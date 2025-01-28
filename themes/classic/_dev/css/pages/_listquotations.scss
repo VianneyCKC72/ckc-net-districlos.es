@@ -1,0 +1,19 @@
+#module-opartdevis-listquotation {
+  @include account;
+
+  #order-list {
+    tr, td {
+      color: $primary-color;
+    }
+    a.btn {
+      background: transparent;
+      padding: 0;
+      border: none;
+      width: auto;
+      height: auto;
+      span {
+        color: $primary-color;
+      }
+    }
+  }
+}

@@ -1,0 +1,45 @@
+#cms {
+  #content:not(.page-cms) {
+    //#content_list {
+    //  order: 1;
+    //  transition: none;
+    //}
+    display: flex;
+    //.elementor.ce-edit-wrapper {
+    //  order: 2;
+    //  transition: none;
+    //}
+
+    .card {
+      img {
+        width: 100%;
+        height: auto;
+      }
+      .text {
+        background: $blue_light_50 0% 0% no-repeat padding-box;
+        padding: 20px;
+        a {
+          display: block;
+          font: normal normal bold 20px/20px 'Poppins-Bold';
+          letter-spacing: -0.4px;
+          color: $primary_color;
+          margin-bottom: 10px;
+          &:hover {
+            color: $hover_color;
+          }
+        }
+          p {
+            font: normal normal medium 15px/20px 'Poppins-Medium';
+            letter-spacing: -0.3px;
+            color: $primary_color;
+          }
+
+      }
+    }
+
+
+    @include elementor_card_row;
+
+    @include custom_card_elementor;
+  }
+}

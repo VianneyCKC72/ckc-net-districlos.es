@@ -1,0 +1,8 @@
+$output-bourbon-deprecation-warnings: false !default;
+@import "~bourbon/app/assets/stylesheets/bourbon";
+@import "partials/_variables";
+@import "utils/variables";
+@import "utils/mixins";
+@import "~bootstrap/scss/bootstrap";
+@import "~bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.css";
+@import "_base.scss";

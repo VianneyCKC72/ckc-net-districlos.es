@@ -1,0 +1,20 @@
+#order-detail {
+  p, .qty div,  td, strong, h4, th, li,address  {
+    color: $primary_color;
+  }
+  #order-infos {
+    .row > .col-xs-3 {
+      margin-top: 20px;
+      min-width: 205px;
+    }
+
+  }
+  #order-history h3, .order-message-form.box  form header h3 {
+    @include other_title;
+  }
+  tr.total-value, .definition-list dl dd, .definition-list dl dt {
+    background-color: $blue_light_50!important;
+    color: $primary_color;
+  }
+
+}

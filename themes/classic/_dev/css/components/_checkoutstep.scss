@@ -1,0 +1,59 @@
+
+
+.js-current-step.-current {
+  .step-title.js-step-title.h3 {
+    color: $darken_blue;
+    span {
+      color: $darken_blue;
+    }
+  }
+}
+
+  .step-title.js-step-title.h3 {
+    font: normal normal medium 20px/30px 'Poppins-Medium';
+    letter-spacing: -0.4px;
+    color: #D8E6ED;
+    text-transform: capitalize!important;
+
+
+    span {
+      display: block;
+      font: normal normal bold 35px/30px 'Poppins-Bold';
+      letter-spacing: -0.7px;
+      color: #D8E6ED;
+      text-transform: lowercase;
+    }
+
+  }
+
+
+  section.checkout-step .step-title {
+
+  }
+
+  #wrapper #content-wrapper #content {
+    #checkout-addresses-step, #checkout-personal-information-step, .checkout-step.-unreachable, #checkout-delivery-step, #checkout-payment-step {
+      padding: 0;
+    }
+  }
+
+#checkout-personal-information-step {
+
+.content {
+
+    p {
+      font: normal normal medium 14px/20px 'Poppins-Medium';
+      letter-spacing: -0.28px;
+      color: $primary_color;
+    }
+
+    .btn {
+      margin-bottom: 20px;
+    }
+
+
+  }
+
+
+}
+

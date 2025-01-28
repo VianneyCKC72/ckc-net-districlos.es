@@ -1,0 +1,97 @@
+/* grid /  list */
+
+#category, #new-products, #manufacturer, #best-sales, #prices-drop  {
+  #header {
+    #search_widget > form {
+      margin-bottom: 0;
+    }
+  }
+  .breadcrumb {
+    padding-left: 0;
+  }
+
+  @include search_widget;
+
+  #search_widget form {
+    max-width: 300px;
+    margin-bottom: 20px;
+  }
+  #content {
+
+    &.page-content.page-not-found {
+      margin: 0;
+      padding: 0;
+      max-width: 100%;
+      h4 {
+        font: normal normal normal 30px/40px 'Poppins-Regular';
+      }
+
+      h4, p {
+        color: $primary-color;
+      }
+
+
+    }
+  }
+
+  h1 {
+    font-family: 'Poppins-Bold';
+    font-size: 30px;
+    line-height: 29px;
+    letter-spacing: -.6px;
+    color: $primary_color;
+    text-transform: initial;
+  }
+  #category-description {
+    p {
+      font-size: 13px;
+      color: $primary-color;
+      margin-bottom: 20px;
+    }
+  }
+  #product-list-header {
+    //margin-top: -10px;
+    .block-category {
+      min-height: auto;
+      margin-bottom: 0;
+      padding: 0;
+    }
+  }
+
+ @include header_cat;
+
+  p {
+    color: $primary_color;
+  }
+
+
+@include viewchoice;
+  //card elementor
+
+  .product-price.h5.w-100 {
+    margin-left: 0;
+  }
+
+  @include elementor_card_row;
+  @include custom_card_elementor;
+
+
+.product_descr {
+  color: $primary_color!important;
+}
+
+  .mobile__ {
+    .breadcrumb {
+      padding-left: 15px;
+      display: none;
+      @media (max-width: 767px) {
+        display: block;
+      }
+    }
+  }
+
+
+}
+
+
+

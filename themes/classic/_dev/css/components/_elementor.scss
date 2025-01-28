@@ -1,0 +1,9 @@
+#index {
+  .elementor-section.elementor-section-boxed > .elementor-container {
+    max-width: 100%!important;
+  }
+  .elementor-button {
+    @include button;
+  }
+}
+

@@ -1,0 +1,17 @@
+#pagenotfound {
+  .page-content.page-not-found {
+    max-width: 100%;
+    h4, p {
+      color: $primary-color;
+    }
+
+    @include search_widget;
+
+    #search_widget form {
+      max-width: 300px;
+    }
+  }
+
+
+
+}

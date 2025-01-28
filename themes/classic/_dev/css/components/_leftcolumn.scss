@@ -1,0 +1,62 @@
+#category, #new-products, #manufacturer, #best-sales, #prices-drop  {
+  #left-column {
+
+    .content_left_column {
+      background-color: $blue_light_50;
+      padding: 1rem;
+    }
+
+    .block-categories {
+      padding: 0!important;
+    }
+    .block-categories, #search_filters_brands, #search_filters_suppliers {
+      padding: 0;
+      padding-top: 20px;
+      background-color: $blue_light_50;
+
+      .h6 {
+        @include title_left_column;
+      }
+
+
+
+      .category-sub-menu, .facet-label {
+        a {
+          font-family: 'Poppins-Medium';
+          font-size: 15px;
+          line-height: 30px;
+          color: $primary_color;
+          font-weight: normal!important;
+          &:hover {
+            color: $hover_color;
+          }
+        }
+      }
+
+
+    }
+
+    #search_filters, #search_filters_brands, #search_filters_suppliers {
+      padding: 0;
+      background: transparent;
+    }
+
+
+    @import "facet";
+
+    @media (max-width: 767px) {
+      margin-top: 1rem;
+      margin-left: 0rem;
+      margin-right: 0rem;
+      margin-bottom: 20px;
+
+    }
+
+    .btn-default.button-small.opartDevisCartToQuotationLink, .btn-default.button-small.opartDevisQuotationRequestLink {
+      width: 100%;
+      max-width: 284px;
+    }
+  }
+
+}
+

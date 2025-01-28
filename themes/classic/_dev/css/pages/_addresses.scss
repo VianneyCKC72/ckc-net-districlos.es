@@ -1,0 +1,33 @@
+#addresses {
+  #content {
+    .address{
+      background-color: $blue_light_50;
+      .address-body {
+        color: $primary_color;
+      }
+      .address-footer {
+        display: flex;
+        justify-content: space-around;
+
+        a {
+          color: $primary_color;
+          padding: .6rem 1rem;
+          border-radius: 25px;
+          background-color: transparent;
+          i {
+            margin-right: 0.4rem;
+            margin-top: -2px;
+          }
+          &:hover {
+            background-color: #f6f6f6;
+          }
+        }
+      }
+    }
+
+    p, span {
+      color: $primary_color;
+    }
+  }
+
+}
