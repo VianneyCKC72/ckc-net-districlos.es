@@ -1,11 +1,11 @@
 <?php return array (
   'parameters' => 
   array (
-    'database_host' => '87.98.141.171',
+    'database_host' => 'localhost',
     'database_port' => '',
-    'database_name' => 'districlos_refonte',
-    'database_user' => 'districlos_refonte',
-    'database_password' => 'TXM1qjk9teu_cfb9wxv',
+    'database_name' => 'districlos',
+    'database_user' => 'root',
+    'database_password' => '',
     'database_prefix' => 'ps_',
     'database_engine' => 'InnoDB',
     'mailer_transport' => 'smtp',

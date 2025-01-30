@@ -30,13 +30,13 @@
 
 {else}
 
-  <div class="form-group row {if !empty($field.errors)}has-error{/if}">
-    <label class="col-md-3 form-control-label{if $field.required} required{/if}" for="field-{$field.name}">
+  <div class="form-group {if !empty($field.errors)}has-error{/if}">
+    <label class="form-control-label{if $field.required} required{/if}" for="field-{$field.name}">
       {if $field.type !== 'checkbox'}
         {$field.label}
       {/if}
     </label>
-    <div class="col-md-6 js-input-column{if ($field.type === 'radio-buttons')} form-control-valign{/if}">
+    <div class="js-input-column{if ($field.type === 'radio-buttons')} form-control-valign{/if}">
 
       {if $field.type === 'select'}
 
@@ -151,7 +151,7 @@
             >
             <span class="input-group-btn">
               <button
-                class="btn"
+                class="btn btn-secondary"
                 type="button"
                 data-action="show-password"
                 data-text-show="{l s='Show' d='Shop.Theme.Actions'}"
