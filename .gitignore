@@ -141,17 +141,6 @@ fabric.properties
 /cache/*
 !/cache/.htaccess
 !/cache/cachefs/index.php
-!/cache/deprecated.txt
-!/cache/index.php
-!/cache/purifier/index.php
-!/cache/push/activity
-!/cache/push/index.php
-!/cache/push/trends
-!/cache/sandbox/index.php
-!/cache/smarty/cache/index.php
-!/cache/smarty/compile/index.php
-!/cache/smarty/index.php
-!/cache/tcpdf/index.php
 
 # Logs
 /logs/*
@@ -312,15 +301,10 @@ themes/default-bootstrap/modules/*/mails/*
 /build/
 /phpunit.xml
 /var/*
-!/var/cache
+# Ignorer le cache et logs PrestaShop 1.7+
 /var/cache/*
-!var/cache/.gitkeep
-!/var/logs
 /var/logs/*
-!var/logs/.gitkeep
-!/var/sessions
-/var/sessions/*
-!var/sessions/.gitkeep
+/var/sessions
 !var/SymfonyRequirements.php
 /vendor/
 /web/bundles/
@@ -440,4 +424,3 @@ $RECYCLE.BIN/
 /modules/ckc_espacepro/config_fr.xml
 /modules/ckc_espacepro/logs.txt
 /.thumbs
-
