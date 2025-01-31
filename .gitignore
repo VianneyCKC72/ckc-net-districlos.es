@@ -253,9 +253,7 @@ app/config/config.php
 modules/*
 #override/*
 themes/*/
-!themes/auto_store
-!themes/_core
-!themes/_libraries
+!themes/classic
 
 # Dynamic Products module
 
