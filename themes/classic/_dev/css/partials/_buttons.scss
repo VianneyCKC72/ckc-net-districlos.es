@@ -1,0 +1,21 @@
+.btn{
+    padding: 18px 30px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 999px;
+}
+.btn-primary{
+    color: $white;
+    background-color: $primary-color;
+    &:hover{
+        background-color: darken($primary-color, 10%);
+    }
+}
+.btn-secondary{
+    color: $white;
+    background-color: $secondary-color;
+    &:hover{
+        background-color: darken($secondary-color, 10%);
+    }
+}
