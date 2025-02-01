@@ -22,33 +22,20 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
+<a href="/authentification?back=my-account&amp;ep=1" class="btn-espace-pro">
+    <img src="/themes/classic/assets/img/ico-espace-pro.png" alt="Espace pro">
+    <span class="text">Espace pro</span>
+</a>
+
 <div id="_desktop_user_info">
   <div class="user-info">
     {if $logged}
-      <a
-        class="logout hidden-sm-down"
-        href="{$urls.actions.logout}"
-        rel="nofollow"
-      >
-        <i class="material-icons">&#xE7FF;</i>
-        {l s='Sign out' d='Shop.Theme.Actions'}
-      </a>
-      <a
-        class="account"
-        href="{$urls.pages.my_account}"
-        title="{l s='View my customer account' d='Shop.Theme.Customeraccount'}"
-        rel="nofollow"
-      >
-        <i class="material-icons hidden-md-up logged">&#xE7FF;</i>
-        <span class="hidden-sm-down">{$customerName}</span>
-      </a>
-    {else}
       <a
         href="{$urls.pages.authentication}?back={$urls.current_url|urlencode}"
         title="{l s='Log in to your customer account' d='Shop.Theme.Customeraccount'}"
         rel="nofollow"
       >
-        <i class="material-icons">&#xE7FF;</i>
+          <img src="/themes/classic/assets/img/ico-compte.png" alt="Espace pro">
         <span class="hidden-sm-down">{l s='Sign in' d='Shop.Theme.Actions'}</span>
       </a>
     {/if}
