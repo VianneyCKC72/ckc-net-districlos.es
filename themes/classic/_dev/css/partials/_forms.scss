@@ -48,3 +48,12 @@
     border-radius: 999px;
     margin-right: 16px;
 }
+
+.header-top .search-widgets form input[type=text],
+.search-widgets form input[type=text] {
+    background:$sand-color url("/img/ico-loupe.png") no-repeat 95% 50%;
+    color: $primary-color;
+    border-radius:75px;
+    width:296px;
+    height:50px;
+}
