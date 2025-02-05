@@ -1,0 +1,423 @@
+$secondary-color: #79c046;
+$pro-color: #026473;
+
+.action-header-espace-pro {
+  .btn-espace-pro {
+    align-items: center;
+    background: $secondary-color;
+    color: #FFF;
+    display: flex;
+    justify-content: center;
+    letter-spacing: 0;
+    min-height: 20px;
+    opacity: 1;
+    padding: 5px;
+    text-align: left;
+    width: 210px;
+  }
+}
+
+.espace_pro {
+  #customer-form section :nth-child(5) {
+    padding-bottom: 5px;
+  }
+  #tmcmsbannerblock {
+    background: $pro-color;
+  }
+
+  #footer .footer-before, #tmcms6block {
+    background: $pro-color !important;
+  }
+
+  .action-header-espace-pro .btn-espace-pro {
+    background: $pro-color !important;
+  }
+  #login-form {
+    .col-md-12 .form-control {
+      padding-left: 45px;
+    }
+  }
+
+  .register-form .js-customer-form {
+    max-width: 454px;
+  }
+
+  .contenair-img {
+    display: flex;
+    justify-content: space-around;
+    margin: 30px auto;
+    width: 1420px;
+
+    img {
+      max-width: 240px;
+    }
+  }
+
+  .contenair-img-auth {
+    .avis {
+      position: absolute;
+      left: 50px;
+      top: 50px;
+      max-width: 300px;
+
+      p {
+        color: #FFF;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 18px;
+      }
+    }
+
+    .block-bas {
+      background: #026473;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      min-width: 65%;
+      height: 75px;
+      padding-top: 10px;
+      transform: translateX(-50%);
+      img.img-connect {
+        display: block;
+        max-height: 100%;
+        object-fit: cover;
+        width: 100%;
+      }
+      .green-dark {
+        color: #fff;
+        font-size: 20px;
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .text-white {
+        color: #FFF;
+        font-size: 16px;
+        text-align: center;
+      }
+    }
+
+    figure {
+      position: relative;
+      height: 100%;
+      margin: 0;
+    }
+
+    .img-connect {
+      height: 100%;
+      object-fit: cover;
+      width: auto;
+    }
+  }
+
+  .block-explication {
+    margin: 70px 0 50px;
+    .btn-secondary {
+      background-color: #7ABF48;
+      border: 1px solid #7ABF48;
+      color: #FFF;
+      font-weight: 700;
+    }
+    h3 {
+      color: #000;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0;
+      line-height: 30px;
+      margin-bottom: 5px;
+      opacity: 1;
+      text-align: left;
+    }
+
+    p {
+      color: #000;
+      letter-spacing: 0;
+    }
+  }
+
+  .steps-container {
+    display: flex;
+    justify-content: space-between;
+    width: 800px;
+    margin: 30px auto;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 25px;
+      left: 150px;
+      right: 150px;
+      height: 2px;
+      background: $pro-color;
+      z-index: 0;
+    }
+  }
+
+  .step {
+    flex: 1;
+    max-width: 880px;
+    text-align: center;
+
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: -50%;
+      width: 100%;
+      height: 2px;
+      background: #026373;
+      display: none;
+      z-index: 0;
+    }
+  }
+
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: $pro-color;
+    color: #FFF;
+    font-size: 20px;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-text {
+    color: #000;
+    font-size: 16px;
+  }
+
+  @mixin background-icon($image) {
+    background: transparent url("../img/espace-pro/#{$image}") no-repeat scroll center left;
+  }
+
+  // Utilisation dans ton SCSS
+  .espace_pro {
+    h3 {
+      &.france_rond { @include background-icon("france_rond.png"); }
+      &.cariste { @include background-icon("cariste.png"); }
+      &.pouce { @include background-icon("pouce.png"); }
+      &.teleoperatrice { @include background-icon("teleoperatrice.png"); }
+      &.picto_rond_title {
+        align-items: center;
+        background-size: 55px;
+        display: flex;
+        height: 80px;
+        padding-left: 65px;
+      }
+    }
+  }
+
+  h2 {
+    &.pouce {
+      @include background-icon("pouce.png");
+    }
+
+    &.picto_rond_title {
+      align-items: center;
+      background-size: 55px;
+      display: flex;
+      height: 80px;
+      padding-left: 65px;
+    }
+  }
+  .bordered {
+    border: 1px solid #C9C9C9;
+    color: #000;
+    padding: 30px;
+  }
+  #login-form {
+    .col-md-12 {
+      .form-control {
+        padding-left: 45px;
+      }
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      float: left;
+      text-transform: none !important;
+    }
+
+    .btn-secondary {
+      @extend .btn-secondary-espace-pro;
+    }
+  }
+
+  .margin-bottom-80 {
+    margin-bottom: 80px;
+  }
+
+  .btn-custom {
+    background-color: $pro-color;
+    border: 1px solid $pro-color;
+    color: #FFF;
+    font-weight: 700;
+  }
+}
+
+.custom-file-upload {
+  background-color: #C9C9C9;
+  border: 1px solid transparent;
+  color: #000;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  padding: 6px 12px;
+  transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+
+  &:hover {
+    background-color: #C9C9C9;
+  }
+}
+
+#authentication .espace_pro {
+  .radio-inline {
+    padding-right: 10px;
+  }
+
+  .title_descr {
+    margin: 0 auto;
+    max-width: 1420px;
+  }
+}
+
+.memeLigne {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.action-header-espace-pro {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#block-reassurance-custom .row {
+  .inside {
+    margin: 20px auto;
+
+    .cont-inside {
+      display: flex;
+      justify-content: space-around;
+      margin: 0 auto;
+      max-width: 1200px;
+      padding-bottom: 0;
+      padding-top: 30px;
+    }
+  }
+
+  .item {
+    background: #F2EEE9;
+    display: flex;
+    flex-direction: column;
+    min-height: 290px;
+    padding: 15px;
+    text-align: center;
+    width: 260px;
+  }
+}
+
+.page-customer-account #content {
+  overflow: unset;
+}
+
+main#page section#content {
+  clear: both;
+}
+
+.text-right {
+  text-align: right;
+}
+
+@media screen and (max-width: 1640px) {
+  .espace_pro .contenair-img-auth .block-bas {
+    .green-dark {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    .text-white {
+      color: #FFF;
+      font-size: 14px;
+    }
+  }
+}
+
+@media screen and (max-width: 1500px) {
+  .espace_pro .bordered {
+    padding: 20px;
+  }
+  .espace_pro #login-form .btn-secondary {
+    font-size: 12px;
+    margin-left: 5px;
+    padding: 8px 15px;
+  }
+  .espace_pro .sous-texte-auth {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    margin-bottom: 25px;
+  }
+  .espace_pro h1 span.text-center {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 30px;
+  }
+  .espace_pro .titreForm {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 22px;
+    margin-bottom: 15px;
+  }
+}
+
+@media screen and (max-width: 1440px) {
+  .espace_pro .contenair-img {
+    width: auto;
+  }
+  .espace_pro .contenair-img img {
+    max-width: 200px;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .espace_pro .bordered {
+    float: none;
+    margin: 0 auto;
+    width: 60%;
+  }
+  .espace_pro .contenair-img-auth .block-bas .text-white {
+    font-size: 12px;
+  }
+  .espace_pro .contenair-img-auth .block-bas {
+    min-width: 85%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .espace_pro .block-explication .col-sm-6:first-child {
+    margin-bottom: 30px;
+    margin-top: 30px;
+  }
+  #block-reassurance-custom .row .inside .cont-inside {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin: 0 auto;
+    max-width: 1200px;
+    padding-bottom: 0;
+    padding-top: 40px;
+  }
+}

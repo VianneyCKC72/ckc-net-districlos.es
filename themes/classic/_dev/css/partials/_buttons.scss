@@ -19,3 +19,9 @@
         background-color: darken($secondary-color, 10%);
     }
 }
+.btn-secondary-espace-pro{
+    background-color: $pro-color;
+    border: 1px solid $pro-color;
+    color: #FFF !important;
+    font-weight: 700 !important;
+}
