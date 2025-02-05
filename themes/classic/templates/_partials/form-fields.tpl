@@ -30,7 +30,8 @@
 
 {else}
 
-  <div class="form-group {if !empty($field.errors)}has-error{/if}">
+    <div class="form-group row {if ($field.name == "firstname" & $field.type == "text" & $espace_pro != 1) or ($field.name == "lastname" & $field.type == "text" & $espace_pro != 1)}input_distri_50 col-md-6{/if}{if !empty($field.errors)}has-error{/if}">
+
     <label class="form-control-label{if $field.required} required{/if}" for="field-{$field.name}">
       {if $field.type !== 'checkbox'}
         {$field.label}
@@ -68,22 +69,28 @@
       {elseif $field.type === 'radio-buttons'}
 
         {block name='form_field_item_radio'}
-          {foreach from=$field.availableValues item="label" key="value"}
-            <label class="radio-inline" for="field-{$field.name}-{$value}">
-              <span class="custom-radio">
-                <input
-                  name="{$field.name}"
-                  id="field-{$field.name}-{$value}"
-                  type="radio"
-                  value="{$value}"
-                  {if $field.required}required{/if}
-                  {if $value eq $field.value} checked {/if}
-                >
-                <span></span>
-              </span>
-              {$label}
-            </label>
-          {/foreach}
+            {foreach from=$field.availableValues item="label" key="value"}
+
+                {if $field.name == 'id_gender' && $value > 2 && $espace_pro != 1}
+                    {* Ne rien faire pour masquer le bouton et le label si les conditions sont remplies *}
+                {else}
+                    <label class="radio-inline {$field.name}">
+                            <span class="custom-radio">
+                                <input name="{$field.name}" type="radio" value="{$value}" {if $field.required}required{/if}{if $value eq $field.value} checked {/if}>
+                                <span></span>
+                            </span>
+                        {if $espace_pro == 1 && $label == 'Mademoiselle'}
+                            Mlle.
+                        {elseif $espace_pro == 1 && $label == 'Monsieur'}
+                            M.
+                        {elseif $espace_pro == 1 && $label == 'Madame'}
+                            Mme.
+                        {else}
+                            {$label}
+                        {/if}
+                    </label>
+                {/if}
+            {/foreach}
         {/block}
 
       {elseif $field.type === 'checkbox'}
@@ -151,7 +158,7 @@
             >
             <span class="input-group-btn">
               <button
-                class="btn btn-secondary"
+                class="btn btn-secondary btn-show-password"
                 type="button"
                 data-action="show-password"
                 data-text-show="{l s='Show' d='Shop.Theme.Actions'}"

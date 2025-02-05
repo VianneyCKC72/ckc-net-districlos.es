@@ -20,6 +20,14 @@
     }
 }
 
+.btn-show-password {
+    color: $white;
+    background-color: $black !important;
+    &:hover{
+        background-color: lighten($black, 10%)  !important;;
+    }
+}
+
 .link-arrow{
     display: flex;
     column-gap: 10px;
@@ -40,7 +48,13 @@
 }
 .btn-secondary-espace-pro{
     background-color: $pro-color;
+}
+.btn-primary-pro {
     border: 1px solid $pro-color;
-    color: #FFF !important;
-    font-weight: 700 !important;
+    background:white;
+    color:$pro-color;
+    &:hover{
+        background-color: $pro-color;
+        color:white;
+    }
 }

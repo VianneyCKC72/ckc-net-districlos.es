@@ -343,15 +343,6 @@ h6 {
   margin-top: 0
 }
 
-.page-content.page-cms ul,
-dl,
-ol,
-p,
-ul {
-  margin-top: 0;
-  margin-bottom: 1rem
-}
-
 abbr[data-original-title],
 abbr[title] {
   cursor: help;
@@ -671,7 +662,6 @@ pre code {
 
 .container {
   width: 1520px;
-  width: 100%;
   max-width: 100%
 }
 
@@ -6070,7 +6060,9 @@ body#checkout section.checkout-step .select-field div {
   padding: .625rem 3.125rem;
   background: #f6f6f6
 }
-
+.form-footer {
+  margin-top: 1rem;
+}
 .block-promo .promo-code form,
 .page-order table thead th,
 .page-order-detail #order-products.return td.qty .select select,
@@ -6540,7 +6532,7 @@ body#checkout #hook-display-after-carrier>[class^=col].links .row>[class^=col] {
   padding-bottom: .9375rem;
   margin-top: 1rem;
   font-size: .875rem;
-  text-align: center
+  text-align: right
 }
 
 .page-customer-account #content .no-account {
@@ -6552,7 +6544,6 @@ body#checkout #hook-display-after-carrier>[class^=col].links .row>[class^=col] {
 .page-registration #content {
   padding: 0;
   background: #fff;
-  max-width: 1262px;
   margin: 0 auto
 }
 
@@ -6781,11 +6772,6 @@ body#checkout #hook-display-after-carrier>[class^=col].links .row>[class^=col] {
 .page-footer .account-link span {
   font-size: .875rem;
   vertical-align: middle
-}
-
-.login-form {
-  margin-top: 15px;
-  margin-left: 20px;
 }
 
 .forgotten-password {
@@ -10822,11 +10808,6 @@ body#checkout #hook-display-after-carrier>[class^=col].links .row>[class^=col] {
 }
 
 @media (min-width:1200px) {
-  /*.container {
-    width: 1140px;
-    max-width: 100%
-  }*/
-
   .row {
     margin-right: -15px;
     margin-left: -15px

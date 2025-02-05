@@ -24,37 +24,53 @@
  *}
 {block name='login_form'}
 
-  {block name='login_form_errors'}
-    {include file='_partials/form-errors.tpl' errors=$errors['']}
-  {/block}
-
-  <form id="login-form" action="{block name='login_form_actionurl'}{$action}{/block}" method="post">
-
-    <div>
-      {block name='login_form_fields'}
-        {foreach from=$formFields item="field"}
-          {block name='form_field'}
-            {form_field field=$field}
-          {/block}
-        {/foreach}
-      {/block}
-      <div class="forgot-password">
-        <a href="{$urls.pages.password}" rel="nofollow">
-          {l s='Forgot your password?' d='Shop.Theme.Customeraccount'}
-        </a>
-      </div>
-    </div>
-
-    {block name='login_form_footer'}
-      <footer class="form-footer text-sm-center clearfix">
-        <input type="hidden" name="submitLogin" value="1">
-        {block name='form_buttons'}
-          <button id="submit-login" class="btn btn-primary" data-link-action="sign-in" type="submit" class="form-control-submit">
-            {l s='Sign in' d='Shop.Theme.Actions'}
-          </button>
-        {/block}
-      </footer>
+    {block name='login_form_errors'}
+        {include file='_partials/form-errors.tpl' errors=$errors['']}
     {/block}
+    <form id="login-form" action="{block name='login_form_actionurl'}{$action}{/block}" method="post">
 
-  </form>
+        <div>
+            {block name='login_form_fields'}
+                {foreach from=$formFields item="field"}
+                    {block name='form_field'}
+                        {form_field field=$field}
+                    {/block}
+                {/foreach}
+            {/block}
+            <div class="forgot-password">
+                <a href="{$urls.pages.password}" rel="nofollow">
+                    {l s='Forgot your password?' d='Shop.Theme.Customeraccount'}
+                </a>
+            </div>
+        </div>
+
+        {block name='login_form_footer'}
+            <footer class="form-footer text-sm-center clearfix">
+                <input type="hidden" name="submitLogin" value="1">
+                {block name='form_buttons'}
+                    {if $espace_pro == 1}<div class="cont-all-btn-login">{/if}
+                    <button id="submit-login" class="btn btn-primary btn-primary-pro" data-link-action="sign-in" type="submit"
+                            class="form-control-submit">
+                        Se connecter
+                    </button>
+                    {if $espace_pro == 1}
+                        <div class="cont-btn-submit">
+                            <span class="green"><strong>100€ offert !</strong></span>
+                            <a href="/authentification?create_account=1&ep=1" class="btn btn-secondary"
+                               id="inscription">Créer un compte</a>
+                        </div>
+                        </div>
+                    {/if}
+                    {if $espace_pro != 1}
+                        <div class="forgot-password">
+                            <a href="{$urls.pages.password}" rel="nofollow">
+                                {l s='Forgot your password?' d='Shop.Theme.Customeraccount'}
+                            </a>
+                        </div>
+                    {/if}
+                {/block}
+            </footer>
+        {/block}
+
+    </form>
 {/block}

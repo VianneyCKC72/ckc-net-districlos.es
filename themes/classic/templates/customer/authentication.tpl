@@ -47,7 +47,7 @@
   {/if}
   {block name='login_form_container'}
     {if $espace_pro == 1}<div class="row">{/if}
-    <section class="login-form{if $espace_pro == 1} bordered col-4{/if}">
+    <section class="login-form{if $espace_pro == 1} col-4{/if}">
       {if $espace_pro != 1}
         <div class="no-account">
           <a href="{$urls.pages.my_account}" data-link-action="display-register-form">

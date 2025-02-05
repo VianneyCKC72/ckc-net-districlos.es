@@ -1,11 +1,8 @@
-$secondary-color: #79c046;
-$pro-color: #026473;
-
 .action-header-espace-pro {
   .btn-espace-pro {
     align-items: center;
     background: $secondary-color;
-    color: #FFF;
+    color: $white;
     display: flex;
     justify-content: center;
     letter-spacing: 0;
@@ -18,6 +15,10 @@ $pro-color: #026473;
 }
 
 .espace_pro {
+  .sous-texte-auth {
+    margin-bottom: 50px;
+    font-size: 16px;
+  }
   #customer-form section :nth-child(5) {
     padding-bottom: 5px;
   }
@@ -37,7 +38,12 @@ $pro-color: #026473;
       padding-left: 45px;
     }
   }
-
+  .cont-all-btn-login {
+    align-items: flex-end;
+    display: flex;
+    justify-content: flex-start;
+    gap:10px;
+  }
   .register-form .js-customer-form {
     max-width: 454px;
   }
@@ -61,7 +67,7 @@ $pro-color: #026473;
       max-width: 300px;
 
       p {
-        color: #FFF;
+        color: $white;
         font-size: 12px;
         font-weight: 600;
         line-height: 18px;
@@ -74,7 +80,7 @@ $pro-color: #026473;
       bottom: 0;
       left: 50%;
       min-width: 65%;
-      height: 75px;
+      height: 90px;
       padding-top: 10px;
       transform: translateX(-50%);
       img.img-connect {
@@ -84,14 +90,14 @@ $pro-color: #026473;
         width: 100%;
       }
       .green-dark {
-        color: #fff;
+        color: $white;
         font-size: 20px;
         font-weight: 700;
         text-align: center;
       }
 
       .text-white {
-        color: #FFF;
+        color: $white;
         font-size: 16px;
         text-align: center;
       }
@@ -114,12 +120,14 @@ $pro-color: #026473;
     margin: 70px 0 50px;
     .btn-secondary {
       background-color: #7ABF48;
-      border: 1px solid #7ABF48;
-      color: #FFF;
+      color: $white;
       font-weight: 700;
+      &.btn-show-passpord {
+        background-color: $black;
+      }
     }
     h3 {
-      color: #000;
+      color: $black;
       font-size: 20px;
       font-weight: 700;
       letter-spacing: 0;
@@ -130,7 +138,7 @@ $pro-color: #026473;
     }
 
     p {
-      color: #000;
+      color: $black;
       letter-spacing: 0;
     }
   }
@@ -166,7 +174,7 @@ $pro-color: #026473;
       right: -50%;
       width: 100%;
       height: 2px;
-      background: #026373;
+      background: $primary-color;
       display: none;
       z-index: 0;
     }
@@ -180,7 +188,7 @@ $pro-color: #026473;
     height: 50px;
     border-radius: 50%;
     background-color: $pro-color;
-    color: #FFF;
+    color: $white;
     font-size: 20px;
     margin-bottom: 10px;
     position: relative;
@@ -188,7 +196,7 @@ $pro-color: #026473;
   }
 
   .step-text {
-    color: #000;
+    color: $black;
     font-size: 16px;
   }
 
@@ -227,8 +235,8 @@ $pro-color: #026473;
     }
   }
   .bordered {
-    border: 1px solid #C9C9C9;
-    color: #000;
+    border: 1px solid $sand-color;
+    color: $black;
     padding: 30px;
   }
   #login-form {
@@ -241,10 +249,9 @@ $pro-color: #026473;
     .btn-primary,
     .btn-secondary {
       float: left;
-      text-transform: none !important;
     }
 
-    .btn-secondary {
+    .btn-secondary:not(.btn-show-passpord) {
       @extend .btn-secondary-espace-pro;
     }
   }
@@ -256,15 +263,15 @@ $pro-color: #026473;
   .btn-custom {
     background-color: $pro-color;
     border: 1px solid $pro-color;
-    color: #FFF;
+    color: $white;
     font-weight: 700;
   }
 }
 
 .custom-file-upload {
-  background-color: #C9C9C9;
+  background-color: $sand-color;
   border: 1px solid transparent;
-  color: #000;
+  color: $black;
   cursor: pointer;
   display: inline-block;
   font-size: 14px;
@@ -274,7 +281,7 @@ $pro-color: #026473;
   transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 
   &:hover {
-    background-color: #C9C9C9;
+    background-color: $sand-color;
   }
 }
 
@@ -304,29 +311,36 @@ $pro-color: #026473;
   top: 0;
 }
 
+#authentication .row.full-width,
 #block-reassurance-custom .row {
+    background: #026473;
+    left: 50%;
+    margin-left: -50vw;
+    position: relative;
+    width: 100vw;
   .inside {
     margin: 20px auto;
-
     .cont-inside {
       display: flex;
       justify-content: space-around;
       margin: 0 auto;
-      max-width: 1200px;
+      max-width: 1520px;
       padding-bottom: 0;
       padding-top: 30px;
+      .item {
+        background: #F2EEE9;
+        display: flex;
+        flex-direction: column;
+        min-height: 290px;
+        padding: 15px;
+        text-align: center;
+        width: 220px;
+      }
     }
+
   }
 
-  .item {
-    background: #F2EEE9;
-    display: flex;
-    flex-direction: column;
-    min-height: 290px;
-    padding: 15px;
-    text-align: center;
-    width: 260px;
-  }
+
 }
 
 .page-customer-account #content {
@@ -348,7 +362,7 @@ main#page section#content {
       margin-bottom: 5px;
     }
     .text-white {
-      color: #FFF;
+      color: $white;
       font-size: 14px;
     }
   }
