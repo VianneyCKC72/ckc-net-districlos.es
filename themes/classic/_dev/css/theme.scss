@@ -8,10 +8,13 @@ $output-bourbon-deprecation-warnings: false !default;
 @import "~bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.css";
 @import "_base.scss";
 
+@import "partials/_titles.scss";
 @import "partials/_forms.scss";
 @import "partials/_buttons.scss";
+@import "partials/_cards.scss";
 
-.flex-card-product{
-    display: flex;
-    column-gap: 32px;
+.stack-row__cards{
+    display: grid;
+    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
