@@ -13,6 +13,7 @@
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
+        color: $black;
         .h3{
             transition: all 0.3s;
             margin-bottom: 0;
@@ -30,15 +31,19 @@
             flex-direction: column;
             align-items: flex-start;
         }
-        .thumbnail img{
+        .thumbnail{
             position: absolute;
-            bottom: 0;
-            right: 0;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
             padding-left: 40%;
             padding-top: 25%;
+            img{
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
         }
         &:hover{
             .content{
