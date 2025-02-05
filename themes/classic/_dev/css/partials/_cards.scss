@@ -30,15 +30,19 @@
             flex-direction: column;
             align-items: flex-start;
         }
-        .thumbnail img{
+        .thumbnail{
             position: absolute;
-            bottom: 0;
-            right: 0;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
             padding-left: 40%;
             padding-top: 25%;
+            img{
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
         }
         &:hover{
             .content{
