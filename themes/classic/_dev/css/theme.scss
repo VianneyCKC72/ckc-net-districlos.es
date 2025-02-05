@@ -18,3 +18,6 @@ $output-bourbon-deprecation-warnings: false !default;
     gap: 24px;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
+
+
+@import "modules/espacepro.scss";

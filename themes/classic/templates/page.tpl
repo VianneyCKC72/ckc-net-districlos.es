@@ -26,7 +26,7 @@
 
 {block name='content'}
 
-  <section id="main">
+    <section id="main" class="{if $espace_pro == 1}espace_pro{/if}">
 
     {block name='page_header_container'}
       {block name='page_title' hide}

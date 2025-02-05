@@ -34,7 +34,9 @@
     {/block}
   </head>
 
-  <body id="{$page.page_name}" class="{$page.body_classes|classnames}">
+  <body id="{$page.page_name}" class="{$page.body_classes|classnames} {if ($page.page_name == 'authentication' && $espace_pro == 1) || $env_pro == 1}
+    espace_pro
+{/if}">
 
     {block name='hook_after_body_opening_tag'}
       {hook h='displayAfterBodyOpeningTag'}
