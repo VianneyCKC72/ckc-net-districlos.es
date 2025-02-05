@@ -254,6 +254,7 @@ modules/*
 #override/*
 themes/*/
 !themes/classic
+themes/classic/assets
 
 # Dynamic Products module
 
