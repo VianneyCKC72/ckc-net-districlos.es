@@ -10,5 +10,10 @@ $output-bourbon-deprecation-warnings: false !default;
 @import "partials/_forms.scss";
 @import "partials/_buttons.scss";
 
+.flex-card-product{
+    display: flex;
+    column-gap: 32px;
+}
+
 
 @import "modules/espacepro.scss";
