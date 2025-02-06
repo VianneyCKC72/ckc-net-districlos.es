@@ -14,41 +14,11 @@ $output-bourbon-deprecation-warnings: false !default;
 @import "partials/_cards.scss";
 
 @import "modules/espacepro.scss";
+@import "modules/banner-newsletter.scss";
+@import "modules/breadcrumb.scss";
 
 .stack-row__cards{
     display: grid;
     gap: 24px;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-}
-
-//WIP - Hugo
-.banner__newsletter{
-    display: flex;
-    position: relative;
-    margin-bottom: 50px;
-    .col-text{
-        border-radius: 100px 20px 20px 20px;
-        padding: 150px 15% 30px;
-        background-color: $primary-color;
-        color: $white;
-        width: 65%;
-        .input-newsletter{
-            display: flex;
-            align-items: center;
-            input{
-                border-radius: 4px;
-                background-color: $white;
-            }
-        }
-    }
-    .col-img{
-        position: absolute;
-        right: 0;
-        top: 0;
-        border-radius: 20px 20px 100px 20px;
-        overflow: hidden;
-        width: 45%;
-        height: 100%;
-        transform: translateY(50px);
-    }
 }

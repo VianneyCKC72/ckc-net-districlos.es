@@ -7,6 +7,7 @@
     &:focus, &:active{
         box-shadow: none !important;
         border: none !important;
+        outline: none !important;
     }
 }
 .btn-primary{

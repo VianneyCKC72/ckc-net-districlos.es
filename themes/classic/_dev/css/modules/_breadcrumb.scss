@@ -1,0 +1,21 @@
+.breadcrumb{
+    a, span{
+        color: $black;
+        font-size: 12px;
+        font-weight: 400;
+        transition: color 0.3s;
+    }
+    a:hover span, a:hover svg{
+        color: $primary-color;
+    }
+    li{
+        &:after{
+            content: '→' !important;
+            color: $black !important;
+            font-size: 12px;
+        }
+        &:last-child:after{
+            display: none;
+        }
+    }
+}
