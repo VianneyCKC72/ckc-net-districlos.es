@@ -34,3 +34,23 @@ $output-bourbon-deprecation-warnings: false !default;
         @extend .mb-0;
     }
 }
+
+.banner-services{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    justify-items: center;
+    gap: 24px;
+    .service{
+        display: flex;
+        column-gap: 16px;
+        align-items: center;
+        img{
+            height: 40px;
+        }
+        p{
+            font-weight: 500;
+            margin-bottom: 0;
+            line-height: 16px;
+        }
+    }
+}
