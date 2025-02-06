@@ -253,8 +253,10 @@ app/config/config.php
 modules/*
 #override/*
 themes/*/
-!themes/classic
-themes/classic/assets
+!themes/classic/
+!themes/auto_store
+!themes/_core
+!themes/_libraries
 
 # Dynamic Products module
 
@@ -423,3 +425,4 @@ $RECYCLE.BIN/
 /modules/ckc_espacepro/config_fr.xml
 /modules/ckc_espacepro/logs.txt
 /.thumbs
+var/
