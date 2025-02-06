@@ -8,6 +8,7 @@ $output-bourbon-deprecation-warnings: false !default;
 @import "~bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.css";
 @import "_base.scss";
 
+@import "partials/_utilities.scss";
 @import "partials/_titles.scss";
 @import "partials/_forms.scss";
 @import "partials/_buttons.scss";
@@ -21,4 +22,15 @@ $output-bourbon-deprecation-warnings: false !default;
     display: grid;
     gap: 24px;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.banner-primary{
+    @extend .bg-primary;
+    @extend .text-white;
+    @extend .rounded-4;
+    padding: 8px 24px;
+    text-align: center;
+    p{
+        @extend .mb-0;
+    }
 }
