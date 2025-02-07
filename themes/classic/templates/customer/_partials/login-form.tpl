@@ -28,8 +28,15 @@
         {include file='_partials/form-errors.tpl' errors=$errors['']}
     {/block}
     <form id="login-form" action="{block name='login_form_actionurl'}{$action}{/block}" method="post">
-
-        <div>
+        {if $espace_pro != 1}
+        <div class="not-account-yet col-5">
+            <h2>Pas encore de compte ?</h2>
+            <button class="btn-secondary btn" data-link-action="display-register-form">
+                Créer un compte
+            </button>
+        </div>
+        {/if}
+        <div class="inside-login-form {if $espace_pro != 1}col-5{/if}">
             {block name='login_form_fields'}
                 {foreach from=$formFields item="field"}
                     {block name='form_field'}
@@ -59,13 +66,6 @@
                             <a href="/authentification?create_account=1&ep=1" class="btn btn-secondary"
                                id="inscription">Créer un compte</a>
                         </div>
-                        </div>
-                    {/if}
-                    {if $espace_pro != 1}
-                        <div class="forgot-password">
-                            <a href="{$urls.pages.password}" rel="nofollow">
-                                {l s='Forgot your password?' d='Shop.Theme.Customeraccount'}
-                            </a>
                         </div>
                     {/if}
                 {/block}

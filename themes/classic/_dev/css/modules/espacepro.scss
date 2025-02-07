@@ -15,6 +15,9 @@
 }
 
 .espace_pro {
+  .card {
+    border:none;
+  }
   .sous-texte-auth {
     margin-bottom: 50px;
     font-size: 16px;
@@ -324,9 +327,10 @@
       display: flex;
       justify-content: space-around;
       margin: 0 auto;
-      max-width: 1520px;
+      max-width: 100%;
       padding-bottom: 0;
       padding-top: 30px;
+      width:1200px;
       .item {
         background: #F2EEE9;
         display: flex;
@@ -335,6 +339,8 @@
         padding: 15px;
         text-align: center;
         width: 220px;
+        align-items: center;
+        gap: 15px;
       }
     }
 

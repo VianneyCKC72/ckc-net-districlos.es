@@ -80,6 +80,7 @@
           <p class="text-white">pour toute première commande en tant que professionnel !</p>
         </div>
       </div>
+      </div>
     {/if}
 
     {block name='display_after_login_form'}
