@@ -33,10 +33,6 @@
   </h1>
 {/if}
 
-{block name='page_title'}
-  {l s='Log in to your account' d='Shop.Theme.Customeraccount'}
-{/block}
-
 {block name='page_content'}
   {if $espace_pro == 1}
     <p class="text-center sous-texte-auth">Bienvenue dans votre Espace Professionnel dédié aux experts du bâtiment,
@@ -48,15 +44,7 @@
   {block name='login_form_container'}
     {if $espace_pro == 1}<div class="row">{/if}
     <section class="login-form{if $espace_pro == 1} col-4{/if}">
-      {if $espace_pro != 1}
-        <div class="no-account">
-          <a href="{$urls.pages.my_account}" data-link-action="display-register-form">
-            {l s='Se connecter' d='Shop.Theme.Global'}</a>
-          <a href="{$urls.pages.register}" data-link-action="display-register-form">
-            {l s='S\'inscrire' d='Shop.Theme.Global'}
-          </a>
-        </div>
-      {else}
+      {if $espace_pro == 1}
         <p class="text-center titreForm"><strong>Je me connecte à mon espace</strong></p>
       {/if}
 

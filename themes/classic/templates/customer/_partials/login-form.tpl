@@ -29,14 +29,21 @@
     {/block}
     <form id="login-form" action="{block name='login_form_actionurl'}{$action}{/block}" method="post">
         {if $espace_pro != 1}
-        <div class="not-account-yet col-5">
-            <h2>Pas encore de compte ?</h2>
-            <button class="btn-secondary btn" data-link-action="display-register-form">
-                Créer un compte
-            </button>
-        </div>
+            <div class="not-account-yet col-5">
+                <div class="inside">
+                    <h2>Pas encore de compte ?</h2>
+                    <a href="{$urls.pages.register}" class="btn btn-secondary" id="inscription">
+                        Créer un compte
+                    </a>
+                </div>
+            </div>
         {/if}
-        <div class="inside-login-form {if $espace_pro != 1}col-5{/if}">
+        <div class="inside-login-form {if $espace_pro != 1}col-7{/if}">
+            {if $espace_pro != 1}
+                {block name='page_title'}
+                    <h1 class="h1">Se connecter</h1>
+                {/block}
+            {/if}
             {block name='login_form_fields'}
                 {foreach from=$formFields item="field"}
                     {block name='form_field'}
@@ -44,6 +51,14 @@
                     {/block}
                 {/foreach}
             {/block}
+
+            <div class="actions-container-login">
+                <a href="{$urls.pages.my_account}" class="btn btn-primary" data-link-action="display-register-form">
+                    {l s='Se connecter' d='Shop.Theme.Global'}
+                </a>
+                <span class="text-important"><strong>Ou bien...</strong></span>
+            </div>
+
             <div class="forgot-password">
                 <a href="{$urls.pages.password}" rel="nofollow">
                     {l s='Forgot your password?' d='Shop.Theme.Customeraccount'}
@@ -51,26 +66,9 @@
             </div>
         </div>
 
-        {block name='login_form_footer'}
-            <footer class="form-footer text-sm-center clearfix">
-                <input type="hidden" name="submitLogin" value="1">
-                {block name='form_buttons'}
-                    {if $espace_pro == 1}<div class="cont-all-btn-login">{/if}
-                    <button id="submit-login" class="btn btn-primary btn-primary-pro" data-link-action="sign-in" type="submit"
-                            class="form-control-submit">
-                        Se connecter
-                    </button>
-                    {if $espace_pro == 1}
-                        <div class="cont-btn-submit">
-                            <span class="green"><strong>100€ offert !</strong></span>
-                            <a href="/authentification?create_account=1&ep=1" class="btn btn-secondary"
-                               id="inscription">Créer un compte</a>
-                        </div>
-                        </div>
-                    {/if}
-                {/block}
-            </footer>
-        {/block}
-
+        {if $espace_pro == 1}
+            {include file="_partials/_espacepro/login-form-espacepro.tpl"}
+        {else}
+        {/if}
     </form>
 {/block}
