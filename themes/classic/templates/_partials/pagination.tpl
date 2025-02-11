@@ -22,17 +22,17 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
-<nav class="pagination">
-  <div class="col-md-4">
+<nav class="pagination d-flex flex-column flex-md-row justify-content-md-between align-items-center">
+  <div class="">
     {block name='pagination_summary'}
       {l s='Showing %from%-%to% of %total% item(s)' d='Shop.Theme.Catalog' sprintf=['%from%' => $pagination.items_shown_from ,'%to%' => $pagination.items_shown_to, '%total%' => $pagination.total_items]}
     {/block}
   </div>
 
-  <div class="col-md-6 offset-md-2 pr-0">
+  <div class="">
     {block name='pagination_page_list'}
      {if $pagination.should_be_displayed}
-        <ul class="page-list clearfix text-sm-center">
+        <ul class="page-list d-flex align-items-center justify-content-center justify-content-md-end mb-0">
           {foreach from=$pagination.pages item="page"}
             <li {if $page.current} class="current" {/if}>
               {if $page.type === 'spacer'}
@@ -44,9 +44,11 @@
                   class="{if $page.type === 'previous'}previous {elseif $page.type === 'next'}next {/if}{['disabled' => !$page.clickable, 'js-search-link' => true]|classnames}"
                 >
                   {if $page.type === 'previous'}
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>{l s='Previous' d='Shop.Theme.Actions'}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>
+                      {l s='Previous' d='Shop.Theme.Actions'}
                   {elseif $page.type === 'next'}
-                    {l s='Next' d='Shop.Theme.Actions'}<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+                    {l s='Next' d='Shop.Theme.Actions'}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
                   {else}
                     {$page.page}
                   {/if}
