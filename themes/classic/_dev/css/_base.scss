@@ -6993,11 +6993,9 @@ body#checkout #hook-display-after-carrier>[class^=col].links .row>[class^=col] {
 }
 
 .products-selection .sort-by {
-  margin-right: -.9375rem;
-  margin-left: .9375rem;
-  text-align: right;
   word-break: break-word;
-  white-space: normal
+  white-space: normal;
+  font-size: 13px;
 }
 
 .products-selection .total-products,
@@ -7044,19 +7042,23 @@ body#checkout #hook-display-after-carrier>[class^=col].links .row>[class^=col] {
 .brands-sort .select-title,
 .products-sort-order .select-title,
 .suppliers-sort .select-title {
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
   width: 100%;
-  padding: .625rem;
+  font-size: 13px;
   cursor: pointer;
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, .25)
+  font-weight: 700;
 }
 
 .brands-sort .select-list,
 .products-sort-order .select-list,
 .suppliers-sort .select-list {
   display: block;
-  padding: .625rem 1.25rem;
+  padding: .25rem 0.75rem;
+  font-size: 13px;
+  transition: all 0.1s;
 }
 
 .brands-sort .select-list:hover,
@@ -7064,20 +7066,21 @@ body#checkout #hook-display-after-carrier>[class^=col].links .row>[class^=col] {
 .suppliers-sort .select-list:hover {
   color: #fff;
   text-decoration: none;
-  background: $secondary-color
+  background: $primary-color
 }
 
 .brands-sort .dropdown-menu,
 .products-sort-order .dropdown-menu,
 .suppliers-sort .dropdown-menu {
-  left: auto;
-  width: 16.88rem;
+  overflow: hidden;
+  left: initial;
+  right: 0;
+  width: calc(100% - 30px);
   margin: 0;
+  padding: 0;
   background: #f6f6f6;
-  border: 0;
-  border-radius: 0;
-  -webkit-box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, .1);
-  box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, .1)
+  border: 1px solid $gray;
+  border-radius: 4px;
 }
 
 .facet-dropdown {
@@ -7210,12 +7213,6 @@ body#checkout #hook-display-after-carrier>[class^=col].links .row>[class^=col] {
 .pagination>div:first-child {
   padding-left: 0;
   line-height: 2.5rem
-}
-
-.pagination .page-list {
-  padding: .375rem;
-  margin-bottom: 0;
-  background: #fff
 }
 
 .pagination a {

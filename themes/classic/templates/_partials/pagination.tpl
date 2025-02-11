@@ -34,8 +34,6 @@
      {if $pagination.should_be_displayed}
         <ul class="page-list clearfix text-sm-center">
           {foreach from=$pagination.pages item="page"}
-
-
             <li {if $page.current} class="current" {/if}>
               {if $page.type === 'spacer'}
                 <span class="spacer">&hellip;</span>
@@ -46,9 +44,9 @@
                   class="{if $page.type === 'previous'}previous {elseif $page.type === 'next'}next {/if}{['disabled' => !$page.clickable, 'js-search-link' => true]|classnames}"
                 >
                   {if $page.type === 'previous'}
-                    <i class="material-icons">&#xE314;</i>{l s='Previous' d='Shop.Theme.Actions'}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>{l s='Previous' d='Shop.Theme.Actions'}
                   {elseif $page.type === 'next'}
-                    {l s='Next' d='Shop.Theme.Actions'}<i class="material-icons">&#xE315;</i>
+                    {l s='Next' d='Shop.Theme.Actions'}<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
                   {else}
                     {$page.page}
                   {/if}
@@ -60,5 +58,4 @@
       {/if}
     {/block}
   </div>
-
 </nav>
