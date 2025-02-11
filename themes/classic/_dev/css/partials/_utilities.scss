@@ -16,3 +16,14 @@
 .rounded-4{
     border-radius: 4px;
 }
+
+.stack-row__cards{
+    display: grid;
+    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.my-section{
+    margin-top: 80px;
+    margin-bottom: 80px;
+}

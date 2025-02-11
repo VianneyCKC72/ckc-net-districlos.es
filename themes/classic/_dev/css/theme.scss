@@ -8,120 +8,43 @@ $output-bourbon-deprecation-warnings: false !default;
 @import "~bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.css";
 @import "_base.scss";
 
-@import "partials/_utilities.scss";
-@import "partials/_titles.scss";
-@import "partials/_forms.scss";
-@import "partials/_buttons.scss";
-@import "partials/_cards.scss";
+@import "partials/utilities.scss";
+@import "partials/titles.scss";
+@import "partials/forms.scss";
+@import "partials/buttons.scss";
+@import "partials/cards.scss";
+@import "partials/banners.scss";
 
 @import "modules/espacepro.scss";
 @import "modules/login_form.scss";
 @import "modules/banner-newsletter.scss";
 @import "modules/breadcrumb.scss";
+@import "modules/slider-products.scss";
 
-.stack-row__cards{
-    display: grid;
-    gap: 24px;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-}
+@import '~swiper/css/bundle';
+@import '~swiper/css';
+@import '~swiper/css/navigation';
+@import '~swiper/css/pagination';
 
-.my-section{
-    margin-top: 80px;
-    margin-bottom: 80px;
-}
 
-.wrapper__swiper__featured-products{
-    position: relative;
-    .swiper__featured-products{
-    }
-    .swiper-button-prev:after, .swiper-button-next:after{
-        display: none;
-    }
-    .swiper-button-prev, .swiper-button-next{
-        color: $white;
-        background-color: $primary-color;
-        border-radius: 100%;
-        height: 35px;
-        width: 35px;
-        padding: 8px;
-        transition: all 0.3s;
-        &:hover{
-            background-color: darken($primary-color, 10%);
-        }
-        &:focus, &:active{
-            background-color: lighten($primary-color, 5%) !important;
-        }
-    }
-    .swiper-button-prev{
-        left: -60px;
-    }
-    .swiper-button-next{
-        right: -60px;
-    }
-    .swiper-pagination{
-        &.swiper-pagination-bullets.swiper-pagination-horizontal{
-            bottom: -60px;
-        }
-        .swiper-pagination-bullet{
-            width: 15px;
-            height: 15px;
-            background-color: $sand-color;
-            opacity: 100%;
-            &.swiper-pagination-bullet-active{
-                background-color: $primary-color;
+@include media-breakpoint-down(sm){
+    .scroll-snap-mobile {
+        width: calc(100% + 32px);
+        transform: translateX(-16px);
+        display:flex;
+        scroll-snap-type: x mandatory;
+        overflow-y: hidden;
+        overflow-x: scroll;
+        .card__category {
+            width: 70%;
+            flex: none;
+            scroll-snap-align: center;
+            &:first-child{
+                margin-left: 16px;
             }
-        }
-    }
-}
-
-
-.home-banner-slider{
-    display: flex;
-    gap: 24px;
-    > div:first-child{
-        width: 60%;
-    }
-    > div:last-child{
-        width: 40%;
-    }
-    @include media-breakpoint-down(md){
-        flex-direction: column;
-        > div:first-child{
-            width: 100%;
-        }
-        > div:last-child{
-            width: 100%;
-        }
-    }
-}
-
-.banner-primary{
-    @extend .bg-primary;
-    @extend .text-white;
-    @extend .rounded-4;
-    padding: 8px 24px;
-    text-align: center;
-    p{
-        @extend .mb-0;
-    }
-}
-
-.banner-services{
-    display: flex;
-    justify-content: space-around;
-    justify-items: center;
-    gap: 24px;
-    .service{
-        display: flex;
-        column-gap: 16px;
-        align-items: center;
-        img{
-            height: 40px;
-        }
-        p{
-            font-weight: 500;
-            margin-bottom: 0;
-            line-height: 16px;
+            &:last-child{
+                margin-right: 16px;
+            }
         }
     }
 }

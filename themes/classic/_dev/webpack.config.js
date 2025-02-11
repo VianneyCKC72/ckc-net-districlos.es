@@ -7,7 +7,7 @@ const LicensePlugin = require('webpack-license-plugin');
 
 let config = {
     entry: {
-        theme: ['./js/theme.js', './css/theme.scss'],
+        theme: ['./js/theme.js', './js/swiper.js', './css/theme.scss'],
         error: ['./css/error.scss'],
     },
     output: {
@@ -94,6 +94,7 @@ let config = {
         prestashop: 'prestashop',
         $: '$',
         jquery: 'jQuery',
+        Swiper: 'swiper',
     },
     plugins: [
         new MiniCssExtractPlugin({
