@@ -24,6 +24,31 @@
  *}
 {if $product.show_price}
   <div class="product-prices js-product-prices">
+
+    {* Start - Inté static *}
+    <div>
+      <div class="product-discount has-discount">
+        <div class="font-weight-bold">-51%</div>
+        <div class="tag-discount">Promotion</div>
+      </div>
+
+      <div class="d-flex align-items-center">
+        <div class="product-price has-discount">20<span>,96€</span></div>
+        <div class="product-discount">
+          <span class="regular-price">22,96€</span>
+        </div>
+      </div>
+      <div>
+        <p class="mb-0">Payez en plusieurs fois<span style="margin-inline: 10px"><img
+              src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt=""></span>en carte
+          bancaire sans frais</p>
+        <p class="mb-0 thin">Un crédit vous engage et doit être remboursé. vérifiez vos capacités de remboursement avant
+          de
+          vous engager.</p>
+      </div>
+    </div>
+    {* End - Inté static *}
+
     {block name='product_discount'}
       {if $product.has_discount}
         <div class="product-discount">
@@ -34,8 +59,7 @@
     {/block}
 
     {block name='product_price'}
-      <div
-        class="product-price h5 {if $product.has_discount}has-discount{/if}">
+      <div class="product-price{if $product.has_discount}has-discount{/if}">
 
         <div class="current-price">
           <span class='current-price-value' content="{$product.rounded_display_price}">
@@ -49,10 +73,11 @@
 
           {if $product.has_discount}
             {if $product.discount_type === 'percentage'}
-              <span class="discount discount-percentage">{l s='Save %percentage%' d='Shop.Theme.Catalog' sprintf=['%percentage%' => $product.discount_percentage_absolute]}</span>
+              <span
+                class="discount discount-percentage">{l s='Save %percentage%' d='Shop.Theme.Catalog' sprintf=['%percentage%' => $product.discount_percentage_absolute]}</span>
             {else}
               <span class="discount discount-amount">
-                  {l s='Save %amount%' d='Shop.Theme.Catalog' sprintf=['%amount%' => $product.discount_to_display]}
+                {l s='Save %amount%' d='Shop.Theme.Catalog' sprintf=['%amount%' => $product.discount_to_display]}
               </span>
             {/if}
           {/if}
@@ -68,19 +93,23 @@
 
     {block name='product_without_taxes'}
       {if $priceDisplay == 2}
-        <p class="product-without-taxes">{l s='%price% tax excl.' d='Shop.Theme.Catalog' sprintf=['%price%' => $product.price_tax_exc]}</p>
+        <p class="product-without-taxes">
+          {l s='%price% tax excl.' d='Shop.Theme.Catalog' sprintf=['%price%' => $product.price_tax_exc]}</p>
       {/if}
     {/block}
 
     {block name='product_pack_price'}
       {if $displayPackPrice}
-        <p class="product-pack-price"><span>{l s='Instead of %price%' d='Shop.Theme.Catalog' sprintf=['%price%' => $noPackPrice]}</span></p>
+        <p class="product-pack-price">
+          <span>{l s='Instead of %price%' d='Shop.Theme.Catalog' sprintf=['%price%' => $noPackPrice]}</span>
+        </p>
       {/if}
     {/block}
 
     {block name='product_ecotax'}
-        {if !$product.is_virtual && $product.ecotax.amount > 0}
-        <p class="price-ecotax">{l s='Including %amount% for ecotax' d='Shop.Theme.Catalog' sprintf=['%amount%' => $product.ecotax.value]}
+      {if !$product.is_virtual && $product.ecotax.amount > 0}
+        <p class="price-ecotax">
+          {l s='Including %amount% for ecotax' d='Shop.Theme.Catalog' sprintf=['%amount%' => $product.ecotax.value]}
           {if $product.has_discount}
             {l s='(not impacted by the discount)' d='Shop.Theme.Catalog'}
           {/if}
@@ -106,7 +135,7 @@
         {elseif $product.additional_delivery_times == 2}
           {if $product.quantity >= $product.quantity_wanted}
             <span class="delivery-information">{$product.delivery_in_stock}</span>
-          {* Out of stock message should not be displayed if customer can't order the product. *}
+            {* Out of stock message should not be displayed if customer can't order the product. *}
           {elseif $product.add_to_cart_url}
             <span class="delivery-information">{$product.delivery_out_stock}</span>
           {/if}

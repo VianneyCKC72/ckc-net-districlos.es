@@ -22,7 +22,7 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
-<section class="featured-products clearfix my-section">
+<section class="featured-products my-section">
   <h2 class="h2">{l s='Viewed products' d='Shop.Theme.Catalog'}</h2>
   {include file="catalog/_partials/productlist-slider.tpl" products=$products}
 </section>

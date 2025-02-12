@@ -22,76 +22,85 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
-<div class="images-container js-images-container">
-  {block name='product_cover'}
-    <div class="product-cover">
-      {if $product.default_image}
-        <picture>
-          {if !empty($product.default_image.bySize.large_default.sources.avif)}<source srcset="{$product.default_image.bySize.large_default.sources.avif}" type="image/avif">{/if}
-          {if !empty($product.default_image.bySize.large_default.sources.webp)}<source srcset="{$product.default_image.bySize.large_default.sources.webp}" type="image/webp">{/if}
-          <img
-            class="js-qv-product-cover img-fluid"
-            src="{$product.default_image.bySize.large_default.url}"
-            {if !empty($product.default_image.legend)}
-              alt="{$product.default_image.legend}"
-              title="{$product.default_image.legend}"
-            {else}
-              alt="{$product.name}"
-            {/if}
-            loading="lazy"
-            width="{$product.default_image.bySize.large_default.width}"
-            height="{$product.default_image.bySize.large_default.height}"
-          >
-        </picture>
-        <div class="layer hidden-sm-down" data-toggle="modal" data-target="#product-modal">
-          <i class="material-icons zoom-in">search</i>
+
+<div class="wrapper__swiper__product-img mb-5 mb-lg-0" style="--product-img-width: auto">
+  {block name='product_images'}
+    <div class="wrapper__swiper__product-img__thumbnails">
+      <div class="swiper swiper__product-img__thumbnails">
+        <div class="swiper-wrapper">
+          {foreach from=$product.images item=image}
+            <div class="swiper-slide">
+              <div class="thumbnail">
+                <picture>
+                  {if !empty($image.bySize.small_default.sources.avif)}
+                  <source srcset="{$image.bySize.small_default.sources.avif}" type="image/avif">{/if}
+                  {if !empty($image.bySize.small_default.sources.webp)}
+                  <source srcset="{$image.bySize.small_default.sources.webp}" type="image/webp">{/if}
+                  <img class="img-cover" src="{$image.bySize.small_default.url}"
+                    alt="{if !empty($image.legend)}{$image.legend}{else}{$product.name}{/if}" />
+                </picture>
+              </div>
+            </div>
+          {/foreach}
         </div>
-      {else}
-        <picture>
-          {if !empty($urls.no_picture_image.bySize.large_default.sources.avif)}<source srcset="{$urls.no_picture_image.bySize.large_default.sources.avif}" type="image/avif">{/if}
-          {if !empty($urls.no_picture_image.bySize.large_default.sources.webp)}<source srcset="{$urls.no_picture_image.bySize.large_default.sources.webp}" type="image/webp">{/if}
-          <img
-            class="img-fluid"
-            src="{$urls.no_picture_image.bySize.large_default.url}"
-            loading="lazy"
-            width="{$urls.no_picture_image.bySize.large_default.width}"
-            height="{$urls.no_picture_image.bySize.large_default.height}"
-          >
-        </picture>
-      {/if}
+      </div>
+      <div class="swiper-button-prev">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-move-left">
+          <path d="M6 8L2 12L6 16" />
+          <path d="M2 12H22" />
+        </svg>
+      </div>
+      <div class="swiper-button-next">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-move-right">
+          <path d="M18 8L22 12L18 16" />
+          <path d="M2 12H22" />
+        </svg>
+      </div>
     </div>
   {/block}
 
-  {block name='product_images'}
-    <div class="js-qv-mask mask">
-      <ul class="product-images js-qv-product-images">
-        {foreach from=$product.images item=image}
-          <li class="thumb-container js-thumb-container">
-            <picture>
-              {if !empty($image.bySize.small_default.sources.avif)}<source srcset="{$image.bySize.small_default.sources.avif}" type="image/avif">{/if}
-              {if !empty($image.bySize.small_default.sources.webp)}<source srcset="{$image.bySize.small_default.sources.webp}" type="image/webp">{/if}
-              <img
-                class="thumb js-thumb {if $image.id_image == $product.default_image.id_image} selected js-thumb-selected {/if}"
-                data-image-medium-src="{$image.bySize.medium_default.url}"
-                {if !empty($image.bySize.medium_default.sources)}data-image-medium-sources="{$image.bySize.medium_default.sources|@json_encode}"{/if}
-                data-image-large-src="{$image.bySize.large_default.url}"
-                {if !empty($image.bySize.large_default.sources)}data-image-large-sources="{$image.bySize.large_default.sources|@json_encode}"{/if}
-                src="{$image.bySize.small_default.url}"
-                {if !empty($image.legend)}
-                  alt="{$image.legend}"
-                  title="{$image.legend}"
-                {else}
-                  alt="{$product.name}"
-                {/if}
-                loading="lazy"
-                width="{$product.default_image.bySize.small_default.width}"
-                height="{$product.default_image.bySize.small_default.height}"
-              >
-            </picture>
-          </li>
-        {/foreach}
-      </ul>
+  {block name='product_cover'}
+    <div class="wrapper__swiper__product-img__cover">
+      <div class="swiper swiper__product-img__cover">
+        <div class="swiper-wrapper">
+          {foreach from=$product.images item=image}
+            <div class="swiper-slide">
+              <a href="#">
+                <picture>
+                  {if !empty($image.bySize.large_default.sources.avif)}
+                  <source srcset="{$image.bySize.large_default.sources.avif}" type="image/avif">{/if}
+                  {if !empty($image.bySize.large_default.sources.webp)}
+                  <source srcset="{$image.bySize.large_default.sources.webp}" type="image/webp">{/if}
+                  <img class="img-cover rounded-4" src="{$image.bySize.large_default.url}"
+                    alt="{if !empty($image.legend)}{$image.legend}{else}{$product.name}{/if}" />
+                </picture>
+              </a>
+            </div>
+          {/foreach}
+        </div>
+      </div>
+      <div class="swiper-button-prev">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-move-left">
+          <path d="M6 8L2 12L6 16" />
+          <path d="M2 12H22" />
+        </svg>
+      </div>
+      <div class="swiper-button-next">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide lucide-move-right">
+          <path d="M18 8L22 12L18 16" />
+          <path d="M2 12H22" />
+        </svg>
+      </div>
     </div>
   {/block}
-{hook h='displayAfterProductThumbs' product=$product}
+
+  {hook h='displayAfterProductThumbs' product=$product}
 </div>
