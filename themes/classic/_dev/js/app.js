@@ -1,3 +1,7 @@
+Fancybox.bind("[data-fancybox]", {
+  // Your custom options
+});
+
 import Swiper from "swiper/bundle";
 
 document
@@ -64,18 +68,12 @@ document
       }
     );
     const swiperProductImgCover = new Swiper(
-      wrapper.querySelector(
-        ".wrapper__swiper__product-img__cover .swiper__product-img__cover"
-      ),
+      wrapper.querySelector(".swiper__product-img__cover"),
       {
         loop: true,
         slidesPerView: 1,
         spaceBetween: 24,
         watchSlidesProgress: true,
-        navigation: {
-          nextEl: wrapper.querySelector(".swiper-button-next"),
-          prevEl: wrapper.querySelector(".swiper-button-prev"),
-        },
         thumbs: {
           swiper: swiperProductImgThumbnails,
         },

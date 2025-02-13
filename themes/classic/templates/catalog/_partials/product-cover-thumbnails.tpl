@@ -64,40 +64,22 @@
   {/block}
 
   {block name='product_cover'}
-    <div class="wrapper__swiper__product-img__cover">
-      <div class="swiper swiper__product-img__cover">
-        <div class="swiper-wrapper">
-          {foreach from=$product.images item=image}
-            <div class="swiper-slide">
-              <a href="#">
-                <picture>
-                  {if !empty($image.bySize.large_default.sources.avif)}
-                  <source srcset="{$image.bySize.large_default.sources.avif}" type="image/avif">{/if}
-                  {if !empty($image.bySize.large_default.sources.webp)}
-                  <source srcset="{$image.bySize.large_default.sources.webp}" type="image/webp">{/if}
-                  <img class="img-cover rounded-4" src="{$image.bySize.large_default.url}"
-                    alt="{if !empty($image.legend)}{$image.legend}{else}{$product.name}{/if}" />
-                </picture>
-              </a>
-            </div>
-          {/foreach}
-        </div>
-      </div>
-      <div class="swiper-button-prev">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="lucide lucide-move-left">
-          <path d="M6 8L2 12L6 16" />
-          <path d="M2 12H22" />
-        </svg>
-      </div>
-      <div class="swiper-button-next">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="lucide lucide-move-right">
-          <path d="M18 8L22 12L18 16" />
-          <path d="M2 12H22" />
-        </svg>
+    <div class="swiper swiper__product-img__cover">
+      <div class="swiper-wrapper">
+        {foreach from=$product.images item=image}
+          <div class="swiper-slide">
+            <a href="{$image.bySize.large_default.url}" data-fancybox="product-gallery">
+              <picture>
+                {if !empty($image.bySize.large_default.sources.avif)}
+                <source srcset=" {$image.bySize.large_default.sources.avif}" type="image/avif">{/if}
+                {if !empty($image.bySize.large_default.sources.webp)}
+                <source srcset="{$image.bySize.large_default.sources.webp}" type="image/webp">{/if}
+                <img class="img-cover rounded-4" src="{$image.bySize.large_default.url}"
+                  alt="{if !empty($image.legend)}{$image.legend}{else}{$product.name}{/if}" />
+              </picture>
+            </a>
+          </div>
+        {/foreach}
       </div>
     </div>
   {/block}

@@ -130,32 +130,26 @@
       margin: 0;
     }
   }
-  .wrapper__swiper__product-img__cover {
-    position: relative;
-    width: calc(var(--product-img-width) - 96px);
-    @include media-breakpoint-up(md) {
-      width: calc(var(--product-img-width) - 126px);
-    }
-    .swiper__product-img__cover {
-      .swiper-slide {
-        img {
-          aspect-ratio: 1/1;
-          width: 100%;
-          height: auto;
-          object-fit: cover;
-        }
+  .swiper__product-img__cover {
+    .swiper-slide {
+      a:focus {
+        outline: none;
       }
-    }
-    .swiper-button-prev {
-      left: -15px;
-    }
-    .swiper-button-next {
-      right: -15px;
+      img {
+        cursor: zoom-in;
+        aspect-ratio: 1/1;
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+      }
     }
   }
 }
 
 .product-tabs {
+  .tab-content {
+    padding-top: 0 !important;
+  }
   .nav-tabs {
     display: flex;
     flex-wrap: wrap;
@@ -163,6 +157,7 @@
     justify-content: flex-start;
     column-gap: 32px;
     border-bottom: none;
+    margin-bottom: 32px;
     .nav-item {
       .nav-link {
         color: $black;
@@ -186,12 +181,69 @@
     padding-top: 20px;
     .tab-pane {
       .product-description {
-        p {
-          font-size: 16px;
-          line-height: 24px;
+        p,
+        ul li {
+          font-size: 13px;
+          line-height: 18px;
           color: $black;
         }
+        .title_descr {
+          font-size: 14px;
+          line-height: 18px;
+          font-weight: 600;
+          margin-bottom: 12px;
+          strong,
+          b {
+            font-weight: unset;
+          }
+        }
+        table.tabPoteau {
+          // width: 100%;
+          border-collapse: collapse;
+          th,
+          td {
+            border: 2px solid $sand-color;
+            padding: 4px 16px !important;
+            text-align: center;
+            font-size: 13px;
+          }
+          th {
+            background-color: $primary-color;
+            color: $white;
+          }
+          td {
+            background-color: rgba($sand-light-color, 30%);
+          }
+        }
       }
+    }
+  }
+}
+
+.color-variants {
+  display: flex;
+  align-items: center;
+  column-gap: 64px;
+  row-gap: 16px;
+  .color-variant {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    .color {
+      width: 20px;
+      height: 20px;
+      border-radius: 100%;
+      &.is-white {
+        box-shadow: 0 0 5px 0 $gray;
+      }
+      &.is-gradient {
+        background: linear-gradient(45deg, $red, $primary-color);
+      }
+    }
+    p {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 0;
     }
   }
 }

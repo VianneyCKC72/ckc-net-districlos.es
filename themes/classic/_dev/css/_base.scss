@@ -5242,9 +5242,7 @@ body#checkout section.checkout-step #login-form .form-control-label {
 }
 
 .definition-list dl dd:nth-of-type(even),
-.definition-list dl dt:nth-of-type(even),
-.product-features > dl.data-sheet dd.value:nth-of-type(even),
-.product-features > dl.data-sheet dt.name:nth-of-type(even) {
+.definition-list dl dt:nth-of-type(even) {
   background: #f6f6f6;
 }
 
@@ -7596,10 +7594,6 @@ body#checkout
   margin: 0 auto;
 }
 
-#blockcart-modal,
-#product-description-short {
-}
-
 #product-description-short ol,
 #product-description-short ul {
   padding-left: 0;
@@ -7628,10 +7622,18 @@ body#checkout
   height: auto;
 }
 
+.product-information .product-description p {
+  font-size: 13px;
+  line-height: 18px;
+  margin-bottom: 0;
+}
+
 .product-information .product-description ol,
 .product-information .product-description ul {
   padding-left: 0.75rem;
   list-style-position: inside;
+  font-size: 13px;
+  line-height: 18px;
 }
 
 #product-description-short ul,
@@ -7678,7 +7680,8 @@ body#checkout
 .product-actions .control-label {
   display: block;
   width: 100%;
-  margin-bottom: 0.375rem;
+  font-size: 13px;
+  margin-bottom: 10px;
 }
 
 .product-actions .product-add-to-cart {
@@ -7714,10 +7717,6 @@ body#checkout
 
 .product-quantity .btn-touchspin {
   height: 1.438rem;
-}
-
-.product-discounts {
-  margin-bottom: 1.5rem;
 }
 
 .product-discounts > .product-discounts-title {
@@ -7793,38 +7792,6 @@ body#checkout
   overflow: hidden;
   font-size: 0.8125rem;
   text-overflow: ellipsis;
-}
-
-.tabs {
-  background: #fff;
-}
-
-.tabs .tab-pane {
-  padding-top: 1.25rem;
-}
-
-.tabs .nav-tabs {
-  border: 0;
-  border-bottom: #f6f6f6 2px solid;
-}
-
-.tabs .nav-tabs .nav-link {
-  border: 0 solid transparent;
-}
-
-.tabs .nav-tabs .nav-link.active {
-  color: $secondary-color;
-}
-
-.tabs .nav-tabs .nav-link.active,
-.tabs .nav-tabs .nav-link:hover {
-  border: 0;
-  border-bottom: $secondary-color 3px solid;
-}
-
-.tabs .nav-tabs .nav-item {
-  float: left;
-  margin-bottom: -0.125rem;
 }
 
 .product-cover {
@@ -8137,9 +8104,30 @@ body#checkout
   font-weight: 500;
 }
 
-.product-features {
-  margin-top: 1.25rem;
-  margin-left: 0.3125rem;
+#product-details {
+  .product-reference {
+    margin-bottom: 12px;
+    .label {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.product-attachments-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  .attachment {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 4px;
+    border: 2px solid $sand-light-color;
+    background-color: rgba($sand-light-color, 30%);
+    p {
+      margin-bottom: 0;
+    }
+  }
 }
 
 .product-features > dl.data-sheet,
@@ -8163,24 +8151,45 @@ body#checkout
   -ms-flex: 1 0 40%;
   flex: 1 0 40%;
   min-height: 2.5rem;
-  padding: 0.625rem;
-  margin-right: 0.625rem;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
+  padding: 0.5rem 0.625rem;
+  margin-bottom: 0;
   text-transform: capitalize;
   word-break: normal;
-  background: #f6f6f6;
+  background: rgba($sand-light-color, 30%);
 }
 
-.product-customization .product-customization-item,
-.product-variants > .product-variants-item {
-  margin: 1.25rem 0;
+.product-features > dl.data-sheet dt.name {
+  font-weight: 400;
+}
+.product-features > dl.data-sheet dd.value {
+  font-weight: 700;
 }
 
-.product-variants > .product-variants-item select {
-  width: auto;
-  padding-right: 1.875rem;
-  background-color: #fff;
+.product-features > dl.data-sheet dd.value:nth-of-type(odd),
+.product-features > dl.data-sheet dt.name:nth-of-type(odd) {
+  background: transparent;
+}
+
+.product-variants {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 32px;
+  row-gap: 12px;
+}
+
+.product-variants .product-variants-item select {
+  width: 100%;
+  height: auto;
+  font-weight: 700;
+  padding: 16px 30px;
+  background: $sand-light-color
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-chevron-down'><path d='m6 9 6 6 6-6'/></svg>")
+    no-repeat right 1rem center/1.25rem 1.25rem;
+  transition: all 0.3s;
+  cursor: pointer;
+  &:hover {
+    background-color: darken($sand-light-color, 10%);
+  }
 }
 
 .product-variants > .product-variants-item ul li {

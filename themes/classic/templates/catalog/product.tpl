@@ -58,12 +58,14 @@
               <h1 class="h2">{block name='page_title'}{$product.name}{/block}</h1>
             {/block}
           {/block}
+          {* Start - Inté static *}
           <div class="has-discount d-flex align-items-center">
             <div class="tag-discount mr-2">% SOLDES</div>
             <p class="small mb-0">100 € offerts par tranche de 1 000 € d’achat & 150 € offerts par tranche de 3 000 €
               d’achat
             </p>
           </div>
+          {* End - Inté static *}
         </div>
       </div>
       <div class="row">
@@ -80,9 +82,35 @@
         <div class="col-lg-5">
 
           <div class="product-information">
+            {* Start - Inté static *}
+            <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mb-3">
+              <div>
+                <p class="small mb-0 font-weight-bold mb-1">
+                  Produit garanti moins cher du web
+                </p>
+                <p class="thin mb-0">
+                  Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.
+                </p>
+              </div>
+              <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
+            </div>
+            <div class="d-flex align-items-center mb-3 gap-16 flex-wrap">
+              <div class="small text-secondary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="lucide lucide-check mr-2">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>en stock</div>
+              <div class="small">REF <span class="font-weight-bold">PNX102PV</span></div>
+              <div>Avis</div>
+            </div>
+            {* End - Inté static *}
+
             {block name='product_description_short'}
-              <div id="product-description-short-{$product.id}" class="product-description">
-                {$product.description_short nofilter}</div>
+              <div id="product-description-short-{$product.id}" class="product-description mb-4">
+                {$product.description_short nofilter}
+                <a href="#description" class="small font-weight-bold text-black d-flex align-items-center mt-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus mr-2"><path d="M5 12h14" /><path d="M12 5v14" /></svg>Lire d'avantage</a>
+                  </div>
             {/block}
 
             {if $product.is_customizable && count($product.customizations.fields)}
@@ -90,10 +118,6 @@
                 {include file="catalog/_partials/product-customization.tpl" customizations=$product.customizations}
               {/block}
             {/if}
-
-            {block name='product_prices'}
-              {include file='catalog/_partials/product-prices.tpl'}
-            {/block}
 
             <div class="product-actions js-product-actions">
               {block name='product_buy'}
@@ -124,6 +148,10 @@
                     {include file='catalog/_partials/product-discounts.tpl'}
                   {/block}
 
+                  {block name='product_prices'}
+                    {include file='catalog/_partials/product-prices.tpl'}
+                  {/block}
+
                   {block name='product_add_to_cart'}
                     {include file='catalog/_partials/product-add-to-cart.tpl'}
                   {/block}
@@ -140,9 +168,9 @@
                         </div>
                       </div>
                       <a href="#" class="d-block small text-black">Stock en magasin
-                        719 en stock national <svg class="ml-2" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                        719 en stock national <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                           viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                          stroke-linejoin="round" class="lucide lucide-move-right">
+                          stroke-linejoin="round" class="lucide lucide-move-right ml-2">
                           <path d="M18 8L22 12L18 16" />
                           <path d="M2 12H22" />
                         </svg></a>
@@ -155,10 +183,10 @@
                           <span class="font-weight-bold text-secondary">719 en stock national</span>
                         </div>
                       </div>
-                      <a href="#" class="d-block small text-black">Voir le magasin le plus proche <svg class="ml-2"
+                      <a href="#" class="d-block small text-black">Voir le magasin le plus proche <svg
                           xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                           stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                          class="lucide lucide-move-right">
+                          class="lucide lucide-move-right ml-2">
                           <path d="M18 8L22 12L18 16" />
                           <path d="M2 12H22" />
                         </svg></a>
@@ -215,6 +243,25 @@
               </ul>
 
               <div class="tab-content" id="tab-content">
+                <div class="color-variants">
+                  <div class="color-variant">
+                    <div class="color" style="background-color: rgb(0, 157, 16);"></div>
+                    <p>Vert 6005</p>
+                  </div>
+                  <div class="color-variant">
+                    <div class="color" style="background-color: rgb(39, 39, 40);"></div>
+                    <p>Anthracite RAL 7016</p>
+                  </div>
+                  <div class="color-variant">
+                    <div class="color is-white"></div>
+                    <p>Blanc RAL 9010</p>
+                  </div>
+                  <div class="color-variant">
+                    <div class="color is-gradient"></div>
+                    <p>Coloris personnalisé sur demande</p>
+                  </div>
+                </div>
+
                 <div class="tab-pane fade in{if $product.description} active js-product-tab-active{/if}" id="description"
                   role="tabpanel">
                   {block name='product_description'}
@@ -231,17 +278,16 @@
                     <div class="tab-pane fade in" id="attachments" role="tabpanel">
                       <section class="product-attachments">
                         <p class="h5 text-uppercase">{l s='Download' d='Shop.Theme.Actions'}</p>
-                        {foreach from=$product.attachments item=attachment}
-                          <div class="attachment">
-                            <h4><a
-                                href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}">{$attachment.name}</a>
-                            </h4>
-                            <p>{$attachment.description}</p>
-                            <a href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}">
-                              {l s='Download' d='Shop.Theme.Actions'} ({$attachment.file_size_formatted})
-                            </a>
-                          </div>
-                        {/foreach}
+                        <div class="product-attachments-list mt-3">
+                          {foreach from=$product.attachments item=attachment}
+                            <a class="attachment" href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-down"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg>
+                              <div class="text-black">
+                                <p>{$attachment.description}</p>
+                                <p class="small">{l s='Download' d='Shop.Theme.Actions'} ({$attachment.file_size_formatted})</p>
+                              </div>
+                              </a>
+                          {/foreach}</div>
                       </section>
                     </div>
                   {/if}
