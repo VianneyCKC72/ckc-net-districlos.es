@@ -6,13 +6,29 @@
   font-size: 10px;
   font-weight: 700;
 }
+.tag-web-price {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  width: 65px;
+  width: 65px;
+}
 .product-prices {
   .product-price {
     font-size: 60px;
     line-height: 70px;
     font-weight: 700;
     span {
-      font-size: 16px;
+      &.price-integer {
+        font-size: 60px;
+        line-height: 70px;
+        font-weight: 700;
+      }
+      &.price-decimal {
+        font-size: 16px;
+        line-height: 18px;
+      }
     }
   }
   .product-discount.has-discount {
@@ -20,6 +36,12 @@
     gap: 12px;
     align-items: center;
     justify-content: flex-start;
+    .discount-value {
+      font-size: 16px;
+      line-height: 18px;
+      font-weight: 700;
+      color: $red;
+    }
   }
 }
 .product-quantity {
@@ -37,6 +59,7 @@
     }
   }
 }
+
 .custom-quantity-selector {
   display: flex;
   gap: 8px;
@@ -150,6 +173,16 @@
   .tab-content {
     padding-top: 0 !important;
   }
+  p {
+    font-size: 13px;
+    line-height: 18px;
+  }
+  h3 {
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
   .nav-tabs {
     display: flex;
     flex-wrap: wrap;
@@ -187,6 +220,7 @@
           line-height: 18px;
           color: $black;
         }
+        h3,
         .title_descr {
           font-size: 14px;
           line-height: 18px;
@@ -197,8 +231,8 @@
             font-weight: unset;
           }
         }
-        table.tabPoteau {
-          // width: 100%;
+        table.tabPoteau,
+        table {
           border-collapse: collapse;
           th,
           td {
@@ -233,9 +267,7 @@
       width: 20px;
       height: 20px;
       border-radius: 100%;
-      &.is-white {
-        box-shadow: 0 0 5px 0 $gray;
-      }
+      box-shadow: 0 0 5px 0 $gray;
       &.is-gradient {
         background: linear-gradient(45deg, $red, $primary-color);
       }
@@ -244,6 +276,84 @@
       font-size: 13px;
       font-weight: 600;
       margin-bottom: 0;
+    }
+  }
+}
+
+.banner-quick-view {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background-color: $sand-light-color;
+  width: 100%;
+  z-index: 100;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  @include media-breakpoint-up(md) {
+    padding-top: 32px;
+    padding-bottom: 32px;
+  }
+  .banner-quick-view-content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    column-gap: 32px;
+    row-gap: 16px;
+    .price-name {
+      width: 100%;
+      @include media-breakpoint-up(lg) {
+        width: calc(35% - 16px);
+      }
+    }
+    .product-price-add-to-cart {
+      display: flex;
+      align-items: center;
+      column-gap: 32px;
+      row-gap: 16px;
+      width: 100%;
+      flex-direction: column;
+      @include media-breakpoint-up(lg) {
+        width: calc(65% - 16px);
+        align-items: flex-end;
+      }
+      @include media-breakpoint-up(sm) {
+        flex-direction: row;
+      }
+      .price {
+        // width: 100%;
+      }
+      .add-to-cart {
+        width: 100%;
+      }
+    }
+  }
+  .product-price.has-discount {
+    color: $secondary-color;
+  }
+  .product-quantity {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    .add {
+      flex: auto;
+      .btn-secondary.add-to-cart {
+        width: 100%;
+        font-size: 15px;
+        font-weight: 500;
+      }
+    }
+    .custom-quantity-selector .btn-quantity,
+    .custom-quantity-selector input.quantity-input {
+      background-color: $white;
+      color: $black;
+    }
+    .custom-quantity-selector .btn-quantity {
+      &:hover {
+        background-color: darken($white, 10%);
+      }
     }
   }
 }

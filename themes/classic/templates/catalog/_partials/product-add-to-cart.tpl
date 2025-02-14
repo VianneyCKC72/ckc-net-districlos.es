@@ -111,7 +111,7 @@
     {/block}*}
 
     {block name='product_minimal_quantity'}
-      <p class="product-minimal-quantity js-product-minimal-quantity">
+      <p class="product-minimal-quantity js-product-minimal-quantity mb-0">
         {if $product.minimal_quantity > 1}
           {l s='The minimum purchase order quantity for the product is %quantity%.' d='Shop.Theme.Checkout' sprintf=['%quantity%' => $product.minimal_quantity]}
         {/if}
