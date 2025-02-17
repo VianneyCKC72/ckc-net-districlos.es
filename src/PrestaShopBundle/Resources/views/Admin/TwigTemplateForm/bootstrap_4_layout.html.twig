@@ -432,7 +432,14 @@
             <tbody>
             {%- for child in form %}
               <tr>
-                <td class="col-md-3">{{ form_widget(child) }}</td>
+                <td class="col-md-3">
+                  <div class="checkbox">
+                      <label class="form-check-label">
+                          <input type="checkbox" id="form_step6_attachments_{{ loop.index0 }}" name="form[step6][attachments][]" value="{{ loop.index0 }}" {% if loop.index0 in form.vars.value %} checked {% endif %}>
+                          {{ form.vars.attr.data[loop.index0]['name'] }}
+                      </label>
+                  </div>
+                </td>
                 <td class="col-md-6 file-name"><span>{{ form.vars.attr.data[loop.index0]['file_name'] }}</span></td>
                 <td class="col-md-2">{{ form.vars.attr.data[loop.index0]['mime'] }}</td>
               </tr>
