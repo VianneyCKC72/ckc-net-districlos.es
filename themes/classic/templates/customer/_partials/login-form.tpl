@@ -66,9 +66,9 @@
             </div>
         </div>
 
-        {if $espace_pro == 1}
-            {include file="_partials/_espacepro/login-form-espacepro.tpl"}
-        {else}
+            {if $espace_pro == 1}
+                {include file="customer/_partials/_espacepro/login-form-espacepro.tpl"}
+            {else}
         {/if}
     </form>
 {/block}
