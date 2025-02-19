@@ -24,167 +24,179 @@
  *}
 <div class="product-line-grid">
   <!--  product line left content: image-->
-  <div class="product-line-grid-left col-md-3 col-xs-4">
-    <span class="product-image media-middle">
+  <div class="product-line-grid-left">
+    <div class="product-image media-middle">
       {if $product.default_image}
         <picture>
-          {if !empty($product.default_image.bySize.cart_default.sources.avif)}<source srcset="{$product.default_image.bySize.cart_default.sources.avif}" type="image/avif">{/if}
-          {if !empty($product.default_image.bySize.cart_default.sources.webp)}<source srcset="{$product.default_image.bySize.cart_default.sources.webp}" type="image/webp">{/if}
-          <img src="{$product.default_image.bySize.cart_default.url}" alt="{$product.name|escape:'quotes'}" loading="lazy">
+          {if !empty($product.default_image.bySize.cart_default.sources.avif)}
+          <source srcset="{$product.default_image.bySize.cart_default.sources.avif}" type="image/avif">{/if}
+          {if !empty($product.default_image.bySize.cart_default.sources.webp)}
+          <source srcset="{$product.default_image.bySize.cart_default.sources.webp}" type="image/webp">{/if}
+          <img src="{$product.default_image.bySize.cart_default.url}" alt="{$product.name|escape:'quotes'}"
+            loading="lazy">
         </picture>
       {else}
         <picture>
-          {if !empty($urls.no_picture_image.bySize.cart_default.sources.avif)}<source srcset="{$urls.no_picture_image.bySize.cart_default.sources.avif}" type="image/avif">{/if}
-          {if !empty($urls.no_picture_image.bySize.cart_default.sources.webp)}<source srcset="{$urls.no_picture_image.bySize.cart_default.sources.webp}" type="image/webp">{/if}
+          {if !empty($urls.no_picture_image.bySize.cart_default.sources.avif)}
+          <source srcset="{$urls.no_picture_image.bySize.cart_default.sources.avif}" type="image/avif">{/if}
+          {if !empty($urls.no_picture_image.bySize.cart_default.sources.webp)}
+          <source srcset="{$urls.no_picture_image.bySize.cart_default.sources.webp}" type="image/webp">{/if}
           <img src="{$urls.no_picture_image.bySize.cart_default.url}" loading="lazy" />
         </picture>
       {/if}
-    </span>
-  </div>
-
-  <!--  product line body: label, discounts, price, attributes, customizations -->
-  <div class="product-line-grid-body col-md-4 col-xs-8">
-    <div class="product-line-info">
-      <a class="label" href="{$product.url}" data-id_customization="{$product.id_customization|intval}">{$product.name}</a>
     </div>
 
-    <div class="product-line-info product-price h5 {if $product.has_discount}has-discount{/if}">
-      {if $product.has_discount}
-        <div class="product-discount">
-          <span class="regular-price">{$product.regular_price}</span>
-          {if $product.discount_type === 'percentage'}
-            <span class="discount discount-percentage">
-                -{$product.discount_percentage_absolute}
-              </span>
-          {else}
-            <span class="discount discount-amount">
-                -{$product.discount_to_display}
-              </span>
-          {/if}
+    <div class="product-details d-flex flex-column">
+      <div class="product-line-info">
+        <a class="h4 text-black" href="{$product.url}"
+          data-id_customization="{$product.id_customization|intval}">{$product.name}</a>
+      </div>
+
+      {foreach from=$product.attributes key="attribute" item="value"}
+        <div class="product-line-info {$attribute|lower}">
+          <span class="label">{$attribute}:</span>
+          <span class="value">{$value}</span>
         </div>
-      {/if}
-      <div class="current-price">
-        <span class="price">{$product.price}</span>
-        {if $product.unit_price_full}
-          <div class="unit-price-cart">{$product.unit_price_full}</div>
-        {/if}
-      </div>
-      {hook h='displayProductPriceBlock' product=$product type="unit_price"}
-    </div>
+      {/foreach}
 
-    <br/>
-
-    {foreach from=$product.attributes key="attribute" item="value"}
-      <div class="product-line-info {$attribute|lower}">
-        <span class="label">{$attribute}:</span>
-        <span class="value">{$value}</span>
-      </div>
-    {/foreach}
-
-    {if is_array($product.customizations) && $product.customizations|count}
-      <br>
-      {block name='cart_detailed_product_line_customization'}
-        {foreach from=$product.customizations item="customization"}
-          <a href="#" data-toggle="modal" data-target="#product-customizations-modal-{$customization.id_customization}">{l s='Product customization' d='Shop.Theme.Catalog'}</a>
-          <div class="modal fade customization-modal js-customization-modal" id="product-customizations-modal-{$customization.id_customization}" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="{l s='Close' d='Shop.Theme.Global'}">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                  <h4 class="modal-title">{l s='Product customization' d='Shop.Theme.Catalog'}</h4>
-                </div>
-                <div class="modal-body">
-                  {foreach from=$customization.fields item="field"}
-                    <div class="product-customization-line row">
-                      <div class="col-sm-3 col-xs-4 label">
-                        {$field.label}
-                      </div>
-                      <div class="col-sm-9 col-xs-8 value">
-                        {if $field.type == 'text'}
-                          {if (int)$field.id_module}
-                            {$field.text nofilter}
-                          {else}
-                            {$field.text}
+      {if is_array($product.customizations) && $product.customizations|count}
+        <br>
+        {block name='cart_detailed_product_line_customization'}
+          {foreach from=$product.customizations item="customization"}
+            <a href="#" data-toggle="modal"
+              data-target="#product-customizations-modal-{$customization.id_customization}">{l s='Product customization' d='Shop.Theme.Catalog'}</a>
+            <div class="modal fade customization-modal js-customization-modal"
+              id="product-customizations-modal-{$customization.id_customization}" tabindex="-1" role="dialog"
+              aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="{l s='Close' d='Shop.Theme.Global'}">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">{l s='Product customization' d='Shop.Theme.Catalog'}</h4>
+                  </div>
+                  <div class="modal-body">
+                    {foreach from=$customization.fields item="field"}
+                      <div class="product-customization-line row">
+                        <div class="col-sm-3 col-xs-4 label">
+                          {$field.label}
+                        </div>
+                        <div class="col-sm-9 col-xs-8 value">
+                          {if $field.type == 'text'}
+                            {if (int)$field.id_module}
+                              {$field.text nofilter}
+                            {else}
+                              {$field.text}
+                            {/if}
+                          {elseif $field.type == 'image'}
+                            <img src="{$field.image.small.url}" loading="lazy">
                           {/if}
-                        {elseif $field.type == 'image'}
-                          <img src="{$field.image.small.url}" loading="lazy">
-                        {/if}
+                        </div>
                       </div>
-                    </div>
-                  {/foreach}
+                    {/foreach}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        {/foreach}
-      {/block}
-    {/if}
-  </div>
-
-  <!--  product line right content: actions (quantity, delete), price -->
-  <div class="product-line-grid-right product-line-actions col-md-5 col-xs-12">
-    <div class="row">
-      <div class="col-xs-4 hidden-md-up"></div>
-      <div class="col-md-10 col-xs-6">
-        <div class="row">
-          <div class="col-md-6 col-xs-6 qty">
-            {if !empty($product.is_gift)}
-              <span class="gift-quantity">{$product.quantity}</span>
-            {else}
-              <input
-                class="js-cart-line-product-quantity"
-                data-down-url="{$product.down_quantity_url}"
-                data-up-url="{$product.up_quantity_url}"
-                data-update-url="{$product.update_quantity_url}"
-                data-product-id="{$product.id_product}"
-                type="number"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                value="{$product.quantity}"
-                name="product-quantity-spin"
-                aria-label="{l s='%productName% product quantity field' sprintf=['%productName%' => $product.name] d='Shop.Theme.Checkout'}"
-              />
-            {/if}
-          </div>
-          <div class="col-md-6 col-xs-2 price">
-            <span class="product-price">
-              <strong>
-                {if !empty($product.is_gift)}
-                  <span class="gift">{l s='Gift' d='Shop.Theme.Checkout'}</span>
-                {else}
-                  {$product.total}
-                {/if}
-              </strong>
-            </span>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2 col-xs-2 text-xs-right">
-        <div class="cart-line-product-actions">
-          <a
-              class                       = "remove-from-cart"
-              rel                         = "nofollow"
-              href                        = "{$product.remove_from_cart_url}"
-              data-link-action            = "delete-from-cart"
-              data-id-product             = "{$product.id_product|escape:'javascript'}"
-              data-id-product-attribute   = "{$product.id_product_attribute|escape:'javascript'}"
-              data-id-customization       = "{$product.id_customization|default|escape:'javascript'}"
-          >
-            {if empty($product.is_gift)}
-              <i class="material-icons float-xs-left">delete</i>
-            {/if}
-          </a>
-
-          {block name='hook_cart_extra_product_actions'}
-            {hook h='displayCartExtraProductActions' product=$product}
-          {/block}
-
-        </div>
-      </div>
+          {/foreach}
+        {/block}
+      {/if}
     </div>
   </div>
 
-  <div class="clearfix"></div>
+  <!--  product line right content: actions (quantity, delete), price -->
+  <div class="product-line-grid-right product-line-actions">
+    <div class="d-flex gap-16 align-items-center w-100 justify-content-between">
+      <div class="qty">
+        {if !empty($product.is_gift)}
+          <span class="gift-quantity">{$product.quantity}</span>
+        {else}
+          <div class="custom-quantity-selector">
+            <button type="button" class="btn-quantity decrease">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-minus">
+                <path d="M5 12h14" />
+              </svg>
+            </button>
+            <input type="number" name="qty" id="quantity_wanted" inputmode="numeric" pattern="[0-9]*"
+              {if $product.quantity_wanted} value="{$product.quantity_wanted}" min="{$product.minimal_quantity}" 
+              {else}
+              value="1" min="1" {/if} class="quantity-input" aria-label="{l s='Quantity' d='Shop.Theme.Actions'}">
+            <button type="button" class="btn-quantity increase">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-plus">
+                <path d="M5 12h14" />
+                <path d="M12 5v14" />
+              </svg>
+            </button>
+          </div>
+          {* <input class="js-cart-line-product-quantity" data-down-url="{$product.down_quantity_url}"
+                data-up-url="{$product.up_quantity_url}" data-update-url="{$product.update_quantity_url}"
+                data-product-id="{$product.id_product}" type="number" inputmode="numeric" pattern="[0-9]*"
+                value="{$product.quantity}" name="product-quantity-spin"
+                aria-label="{l s='%productName% product quantity field' sprintf=['%productName%' => $product.name] d='Shop.Theme.Checkout'}" /> *}
+        {/if}
+      </div>
+      <div class="price">
+        {if $product.has_discount}
+          {if $product.discount_type === 'percentage'}
+            <span class="discount discount-percentage">
+              -{$product.discount_percentage_absolute}
+            </span>
+          {else}
+            <span class="discount discount-amount">
+              -{$product.discount_to_display}
+            </span>
+          {/if}
+        {/if}
+        <div class="product-line-info product-price h5 mb-0 {if $product.has_discount}has-discount{/if}">
+          <div class="current-price">
+            <span class="price">{$product.price}</span>
+            {if $product.unit_price_full}
+              <div class="unit-price-cart">{$product.unit_price_full}</div>
+            {/if}
+          </div>
+          {hook h='displayProductPriceBlock' product=$product type="unit_price"}
+          {if $product.has_discount}
+            <div class="product-discount">
+              <span class="regular-price">{$product.regular_price}</span>
+            </div>
+          {/if}
+        </div>
+
+        {* <span class="product-price">
+          <strong>
+            {if !empty($product.is_gift)}
+              <span class="gift">{l s='Gift' d='Shop.Theme.Checkout'}</span>
+            {else}
+              {$product.total}
+            {/if}
+          </strong>
+        </span> *}
+      </div>
+    </div>
+    <div class="cart-line-product-actions">
+      <a class="remove-from-cart" rel="nofollow" href="{$product.remove_from_cart_url}"
+        data-link-action="delete-from-cart" data-id-product="{$product.id_product|escape:'javascript'}"
+        data-id-product-attribute="{$product.id_product_attribute|escape:'javascript'}"
+        data-id-customization="{$product.id_customization|default|escape:'javascript'}">
+        {if empty($product.is_gift)}
+          <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M3.375 0.5L2.8125 1.15H0.5625C0.225 1.15 0 1.41 0 1.8C0 2.19 0.225 2.45 0.5625 2.45H1.6875H7.3125H8.4375C8.775 2.45 9 2.19 9 1.8C9 1.41 8.775 1.15 8.4375 1.15H6.1875L5.625 0.5H3.375ZM0.5625 3.75V12.2C0.5625 12.915 1.06875 13.5 1.6875 13.5H7.3125C7.93125 13.5 8.4375 12.915 8.4375 12.2V3.75H0.5625ZM2.8125 5.05C3.15 5.05 3.375 5.31 3.375 5.7V11.55C3.375 11.94 3.15 12.2 2.8125 12.2C2.475 12.2 2.25 11.94 2.25 11.55V5.7C2.25 5.31 2.475 5.05 2.8125 5.05ZM6.1875 5.05C6.525 5.05 6.75 5.31 6.75 5.7V11.55C6.75 11.94 6.525 12.2 6.1875 12.2C5.85 12.2 5.625 11.94 5.625 11.55V5.7C5.625 5.31 5.85 5.05 6.1875 5.05Z"
+              fill="black" />
+          </svg>
+
+        {/if}
+      </a>
+
+      {block name='hook_cart_extra_product_actions'}
+        {hook h='displayCartExtraProductActions' product=$product}
+      {/block}
+
+    </div>
+  </div>
 </div>

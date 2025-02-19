@@ -14,6 +14,7 @@ $output-bourbon-deprecation-warnings: false !default;
 @import "partials/buttons.scss";
 @import "partials/cards.scss";
 @import "partials/banners.scss";
+@import "partials/modal.scss";
 
 @import "modules/espacepro.scss";
 @import "modules/login_form.scss";
@@ -21,6 +22,8 @@ $output-bourbon-deprecation-warnings: false !default;
 @import "modules/breadcrumb.scss";
 @import "modules/product-slider.scss";
 @import "modules/product-sheet.scss";
+@import "modules/modal-cart.scss";
+@import "modules/cart.scss";
 
 @import "~swiper/css/bundle";
 @import "~swiper/css";

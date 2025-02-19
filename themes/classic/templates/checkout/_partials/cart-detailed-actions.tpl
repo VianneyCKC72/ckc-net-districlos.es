@@ -23,21 +23,23 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 {block name='cart_detailed_actions'}
-  <div class="checkout cart-detailed-actions js-cart-detailed-actions card-block">
+  <div class="checkout cart-detailed-actions js-cart-detailed-actions card-block mt-3">
     {if $cart.minimalPurchaseRequired}
       <div class="alert alert-warning" role="alert">
         {$cart.minimalPurchaseRequired}
       </div>
       <div class="text-sm-center">
-        <button type="button" class="btn btn-primary disabled" disabled>{l s='Proceed to checkout' d='Shop.Theme.Actions'}</button>
+        <button type="button" class="btn btn-primary disabled"
+          disabled>{l s='Proceed to checkout' d='Shop.Theme.Actions'}</button>
       </div>
     {elseif empty($cart.products) }
       <div class="text-sm-center">
-        <button type="button" class="btn btn-primary disabled" disabled>{l s='Proceed to checkout' d='Shop.Theme.Actions'}</button>
+        <button type="button" class="btn btn-primary disabled"
+          disabled>{l s='Proceed to checkout' d='Shop.Theme.Actions'}</button>
       </div>
     {else}
       <div class="text-sm-center">
-        <a href="{$urls.pages.order}" class="btn btn-primary">{l s='Proceed to checkout' d='Shop.Theme.Actions'}</a>
+        <a href="{$urls.pages.order}" class="btn btn-secondary w-100">{l s='Proceed to checkout' d='Shop.Theme.Actions'}</a>
         {hook h='displayExpressCheckout'}
       </div>
     {/if}
