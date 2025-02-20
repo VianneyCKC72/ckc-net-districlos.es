@@ -1,0 +1,72 @@
+#ckcpromobarre {
+    border-color: transparent;
+    font-size: 14px;
+    width: 1470px;
+    margin: 0 auto;
+}
+#ckcpromobarre .container{
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.hide_alert{
+    display: none;
+}
+.block-left-banner {
+    font-size: 13px;
+    line-height: 19px;
+    text-transform: uppercase;
+}
+.block-left-banner::after {
+    padding-left: 10px;
+    content: "→" !important;
+}
+
+.block-left-banner strong {
+    font-weight: 900;
+}
+.clients {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: flex-end;
+}
+.block-question {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+.button_barrepromo{
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+.button_text_barrepromo{
+    font-size: 18px !important;
+    align-self: center;
+    display: none;
+    right: 15px;
+    position: absolute;
+}
+#ckcpromobarre button {
+    color:white;
+}
+#ckcpromobarre.bottom {
+    color: #ffffff;
+    width: 100%;
+    z-index: 1000;
+    bottom: 0;
+    position: fixed;
+    margin-bottom: 0;
+}
+#ckcpromobarre a:hover {
+    opacity:0.8;
+}
+#ckcpromobarre a {
+    color: #ffffff !important;
+    text-decoration: none;
+}
+/*#ckcpromobarre p {*/
+/*    margin-bottom: 0;*/
+/*}*/
+
