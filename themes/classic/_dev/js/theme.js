@@ -6439,17 +6439,21 @@
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    const quantityInput = document.getElementById("quantity_wanted");
-    const increaseBtn = document.querySelector(".increase");
-    const decreaseBtn = document.querySelector(".decrease");
+      const quantityInput = document.getElementById("quantity_wanted");
+      const increaseBtn = document.querySelector(".increase");
+      const decreaseBtn = document.querySelector(".decrease");
 
-    increaseBtn.addEventListener("click", function () {
-        quantityInput.stepUp();
-    });
+      if (quantityInput && increaseBtn && decreaseBtn) {
+            increaseBtn.addEventListener("click", function () {
+                  quantityInput.stepUp();
+            });
 
-    decreaseBtn.addEventListener("click", function () {
-        if (quantityInput.value > parseInt(quantityInput.min)) {
-            quantityInput.stepDown();
-        }
-    });
+            decreaseBtn.addEventListener("click", function () {
+                  if (quantityInput.value > parseInt(quantityInput.min) || !quantityInput.min) {
+                        quantityInput.stepDown();
+                  }
+            });
+      } else {
+            console.warn("Un ou plusieurs éléments ne sont pas trouvés dans le DOM.");
+      }
 });

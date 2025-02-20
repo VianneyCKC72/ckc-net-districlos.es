@@ -23,16 +23,18 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 {if $elements}
-  <div id="block-reassurance">
-    <ul>
-      {foreach from=$elements item=element}
-        <li>
-          <div class="block-reassurance-item">
-            <img src="{$element.image}" alt="{$element.text}" loading="lazy">
-            <span class="h6">{$element.text}</span>
-          </div>
-        </li>
-      {/foreach}
-    </ul>
-  </div>
+    <div class="banner-services stack-row__cards">
+        {foreach from=$elements item=element}
+            <div class="block-reassurance-item service">
+                <img src="{$element.image}" alt="{$element.title|replace:'__':' ' nofilter}" loading="lazy">
+                <p>
+                    {$element.title|replace:'__':'<br>' nofilter}
+                    {if $element.description == '__picto3x4x10x12x'}
+                        <br>
+                        <img height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="Payer en plusieurs fois">
+                    {/if}
+                </p>
+            </div>
+        {/foreach}
+    </div>
 {/if}
