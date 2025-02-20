@@ -24,7 +24,7 @@
  *}
 {if $cart.vouchers.allowed}
   {block name='cart_voucher'}
-    <div class="block-promo">
+    <div class="block-promo mt-3">
       <div class="cart-voucher js-cart-voucher">
         {if $cart.vouchers.added}
           {block name='cart_voucher_list'}
@@ -34,9 +34,15 @@
                   <span class="label">{$voucher.name}</span>
                   <div class="float-xs-right">
                     <span>{$voucher.reduction_formatted}</span>
-                      {if isset($voucher.code) && $voucher.code !== ''}
-                        <a href="{$voucher.delete_url}" data-link-action="remove-voucher"><i class="material-icons">&#xE872;</i></a>
-                      {/if}
+                    {if isset($voucher.code) && $voucher.code !== ''}
+                      <a href="{$voucher.delete_url}" data-link-action="remove-voucher" class="ml-2">
+                        <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg" class="mb-1">
+                          <path
+                            d="M3.375 0.5L2.8125 1.15H0.5625C0.225 1.15 0 1.41 0 1.8C0 2.19 0.225 2.45 0.5625 2.45H1.6875H7.3125H8.4375C8.775 2.45 9 2.19 9 1.8C9 1.41 8.775 1.15 8.4375 1.15H6.1875L5.625 0.5H3.375ZM0.5625 3.75V12.2C0.5625 12.915 1.06875 13.5 1.6875 13.5H7.3125C7.93125 13.5 8.4375 12.915 8.4375 12.2V3.75H0.5625ZM2.8125 5.05C3.15 5.05 3.375 5.31 3.375 5.7V11.55C3.375 11.94 3.15 12.2 2.8125 12.2C2.475 12.2 2.25 11.94 2.25 11.55V5.7C2.25 5.31 2.475 5.05 2.8125 5.05ZM6.1875 5.05C6.525 5.05 6.75 5.31 6.75 5.7V11.55C6.75 11.94 6.525 12.2 6.1875 12.2C5.85 12.2 5.625 11.94 5.625 11.55V5.7C5.625 5.31 5.85 5.05 6.1875 5.05Z"
+                            fill="black"></path>
+                        </svg>
+                      </a>
+                    {/if}
                   </div>
                 </li>
               {/foreach}
@@ -44,33 +50,26 @@
           {/block}
         {/if}
 
-        <p class="promo-code-button display-promo{if $cart.discounts|count > 0} with-discounts{/if}">
-          <a class="collapse-button" href="#promo-code">
+        <div class="promo-code">
+          <p class="mb-2">
             {l s='Have a promo code?' d='Shop.Theme.Checkout'}
-          </a>
-        </p>
+          </p>
 
-        <div id="promo-code" class="collapse{if $cart.discounts|count > 0} in{/if}">
-          <div class="promo-code">
-            {block name='cart_voucher_form'}
-              <form action="{$urls.pages.cart}" data-link-action="add-voucher" method="post">
-                <input type="hidden" name="token" value="{$static_token}">
-                <input type="hidden" name="addDiscount" value="1">
-                <input class="promo-input" type="text" name="discount_name" placeholder="{l s='Promo code' d='Shop.Theme.Checkout'}">
-                <button type="submit" class="btn btn-primary"><span>{l s='Add' d='Shop.Theme.Actions'}</span></button>
-              </form>
-            {/block}
+          {block name='cart_voucher_form'}
+            <form action="{$urls.pages.cart}" data-link-action="add-voucher" method="post">
+              <input type="hidden" name="token" value="{$static_token}">
+              <input type="hidden" name="addDiscount" value="1">
+              <input class="promo-input" type="text" name="discount_name"
+                placeholder="{l s='Promo code' d='Shop.Theme.Checkout'}">
+              <button type="submit" class="btn btn-primary"><span>{l s='OK' d='Shop.Theme.Actions'}</span></button>
+            </form>
+          {/block}
 
-            {block name='cart_voucher_notifications'}
-              <div class="alert alert-danger js-error" role="alert">
-                <i class="material-icons">&#xE001;</i><span class="ml-1 js-error-text"></span>
-              </div>
-            {/block}
-
-            <a class="collapse-button promo-code-button cancel-promo" role="button" data-toggle="collapse" data-target="#promo-code" aria-expanded="true" aria-controls="promo-code">
-              {l s='Close' d='Shop.Theme.Checkout'}
-            </a>
-          </div>
+          {block name='cart_voucher_notifications'}
+            <div class="alert alert-danger js-error" role="alert">
+              <i class="material-icons">&#xE001;</i><span class="ml-1 js-error-text"></span>
+            </div>
+          {/block}
         </div>
 
         {if $cart.discounts|count > 0}
