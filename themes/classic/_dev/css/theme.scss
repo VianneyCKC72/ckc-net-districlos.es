@@ -24,6 +24,7 @@ $output-bourbon-deprecation-warnings: false !default;
 @import "modules/product-slider.scss";
 @import "modules/product-sheet.scss";
 @import "modules/cart.scss";
+@import "modules/checkout.scss";
 
 @import "~swiper/css/bundle";
 @import "~swiper/css";

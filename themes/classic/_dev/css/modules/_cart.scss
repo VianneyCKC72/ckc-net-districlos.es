@@ -117,15 +117,15 @@
   @include media-breakpoint-up(lg) {
     column-gap: 60px;
     flex-direction: row;
+    .cart-grid-body {
+      flex: 2;
+    }
+    .cart-grid-right {
+      flex: 1;
+    }
   }
   @media screen and (min-width: 1400px) {
     column-gap: 120px;
-  }
-  .cart-grid-body {
-    flex: 2;
-  }
-  .cart-grid-right {
-    flex: 1;
   }
 }
 

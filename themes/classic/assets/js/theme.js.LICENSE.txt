@@ -1,22 +1,22 @@
 /*!
-      * @fileOverview TouchSwipe - jQuery Plugin
-      * @version 1.6.18
-      *
-      * @author Matt Bryson http://www.github.com/mattbryson
-      * @see https://github.com/mattbryson/TouchSwipe-Jquery-Plugin
-      * @see http://labs.rampinteractive.co.uk/touchSwipe/
-      * @see http://plugins.jquery.com/project/touchSwipe
-      * @license
-      * Copyright (c) 2010-2015 Matt Bryson
-      * Dual licensed under the MIT or GPL Version 2 licenses.
-      *
-      */
+       * @fileOverview TouchSwipe - jQuery Plugin
+       * @version 1.6.18
+       *
+       * @author Matt Bryson http://www.github.com/mattbryson
+       * @see https://github.com/mattbryson/TouchSwipe-Jquery-Plugin
+       * @see http://labs.rampinteractive.co.uk/touchSwipe/
+       * @see http://plugins.jquery.com/project/touchSwipe
+       * @license
+       * Copyright (c) 2010-2015 Matt Bryson
+       * Dual licensed under the MIT or GPL Version 2 licenses.
+       *
+       */
 
 /*!
-      * Bootstrap v4.0.0-alpha.5 (https://getbootstrap.com)
-      * Copyright 2011-2016 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
-      * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-      */
+       * Bootstrap v4.0.0-alpha.5 (https://getbootstrap.com)
+       * Copyright 2011-2016 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+       * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+       */
 
 /*! VelocityJS.org (1.5.0). (C) 2014 Julian Shapiro. MIT @license: en.wikipedia.org/wiki/MIT_License */
 
