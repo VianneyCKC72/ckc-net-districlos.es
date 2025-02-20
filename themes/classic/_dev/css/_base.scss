@@ -9053,11 +9053,7 @@ body#checkout
 }
 
 #header .header-nav .blockcart {
-  //height: 3rem;
-  //padding: .75rem;
-  //margin-left: .9375rem;
-  //text-align: center;
-  //white-space: nowrap;
+  position:relative;
   background: #f6f6f6;
 }
 
@@ -9086,7 +9082,10 @@ body#checkout
 }
 
 #header .header-top {
-  padding: 1.25rem 0;
+  padding-top: 25px;
+  padding-bottom: 70px;
+  max-width: 1520px;
+  margin: 0 auto;
 }
 
 #header .header-top > .container {

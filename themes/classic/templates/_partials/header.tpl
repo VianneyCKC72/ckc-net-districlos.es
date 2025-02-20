@@ -30,8 +30,7 @@
 
 {block name='header_top'}
     <div class="header-top">
-        <div class="container">
-            <div class="row row-header">
+            <div class="row-header">
                 <div class="hidden-sm-down" id="_desktop_logo">
                     {if $shop.logo_details}
                         {if $page.page_name == 'index'}
@@ -72,7 +71,6 @@
                     </nav>
                 {/block}
             </div>
-
             <div id="mobile_top_menu_wrapper" class="row hidden-md-up" style="display:none;">
                 <div class="js-top-menu mobile" id="_mobile_top_menu"></div>
                 <div class="js-top-menu-bottom">
@@ -82,6 +80,6 @@
                 </div>
             </div>
         </div>
-    </div>
+
     {hook h='displayNavFullWidth'}
 {/block}

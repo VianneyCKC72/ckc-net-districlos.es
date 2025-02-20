@@ -1,6 +1,22 @@
 #header {
   .row-header {
     gap:20px;
+    display:flex;
+    justify-content: space-between;
+    align-content: center;
+  }
+  .cart-products-count{
+    background: #ff144e;
+    color: #fff;
+    height: 11px;
+    line-height: 11px;
+    top: -3px;
+    width: 11px;
+    font-size: 7px;
+    right: 0;
+    position: absolute;
+    border-radius: 50%;
+    text-align: center;
   }
   .ico {
     font-weight: 700;
@@ -31,7 +47,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 30px;
+    gap: 15px;
   }
 
   .btn-configurateur {
@@ -65,6 +81,7 @@
     justify-content: flex-end;
     gap: 30px;
     text-transform: uppercase;
+    padding-left: 30px;
   }
 
   .header-nav {

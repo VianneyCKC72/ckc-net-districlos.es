@@ -18,10 +18,15 @@
   display: none;
 }
 #search_widget form input {
-  width: 100%;
-  padding: 10px 20px 10px 40px;
+  width: 296px;
+  padding: 10px 20px 10px 25px;
   outline: none;
   border: none;
+  float: left;
+  background: #F8F4EE url("/themes/classic/assets/img/ico-loupe.png") 260px center no-repeat;
+  color: #026473;
+  font-size: 12px;
+  height: 50px;
 }
 
 .ui-autocomplete.searchbar-autocomplete {
@@ -65,6 +70,6 @@
 
 @media only screen and (min-width: 992px) {
   #search_widget {
-    min-width: 16.5rem;
+    min-width: 320px;
   }
 }
