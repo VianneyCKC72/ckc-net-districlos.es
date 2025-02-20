@@ -59,9 +59,34 @@
               color: $black;
             }
           }
+          .cart-line-product-actions {
+            .remove-from-cart {
+              width: 30px;
+              height: 30px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              transition: all 0.1s;
+              border-radius: 4px;
+              svg path {
+                transition: all 0.1s;
+              }
+              &:hover {
+                background-color: $sand-light-color;
+                svg {
+                  path {
+                    fill: $red;
+                  }
+                }
+              }
+            }
+          }
         }
         .product-details {
           font-size: 13px;
+          .value {
+            font-weight: 600;
+          }
         }
         .product-image {
           flex: none;
@@ -107,7 +132,7 @@
 .cart-summary {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 28px;
   padding: 15px 25px;
   background-color: $sand-light-color;
   border-radius: 4px;
@@ -163,6 +188,40 @@
       &:focus {
         outline: none;
       }
+    }
+  }
+}
+
+.payment-methods__listing {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(auto, 200px));
+  column-gap: 24px;
+  row-gap: 12px;
+  .payment-method {
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    .img {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100px;
+      width: 100%;
+      border: 1px solid $gray;
+      border-radius: 4px;
+      padding: 12px;
+      img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        max-height: 70px;
+      }
+    }
+    p {
+      text-align: center;
+      margin-bottom: 0;
     }
   }
 }

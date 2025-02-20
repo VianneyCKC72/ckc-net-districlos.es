@@ -27,12 +27,17 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
+        <h4 class="h4 mb-0" id="myModalLabel">
+          {l s='Product successfully added to your shopping cart' d='Shop.Theme.Checkout'}
+        </h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="{l s='Close' d='Shop.Theme.Global'}">
-          <span aria-hidden="true"><i class="material-icons">close</i></span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide lucide-x">
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
         </button>
-        {* <h4 class="modal-title h6 text-sm-center" id="myModalLabel"><i
-            class="material-icons rtl-no-flip">&#xE876;</i>{l s='Product successfully added to your shopping cart' d='Shop.Theme.Checkout'}
-        </h4> *}
       </div>
       <div class="modal-body">
         <div class="row">
@@ -49,15 +54,23 @@
               </div>
               <div class="col-md-6">
                 <h6 class="h6 product-name">{$product.name}</h6>
-                <p class="product-price">{$product.price}</p>
+                {assign var="price_parts" value=","|explode:$product.price}
+                {assign var="price_integer" value=$price_parts[0]}
+                {assign var="price_decimal" value=$price_parts[1]}
+                <div class="product-price {if $product.has_discount}has-discount{/if}">
+                  <span class="price-integer">{$price_integer}</span><span
+                    class="price-decimal">,{$price_decimal}</span></span>
+                </div>
                 {hook h='displayProductPriceBlock' product=$product type="unit_price"}
-                {foreach from=$product.attributes item="property_value" key="property"}
-                  <span
-                    class="{$property|lower}">{l s='%label%:' sprintf=['%label%' => $property] d='Shop.Theme.Global'}<strong>
-                      {$property_value}</strong></span><br>
-                {/foreach}
+                <div class="small">
+                  {foreach from=$product.attributes item="property_value" key="property"}
+                    <span
+                      class="{$property|lower}">{l s='%label%:' sprintf=['%label%' => $property] d='Shop.Theme.Global'}<strong>
+                        {$property_value}</strong></span><br>
+                  {/foreach}
+                </div>
                 <span
-                  class="product-quantity">{l s='Quantity:' d='Shop.Theme.Checkout'}&nbsp;<strong>{$product.cart_quantity}</strong></span>
+                  class="product-quantity small">{l s='Quantity:' d='Shop.Theme.Checkout'}&nbsp;<strong>{$product.cart_quantity}</strong></span>
               </div>
             </div>
           </div>
@@ -101,8 +114,7 @@
               <div class="cart-content-btn">
                 <button type="button" class="btn btn-secondary"
                   data-dismiss="modal">{l s='Continue shopping' d='Shop.Theme.Actions'}</button>
-                <a href="{$cart_url}" class="btn btn-primary"><i
-                    class="material-icons rtl-no-flip">&#xE876;</i>{l s='Proceed to checkout' d='Shop.Theme.Actions'}</a>
+                <a href="{$cart_url}" class="btn btn-primary">{l s='Proceed to checkout' d='Shop.Theme.Actions'}</a>
               </div>
             </div>
           </div>

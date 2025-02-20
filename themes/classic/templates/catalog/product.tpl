@@ -106,7 +106,9 @@
               {else}
                 <div class="small text-red">Rupture de stock</div>
               {/if}
-              <div class="small">REF <span class="font-weight-bold">{$product.reference_to_display}</span></div>
+              {if $product.reference_to_display}
+                <div class="small">REF <span class="font-weight-bold">{$product.reference_to_display}</span></div>
+              {/if}
               <div>Avis</div>
             </div>
             {* End - Inté static *}

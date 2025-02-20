@@ -48,13 +48,13 @@
 
     <div class="product-details d-flex flex-column">
       <div class="product-line-info">
-        <a class="h4 text-black" href="{$product.url}"
+        <a class="h4 text-black mb-2 d-block" href="{$product.url}"
           data-id_customization="{$product.id_customization|intval}">{$product.name}</a>
       </div>
 
       {foreach from=$product.attributes key="attribute" item="value"}
         <div class="product-line-info {$attribute|lower}">
-          <span class="label">{$attribute}:</span>
+          <span class="label">{$attribute} :</span>
           <span class="value">{$value}</span>
         </div>
       {/foreach}
