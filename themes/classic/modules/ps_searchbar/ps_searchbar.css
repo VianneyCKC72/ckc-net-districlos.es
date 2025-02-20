@@ -53,7 +53,6 @@
 
 @media only screen and (min-width: 768px) {
   #search_widget {
-    float: right;
     margin-bottom: 0;
   }
 

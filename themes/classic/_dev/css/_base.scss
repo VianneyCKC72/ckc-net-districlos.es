@@ -9213,10 +9213,6 @@ body#checkout
 #header {
   position: relative;
   z-index: 999;
-  color: #7a7a7a;
-  background: #fff;
-  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.11);
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.11);
 }
 
 #header .logo {
@@ -9232,11 +9228,6 @@ body#checkout
 #header .menu,
 #header .menu > ul > li {
   display: inline-block;
-}
-
-#header .header-nav {
-  max-height: 50px;
-  border-bottom: #f6f6f6 2px solid;
 }
 
 #header .header-nav #menu-icon {
@@ -9258,37 +9249,6 @@ body#checkout
   -webkit-box-pack: end;
   -ms-flex-pack: end;
   justify-content: flex-end;
-}
-
-#header .header-nav .currency-selector {
-  margin-top: 0.9375rem;
-  margin-left: 0.9375rem;
-  white-space: nowrap;
-}
-
-#header .header-nav .user-info {
-  margin-left: 0.5rem;
-  text-align: right;
-}
-
-#header .header-nav .user-info .account {
-  margin-left: 0.625rem;
-}
-
-#header .header-nav .language-selector,
-#header .header-nav .user-info {
-  margin-top: 0.9375rem;
-  white-space: nowrap;
-}
-
-#header .header-nav .cart-preview.active {
-  background: $secondary-color;
-}
-
-#header .header-nav .blockcart.active a:hover,
-#header .header-nav .cart-preview.active a,
-#header .header-nav .cart-preview.active i {
-  color: #fff;
 }
 
 #header .header-nav .cart-preview .shopping-cart {
