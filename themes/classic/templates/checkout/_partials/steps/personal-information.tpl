@@ -34,12 +34,7 @@
 
     <div class="clearfix">
       <form method="GET" action="{$urls.pages.order}">
-        <button
-          class="continue btn btn-primary float-xs-right"
-          name="controller"
-          type="submit"
-          value="order"
-        >
+        <button class="continue btn btn-primary float-xs-right" name="controller" type="submit" value="order">
           {l s='Continue' d='Shop.Theme.Actions'}
         </button>
       </form>
@@ -47,16 +42,10 @@
     </div>
 
   {else}
-    <ul class="nav nav-inline my-2" role="tablist">
-      <li class="nav-item">
-        <a
-          class="nav-link {if !$show_login_form}active{/if}"
-          data-toggle="tab"
-          href="#checkout-guest-form"
-          role="tab"
-          aria-controls="checkout-guest-form"
-          {if !$show_login_form} aria-selected="true"{/if}
-          >
+    <ul class="nav nav-inline d-flex flex-wrap gap-16" role="tablist">
+      <li class="nav-item m-0">
+        <a class="btn btn-primary-outline {if !$show_login_form}active{/if}" data-toggle="tab" href="#checkout-guest-form"
+          role="tab" aria-controls="checkout-guest-form" {if !$show_login_form} aria-selected="true" {/if}>
           {if $guest_allowed}
             {l s='Order as a guest' d='Shop.Theme.Checkout'}
           {else}
@@ -65,34 +54,25 @@
         </a>
       </li>
 
-      <li class="nav-item">
-        <span class="nav-separator"> | </span>
-      </li>
-
-      <li class="nav-item">
-        <a
-          class="nav-link {if $show_login_form}active{/if}"
-          data-link-action="show-login-form"
-          data-toggle="tab"
-          href="#checkout-login-form"
-          role="tab"
-          aria-controls="checkout-login-form"
-          {if $show_login_form} aria-selected="true"{/if}
-        >
+      <li class="nav-item m-0">
+        <a class="btn btn-primary-outline {if $show_login_form}active{/if}" data-link-action="show-login-form"
+          data-toggle="tab" href="#checkout-login-form" role="tab" aria-controls="checkout-login-form" {if $show_login_form}
+          aria-selected="true" {/if}>
           {l s='Sign in' d='Shop.Theme.Actions'}
         </a>
       </li>
     </ul>
 
     <div class="tab-content">
-      <div class="tab-pane {if !$show_login_form}active{/if}" id="checkout-guest-form" role="tabpanel" {if $show_login_form}aria-hidden="true"{/if}>
+      <div class="tab-pane {if !$show_login_form}active{/if}" id="checkout-guest-form" role="tabpanel"
+        {if $show_login_form}aria-hidden="true" {/if}>
         {render file='checkout/_partials/customer-form.tpl' ui=$register_form guest_allowed=$guest_allowed}
       </div>
-      <div class="tab-pane {if $show_login_form}active{/if}" id="checkout-login-form" role="tabpanel" {if !$show_login_form}aria-hidden="true"{/if}>
+      <div class="tab-pane {if $show_login_form}active{/if}" id="checkout-login-form" role="tabpanel"
+        {if !$show_login_form}aria-hidden="true" {/if}>
         {render file='checkout/_partials/login-form.tpl' ui=$login_form}
       </div>
     </div>
-
 
   {/if}
 {/block}

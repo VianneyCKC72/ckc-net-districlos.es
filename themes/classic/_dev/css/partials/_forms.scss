@@ -31,8 +31,9 @@
   &:focus {
     color: $black;
     background-color: $sand-light-color;
-    outline: 3px solid $primary-color;
+    outline: 2px solid $primary-color;
     border: none;
+    box-shadow: none;
   }
 }
 
@@ -122,4 +123,54 @@ select.form-control-select {
       transform: rotate(45deg);
     }
   }
+}
+
+.custom-checkbox {
+  label {
+    margin-bottom: 0;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+  input[type="checkbox"] {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    margin-top: 0.25rem;
+    cursor: pointer;
+    opacity: 0;
+    + span {
+      display: inline-block;
+      background-color: $sand-light-color;
+      border-radius: 4px;
+      margin-right: 0.5rem;
+      width: 20px;
+      height: 20px;
+      border: none;
+      vertical-align: middle;
+      pointer-events: none;
+      cursor: pointer;
+      .checkbox-checked {
+        display: none;
+        margin-left: 2px;
+        margin-top: 2px;
+      }
+    }
+    &:checked + span {
+      background-color: $primary-color;
+      color: $white;
+      .checkbox-checked {
+        display: block;
+      }
+    }
+  }
+}
+
+.custom-checkbox label,
+body#checkout #delivery > label,
+body#checkout section.checkout-step #customer-form .form-control-label,
+body#checkout section.checkout-step #delivery-address .form-control-label,
+body#checkout section.checkout-step #invoice-address .form-control-label,
+body#checkout section.checkout-step #login-form .form-control-label {
+  text-align: left;
 }
