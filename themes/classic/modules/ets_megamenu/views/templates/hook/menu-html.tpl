@@ -19,26 +19,26 @@
 *  International Registered Trademark & Property of ETS-Soft
 *}
 {if isset($menus) && $menus}
-{*    <div class="ybc-menu-toggle ybc-menu-btn closed">*}
-{*        <div class="mm_modal_filter"></div>*}
-{*        <span class="ybc-menu-button-toggle_icon">*}
-{*                            <svg class="Header__toggle-svg hamburger" viewbox="0 0 60 40">*}
-{*                                <g stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">*}
-{*                                    <path class="top-line" d="M10,10 L50,10 Z"></path>*}
-{*                                    <path class="middle-line" d="M10,20 L50,20 Z"></path>*}
-{*                                    <path class="bottom-line" d="M10,30 L50,30 Z"></path>*}
-{*                                </g>*}
-{*                            </svg>*}
-{*                            <svg class="Header__toggle-svg hamburger_sticky" viewbox="0 0 60 40">*}
-{*                                <g stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">*}
-{*                                    <path class="top-line" d="M10,10 L50,10 Z"></path>*}
-{*                                    <path class="middle-line" d="M10,20 L50,20 Z"></path>*}
-{*                                    <path class="bottom-line" d="M10,30 L50,30 Z"></path>*}
-{*                                </g>*}
-{*                            </svg>*}
-{*                        </span>*}
-{*        <span class="main_menu_label">Nos produits</span>*}
-{*    </div>*}
+    {*    <div class="ybc-menu-toggle ybc-menu-btn closed">*}
+    {*        <div class="mm_modal_filter"></div>*}
+    {*        <span class="ybc-menu-button-toggle_icon">*}
+    {*                            <svg class="Header__toggle-svg hamburger" viewbox="0 0 60 40">*}
+    {*                                <g stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">*}
+    {*                                    <path class="top-line" d="M10,10 L50,10 Z"></path>*}
+    {*                                    <path class="middle-line" d="M10,20 L50,20 Z"></path>*}
+    {*                                    <path class="bottom-line" d="M10,30 L50,30 Z"></path>*}
+    {*                                </g>*}
+    {*                            </svg>*}
+    {*                            <svg class="Header__toggle-svg hamburger_sticky" viewbox="0 0 60 40">*}
+    {*                                <g stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">*}
+    {*                                    <path class="top-line" d="M10,10 L50,10 Z"></path>*}
+    {*                                    <path class="middle-line" d="M10,20 L50,20 Z"></path>*}
+    {*                                    <path class="bottom-line" d="M10,30 L50,30 Z"></path>*}
+    {*                                </g>*}
+    {*                            </svg>*}
+    {*                        </span>*}
+    {*        <span class="main_menu_label">Nos produits</span>*}
+    {*    </div>*}
     <ul class="mm_menus_ul {if isset($mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB) && $mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB} clicktext_show_submenu{/if} {if isset($mm_config.ETS_MM_SHOW_ICON_VERTICAL)&& !$mm_config.ETS_MM_SHOW_ICON_VERTICAL} hide_icon_vertical{/if}">
         <li class="close_menu">
             <div class="pull-left">
@@ -63,7 +63,9 @@
                                 <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" title="" alt="" width="20"/>
 
 
+
 {elseif $menu.menu_icon}
+
 
 
                                 <i class="fa {$menu.menu_icon|escape:'html':'UTF-8'}"></i>
@@ -81,9 +83,9 @@
                         {if $menu.tabs}
                             <span class="arrow closed YES"
                                   style="display: flex;align-items: center;justify-content: flex-end;padding-right: 2rem;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                             class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-right"><path
+            d="M18 8L22 12L18 16"/><path d="M2 12H22"/></svg>
                     </span>
                         {/if}
                     {/if}
@@ -105,14 +107,16 @@
                                         <span class="mm_tab_name mm_tab_toggle{if $tab.columns} mm_tab_has_child{/if}">
                                             <span class="mm_tab_toggle_title">
                                                 {if $tab.url}
-                                                    <a href="{$tab.url|escape:'html':'UTF-8'}">
+                                                    <a class="mm-link-menu-sub" href="{$tab.url|escape:'html':'UTF-8'}">
                                                 {/if}
                                                         {if $tab.tab_img_link}
                                                             <img src="{$tab.tab_img_link|escape:'html':'UTF-8'}"
                                                                  title="" alt="" width="20"/>
 
 
+
 {elseif $tab.tab_icon}
+
 
 
                                                             <i class="fa {$tab.tab_icon|escape:'html':'UTF-8'}"></i>
@@ -121,6 +125,11 @@
                                                         {if $tab.bubble_text}<span class="mm_bubble_text"
                                                                                    style="background: {if $tab.bubble_background_color}{$tab.bubble_background_color|escape:'html':'UTF-8'}{else}#FC4444{/if}; color: {if $tab.bubble_text_color|escape:'html':'UTF-8'}{$tab.bubble_text_color|escape:'html':'UTF-8'}{else}#ffffff{/if};">{$tab.bubble_text|escape:'html':'UTF-8'}</span>{/if}
                                                         {if $tab.url}
+                                                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-right">
+                                                          <path d="M18 8L22 12L18 16"/>
+                                                          <path d="M2 12H22"/>
+                                                        </svg>
+
                                                     </a>
                                                 {/if}
                                             </span>
@@ -193,9 +202,7 @@
                             {if $menu.menu_img_link}
                                 <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" title="" alt="" width="20"/>
 
-
 {elseif $menu.menu_icon}
-
 
                                 <i class="fa {$menu.menu_icon|escape:'html':'UTF-8'}"></i>
                             {/if}
@@ -209,15 +216,12 @@
             </li>
         {/foreach}
         <li class="mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
-
-            <div class="hide_pro">
+            <div class="hide_pro image-fw-mm">
                 <a href="#">
                     <img src="/img/cms/menu/slide-post-soldes-mobile.webp"
                          alt="Bannière post soldes">
                 </a>
             </div>
-
-            <a href="module/opartdevis/simplequotation" class="btn btn-secondary request_quote">Demander un devis</a>
         </li>
     </ul>
     {hook h='displayCustomMenu'}
