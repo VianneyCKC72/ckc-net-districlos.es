@@ -101,7 +101,7 @@ $(function () {
                 } else if (windowWidth <= 1200) {
                     topOffset = 200;
                 } else {
-                    topOffset = 177;
+                    topOffset = 150;
                 }
 
                 // Ajustement dynamique en fonction du scroll
@@ -115,7 +115,7 @@ $(function () {
                     } else if (windowWidth <= 1200) {
                         topOffset = 200;
                     } else {
-                        topOffset = 177;
+                        topOffset = 150;
                     }
                 }
 

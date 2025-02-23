@@ -64,7 +64,9 @@
 
 
 
+
 {elseif $menu.menu_icon}
+
 
 
 
@@ -81,7 +83,7 @@
                     </a>
                     {if $menu.enabled_vertical}
                         {if $menu.tabs}
-                            <span class="arrow closed YES"
+                            <span class="arrow closed YES niveau1"
                                   style="display: flex;align-items: center;justify-content: flex-end;padding-right: 2rem;">
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-right"><path
@@ -115,7 +117,9 @@
 
 
 
+
 {elseif $tab.tab_icon}
+
 
 
 
@@ -125,12 +129,16 @@
                                                         {if $tab.bubble_text}<span class="mm_bubble_text"
                                                                                    style="background: {if $tab.bubble_background_color}{$tab.bubble_background_color|escape:'html':'UTF-8'}{else}#FC4444{/if}; color: {if $tab.bubble_text_color|escape:'html':'UTF-8'}{$tab.bubble_text_color|escape:'html':'UTF-8'}{else}#ffffff{/if};">{$tab.bubble_text|escape:'html':'UTF-8'}</span>{/if}
                                                         {if $tab.url}
-                                                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-right">
+                                                    </a>
+                                                     <span class="arrow YES closed niveau2">
+                                                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                            viewBox="0 0 24 24" fill="none" stroke="white"
+                                                            stroke-width="2" stroke-linecap="round"
+                                                            stroke-linejoin="round" class="lucide lucide-move-right">
                                                           <path d="M18 8L22 12L18 16"/>
                                                           <path d="M2 12H22"/>
                                                         </svg>
-
-                                                    </a>
+                                                     </span>
                                                 {/if}
                                             </span>
                                         </span>
@@ -164,7 +172,9 @@
                         </ul>
                     {/if}
 
-                    {if $menu.columns}<span class="arrow closed"></span>{/if}
+                    {if $menu.columns}<span class="arrow closed niveau3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left"><path d="M6 8L2 12L6 16"/><path d="M2 12H22"/></svg>
+                    </span>{/if}
                     {if $menu.columns}
                         <ul class="mm_columns_ul"
                             style=" width:{$menu.sub_menu_max_width|escape:'html':'UTF-8'};{if Configuration::get('ETS_MM_TEXT_FONT_SIZE')} font-size:{Configuration::get('ETS_MM_TEXT_FONT_SIZE')|intval}px;{/if}{if !$menu.enabled_vertical && $menu.background_image} background-image:url('{$menu.background_image|escape:'html':'UTF-8'}');background-position:{$menu.position_background|escape:'html':'UTF-8'}{/if}">
@@ -202,7 +212,9 @@
                             {if $menu.menu_img_link}
                                 <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" title="" alt="" width="20"/>
 
+
 {elseif $menu.menu_icon}
+
 
                                 <i class="fa {$menu.menu_icon|escape:'html':'UTF-8'}"></i>
                             {/if}

@@ -127,7 +127,7 @@
                     <a href="{$product.url}" class="btn btn-primary">Voir le produit</a>
                 </div>
 
-                {include file='catalog/_partials/product-flags.tpl'}
+{*                {include file='catalog/_partials/product-flags.tpl'}*}
             </div>
         </article>
     </div>

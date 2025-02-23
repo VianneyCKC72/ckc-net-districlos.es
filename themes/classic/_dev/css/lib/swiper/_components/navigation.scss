@@ -1,8 +1,8 @@
-.swiper-button-arrow{
-
+body {
+  background:red !important;
 }
-
-
+.elementor-swiper-button-prev,
+.elementor-swiper-button-next,
 .swiper-button-prev,
 .swiper-button-next {
   position: absolute;
@@ -16,10 +16,12 @@
   justify-content: center;
   opacity: .7;
   transition: $default-transition;
+
   &.swiper-button-disabled {
     opacity: 0.2;
     cursor: auto;
   }
+
   &:after {
     font-family: FontAwesome;
     font-size: 36px;
@@ -30,22 +32,29 @@
     line-height: 1;
   }
 }
+
+.elementor-swiper-button-prev,
 .swiper-button-prev,
 .swiper-container-rtl .swiper-button-next {
   &:after {
     content: "\F104";
   }
+
   left: 0px;
   right: auto;
 }
+
+.elementor-swiper-button-next,
 .swiper-button-next,
 .swiper-container-rtl .swiper-button-prev {
   &:after {
     content: "\F105";
   }
+
   right: 0px;
   left: auto;
 }
+
 .swiper-button-lock {
   display: none;
 }
@@ -55,6 +64,7 @@
   left: 1rem;
   right: auto;
 }
+
 .swiper-button-inner-next,
 .swiper-container-rtl .swiper-button-inner-prev {
   right: 1rem;
@@ -64,37 +74,44 @@
 //inside
 
 .swiper-arrows-inside .swiper-button-prev,
-  .swiper-arrows-inside.swiper-container-rtl .swiper-button-next {
-    &:after {
-      content: "\F104";
-    }
-    left: 20px;
-    right: auto;
+.swiper-arrows-inside.swiper-container-rtl .swiper-button-next {
+  &:after {
+    content: "\F104";
   }
+
+  left: 20px;
+  right: auto;
+}
+
 .swiper-arrows-inside .swiper-button-next,
-  .swiper-arrows-inside.swiper-container-rtl .swiper-button-prev {
-    &:after {
-      content: "\F105";
-    }
-    right: 20px;
-    left: auto;
+.swiper-arrows-inside.swiper-container-rtl .swiper-button-prev {
+  &:after {
+    content: "\F105";
   }
+
+  right: 20px;
+  left: auto;
+}
 
 
 //above
-.swiper-arrows-above{
-  .swiper-button{
+.swiper-arrows-above {
+  .elementor-swiper-button,
+  .swiper-button {
     top: 0;
     padding: 0;
     width: 1.8rem;
     height: 1.8rem;
     transform: none;
-    &:after{
+
+    &:after {
       font-size: 1.2rem;
       line-height: 0.8rem;
     }
   }
-  .swiper-button-prev{
+
+  .elementor-swiper-button-prev,
+  .swiper-button-prev {
     left: auto;
     right: 2rem;
   }

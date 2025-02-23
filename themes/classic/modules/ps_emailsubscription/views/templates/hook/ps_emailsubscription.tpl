@@ -1,3 +1,4 @@
+<p style="margin-top: 70px; margin-bottom: 70px;"><iframe width="100%" height="100%" id="AV_widget_iframe" title="Avis client" frameborder="0" src="//cl.avis-verifies.com/fr/cache/0/8/4/084cf537-ed41-0a34-15e7-e45715e81af8/widget4/084cf537-ed41-0a34-15e7-e45715e81af8horizontal_index.html"></iframe></p>
 <div class="banner__newsletter">
     <div class="col-text">
         <h2 class="h2">Newsletter</h2>

@@ -1,0 +1,41 @@
+#index {
+  .block-home-configurateur {
+    .card__bg-image .content {
+      height: 342px;
+    }
+  }
+  .banner-services .elementor-widget-container{
+    width: 100%;
+  }
+  .paiement_plusieurs_fois {
+    height: 21px;
+    margin-top: 2px;
+    margin-left: 2px;
+    image-rendering: auto;
+  }
+  .elementor-carousel-wrapper.swiper .swiper-button-next{
+    right: -15px;
+    height: 35px !important;
+    width: 35px !important;
+  }
+  .elementor-carousel-wrapper.swiper .swiper-button-prev{
+    left: -15px;
+    height: 35px !important;
+    width: 35px !important;
+  }
+  .two-col-home-block-magasin {
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .home-texte-customs-magasins {
+    max-width: 362px;
+
+  }
+  .elementor-element-5089e70f .btn-primary-arrow {
+    position: absolute;
+    border: 0;
+    bottom: 20px;
+  }
+
+}
