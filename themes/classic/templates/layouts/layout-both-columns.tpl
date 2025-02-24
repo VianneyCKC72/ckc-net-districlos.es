@@ -69,8 +69,8 @@
             <div id="left-column" class="col-xs-12 col-md-4 col-lg-3">
               {if $page.page_name == 'product'}
                 {hook h='displayLeftColumnProduct' product=$product category=$category}
-              {else}
-                {hook h="displayLeftColumn"}
+              {else}TEST
+                {hook h="displayLeftColumn"}TEST
               {/if}
             </div>
           {/block}
@@ -98,6 +98,12 @@
       </div>
       {hook h="displayWrapperBottom"}
     </section>
+
+      <div class="container">
+          {block name='hook_footer_before'}
+              {hook h='displayFooterBefore'}
+          {/block}
+      </div>
 
     <footer id="footer" class="js-footer">
       {block name="footer"}
