@@ -58,6 +58,7 @@
               <h1 class="h2">{block name='page_title'}{$product.name}{/block}</h1>
             {/block}
           {/block}
+
           {* Start - Inté static *}
           <div class="has-discount d-flex align-items-center">
             <div class="tag-discount mr-2">% SOLDES</div>
@@ -109,7 +110,7 @@
               {if $product.reference_to_display}
                 <div class="small">REF <span class="font-weight-bold">{$product.reference_to_display}</span></div>
               {/if}
-              <div>Avis</div>
+              <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
             </div>
             {* End - Inté static *}
 

@@ -120,6 +120,8 @@
                             {/if}
                         {/block}
 
+                        <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
+
                         {block name='product_reviews'}
                             {hook h='displayProductListReviews' product=$product}
                         {/block}

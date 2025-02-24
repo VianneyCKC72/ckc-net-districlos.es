@@ -99,12 +99,14 @@
     <div class="banner-quick-view">
       <div class="container">
         <div class="banner-quick-view-content">
-          <div class="price-name">
+          <p class="price-name">
             {include file='catalog/_partials/product-prices/has-discount.tpl'}
             {block name='page_header_container'}
               {block name='page_header'}
                 <h2 class="h2 mb-0 mt-2">{block name='page_title'}{$product.name}{/block}</h2>
-                <p class="mb-0">Avis</p>
+                <p class="mb-0">
+                  <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
+                </p>
               {/block}
             {/block}
           </div>

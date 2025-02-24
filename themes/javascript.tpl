@@ -34,6 +34,8 @@ var {$k} = {$def|json_encode nofilter};
 <script type="text/javascript" src="{$js_uri}"></script>
 {/foreach}
 {/if}
+
+
 {if isset($js_inline) && $js_inline|@count}
 <script type="text/javascript">
 {foreach from=$js_inline key=k item=inline}
