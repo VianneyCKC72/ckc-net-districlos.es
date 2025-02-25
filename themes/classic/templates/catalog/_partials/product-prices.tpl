@@ -99,7 +99,7 @@
     <div class="banner-quick-view">
       <div class="container">
         <div class="banner-quick-view-content">
-          <p class="price-name">
+          <div class="price-name">
             {include file='catalog/_partials/product-prices/has-discount.tpl'}
             {block name='page_header_container'}
               {block name='page_header'}
