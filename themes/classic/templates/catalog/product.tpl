@@ -187,7 +187,7 @@
                             {/if}
                           </div>
                         </div>
-                        <button class="d-block small text-black" id="showDelivery">Estimez vos frais de livraison <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                        <button type="button" class="d-block small text-black" id="showDelivery">Estimez vos frais de livraison <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                             stroke-linejoin="round" class="lucide lucide-move-right ml-2">
                             <path d="M18 8L22 12L18 16" />

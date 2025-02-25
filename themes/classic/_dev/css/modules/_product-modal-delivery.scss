@@ -1,6 +1,9 @@
+#showDelivery {
+  background-color: transparent;
+}
+
 #modalShowDelivery {
   z-index: 999999 !important;
-  background-color: transparent;
   .close {
     &:not(.btn) {
       color: #fff !important;
@@ -20,6 +23,12 @@
     }
   }
 
+  .title-modal-delivery {
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:1rem;
+  }
+
   .modal-dialog-select-shop{
     display:flex;
     flex-direction:column;
@@ -30,6 +39,9 @@
     max-width: 70rem;
   }
 
+  .modal-content {
+    border: 0;
+  }
 
   .modal-body {
     padding: 0;
@@ -59,6 +71,12 @@
     p {
       font-size: 14px;
       margin-bottom: 1rem;
+
+      &:first-child {
+        font-size:18px;
+        font-weight:700;
+        margin-bottom:1rem;
+      }
     }
   }
 }
