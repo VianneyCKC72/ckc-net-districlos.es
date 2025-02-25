@@ -129,6 +129,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function search(product = false, id_product = null, id_product_attribute = null) {
     let url = product ? prestashop.urls.pages.product : prestashop.urls.pages.cart;
+    if (product) {
+        url = url+"?id_product="+id_product;
+    }
     let quantity = product ? document.getElementById("quantity_wanted").value : null;
     let data = {
         ajax: "1",
