@@ -14,8 +14,7 @@ try {
 	$csv = readCSV('/var/www/districlos/admin562niy1zl/prices/EDI_TARIF_DV_WEB.csv');
 
 	// fgetcsv($file);
-	var_dump($csv);
-	die;
+
 	foreach ( $csv as $value ) {
 
 		$value = explode(';', $value[0]);
@@ -55,6 +54,8 @@ try {
 			$stmt->execute(['price' => $final_price_ht, 'id_product' => $value[1]]);
 		}
 	}
+
+	echo "Prix mis à jour avec succès";
 
 } catch(PDOException $e) {
 	echo "Connection failed: " . $e->getMessage();
