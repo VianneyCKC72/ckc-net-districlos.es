@@ -13,8 +13,12 @@
       right: -60px;
     }
   }
-  .swiper-slide {
-    height: auto;
+  .swiper__featured-products {
+    .js-product.product {
+      .swiper-slide {
+        height: auto;
+      }
+    }
   }
   .swiper-pagination {
     &.swiper-pagination-bullets.swiper-pagination-horizontal {
