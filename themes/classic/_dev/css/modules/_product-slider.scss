@@ -6,15 +6,25 @@
     @include media-breakpoint-up(xl) {
       left: -60px;
     }
+    svg {
+      color:white;
+    }
   }
   .swiper-button-next {
     right: -15px;
     @include media-breakpoint-up(xl) {
       right: -60px;
     }
+    svg {
+      color:white;
+    }
   }
-  .swiper-slide {
-    height: auto;
+  .swiper__featured-products {
+    .js-product.product {
+      .swiper-slide {
+        height: auto;
+      }
+    }
   }
   .swiper-pagination {
     &.swiper-pagination-bullets.swiper-pagination-horizontal {
