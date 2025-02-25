@@ -6,11 +6,17 @@
     @include media-breakpoint-up(xl) {
       left: -60px;
     }
+    svg {
+      color:white;
+    }
   }
   .swiper-button-next {
     right: -15px;
     @include media-breakpoint-up(xl) {
       right: -60px;
+    }
+    svg {
+      color:white;
     }
   }
   .swiper__featured-products {

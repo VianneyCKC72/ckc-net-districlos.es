@@ -65,8 +65,8 @@ $output-bourbon-deprecation-warnings: false !default;
   color: $white;
   background-color: $primary-color;
   border-radius: 100%;
-  height: 35px;
-  width: 35px;
+  height: 35px !important;
+  width: 35px!important;
   padding: 8px;
   transition: all 0.3s;
   &:hover {
