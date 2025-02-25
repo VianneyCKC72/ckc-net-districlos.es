@@ -1,4 +1,5 @@
-.wrapper__swiper__featured-products, .elementor-carousel-wrapper.swiper {
+.wrapper__swiper__featured-products,
+.elementor-carousel-wrapper.swiper {
   position: relative;
   .swiper-button-prev {
     left: -15px;
@@ -11,6 +12,9 @@
     @include media-breakpoint-up(xl) {
       right: -60px;
     }
+  }
+  .swiper-slide {
+    height: auto;
   }
   .swiper-pagination {
     &.swiper-pagination-bullets.swiper-pagination-horizontal {

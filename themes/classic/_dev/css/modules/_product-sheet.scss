@@ -301,6 +301,9 @@
     column-gap: 32px;
     row-gap: 16px;
     .price-name {
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
       width: 100%;
       @include media-breakpoint-up(lg) {
         width: calc(35% - 16px);
@@ -319,9 +322,6 @@
       }
       @include media-breakpoint-up(sm) {
         flex-direction: row;
-      }
-      .price {
-        // width: 100%;
       }
       .add-to-cart {
         width: 100%;
@@ -355,5 +355,11 @@
         background-color: darken($white, 10%);
       }
     }
+  }
+}
+
+.skeepers_product__stars {
+  .review__header {
+    margin-bottom: 0;
   }
 }
