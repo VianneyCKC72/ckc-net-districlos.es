@@ -180,11 +180,14 @@
                           <div class="small ml-4">
                             Livraison à domicile<br>
                             <span class="font-weight-bold text-secondary">offerte dès 1 499 € TTC</span><br>
-                            <span class="thin">sous 10 jours</span>
+                            {if in_array(294,Product::getProductCategories($product->id|intval)) or in_array(295,Product::getProductCategories($product->id|intval)) or in_array(293,Product::getProductCategories($product->id|intval))}
+                            <span class="thin">Sous 3 à 4 semaines.</span>
+                            {else}
+                              <span class="thin">Sous 10 jours.</span>
+                            {/if}
                           </div>
                         </div>
-                        <a href="#" class="d-block small text-black">Stock en magasin
-                          719 en stock national <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                        <a href="#" class="d-block small text-black">Estimez vos frais de livraison <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                             stroke-linejoin="round" class="lucide lucide-move-right ml-2">
                             <path d="M18 8L22 12L18 16" />
@@ -199,7 +202,7 @@
                             <span class="font-weight-bold text-secondary">719 en stock national</span>
                           </div>
                         </div>
-                        <a href="#" class="d-block small text-black">Voir le magasin le plus proche <svg
+                        <a href="#" id="showDelivery" class="d-block small text-black">Voir le magasin le plus proche <svg
                             xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
                             class="lucide lucide-move-right ml-2">
@@ -210,7 +213,7 @@
                     </div>
                     {* End - Inté static *}
 
-                    {* 
+                    {*
                     {block name='product_additional_info'}
                       {include file='catalog/_partials/product-additional-info.tpl'}
                     {/block} *}
@@ -222,6 +225,9 @@
                   {/block}
               </div>
             </div>
+            {block name='product_delivery_modal'}
+              {include file='catalog/_partials/product-delivery-modal.tpl'}
+            {/block}
           </div>
         </div>
         <div class="row">
@@ -238,7 +244,7 @@
                       <a class="nav-link
                       {if $product.description} active js-product-nav-active
                       {/if}" data-toggle="tab" href="#description" role="tab" aria-controls="description"
-                      {if $product.description} aria-selected="true" 
+                      {if $product.description} aria-selected="true"
                       {/if}>
                       {l s='Description' d='Shop.Theme.Catalog'}</a>
                     </li>
@@ -248,7 +254,7 @@
                     <a class="nav-link
                     {if !$product.description} active js-product-nav-active
                     {/if}" data-toggle="tab" href="#product-details" role="tab" aria-controls="product-details"
-                    {if !$product.description} aria-selected="true" 
+                    {if !$product.description} aria-selected="true"
                     {/if}>
                     {l s='Product Details' d='Shop.Theme.Catalog'}</a>
                   </li>

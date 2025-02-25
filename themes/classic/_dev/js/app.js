@@ -97,4 +97,87 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialiser la valeur au chargement
   updateWidth();
+
+    const postalCodeInput = document.getElementById("postalCodeInput");
+    if (postalCodeInput) {
+        postalCodeInput.addEventListener("keyup", function (event) {
+            if (event.key === "Enter") {
+                search();
+            }
+        });
+    }
+
+    document.getElementById("showDelivery").addEventListener("click", function (e) {
+        e.preventDefault();
+        document.getElementById("modalShowDelivery").classList.add("show");
+        document.getElementById("modalShowDelivery").style.display = "block";
+    });
+
+    const submitZipCode = document.getElementById("submitZipCode");
+    if (submitZipCode) {
+        submitZipCode.addEventListener("click", function () {
+            search();
+        });
+    }
+
+    const submitZipCodeProduct = document.getElementById("submitZipCodeProduct");
+    if (submitZipCodeProduct) {
+        submitZipCodeProduct.addEventListener("click", function () {
+            search(true, this.dataset.idProduct, this.dataset.idProductAttribute);
+        });
+    }
 });
+
+async function search(product = false, id_product = null, id_product_attribute = null) {
+    let url = product ? prestashop.urls.pages.product : prestashop.urls.pages.cart;
+    let quantity = product ? document.getElementById("quantity_wanted").value : null;
+    let data = {
+        ajax: "1",
+        action: "get_deliveries",
+        postal_code: document.getElementById("postalCodeInput").value,
+        ...(product && { id_product, id_product_attribute, quantity })
+    };
+
+    await searchProduct(url, data);
+}
+
+async function searchProduct(url, data) {
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        const resp = await response.json();
+        const deliveriesTable = document.querySelector(".deliveriesTable tbody");
+        const deliveryCostError = document.querySelector(".deliveryCostError");
+
+        if (resp.success) {
+            deliveriesTable.innerHTML = "";
+            resp.deliveries_options.forEach(({ name, price, reduc, delay }) => {
+                let formattedPrice = price === "gratuit" ? "Gratuit" : `<span class="text-line-through color-red mr-10">${reduc}</span>${price}`;
+
+                let position = name.indexOf("£");
+                if (position !== -1) {
+                    let avant = name.substring(0, position);
+                    let apres = name.substring(position + 1);
+                    name = `${avant} <strong>${apres}</strong>`;
+                }
+
+                deliveriesTable.innerHTML += `<tr>
+                    <td style="width: 35%" class="text-center">${name}</td>
+                    <td style="width: 20%">${formattedPrice}</td>
+                    <td style="width: 45%">${delay}</td>
+                </tr>`;
+            });
+            document.querySelector(".deliveriesTable").style.display = "block";
+            deliveryCostError.style.display = "none";
+        } else {
+            document.querySelector(".deliveriesTable").style.display = "none";
+            deliveryCostError.style.display = "block";
+        }
+    } catch (error) {
+        console.error("Erreur lors de la récupération des livraisons :", error);
+    }
+}
