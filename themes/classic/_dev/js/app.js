@@ -109,8 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("showDelivery").addEventListener("click", function (e) {
         e.preventDefault();
-        document.getElementById("modalShowDelivery").classList.add("show");
-        document.getElementById("modalShowDelivery").style.display = "block";
+        $('#modalShowDelivery').modal('show');
     });
 
     const submitZipCode = document.getElementById("submitZipCode");
