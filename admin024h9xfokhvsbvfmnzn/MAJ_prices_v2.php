@@ -13,9 +13,9 @@ try {
 
 	$csv = readCSV('/var/www/districlos/admin562niy1zl/prices/EDI_TARIF_DV_WEB.csv');
 
-	// Skip header row if it exists
 	// fgetcsv($file);
-
+	var_dump($csv);
+	die;
 	foreach ( $csv as $value ) {
 
 		$value = explode(';', $value[0]);
@@ -23,8 +23,7 @@ try {
 		if ($value[0] == "" || !isset($value[1]) || !isset($value[3])) {
 			continue;
 		}
-		// Assuming CSV structure is: id_product, id_product_attribute, price
-		// Adjust indices based on actual CSV structure
+
 		$final_price_ttc = (float) str_replace(',', '.', $value[3]) * 1.2;
 		$final_price_ht = (float) str_replace(',', '.', $value[3]);
 		//$reduction = 0;
