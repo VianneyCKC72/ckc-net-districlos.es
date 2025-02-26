@@ -1,76 +1,281 @@
-// Définition des variables
 $border-color: #ccc;
 $select-padding: 10px;
 $icon-size: 24px;
 $icon-right-spacing: 10px;
 
-.PM_ASBlockOutputVertical .PM_ASResetSearch {
-  box-shadow: none;
-  @extend .btn-primary;
-  @extend .btn;
-}
-#PM_ASBlockOutput_1 {
-  background: $sand-light-color;
-  color: black;
-  font-weight: 600;
-  font-size: 13px;
-  line-height: 18px;
-  letter-spacing: 0;
-  padding: 30px 20px;
-  .card-block{
+#left-column {
+  .PM_ASBlockOutputVertical .PM_ASResetSearch {
+    box-shadow: none;
+    @extend .btn-primary;
+    @extend .btn;
+  }
+
+  #PM_ASBlockOutput_1 {
     background: $sand-light-color;
-    &::after {
-      display: block !important;
+    color: black;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 18px;
+    letter-spacing: 0;
+    padding: 40px 80px 30px 30px;
+    border-radius: 4px;
+
+    .card-block {
+      background: $sand-light-color;
+
+      &::after {
+        display: block !important;
+      }
+    }
+
+    .PM_ASCriterionsGroupList {
+      background: $sand-light-color;
+
+      .ui-widget-header {
+        border: none;
+        background: $primary-light-color;
+      }
+
+      .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+        background: $primary-color;
+        border: none;
+        border-radius: 50%;
+        height: 12px;
+        width: 12px;
+      }
+
+      .ui-widget-content {
+        border: none;
+        background: $sand-color;
+        border-radius: 10px;
+        height: 6px;
+      }
+
+    }
+
+    .PM_ASCriterionsGroupTitle {
+      span {
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 24px;
+        letter-spacing: 0;
+        margin-bottom: 15px;
+        float: left;
+        width: 100%;
+        margin-top: 10px;
+      }
     }
   }
 
-  .PM_ASCriterionsGroupList {
-    background: $sand-light-color;
+  .PM_ASCritRange {
+    max-width: 90%;
+    margin-left: 10px;
+    margin-right: auto;
   }
 
-  .PM_ASCriterionsGroupTitle {
-    span {
-      font-weight: 600;
-      font-size: 16px;
-      line-height: 24px;
-      letter-spacing: 0;
+  .PM_ASCriterionStepEnable {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+
+    &.has-select::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: $icon-right-spacing;
+      width: $icon-size;
+      height: $icon-size;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-chevron-down'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-size: contain;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    &:hover.has-select::after {
+      opacity: 0.7;
     }
   }
-}
 
-.PM_ASCriterionGroupSelect {
-  appearance: none; // Supprime la flèche native
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: white;
-  border: 1px solid $border-color;
-  padding: $select-padding ($icon-right-spacing + $icon-size) $select-padding $select-padding;
-  position: relative;
-  cursor: pointer;
-  width: 100%;
-}
+  .PM_ASCriterionGroupSelect {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: white;
+    border: 1px solid $border-color;
+    padding: $select-padding ($icon-right-spacing + $icon-size) $select-padding $select-padding;
+    cursor: pointer;
+    width: 100%;
+  }
 
-.PM_ASCriterionStepEnable {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-
-  &::after {
-    content: "";
+  .PM_ASCriterionCheckbox {
     position: absolute;
-    top: 50%;
-    right: $icon-right-spacing;
-    width: $icon-size;
-    height: $icon-size;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-chevron-down'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-size: contain;
-    transform: translateY(-50%);
-    pointer-events: none;
+    opacity: 0;
+    width: 18px;
+    height: 18px;
   }
 
-  // Effet au survol
-  &:hover::after {
-    opacity: 0.7;
+  .PM_ASLabelCheckbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    padding-left: 26px;
+    font-size: 14px;
+    user-select: none;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      width: 18px;
+      height: 18px;
+      background-color: #DCD6CD;
+      border-radius: 2px;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 50%;
+      width: 8px;
+      height: 4px;
+      border: solid white;
+      border-width: 0 0 2px 2px;
+      transform: rotate(-45deg) translateY(-50%);
+      opacity: 0; // Caché par défaut
+      transition: opacity 0.2s ease-in-out;
+    }
   }
+
+  .PM_ASCriterionCheckbox:checked + .PM_ASLabelCheckbox {
+    background:none;
+    &::before {
+      background-color: #008397; // Fond vert quand coché
+    }
+
+    &::after {
+      opacity: 1; // Affiche le check blanc
+    }
+  }
+
+  .PM_ASCriterionGroupLink {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-direction: column;
+  }
+
+  .PM_ASCriterionGroupLink li {
+    position: relative;
+  }
+
+  .PM_ASCriterionCheckbox {
+    position: absolute;
+    opacity: 0;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+  }
+
+  .PM_ASLabelCheckbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    position: relative;
+    font-size: 14px;
+    user-select: none;
+
+    .PM_ASCriterionColorSquare {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-block;
+      border: 1px solid #ccc;
+      transition: border 0.3s ease;
+    }
+  }
+
+  .PM_ASCriterionCheckbox:checked + .PM_ASLabelCheckbox {
+    font-weight: bold;
+    color: #008397;
+  }
+
+  .PM_ASCriterionCheckbox:checked + .PM_ASLabelCheckbox .PM_ASCriterionColorSquare {
+    border: 2px solid #008397;
+  }
+
+  .PM_ASCriterionGroupLink input[type="hidden"] {
+    display: none;
+  }
+
+  .PM_ASCriterionCheckbox:checked + .PM_ASLabelCheckbox {
+    border-color: #008397;
+    font-weight: bold;
+    color: #008397;
+
+    .PM_ASCriterionColorSquare {
+      border: 2px solid #008397;
+    }
+  }
+
+  .PM_ASCriterionLink {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    height: auto;
+    line-height: normal;
+
+    .PM_ASCriterionColorSquare {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-block;
+      border: 1px solid #ccc;
+      transition: border 0.3s ease;
+    }
+  }
+
+  .PM_ASCriterionLinkSelected {
+    border-color: $primary-light-color;
+    background-color: rgba(0, 131, 151, 0.1);
+    font-weight: bold;
+    color: $primary-light-color;
+  }
+
+  .PM_ASCriterionLinkSelected .PM_ASCriterionColorSquare {
+    border: 2px solid #008397;
+  }
+
+  .PM_ASCriterionGroupLink input[type="hidden"] {
+    display: none;
+  }
+
+  .PM_ASCriterionGroupLinkColor {
+    .PM_ASCriterionColorSquare {
+      width: 10px;
+      height: 10px;
+      border: none !important;
+    }
+
+    .PM_ASCriterionCheckbox:checked + .PM_ASLabelCheckbox .PM_ASCriterionColorSquare {
+      border: none !important;
+    }
+  }
+
 }
