@@ -1,0 +1,76 @@
+// Définition des variables
+$border-color: #ccc;
+$select-padding: 10px;
+$icon-size: 24px;
+$icon-right-spacing: 10px;
+
+.PM_ASBlockOutputVertical .PM_ASResetSearch {
+  box-shadow: none;
+  @extend .btn-primary;
+  @extend .btn;
+}
+#PM_ASBlockOutput_1 {
+  background: $sand-light-color;
+  color: black;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: 0;
+  padding: 30px 20px;
+  .card-block{
+    background: $sand-light-color;
+    &::after {
+      display: block !important;
+    }
+  }
+
+  .PM_ASCriterionsGroupList {
+    background: $sand-light-color;
+  }
+
+  .PM_ASCriterionsGroupTitle {
+    span {
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 24px;
+      letter-spacing: 0;
+    }
+  }
+}
+
+.PM_ASCriterionGroupSelect {
+  appearance: none; // Supprime la flèche native
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: white;
+  border: 1px solid $border-color;
+  padding: $select-padding ($icon-right-spacing + $icon-size) $select-padding $select-padding;
+  position: relative;
+  cursor: pointer;
+  width: 100%;
+}
+
+.PM_ASCriterionStepEnable {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: $icon-right-spacing;
+    width: $icon-size;
+    height: $icon-size;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-chevron-down'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  // Effet au survol
+  &:hover::after {
+    opacity: 0.7;
+  }
+}

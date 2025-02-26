@@ -25,7 +25,8 @@ $output-bourbon-deprecation-warnings: false !default;
 @import "modules/product-sheet.scss";
 @import "modules/cart.scss";
 @import "modules/checkout.scss";
-@import "modules/product-modal-delivery";
+@import "modules/product-modal-delivery.scss";
+@import "modules/facette.scss";
 
 @import "pages/homepage.scss";
 
