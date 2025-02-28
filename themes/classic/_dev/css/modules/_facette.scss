@@ -10,7 +10,7 @@ $icon-right-spacing: 10px;
     @extend .btn;
   }
 
-  #PM_ASBlockOutput_1 {
+  .PM_ASForm {
     background: $sand-light-color;
     color: black;
     font-weight: 500;
@@ -153,7 +153,7 @@ $icon-right-spacing: 10px;
   .PM_ASCriterionCheckbox:checked + .PM_ASLabelCheckbox {
     background:none;
     &::before {
-      background-color: #008397; // Fond vert quand coché
+      background-color: $primary-light-color; // Fond vert quand coché
     }
 
     &::after {
@@ -204,11 +204,11 @@ $icon-right-spacing: 10px;
 
   .PM_ASCriterionCheckbox:checked + .PM_ASLabelCheckbox {
     font-weight: bold;
-    color: #008397;
+    color: $primary-light-color;
   }
 
   .PM_ASCriterionCheckbox:checked + .PM_ASLabelCheckbox .PM_ASCriterionColorSquare {
-    border: 2px solid #008397;
+    border: 2px solid $primary-light-color;
   }
 
   .PM_ASCriterionGroupLink input[type="hidden"] {
@@ -216,12 +216,12 @@ $icon-right-spacing: 10px;
   }
 
   .PM_ASCriterionCheckbox:checked + .PM_ASLabelCheckbox {
-    border-color: #008397;
+    border-color: $primary-light-color;
     font-weight: bold;
-    color: #008397;
+    color: $primary-light-color;
 
     .PM_ASCriterionColorSquare {
-      border: 2px solid #008397;
+      border: 2px solid $primary-light-color;
     }
   }
 
@@ -259,7 +259,7 @@ $icon-right-spacing: 10px;
   }
 
   .PM_ASCriterionLinkSelected .PM_ASCriterionColorSquare {
-    border: 2px solid #008397;
+    border: 2px solid $primary-light-color;
   }
 
   .PM_ASCriterionGroupLink input[type="hidden"] {

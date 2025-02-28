@@ -1,0 +1,21 @@
+.stars__item {
+  background: white !important; /* Fond blanc */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: 50%; /* Si besoin */
+}
+
+.star-svg path {
+  fill: $secondary-color !important; /* Étoile jaune */
+}
+.rate-aggregate, .rate-aggregate__separator, .rate-aggregate__max {
+  display:none !important;
+}
+
+.rate-total, .stars__rating {
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 16px;
+}

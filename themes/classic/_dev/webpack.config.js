@@ -13,6 +13,7 @@ let config = {
             "./js/modules/swiper.js",
             "./js/pages/product.js",
             "./js/pages/homepage.js",
+            "./js/pages/category.js",
             "./css/theme.scss"
         ],
         error: ["./css/error.scss"],
