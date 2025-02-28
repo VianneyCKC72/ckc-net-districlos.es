@@ -1656,31 +1656,31 @@ fieldset[disabled] a.btn {
 }
 
 .btn-outline-primary {
-  color: $secondary-color;
+  color: $primary-color;
   background-image: none;
   background-color: transparent;
-  border-color: $secondary-color;
+  border: 1px solid $primary-color !important;
 }
 
 .btn-outline-primary:hover {
   color: #fff;
-  background-color: $secondary-color;
-  border-color: $secondary-color;
+  background-color: $primary-color;
+  border-color: $primary-color;
 }
 
 .btn-outline-primary.focus,
 .btn-outline-primary:focus {
   color: #fff;
-  background-color: $secondary-color;
-  border-color: $secondary-color;
+  background-color: $primary-color;
+  border-color: $primary-color;
 }
 
 .btn-outline-primary.active,
 .btn-outline-primary:active,
 .open > .btn-outline-primary.dropdown-toggle {
   color: #fff;
-  background-color: $secondary-color;
-  border-color: $secondary-color;
+  background-color: $primary-color;
+  border-color: $primary-color;
 }
 
 .btn-outline-primary.active.focus,
@@ -3408,10 +3408,21 @@ a.tag:hover {
 }
 
 .alert {
-  padding: 0.75rem 1.25rem;
-  margin-bottom: 1rem;
-  border: 1px solid transparent;
-  border-radius: 0;
+  padding: 1rem 1.25rem 0.75rem 1.25rem;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.2;
+  margin-bottom: 0;
+  border-width: 2px;
+}
+
+.tiny-alert {
+  font-size: 14px;
+  &.alert-danger {
+    color: $red;
+    border: none;
+    background-color: transparent;
+  }
 }
 
 .alert-heading {
@@ -3471,9 +3482,9 @@ a.tag:hover {
 }
 
 .alert-danger {
-  background-color: #f2dede;
-  border-color: #ebcccc;
-  color: #a94442;
+  background-color: rgba($red, 0.1);
+  border-color: rgba($red, 0.3);
+  color: $red;
 }
 
 .alert-danger hr {
@@ -4970,10 +4981,8 @@ textarea:active:-moz-placeholder {
 
 .form-control-comment {
   display: block;
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
   color: rgba($black, 0.5);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .form-control-submit.disabled {
@@ -4983,11 +4992,7 @@ textarea:active:-moz-placeholder {
 
 .form-group.has-error input,
 .form-group.has-error select {
-  outline: 0.1875rem solid #ff4c4c;
-}
-
-.form-group.has-error .help-block {
-  color: #ff4c4c;
+  outline: 1px solid #ff4c4c;
 }
 
 #mobile_top_menu_wrapper .top-menu .sub-menu ul[data-depth="1"],
@@ -5117,13 +5122,6 @@ form section .form-informations-title {
   font-size: 0.875rem;
 }
 
-.done {
-  display: inline-block;
-  padding: 0 0.8125rem;
-  margin-right: 1.563rem;
-  color: #4cbb6c;
-}
-
 .thumb-mask > .mask {
   position: relative;
   width: 3.438rem;
@@ -5167,6 +5165,9 @@ form section .form-informations-title {
 
 .help-block {
   margin-top: 0.625rem;
+  ul {
+    margin-bottom: 0;
+  }
 }
 
 .btn.disabled,
@@ -5217,10 +5218,6 @@ form section .form-informations-title {
 .btn-tertiary-outline:hover {
   color: #bbcdd2;
   border-color: #bbcdd2;
-}
-
-.alert {
-  font-size: 0.8125rem;
 }
 
 .nav-item .nav-link,
@@ -5379,8 +5376,7 @@ body#checkout section.checkout-step small {
 }
 
 .page-not-found .search-widget form,
-.search-widget,
-body#checkout section.checkout-step.-reachable.-complete h1 .done {
+.search-widget {
   display: inline-block;
 }
 
@@ -10664,11 +10660,6 @@ body#checkout section.checkout-step .radio-field label {
 
   #order-items .h3._desktop-title {
     display: none;
-  }
-
-  .done {
-    padding: 0;
-    margin-right: 0.625rem;
   }
 
   body#checkout section.checkout-step .address-item {

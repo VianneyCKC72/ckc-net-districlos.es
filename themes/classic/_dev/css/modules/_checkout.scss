@@ -1,8 +1,131 @@
-.checkout {
+body#checkout section.checkout-step .content,
+body#checkout section.checkout-step .done,
+body#checkout section.checkout-step .step-edit {
+  display: none;
+}
+body#checkout section.checkout-step.-current .content {
+  display: block;
+}
+body#checkout section.checkout-step.-current.-reachable.-complete .done,
+body#checkout section.checkout-step.-current.-reachable.-complete .step-edit {
+  display: none;
+}
+body#checkout section.checkout-step.-current.-reachable.-complete .step-number {
+  display: inline-block;
+}
+body#checkout section.checkout-step.-current.-reachable.-complete .content {
+  display: block;
+}
+body#checkout section.checkout-step.-reachable.-complete h1 .done {
+  display: inline-block;
+  color: $secondary-color;
+}
+body#checkout section.checkout-step.-reachable.-complete h1 .step-number {
+  display: none;
+}
+body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
+  display: block;
+  float: right;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: $black;
+  &:hover {
+    color: $secondary-color;
+  }
+}
+
+#checkout {
   margin-top: 5rem;
 
   .checkout-login-form {
-    
+  }
+
+  .cart-grid-body {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+  }
+
+  .checkout-step {
+    &:not(.js-current-step) {
+      background-color: $sand-light-color;
+      padding: 20px;
+      border-radius: 4px;
+    }
+  }
+
+  .js-address-form {
+    .address-selector.js-address-selector {
+      display: flex;
+      flex-direction: column;
+      row-gap: 12px;
+      .address-item {
+        border: 1px solid rgba($sand-light-color, 0.3);
+        background-color: $sand-light-color;
+        border-radius: 4px;
+        padding: 20px;
+        .address {
+          margin-top: 6px;
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+      .address-footer {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        column-gap: 12px;
+        row-gap: 6px;
+        .delete-address,
+        .edit-address {
+          display: flex;
+          column-gap: 6px;
+          align-items: center;
+          color: $black;
+          font-size: 14px;
+          font-weight: 500;
+          padding: 4px 8px;
+          border-radius: 4px;
+          background-color: rgba($primary-color, 0.1);
+          border: 1px solid rgba($primary-color, 0.3);
+          transition: all 0.3s;
+          &:hover {
+            background-color: rgba($primary-color, 0.3);
+            border-color: rgba($primary-color, 0.6);
+          }
+        }
+      }
+    }
+    .add-address {
+      margin-top: 16px;
+      margin-bottom: 0;
+      a {
+        width: fit-content;
+        display: flex;
+        align-items: center;
+        color: $black;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 6px 12px;
+        border-radius: 4px;
+        background-color: rgba($secondary-color, 0.1);
+        border: 1px solid rgba($secondary-color, 0.3);
+        transition: all 0.3s;
+        &:hover {
+          background-color: rgba($secondary-color, 0.3);
+          border-color: rgba($secondary-color, 0.6);
+        }
+      }
+    }
+    .form-footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: flex-end;
+      column-gap: 12px;
+      row-gap: 6px;
+    }
   }
 }
 
