@@ -19,5 +19,9 @@
             </g>
         </svg>
     </span>
-    <span class="main_menu_label"><span class="hidden-condition">Nos </span>produits</span>
+    <span class="main_menu_label">
+        <span class="hidden-condition">
+            Nos
+        </span>produits
+    </span>
 </div>

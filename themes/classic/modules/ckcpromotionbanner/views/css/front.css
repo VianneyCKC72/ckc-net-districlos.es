@@ -19,6 +19,9 @@
         padding-right: 15px;
         width: 100%;
     }
+    @media only screen and (max-width: 996px) {
+        justify-content: space-around;
+    }
 }
 .hide_alert{
     display: none;
@@ -32,6 +35,13 @@
     }
     @media only screen and (max-width: 1180px) {
         font-size: 11px;
+    }
+    @media only screen and (max-width: 767px) {
+        font-size: 11px;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        width: 100%;
     }
 }
 .block-left-banner::after {
@@ -59,6 +69,9 @@
     @media only screen and (max-width: 1180px) {
         font-size: 12px;
     }
+    @media only screen and (max-width: 996px) {
+        display:none;
+    }
 }
 .block-question {
     display: flex;
@@ -74,6 +87,9 @@
     }
     @media only screen and (max-width: 1180px) {
         font-size: 12px;
+    }
+    @media only screen and (max-width: 767px) {
+        display:none;
     }
 }
 .button_barrepromo{

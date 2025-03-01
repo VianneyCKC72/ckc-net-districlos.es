@@ -39,6 +39,19 @@
     background: #F8F4ED url(/themes/classic/assets/img/ico-loupe.png) 160px center no-repeat;
     font-size: 11px;
   }
+
+  @media only screen and (max-width: 767px) {
+    width: 420px;
+    padding: 10px 10px 10px 25px;
+    background: #F8F4ED url(/themes/classic/assets/img/ico-loupe.png) 370px center no-repeat;
+    font-size: 14px;
+  }
+  @media only screen and (max-width: 460px) {
+    width: 280px;
+    padding: 10px 10px 10px 25px;
+    background: #F8F4ED url(/themes/classic/assets/img/ico-loupe.png) 220px center no-repeat;
+    font-size: 14px;
+  }
 }
 
 .ui-autocomplete.searchbar-autocomplete {

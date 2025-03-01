@@ -1,85 +1,64 @@
-{**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/AFL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
- *}
-{block name='header_banner'}
-    <div class="header-banner">
-        {hook h='displayBanner'}
-    </div>
-{/block}
-
 {block name='header_top'}
     <div class="header-top">
-            <div class="row-header">
-                <div class="hidden-sm-down" id="_desktop_logo">
-                    {if $shop.logo_details}
-                        {if $page.page_name == 'index'}
-                            <h1>
-                                {renderLogo}
-                            </h1>
-                        {else}
-                            {renderLogo}
-                        {/if}
-                    {/if}
-                </div>
+        <div class="row-header d-flex align-items-center justify-content-between">
 
-                {block name='header_nav'}
-                    <nav class="header-nav">
-                        <div class="displayMenu">
-                            {include file='_partials/btn-menu.tpl'}
-                            <a class="link-danger" href="#">Destockage</a>
-                        </div>
-
-                        <div class="displayTop">
-                            {hook h='displayTop'}
-                            <a href="#" class="btn btn-primary btn-configurateur ">
-                                <div class="text-btn">
-                                    <span class="small-text">
-                                        Configurez<br>
-                                    </span>
-                                    <span class="medium-text">votre clôture</span>
-                                </div>
-                                <img width="29px" height="26px" alt="cloture" src="/img/ico-cloture.png">
-                            </a>
-                        </div>
-                        {*                        <div class="displayNav1">*}
-                        {*                            {hook h='displayNav1'}*}
-                        {*                        </div>*}
-                        <div class="displayNav2">
-                            {hook h='displayNav2'}
-                        </div>
-                    </nav>
-                {/block}
+            <!-- Logo Desktop (Visible seulement à partir de md) -->
+            <div class="d-none d-md-block">
+                {if $shop.logo_details}
+                    {renderLogo}
+                {/if}
             </div>
-            <div id="mobile_top_menu_wrapper" class="row hidden-md-up" style="display:none;">
-                <div class="js-top-menu mobile" id="_mobile_top_menu"></div>
-                <div class="js-top-menu-bottom">
-                    <div id="_mobile_currency_selector"></div>
-                    <div id="_mobile_language_selector"></div>
-                    <div id="_mobile_contact_link"></div>
-                </div>
+
+            <!-- Bouton menu (Visible uniquement sur Desktop) -->
+            <div class="menu-button d-none d-md-block">
+                {include file='_partials/btn-menu.tpl'}
+            </div>
+
+            <!-- Logo Mobile (Visible seulement sur xs et sm) -->
+            <div class="d-block d-md-none">
+                <img class="logo img-fluid" src="/img/logo-mobile.png" alt="Districlos" width="42" height="42">
+            </div>
+
+            {block name='header_nav'}
+                <nav class="header-nav d-flex align-items-center">
+                    <div class="displayMenu">
+                        <a class="link-danger" href="#">Destockage</a>
+                    </div>
+
+                    <div class="displayTop">
+                        {hook h='displayTop'}
+                        <a href="#" class="btn btn-primary btn-configurateur">
+                            <div class="text-btn">
+                                <span class="small-text">
+                                    Configurez<br>
+                                </span>
+                                <span class="medium-text">votre clôture</span>
+                            </div>
+                            <img width="29px" height="26px" alt="cloture" src="/img/ico-cloture.png">
+                        </a>
+                    </div>
+
+                    <div class="displayNav2">
+                        {hook h='displayNav2'}
+                    </div>
+                </nav>
+            {/block}
+
+            <!-- Bouton menu (Visible uniquement sur Mobile) -->
+            <div class="menu-button d-md-none">
+                {include file='_partials/btn-menu.tpl'}
             </div>
         </div>
+
+        <div id="mobile_top_menu_wrapper" class="row hidden-md-up" style="display:none;">
+            <div class="js-top-menu mobile" id="_mobile_top_menu"></div>
+            <div class="js-top-menu-bottom">
+                <div id="_mobile_currency_selector"></div>
+                <div id="_mobile_language_selector"></div>
+                <div id="_mobile_contact_link"></div>
+            </div>
+        </div>
+    </div>
 
     {hook h='displayNavFullWidth'}
 {/block}

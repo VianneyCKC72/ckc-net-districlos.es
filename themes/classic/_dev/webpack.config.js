@@ -12,6 +12,7 @@ let config = {
             "./js/modules/facet.js",
             "./js/modules/swiper.js",
             "./js/pages/product.js",
+            "./js/composents/header.js",
             "./js/pages/homepage.js",
             "./js/pages/category.js",
             "./css/theme.scss"
