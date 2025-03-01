@@ -81,79 +81,64 @@ $(function () {
                     $('body').removeClass('disable-sticky');
             });
         }
-    $(document).ready(function () {
-        function adjustMenuPosition() {
-            const $menu = $('.mm_modal_filter, ul.mm_menus_ul');
-            const windowWidth = $(window).width();
-            let topOffset, leftOffset;
+    $(function () {
 
-            if (windowWidth < 768) {
-                topOffset = 0;
-                leftOffset = '0'; // Pleine largeur sur mobile
-            } else if (windowWidth <= 991) {
-                topOffset = 108;
-                leftOffset = 'calc(50% - 380px)'; // Ajusté pour écrans moyens
-            } else if (windowWidth <= 1200) {
-                topOffset = 150;
-                leftOffset = 0; // Ajustement dynamique
-            } else if (windowWidth <= 1520) {
-                topOffset = 200;
-                leftOffset = '0'; // Si l'écran est plus petit que 1520px, aligner à gauche
-            } else {
-                topOffset = 200;
-                leftOffset = 'calc(50% - 760px)'; // Centré sur un conteneur de 1520px
+        function adjustMenuPosition() {
+            // Vérifier si le menu doit être ajusté
+            if ($('.ets_mm_megamenu').hasClass('scroll_heading') || !$('.ets_mm_megamenu.sticky_enabled').length) {
+                return;
             }
 
-            // Appliquer les nouveaux styles
-            $menu.css({
+            const windowWidth = $(window).width();
+            const scrollTop = $(window).scrollTop();
+            let topOffset, leftOffset;
+
+            // Définition de topOffset selon la largeur de l'écran
+            if (windowWidth < 768) {
+                topOffset = 0;
+            } else if (windowWidth <= 991) {
+                topOffset = 108;
+            } else if (windowWidth <= 1200) {
+                topOffset = 200;
+            } else {
+                topOffset = 150;
+            }
+
+            // Ajustement dynamique en fonction du scroll
+            if (scrollTop > 0 && scrollTop < 140.5) {
+                topOffset -= scrollTop;
+            } else if (scrollTop === 0) {
+                if (windowWidth < 768) {
+                    topOffset = 0;
+                } else if (windowWidth <= 991) {
+                    topOffset = 108;
+                } else if (windowWidth <= 1200) {
+                    topOffset = 200;
+                } else {
+                    topOffset = 150;
+                }
+            }
+
+            // Gestion de la position gauche (left) pour éviter le décalage du menu
+            if (windowWidth < 1520) {
+                leftOffset = '0'; // Aligner à gauche si l'écran est plus petit que 1520px
+            } else {
+                leftOffset = 'calc(50% - 760px)'; // Centrer sur un conteneur de 1520px
+            }
+
+            // Application des styles
+            $('.mm_modal_filter, ul.mm_menus_ul').css({
                 'top': `${topOffset}px`,
                 'left': leftOffset,
-                'width': windowWidth < 1520 ? '100%' : '1520px', // Largeur max à 1520px ou 100% si plus petit
-                'transform': windowWidth < 768 ? 'none' : 'translateX(0)'
+                'width': windowWidth < 1520 ? '100%' : '1520px' // Adapter la largeur
             });
         }
 
-        function toggleMenu() {
-            const $menuWrapper = $('.mm_menus_ul');
-            const $body = $('body');
-            const $menuButton = $('.ybc-menu-toggle');
-
-            if ($menuWrapper.hasClass('active')) {
-                $menuWrapper.removeClass('active');
-                $menuButton.removeClass('opened').addClass('closed');
-                $body.removeClass('menu-opened');
-                $('.mm_modal_filter').addClass('d-none'); // Cacher l'overlay
-            } else {
-                $menuWrapper.addClass('active');
-                $menuButton.removeClass('closed').addClass('opened');
-                $body.addClass('menu-opened');
-                $('.mm_modal_filter').removeClass('d-none'); // Montrer l'overlay
-            }
-        }
-
-        // Gérer l'ouverture et la fermeture du menu avec un seul clic
-        $('.ybc-menu-toggle .ybc-menu-button-toggle_icon, .ybc-menu-toggle .main_menu_label, .ybc-menu-toggle div.mm_modal_filter').on('click', function () {
-            toggleMenu();
-        });
-
-        // Fermer le menu en cliquant en dehors
-        $(document).mouseup(function (e) {
-            if (!$('.mm_menus_ul').is(e.target) && $('.mm_menus_ul').has(e.target).length === 0) {
-                toggleMenu();
-            }
-        });
-
-        // Fermer le menu en appuyant sur la touche "Échap"
-        $(document).keyup(function (e) {
-            if (e.key === "Escape") {
-                toggleMenu();
-            }
-        });
-
-        // Appliquer l'ajustement du menu au chargement et lors du redimensionnement
+        // Appliquer l'ajustement au chargement, au défilement et au redimensionnement
+        $(window).on('scroll resize', adjustMenuPosition);
         adjustMenuPosition();
-        $(window).on('resize', adjustMenuPosition);
     });
+
 
     $(window).load(function () {
             if ($('.ets_mn_submenu_full_height').length > 0) {
