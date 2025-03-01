@@ -81,7 +81,7 @@
           <div class="order-options">
             <div id="delivery">
               <label for="delivery_message">{l s='If you would like to add a comment about your order, please write it in the field below.' d='Shop.Theme.Checkout'}</label>
-              <textarea rows="2" cols="120" id="delivery_message" name="delivery_message">{$delivery_message}</textarea>
+              <textarea rows="3" id="delivery_message" name="delivery_message">{$delivery_message}</textarea>
             </div>
 
             {if $recyclablePackAllowed}
@@ -101,7 +101,7 @@
 
               <div id="gift" class="collapse{if $gift.isGift} in{/if}">
                 <label for="gift_message">{l s='If you\'d like, you can add a note to the gift:' d='Shop.Theme.Checkout'}</label>
-                <textarea rows="2" cols="120" id="gift_message" name="gift_message">{$gift.message}</textarea>
+                <textarea rows="3" id="gift_message" name="gift_message">{$gift.message}</textarea>
               </div>
             {/if}
 
@@ -112,7 +112,7 @@
         </button>
       </form>
     {else}
-      <p class="alert alert-danger">{l s='Unfortunately, there are no carriers available for your delivery address.' d='Shop.Theme.Checkout'}</p>
+      <p class="alert alert-danger mt-3">{l s='Unfortunately, there are no carriers available for your delivery address.' d='Shop.Theme.Checkout'}</p>
     {/if}
   </div>
 

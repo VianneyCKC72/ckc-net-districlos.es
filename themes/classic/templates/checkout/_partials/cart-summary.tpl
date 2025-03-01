@@ -22,20 +22,21 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
-<section id="js-checkout-summary" class="card js-cart" data-refresh-url="{$urls.pages.cart}?ajax=1&action=refresh">
-  <div class="card-block">
-    {block name='hook_checkout_summary_top'}
-      {include file='checkout/_partials/cart-summary-top.tpl' cart=$cart}
-    {/block}
+<section id="js-checkout-summary" class="js-cart cart-summary"
+  data-refresh-url="{$urls.pages.cart}?ajax=1&action=refresh">
 
-    {block name='cart_summary_products'}
-      {include file='checkout/_partials/cart-summary-products.tpl' cart=$cart}
-    {/block}
+  {block name='hook_checkout_summary_top'}
+    {include file='checkout/_partials/cart-summary-top.tpl' cart=$cart}
+  {/block}
 
-    {block name='cart_summary_subtotals'}
-      {include file='checkout/_partials/cart-summary-subtotals.tpl' cart=$cart}
-    {/block}
-  </div>
+  {block name='cart_summary_products'}
+    {include file='checkout/_partials/cart-summary-products.tpl' cart=$cart}
+  {/block}
+
+  {block name='cart_summary_subtotals'}
+    {include file='checkout/_partials/cart-summary-subtotals.tpl' cart=$cart}
+  {/block}
+
 
   {block name='cart_summary_totals'}
     {include file='checkout/_partials/cart-summary-totals.tpl' cart=$cart}
