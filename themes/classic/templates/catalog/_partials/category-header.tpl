@@ -25,7 +25,16 @@
 <div id="js-product-list-header">
     {if $listing.pagination.items_shown_from == 1}
         <div class="block-category card card-block">
-            <h1 class="h1">{$category.name}</h1>
+            <div class="head-top-category">
+                <h1 class="h1">{$category.name}</h1>
+                <div class="has-discount d-flex align-items-center">
+                    <div class="tag-discount mr-2">% SOLDES</div>
+                    <p class="small mb-0">100 € offerts par tranche de 1 000 € d’achat &amp; 150 € offerts par tranche
+                        de 3 000 €
+                        d’achat
+                    </p>
+                </div>
+            </div>
             <div class="block-category-inner">
                 <div id="category-description">
                     {if $category.description}

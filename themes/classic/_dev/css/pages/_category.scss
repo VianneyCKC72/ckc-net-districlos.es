@@ -72,6 +72,13 @@
   }
 }
 
+.head-top-category {
+  display: flex;
+  justify-content: space-between;
+  /* align-items: flex-start; */
+  margin-right: 10px;
+  margin-bottom: 20px;
+}
 .elementor-element-cfe14d2 .elementor-element-populated {
   padding: 0 !important;
 }

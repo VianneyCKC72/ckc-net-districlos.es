@@ -42,6 +42,7 @@
             <h1 id="js-product-list-header" class="h2">{$listing.label}</h1>
         {/block}
 
+
         {*    {block name='subcategory_list'}*}
         {*      {if isset($subcategories) && $subcategories|@count > 0}*}
         {*        {include file='catalog/_partials/subcategories.tpl' subcategories=$subcategories}*}
