@@ -27,6 +27,18 @@
   color: #026473;
   font-size: 12px;
   height: 50px;
+  @media only screen and (max-width: 1620px) {
+    width: 260px;
+    padding: 10px 10px 10px 25px;
+    background: #F8F4ED url(/themes/classic/assets/img/ico-loupe.png) 226px center no-repeat;
+    font-size: 11px;
+  }
+  @media only screen and (max-width: 1320px) {
+    width: 200px;
+    padding: 10px 10px 10px 25px;
+    background: #F8F4ED url(/themes/classic/assets/img/ico-loupe.png) 160px center no-repeat;
+    font-size: 11px;
+  }
 }
 
 .ui-autocomplete.searchbar-autocomplete {
@@ -69,6 +81,18 @@
 }
 
 @media only screen and (min-width: 992px) {
+  #search_widget {
+    min-width: 220px;
+  }
+}
+
+@media only screen and (min-width: 1240px) {
+  #search_widget {
+    min-width: 260px;
+  }
+}
+
+@media only screen and (min-width: 1620px) {
   #search_widget {
     min-width: 320px;
   }

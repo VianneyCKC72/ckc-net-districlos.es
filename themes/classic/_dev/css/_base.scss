@@ -8456,6 +8456,15 @@ body#checkout section.checkout-step .radio-field label {
   padding-bottom: 70px;
   max-width: 1520px;
   margin: 0 auto;
+  @media only screen and (max-width: 1620px) {
+    padding-bottom: 50px;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  @media only screen and (max-width: 1068px) {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 }
 
 #header .header-top > .container {
