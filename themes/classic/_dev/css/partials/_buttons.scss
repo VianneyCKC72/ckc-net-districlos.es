@@ -82,6 +82,10 @@
   color: $white;
   background-color: $primary-color;
   border-radius: 10px;
+  @media only screen and (max-width: 1380px) {
+    padding: 8px;
+    gap: 8px;
+  }
 }
 .btn-secondary-espace-pro {
   background-color: $pro-color;

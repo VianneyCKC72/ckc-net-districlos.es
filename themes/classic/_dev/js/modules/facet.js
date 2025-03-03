@@ -48,6 +48,27 @@ function updateFacets() {
 // Appliquer au chargement de la page
 $(document).ready(function () {
     updateFacets();
+
+
+    if ($(window).width() < 768) {
+        // Vérifier que le toggle n'existe pas déjà (éviter les doublons)
+        if ($('.filter-toggle').length === 0) {
+            let filterTitle = $('<div class="filter-toggle"><span>Filtres</span> <span class="chevron"></span></div>');
+
+            // Insérer le titre avant la card-header
+            $('#PM_ASBlock_1 .card-header').before(filterTitle);
+
+            // Cacher les filtres par défaut
+            $('#PM_ASBlock_1 .card-block').hide();
+        }
+
+        // Afficher le toggle et gérer le clic
+        $('.filter-toggle').show().click(function () {
+            $('#PM_ASBlock_1 .card-block').slideToggle();
+            $('.chevron').toggleClass('open');
+        });
+    }
+
 });
 
 // Re-appliquer après chaque mise à jour AJAX

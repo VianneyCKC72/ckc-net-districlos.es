@@ -19,7 +19,10 @@ $icon-right-spacing: 10px;
     letter-spacing: 0;
     padding: 40px 80px 30px 30px;
     border-radius: 4px;
-
+    @media (max-width: 1490px) {
+      padding: 40px 15px 30px 15px;
+      font-size: 12px;
+    }
     .card-block {
       background: $sand-light-color;
 
@@ -114,6 +117,13 @@ $icon-right-spacing: 10px;
     width: 18px;
     height: 18px;
   }
+  @media (max-width: 1290px) {
+    .elementor-12010000 .elementor-element.elementor-element-8e5dd50,
+    .elementor-12010000 .elementor-element.elementor-element-6cb0601:not(.elementor-motion-effects-element-type-background), .elementor-12010000 .elementor-element.elementor-element-6cb0601 > .elementor-motion-effects-container > .elementor-motion-effects-layer {
+      padding: 0;
+    }
+
+  }
 
   .PM_ASLabelCheckbox {
     display: flex;
@@ -123,6 +133,12 @@ $icon-right-spacing: 10px;
     padding-left: 26px;
     font-size: 14px;
     user-select: none;
+    @media (max-width: 1490px) {
+      font-size: 13px;
+    }
+    @media (max-width: 1290px) {
+      font-size: 12px;
+    }
 
     &::before {
       content: "";

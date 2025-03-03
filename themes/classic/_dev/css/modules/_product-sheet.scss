@@ -5,13 +5,15 @@
   border-radius: 40px;
   font-size: 10px;
   font-weight: 700;
+  @media (max-width: 768px) {
+    min-width: 85px;
+  }
 }
 .tag-web-price {
   position: absolute;
   top: 10px;
   right: 10px;
   z-index: 10;
-  width: 65px;
   width: 65px;
 }
 .product-prices {

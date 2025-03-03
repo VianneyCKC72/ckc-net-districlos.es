@@ -21,9 +21,10 @@ $(document).ready(function () {
         const productsContainer = $('.products');
         const productDescriptions = $('.product_descr'); // Sélection de la description
 
+        var classgrid = "col-xs-6 col-md-6 col-lg-4 col-sm-6 col-xl-3";
         if (isListView) {
             setCookie("show_list", "true", 365);
-            productList.removeClass('col-xs-6 col-md-4 col-lg-3 col-sm-6 col-xl-3')
+            productList.removeClass(classgrid)
                 .addClass('list_view col-12');
             productDescriptions.show(); // Affiche la description des produits en mode liste
             showListBtn.addClass('active');
@@ -32,7 +33,7 @@ $(document).ready(function () {
         } else {
             setCookie("show_list", "", -1);
             productList.removeClass('list_view col-12')
-                .addClass('col-xs-6 col-md-4 col-lg-3 col-sm-6 col-xl-3');
+                .addClass(classgrid);
             productDescriptions.hide(); // Cache la description des produits en mode grille
             showGridBtn.addClass('active');
             showListBtn.removeClass('active');
