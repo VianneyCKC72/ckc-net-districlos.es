@@ -57,4 +57,17 @@ $(document).ready(function () {
     } else {
         toggleView(false);
     }
+
+
+    var content = $('#description-content');
+    var button = $('#toggle-btn');
+
+    if (content.length && content[0].scrollHeight <= 100) {
+        button.hide(); // Cache le bouton si le texte est déjà court
+    }
+
+    button.on('click', function() {
+        content.toggleClass('expanded');
+        button.text(content.hasClass('expanded') ? "Voir moins" : "En savoir plus");
+    });
 });
