@@ -29,11 +29,17 @@
             {/if}
             <div>
                 {if empty($block['description'])}
-                    <p>{$block['title']}</p>
+                    <p>{$block['title']|replace:'__':'<br>' nofilter}</p>
                 {else}
-                    <p>{$block['title']}</p>
-                    <p>{$block['description'] nofilter}</p>
+                    <p>{$block['title']}
+{*                    <p>{$block['description'] nofilter}</p>*}
+                    {if $block['description']== '__picto3x4x10x12x'}
+                        <br>
+                        <img class="paiement_plusieurs_fois" height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="Payer en plusieurs fois">
+                    {/if}
+                    </p>
                 {/if}
+
             </div>
         </div>
     {/foreach}

@@ -23,10 +23,21 @@
  * International Registered Trademark & Property of PrestaShop SA
  *}
 
+<!-- Bouton Loupe (Affiché seulement sur mobile < 767px) -->
+<div id="search_icon" class="d-block d-md-none">
+    <img src="/img/loupe.png" width="23px" height="23px" alt="recherche">
+</div>
+
+<!-- Barre de Recherche (Visible en permanence sur desktop, cachée sur mobile sauf ouverture) -->
 <div id="search_widget" class="search-widgets" data-search-controller-url="{$search_controller_url}">
     <form method="get" action="{$search_controller_url}">
-            <input type="hidden" name="controller" value="search">
-            <input type="text" name="s" value="{$search_string}" placeholder="Je recherche..."
-                   aria-label="{l s='Search' d='Shop.Theme.Catalog'}">
+        <input type="hidden" name="controller" value="search">
+        <input type="text" name="s" value="{$search_string}" placeholder="Je recherche..."
+               aria-label="{l s='Search' d='Shop.Theme.Catalog'}">
+        <!-- Bouton de fermeture pour mobile uniquement -->
+        <i class="material-icons clear d-md-none" aria-hidden="true" id="close_search">clear</i>
     </form>
 </div>
+
+<!-- Overlay pour bloquer le scroll sur mobile uniquement -->
+<div id="overlay" class="overlay d-none d-md-none"></div>

@@ -3,11 +3,25 @@
     font-size: 14px;
     /*width: 1520px;*/
     margin: 0 auto;
+    border-radius: 0;
+    border:none;
+    @media only screen and (max-width: 1620px) {
+        padding-left: 0;
+        padding-right: 0;
+    }
 }
 #ckcpromobarre .container{
     display:flex;
     align-items: center;
     justify-content: space-between;
+    @media only screen and (max-width: 1420px) {
+        padding-left: 15px;
+        padding-right: 15px;
+        width: 100%;
+    }
+    @media only screen and (max-width: 996px) {
+        justify-content: space-around;
+    }
 }
 .hide_alert{
     display: none;
@@ -16,10 +30,26 @@
     font-size: 13px;
     line-height: 19px;
     text-transform: uppercase;
+    @media only screen and (max-width: 1620px) {
+        font-size: 12px;
+    }
+    @media only screen and (max-width: 1180px) {
+        font-size: 11px;
+    }
+    @media only screen and (max-width: 767px) {
+        font-size: 11px;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        width: 100%;
+    }
 }
 .block-left-banner::after {
     padding-left: 10px;
     content: "→" !important;
+    @media only screen and (max-width: 1180px) {
+        display:none;
+    }
 }
 
 .block-left-banner strong {
@@ -30,11 +60,37 @@
     align-items: center;
     gap: 6px;
     justify-content: flex-end;
+    @media only screen and (max-width: 1620px) {
+        font-size: 13px;
+        img {
+            margin-top: -2px;
+        }
+    }
+    @media only screen and (max-width: 1180px) {
+        font-size: 12px;
+    }
+    @media only screen and (max-width: 996px) {
+        display:none;
+    }
 }
 .block-question {
     display: flex;
     gap: 6px;
     align-items: center;
+    @media only screen and (max-width: 1620px) {
+        font-size: 13px;
+        gap: 4px;
+        img {
+            width: 18px;
+            height: auto;
+        }
+    }
+    @media only screen and (max-width: 1180px) {
+        font-size: 12px;
+    }
+    @media only screen and (max-width: 767px) {
+        display:none;
+    }
 }
 .button_barrepromo{
     display: flex;

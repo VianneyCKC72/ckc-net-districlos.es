@@ -862,10 +862,40 @@ span.mm_alert.alert-warning:before {
     gap: 10px;
     justify-content: flex-start;
     align-items: center;
+    @media only screen and (max-width: 1620px) {
+        font-size: 15px;
+        gap: 5px;
+        width: 160px;
+    }
+    @media only screen and (max-width: 1200px) {
+        width: 120px;
+    }
+    @media only screen and (max-width: 992px) {
+        width: 130px;
+    }
+    @media only screen and (max-width: 860px) {
+        width: 110px;
+    }
+    @media only screen and (max-width: 860px) {
+        width: 110px;
+    }
+    @media only screen and (max-width: 830px) {
+        flex-direction: column;
+        font-size: 9px;
+        gap: 0px;
+    }
+    @media only screen and (max-width: 767px) {
+        width: 70px;
+    }
+
 }
 .ybc-menu-toggle svg {
     width: 25px;
     margin: auto 0;
+    @media only screen and (max-width: 767px) {
+        width: 40px;
+        margin: -4px 0 auto;
+    }
 }
 .ybc-menu-toggle svg .top-line,
 .ybc-menu-toggle svg .bottom-line,

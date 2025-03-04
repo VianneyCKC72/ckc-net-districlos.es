@@ -25,21 +25,28 @@
 <div id="js-product-list-header">
     {if $listing.pagination.items_shown_from == 1}
         <div class="block-category card card-block">
-            <h1 class="h1">{$category.name}</h1>
-            <div class="block-category-inner">
-                {if $category.description}
-                    <div id="category-description" class="text-muted">{$category.description nofilter}</div>
-                {/if}
-                {if !empty($category.image.large.url)}
-                    <div class="category-cover">
-                        <picture>
-                            {if !empty($category.image.large.sources.avif)}<source srcset="{$category.image.large.sources.avif}" type="image/avif">{/if}
-                            {if !empty($category.image.large.sources.webp)}<source srcset="{$category.image.large.sources.webp}" type="image/webp">{/if}
-                            <img src="{$category.image.large.url}" alt="{if !empty($category.image.legend)}{$category.image.legend}{else}{$category.name}{/if}" loading="lazy" width="141" height="180">
-                        </picture>
-                    </div>
-                {/if}
+            <div class="head-top-category">
+                <h1 class="h1">{$category.name}</h1>
+                <div class="has-discount d-flex align-items-center">
+                    <div class="tag-discount mr-2">% SOLDES</div>
+                    <p class="small mb-0">100 € offerts par tranche de 1 000 € d’achat &amp; 150 € offerts par tranche
+                        de 3 000 €
+                        d’achat
+                    </p>
+                </div>
             </div>
+            <div class="block-category-inner">
+                <div id="category-description">
+                    <div class="category-description" id="description-content">
+                        {if $category.description}
+                            {$category.description nofilter}
+                        {/if}
+                    </div>
+                    <button class="read-more-btn btn btn-primary" id="toggle-btn">En savoir plus</button>
+                    {include file='catalog/_partials/link-sub-desc.tpl'}
+                </div>
+            </div>
+
         </div>
     {/if}
 </div>

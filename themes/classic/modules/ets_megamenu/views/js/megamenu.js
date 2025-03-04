@@ -81,19 +81,33 @@ $(function () {
                     $('body').removeClass('disable-sticky');
             });
         }
-        $(function () {
+    $(function () {
 
-            function adjustMenuPosition() {
-                // Vérifier si le menu doit être ajusté
-                if ($('.ets_mm_megamenu').hasClass('scroll_heading') || !$('.ets_mm_megamenu.sticky_enabled').length) {
-                    return;
-                }
+        function adjustMenuPosition() {
+            // Vérifier si le menu doit être ajusté
+            if ($('.ets_mm_megamenu').hasClass('scroll_heading') || !$('.ets_mm_megamenu.sticky_enabled').length) {
+                return;
+            }
 
-                const windowWidth = $(window).width();
-                const scrollTop = $(window).scrollTop();
-                let topOffset;
+            const windowWidth = $(window).width();
+            const scrollTop = $(window).scrollTop();
+            let topOffset, leftOffset;
 
-                // Définition de topOffset selon la largeur de l'écran
+            // Définition de topOffset selon la largeur de l'écran
+            if (windowWidth < 768) {
+                topOffset = 0;
+            } else if (windowWidth <= 991) {
+                topOffset = 108;
+            } else if (windowWidth <= 1200) {
+                topOffset = 200;
+            } else {
+                topOffset = 150;
+            }
+
+            // Ajustement dynamique en fonction du scroll
+            if (scrollTop > 0 && scrollTop < 140.5) {
+                topOffset -= scrollTop;
+            } else if (scrollTop === 0) {
                 if (windowWidth < 768) {
                     topOffset = 0;
                 } else if (windowWidth <= 991) {
@@ -103,35 +117,30 @@ $(function () {
                 } else {
                     topOffset = 150;
                 }
-
-                // Ajustement dynamique en fonction du scroll
-                if (scrollTop > 0 && scrollTop < 140.5) {
-                    topOffset -= scrollTop;
-                } else if (scrollTop === 0) {
-                    if (windowWidth < 768) {
-                        topOffset = 0;
-                    } else if (windowWidth <= 991) {
-                        topOffset = 108;
-                    } else if (windowWidth <= 1200) {
-                        topOffset = 200;
-                    } else {
-                        topOffset = 150;
-                    }
-                }
-
-                // Application des styles
-                $('.mm_modal_filter, ul.mm_menus_ul').css({
-                    'top': `${topOffset}px`,
-                    'left': 'calc(50% - 760px)' // Centrage sur un conteneur de 1520px
-                });
             }
 
-            // Appliquer l'ajustement au chargement, au défilement et au redimensionnement
-            $(window).on('scroll resize', adjustMenuPosition);
-            adjustMenuPosition();
-        });
+            // Gestion de la position gauche (left) pour éviter le décalage du menu
+            if (windowWidth < 1520) {
+                leftOffset = '0'; // Aligner à gauche si l'écran est plus petit que 1520px
+            } else {
+                leftOffset = 'calc(50% - 760px)'; // Centrer sur un conteneur de 1520px
+            }
 
-        $(window).load(function () {
+            // Application des styles
+            $('.mm_modal_filter, ul.mm_menus_ul').css({
+                'top': `${topOffset}px`,
+                'left': leftOffset,
+                'width': windowWidth < 1520 ? '100%' : '1520px' // Adapter la largeur
+            });
+        }
+
+        // Appliquer l'ajustement au chargement, au défilement et au redimensionnement
+        $(window).on('scroll resize', adjustMenuPosition);
+        adjustMenuPosition();
+    });
+
+
+    $(window).load(function () {
             if ($('.ets_mn_submenu_full_height').length > 0) {
                 var ver_sub_height = $('.ets_mn_submenu_full_height').height();
                 $('.ets_mn_submenu_full_height').find('.mm_columns_ul').css("min-height", ver_sub_height);

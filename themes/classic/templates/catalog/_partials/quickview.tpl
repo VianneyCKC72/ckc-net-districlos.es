@@ -53,9 +53,12 @@
             {block name='product_prices'}
               {include file='catalog/_partials/product-prices.tpl'}
             {/block}
+
             {block name='product_description_short'}
               <div id="product-description-short">{$product.description_short nofilter}</div>
             {/block}
+
+
             {block name='product_buy'}
               <div class="product-actions js-product-actions">
                 <form action="{$urls.pages.cart}" method="post" id="add-to-cart-or-refresh">
