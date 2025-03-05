@@ -43,5 +43,6 @@
       {hook h='displayCMSPrintButton'}
     {/block}
 
+{*    {include file='nos-magasins.tpl'}*}
   </section>
 {/block}
