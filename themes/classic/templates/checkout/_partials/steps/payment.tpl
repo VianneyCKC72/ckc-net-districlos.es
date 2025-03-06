@@ -8,9 +8,9 @@
   <div style="display:none" class="js-cart-payment-step-refresh"></div>
 
   {if !empty($display_transaction_updated_info)}
-  <p class="cart-payment-step-refreshed-info">
-    {l s='Transaction amount has been correctly updated' d='Shop.Theme.Checkout'}
-  </p>
+    <p class="cart-payment-step-refreshed-info">
+      {l s='Transaction amount has been correctly updated' d='Shop.Theme.Checkout'}
+    </p>
   {/if}
 
   {if $is_free}
@@ -23,15 +23,10 @@
           <div id="{$option.id}-container" class="payment-option clearfix">
             {* This is the way an option should be selected when Javascript is enabled *}
             <span class="custom-radio float-xs-left">
-              <input
-                class="ps-shown-by-js {if $option.binary} binary {/if}"
-                id="{$option.id}"
-                data-module-name="{$option.module_name}"
-                name="payment-option"
-                type="radio"
-                required
-                {if ($selected_payment_option == $option.id || $is_free) || ($payment_options|@count === 1 && $module_options|@count === 1)} checked {/if}
-              >
+              <input class="ps-shown-by-js {if $option.binary} binary {/if}" id="{$option.id}"
+                data-module-name="{$option.module_name}" name="payment-option" type="radio" required
+                {if ($selected_payment_option == $option.id || $is_free) || ($payment_options|@count === 1 && $module_options|@count === 1)}
+                checked {/if}>
               <span></span>
             </span>
             {* This is the way an option should be selected when Javascript is disabled *}
@@ -56,18 +51,14 @@
         </div>
 
         {if $option.additionalInformation}
-          <div
-            id="{$option.id}-additional-information"
-            class="js-additional-information definition-list additional-information{if $option.id != $selected_payment_option} ps-hidden {/if}"
-          >
+          <div id="{$option.id}-additional-information"
+            class="js-additional-information definition-list additional-information{if $option.id != $selected_payment_option} ps-hidden {/if}">
             {$option.additionalInformation nofilter}
           </div>
         {/if}
 
-        <div
-          id="pay-with-{$option.id}-form"
-          class="js-payment-option-form {if $option.id != $selected_payment_option} ps-hidden {/if}"
-        >
+        <div id="pay-with-{$option.id}-form"
+          class="js-payment-option-form {if $option.id != $selected_payment_option} ps-hidden {/if}">
           {if $option.form}
             {$option.form nofilter}
           {else}
@@ -81,7 +72,8 @@
         </div>
       {/foreach}
     {foreachelse}
-      <p class="alert alert-danger">{l s='Unfortunately, there are no payment method available.' d='Shop.Theme.Checkout'}</p>
+      <p class="alert alert-danger">{l s='Unfortunately, there are no payment method available.' d='Shop.Theme.Checkout'}
+      </p>
     {/foreach}
   </div>
 
@@ -100,14 +92,13 @@
           <li>
             <div class="float-xs-left">
               <span class="custom-checkbox">
-                <input  id    = "conditions_to_approve[{$condition_name}]"
-                        name  = "conditions_to_approve[{$condition_name}]"
-                        required
-                        type  = "checkbox"
-                        value = "1"
-                        class = "ps-shown-by-js"
-                >
-                <span><i class="material-icons rtl-no-flip checkbox-checked">&#xE5CA;</i></span>
+                <input id="conditions_to_approve[{$condition_name}]" name="conditions_to_approve[{$condition_name}]" required
+                  type="checkbox" value="1" class="ps-shown-by-js">
+                <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-check checkbox-checked">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg></span>
               </span>
             </div>
             <div class="condition-label">
@@ -127,13 +118,14 @@
     {include file='checkout/_partials/order-final-summary.tpl'}
   {/if}
 
-  <div id="payment-confirmation" class="js-payment-confirmation">
+  <div id="payment-confirmation" class="js-payment-confirmation mt-4">
     <div class="ps-shown-by-js">
-      <button type="submit" class="btn btn-primary center-block{if !$selected_payment_option} disabled{/if}">
+      <button type="submit"
+        class="d-block ml-auto btn btn-primary center-block{if !$selected_payment_option} disabled{/if}">
         {l s='Place order' d='Shop.Theme.Checkout'}
       </button>
       {if $show_final_summary}
-        <article class="alert alert-danger mt-2 js-alert-payment-conditions" role="alert" data-alert="danger">
+        <article class="alert alert-danger mt-3 js-alert-payment-conditions" role="alert" data-alert="danger">
           {l
             s='Please make sure you\'ve chosen a [1]payment method[/1] and accepted the [2]terms and conditions[/2].'
             sprintf=[
@@ -149,7 +141,8 @@
     </div>
     <div class="ps-hidden-by-js">
       {if $selected_payment_option and $all_conditions_approved}
-        <label for="pay-with-{$selected_payment_option}">{l s='Order with an obligation to pay' d='Shop.Theme.Checkout'}</label>
+        <label
+          for="pay-with-{$selected_payment_option}">{l s='Order with an obligation to pay' d='Shop.Theme.Checkout'}</label>
       {/if}
     </div>
   </div>
