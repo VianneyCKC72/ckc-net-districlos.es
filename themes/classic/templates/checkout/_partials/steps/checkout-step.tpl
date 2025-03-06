@@ -41,7 +41,7 @@
         {l s='Edit' d='Shop.Theme.Actions'}</span>
     </h1>
 
-    <div class="content">
+    <div class="content mt-3">
       {block name='step_content'}DUMMY STEP CONTENT{/block}
     </div>
   </section>

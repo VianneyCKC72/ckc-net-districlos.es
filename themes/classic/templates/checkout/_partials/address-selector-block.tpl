@@ -28,7 +28,7 @@
       id="{$name|classname}-address-{$address.id}">
       <header class="h4 mb-0">
         <label class="radio-block">
-          <span class="custom-radio">
+          <span class="custom-radio white">
             <input type="radio" name="{$name}" value="{$address.id}" {if $address.id == $selected}checked{/if}>
             <span></span>
           </span>

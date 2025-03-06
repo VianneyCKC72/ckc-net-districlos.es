@@ -31,76 +31,81 @@
 
   <div class="delivery-options-list">
     {if $delivery_options|count}
-      <form
-        class="clearfix"
-        id="js-delivery"
-        data-url-update="{url entity='order' params=['ajax' => 1, 'action' => 'selectDeliveryOption']}"
-        method="post"
-      >
+      <form class="clearfix" id="js-delivery"
+        data-url-update="{url entity='order' params=['ajax' => 1, 'action' => 'selectDeliveryOption']}" method="post">
         <div class="form-fields">
           {block name='delivery_options'}
-            <div class="delivery-options">
+            <div class="delivery-options mt-3">
               {foreach from=$delivery_options item=carrier key=carrier_id}
-                  <div class="row delivery-option js-delivery-option">
-                    <div class="col-sm-1">
-                      <span class="custom-radio float-xs-left">
-                        <input type="radio" name="delivery_option[{$id_address}]" id="delivery_option_{$carrier.id}" value="{$carrier_id}"{if $delivery_option == $carrier_id} checked{/if}>
-                        <span></span>
-                      </span>
-                    </div>
-                    <label for="delivery_option_{$carrier.id}" class="col-xs-9 col-sm-11 delivery-option-2">
-                      <div class="row">
-                        <div class="col-sm-5 col-xs-12">
-                          <div class="row carrier{if $carrier.logo} carrier-hasLogo{/if}">
-                            {if $carrier.logo}
-                            <div class="col-xs-12 col-md-4 carrier-logo">
-                                <img src="{$carrier.logo}" alt="{$carrier.name}" loading="lazy" />
-                            </div>
-                            {/if}
-                            <div class="col-xs-12 carriere-name-container{if $carrier.logo} col-md-8{/if}">
-                              <span class="h6 carrier-name">{$carrier.name}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-sm-4 col-xs-12">
-                          <span class="carrier-delay">{$carrier.delay}</span>
-                        </div>
-                        <div class="col-sm-3 col-xs-12">
-                          <span class="carrier-price">{$carrier.price}</span>
+                <div class="delivery-option js-delivery-option">
+
+                  <label for="delivery_option_{$carrier.id}" class="delivery-option-2">
+                    <span class="custom-radio white">
+                      <input type="radio" name="delivery_option[{$id_address}]" id="delivery_option_{$carrier.id}"
+                        value="{$carrier_id}" {if $delivery_option == $carrier_id} checked{/if}>
+                      <span></span>
+                    </span>
+                    <div class="row">
+                      <div class="col-sm-5 col-xs-12">
+                        <div class="carrier">
+                          {if $carrier.logo}
+                            <img class="carrier-logo" src="{$carrier.logo}" alt="{$carrier.name}" loading="lazy" />
+                          {/if}
+                          <span class="h6 carrier-name">{$carrier.name}</span>
                         </div>
                       </div>
-                    </label>
-                  </div>
-                  <div class="row carrier-extra-content js-carrier-extra-content"{if $delivery_option != $carrier_id} style="display:none;"{/if}>
+                      <div class="col-sm-4 col-xs-12">
+                        <span class="carrier-delay">{$carrier.delay}</span>
+                      </div>
+                      <div class="col-sm-3 col-xs-12">
+                        <span class="carrier-price">{$carrier.price}</span>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+                {if $delivery_option != $carrier_id}
+                  <div class="row carrier-extra-content js-carrier-extra-content">
                     {$carrier.extraContent nofilter}
                   </div>
-                  <div class="clearfix"></div>
+                {/if}
               {/foreach}
             </div>
           {/block}
-          <div class="order-options">
+          <div class="order-options my-3">
             <div id="delivery">
-              <label for="delivery_message">{l s='If you would like to add a comment about your order, please write it in the field below.' d='Shop.Theme.Checkout'}</label>
+              <label for="delivery_message"
+                class="small">{l s='If you would like to add a comment about your order, please write it in the field below.' d='Shop.Theme.Checkout'}</label>
               <textarea rows="3" id="delivery_message" name="delivery_message">{$delivery_message}</textarea>
             </div>
 
             {if $recyclablePackAllowed}
               <span class="custom-checkbox">
                 <input type="checkbox" id="input_recyclable" name="recyclable" value="1" {if $recyclable} checked {/if}>
-                <span><i class="material-icons rtl-no-flip checkbox-checked">&#xE5CA;</i></span>
-                <label for="input_recyclable">{l s='I would like to receive my order in recycled packaging.' d='Shop.Theme.Checkout'}</label>
+                <span><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-check">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg></span>
+                <label
+                  for="input_recyclable">{l s='I would like to receive my order in recycled packaging.' d='Shop.Theme.Checkout'}</label>
               </span>
             {/if}
 
             {if $gift.allowed}
               <span class="custom-checkbox">
-                <input class="js-gift-checkbox" id="input_gift" name="gift" type="checkbox" value="1" {if $gift.isGift}checked="checked"{/if}>
-                <span><i class="material-icons rtl-no-flip checkbox-checked">&#xE5CA;</i></span>
-                <label for="input_gift">{$gift.label}</label >
+                <input class="js-gift-checkbox" id="input_gift" name="gift" type="checkbox" value="1"
+                  {if $gift.isGift}checked="checked" {/if}>
+                <span><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-check">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg></span>
+                <label for="input_gift">{$gift.label}</label>
               </span>
 
               <div id="gift" class="collapse{if $gift.isGift} in{/if}">
-                <label for="gift_message">{l s='If you\'d like, you can add a note to the gift:' d='Shop.Theme.Checkout'}</label>
+                <label
+                  for="gift_message">{l s='If you\'d like, you can add a note to the gift:' d='Shop.Theme.Checkout'}</label>
                 <textarea rows="3" id="gift_message" name="gift_message">{$gift.message}</textarea>
               </div>
             {/if}
@@ -112,7 +117,8 @@
         </button>
       </form>
     {else}
-      <p class="alert alert-danger mt-3">{l s='Unfortunately, there are no carriers available for your delivery address.' d='Shop.Theme.Checkout'}</p>
+      <p class="alert alert-danger mt-3">
+        {l s='Unfortunately, there are no carriers available for your delivery address.' d='Shop.Theme.Checkout'}</p>
     {/if}
   </div>
 
