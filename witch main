@@ -1,0 +1,502 @@
+[33mcommit c4bda6afc4189fe94ecaa191e0f1cc067040c6df[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Merge: 7130bde02 2b5d15445
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Tue Feb 25 14:23:54 2025 +0100
+
+    Merge remote-tracking branch 'origin/main'
+
+[33mcommit 7130bde02427278e52d0cb96660bc23e50f1e5a2[m
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Tue Feb 25 14:23:35 2025 +0100
+
+    fullwidth banniere promo
+
+[33mcommit 2b5d15445989caa9b4a3723b9defe23b5ff9cdaa[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Tue Feb 25 11:48:36 2025 +0100
+
+    Fix card product slider
+
+[33mcommit 9b8cb25194f4720ae131fb9f471b0cad4fa079d1[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Tue Feb 25 11:33:56 2025 +0100
+
+    FIXS
+
+[33mcommit ab115bab2bb9b3e7e7032054ee7661c01d561f19[m
+Author: Tony Vatry <tony@webilo.fr>
+Date:   Tue Feb 25 11:27:55 2025 +0100
+
+    FIX delivery
+
+[33mcommit 98ca98e4b48973ad18951c7c40943ff7b193e1f6[m
+Author: Tony Vatry <tony@webilo.fr>
+Date:   Tue Feb 25 11:22:03 2025 +0100
+
+    FIX delivery
+
+[33mcommit e332b5ef245663c9a9d6c7fe4556c3b186d54acb[m
+Author: Tony Vatry <tony@webilo.fr>
+Date:   Tue Feb 25 11:18:01 2025 +0100
+
+    FIX delivery
+
+[33mcommit 35ac23d15d914b135aa0cdb0e70806d983cbb02a[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Tue Feb 25 11:12:15 2025 +0100
+
+    FIX ?
+
+[33mcommit fd0c05bf82d8bfbe17fbb28279c0595b4fa34fba[m
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Tue Feb 25 11:11:33 2025 +0100
+
+    Correction de la fiche produit suite a un bug
+
+[33mcommit 9cb57a574bcfda0886299e7c3af0d7e34246cef3[m
+Author: Tony Vatry <tony@webilo.fr>
+Date:   Tue Feb 25 11:09:07 2025 +0100
+
+    FIX delivery
+
+[33mcommit b35fa185c4b263e5bc4dce76caf2de8cd7054ea0[m
+Author: Tony Vatry <tony@webilo.fr>
+Date:   Tue Feb 25 10:59:37 2025 +0100
+
+    FIX delivery
+
+[33mcommit 53c6bfa622e449953a9239dd146c9453e2f070f7[m
+Author: Tony Vatry <tony@webilo.fr>
+Date:   Tue Feb 25 10:51:20 2025 +0100
+
+    ADD price sync
+
+[33mcommit 32795efda3b8d9f21846d9cf9abe855c16350e14[m
+Author: Tony Vatry <tony@webilo.fr>
+Date:   Tue Feb 25 10:51:06 2025 +0100
+
+    FIX shipping
+
+[33mcommit 44ff9e36491cfd2a9c9406f4f8b762b237815d31[m
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Tue Feb 25 09:36:26 2025 +0100
+
+    Correction de la fiche produit suite a un bug
+
+[33mcommit 91f2ace22403e612284dc6009fa9905688871508[m
+Author: Tony Vatry <tony@webilo.fr>
+Date:   Tue Feb 25 08:12:03 2025 +0100
+
+    ADD redirections
+
+[33mcommit f95eef0ca6966caef028ba38bae750aa5c4f9edd[m
+Author: Tony Vatry <tony@webilo.fr>
+Date:   Tue Feb 25 08:11:51 2025 +0100
+
+    ADD product modal delivery
+
+[33mcommit 9b741d76b780476376002c0304c77d44f4674676[m
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Mon Feb 24 23:12:26 2025 +0100
+
+    Nouveau footer
+
+[33mcommit d87377ce1157179a2ab5495bb170554925f7282f[m
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Mon Feb 24 23:12:08 2025 +0100
+
+    Nouveau footer
+
+[33mcommit e882404f726dd118c83526ae909d8ea513805b83[m
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Mon Feb 24 14:00:22 2025 +0100
+
+    Avis vérifié
+
+[33mcommit 33eb7202527b386375523d162f94211fa105346a[m
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Sun Feb 23 23:41:10 2025 +0100
+
+    Intégration du nouveau Menu + Homepage
+
+[33mcommit fdce86af4b4aa57d15fc4d80d5d5ca4f7c72da3a[m
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Fri Feb 21 17:27:18 2025 +0100
+
+    Intégration du nouveau Menu + JS
+
+[33mcommit 8dfa08ec7d87b4cf9eae2ddb65447f9b267952c4[m
+Merge: e17a30174 5391346e9
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Thu Feb 20 23:21:40 2025 +0100
+
+    Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+
+[33mcommit e17a30174ba6c4eee10d14e83aa67927dd0abd10[m
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Thu Feb 20 23:21:31 2025 +0100
+
+    Intégration du Header + Import du menu
+
+[33mcommit 5391346e9c440b3993b78c9cbab618c441907f61[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Thu Feb 20 18:16:12 2025 +0100
+
+    WIP checkout
+
+[33mcommit 5a8bcb4188134763861f2fcc4c946516b9da751d[m
+Merge: da856a909 6284ad33b
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Thu Feb 20 17:39:03 2025 +0100
+
+    Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+    
+    # Conflicts:
+    #       themes/classic/_dev/css/theme.scss
+
+[33mcommit da856a909b10508fdb2789073dd694c4fd5ad907[m
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Thu Feb 20 17:38:32 2025 +0100
+
+    Intégration du Header + Import du menu
+
+[33mcommit 6284ad33b95cd14fda2ea3c2f142e429c9e1f127[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Thu Feb 20 12:19:15 2025 +0100
+
+    cart + modal cart
+
+[33mcommit 9fb59fd8497f149648fcdb4c5154842d26f8b672[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Wed Feb 19 11:19:50 2025 +0100
+
+    WIP cart
+
+[33mcommit 52281d560dd968a2ac99ad0e38525a294688bc23[m
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Thu Feb 20 11:07:35 2025 +0100
+
+    Module ckc promotion banner
+
+[33mcommit 575eb0a0a8ae482850a701e209c275dba81f06e7[m
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Thu Feb 20 10:00:50 2025 +0100
+
+    flixslider.css
+
+[33mcommit c1f2d5b4d2ee6328b7072892d1cd559d9c4c777d[m
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Thu Feb 20 09:56:09 2025 +0100
+
+    adaptation des reassurances sur la homepage
+    correction d'un bug JS sur la home suite a la gestion de l'incrémentation et décrémentation de districlos
+    dynamisation des newsletters
+
+[33mcommit bd0ffde546dbed46969ca23a610c08de89b24dec[m
+Author: Vianney CHANOUX <vianney.ckc@gmail.com>
+Date:   Thu Feb 20 09:40:45 2025 +0100
+
+    adaptation des reassurances sur la homepage
+    correction d'un bug JS sur la home suite a la gestion de l'incrémentation et décrémentation de districlos
+    dynamisation des newsletters
+
+[33mcommit 9b077e64ac42adeca7da8cebf5053b627be9b6e9[m
+Author: vianney <vianney@ckc-net.com>
+Date:   Tue Feb 18 10:33:18 2025 +0100
+
+    surcharge ps_customtext.tpl
+
+[33mcommit 36b9c374772b834a73368e92c863688fea9085a9[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Mon Feb 17 16:17:51 2025 +0100
+
+    static inte
+
+[33mcommit 3d0628944b852533b8e2a5c9d96536540fbcf29b[m
+Author: vianney <vianney@ckc-net.com>
+Date:   Mon Feb 17 16:06:32 2025 +0100
+
+    surcharge ps_customtext.tpl
+
+[33mcommit a63cdd32b7359a0bae143ead4f69794b3ba5b1f5[m
+Merge: db83b7e2e e0ec98d51
+Author: Vianney <vianney.ckc@gmail.comm>
+Date:   Mon Feb 17 15:47:44 2025 +0100
+
+    Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+
+[33mcommit db83b7e2e336f97c2aee029eb53b05bebbd90c5a[m
+Author: vianney <vianney@ckc-net.com>
+Date:   Mon Feb 17 15:47:33 2025 +0100
+
+    Ckc Refonte - Formulaire de connexion Particulier
+
+[33mcommit e0ec98d517b68caebdb90ebfc2bbecfb8f434010[m
+Author: Tony Vatry <tony@webilo.fr>
+Date:   Mon Feb 17 10:27:08 2025 +0100
+
+    FIX file attachment form
+
+[33mcommit 817b433ee815f2cffdf87d0862ea3b35f50c2c84[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Fri Feb 14 17:38:36 2025 +0100
+
+    🚧 product sheet
+
+[33mcommit 6570262fb5113627cad6960234054f5fa0d96c76[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Thu Feb 13 18:16:53 2025 +0100
+
+    🚧 WIP product sheet
+
+[33mcommit 609c99c0c350a6ae371c4ae0560d765437b0bfd2[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Wed Feb 12 18:27:58 2025 +0100
+
+    WIP product sheet
+
+[33mcommit 04a513c0266c40749a78062f8c00c6d6ca903e22[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Tue Feb 11 17:18:04 2025 +0100
+
+    :construction: pagination products listing
+
+[33mcommit 258414d88ebcfaa95735da94e9e9540a0102e6f0[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Tue Feb 11 16:57:44 2025 +0100
+
+    :construction: filter products listing
+
+[33mcommit 3f1149cc071e700181492a8748bde45ca3d2d028[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Tue Feb 11 15:59:34 2025 +0100
+
+    :construction: banner slider home + slider related/features products + listing card category mobile
+
+[33mcommit b82e61f797d1a09ded0b1e5d53bc35b1a963c498[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Mon Feb 10 18:01:19 2025 +0100
+
+    :construction: banner slider home + WIP slider related/features products
+
+[33mcommit 4f3715d40064f3455774b32300ba85644806156b[m
+Author: vianney <vianney@ckc-net.com>
+Date:   Fri Feb 7 17:49:49 2025 +0100
+
+    Ckc Refonte - Formulaire de connexion Particulier
+
+[33mcommit f82389169c4bfe5b4a4fa69fe816dadf2a956a49[m
+Author: vianney <vianney@ckc-net.com>
+Date:   Fri Feb 7 14:13:53 2025 +0100
+
+    Ckc Refonte - Intégration espace pro
+
+[33mcommit d3192d50bcefdf238f34a256dd4707e89345d8a1[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Thu Feb 6 17:49:56 2025 +0100
+
+    :construction: banner services
+
+[33mcommit 884552fa863baba9d363b0be1b73f9e2e40f0e18[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Thu Feb 6 16:43:51 2025 +0100
+
+    :construction: banner newsletter responsive
+
+[33mcommit 81b839c9812733aa68f6c5d4d336214615cbba23[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Thu Feb 6 15:54:08 2025 +0100
+
+    :construction: banner newsletter + breadcrumb
+
+[33mcommit 06aa5967d6dc5ac3629d90cd94b83825306d7712[m
+Author: CKC <info.ckc@gmail.com>
+Date:   Thu Feb 6 13:54:31 2025 +0100
+
+    Exclure var/ du suivi Git
+
+[33mcommit 92a9128810ebf496710de721e8038c01c309d9ea[m
+Merge: b3f1e9dba 007c440cb
+Author: Vianney <vianney.ckc@gmail.comm>
+Date:   Wed Feb 5 23:04:41 2025 +0100
+
+    Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+
+[33mcommit b3f1e9dba1f4cc5e5852c1365a69eae60b14aa90[m
+Author: vianney <vianney@ckc-net.com>
+Date:   Wed Feb 5 23:04:16 2025 +0100
+
+    Ckc Refonte - Intégration espace pro
+
+[33mcommit 007c440cb1e22d963856f2100c056cd68e5e77b8[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Wed Feb 5 18:36:43 2025 +0100
+
+    :construction: WIP banner newsletter
+
+[33mcommit 047b51f08224ef3ec1863f3a829751b04df77689[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Wed Feb 5 16:51:41 2025 +0100
+
+    :wrench: fix
+
+[33mcommit 36144f3dbab5d0305ecf85073534255608690607[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Wed Feb 5 16:44:02 2025 +0100
+
+    :wrench: fix gitignore
+
+[33mcommit 3e7537691aaf8107ade1a087f243150f2ffe977c[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Wed Feb 5 16:37:12 2025 +0100
+
+    :wrench: fix
+
+[33mcommit b741f9193798aeb190028ecef9d0b52eee2eeb87[m
+Merge: 7ced798be 69c0cf5cb
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Wed Feb 5 16:36:40 2025 +0100
+
+    Merge remote-tracking branch 'origin/main'
+    
+    # Conflicts:
+    #       themes/classic/_dev/css/_base.scss
+    #       themes/classic/_dev/css/partials/_buttons.scss
+    #       themes/classic/_dev/css/theme.scss
+
+[33mcommit 7ced798be5935522326ff90f0716740c6be75cd7[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Wed Feb 5 16:34:57 2025 +0100
+
+    :construction: card product category + card bg image
+
+[33mcommit 69c0cf5cbfed39e9b186828fa064b70e4a82723d[m
+Author: vianney <vianney@ckc-net.com>
+Date:   Wed Feb 5 16:29:01 2025 +0100
+
+    Ckc Refonte - Intégration espace pro
+
+[33mcommit edc42836b30a2e331f400cebffcc915daa825644[m
+Merge: 6d62046ce 310ce5a29
+Author: Vianney <vianney.ckc@gmail.comm>
+Date:   Wed Feb 5 16:28:45 2025 +0100
+
+    Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+    
+    # Conflicts:
+    #       themes/classic/_dev/css/_base.scss
+    #       themes/classic/_dev/css/theme.scss
+
+[33mcommit 6d62046ce5283862f50080855627a015176cd8a4[m
+Author: vianney <vianney@ckc-net.com>
+Date:   Wed Feb 5 16:17:09 2025 +0100
+
+    Ckc Refonte - Intégration espace pro
+
+[33mcommit 310ce5a29e5c77e54bae83c2159864dca6e2784b[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Wed Feb 5 11:47:47 2025 +0100
+
+    :construction: card product
+
+[33mcommit 074cca2a923df28a2568c23de8b29ab2a1d08c85[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Tue Feb 4 18:02:40 2025 +0100
+
+    :construction: WIP card product
+
+[33mcommit 1b8720500329ca9161628f21d7d69d03b7f5aa40[m
+Author: vianney <vianney@ckc-net.com>
+Date:   Sun Feb 2 21:45:05 2025 +0100
+
+    Ckc Refonte - barre de recherche et pictos
+
+[33mcommit b42b882e0cbfc3b19f9fe415d518ac0295a828a3[m
+Merge: 34b71b5b1 f3bd5b8bd
+Author: Vianney <vianney.ckc@gmail.comm>
+Date:   Sat Feb 1 11:14:39 2025 +0100
+
+    Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+
+[33mcommit 34b71b5b159964e4d710e8f7e7fe41c0b7f46732[m
+Author: vianney <vianney@ckc-net.com>
+Date:   Sat Feb 1 11:14:23 2025 +0100
+
+    Ckc Refonte - Ajout des icones du header + bouton espace pro
+
+[33mcommit f3bd5b8bd7bc69d8dae3db6f1fef549eb18a08e5[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Fri Jan 31 18:33:27 2025 +0100
+
+    set up front
+
+[33mcommit 637d9bb0626e7d1ab647d1264e64d918d5a28ceb[m
+Author: vianney <vianney@ckc-net.com>
+Date:   Fri Jan 31 16:05:12 2025 +0100
+
+    Ajout du theme qui était dans le gitignore..
+
+[33mcommit dcf4340da2c2d46145e420a125e137e33bb488e2[m
+Author: Vianney <vianney.ckc@gmail.comm>
+Date:   Fri Jan 31 16:03:05 2025 +0100
+
+    Rechargement du .gitignore
+
+[33mcommit 9fdb4ab70b0c8278556e1cf4508dd058d35c9235[m
+Merge: 4848af3b5 e7ba386c8
+Author: Vianney <vianney.ckc@gmail.comm>
+Date:   Fri Jan 31 16:01:45 2025 +0100
+
+    Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+    
+    # Conflicts:
+    #       var/cache/prod/appParameters.php
+
+[33mcommit 4848af3b5ebd595eadc65ba42116ea44d5b2a6cb[m
+Author: vianney <vianney@ckc-net.com>
+Date:   Fri Jan 31 16:01:14 2025 +0100
+
+    Mise a jour du gitignore
+
+[33mcommit e7ba386c84cbd46dade47507a0593acc8f66fb86[m
+Author: Hugo Debard <hugodebard.pro@gmail.com>
+Date:   Thu Jan 30 18:06:13 2025 +0100
+
+    :construction: WIP integrations
+
+[33mcommit 3c48737291b3c22028c8da4f2f48e1f35d9dca39[m
+Author: CKC <info.ckc@gmail.com>
+Date:   Tue Jan 28 14:01:25 2025 +0100
+
+    ajout themes classic dans gitignore  + mise en place webpack
+
+[33mcommit 2b0aaf4143a499ba442f79b5ab9f55e21e5c84ec[m
+Author: Tony Vatry <tony@webilo.fr>
+Date:   Mon Jan 27 16:03:11 2025 +0100
+
+    ADD gitignore
+
+[33mcommit a6bec4100d17632744a20b29f419a4950fe69467[m
+Merge: a2cc34d8a 59c1479ee
+Author: CKC <info.ckc@gmail.com>
+Date:   Wed Jan 15 02:01:17 2025 +0100
+
+    Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+
+[33mcommit 59c1479eed86d1e68a65e95471fe1d7c4f43cce1[m
+Author: Tony Vatry <tony@webilo.fr>
+Date:   Wed Jan 15 01:59:29 2025 +0100
+
+    Replace repository with Prestashop files from server
+
+[33mcommit a2cc34d8aee46118f1f62ee2ecedc72103f82e13[m
+Author: CKC <info.ckc@gmail.com>
+Date:   Wed Jan 15 01:57:26 2025 +0100
+
+    Update
+
+[33mcommit 79a4ad92d1b7f5eda19c92d4371dd11d76fe0f2b[m
+Author: Tony Vatry <tony@webilo.fr>
+Date:   Mon Dec 9 23:36:05 2024 +0100
+
+    Initial commit
