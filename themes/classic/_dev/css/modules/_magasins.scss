@@ -1,3 +1,24 @@
+#section-lien-cross .elementor-widget-image-box .elementor-image-box-title a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+
+  @media (max-width: 1280px) {
+    font-size: 15px;
+  }
+
+  .link {
+    flex-grow: 1;
+  }
+
+  .btn-primary-arrow {
+    padding: 5px;
+    display: flex;
+    align-items: center;
+  }
+}
+
 
 .magasin-entete {
   flex-direction: column;
