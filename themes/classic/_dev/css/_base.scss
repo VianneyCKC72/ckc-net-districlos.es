@@ -170,7 +170,10 @@ dfn {
 }
 
 h1 {
-  font-size: 2em;
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 45px;
+  letter-spacing: 0;
   margin: 0.67em 0;
 }
 
@@ -2997,6 +3000,13 @@ tbody.collapse.in {
   border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
+.card-sand {
+  background-color: $sand-light-color;
+  border-radius: 4px;
+  padding: 20px;
+  font-size: 14px;
+}
+
 .card,
 .card-title {
   margin-bottom: 0rem;
@@ -3184,9 +3194,8 @@ tbody.collapse.in {
 
 .breadcrumb {
   padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   list-style: none;
-  background-color: #f6f6f6;
   border-radius: 0;
 }
 
@@ -3651,10 +3660,6 @@ base::-moz-progress-bar {
 .media,
 .media-body {
   overflow: hidden;
-}
-
-.media-body {
-  width: 10000px;
 }
 
 .media-body,
@@ -5097,9 +5102,12 @@ form section .form-informations-title {
   margin-right: 0.5rem;
   vertical-align: middle;
   cursor: pointer;
-  background: #fff;
-  border: #979797 1px solid;
+  background-color: $sand-light-color;
   border-radius: 50%;
+  &.white {
+    background-color: #fff;
+    border: 1px solid $sand-color;
+  }
 }
 
 .custom-radio input[type="radio"] {
@@ -5109,13 +5117,17 @@ form section .form-informations-title {
 
 .custom-radio input[type="radio"]:checked + span {
   position: absolute;
-  top: 0.125rem;
-  left: 0.125rem;
+  top: 3px;
+  left: 3px;
   display: block;
   width: 12px;
   height: 12px;
-  background-color: $secondary-color;
+  background-color: $primary-color;
   border-radius: 50%;
+}
+.custom-radio.white input[type="radio"]:checked + span {
+  top: 2px;
+  left: 2px;
 }
 
 .text-muted {
@@ -5610,10 +5622,6 @@ body#checkout section.checkout-step .radio-field label {
   margin-bottom: 1.25rem;
 }
 
-#order-items {
-  border-right: #f6f6f6 1px solid;
-}
-
 #order-items .h3,
 .page-addresses .address .address-footer a i,
 .page-addresses .addresses-footer a i,
@@ -5742,13 +5750,6 @@ body#checkout section.checkout-step .radio-field label {
 
 .page-customer-account #content .order-actions a {
   padding: 0 0.125rem;
-}
-
-.page-customer-account #content .forgot-password {
-  padding-bottom: 0.9375rem;
-  margin-top: 1rem;
-  font-size: 0.875rem;
-  text-align: right;
 }
 
 .page-customer-account #content .no-account {
@@ -6383,7 +6384,6 @@ body#checkout section.checkout-step .radio-field label {
 }
 
 .page-content.page-cms {
-  padding: 1.25rem;
   text-align: justify;
   background: #fff;
 }
@@ -9504,73 +9504,169 @@ body#checkout section.checkout-step .radio-field label {
   }
 }
 /* 🖥️ Par défaut (s'applique à toutes les tailles d'écran) */
-.d-none { display: none !important; }
-.d-inline { display: inline !important; }
-.d-inline-block { display: inline-block !important; }
-.d-block { display: block !important; }
-.d-flex { display: flex !important; }
-.d-inline-flex { display: inline-flex !important; }
-.d-grid { display: grid !important; }
-.d-inline-grid { display: inline-grid !important; }
+.d-none {
+  display: none !important;
+}
+.d-inline {
+  display: inline !important;
+}
+.d-inline-block {
+  display: inline-block !important;
+}
+.d-block {
+  display: block !important;
+}
+.d-flex {
+  display: flex !important;
+}
+.d-inline-flex {
+  display: inline-flex !important;
+}
+.d-grid {
+  display: grid !important;
+}
+.d-inline-grid {
+  display: inline-grid !important;
+}
 
 /* 🎯 Responsive - XS (extra small, <576px) */
 @media (min-width: 576px) {
-  .d-sm-none { display: none !important; }
-  .d-sm-inline { display: inline !important; }
-  .d-sm-inline-block { display: inline-block !important; }
-  .d-sm-block { display: block !important; }
-  .d-sm-flex { display: flex !important; }
-  .d-sm-inline-flex { display: inline-flex !important; }
-  .d-sm-grid { display: grid !important; }
-  .d-sm-inline-grid { display: inline-grid !important; }
+  .d-sm-none {
+    display: none !important;
+  }
+  .d-sm-inline {
+    display: inline !important;
+  }
+  .d-sm-inline-block {
+    display: inline-block !important;
+  }
+  .d-sm-block {
+    display: block !important;
+  }
+  .d-sm-flex {
+    display: flex !important;
+  }
+  .d-sm-inline-flex {
+    display: inline-flex !important;
+  }
+  .d-sm-grid {
+    display: grid !important;
+  }
+  .d-sm-inline-grid {
+    display: inline-grid !important;
+  }
 }
 
 /* 📱 Responsive - SM (small, ≥576px) */
 @media (min-width: 768px) {
-  .d-md-none { display: none !important; }
-  .d-md-inline { display: inline !important; }
-  .d-md-inline-block { display: inline-block !important; }
-  .d-md-block { display: block !important; }
-  .d-md-flex { display: flex !important; }
-  .d-md-inline-flex { display: inline-flex !important; }
-  .d-md-grid { display: grid !important; }
-  .d-md-inline-grid { display: inline-grid !important; }
+  .d-md-none {
+    display: none !important;
+  }
+  .d-md-inline {
+    display: inline !important;
+  }
+  .d-md-inline-block {
+    display: inline-block !important;
+  }
+  .d-md-block {
+    display: block !important;
+  }
+  .d-md-flex {
+    display: flex !important;
+  }
+  .d-md-inline-flex {
+    display: inline-flex !important;
+  }
+  .d-md-grid {
+    display: grid !important;
+  }
+  .d-md-inline-grid {
+    display: inline-grid !important;
+  }
 }
 
 /* 💻 Responsive - MD (medium, ≥768px) */
 @media (min-width: 992px) {
-  .d-lg-none { display: none !important; }
-  .d-lg-inline { display: inline !important; }
-  .d-lg-inline-block { display: inline-block !important; }
-  .d-lg-block { display: block !important; }
-  .d-lg-flex { display: flex !important; }
-  .d-lg-inline-flex { display: inline-flex !important; }
-  .d-lg-grid { display: grid !important; }
-  .d-lg-inline-grid { display: inline-grid !important; }
+  .d-lg-none {
+    display: none !important;
+  }
+  .d-lg-inline {
+    display: inline !important;
+  }
+  .d-lg-inline-block {
+    display: inline-block !important;
+  }
+  .d-lg-block {
+    display: block !important;
+  }
+  .d-lg-flex {
+    display: flex !important;
+  }
+  .d-lg-inline-flex {
+    display: inline-flex !important;
+  }
+  .d-lg-grid {
+    display: grid !important;
+  }
+  .d-lg-inline-grid {
+    display: inline-grid !important;
+  }
 }
 
 /* 🖥️ Responsive - LG (large, ≥992px) */
 @media (min-width: 1200px) {
-  .d-xl-none { display: none !important; }
-  .d-xl-inline { display: inline !important; }
-  .d-xl-inline-block { display: inline-block !important; }
-  .d-xl-block { display: block !important; }
-  .d-xl-flex { display: flex !important; }
-  .d-xl-inline-flex { display: inline-flex !important; }
-  .d-xl-grid { display: grid !important; }
-  .d-xl-inline-grid { display: inline-grid !important; }
+  .d-xl-none {
+    display: none !important;
+  }
+  .d-xl-inline {
+    display: inline !important;
+  }
+  .d-xl-inline-block {
+    display: inline-block !important;
+  }
+  .d-xl-block {
+    display: block !important;
+  }
+  .d-xl-flex {
+    display: flex !important;
+  }
+  .d-xl-inline-flex {
+    display: inline-flex !important;
+  }
+  .d-xl-grid {
+    display: grid !important;
+  }
+  .d-xl-inline-grid {
+    display: inline-grid !important;
+  }
 }
 
 /* 🖥️ Responsive - XL (extra-large, ≥1200px) */
 @media (min-width: 1400px) {
-  .d-xxl-none { display: none !important; }
-  .d-xxl-inline { display: inline !important; }
-  .d-xxl-inline-block { display: inline-block !important; }
-  .d-xxl-block { display: block !important; }
-  .d-xxl-flex { display: flex !important; }
-  .d-xxl-inline-flex { display: inline-flex !important; }
-  .d-xxl-grid { display: grid !important; }
-  .d-xxl-inline-grid { display: inline-grid !important; }
+  .d-xxl-none {
+    display: none !important;
+  }
+  .d-xxl-inline {
+    display: inline !important;
+  }
+  .d-xxl-inline-block {
+    display: inline-block !important;
+  }
+  .d-xxl-block {
+    display: block !important;
+  }
+  .d-xxl-flex {
+    display: flex !important;
+  }
+  .d-xxl-inline-flex {
+    display: inline-flex !important;
+  }
+  .d-xxl-grid {
+    display: grid !important;
+  }
+  .d-xxl-inline-grid {
+    display: inline-grid !important;
+  }
 }
 
 @media (min-width: 992px) {
@@ -10435,16 +10531,6 @@ body#checkout section.checkout-step .radio-field label {
     padding-left: 0.9375rem;
   }
 
-  body#checkout
-    section.checkout-step
-    .delivery-options
-    .delivery-option
-    label
-    .carrier:not(.carrier-hasLogo)
-    .col-xs-12 {
-    padding-left: 0;
-  }
-
   .forgotten-password .form-fields .center-email-fields {
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
@@ -10745,8 +10831,7 @@ body#checkout section.checkout-step .radio-field label {
     flex-grow: 1;
   }
 
-  #product-modal .modal-content .modal-body,
-  body#checkout section.checkout-step .delivery-option-2 {
+  #product-modal .modal-content .modal-body {
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
     -ms-flex-direction: column;

@@ -11499,6 +11499,34 @@ $(document).ready(function () {
     } else {
         console.warn("Un ou plusieurs éléments ne sont pas trouvés dans le DOM.");
     }
+    // Loading image before flex slider load
+    $(window).load(function () {
+        $(".loadingdiv").remove()
+        setTimeout(function () {
+            $('.slides').show()
+        }, 500);
+    });
+
+// // Countdown function 29/01/2024
+    $(window).ready(() => {
+        const isMobile = $(window).width() < 768
+
+        isMobile ?
+            $(".flexslider-mobile").flexslider({
+                slideshowSpeed: $(".flexslider-mobile").data("interval"),
+                pauseOnHover: $(".flexslider-mobile").data("pause"),
+                animation: "none",
+                start: function (slider) {
+
+                }
+            })
+            : $(".flexslider-desktop").flexslider({
+                slideshowSpeed: $(".flexslider-desktop").data("interval"),
+                pauseOnHover: $(".flexslider-desktop").data("pause"),
+                animation: "none",
+                animationLoop: false
+            })
+    })
 });
 
 

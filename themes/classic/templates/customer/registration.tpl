@@ -24,16 +24,28 @@
  *}
 {extends file='page.tpl'}
 
-{block name='page_title'}
-  {l s='Create an account' d='Shop.Theme.Customeraccount'}
-{/block}
-
 {block name='page_content'}
-    {block name='register_form_container'}
-      {$hook_create_account_top nofilter}
-      <section class="register-form">
-        <p>{l s='Already have an account?' d='Shop.Theme.Customeraccount'} <a href="{$urls.pages.authentication}">{l s='Log in instead!' d='Shop.Theme.Customeraccount'}</a></p>
+  {block name='register_form_container'}
+    {$hook_create_account_top nofilter}
+    <section class="register-form" id="registration-form">
+      {* <p>{l s='Already have an account?' d='Shop.Theme.Customeraccount'} <a
+          href="{$urls.pages.authentication}">{l s='Log in instead!' d='Shop.Theme.Customeraccount'}</a></p> *}
+
+      <div class="already-account">
+        <div class="img">
+          <img src="https://picsum.photos/{rand(300, 600)}/{rand(300, 600)}" alt="" />
+        </div>
+        <div class="inside">
+          <h2 class="mb-4">{l s='Already have an account?' d='Shop.Theme.Customeraccount'}</h2>
+          <a href="{$urls.pages.authentication}" class="btn btn-secondary" id="inscription">
+            {l s='Log in instead!' d='Shop.Theme.Customeraccount'}
+          </a>
+        </div>
+      </div>
+
+      <div class="inside-register-form">
         {render file='customer/_partials/customer-form.tpl' ui=$register_form}
-      </section>
-    {/block}
+      </div>
+    </section>
+  {/block}
 {/block}

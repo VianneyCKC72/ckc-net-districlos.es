@@ -16,7 +16,7 @@ SetEnv HTTP_MOD_REWRITE On
 </IfModule>
 
 RewriteEngine on
-
+RewriteRule ^content/4-a-propos-de-cloture-discount$ /content/490-a-propos [L,R=301]
 
 #Domain: districlos.ckc-net.com
 RewriteRule . - [E=REWRITEBASE:/]
