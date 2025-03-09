@@ -15,28 +15,6 @@ $(document).ready(function () {
         updateWidth();
     }
 
-    var $postalCodeInput = $("#postalCodeInput");
-    if ($postalCodeInput.length) {
-        $postalCodeInput.on("keyup", function (event) {
-            if (event.key === "Enter") {
-                search();
-            }
-        });
-    }
-
-    $("#showDelivery").on("click", function (e) {
-        e.preventDefault();
-        $("#modalShowDelivery").modal("show");
-    });
-
-    $("#submitZipCode").on("click", function () {
-        search();
-    });
-
-    $("#submitZipCodeProduct").on("click", function () {
-        search(true, $(this).data("idProduct"), $(this).data("idProductAttribute"));
-    });
-
 
     // Délégation d'événements pour les boutons de quantité
     $('body').on('click', '.increase', function () {
@@ -136,65 +114,3 @@ $(document).ready(function () {
         checkStock();
     });
 });
-
-
-async function search(product = false, id_product = null, id_product_attribute = null) {
-    let url = product ? prestashop.urls.pages.product : prestashop.urls.pages.cart;
-    if (product) {
-        url += "?id_product=" + id_product;
-    }
-
-    let quantity = product ? $("#quantity_wanted").val() : null;
-    let data = {
-        ajax: "1",
-        action: "get_deliveries",
-        postal_code: $("#postalCodeInput").val(),
-        ...(product && {id_product, id_product_attribute, quantity})
-    };
-
-    await searchProduct(url, data);
-}
-
-async function searchProduct(url, data) {
-    try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(data)
-        });
-
-        const resp = await response.json();
-        var $deliveriesTable = $(".deliveriesTable tbody");
-        var $deliveryCostError = $(".deliveryCostError");
-
-        if (resp.success) {
-            $deliveriesTable.empty();
-            resp.deliveries_options.forEach(({name, price, reduc, delay}) => {
-                let formattedPrice = price === "gratuit" ? "Gratuit" : `<span class="text-line-through color-red mr-10">${reduc}</span>${price}`;
-
-                let position = name.indexOf("£");
-                if (position !== -1) {
-                    let avant = name.substring(0, position);
-                    let apres = name.substring(position + 1);
-                    name = `${avant} <strong>${apres}</strong>`;
-                }
-
-                $deliveriesTable.append(`
-                    <tr>
-                        <td style="width: 35%" class="text-center">${name}</td>
-                        <td style="width: 20%">${formattedPrice}</td>
-                        <td style="width: 45%">${delay}</td>
-                    </tr>
-                `);
-            });
-
-            $(".deliveriesTable").show();
-            $deliveryCostError.hide();
-        } else {
-            $(".deliveriesTable").hide();
-            $deliveryCostError.show();
-        }
-    } catch (error) {
-        console.error("Erreur lors de la récupération des livraisons :", error);
-    }
-}
