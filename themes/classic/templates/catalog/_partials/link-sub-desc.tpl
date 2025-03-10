@@ -1,7 +1,7 @@
 {if !empty($subcategoryLinks)}
     <div class="category_inline description_souscat">
         {foreach $subcategoryLinks as $link}
-            <a href="{$link.url}" class="item description_souscatconf {$link.class}">
+            <a href="{$link.url}" class="item description_souscatconf {$link.class}" style="max-width: 295px; padding: 0 15px;">
                 <h2>
                     <span class="title">
                         {$link.title nofilter}

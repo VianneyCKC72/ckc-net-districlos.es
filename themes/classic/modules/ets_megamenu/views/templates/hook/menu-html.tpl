@@ -39,14 +39,25 @@
     {*                        </span>*}
     {*        <span class="main_menu_label">Nos produits</span>*}
     {*    </div>*}
+
     <ul class="mm_menus_ul {if isset($mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB) && $mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB} clicktext_show_submenu{/if} {if isset($mm_config.ETS_MM_SHOW_ICON_VERTICAL)&& !$mm_config.ETS_MM_SHOW_ICON_VERTICAL} hide_icon_vertical{/if}">
         <li class="close_menu">
-            <div class="pull-left">
+            <a class="pull-left" href="{$urls.base_url}">
+                <img class="logo img-fluid" src="/img/logo-1739869573.jpg" alt="Districlos" width="178" height="48">
+            </a>
+            <div class="pull-right">
                 <span class="mm_menus_back">
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+{*<svg xmlns="http://www.w3.org/2000/svg" width="16" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20"
                                                                                                       y1="12" y2="12"/><line
-            x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+            x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>*}
+                    <svg class="Header__toggle-svg hamburger add-favori" viewBox="0 0 60 40">
+                        <g stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                            <path class="top-line" d="M10,10 L50,10 Z"></path>
+                            <path class="middle-line" d="M10,20 L50,20 Z"></path>
+                            <path class="bottom-line" d="M10,30 L50,30 Z"></path>
+                        </g>
+                    </svg>
                 </span>
             </div>
         </li>
@@ -60,7 +71,7 @@
                     <span class="mm_menu_content_title">
                         <div>
                             {if $menu.menu_img_link}
-                                <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" title="" alt="" width="20"/>
+                                <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" class="img-menu-desktop-custom" title="" alt="" width="20"/>
 
 
 
@@ -96,6 +107,22 @@
                     {if $menu.tabs}
                         <ul class="mm_columns_ul mm_columns_ul_tab {if $menu.menu_ver_alway_show} mm_columns_ul_tab_content{/if}"
                             style="width:{$menu.sub_menu_max_width|escape:'html':'UTF-8'};{if Configuration::get('ETS_MM_TEXT_FONT_SIZE')} font-size:{Configuration::get('ETS_MM_TEXT_FONT_SIZE')|intval}px;{/if}">
+                            <li class="close_menu close-menu-sub">
+                                <div class="pull-left">
+                                    <img src="/img/mobile-menu-arrow-left.svg" alt="Districlos" width="26px" height="12px">
+                                </div>
+                                <div class="pull-right">
+                                    <span class="mm_menus_back">
+                                        <svg class="Header__toggle-svg hamburger add-favori" viewBox="0 0 60 40">
+                                            <g stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                                                <path class="top-line" d="M10,10 L50,10 Z"></path>
+                                                <path class="middle-line" d="M10,20 L50,20 Z"></path>
+                                                <path class="bottom-line" d="M10,30 L50,30 Z"></path>
+                                            </g>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </li>
                             <li class="mm_tabs_li mm_tabs_has_content back_menu_parent_li back_first">
                                 <span class="back_menu_parent">{$menu.title|escape:'html':'UTF-8'}</span>
                             </li>
@@ -139,12 +166,28 @@
                                                           <path d="M2 12H22"/>
                                                         </svg>
                                                      </span>
-                                                {/if}
+                                                {/if} 
                                             </span>
                                         </span>
                                         </div>
                                         {if $tab.columns}
                                             <ul class="mm_columns_contents_ul ">
+                                                <li class="close_menu close-menu-sub">
+                                                    <div class="pull-left">
+                                                        <img src="/img/mobile-menu-arrow-left-white.svg" alt="Districlos" width="26px" height="12px">
+                                                    </div>
+                                                    <div class="pull-right">
+                                                        <span class="mm_menus_back">
+                                                            <svg class="Header__toggle-svg hamburger add-favori" viewBox="0 0 60 40">
+                                                                <g stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                                                                    <path class="top-line" d="M10,10 L50,10 Z"></path>
+                                                                    <path class="middle-line" d="M10,20 L50,20 Z"></path>
+                                                                    <path class="bottom-line" d="M10,30 L50,30 Z"></path>
+                                                                </g>
+                                                            </svg>
+                                                        </span>
+                                                    </div>
+                                                </li>
                                                 <li class="mm_columns_li column_size_3 back_menu_parent_li">
                                                     <span class="back_menu_parent">{$tab.title|escape:'html':'UTF-8'}</span>
                                                 </li>
@@ -162,6 +205,9 @@
                                                         </li>
                                                     {/if}
                                                 {/foreach}
+                                                <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.base_url}">
+                                                    <img class="logo img-fluid" src="/img/logo-text-white.png" alt="Districlos" width="178" height="48">
+                                                </a>
                                             </ul>
                                         {/if}
 
@@ -169,6 +215,9 @@
 
                                 </li>
                             {/foreach}
+                            <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.base_url}">
+                                <img class="logo img-fluid" src="/img/logo-1739869573.jpg" alt="Districlos" width="178" height="48">
+                            </a>
                         </ul>
                     {/if}
 
@@ -210,7 +259,7 @@
                     <span class="mm_menu_content_title">
                         <div>
                             {if $menu.menu_img_link}
-                                <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" title="" alt="" width="20"/>
+                                <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" class="img-menu-desktop-custom" title="" alt="" width="20"/>
 
 
 {elseif $menu.menu_icon}
@@ -227,6 +276,43 @@
                 </div>
             </li>
         {/foreach}
+        <li class="menu-mobile-custom-container-links mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
+            <div class="menu-mobile-custom-useful-links">
+                <a class="menu-mobile-useful-link" href="{$urls.pages.authentication}?back=my-account&amp;ep=1">
+                    <img src="/img/menu-mobile-espace-pro.svg" alt="espace pro" width="19px" height="18px">
+                    <p>ESPACE<br>
+                        PRO</p>
+                </a>
+                <a class="menu-mobile-useful-link" href="/module/opartdevis/simplequotation">
+                    <img src="/img/menu-mobile-devis.svg" alt="devis" width="20px" height="19px">
+                    <p>DEVIS</p>
+                </a>
+                <a class="menu-mobile-useful-link" href="/content/11-nos-magasins-de-cloture">
+                    <img src="/img/menu-mobile-magasins.svg" alt="magasins" width="19px" height="19px">
+                    <p>MAGASINS</p>
+                </a>
+                <a class="menu-mobile-useful-link" href="{$urls.pages.authentication}?back={$urls.current_url|urlencode}">
+                    <img src="/img/menu-mobile-compte.svg" alt="compte" width="16px" height="19px">
+                    <p>COMPTE</p>
+                </a>
+            </div>
+            <a href="#" class="btn-configurateur-mobile">
+                <div class="text-btn">
+                                <span class="small-text">
+                                    Configurez<br>
+                                </span>
+                    <span class="medium-text">votre clôture</span>
+                </div>
+                <img width="63px" height="63px" alt="cloture" src="/img/menu-mobile-fence.svg">
+            </a>
+            <a href="tel:+33422531034" class="menu-mobile-phone-contact">
+                <img src="/img/menu-mobile-phone.svg" alt="contact téléphone" width="27px" height="25px">
+                <span class="menu-mobile-phone-text">Des questions ?&nbsp;</span>
+                <span class="menu-mobile-phone-number">04 22 53 10 34</span>
+            </a>
+            <img src="/img/menu-mobile-stars.svg" alt="note" width="72px" height="11px" class="menu-mobile-stars">
+            <p class="menu-mobile-note-text">Nos clients sont satisfaits :&nbsp;<span>9.5/10</span></p>
+        </li>
         <li class="mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
             <div class="hide_pro image-fw-mm">
                 <a href="#">
