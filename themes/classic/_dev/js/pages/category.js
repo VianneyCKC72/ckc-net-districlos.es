@@ -70,4 +70,41 @@ $(document).ready(function () {
         content.toggleClass('expanded');
         button.text(content.hasClass('expanded') ? "Voir moins" : "En savoir plus");
     });
+
+    const redirects = {
+        '/3-cloture-rigide/s-1/couleur-vert_6005': '/s/1/cloture-rigide-verte',
+        '/3-cloture-rigide/s-1/couleur-gris_7035': '/s/2/cloture-rigide-gris',
+        '/3-cloture-rigide/s-1/couleur-gris_7016': '/s/2/cloture-rigide-gris',
+        '/3-cloture-rigide/s-1/couleur-blanc_9010': '/s/4/cloture-rigide-blanche',
+        '/3-cloture-rigide/s-1/couleur-noir_9005': '/s/3/cloture-rigide-noir'
+    };
+
+    function redirectTo(url) {
+        window.location.href = window.location.origin + url;
+    }
+
+    function checkAndRedirect(url) {
+        if (redirects[url]) {
+            redirectTo(redirects[url]);
+        }
+    }
+
+    // Observe URL changes
+    let lastUrl = location.pathname + location.search;
+    const observer = new MutationObserver(() => {
+        const currentUrl = location.pathname + location.search;
+        if (currentUrl !== lastUrl) {
+            lastUrl = currentUrl;
+            checkAndRedirect(currentUrl);
+        }
+    });
+
+    observer.observe(document, {subtree: true, childList: true});
+
+    checkAndRedirect(lastUrl);
+
+    function redirectToBase64Url(base64Url) {
+        const decodedUrl = atob(base64Url);
+        window.location.href = decodedUrl;
+    }
 });

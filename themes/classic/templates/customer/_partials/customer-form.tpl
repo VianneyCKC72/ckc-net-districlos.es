@@ -27,47 +27,44 @@
     {include file='_partials/form-errors.tpl' errors=$errors['']}
   {/block}
 
-<form action="{block name='customer_form_actionurl'}{$action}{/block}" id="customer-form" class="js-customer-form" method="post">
-
-  {block name='page_title'}
-
-    {assign var="currentUrl" value="https://"|cat:$smarty.server.HTTP_HOST|cat:$smarty.server.REQUEST_URI}
-
-{*    {if $currentUrl == $urls.pages.identity }*}
-{*      <h1 class="mb-3">Mes informations</h1>*}
-{*    {else}*}
-{*      <h1 class="mb-3">{l s='Create an account' d='Shop.Theme.Customeraccount'}</h1>*}
-
-{*    {/if}*}
-  {/block}
-
-  <div>
-    {block "form_fields"}
-      {foreach from=$formFields item="field"}
-        {block "form_field"}
-          {if $field.type === "password"}
-            <div class="field-password-policy">
-              {form_field field=$field}
-            </div>
-          {else}
-            {form_field field=$field}
-          {/if}
-        {/block}
-      {/foreach}
-      {$hook_create_account_form nofilter}
-    {/block}
-  </div>
-
-  {block name='customer_form_footer'}
-    <footer class="form-footer clearfix">
-      <input type="hidden" name="submitCreate" value="1">
-      {block "form_buttons"}
-        <button class="btn btn-primary form-control-submit float-xs-right" data-link-action="save-customer" type="submit">
-          {l s='Save' d='Shop.Theme.Actions'}
-        </button>
+  <form action="{block name='customer_form_actionurl'}{$action}{/block}" id="customer-form" class="js-customer-form"
+    method="post">
+      {block name='page_title'}
+        {assign var="currentUrl" value="https://"|cat:$smarty.server.HTTP_HOST|cat:$smarty.server.REQUEST_URI}
       {/block}
-    </footer>
-  {/block}
+    <div>
+      {if !isset($show_title) || $show_title}
+        {block name='page_title'}
+          <h1 class="h1 mb-4">Créer un compte</h1>
+        {/block}
+      {/if}
 
-</form>
+      {block "form_fields"}
+        {foreach from=$formFields item="field"}
+          {block "form_field"}
+            {if $field.type === "password"}
+              <div class="field-password-policy">
+                {form_field field=$field}
+              </div>
+            {else}
+              {form_field field=$field}
+            {/if}
+          {/block}
+        {/foreach}
+        {$hook_create_account_form nofilter}
+      {/block}
+    </div>
+
+    {block name='customer_form_footer'}
+      <div class="actions-container-register">
+        <input type="hidden" name="submitCreate" value="1">
+        {block "form_buttons"}
+          <button class="btn btn-primary form-control-submit" data-link-action="save-customer" type="submit">
+            {l s='Save' d='Shop.Theme.Actions'}
+          </button>
+        {/block}
+      </div>
+    {/block}
+
+  </form>
 {/block}

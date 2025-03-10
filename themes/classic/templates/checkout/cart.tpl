@@ -63,21 +63,9 @@
 
             <div>
               <p class="h3">Récapitulatif</p>
-              <div class="d-flex align-items-center mb-2 mt-4">
-                <img src="/themes/classic/assets/img/services/delivery.svg" loading="lazy" alt="">
-                <div class="small ml-4">
-                  Livraison à domicile <span class="font-weight-bold text-secondary">offerte dès 1 499 € TTC</span><br>
-                  <span class="thin">sous 10 jours</span>
-                </div>
-              </div>
-              <a href="#" class="d-block small text-black font-weight-bold">Estimez vos frais de livraison <svg
-                  xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                  class="lucide lucide-move-right ml-2">
-                  <path d="M18 8L22 12L18 16"></path>
-                  <path d="M2 12H22"></path>
-                </svg>
-              </a>
+              {if file_exists($smarty.const._PS_MODULE_DIR_|cat:'ckc_shipping_estimator/views/templates/front/cart/shipping_estimator.tpl')}
+                {include file="module:ckc_shipping_estimator/views/templates/front/cart/shipping_estimator.tpl"}
+              {/if}
             </div>
 
             {block name='hook_shopping_cart'}

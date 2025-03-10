@@ -204,46 +204,10 @@
 
                     {* Start - Inté static *}
                     <div class="d-flex justify-content-between flex-wrap gap-16 mt-4">
-                      <div>
-                        <div class="d-flex align-items-center mb-2">
-                          <img src="/themes/classic/assets/img/services/delivery.svg" loading="lazy" alt="">
-                          <div class="small ml-4">
-                            Livraison à domicile<br>
-                            <span class="font-weight-bold text-secondary">offerte dès 1 499 € TTC</span><br>
-
-                    {if in_array(294,Product::getProductCategories($product->id|intval)) or in_array(295,Product::getProductCategories($product->id|intval)) or in_array(293,Product::getProductCategories($product->id|intval))}
-                              <span class="thin">Sous 3 à 4 semaines.</span>
-
-                    {else}
-                              <span class="thin">Sous 10 jours.</span>
-
-                    {/if}
-                          </div>
-                        </div>
-                        <button type="button" class="d-block small text-black" id="showDelivery">Estimez vos frais de
-                          livraison <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                            stroke-linejoin="round" class="lucide lucide-move-right ml-2">
-                            <path d="M18 8L22 12L18 16" />
-                            <path d="M2 12H22" />
-                          </svg></button>
-                      </div>
-                      <div>
-                        <div class="d-flex align-items-center mb-2">
-                          <img src="/themes/classic/assets/img/services/delivery.svg" loading="lazy" alt="">
-                          <div class="small ml-4">
-                            Stock en magasin<br>
-                            <span class="font-weight-bold text-secondary">719 en stock national</span>
-                          </div>
-                        </div>
-                        <a href="#" class="d-block small text-black">Voir le magasin le plus proche <svg
-                            xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-move-right ml-2">
-                            <path d="M18 8L22 12L18 16" />
-                            <path d="M2 12H22" />
-                          </svg></a>
-                      </div>
+                      {if file_exists($smarty.const._PS_MODULE_DIR_|cat:'ckc_shipping_estimator/views/templates/front/product/shipping_estimator.tpl')}
+                        {include file="module:ckc_shipping_estimator/views/templates/front/product/shipping_estimator.tpl"}
+                      {/if}
+                      {hook h="displayStockButton" product=$product}
                     </div>
                     {* End - Inté static *}
 
@@ -265,12 +229,6 @@
                   {/block}
               </div>
             </div>
-
-                  {block name='product_delivery_modal'}
-
-                    {include file='catalog/_partials/product-delivery-modal.tpl'}
-
-                  {/block}
           </div>
         </div>
         <div class="row">
@@ -295,7 +253,7 @@
 
                       {/if}" data-toggle="tab" href="#description" role="tab" aria-controls="description"
 
-                      {if $product.description} aria-selected="true" 
+                      {if $product.description} aria-selected="true"
                       {/if}>
 
                       {l s='Description' d='Shop.Theme.Catalog'}</a>
@@ -310,7 +268,7 @@
 
                     {/if}" data-toggle="tab" href="#product-details" role="tab" aria-controls="product-details"
 
-                    {if !$product.description} aria-selected="true" 
+                    {if !$product.description} aria-selected="true"
                     {/if}>
 
                     {l s='Product Details' d='Shop.Theme.Catalog'}</a>

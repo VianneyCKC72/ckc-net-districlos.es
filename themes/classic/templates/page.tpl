@@ -26,7 +26,7 @@
 
 {block name='content'}
 
-    <section id="main" class="{if $espace_pro == 1}espace_pro{/if}">
+  <section id="main" class="{if $espace_pro == 1}espace_pro{/if}">
 
     {block name='page_header_container'}
       {block name='page_title' hide}
@@ -37,7 +37,7 @@
     {/block}
 
     {block name='page_content_container'}
-      <div id="content" class="page-content card card-block">
+      <div id="content">
         {block name='page_content_top'}{/block}
         {block name='page_content'}
           <!-- Page content -->
