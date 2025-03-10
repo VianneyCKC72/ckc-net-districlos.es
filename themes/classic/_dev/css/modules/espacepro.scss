@@ -1,4 +1,19 @@
 .espace_pro {
+
+
+  &#authentication, &#registration {
+    #login-form, #registration-form {
+      display: block;
+    }
+
+    .inside-login-form, .inside-register-form {
+      width:100%;
+    }
+  }
+
+  .login-form, .register-form {
+    max-width: none;
+  }
   .card {
     border:none;
   }

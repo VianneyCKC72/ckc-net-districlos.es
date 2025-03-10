@@ -28,10 +28,13 @@
         {include file='_partials/form-errors.tpl' errors=$errors['']}
     {/block}
     <form id="login-form" action="{block name='login_form_actionurl'}{$action}{/block}" method="post">
-        {if $espace_pro != 1 && !isset($show_title) || $show_title}
+        {block name='page_title'}
+            {assign var="currentUrl" value="https://"|cat:$smarty.server.HTTP_HOST|cat:$smarty.server.REQUEST_URI}
+        {/block}
+        {if $espace_pro != 1 && !isset($show_title) || $show_title === false}
             <div class="not-account-yet">
                 <div class="img">
-                    <img src="https://picsum.photos/{rand(300, 600)}/{rand(300, 600)}" alt="" />
+                    <img src="https://picsum.photos/{rand(300, 600)}/{rand(300, 600)}" alt=""/>
                 </div>
                 <div class="inside">
                     <h2 class="mb-4">Pas encore de compte ?</h2>
@@ -42,7 +45,7 @@
             </div>
         {/if}
         <div class="inside-login-form my-4">
-            {if $espace_pro != 1 && !isset($show_title) || $show_title}
+            {if $espace_pro != 1 && !isset($show_title) || $show_title === false}
                 {block name='page_title'}
                     <h1 class="h1 mb-4">Se connecter</h1>
                 {/block}
@@ -55,6 +58,7 @@
                 {/foreach}
             {/block}
 
+            {if $espace_pro != 1}
             <div class="actions-container-login">
                 <a href="{$urls.pages.my_account}" class="btn btn-primary" data-link-action="display-register-form">
                     {l s='Se connecter' d='Shop.Theme.Global'}
@@ -67,7 +71,7 @@
                 <span class="text-important"><strong>Ou bien...</strong></span>
             </div>
         </div>
-
+        {/if}
         {if $espace_pro == 1}
             {include file="customer/_partials/_espacepro/login-form-espacepro.tpl"}
         {/if}

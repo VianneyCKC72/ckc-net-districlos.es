@@ -44,7 +44,7 @@
       </div>
 
       <div class="inside-register-form">
-        {render file='customer/_partials/customer-form.tpl' ui=$register_form}
+        {render file='customer/_partials/customer-form.tpl' ui=$register_form show_title=false}
       </div>
     </section>
   {/block}

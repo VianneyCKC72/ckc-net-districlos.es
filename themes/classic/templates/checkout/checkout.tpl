@@ -36,6 +36,9 @@
       {/block}
     </div>
     <div class="cart-grid-right">
+      <div class="text-right">
+      <a style="margin-bottom:5px; font-size:12px;" href="/"><svg style="max-width: 15px" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>Retour à la boutique</a>
+      </div>
       {block name='cart_summary'}
         {include file='checkout/_partials/cart-summary.tpl' cart=$cart}
       {/block}

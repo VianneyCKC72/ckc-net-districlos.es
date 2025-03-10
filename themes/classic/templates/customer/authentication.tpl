@@ -43,15 +43,15 @@
   {/if}
   {block name='login_form_container'}
     {if $espace_pro == 1}<div class="row">{/if}
-    <section class="login-form{if $espace_pro == 1} col-4{/if}">
+    <section class="login-form{if $espace_pro == 1} col-6{/if}">
       {if $espace_pro == 1}
         <p class="text-center titreForm"><strong>Je me connecte à mon espace</strong></p>
       {/if}
 
-      {render file='customer/_partials/login-form.tpl' ui=$login_form}
+      {render file='customer/_partials/login-form.tpl' ui=$login_form  show_title=false}
     </section>
     {if $espace_pro == 1}
-      <div class="col-8 contenair-img-auth">
+      <div class="col-6 contenair-img-auth">
         <figure>
           <img class="img-connect" alt="Authentification Districlos" src="/img/cms/auth/img-espace-pro.jpeg">
         </figure>

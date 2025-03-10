@@ -43,5 +43,11 @@ $(document).ready(function () {
             $("body").removeClass("no-scroll");
         }
     });
+
+    $("#nav_account").on("click", function (e) {
+        e.preventDefault();
+        $(this).find(' > div').toggleClass('active')
+        $('.row.links').toggleClass('hide_mobile')
+    });
 });
 

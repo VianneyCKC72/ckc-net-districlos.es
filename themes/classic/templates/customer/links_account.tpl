@@ -1,6 +1,16 @@
 <div class="col-md-3">
     {assign var="currentUrl" value="https://"|cat:$smarty.server.HTTP_HOST|cat:$smarty.server.REQUEST_URI}
-    <div class="row links">
+    {if $page.page_name != 'my-account'}
+        <div id="nav_account">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+            <div>
+                <span>Menu</span>
+            </div>
+        </div>
+    {/if}
+
+    <div class="row links  {if  $page.page_name != 'my-account'} hide_mobile{/if}">
+
         <a class="col-12 {if $currentUrl == $urls.pages.identity } active {/if}" id="identity-link" href="{$urls.pages.identity}">
     <span class="link-item">
       {l s='Information' d='Shop.Theme.Customeraccount'}
