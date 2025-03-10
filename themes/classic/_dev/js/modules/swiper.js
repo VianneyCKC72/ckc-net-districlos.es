@@ -36,3 +36,24 @@ document
             }
         );
     });
+
+document
+    .querySelectorAll(".swiper__featured-products .swiper-wrapper")
+    .forEach((wrapper, index) => {
+        console.log(wrapper.querySelector(".swiper-slide"));
+        new Swiper(
+            wrapper.querySelector(".swiper-slide"),
+            {
+                direction: "horizontal",
+                loop: true,
+                slidesPerView: "auto",
+                spaceBetween: 8,
+                watchSlidesProgress: true,
+                slidePerView: 4,
+                navigation: {
+                    nextEl: wrapper.querySelector(".swiper-button-next"),
+                    prevEl: wrapper.querySelector(".swiper-button-prev"),
+                },
+            }
+        );
+    });
