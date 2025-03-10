@@ -24,14 +24,21 @@
  *}
 {extends file='customer/page.tpl'}
 
-{block name='page_title'}
-  {l s='Your vouchers' d='Shop.Theme.Customeraccount'}
-{/block}
 
 {block name='page_content'}
+
+<div class="small_container">
+
+
   {if $cart_rules}
-    <table class="table table-striped table-bordered hidden-sm-down">
-      <thead class="thead-default">
+  <div class="row">
+    {include file='customer/links_account.tpl'}
+    <div class="col-md-8">
+      {block name='page_title'}
+        <h1> {l s='Your vouchers' d='Shop.Theme.Customeraccount'}</h1>
+      {/block}
+      <table class="table table-striped table-bordered hidden-sm-down">
+        <thead class="thead-default">
         <tr>
           <th>{l s='Code' d='Shop.Theme.Checkout'}</th>
           <th>{l s='Name' d='Shop.Theme.Checkout'}</th>
@@ -41,8 +48,8 @@
           <th>{l s='Cumulative' d='Shop.Theme.Checkout'}</th>
           <th>{l s='Expiration date' d='Shop.Theme.Checkout'}</th>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
         {foreach from=$cart_rules item=cart_rule}
           <tr>
             <th scope="row">{$cart_rule.code}</th>
@@ -54,45 +61,52 @@
             <td>{$cart_rule.voucher_date}</td>
           </tr>
         {/foreach}
-      </tbody>
-    </table>
-    <div class="cart-rules hidden-md-up">
-      {foreach from=$cart_rules item=cart_rule}
-        <div class="cart-rule">
-          <ul>
-            <li>
-              <strong>{l s='Code' d='Shop.Theme.Checkout'}</strong>
-              {$cart_rule.code}
-            </li>
-            <li>
-              <strong>{l s='Description' d='Shop.Theme.Checkout'}</strong>
-              {$cart_rule.name}
-            </li>
-            <li>
-              <strong>{l s='Quantity' d='Shop.Theme.Checkout'}</strong>
-              {$cart_rule.quantity_for_user}
-            </li>
-            <li>
-              <strong>{l s='Value' d='Shop.Theme.Checkout'}</strong>
-              {$cart_rule.value}
-            </li>
-            <li>
-              <strong>{l s='Minimum' d='Shop.Theme.Checkout'}</strong>
-              {$cart_rule.voucher_minimal}
-            </li>
-            <li>
-              <strong>{l s='Cumulative' d='Shop.Theme.Checkout'}</strong>
-              {$cart_rule.voucher_cumulable}
-            </li>
-            <li>
-              <strong>{l s='Expiration date' d='Shop.Theme.Checkout'}</strong>
-              {$cart_rule.voucher_date}
-            </li>
-          </ul>
-        </div>
-      {/foreach}
+        </tbody>
+      </table>
+      <div class="cart-rules hidden-md-up">
+        {foreach from=$cart_rules item=cart_rule}
+          <div class="cart-rule">
+            <ul>
+              <li>
+                <strong>{l s='Code' d='Shop.Theme.Checkout'}</strong>
+                {$cart_rule.code}
+              </li>
+              <li>
+                <strong>{l s='Description' d='Shop.Theme.Checkout'}</strong>
+                {$cart_rule.name}
+              </li>
+              <li>
+                <strong>{l s='Quantity' d='Shop.Theme.Checkout'}</strong>
+                {$cart_rule.quantity_for_user}
+              </li>
+              <li>
+                <strong>{l s='Value' d='Shop.Theme.Checkout'}</strong>
+                {$cart_rule.value}
+              </li>
+              <li>
+                <strong>{l s='Minimum' d='Shop.Theme.Checkout'}</strong>
+                {$cart_rule.voucher_minimal}
+              </li>
+              <li>
+                <strong>{l s='Cumulative' d='Shop.Theme.Checkout'}</strong>
+                {$cart_rule.voucher_cumulable}
+              </li>
+              <li>
+                <strong>{l s='Expiration date' d='Shop.Theme.Checkout'}</strong>
+                {$cart_rule.voucher_date}
+              </li>
+            </ul>
+          </div>
+        {/foreach}
+      </div>
     </div>
-  {else}
-    <div class="alert alert-info" role="alert" data-alert="info">{l s='You do not have any vouchers.' d='Shop.Notifications.Warning'}</div>
-  {/if}
-{/block}
+    {else}
+    <div class="row">
+      {include file='customer/links_account.tpl'}
+      <div class="col-md-8">
+        <div class="alert alert-info" role="alert" data-alert="info">{l s='You do not have any vouchers.' d='Shop.Notifications.Warning'}</div>
+      </div>
+    </div>
+    {/if}
+  </div>
+  {/block}

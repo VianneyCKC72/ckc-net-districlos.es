@@ -1,21 +1,62 @@
-#section-lien-cross .elementor-widget-image-box .elementor-image-box-title a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 15px;
+#section-lien-cross {
+  .elementor-widget-container {
+    transition: border 0.4s ease-in-out;
 
-  @media (max-width: 1280px) {
-    font-size: 15px;
+    &:hover {
+      border: 1px solid $primary-color;
+    }
   }
-
-  .link {
-    flex-grow: 1;
+  @media (max-width: 768px) {
+    .elementor-column {
+      width:50%;
+      .elementor-element-populated {
+        padding: 15px;
+        @media (max-width: 420px) {
+          padding: 3px;
+          h3 a {
+            font-size: 11px;
+            line-height: 17px;
+            padding: 0 5px;
+          }
+        }
+        .elementor-image-box-title a .btn-primary-arrow {
+          padding: 2px;
+        }
+      }
+    }
   }
-
-  .btn-primary-arrow {
-    padding: 5px;
+  @media (max-width: 996px) {
+    .elementor-column > .elementor-element-populated {
+      padding: 5px;
+    }
+  }
+  .elementor-widget-image-box .elementor-image-box-title a {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+
+    @media (max-width: 1280px) {
+      font-size: 15px;
+      line-height: 18px;
+    }
+    @media (max-width: 1120px) {
+      font-size: 14px;
+    }
+    @media (max-width: 996px) {
+      font-size: 12px;
+      padding: 0 10px;
+    }
+
+    .link {
+      flex-grow: 1;
+    }
+
+    .btn-primary-arrow {
+      padding: 5px;
+      display: flex;
+      align-items: center;
+    }
   }
 }
 
@@ -332,14 +373,15 @@
     }
     @media (max-width: 640px) {
       .elementor-image > img {
-        margin-bottom:15px;
+        margin-bottom: 15px;
       }
 
       .elementor-col-66,
       .elementor-col-33 {
         width: 100%;
+
         .elementor-element-populated {
-          margin:0;
+          margin: 0;
         }
       }
     }
@@ -350,9 +392,11 @@
   #section-equipe {
     margin-top: 20px;
     margin-bottom: 20px;
+
     .elementor-image {
       margin-bottom: 20px;
     }
+
     .elementor-element > .elementor-element-populated {
       padding: 0;
     }
@@ -369,6 +413,7 @@
   #section-description-magasin {
     margin-top: 20px;
     margin-bottom: 10px;
+
     .elementor-element-populated {
       padding: 0;
     }
@@ -466,4 +511,12 @@
     }
   }
 
+}
+
+#block-magasin-seo {
+  h2,h3,h4 {
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 15px;
+  }
 }

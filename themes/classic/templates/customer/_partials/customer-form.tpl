@@ -28,6 +28,19 @@
   {/block}
 
 <form action="{block name='customer_form_actionurl'}{$action}{/block}" id="customer-form" class="js-customer-form" method="post">
+
+  {block name='page_title'}
+
+    {assign var="currentUrl" value="https://"|cat:$smarty.server.HTTP_HOST|cat:$smarty.server.REQUEST_URI}
+
+{*    {if $currentUrl == $urls.pages.identity }*}
+{*      <h1 class="mb-3">Mes informations</h1>*}
+{*    {else}*}
+{*      <h1 class="mb-3">{l s='Create an account' d='Shop.Theme.Customeraccount'}</h1>*}
+
+{*    {/if}*}
+  {/block}
+
   <div>
     {block "form_fields"}
       {foreach from=$formFields item="field"}

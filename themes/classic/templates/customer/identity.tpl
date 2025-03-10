@@ -29,5 +29,14 @@
 {/block}
 
 {block name='page_content'}
-  {render file='customer/_partials/customer-form.tpl' ui=$customer_form}
+
+  <div class="small_container">
+
+    <div class="row">
+      {include file='customer/links_account.tpl'}
+      <div class="col-md-8">
+        {render file='customer/_partials/customer-form.tpl' ui=$customer_form}
+      </div>
+    </div>
+  </div>
 {/block}

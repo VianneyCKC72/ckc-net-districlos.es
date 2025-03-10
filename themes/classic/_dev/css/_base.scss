@@ -5945,26 +5945,6 @@ body#checkout section.checkout-step .radio-field label {
   margin-top: 0.75rem;
 }
 
-.page-my-account #content .links {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
-  -webkit-box-pack: start;
-  -ms-flex-pack: start;
-  justify-content: flex-start;
-}
-
-.page-my-account #content .links a {
-  display: inline-block;
-  padding: 0 0.9375rem;
-  margin-bottom: 1.875rem;
-  font-size: 1rem;
-  font-weight: 700;
-  text-align: center;
-  text-transform: uppercase;
-}
 
 .page-my-account #content .links a span.link-item {
   display: block;
@@ -5979,6 +5959,53 @@ body#checkout section.checkout-step .radio-field label {
   padding-bottom: 3.4rem;
   font-size: 2.6rem;
 }
+
+
+.page-my-account #content .links {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-box-pack: start;
+  -ms-flex-pack: start;
+  justify-content: flex-start
+}
+
+.page-my-account #content .links a {
+  .link-item {
+    height: 50px;
+    display: flex;
+    padding: 16px 23px;
+    gap: 10px;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 18px;
+    letter-spacing: 0;
+    color: #000000;
+    border-radius: 3px;
+    &.active, &:hover {
+      color: $secondary-color;
+    }
+  }
+}
+
+.page-my-account #content .links a i {
+  display: block;
+  width: 100%;
+  padding-bottom: 3.4rem;
+  font-size: 2.6rem;
+}
+
+#history .orders {
+  margin: 0 -1rem
+}
+
+#history .orders .order {
+  padding: .75rem 1rem;
+  border-bottom: 1px solid white
+}
+
 
 #history .orders {
   margin: 0 -1rem;

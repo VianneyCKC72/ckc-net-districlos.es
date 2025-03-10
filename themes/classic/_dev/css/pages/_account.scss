@@ -1,0 +1,40 @@
+#my-account {
+  .breadcrumb {
+    display: none;
+  }
+
+}
+
+#content-wrapper .links {
+  a {
+
+    .link-item {
+      height: 50px;
+      display: flex;
+      padding: 16px 23px;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 18px;
+      color: $primary-color;
+      border-radius: 3px;
+
+      &.active, &:hover {
+        color: $white;
+        background-color: $primary-color;
+
+        img {
+          filter: invert(1);
+        }
+      }
+
+    }
+  }
+}
+
+#identity {
+  .page-header {
+    display: none;
+  }
+
+}
