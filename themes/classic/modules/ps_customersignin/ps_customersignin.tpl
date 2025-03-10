@@ -37,14 +37,26 @@
 
 <div id="_desktop_user_info">
   <div class="user-info">
-      <a
-        href="{$urls.pages.authentication}?back={$urls.current_url|urlencode}"
-        title="{l s='Log in to your customer account' d='Shop.Theme.Customeraccount'}"
-        class="ico"
-        rel="nofollow"
-      >
-          <img src="/themes/classic/assets/img/ico-compte.png" alt="Espace pro">
-        <span class="hidden-sm-down">{l s='Sign in' d='Shop.Theme.Actions'}</span>
-      </a>
+      {if $logged}
+          <a
+                  class="ico"
+                  href="{$urls.pages.my_account}"
+                  title="{l s='View my customer account' d='Shop.Theme.Customeraccount'}"
+                  rel="nofollow"
+          >
+              <img src="/themes/classic/assets/img/ico-compte.png" alt="Connexion">
+              <span class="hidden-sm-down">Mon compte</span>
+          </a>
+          {else}
+          <a
+                  href="{$urls.pages.authentication}?back={$urls.current_url|urlencode}"
+                  title="{l s='Log in to your customer account' d='Shop.Theme.Customeraccount'}"
+                  class="ico"
+                  rel="nofollow"
+          >
+              <img src="/themes/classic/assets/img/ico-compte.png" alt="Connexion">
+              <span class="hidden-sm-down">{l s='Sign in' d='Shop.Theme.Actions'}</span>
+          </a>
+      {/if}
   </div>
 </div>
