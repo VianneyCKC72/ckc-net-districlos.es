@@ -26,11 +26,10 @@
 
 
 {block name='page_content'}
-
+  {block name='page_title'}
+    <h1>{l s='Your account' d='Shop.Theme.Customeraccount'}</h1>
+  {/block}
   <div class="small_container">
-    {block name='page_title'}
-       {l s='Your account' d='Shop.Theme.Customeraccount'}
-    {/block}
     <div class="row">
       {include file='customer/links_account.tpl'}
     </div>

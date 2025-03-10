@@ -1,40 +1,152 @@
-#my-account {
+#my-account, .page-addresses, #address {
   .breadcrumb {
     display: none;
   }
 
 }
 
-#content-wrapper .links {
-  a {
-
-    .link-item {
-      height: 50px;
-      display: flex;
-      padding: 16px 23px;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 15px;
-      line-height: 18px;
-      color: $primary-color;
-      border-radius: 3px;
-
-      &.active, &:hover {
-        color: $white;
-        background-color: $primary-color;
-
-        img {
-          filter: invert(1);
-        }
-      }
+.small_container {
+  max-width: 1420px;
+  margin: 0 auto;
+  .entete {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-bottom:30px;
+  }
+  .content_right {
+    h2 {
+      font-weight: 600;
+      font-size: 35px;
+      letter-spacing: 0;
+      vertical-align: middle;
 
     }
   }
 }
 
+#content-wrapper .links {
+  a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    min-height: 50px;
+    margin-bottom: 5px;
+    color:black;
+    .link-item {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 400;
+      font-size: 16px;
+      letter-spacing: 0;
+      line-height: 18px;
+      border-radius: 3px;
+      position: relative;
+      padding: 16px 23px 16px 36px;
+      color:black;
+      &::before {
+        content: "";
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 13px;
+        height: 13px;
+        background-color: black;
+        border-radius: 1px;
+      }
+    }
+    &.active, &:hover {
+      color: $white;
+      background-color: $primary-light-color;
+      border-radius: 30px;
+      img {
+        filter: invert(1);
+      }
+
+      &::before {
+        background-color: $white;
+      }
+    }
+  }
+}
+
+
 #identity {
   .page-header {
     display: none;
   }
+}
 
+.page-addresses {
+  .address {
+    .address-body {
+      .head-addresses {
+        display:flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap:15px;
+        margin-bottom:15px;
+        h4 {
+          font-weight: 600;
+          font-size: 16px;
+          line-height: 20px;
+          vertical-align: middle;
+          text-transform: uppercase;
+          margin-bottom:0;
+        }
+        .badge {
+          font-weight: 700;
+          font-size: 10px;
+          line-height: 10px;
+          letter-spacing: 0;
+          vertical-align: middle;
+          background:$secondary-color;
+          color:white;
+          width: 138px;
+          height: 30px;
+          gap: 10px;
+          border-radius: 20px;
+          padding: 10px 20px;
+        }
+      }
+      address {
+        min-height: 9rem;
+        font-weight: 400;
+        font-size: 13px;
+        line-height: 20px;
+        vertical-align: middle;
+        padding: 30px 20px;
+        background: #F6F2EB;
+        color: black;
+        margin-bottom:0;
+        .label-name {
+          text-transform: capitalize;
+        }
+        &.default {
+          background: $secondary-color;
+          color: #FFFFFF;
+        }
+      }
+    }
+  }
+  .address-footer {
+    color:black;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 20px;
+    letter-spacing: 0;
+    vertical-align: middle;
+    span {
+      color:black;
+    }
+    svg {
+      color:black;
+      width: 10px;
+      height:auto;
+    }
+  }
 }

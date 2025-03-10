@@ -27,37 +27,47 @@
 
 
 {block name='page_content'}
-  <div class="small_container">
+    {block name='page_title'}
+        <h1>{l s='Your account' d='Shop.Theme.Customeraccount'}</h1>
+    {/block}
+    <div class="small_container">
 
-    <div class="row">
-      {include file='customer/links_account.tpl'}
-      <div class="col-md-8">
-        <div class="content_right">
+        <div class="row">
+            {include file='customer/links_account.tpl'}
+            <div class="col-md-9">
+                <div class="content_right">
 
-          {block name='page_title'}
-            <h1>{l s='Your addresses' d='Shop.Theme.Customeraccount'}</h1>
-          {/block}
-          {if $customer.addresses}
-            {foreach $customer.addresses as $address}
-              <div class="col-lg-6 col-md-6 col-sm-6">
-                {block name='customer_address'}
-                  {include file='customer/_partials/block-address.tpl' address=$address}
-                {/block}
-              </div>
-            {/foreach}
-          {else}
-            <div class="alert alert-info" role="alert" data-alert="info">
-              {l s='No addresses are available.' d='Shop.Notifications.Success'} <a href="{$urls.pages.address}" title="{l s='Add a new address' d='Shop.Theme.Actions'}">{l s='Add a new address' d='Shop.Theme.Actions'}</a>
+                    {block name='page_title'}
+                        <div class="entete">
+                            <h2>{l s='Your addresses' d='Shop.Theme.Customeraccount'}</h2>
+                            <a href="{$urls.pages.address}" class="btn-primary btn">+ Créer une nouvelle adresse</a>
+                        </div>
+                    {/block}
+
+                    {if $customer.addresses}
+                        {foreach $customer.addresses as $address}
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                {block name='customer_address'}
+                                    {include file='customer/_partials/block-address.tpl' address=$address}
+                                {/block}
+                            </div>
+                        {/foreach}
+                    {else}
+                        <div class="alert alert-info" role="alert" data-alert="info">
+                            {l s='No addresses are available.' d='Shop.Notifications.Success'} <a
+                                    href="{$urls.pages.address}"
+                                    title="{l s='Add a new address' d='Shop.Theme.Actions'}">{l s='Add a new address' d='Shop.Theme.Actions'}</a>
+                        </div>
+                    {/if}
+                    <div class="clearfix"></div>
+                    <div class="addresses-footer">
+                        <a class="btn btn_style_5 w-auto text-white " href="{$urls.pages.address}"
+                           data-link-action="add-address">
+                            {l s='Create new address' d='Shop.Theme.Actions'}
+                        </a>
+                    </div>
+                </div>
             </div>
-          {/if}
-          <div class="clearfix"></div>
-          <div class="addresses-footer">
-            <a class="btn btn_style_5 w-auto text-white " href="{$urls.pages.address}" data-link-action="add-address">
-              {l s='Create new address' d='Shop.Theme.Actions'}
-            </a>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
 {/block}

@@ -26,16 +26,18 @@
 
 
 {block name='page_content'}
-
+  {block name='page_title'}
+    <h1>{l s='Your account' d='Shop.Theme.Customeraccount'}</h1>
+  {/block}
   <div class="small_container">
 
     <div class="row">
       {include file='customer/links_account.tpl'}
-      <div class="col-md-8">
+      <div class="col-md-9">
         <div class="content_right">
 
           {block name='page_title'}
-            <h1>{l s='Order history' d='Shop.Theme.Customeraccount'}</h1>
+            <h2>{l s='Order history' d='Shop.Theme.Customeraccount'}</h2>
           {/block}
           <h6>{l s='Here are the orders you\'ve placed since your account was created.' d='Shop.Theme.Customeraccount'}</h6>
 

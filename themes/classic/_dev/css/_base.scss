@@ -3454,54 +3454,54 @@ a.tag:hover {
 }
 
 .alert-success {
-  background-color: #dff0d8;
-  border-color: #d0e9c6;
-  color: #3c763d;
+  background-color: lighten($secondary-color, 35%); // Un vert clair basé sur $secondary-color
+  border-color: lighten($secondary-color, 20%);
+  color: darken($secondary-color, 20%);
 }
 
 .alert-success hr {
-  border-top-color: #c1e2b3;
+  border-top-color: lighten($secondary-color, 25%);
 }
 
 .alert-success .alert-link {
-  color: #2b542c;
+  color: darken($secondary-color, 30%);
 }
 
 .alert-info {
-  background-color: #d9edf7;
-  border-color: #bcdff1;
-  color: #31708f;
+  background-color: lighten($primary-light-color, 40%); // Un bleu clair basé sur $primary-light-color
+  border-color: lighten($primary-light-color, 20%);
+  color: darken($primary-light-color, 20%);
 }
 
 .alert-info hr {
-  border-top-color: #a6d5ec;
+  border-top-color: lighten($primary-light-color, 25%);
 }
 
 .alert-info .alert-link {
-  color: #245269;
+  color: darken($primary-light-color, 30%);
 }
 
 .alert-warning {
-  background-color: rgba(255, 154, 82, 0.3);
-  border-color: #ff9a52;
+  background-color: rgba($pro-color, 0.3); // Utilisation de $pro-color avec opacité
+  border-color: $pro-color;
 }
 
 .alert-warning hr {
-  border-top-color: #ff8b39;
+  border-top-color: darken($pro-color, 10%);
 }
 
 .alert-danger {
-  background-color: rgba($red, 0.1);
-  border-color: rgba($red, 0.3);
-  color: $red;
+  background-color: lighten($red, 35%); // Un rouge clair basé sur $red
+  border-color: lighten($red, 20%);
+  color: darken($red, 20%);
 }
 
 .alert-danger hr {
-  border-top-color: #e4b9b9;
+  border-top-color: lighten($red, 25%);
 }
 
 .alert-danger .alert-link {
-  color: #843534;
+  color: darken($red, 30%);
 }
 
 .progress {
@@ -5770,10 +5770,6 @@ body#checkout section.checkout-step .radio-field label {
   background: #fff;
 }
 
-.page-addresses .address .address-body {
-  padding: 1rem;
-}
-
 .page-addresses .address .address-body h4,
 .page-order-detail .addresses h4,
 .page-order-detail h3 {
@@ -5787,21 +5783,12 @@ body#checkout section.checkout-step .radio-field label {
 
 .page-addresses .address .address-footer {
   padding: 0.5rem 1rem;
-  border-top: 1px solid #7a7a7a;
 }
 
 .page-addresses .address .address-footer a {
-  margin-right: 0.5rem;
+  margin-right: 1rem;
 }
 
-.page-addresses .address .address-footer a span {
-  font-size: 0.9375rem;
-  vertical-align: middle;
-}
-
-.page-addresses .addresses-footer {
-  margin: 0 0.9375rem;
-}
 
 #order-return-infos .thead-default th,
 .page-addresses .addresses-footer a,
@@ -5936,58 +5923,6 @@ body#checkout section.checkout-step .radio-field label {
 #order-return-infos .customization,
 .page-order-detail .customization {
   margin-top: 0.75rem;
-}
-
-
-.page-my-account #content .links a span.link-item {
-  display: block;
-  height: 100%;
-  padding: 1rem;
-  background: #fff;
-}
-
-.page-my-account #content .links a i {
-  display: block;
-  width: 100%;
-  padding-bottom: 3.4rem;
-  font-size: 2.6rem;
-}
-
-
-.page-my-account #content .links {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
-  -webkit-box-pack: start;
-  -ms-flex-pack: start;
-  justify-content: flex-start
-}
-
-.page-my-account #content .links a {
-  .link-item {
-    height: 50px;
-    display: flex;
-    padding: 16px 23px;
-    gap: 10px;
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 18px;
-    letter-spacing: 0;
-    color: #000000;
-    border-radius: 3px;
-    &.active, &:hover {
-      color: $secondary-color;
-    }
-  }
-}
-
-.page-my-account #content .links a i {
-  display: block;
-  width: 100%;
-  padding-bottom: 3.4rem;
-  font-size: 2.6rem;
 }
 
 #history .orders {

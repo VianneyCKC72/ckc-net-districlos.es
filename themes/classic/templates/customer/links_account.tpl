@@ -1,4 +1,4 @@
-<div class="col-md-4">
+<div class="col-md-3">
     {assign var="currentUrl" value="https://"|cat:$smarty.server.HTTP_HOST|cat:$smarty.server.REQUEST_URI}
     <div class="row links">
         <a class="col-12" id="identity-link" href="{$urls.pages.identity}">
@@ -25,7 +25,7 @@
         {if !$configuration.is_catalog}
             <a class="col-12" id="history-link" href="{$urls.pages.history}">
       <span class="link-item {if $currentUrl == $urls.pages.history } active {/if}">
-        {l s='Order history and details' d='Shop.Theme.Customeraccount'}
+        Mes commandes
       </span>
             </a>
         {/if}
@@ -56,7 +56,7 @@
 
         <a class="col-12" id="returns-link" href="/module/psgdpr/gdpr">
       <span class="link-item {if $currentUrl == 'https://mosaic.ckc-net.com/module/psgdpr/gdpr' } active {/if}">
-        RGPD
+        Mes données personnelles
       </span>
         </a>
 
