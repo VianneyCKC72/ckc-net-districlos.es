@@ -26,24 +26,13 @@
 
 
 {block name='page_content'}
-  {block name='page_title'}
-    <h1>{l s='Your account' d='Shop.Theme.Customeraccount'}</h1>
-  {/block}
-  <div class="small_container">
-    <div class="row">
-      {include file='customer/links_account.tpl'}
+    {block name='page_title'}
+        <h1>{l s='Your account' d='Shop.Theme.Customeraccount'}</h1>
+    {/block}
+    <div class="small_container">
+        <div class="row">
+            {include file='customer/links_account.tpl'}
+
+        </div>
     </div>
-  </div>
-
-{/block}
-
-
-{block name='page_footer'}
-  {block name='my_account_links'}
-    <div class="text-sm-center">
-      <a href="{$urls.actions.logout}" >
-        {l s='Sign out' d='Shop.Theme.Actions'}
-      </a>
-    </div>
-  {/block}
 {/block}

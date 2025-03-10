@@ -22,12 +22,29 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
-{extends 'customer/page.tpl'}
-
-{block name='page_title'}
-  {l s='Your personal information' d='Shop.Theme.Customeraccount'}
-{/block}
+{extends file='customer/page.tpl'}
 
 {block name='page_content'}
-  {render file='customer/_partials/customer-form.tpl' ui=$customer_form}
+  {block name='page_title'}
+    <h1>{l s='Your account' d='Shop.Theme.Customeraccount'}</h1>
+  {/block}
+
+  <div class="small_container">
+    <div class="row">
+      {include file='customer/links_account.tpl'}
+      <div class="col-md-9">
+        <div class="content_right">
+          {block name='page_title'}
+            <div class="entete">
+              <h2>{l s='Your personal information' d='Shop.Theme.Customeraccount'}</h2>
+            </div>
+          {/block}
+
+          <div class="identity-form">
+            {render file='customer/_partials/customer-form.tpl' ui=$customer_form show_title=false}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 {/block}

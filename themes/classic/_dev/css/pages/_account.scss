@@ -1,8 +1,7 @@
-#my-account, .page-addresses, #address {
+#my-account, .page-addresses, #address, #module-psgdpr-gdpr, #order-slip, #module-opartdevis-listquotation {
   .breadcrumb {
     display: none;
   }
-
 }
 
 .small_container {
@@ -63,6 +62,14 @@
       color: $white;
       background-color: $primary-light-color;
       border-radius: 30px;
+      span, .link-item {
+        color: $white;
+        .link-item {
+          &:before {
+            background:white;
+          }
+        }
+      }
       img {
         filter: invert(1);
       }
