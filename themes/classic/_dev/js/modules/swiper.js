@@ -38,21 +38,33 @@ document
     });
 
 document
-    .querySelectorAll(".swiper__featured-products .swiper-wrapper")
+    .querySelectorAll(".wrapper__swiper__featured-products")
     .forEach((wrapper, index) => {
-        console.log(wrapper.querySelector(".swiper-slide"));
         new Swiper(
-            wrapper.querySelector(".swiper-slide"),
+            wrapper.querySelector(".swiper__featured-products"),
             {
                 direction: "horizontal",
                 loop: true,
-                slidesPerView: "auto",
+                slidesPerView: 4,
                 spaceBetween: 8,
                 watchSlidesProgress: true,
-                slidePerView: 4,
                 navigation: {
                     nextEl: wrapper.querySelector(".swiper-button-next"),
                     prevEl: wrapper.querySelector(".swiper-button-prev"),
+                },
+                breakpoints: {
+                    320: {
+                        slidesPerView: 1,
+                    },
+                    480: {
+                        slidesPerView: 2,
+                    },
+                    768: {
+                        slidesPerView: 3,
+                    },
+                    992: {
+                        slidesPerView: 4,
+                    },
                 },
             }
         );
