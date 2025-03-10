@@ -166,7 +166,7 @@
                                                           <path d="M2 12H22"/>
                                                         </svg>
                                                      </span>
-                                                {/if} 
+                                                {/if}
                                             </span>
                                         </span>
                                         </div>

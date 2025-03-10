@@ -25,11 +25,22 @@
                 {if $block.title_link}<a href="{$block.title_link|escape:'html':'UTF-8'}" {if Configuration::get('ETS_MM_TEXTTITLE_FONT_SIZE')} style="font-size:{Configuration::get('ETS_MM_TEXTTITLE_FONT_SIZE')|intval}px"{/if}>{/if}
                     {$block.title|escape:'html':'UTF-8'}
                     {if $block.title_link}</a>{/if}
+                        <span class="arrow YES closed niveau3 arrow-sub-menu-mobile-hide">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                viewBox="0 0 24 24" fill="none" stroke="white"
+                                stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="lucide lucide-move-right">
+                              <path d="M18 8L22 12L18 16"/>
+                              <path d="M2 12H22"/>
+                            </svg>
+                         </span>
             </span>
         {/if}
         <div class="ets_mm_block_content">        
             {if $block.block_type=='CATEGORY'}
-                {if isset($block.categoriesHtml)}{$block.categoriesHtml nofilter}{/if}
+                {if isset($block.categoriesHtml)}
+                    {$block.categoriesHtml nofilter}
+                {/if}
             {elseif $block.block_type=='MNFT'}
                 {if isset($block.manufacturers) && $block.manufacturers}
                     <ul {if isset($block.display_mnu_img) && $block.display_mnu_img}class="mm_mnu_display_img"{/if}>
