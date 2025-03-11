@@ -6,7 +6,8 @@
 
     <form id="login-form" action="{$action}" method="post">
         <input type="hidden" name="submitLogin" value="1">
-        {if $espace_pro != true && (!isset($show_title) || $show_title)}
+
+        {if $espace_pro != true && (!isset($show_title) || $show_title===false)}
             <div class="not-account-yet">
                 <div class="img">
                     <img src="https://picsum.photos/{rand(300, 600)}/{rand(300, 600)}" alt="" />
@@ -21,7 +22,7 @@
         {/if}
 
         <div class="inside-login-form my-4">
-            {if $espace_pro != 1 && !isset($show_title) || $show_title}
+            {if $espace_pro != true && (!isset($show_title) || $show_title===false)}
                 {block name='page_title'}
                     <h1 class="h1 mb-4">Se connecter</h1>
                 {/block}
