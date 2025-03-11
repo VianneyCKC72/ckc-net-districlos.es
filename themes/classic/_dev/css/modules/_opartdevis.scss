@@ -1,0 +1,206 @@
+#module-opartdevis-simplequotation {
+
+  #left-column,
+  #notifications {
+    display: none !important;
+  }
+
+  .layout-left-column #content-wrapper {
+    width: 100% !important;
+  }
+
+  #iframe_devis {
+    background-image: url('../img/background_devis.jpg');
+    height: auto;
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    background-size: 80%;
+    padding: 45px 60px 45px 0;
+  }
+
+  #uperiaIframe {
+    width: 100%;
+    height: 700px;
+
+    #uperiaIframeContent {
+      border: none;
+    }
+  }
+
+  .form_uperia_container {
+    width: 40%;
+    background: white;
+    text-align: center;
+
+    h2 {
+      font-size: 40px;
+      padding: 15px 15px 0 15px;
+      text-transform: uppercase;
+    }
+  }
+
+  #block-reassurance {
+    height: 40%;
+    border: 8px solid #026473;
+    width: 35%;
+
+    ul {
+      width: 100%;
+      height: 100%;
+    }
+
+    img {
+      width: 88px;
+      height: 88px;
+    }
+
+    span {
+      font-weight: bold;
+    }
+
+    .block-reassurance-row {
+      height: calc(50% - .5px);
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      li {
+        width: 50%;
+        height: 100%;
+      }
+    }
+
+    .block-reassurance-separator {
+      width: 100%;
+      height: 1px;
+      background: rgba(2, 100, 115, 0.2);
+    }
+  }
+
+  .devis_entete {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .devis_title h1 {
+    color: #79C046;
+  }
+
+  .devis_description {
+    color: white;
+  }
+
+  .quotation_label {
+    margin-bottom: 5px;
+  }
+
+  .devis_box_left,
+  .devis_box_right {
+    cursor: pointer;
+  }
+
+  .element {
+    border: 1px solid #ACACAC;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .grid-cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+
+    @media screen and (max-width: 768px) {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
+
+  .gap-2 {
+    gap: 1rem;
+  }
+
+  .main_grid {
+    padding: 1rem;
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 1rem;
+
+    button {
+      display: inline-flex;
+      height: 35px;
+      justify-content: center;
+      margin: 0 2px;
+      width: 40px;
+      color: #000;
+      background-color: #7cbb3d;
+      font-size: 1rem;
+      border-radius: .25rem;
+      transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+
+      &.disabled {
+        opacity: .3;
+      }
+    }
+  }
+
+  .form-control {
+    display: flex;
+    flex-direction: column;
+    border: unset;
+
+    label {
+      text-align: left;
+    }
+
+    input, textarea {
+      border: 1px solid #ACACAC;
+      resize: none;
+    }
+  }
+
+  .error {
+    border: 1px solid red !important;
+  }
+
+  .error-message {
+    color: red;
+    font-size: 0.8em;
+    display: none;
+  }
+
+  @media screen and (max-width: 1199px) {
+    #iframe_devis {
+      flex-direction: column-reverse;
+      background-image: none;
+      gap: 20px;
+      width: 100%;
+    }
+
+    #block-reassurance {
+      width: 60%;
+    }
+  }
+
+  @media screen and (max-width: 500px) {
+    #layerslider_2 {
+      display: none;
+    }
+
+    .form_uperia_container {
+      width: 100%;
+    }
+
+    #iframe_devis {
+      padding: 0;
+    }
+
+    #block-reassurance {
+      width: 100%;
+    }
+  }
+}

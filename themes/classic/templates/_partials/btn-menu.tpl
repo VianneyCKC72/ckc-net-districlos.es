@@ -1,5 +1,5 @@
 <div class="ybc-menu-toggle ybc-menu-btn closed">
-    <div class="mm_modal_filter"></div>
+{*    <div class="mm_modal_filter"></div>*}
     <span class="ybc-menu-button-toggle_icon">
         <svg class="Header__toggle-svg hamburger" viewbox="0 0 60 40">
             <g stroke="#000" stroke-width="4" stroke-linecap="round"

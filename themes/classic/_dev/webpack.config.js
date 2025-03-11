@@ -10,6 +10,7 @@ let config = {
         theme: [
             "./js/theme.js",
             "./js/modules/facet.js",
+            "./js/modules/opartdevis.js",
             "./js/modules/swiper.js",
             "./js/pages/product.js",
             "./js/composents/header.js",

@@ -30,6 +30,7 @@ $output-bourbon-deprecation-warnings: false !default;
 @import "modules/facette.scss";
 @import "modules/avisverifie.scss";
 @import "modules/magasins.scss";
+@import "modules/opartdevis.scss";
 
 @import "pages/homepage.scss";
 @import "pages/category.scss";
@@ -59,50 +60,5 @@ $output-bourbon-deprecation-warnings: false !default;
         margin-right: 16px;
       }
     }
-  }
-}
-
-.swiper-button-prev:after,
-.swiper-button-next:after {
-  display: none;
-}
-.swiper-button-prev,
-.swiper-button-next {
-  color: $white;
-  background-color: $primary-color;
-  border-radius: 100%;
-  height: 35px !important;
-  width: 35px!important;
-  padding: 8px;
-  transition: all 0.3s;
-  &:hover {
-    background-color: darken($primary-color, 10%);
-  }
-  &:focus,
-  &:active {
-    background-color: lighten($primary-color, 5%) !important;
-  }
-}
-.kitcontent a {
-  color:black;
-}
-.kitcontent{position:relative;text-align:center}
-span.nbrcontent{background-color:#026473;color:#FFF;font-weight:800;margin-top:18px;padding:5px 40px}
-.kitcontent p{font-size:.8em;line-height:1.2rem;text-align:left}
-.kitcontent h5{font-weight:600;margin:10px 0 7px}
-.kitcontent img{padding-top:10px;width:50%}
-.kitcontent{display:flex;flex-direction:column;position:relative;text-align:center}
-.kitcontent h5{height:60px}
-.kitcontent img,#everpspopup_block_center.fancybox-content .container{margin:auto}
-.descr_contenance .descrL_product {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-bottom: 2rem;
-}
-@media screen and (min-width: 544px) {
-  .descrL_product {
-    column-gap: 1em;
-    grid-template-columns: repeat(1, 1fr);
-    row-gap: 2em;
   }
 }
