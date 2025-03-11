@@ -238,6 +238,8 @@ class ModuleRepository implements ModuleRepositoryInterface
     private function getModuleAttributes(string $moduleName, bool $isValid): array
     {
         $attributes = [];
+
+
         if ($isValid) {
             try {
                 $tmpModule = ModuleLegacy::getInstanceByName($moduleName);
@@ -249,9 +251,14 @@ class ModuleRepository implements ModuleRepositoryInterface
                     $attributes[$attribute] = $tmpModule->{$attribute};
                 }
             }
-            $attributes['parent_class'] = get_parent_class($tmpModule);
-            $attributes['is_paymentModule'] = is_subclass_of($tmpModule, 'PaymentModule');
-            $attributes['is_configurable'] = method_exists($tmpModule, 'getContent');
+
+
+            if(!empty($tmpModule)) {
+                $attributes['parent_class'] = get_parent_class($tmpModule);
+                $attributes['is_paymentModule'] = is_subclass_of($tmpModule, 'PaymentModule');
+                $attributes['is_configurable'] = method_exists($tmpModule, 'getContent');
+            } else
+                return [];
         }
 
         return $attributes;

@@ -26,12 +26,6 @@
 {if !$env_pro}
     {if $tmhomeslider.slides}
         <div class="flexslider flexslider-desktop" data-interval="{$tmhomeslider.speed}" data-pause="{$tmhomeslider.pause}" style="min-height: 291px">
-            <div class="loadingdiv"></div>
-            {if $tmhomeslider.slides[0]}
-                <div class="loadingdiv">
-                    <img src="{$tmhomeslider.slides[0].image_url}" alt="{$tmhomeslider.slides[0].legend}" />
-                </div>
-            {/if}
             <ul class="slides">
                 {foreach from=$tmhomeslider.slides item=slide}
                     <li class="slide">

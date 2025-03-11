@@ -4,6 +4,17 @@
       min-height: auto !important;
     }
   }
+
+  @media (max-width: 768px) {
+
+  }
+
+
+  Districlos, votre expert clôtures, portails et brise-vues depuis plus de 10 ans.
+  .ce-widgets-space--gap > .elementor-column-wrap > .elementor-widget-wrap {
+    gap: var(--ce-widgets-space, 0px);
+  }
+
   @media (max-width: 1024px) {
     #liste-category-home {
       .elementor-container {
