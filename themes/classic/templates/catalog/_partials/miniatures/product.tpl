@@ -61,7 +61,7 @@
                         {/if}
                     {/block}
 
-                    {if !$product.main_variants}
+                    {if $product.main_variants}
                         <div class="highlighted-informations">
                             {block name='product_variants'}
                                 {if $product.main_variants}

@@ -3454,7 +3454,10 @@ a.tag:hover {
 }
 
 .alert-success {
-  background-color: lighten($secondary-color, 35%); // Un vert clair basé sur $secondary-color
+  background-color: lighten(
+    $secondary-color,
+    35%
+  ); // Un vert clair basé sur $secondary-color
   border-color: lighten($secondary-color, 20%);
   color: darken($secondary-color, 20%);
 }
@@ -3468,7 +3471,10 @@ a.tag:hover {
 }
 
 .alert-info {
-  background-color: lighten($primary-light-color, 40%); // Un bleu clair basé sur $primary-light-color
+  background-color: lighten(
+    $primary-light-color,
+    40%
+  ); // Un bleu clair basé sur $primary-light-color
   border-color: lighten($primary-light-color, 20%);
   color: darken($primary-light-color, 20%);
 }
@@ -3482,7 +3488,10 @@ a.tag:hover {
 }
 
 .alert-warning {
-  background-color: rgba($pro-color, 0.3); // Utilisation de $pro-color avec opacité
+  background-color: rgba(
+    $pro-color,
+    0.3
+  ); // Utilisation de $pro-color avec opacité
   border-color: $pro-color;
 }
 
@@ -4793,7 +4802,7 @@ a.bg-inverse:hover {
 }
 
 .font-weight-semibold {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .font-italic {
@@ -5793,7 +5802,6 @@ body#checkout section.checkout-step .radio-field label {
   margin-right: 1rem;
 }
 
-
 #order-return-infos .thead-default th,
 .page-addresses .addresses-footer a,
 .page-addresses .addresses-footer a:hover,
@@ -5930,14 +5938,13 @@ body#checkout section.checkout-step .radio-field label {
 }
 
 #history .orders {
-  margin: 0 -1rem
+  margin: 0 -1rem;
 }
 
 #history .orders .order {
-  padding: .75rem 1rem;
-  border-bottom: 1px solid white
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid white;
 }
-
 
 #history .orders {
   margin: 0 -1rem;
@@ -6262,7 +6269,7 @@ body#checkout section.checkout-step .radio-field label {
   z-index: 2;
   width: 100%;
   height: auto;
-  padding: 0.625rem 0;
+  padding: 1rem 0;
   text-align: center;
   background: rgb(255 255 255);
   -webkit-transition: 0.3s;
