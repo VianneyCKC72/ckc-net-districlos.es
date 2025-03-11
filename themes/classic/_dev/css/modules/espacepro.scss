@@ -1,5 +1,24 @@
 .espace_pro {
-
+  .contenair-img img {
+    max-width: 240px;
+    border-radius: 5px;
+  }
+  .title_descr{
+    color:white;
+    float: left;
+    margin-top: 30px !important;
+    width: 100%;
+    font-size: 20px;
+  }
+  .cont-btn-submit {
+    display: flex;
+    flex-direction: column;
+    float: right;
+    justify-content: center;
+    margin-left: 15px;
+    margin-top: 3%;
+    text-align: center;
+  }
 
   &#authentication, &#registration {
     #login-form, #registration-form {
@@ -261,13 +280,6 @@
   .margin-bottom-80 {
     margin-bottom: 80px;
   }
-
-  .btn-custom {
-    background-color: $pro-color;
-    border: 1px solid $pro-color;
-    color: $white;
-    font-weight: 700;
-  }
 }
 
 .custom-file-upload {
@@ -340,6 +352,7 @@
         width: 220px;
         align-items: center;
         gap: 15px;
+        border-radius: 5px;
       }
     }
 

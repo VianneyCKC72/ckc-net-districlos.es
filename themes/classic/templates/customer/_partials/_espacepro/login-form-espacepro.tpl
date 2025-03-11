@@ -10,7 +10,7 @@
 
             <div class="cont-btn-submit">
                 <span class="green"><strong>100€ offert !</strong></span>
-                <a href="/authentification?create_account=1&ep=1" class="btn btn-secondary"
+                <a href="/inscription?create_account=1&ep=1" class="btn btn-secondary"
                    id="inscription">Créer un compte</a>
             </div>
             </div>
