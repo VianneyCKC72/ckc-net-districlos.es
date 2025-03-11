@@ -25,7 +25,7 @@
 <div class="product-line-grid">
   <!--  product line left content: image-->
   <div class="product-line-grid-left">
-    <div class="product-image media-middle">
+    <a href="{$product.url}" class="product-image media-middle">
       {if $product.default_image}
         <picture>
           {if !empty($product.default_image.bySize.cart_default.sources.avif)}
@@ -44,7 +44,7 @@
           <img src="{$urls.no_picture_image.bySize.cart_default.url}" loading="lazy" />
         </picture>
       {/if}
-    </div>
+    </a>
 
     <div class="product-details d-flex flex-column">
       <div class="product-line-info">
