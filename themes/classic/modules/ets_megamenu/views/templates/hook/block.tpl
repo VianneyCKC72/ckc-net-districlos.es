@@ -18,7 +18,7 @@
  * @license    Valid for 1 website (or project) for each purchase of license
  */
 *}
-{if isset($block) && $block && $block.enabled}    
+{if isset($block) && $block && $block.enabled}
     <div class="ets_mm_block mm_block_type_{strtolower($block.block_type)|escape:'html':'UTF-8'}">
         {if $block.display_title && $block.display_title == true}
             <span class="h4" {if Configuration::get('ETS_MM_TEXTTITLE_FONT_SIZE')} style="font-size:{Configuration::get('ETS_MM_TEXTTITLE_FONT_SIZE')|intval}px"{/if}>
@@ -36,7 +36,7 @@
                          </span>
             </span>
         {/if}
-        <div class="ets_mm_block_content">        
+        <div class="ets_mm_block_content">
             {if $block.block_type=='CATEGORY'}
                 {if isset($block.categoriesHtml)}
                     {$block.categoriesHtml nofilter}
@@ -96,7 +96,7 @@
                     <span class="mm_img_content">
                         <img src="{$block.image|escape:'html':'UTF-8'}" alt="{$block.title|escape:'html':'UTF-8'}" />
                     </span>
-                {if $block.image_link}</a>{/if}{/if}
+                    {if $block.image_link}</a>{/if}{/if}
             {elseif $block.block_type=='PRODUCT'}
                 {if isset($block.productsHtml)}{$block.productsHtml nofilter}{/if}
             {else}
