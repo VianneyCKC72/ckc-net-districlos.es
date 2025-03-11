@@ -23,7 +23,8 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 {block name='product_miniature_item'}
-    <div class="js-product product {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')} list_view col-12 {else}{if !empty($productClasses)} {$productClasses} {/if} {/if}">
+    <div
+        class="js-product product {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')} list_view col-12 {else}{if !empty($productClasses)} {$productClasses} {/if} {/if}">
         <article class="product-miniature js-product-miniature" data-id-product="{$product.id_product}"
             data-id-product-attribute="{$product.id_product_attribute}">
             <div class="thumbnail-container">
@@ -60,19 +61,15 @@
                         {/if}
                     {/block}
 
-                    <div class="highlighted-informations{if !$product.main_variants} no-variants{/if}">
-                        {* {block name='quick_view'}
-                            <a class="quick-view js-quick-view" href="#" data-link-action="quickview">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> {l s='Quick view' d='Shop.Theme.Actions'}
-                            </a>
-                        {/block} *}
-
-                        {block name='product_variants'}
-                            {if $product.main_variants}
-                                {include file='catalog/_partials/variant-links.tpl' variants=$product.main_variants}
-                            {/if}
-                        {/block}
-                    </div>
+                    {if !$product.main_variants}
+                        <div class="highlighted-informations">
+                            {block name='product_variants'}
+                                {if $product.main_variants}
+                                    {include file='catalog/_partials/variant-links.tpl' variants=$product.main_variants}
+                                {/if}
+                            {/block}
+                        </div>
+                    {/if}
                 </div>
 
                 <div class="product-description">
@@ -135,7 +132,7 @@
                     <a href="{$product.url}" class="btn btn-primary">Voir le produit</a>
                 </div>
 
-{*                {include file='catalog/_partials/product-flags.tpl'}*}
+                {*                {include file='catalog/_partials/product-flags.tpl'}*}
             </div>
         </article>
     </div>
