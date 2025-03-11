@@ -206,6 +206,10 @@ $(function () {
                 var btnObj = $(this).closest('.ybc-menu-toggle');
                 btnObj.removeClass('closed').addClass('opened');
                 $('body').addClass('menu-opened');
+                if($(this).hasClass('ybc-menu-button-toggle_icon')){
+                    btnMobileCustom = $('.close_menu .mm_menus_back');
+                    btnMobileCustom.addClass('opened').removeClass('closed');
+                }
 
                 wrapper.stop(true, true).addClass('active');
                 $('#netreviewsWidgetNum28990widget03av').hide();
@@ -245,6 +249,10 @@ $(function () {
                 var btnObj = $(this);
                 btnObj.removeClass('opened');
                 btnObj.addClass('closed');
+                if($(this).hasClass('mm_menus_back')){
+                    btnMainCustom = $('.menu-button.d-md-none .ybc-menu-toggle');
+                    btnMainCustom.removeClass('opened').addClass('closed');
+                }
                 $('body').removeClass('menu-opened');
                 $('#netreviewsWidgetNum28990widget03av').show()
 

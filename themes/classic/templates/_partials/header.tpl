@@ -27,7 +27,7 @@
 
                     <div class="displayTop">
                         {hook h='displayTop'}
-                        <a href="#" class="btn btn-primary btn-configurateur">
+                        <a href="/configurateur" class="btn btn-primary btn-configurateur">
                             <div class="text-btn">
                                 <span class="small-text">
                                     Configurez<br>

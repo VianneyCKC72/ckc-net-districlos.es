@@ -4792,6 +4792,10 @@ a.bg-inverse:hover {
   font-weight: 700;
 }
 
+.font-weight-semibold {
+    font-weight: 600;
+}
+
 .font-italic {
   font-style: italic;
 }
@@ -8386,7 +8390,6 @@ body#checkout section.checkout-step .radio-field label {
 
 #header .header-nav .blockcart {
   position: relative;
-  background: #f6f6f6;
 }
 
 #header .header-nav .blockcart a:hover {
