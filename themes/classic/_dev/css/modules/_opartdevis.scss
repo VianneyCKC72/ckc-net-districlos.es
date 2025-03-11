@@ -1,5 +1,4 @@
 #module-opartdevis-simplequotation {
-
   #left-column,
   #notifications {
     display: none !important;
@@ -10,7 +9,7 @@
   }
 
   #iframe_devis {
-    background-image: url('../img/background_devis.jpg');
+    // background-image: url('../img/background_devis.jpg');
     height: auto;
     background-repeat: no-repeat;
     background-position: bottom right;
@@ -59,7 +58,7 @@
     }
 
     .block-reassurance-row {
-      height: calc(50% - .5px);
+      height: calc(50% - 0.5px);
       width: 100%;
       display: flex;
       justify-content: center;
@@ -85,7 +84,7 @@
   }
 
   .devis_title h1 {
-    color: #79C046;
+    color: #79c046;
   }
 
   .devis_description {
@@ -102,7 +101,7 @@
   }
 
   .element {
-    border: 1px solid #ACACAC;
+    border: 1px solid #acacac;
     padding: 1rem;
     text-align: center;
     cursor: pointer;
@@ -139,11 +138,12 @@
       color: #000;
       background-color: #7cbb3d;
       font-size: 1rem;
-      border-radius: .25rem;
-      transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+      border-radius: 0.25rem;
+      transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+        border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
       &.disabled {
-        opacity: .3;
+        opacity: 0.3;
       }
     }
   }
@@ -157,8 +157,9 @@
       text-align: left;
     }
 
-    input, textarea {
-      border: 1px solid #ACACAC;
+    input,
+    textarea {
+      border: 1px solid #acacac;
       resize: none;
     }
   }
