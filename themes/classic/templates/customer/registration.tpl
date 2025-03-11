@@ -28,9 +28,7 @@
   {block name='register_form_container'}
     {$hook_create_account_top nofilter}
     <section class="register-form" id="registration-form">
-      {* <p>{l s='Already have an account?' d='Shop.Theme.Customeraccount'} <a
-          href="{$urls.pages.authentication}">{l s='Log in instead!' d='Shop.Theme.Customeraccount'}</a></p> *}
-
+      
       <div class="already-account">
         <div class="img">
           <img src="https://picsum.photos/{rand(300, 600)}/{rand(300, 600)}" alt="" />
