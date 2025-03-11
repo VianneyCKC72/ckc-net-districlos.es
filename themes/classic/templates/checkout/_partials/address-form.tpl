@@ -18,20 +18,20 @@
     {if $type === "delivery"}
       <div class="form-group row">
         <div class="col-md-9 col-md-offset-3">
-          <input name="use_same_address" id="use_same_address" type="checkbox" value="1" {if $use_same_address} checked
-            {/if}>
-          <label for="use_same_address">{l s='Use this address for invoice too' d='Shop.Theme.Checkout'}</label>
-
-
           <span class="custom-checkbox">
-                <input id="conditions_to_approve[{$condition_name}]" name="conditions_to_approve[{$condition_name}]" required
-                  type="checkbox" value="1" class="ps-shown-by-js">
-                <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
-                    class="lucide lucide-check checkbox-checked">
-                    <path d="M20 6 9 17l-5-5" />
-                  </svg></span>
+            <label for="use_same_address">
+              <input name="use_same_address" id="use_same_address" type="checkbox" value="1" {if $use_same_address} checked
+                {/if}>
+              <span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-check checkbox-checked">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
               </span>
+              {l s='Use this address for invoice too' d='Shop.Theme.Checkout'}
+            </label>
+          </span>
         </div>
       </div>
     {/if}
