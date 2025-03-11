@@ -5,7 +5,7 @@
     }
   }
   @media (max-width: 1024px) {
-    .elementor-element-5089e70f {
+    #liste-category-home {
       .elementor-container {
         overflow-x: auto;
         scroll-snap-type: x mandatory;
@@ -53,17 +53,28 @@
   }
 
   @media (max-width: 768px) {
-    .elementor-element-5089e70f {
+    #liste-category-home {
       .elementor-container {
         .elementor-top-column {
           flex: 0 0 60%;
+        }
+      }
+
+      #bloc-seo-footer .elementor-row {
+        flex-direction: column;
+        .elementor-col-50{
+          width: 100%;
+          margin-bottom: 20px;
+        }
+        .elementor-widget-container{
+          padding: 0;
         }
       }
     }
   }
 
   @media (max-width: 460px) {
-    .elementor-element-5089e70f {
+    #liste-category-home {
       .elementor-container {
         .elementor-top-column {
           flex: 0 0 80%;
@@ -115,7 +126,7 @@
     max-width: 362px;
 
   }
-  .elementor-element-5089e70f .btn-primary-arrow {
+  #liste-category-home .btn-primary-arrow {
     position: absolute;
     border: 0;
     bottom: 20px;

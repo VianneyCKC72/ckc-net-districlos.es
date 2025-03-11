@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Calque_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20.93 20.93">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        font-family: OpenSans-Extrabold, 'Open Sans';
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: -.02em;
+      }
+
+      .cls-2 {
+        fill: #8abe03;
+      }
+    </style>
+  </defs>
+  <circle class="cls-2" cx="10.47" cy="10.47" r="10.47"/>
+  <text class="cls-1" transform="translate(1.62 12.97)"><tspan x="0" y="0">10x</tspan></text>
+</svg>
