@@ -87,7 +87,7 @@
               <path class="st0" d="M19.8,6.5c-3.2,0-5.8,2.6-5.8,5.8s2.6,5.8,5.8,5.8c3.2,0,5.8-2.6,5.8-5.8S23,6.5,19.8,6.5z M22.4,12.9h-1.9v1.9
                 h-1.3v-1.9h-1.9v-1.2h1.9V9.8h1.3v1.9h1.9V12.9z" />
             </svg>
-            {l s='Add to cart' d='Shop.Theme.Actions'}
+            <span class="add-to-cart-text">{l s='Add to cart' d='Shop.Theme.Actions'}</span>
           </button>
         </div>
 

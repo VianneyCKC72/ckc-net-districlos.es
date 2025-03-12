@@ -101,12 +101,21 @@
         <div class="banner-quick-view-content">
           <div class="price-name">
             {include file='catalog/_partials/product-prices/has-discount.tpl'}
-            {block name='page_header_container'}
-              {block name='page_header'}
-                <h2 class="h2 mb-0">{block name='page_title'}{$product.name}{/block}</h2>
-                <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
-              {/block}
-            {/block}
+            <div class="d-flex justify-content-between gap-16">
+              <div>
+                {block name='page_header_container'}
+                  {block name='page_header'}
+                    <h2 class="h2 mb-0">{block name='page_title'}{$product.name}{/block}</h2>
+                    <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
+                  {/block}
+                {/block}
+              </div>
+              <div class="price">
+                {block name='product_price'}
+                  {include file='catalog/_partials/product-prices/price.tpl'}
+                {/block}
+              </div>
+            </div>
           </div>
           <div class="product-price-add-to-cart">
             <div class="price">

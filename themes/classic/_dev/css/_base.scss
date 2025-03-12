@@ -6192,7 +6192,7 @@ body#checkout section.checkout-step .radio-field label {
 
 .product-miniature .thumbnail-container:focus .highlighted-informations,
 .product-miniature .thumbnail-container:hover .highlighted-informations {
-  top: unquote("calc(100% - 2.75rem)");
+  top: unquote("calc(100% - 3.5rem)");
 }
 
 .product-miniature .thumbnail-container:focus .highlighted-informations::after,
@@ -6206,7 +6206,7 @@ body#checkout section.checkout-step .radio-field label {
 .product-miniature
   .thumbnail-container:hover
   .highlighted-informations.no-variants {
-  top: unquote("calc(100% - 2.75rem)");
+  top: unquote("calc(100% - 3.5rem)");
 }
 
 .product-miniature .thumbnail-container .product-thumbnail {
