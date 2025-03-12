@@ -142,6 +142,7 @@
     }
     .swiper-button-prev,
     .swiper-button-next {
+      color: $white;
       left: 50%;
       transform: translateX(-50%) rotate(90deg);
     }
