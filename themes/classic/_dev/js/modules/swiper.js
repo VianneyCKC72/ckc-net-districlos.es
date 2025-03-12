@@ -15,7 +15,7 @@ document
                 direction: "vertical",
                 loop: true,
                 slidesPerView: "auto",
-                spaceBetween: 8,
+                spaceBetween: 24,
                 watchSlidesProgress: true,
                 navigation: {
                     nextEl: wrapper.querySelector(".swiper-button-next"),
@@ -46,7 +46,7 @@ document
                 direction: "horizontal",
                 loop: true,
                 slidesPerView: 4,
-                spaceBetween: 8,
+                spaceBetween: 24,
                 watchSlidesProgress: true,
                 navigation: {
                     nextEl: wrapper.querySelector(".swiper-button-next"),
