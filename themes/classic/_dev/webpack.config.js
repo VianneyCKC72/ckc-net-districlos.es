@@ -13,6 +13,7 @@ let config = {
             "./js/modules/opartdevis.js",
             "./js/modules/swiper.js",
             "./js/modules/social.js",
+            "./js/modules/faq.js",
             "./js/pages/product.js",
             "./js/composents/header.js",
             "./js/pages/homepage.js",
