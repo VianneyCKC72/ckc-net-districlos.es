@@ -1,20 +1,27 @@
 .stars__item {
-  background: white !important; /* Fond blanc */
+  background: transparent !important;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 2px;
-  border-radius: 50%; /* Si besoin */
+}
+
+.skeepers_product__stars .stars__item .star-svg {
+  width: 100% !important;
+  height: auto !important;
+  margin-top: 0 !important;
 }
 
 .star-svg path {
   fill: $secondary-color !important; /* Étoile jaune */
 }
-.rate-aggregate, .rate-aggregate__separator, .rate-aggregate__max {
-  display:none !important;
+.rate-aggregate,
+.rate-aggregate__separator,
+.rate-aggregate__max {
+  display: none !important;
 }
 
-.rate-total, .stars__rating {
+.rate-total,
+.stars__rating {
   font-weight: 500;
   font-size: 13px;
   line-height: 16px;
