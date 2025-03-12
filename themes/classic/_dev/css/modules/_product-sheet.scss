@@ -292,6 +292,12 @@
   z-index: 100;
   padding-top: 16px;
   padding-bottom: 16px;
+  opacity: 0;
+  visibility: hidden;
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
   @media screen and (max-width: 768px) {
     padding-top: 8px;
     padding-bottom: 8px;
