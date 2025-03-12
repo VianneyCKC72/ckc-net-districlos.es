@@ -11,6 +11,7 @@ html {
   font-family: "Poppins", sans-serif;
   color: $black;
   background: $white;
+  scroll-behavior: smooth;
   ::-moz-selection {
     background: rgba(2, 100, 115, 0.25);
   }
