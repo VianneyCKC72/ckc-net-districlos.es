@@ -260,9 +260,16 @@
 
 .color-variants {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  column-gap: 64px;
+  column-gap: 16px;
   row-gap: 16px;
+  @include media-breakpoint-up(md) {
+    column-gap: 32px;
+  }
+  @include media-breakpoint-up(xl) {
+    column-gap: 64px;
+  }
   .color-variant {
     display: flex;
     align-items: center;
