@@ -4,7 +4,9 @@
   line-height: 22px;
   color: black;
   margin-bottom: 50px;
-
+  strong {
+    font-weight: 700 !important;
+  }
   .category_inline.description_souscat {
     display: flex;
     align-items: center;
@@ -90,7 +92,7 @@
       }
 
       &.bck-blue {
-        background: $primary-color;
+        background: #026473;
         max-width: 245px;
         @media (max-width: 768px) {
           max-width: none;
@@ -111,12 +113,15 @@
 
           h2 {
             span {
-              color: $primary-color;
+              color: #026473;
             }
           }
 
           .btn-primary-arrow {
             background: $primary-color;
+            &.blue-light {
+              background: $primary-light-color;
+            }
 
             svg {
               color: white;

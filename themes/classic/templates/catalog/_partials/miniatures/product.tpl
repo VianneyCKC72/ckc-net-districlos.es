@@ -77,10 +77,10 @@
                         {block name='product_name'}
                             {if $page.page_name == 'index'}
                                 <h3 class="h3 product-title"><a href="{$product.url}"
-                                        content="{$product.url}">{$product.name|truncate:30:'...'}</a></h3>
+                                        content="{$product.url}">{$product.name}</a></h3>
                             {else}
                                 <h2 class="h3 product-title"><a href="{$product.url}"
-                                        content="{$product.url}">{$product.name|truncate:30:'...'}</a></h2>
+                                        content="{$product.url}">{$product.name}</a></h2>
                             {/if}
                         {/block}
 

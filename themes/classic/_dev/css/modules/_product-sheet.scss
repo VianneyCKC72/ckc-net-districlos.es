@@ -359,6 +359,94 @@
   }
 }
 
+.descrL_product {
+  column-gap: 1em;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 2em;
+}
+
+span.nbrcontent {
+  padding: 5px 10px;
+}
+
+.descr_product_distri {
+  table {
+    font-size: 87%;
+  }
+}
+
+.descrL_color {
+  column-gap: 10px;
+  font-size: 80%;
+  row-gap: 10px;
+  text-align: center;
+}
+
+.descr_couleur {
+  border: 1px solid #000;
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+  justify-content: center;
+  padding: 10px;
+  text-align: center;
+  width: auto !important;
+
+  &.descr_couleur_gris {
+    background-color: #303030;
+    color: #fff;
+  }
+
+  &.descr_couleur_noir {
+    background-color: #000;
+    padding: 10px;
+  }
+
+  &.descr_couleur_blanc {
+    background-color: #fff;
+    padding: 10px;
+    margin-bottom: 5px;
+  }
+
+  &.descr_couleur_vert {
+    background-color: #004c17;
+    color: #fff;
+  }
+  p {
+    border: unset;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: normal;
+    margin-top: 1rem;
+    padding: 5px;
+    > span {
+      display: block;
+      font-size: 15px;
+    }
+  }
+}
+
+@media screen and (min-width: 544px) {
+  .title_descr {
+    text-align: left;
+  }
+}
+
+.descrL_conseil {
+  column-gap: 4em;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 100%;
+}
+
+.descr_color,.descr_table,.descr_infosupp,.descr_conseils,.text_card_payment div{margin-top:30px}
+.descrL_color {
+  column-gap: 1em;
+  display: grid;
+  grid-template-columns: repeat(8,1fr);
+  row-gap: 3em;
+  width: 100%;
+}
 .skeepers_product__stars {
   .review__header {
     margin-bottom: 0;

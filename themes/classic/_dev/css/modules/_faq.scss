@@ -11,6 +11,10 @@
     margin-right: -5px;
     width: 60.38px;
   }
+
+  @media screen and (max-width: 768px) {
+      flex-direction: column;
+  }
 }
 
 #block-reassurance-FAQ {

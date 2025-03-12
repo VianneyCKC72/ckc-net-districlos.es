@@ -104,13 +104,18 @@ body#module-opartdevis-createquotation {
   }
 
   .green_bubble {
-    background: #79C046;
+    background: #79c046;
     border-radius: 50%;
     color: #fff;
     font-family: Arial, sans-serif;
-    font-size: 41px;
+    font-size: 26px;
     font-weight: 700;
-    padding: 30px
+    padding: 20px;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .title_blue {
