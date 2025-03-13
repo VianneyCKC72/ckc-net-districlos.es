@@ -13,10 +13,12 @@
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     padding: 10px 0px;
     z-index: 1000;
+
     .header-top {
-    padding-top: 5px!important;
-    padding-bottom: 5px!important;
+      padding-top: 5px !important;
+      padding-bottom: 5px !important;
     }
+
     .logo img {
       width: 140px;
       transition: width 0.3s ease-in-out;

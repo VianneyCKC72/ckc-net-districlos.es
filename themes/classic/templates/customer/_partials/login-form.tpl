@@ -45,6 +45,7 @@
                         {l s='Forgot your password?' d='Shop.Theme.Customeraccount'}
                     </a>
                 </div>
+                <p class="txt_ou_bien text-center"><strong>Ou bien...</strong></p>
             </div>
         </div>
 

@@ -32,6 +32,7 @@
                     {block name='product_thumbnail'}
                         {if $product.cover}
                             <a href="{$product.url}" class="thumbnail product-thumbnail">
+                                <img class="tag-web-price tag-web-price-miniature" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
                                 <picture>
                                     {if !empty($product.cover.bySize.medium_default.sources.avif)}
                                     <source srcset="{$product.cover.bySize.medium_default.sources.avif}" type="image/avif">{/if}
