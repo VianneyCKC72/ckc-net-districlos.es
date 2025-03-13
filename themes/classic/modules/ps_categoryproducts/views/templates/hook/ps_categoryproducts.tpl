@@ -24,11 +24,7 @@
  *}
 <section class="featured-products my-section">
   <h2 class="h2">
-    {if $products|@count == 1}
-      {l s='%s other product in the same category:' sprintf=[$products|@count] d='Shop.Theme.Catalog'}
-    {else}
-      {l s='%s other products in the same category:' sprintf=[$products|@count] d='Shop.Theme.Catalog'}
-    {/if}
+    Dans la même catégorie
   </h2>
   {include file="catalog/_partials/productlist-slider.tpl" products=$products}
 </section>

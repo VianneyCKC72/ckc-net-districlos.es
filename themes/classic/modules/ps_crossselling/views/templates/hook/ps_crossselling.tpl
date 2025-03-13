@@ -24,6 +24,8 @@
  *}
 
 <section class="featured-products my-section">
-  <h2 class="h2">{l s='Customers who bought this product also bought:' d='Shop.Theme.Catalog'}</h2>
+  <h2 class="h2">
+    Nos clients ont également acheté
+  </h2>
   {include file="catalog/_partials/productlist-slider.tpl" products=$products}
 </section>

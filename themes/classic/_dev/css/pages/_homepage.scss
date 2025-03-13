@@ -9,6 +9,14 @@
 
   }
 
+
+  .swiper-slide {
+    height : auto;
+  }
+  .swiper-slide .js-product.product  {
+    height:100%
+  }
+
   .ce-widgets-space--gap > .elementor-column-wrap > .elementor-widget-wrap {
     gap: var(--ce-widgets-space, 0px);
   }
