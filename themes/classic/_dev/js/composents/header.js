@@ -51,5 +51,21 @@ $(document).ready(function () {
             $('.row.links').toggleClass('hide_mobile')
         });
     });
+
+    $(document).ready(function () {
+        var $header = $("#header");
+        var $promoBar = $("#ckcpromobarre");
+        var stickyOffset = $header.offset().top + ($promoBar.length ? $promoBar.outerHeight() : 0);
+
+        $(window).on("scroll", function () {
+            if ($(window).scrollTop() > stickyOffset) {
+                $header.addClass("sticky");
+            } else {
+                $header.removeClass("sticky");
+            }
+        });
+    });
+
+
 });
 
