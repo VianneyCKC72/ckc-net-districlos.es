@@ -76,7 +76,7 @@ if (typeof jQuery !== 'undefined') {
                 av_widget_click();
             } else {
                 $('html,body').animate({
-                    scrollTop: $("#AV_widget_iframe").offset().top
+                    scrollTop: $(".nav-link.avisVerfies").offset().top
                 }, 'slow');
             }
         });
