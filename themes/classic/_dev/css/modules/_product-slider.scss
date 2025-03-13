@@ -89,3 +89,10 @@
     background-color: lighten($primary-color, 5%) !important;
   }
 }
+#product .fancybox__carousel .fancybox__track .fancybox__slide .fancybox__content{
+  min-width: 70%;
+  min-height: 70%;
+}
+#product .fancybox__carousel .fancybox__nav .f-button svg{
+  stroke: #fff;
+}
