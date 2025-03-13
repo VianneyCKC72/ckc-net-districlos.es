@@ -94,7 +94,7 @@
                                             {$smarty.capture.custom_price nofilter}
                                         {else}
                                             {$product.price}
-                                        {/if}
+                                        {/if} <span class="ttc-miniuature-product">TTC</span>
                                     </span>
 
                                     {if $product.has_discount}
