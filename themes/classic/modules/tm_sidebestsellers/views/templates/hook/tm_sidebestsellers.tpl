@@ -24,7 +24,7 @@
 *}
 <div class="sidebar-bestseller block">
     <h4 class="block_title hidden-md-down">{l s='Nos meilleures ventes' d='Shop.Theme.Global'}</h4>
-    <h4 class="block_title hidden-lg-up" data-target="#block_bestseller_toggle" data-toggle="collapse">{l s='Best Sellers' d='Shop.Theme.Global'}
+    <h4 class="block_title hidden-lg-up" data-target="#block_bestseller_toggle" data-toggle="collapse">{l s='Nos meilleures ventes' d='Shop.Theme.Global'}
         <span class="pull-xs-right">
       <span class="navbar-toggler collapse-icons">
       <i class="material-icons add">&#xE313;</i>
@@ -91,13 +91,12 @@
                                     </div>
                                 {/if}
                             {/block}
+                            <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
                         </div>
-
-
                     </div>
                 </div>
             {/foreach}
         </div>
-        <a href="{$allBestSellers}" class="allproducts btn-primary btn">{l s='All best sellers' d='Shop.Theme.Global'}</a>
+        {*<a href="{$allBestSellers}" class="allproducts btn-primary btn">{l s='All best sellers' d='Shop.Theme.Global'}</a>*}
     </div>
 </div>

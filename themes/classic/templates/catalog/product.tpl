@@ -395,6 +395,21 @@
                     {/if}
                   {/block}
 
+                  <div class="tab-pane fade in" id="avisverifies" role="tabpanel">
+                    <section class="avisverifies d-flex">
+
+                      <div class="skeepers_product__reviews"
+                           data-product-id="{$product.id}"
+                           data-locale="fr_FR"
+                           data-price="{$product.price}"
+                           data-currency="{$currency.iso_code}"
+                           data-name="{$product.title}"
+                           data-url="{$urls.current_url}"
+                           data-image-url="{$urls.no_picture_image.bySize.large_default.url}"></div>
+
+                    </section>
+                  </div>
+
                   {foreach from=$product.extraContent item=extra key=extraKey}
                     <div class="tab-pane fade in {$extra.attr.class}" id="extra-{$extraKey}" role="tabpanel"
                       {foreach $extra.attr as $key => $val} {$key}="{$val}" {/foreach}>

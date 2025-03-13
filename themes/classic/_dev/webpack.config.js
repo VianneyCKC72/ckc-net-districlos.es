@@ -14,6 +14,7 @@ let config = {
             "./js/modules/swiper.js",
             "./js/modules/social.js",
             "./js/modules/faq.js",
+            "./js/modules/avis.js",
             "./js/pages/product.js",
             "./js/composents/header.js",
             "./js/pages/homepage.js",
