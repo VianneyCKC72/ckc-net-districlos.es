@@ -11487,7 +11487,8 @@ $(document).ready(function () {
 
     if ($quantityInput.length && $increaseBtn.length && $decreaseBtn.length) {
         $increaseBtn.on("click", function () {
-            $quantityInput[0].stepUp(); // jQuery retourne un objet, on accède au DOM avec [0]
+            // commenté parce qu'il est en double et provoque un bug
+            /* $quantityInput[0].stepUp();*/ // jQuery retourne un objet, on accède au DOM avec [0]
         });
 
         $decreaseBtn.on("click", function () {
