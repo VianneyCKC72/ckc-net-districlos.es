@@ -75,6 +75,7 @@ if (typeof jQuery !== 'undefined') {
             if(!$(this).parent().parent().hasClass("product-information") && !$(this).parent().parent().parent().hasClass("product-information")){
                 av_widget_click();
             } else {
+                $("li.nav-item .nav-link.avisVerfies").click();
                 $('html,body').animate({
                     scrollTop: $(".nav-link.avisVerfies").offset().top
                 }, 'slow');
