@@ -51,7 +51,6 @@
             {/if}
           {/block}
         {/foreach}
-        {$hook_create_account_form nofilter}
       {/block}
     </div>
 
@@ -65,6 +64,8 @@
         {/block}
       </div>
     {/block}
+
+    {$hook_create_account_form nofilter}
 
   </form>
 {/block}

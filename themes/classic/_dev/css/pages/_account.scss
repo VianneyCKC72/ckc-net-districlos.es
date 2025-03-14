@@ -219,7 +219,7 @@
     }
   }
 }
-.actions-container-login .txt_ou_bien {
+.txt_ou_bien {
   font-weight: 600;
   font-size: 20px;
   line-height: 18px;
@@ -233,4 +233,11 @@
 #authentication .ets_solo_social_wrapper.lgp {
   border-bottom:none !important;
   margin-bottom: 0;
+}
+
+.custom-checkbox label em {
+  float: left;
+  display: block;
+  margin-top: 2px;
+  padding-left: 30px;
 }

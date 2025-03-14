@@ -19,6 +19,7 @@ let config = {
             "./js/composents/header.js",
             "./js/pages/homepage.js",
             "./js/pages/category.js",
+            "./js/pages/register.js",
             "./css/theme.scss"
         ],
         error: ["./css/error.scss"],
