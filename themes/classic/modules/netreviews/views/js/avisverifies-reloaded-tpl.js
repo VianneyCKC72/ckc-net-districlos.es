@@ -74,10 +74,6 @@ if (typeof jQuery !== 'undefined') {
         $("div.product-container div.skeepers_product__stars").on("click", function () {
             if(!$(this).parent().parent().hasClass("product-information") && !$(this).parent().parent().parent().hasClass("product-information")){
                 av_widget_click();
-            } else {
-                $('html,body').animate({
-                    scrollTop: $(".nav-link.avisVerfies").offset().top
-                }, 'slow');
             }
         });
     });
