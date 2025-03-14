@@ -518,5 +518,7 @@
   position: absolute;
   margin-left: 5px;
 }
-
+#category .container:has(#AV_widget_iframe){
+  display: none;
+}
 
