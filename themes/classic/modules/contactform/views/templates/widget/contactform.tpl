@@ -133,5 +133,8 @@
     {/if}
 
   </form>*}
+  <div class="img-container-contact">
+    <img src="/img/cms/procard-contactform.jpg" alt="contacter nous" width="571" height="818">
+  </div>
   [contact-form-7 id="1"]
 </section>
