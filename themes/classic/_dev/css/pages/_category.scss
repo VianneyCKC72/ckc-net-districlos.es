@@ -518,7 +518,14 @@
   position: absolute;
   margin-left: 5px;
 }
-#category .container:has(#AV_widget_iframe){
+.container:has(#AV_widget_iframe) .only-category-block{
   display: none;
+}
+#category .container #AV_widget_iframe,
+#category .container .banner__newsletter{
+  display: none;
+}
+#category .container:has(#AV_widget_iframe) .only-category-block{
+  display: block;
 }
 
