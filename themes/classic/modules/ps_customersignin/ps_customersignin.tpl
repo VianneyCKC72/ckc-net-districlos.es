@@ -1,10 +1,11 @@
 {**
- * 2007-2017 PrestaShop
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
  *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.txt.
+ * that is bundled with this package in the file LICENSE.md.
  * It is also available through the world-wide-web at this URL:
  * https://opensource.org/licenses/AFL-3.0
  * If you did not receive a copy of the license and are unable to
@@ -15,48 +16,47 @@
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://devdocs.prestashop.com/ for more information.
  *
- * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2007-2017 PrestaShop SA
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
- * International Registered Trademark & Property of PrestaShop SA
  *}
+<a href="{$urls.pages.authentication}?back=my-account&amp;ep=1" class="ico btn-espace-pro">
+    <img src="/themes/classic/assets/img/ico-espace-pro.png" alt="Connexion à Espace pro">
+    <span class="text">Espace pro</span>
+</a>
+<a href="/module/opartdevis/simplequotation" class="ico btn-devis">
+    <img src="/themes/classic/assets/img/ico-devis.png" alt="Page de de demande de Devis">
+    <span class="text">Devis</span>
+</a>
+<a href="/content/11-nos-magasins-de-cloture" class="ico btn-magasin">
+    <img src="/themes/classic/assets/img/ico-magasins.png" alt="Consultez nos magasins">
+    <span class="text">Magasins</span>
+</a>
+
 <div id="_desktop_user_info">
-    <div class="tm_userinfotitle"><div class="bg-img"></div> {*{l s='my account' d='Shop.Theme.Global'}*}<i class="material-icons">&#xE313;</i></div><span class="distri_userinfotitle">Compte</span>
-   <ul class="user-info">
-    {if $logged}
-      <a
-        class="account"
-        href="{$my_account_url}"
-        title="{l s='View my customer account' d='Shop.Theme.Global'}"
-        rel="nofollow"
-      >
-        <i class="material-icons logged">&#xE7FF;</i>
-        <span class="hidden-md-down">Mon compte</span>
-      </a>
-            <a
-        class="logout hidden-md-down"
-        href="{$logout_url}"
-        rel="nofollow"
-      >
-        <i class="material-icons">&#xe898;</i>
-        {l s='Sign out' d='Shop.Theme.Global'}
-      </a>
-    {else}
-      <a
-        href="{$my_account_url}"
-        title="{l s='Log in to your customer account' d='Shop.Theme.Global'}"
-        rel="nofollow"
-      >
-        <i class="material-icons">&#xe899;</i>
-        <span class="hidden-md-down">{l s='Sign in' d='Shop.Theme.Global'}</span>
-      </a>
-    {/if}
-
-     <div class="head-compare">
+  <div class="user-info">
+      {if $logged}
+          <a
+                  class="ico"
+                  href="{$urls.pages.my_account}"
+                  title="{l s='View my customer account' d='Shop.Theme.Customeraccount'}"
+                  rel="nofollow"
+          >
+              <img src="/themes/classic/assets/img/ico-compte.png" alt="Connexion">
+              <span class="hidden-sm-down">Mon compte</span>
+          </a>
+          {else}
+          <a
+                  href="{$urls.pages.authentication}?back={$urls.current_url|urlencode}"
+                  title="{l s='Log in to your customer account' d='Shop.Theme.Customeraccount'}"
+                  class="ico"
+                  rel="nofollow"
+          >
+              <img src="/themes/classic/assets/img/ico-compte.png" alt="Connexion">
+              <span class="hidden-sm-down">{l s='Sign in' d='Shop.Theme.Actions'}</span>
+          </a>
+      {/if}
   </div>
-  </div>
-
-
-
+</div>
