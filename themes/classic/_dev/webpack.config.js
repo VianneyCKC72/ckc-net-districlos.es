@@ -20,6 +20,7 @@ let config = {
             "./js/pages/homepage.js",
             "./js/pages/category.js",
             "./js/pages/register.js",
+            "./js/pages/identity.js",
             "./css/theme.scss"
         ],
         error: ["./css/error.scss"],

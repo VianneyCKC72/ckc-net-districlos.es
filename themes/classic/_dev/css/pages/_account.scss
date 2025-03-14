@@ -96,18 +96,6 @@
       position: relative;
       padding: 16px 23px 16px 36px;
       color: black;
-
-      &::before {
-        content: "";
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 13px;
-        height: 13px;
-        background-color: black;
-        border-radius: 1px;
-      }
     }
 
     &.active, &:hover {
@@ -119,9 +107,6 @@
         color: $white;
 
         .link-item {
-          &:before {
-            background: white;
-          }
         }
       }
 
