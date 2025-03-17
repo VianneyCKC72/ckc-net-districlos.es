@@ -1,0 +1,20 @@
+Bonjour,
+
+Validez le compte professionnel de {lastname} {firstname}
+
+Nous avons reçu une nouvelle inscription professionnelle sur le site [Nom du Site].
+
+Voici les premières informations :
+Nom : {lastname} {firstname}
+Société : {company}
+Email : {email}
+
+Pour activer ce compte professionnel, veuillez procéder à la vérification du Kbis joint à l'inscription.
+Vous pouvez réaliser cette opération dans le back-office, sous l'onglet "Clients" > "Espace Professionnel".
+
+Merci de traiter cette inscription dans les meilleurs délais pour permettre au nouveau client professionnel d'utiliser son compte.
+
+-------------------------------------------------------------------------------------
+
+{shop_name}
+{shop_url}
