@@ -1,0 +1,28 @@
+[{shop_url}] 
+
+Bonjour {firstname} {lastname}, 
+
+Votre commande sur {shop_name} ayant pour référence {order_name} a été acceptée et sera traitée rapidement. Vous recevrez un email lorsqu’elle sera en préparation. 
+
+IMPORTANT 
+Avant de signer votre bon de livraison, vous devez déballer et contrôler vos produits en présence du livreur, même si l'emballage vous semble intact. Ne signez pas sous la pression du livreur, si l'emballage est abimé.
+					
+Dans le cas où un dommage est révélé, veuillez obligatoirement noter les RESERVES en décrivant précisément le dégat constaté sur le bon de livraison et en informer notre service clients dans les trois jours ouvrables au plus tard en joignant des photos des produits défectueux et la copie du bon de livraison. 
+
+Seules les RESERVES sur le bon de livraison vous donne un droit à échanges possibles. Veuillez noter que nous ne pourront traiter aucune réclamations sans un bon de livraison, indiquant des réserves, recu par notre service client dans les 3 jours ouvrables suivant la réception de la commande.
+
+
+Vous pouvez accéder à tout moment au suivi de votre commande et
+télécharger votre facture dans "Historique des commandes"
+[{history_url}] de la rubrique "Mon compte"
+[{my_account_url}] sur notre site. 
+
+Si vous avez un compte invité, vous pouvez suivre votre commande
+dans la section "Suivi invité"
+[{guest_tracking_url}?id_order={order_name}] de notre
+site. 
+
+Merci de ne pas répondre directement à ce courriel en cliquant sur "Répondre", votre message ne serait pas pris en compte. Pour nous contacter, merci d'utiliser la page "contact" [{shop_url}contactez-nous] de notre site.
+
+{shop_name} [{shop_url}] 
+
