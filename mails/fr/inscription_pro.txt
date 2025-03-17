@@ -1,0 +1,25 @@
+Cher {firstname} {lastname},
+
+Nous sommes ravis de vous accueillir sur notre plateforme professionnelle {shop_name} !
+
+Voici les informations que vous nous avez fournies :
+
+Société : {company}
+Code NAF : {naf}
+TVA : {tva}
+Siret : {siret}
+Nom : {lastname}
+Prénom : {firstname}
+E-mail : {email}
+Adresse : {adresse}
+Code postal : {cp}
+Téléphone : {phone}
+En créant un compte sur notre site, vous débutez la première étape de l’inscription. Actuellement, votre compte est en cours de validation par nos équipes. Vous recevrez très prochainement un e-mail confirmant que votre compte a été approuvé et que vous pouvez commencer à explorer notre catalogue complet de produits à prix pro.
+
+D'ici là, n'hésitez pas à parcourir notre site et à prendre connaissance des différentes options que nous proposons. Si vous avez des questions ou des besoins particuliers, notre équipe est à votre disposition pour vous aider et vous guider dans vos choix.
+
+Nous sommes impatients de vous accompagner dans vos projets futurs et de contribuer à leur réussite !
+
+Pour toute question ou besoin supplémentaire, n'hésitez pas à nous contacter.
+
+{shop_name}
