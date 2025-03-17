@@ -23,7 +23,7 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 
-<div id="ckcpromobarre" class="{$class} alert hide_alert alert-warning" role="alert" style="color:#ffffff; background-color: {$CKC_BARREPROMO_COLOR} !important;">
+<div id="ckcpromobarre" class="{$class} alert hide_alert alert-warning" role="alert" style="color:#ffffff; background-color: {if $env_pro == 1}#ffa400{else}{$CKC_BARREPROMO_COLOR}{/if};">
     {if $CKC_BARREPROMO_TEXTE AND $CKC_BARREPROMO_DISPLAY == 1}
         <span>{$CKC_BARREPROMO_TEXTE nofilter}</span>
     {if $CKC_BARREPROMO_TIMER_DISPLAY == 1}

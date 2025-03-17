@@ -10,7 +10,7 @@
         {if $espace_pro != true && (!isset($show_title) || $show_title===false)}
             <div class="not-account-yet">
                 <div class="img">
-                    <img src="https://picsum.photos/{rand(300, 600)}/{rand(300, 600)}" alt="" />
+                    <img src="/img/cms/connexion-page-img.jpeg" alt="connexion" />
                 </div>
                 <div class="inside">
                     <h2 class="mb-4">Pas encore de compte ?</h2>
