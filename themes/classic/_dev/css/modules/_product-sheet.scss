@@ -660,3 +660,18 @@ span.nbrcontent {
 .accessories_table_price_content .left-column-total {
   text-align: left !important;
 }
+
+@media screen and (max-width: 533px) {
+  #product .descrL_color {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .descrL_color {
+    column-gap: 10px;
+    font-size: 80%;
+    row-gap: 10px;
+    text-align: center;
+  }
+}
