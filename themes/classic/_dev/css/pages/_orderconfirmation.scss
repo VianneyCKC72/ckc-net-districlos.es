@@ -1,0 +1,60 @@
+#order-confirmation{
+  section.card{
+    border: none;
+  }
+  #content-hook_order_confirmation{
+    .card-block{
+      h3.card-title{
+        font-size: 35px;
+        font-weight: 600;
+        line-height: 100%;
+        margin-bottom: 20px;
+        margin-top: 20px;
+      }
+    }
+  }
+  #order-items{
+    padding-right: 0;
+    padding-left: 0;
+    table.order-confirmation-total{
+      background-color: #F6F2EB;
+      border-radius: 4px 4px 0 0;
+      tr.total-value{
+        background-color: #F6F2EB;
+        font-weight: 600;
+        .label{
+          font-size: 20px;
+          line-height: 25px;
+        }
+        .value{
+          font-size: 25px;
+          line-height: 25px;
+        }
+      }
+      tr{
+        td{
+          padding: 0.5rem 1.3rem;
+        }
+      }
+    }
+    table.order-confirmation-total > tr:first-child td{
+      padding: 1.3rem 1.3rem 0.5rem;
+    }
+  }
+  #order-items > .row > h3:first-child{
+    padding-left: 30px;
+  }
+  #order-details{
+    padding-top: 15px;
+    background-color: #F6F2EB;
+    width: 100%;
+    border-radius: 0 0 4px 4px;
+    margin-top: 0;
+  }
+  .definition-list dl dd, .definition-list dl dt {
+    background: #F6F2EB;
+  }
+  .definition-list dl dd:nth-of-type(even), .definition-list dl dt:nth-of-type(even) {
+    background: #F6F2EB;
+  }
+}
