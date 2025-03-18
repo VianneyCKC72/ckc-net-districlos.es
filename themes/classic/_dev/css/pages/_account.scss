@@ -125,6 +125,12 @@
   .page-header {
     display: none;
   }
+  .actions-container-register{
+    align-items: flex-start;
+    .btn.btn-primary.form-control-submit{
+      max-width: 162px;
+    }
+  }
 }
 
 .page-addresses {
