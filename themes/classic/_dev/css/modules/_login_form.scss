@@ -111,6 +111,7 @@
   }
 }
 
+
 .ets_solo_social_wrapper {
   .ets_solo_social {
     display: flex;
@@ -144,6 +145,26 @@
           border: 1px solid $black;
           color: $black;
           box-shadow: none;
+        }
+      }
+    }
+  }
+}
+
+.page-order {
+  .ets_solo_social_wrapper {
+    .ets_solo_social {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      justify-content: flex-start;
+      .ets_solo_social_item {
+        width: auto;
+
+        .ets_solo_social_btn {
+          width: 220px;
+          max-width: none;
         }
       }
     }

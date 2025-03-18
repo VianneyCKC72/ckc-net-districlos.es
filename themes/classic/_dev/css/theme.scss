@@ -72,3 +72,23 @@ $output-bourbon-deprecation-warnings: false !default;
 .close_once {
   display:none;
 }
+
+html, body {
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+}
+
+.actionBar {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+.actionBar > div {
+  max-width: 100% !important;
+  flex-wrap: wrap !important; /* Évite l'étirement des flexbox */
+}
+
+textarea {
+  width: 100% !important;
+  max-width: calc(100% - 40px) !important;
+}

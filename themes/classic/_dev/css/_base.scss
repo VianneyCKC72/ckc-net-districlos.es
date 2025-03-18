@@ -6228,18 +6228,25 @@ body#checkout section.checkout-step .radio-field label {
   font-weight: 500;
   margin-bottom: 0;
 }
-
+.flex_cln {
+  flex-direction: column;
+}
 .product-miniature .product-price-and-shipping {
+  display:flex;
+  justify-content: flex-start;
   .price {
     font-size: 25px;
     font-weight: 700;
+    color:$black;
     &.has-discount {
       color: $red;
     }
   }
   .regular-price {
     font-weight: 700;
-    margin-left: 6px;
+    color: $red;
+    line-height: 15px;
+    margin-bottom: 10px;
   }
 }
 
@@ -7063,10 +7070,11 @@ body#checkout section.checkout-step .radio-field label {
 .product-prices .tax-shipping-delivery-label {
   font-size: 0.8125rem;
   word-wrap: break-word;
-  font-size: 16px;
   font-weight: 700;
 }
-
+.product-prices .has-discount .tax-shipping-delivery-label {
+  color: #ff144e;
+}
 .product-prices .tax-shipping-delivery-label .delivery-information {
   padding: 0 0 0 2px;
   font-weight: 700;
