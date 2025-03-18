@@ -533,6 +533,12 @@
   border: 0;
   bottom: 20px;
 }
+.evercontentseo img.cms-banner-desktop{
+  display: inline;
+}
+.evercontentseo img.image-mobile{
+  display: none;
+}
 @media (max-width: 767px) {
   section.elementor-element-4d6d522,
   #category #category-description .category_inline.description_souscat{
@@ -540,5 +546,11 @@
   }
   .has-discount{
     margin-top: 20px;
+  }
+  .evercontentseo img.cms-banner-desktop{
+    display: none;
+  }
+  .evercontentseo img.image-mobile{
+    display: inline;
   }
 }
