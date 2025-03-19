@@ -116,6 +116,7 @@
                                                     {/if}
                                                 </div>
                                             </div>
+                                            </div>
                                         {/foreach}
                                     </div>
                                 </div>

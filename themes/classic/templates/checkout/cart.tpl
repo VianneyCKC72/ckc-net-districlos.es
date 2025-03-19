@@ -78,9 +78,16 @@
                         </div>
 
                         <div>
-                            <p class="text-red small mb-0">Plus que 942.6€ pour bénéficier de <b>100€ offerts</b>.</p>
-                            <p class="text-red small mb-0">Plus que 1441.6€ pour bénéficier de <b>la livraison
+{*                            todo : Tony va reprendre le code dans un controller *}
+                            {if $cart.subtotals.products.next_promotion > 0}
+                            <p class="text-red small mb-0">
+                                Plus que {$cart.subtotals.products.next_promotion}€ pour bénéficier de <b>100€ offerts</b>.
+                            </p>
+
+                            <p class="text-red small mb-0">
+                                Plus que {$cart.subtotals.products.next_promotion}€ pour bénéficier de <b>la livraison
                                     offerte</b>.</p>
+                            {/if}
                         </div>
 
                         <div>
