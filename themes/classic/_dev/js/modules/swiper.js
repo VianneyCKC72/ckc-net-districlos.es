@@ -14,8 +14,6 @@ document
       {
         direction: "vertical",
         loop: true,
-          observer: true,
-          observeParents: true,
         slidesPerView: "auto",
         spaceBetween: 24,
         watchSlidesProgress: true,
@@ -39,36 +37,25 @@ document
     );
   });
 
-document
-  .querySelectorAll(".wrapper__swiper__featured-products")
-  .forEach((wrapper, index) => {
+document.querySelectorAll(".wrapper__swiper__featured-products").forEach((wrapper) => {
     new Swiper(wrapper.querySelector(".swiper__featured-products"), {
-      loop: true,
-      slidesPerView: 1.8,
-      spaceBetween: 20,
+        loop: wrapper.closest("#cart") ? false : true, // Désactive loop dans le panier
+        spaceBetween: 20,
+        slidesPerView: 4,
+        breakpoints: {
+            640: { slidesPerView: 2.4, spaceBetween: 24 },
+            768: { slidesPerView: 3, spaceBetween: 24 },
+            1024: { slidesPerView: 4, spaceBetween: 24 },
+        },
         observer: true,
         observeParents: true,
-      breakpoints: {
-        640: {
-          slidesPerView: 2.4,
-          spaceBetween: 24,
+        pagination: {
+            el: wrapper.querySelector(".swiper-pagination"),
+            clickable: true,
         },
-        768: {
-          slidesPerView: 3,
-          spaceBetween: 24,
+        navigation: {
+            nextEl: wrapper.querySelector(".swiper-button-next"),
+            prevEl: wrapper.querySelector(".swiper-button-prev"),
         },
-        1024: {
-          slidesPerView: 4,
-          spaceBetween: 24,
-        },
-      },
-      pagination: {
-        el: wrapper.querySelector(".swiper-pagination"),
-        clickable: true,
-      },
-      navigation: {
-        nextEl: wrapper.querySelector(".swiper-button-next"),
-        prevEl: wrapper.querySelector(".swiper-button-prev"),
-      },
     });
-  });
+});

@@ -1,0 +1,22 @@
+#cart {
+  .swiper__featured-products {
+    //max-width: 920px; /* Empêche Swiper de dépasser */
+    overflow: hidden; /* Évite que les slides débordent */
+  }
+
+  .swiper-slide {
+    max-width: 100%; /* Chaque slide ne dépassera pas le conteneur */
+    flex: 0 0 auto; /* Empêche que les slides se stretchent */
+  }
+
+  .reassu-cart{
+    float:left;
+    .elementor-widget-container{
+      width: 100%;
+      .banner-services, .hero-home {
+        justify-content: space-between;
+        width: 100%;
+      }
+    }
+  }
+}
