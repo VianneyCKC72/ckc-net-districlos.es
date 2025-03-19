@@ -14,6 +14,8 @@ document
       {
         direction: "vertical",
         loop: true,
+          observer: true,
+          observeParents: true,
         slidesPerView: "auto",
         spaceBetween: 24,
         watchSlidesProgress: true,
@@ -44,6 +46,8 @@ document
       loop: true,
       slidesPerView: 1.8,
       spaceBetween: 20,
+        observer: true,
+        observeParents: true,
       breakpoints: {
         640: {
           slidesPerView: 2.4,

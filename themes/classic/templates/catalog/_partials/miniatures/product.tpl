@@ -94,7 +94,7 @@
                             {if $product.show_price}
                                 <div class="product-price-and-shipping flex_cln">
 {*                                    {hook h='displayProductPriceBlock' product=$product type="before_price"}*}
-                                    <span class="price taxe_{if $env_pro == 1}HT{else}TTC{/if}">
+                                    <span class="price">
                                         {$product.price} {if $env_pro == 1}HT{else}TTC{/if}
                                     </span>
 
