@@ -19,4 +19,23 @@
       }
     }
   }
+
+  .product-line-grid-left {
+    a {
+      position: relative;
+      span.discount {
+        background: $red;
+        position: absolute;
+        color: #fff;
+        border-radius: 4px;
+        padding: 4px;
+        font-size: 12px;
+        right: 5px;
+        top: 5px;
+      }
+    }
+    .product-price {
+      color:#000;
+    }
+  }
 }

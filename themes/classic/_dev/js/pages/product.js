@@ -16,21 +16,23 @@ $(document).ready(function () {
   }
 
   // Délégation d'événements pour les boutons de quantité
-  $("body").on("click", ".increase", function () {
-    let $quantityInput = $("#quantity_wanted");
+  $('body').on('click', '.increase', function () {
+    let parent = $(this).closest('.custom-quantity-selector')
+    let $quantityInput = $(parent).find('input');
+    // console.log('$quantityInput => ', $quantityInput)
     $quantityInput[0].stepUp();
-    $quantityInput.trigger("input");
+    $quantityInput.trigger('blur', ['up']);
   });
-  $("body").on("click", ".decrease", function () {
-    let $quantityInput = $("#quantity_wanted");
-    if (
-      $quantityInput.val() > parseInt($quantityInput.attr("min")) ||
-      !$quantityInput.attr("min")
-    ) {
+
+  $('body').on('click', '.decrease', function () {
+    let parent = $(this).closest('.custom-quantity-selector')
+    let $quantityInput = $(parent).find('input');
+    if ($quantityInput.val() > parseInt($quantityInput.attr('min')) || !$quantityInput.attr('min')) {
       $quantityInput[0].stepDown();
-      $quantityInput.trigger("input");
+      $quantityInput.trigger('blur', ['down']);
     }
   });
+
 
   // Récupère dynamiquement les valeurs des inputs
   function getFormData() {
