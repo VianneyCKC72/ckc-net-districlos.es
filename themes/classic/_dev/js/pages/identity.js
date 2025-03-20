@@ -10,8 +10,17 @@ $(document).ready(function () {
         var $submitButton = $form.find('.actions-container-register'); // Bouton "Enregistrer"
 
         // Vérifier si tous les éléments existent avant de les déplacer
-        if ($smsCheckbox.length && $submitButton.length) {
-            $smsCheckbox.insertBefore($submitButton);
+        /*        if ($smsCheckbox.length && $submitButton.length) {
+                    $smsCheckbox.insertBefore($submitButton);
+                }*/
+        if ($smsCheckbox.length && $privacyCheckbox.length && $newsletterCheckbox.length) {
+            $newsletterCheckbox.insertAfter($privacyCheckbox)
+            $smsCheckbox.insertAfter($newsletterCheckbox)
+            $("#customer-form > div > .form-group:last-child .form-control-comment").css("display", "none")
+        } else {
+            if ($smsCheckbox.length && $submitButton.length) {
+                $smsCheckbox.insertBefore($submitButton);
+            }
         }
     }
 });
