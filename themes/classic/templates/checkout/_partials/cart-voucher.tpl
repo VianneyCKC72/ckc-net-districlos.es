@@ -22,7 +22,7 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
-{if $cart.vouchers.allowed}
+{*{if $cart.vouchers.allowed}*}
   {block name='cart_voucher'}
     <div class="block-promo mt-3">
       <div class="cart-voucher js-cart-voucher">
@@ -52,7 +52,7 @@
 
         <div class="promo-code">
           <p class="mb-2">
-            {l s='Have a promo code?' d='Shop.Theme.Checkout'}
+            Un code promo ?
           </p>
 
           {block name='cart_voucher_form'}
@@ -89,4 +89,4 @@
       </div>
     </div>
   {/block}
-{/if}
+{*{/if}*}
