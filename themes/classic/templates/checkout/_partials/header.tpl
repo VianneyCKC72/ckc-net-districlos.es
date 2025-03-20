@@ -24,10 +24,10 @@
  *}
 {block name='header_nav'}
   <nav class="header-nav">
-    <div class="container">
+    <div class="container" style="margin-bottom: 50px;">
       <div class="row">
         <div class="col-md-6 hidden-sm-down" id="_desktop_logo">
-            {renderLogo}
+{*            {renderLogo}*}
         </div>
         <div class="col-md-6 text-xs-right hidden-sm-down">
           {hook h='displayNav1'}

@@ -52,6 +52,12 @@ class FrontController extends FrontControllerCore
                 $siret = $infos['siret'];
             }
         }
+        $isLogged = $this->context->customer->logged;
+        if ($isLogged) {
+            $env_particulier = !in_array(10, $this->context->customer->getGroups());
+        } else {
+            $env_particulier = false;
+        }
 
         $this->context->smarty->assign([
                                            'display_espace_pro'                   => $display_espace_pro,
@@ -62,7 +68,8 @@ class FrontController extends FrontControllerCore
                                            'connecter_avec_un_compte_particulier' => $connecter_avec_un_compte_particulier,
                                            'tva'                                  => $tva,
                                            'siret'                                => $siret,
-                                           'kbis'                                 => $kbis
+                                           'kbis'                                 => $kbis,
+                                            'env_particulier' => $env_particulier,
                                        ]
         );
 

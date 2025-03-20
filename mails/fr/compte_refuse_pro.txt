@@ -1,0 +1,24 @@
+Bonjour {firstname} {lastname},
+
+Nous vous contactons concernant votre récente demande d'activation de compte professionnel
+chez DISTRICLOS. Après avoir examiné attentivement votre demande, nous regrettons de vous
+informer que nous n'avons pas pu procéder à l'activation de votre compte pour les raisons
+suivantes :
+1. Non-conformité du Kbis : Le document Kbis que vous avez fourni ne répond pas aux critères
+exigés pour l'activation d'un compte professionnel. Nous vous prions de bien vouloir vérifier que
+le Kbis fourni est à jour et conforme aux règlements en vigueur.
+OU
+2. Activité professionnelle non en rapport avec les métiers de l'aménagement extérieur : D'après
+nos vérifications, l'activité professionnelle que vous exercez ne semble pas être en relation avec
+les métiers de l'aménagement extérieur, qui constituent notre domaine d'expertise.
+Nous vous prions de bien vouloir nous excuser pour ce désagrément. Si vous estimez qu'il y a eu
+une erreur ou si vous disposez de nouvelles informations à nous fournir, n'hésitez pas à nous
+contacter afin que nous puissions réexaminer votre demande.
+En attendant, nous tenons à vous informer que vous pouvez toujours accéder à notre site
+Districlos dédié aux particuliers pour découvrir nos produits et services. De plus, vous avez la
+possibilité de prendre contact avec notre service commercial au 04.22.53.10.34 pour obtenir un
+devis personnalisé répondant à vos besoins spécifiques.
+Nous restons à votre disposition pour toute question ou assistance supplémentaire que vous
+pourriez nécessiter.
+
+{shop_name}

@@ -25,90 +25,100 @@
 {extends file=$layout}
 
 {block name='content'}
+    <section id="main">
+        <div class="cart-grid mt-5">
 
-  <section id="main">
-    <div class="cart-grid mt-5">
+            <!-- Left Block: cart product informations & shipping -->
+            <div class="cart-grid-body">
 
-      <!-- Left Block: cart product informations & shipping -->
-      <div class="cart-grid-body">
+                <!-- cart products detailed -->
+                <div class="cart-container">
+                    <div class="card-block">
+                        <h1 class="h2">{l s='Shopping Cart' d='Shop.Theme.Checkout'}</h1>
+                    </div>
 
-        <!-- cart products detailed -->
-        <div class="cart-container">
-          <div class="card-block">
-            <h1 class="h2">{l s='Shopping Cart' d='Shop.Theme.Checkout'}</h1>
-          </div>
+                    {block name='cart_overview'}
+                        {include file='checkout/_partials/cart-detailed.tpl' cart=$cart}
+                    {/block}
+                </div>
 
-          {block name='cart_overview'}
-            {include file='checkout/_partials/cart-detailed.tpl' cart=$cart}
-          {/block}
+                {* {block name='continue_shopping'}
+                  <a class="label" href="{$urls.pages.index}">
+                    <i class="material-icons">chevron_left</i>{l s='Continue shopping' d='Shop.Theme.Actions'}
+                  </a>
+                {/block} *}
+
+            </div>
+
+            <!-- Right Block: cart subtotal & cart total -->
+            <div class="cart-grid-right">
+
+                {block name='cart_summary'}
+                    <div class="cart-summary">
+
+                        <div>
+                            <p class="h3">Récapitulatif</p>
+                            {if file_exists($smarty.const._PS_MODULE_DIR_|cat:'ckc_shipping_estimator/views/templates/front/cart/shipping_estimator.tpl')}
+                                {include file="module:ckc_shipping_estimator/views/templates/front/cart/shipping_estimator.tpl"}
+                            {/if}
+                        </div>
+
+                        {block name='hook_shopping_cart'}
+                            {hook h='displayShoppingCart'}
+                        {/block}
+
+                        <div>
+                            {block name='cart_totals'}
+                                {include file='checkout/_partials/cart-detailed-totals.tpl' cart=$cart}
+                            {/block}
+
+                            {block name='cart_actions'}
+                                {include file='checkout/_partials/cart-detailed-actions.tpl' cart=$cart}
+                            {/block}
+                        </div>
+
+                        <div>
+                            <p class="text-red small mb-0">Plus que 942.6€ pour bénéficier de <b>100€ offerts</b>.</p>
+                            <p class="text-red small mb-0">Plus que 1441.6€ pour bénéficier de <b>la livraison
+                                    offerte</b>.</p>
+                        </div>
+
+                        <div>
+                            <p>Moyens de paiement acceptés</p>
+                            <div class="d-flex flex-wrap gap-16">
+                                <img style="width: 70px;" src="/themes/classic/assets/img/payment/mastercard.png"
+                                     loading="lazy"
+                                     alt="Mastercard">
+                                <img style="width: 70px;" src="/themes/classic/assets/img/payment/visa.png"
+                                     loading="lazy" alt="Visa">
+                                <img style="width: 70px;" src="/themes/classic/assets/img/payment/cb.png" loading="lazy"
+                                     alt="Carte Bleue">
+                            </div>
+                        </div>
+
+                    </div>
+                {/block}
+
+                {* {block name='hook_reassurance'}
+                  {hook h='displayReassurance'}
+                {/block} *}
+
+            </div>
+
         </div>
 
-        {* {block name='continue_shopping'}
-          <a class="label" href="{$urls.pages.index}">
-            <i class="material-icons">chevron_left</i>{l s='Continue shopping' d='Shop.Theme.Actions'}
-          </a>
-        {/block} *}
-
-        <!-- shipping informations -->
-        {block name='hook_shopping_cart_footer'}
-          {hook h='displayShoppingCartFooter'}
-        {/block}
-      </div>
-
-      <!-- Right Block: cart subtotal & cart total -->
-      <div class="cart-grid-right">
-
-        {block name='cart_summary'}
-          <div class="cart-summary">
-
-            <div>
-              <p class="h3">Récapitulatif</p>
-              {if file_exists($smarty.const._PS_MODULE_DIR_|cat:'ckc_shipping_estimator/views/templates/front/cart/shipping_estimator.tpl')}
-                {include file="module:ckc_shipping_estimator/views/templates/front/cart/shipping_estimator.tpl"}
-              {/if}
-            </div>
-
-            {block name='hook_shopping_cart'}
-              {hook h='displayShoppingCart'}
+        <div class="col-12">
+            <!-- shipping informations -->
+            {block name='hook_shopping_cart_footer'}
+                {hook h='displayShoppingCartFooter'}
             {/block}
 
-            <div>
-              {block name='cart_totals'}
-                {include file='checkout/_partials/cart-detailed-totals.tpl' cart=$cart}
-              {/block}
+            {hook h='displayCrossSellingShoppingCart'}
+        </div>
 
-              {block name='cart_actions'}
-                {include file='checkout/_partials/cart-detailed-actions.tpl' cart=$cart}
-              {/block}
-            </div>
+        <div class="col-12 reassu-cart" style="margin-top: 70px; margin-bottom: 70px;">
+            {hook h='CETemplate' id=1}
+        </div>
 
-            <div>
-              <p class="text-red small mb-0">Plus que 942.6€ pour bénéficier de <b>100€ offerts</b>.</p>
-              <p class="text-red small mb-0">Plus que 1441.6€ pour bénéficier de <b>la livraison offerte</b>.</p>
-            </div>
-
-            <div>
-              <p>Moyens de paiement acceptés</p>
-              <div class="d-flex flex-wrap gap-16">
-                <img style="width: 70px;" src="/themes/classic/assets/img/payment/mastercard.png" loading="lazy"
-                  alt="Mastercard">
-                <img style="width: 70px;" src="/themes/classic/assets/img/payment/visa.png" loading="lazy" alt="Visa">
-                <img style="width: 70px;" src="/themes/classic/assets/img/payment/cb.png" loading="lazy" alt="Carte Bleue">
-              </div>
-            </div>
-
-          </div>
-        {/block}
-
-        {* {block name='hook_reassurance'}
-          {hook h='displayReassurance'}
-        {/block} *}
-
-      </div>
-
-    </div>
-
-    {hook h='displayCrossSellingShoppingCart'}
-
-  </section>
+    </section>
 {/block}

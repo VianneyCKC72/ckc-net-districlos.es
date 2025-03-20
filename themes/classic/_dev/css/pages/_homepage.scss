@@ -1,4 +1,107 @@
 #index {
+  @media (max-width: 991px) {
+    .flexslider {
+      min-height: auto !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+
+  }
+
+
+  .swiper-slide {
+    height : auto;
+  }
+  .swiper-slide .js-product.product  {
+    height:100%
+  }
+
+  .ce-widgets-space--gap > .elementor-column-wrap > .elementor-widget-wrap {
+    gap: var(--ce-widgets-space, 0px);
+  }
+
+  @media (max-width: 1024px) {
+    #liste-category-home {
+      .elementor-container {
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        display: flex;
+        gap: 10px;
+        padding: 0;
+        scroll-padding: 20px;
+        -webkit-overflow-scrolling: touch;
+
+        .elementor-row {
+          display: flex;
+          flex-wrap: nowrap;
+          gap: 15px;
+        }
+
+        .elementor-top-column {
+          flex: 0 0 45%;
+          max-width: 280px;
+          scroll-snap-align: center;
+          transition: transform 0.3s ease-in-out;
+
+          .elementor-column-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+
+          .elementor-widget-wrap {
+            width: 100%;
+          }
+
+          .elementor-widget-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+
+          img {
+            width: 100%;
+            border-radius: 10px;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    #liste-category-home {
+      .elementor-container {
+        .elementor-top-column {
+          flex: 0 0 60%;
+        }
+      }
+
+      #bloc-seo-footer .elementor-row {
+        flex-direction: column;
+        .elementor-col-50{
+          width: 100%;
+          margin-bottom: 20px;
+        }
+        .elementor-widget-container{
+          padding: 0;
+        }
+      }
+    }
+  }
+
+  @media (max-width: 460px) {
+    #liste-category-home {
+      .elementor-container {
+        .elementor-top-column {
+          flex: 0 0 80%;
+        }
+      }
+    }
+  }
+
+
+
   .block-home-configurateur {
     .card__bg-image .content {
       height: 342px;
@@ -6,6 +109,9 @@
         gap: 6px;
         padding: 20px 20px 15px;
         height: 271px;
+      }
+      @media only screen and (max-width: 768px) {
+        height: 216px;
       }
     }
   }
@@ -37,7 +143,7 @@
     max-width: 362px;
 
   }
-  .elementor-element-5089e70f .btn-primary-arrow {
+  #liste-category-home .btn-primary-arrow {
     position: absolute;
     border: 0;
     bottom: 20px;

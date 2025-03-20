@@ -37,7 +37,20 @@ body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
 
 #checkout {
   margin-top: 0;
-
+  .-current {
+    margin-bottom:30px;
+    margin-top: 20px;
+  }
+  .conditions-to-approve {
+    margin-top: 10px;
+  }
+  h4 {
+    margin-bottom: 10px;
+    margin-top: 25px;
+  }
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
   .cart-summary {
     .cart-summary-line {
       display: flex;
@@ -237,5 +250,8 @@ body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
         font-weight: 600;
       }
     }
+  }
+  #login-form .not-account-yet img{
+    display: none;
   }
 }

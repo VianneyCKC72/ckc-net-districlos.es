@@ -96,18 +96,6 @@
       position: relative;
       padding: 16px 23px 16px 36px;
       color: black;
-
-      &::before {
-        content: "";
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 13px;
-        height: 13px;
-        background-color: black;
-        border-radius: 1px;
-      }
     }
 
     &.active, &:hover {
@@ -119,9 +107,6 @@
         color: $white;
 
         .link-item {
-          &:before {
-            background: white;
-          }
         }
       }
 
@@ -139,6 +124,12 @@
 #identity {
   .page-header {
     display: none;
+  }
+  .actions-container-register{
+    align-items: flex-start;
+    .btn.btn-primary.form-control-submit{
+      max-width: 162px;
+    }
   }
 }
 
@@ -218,4 +209,26 @@
       height: auto;
     }
   }
+}
+.txt_ou_bien {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 18px;
+  letter-spacing: 0;
+  vertical-align: middle;
+}
+.ets_solo_wrapper_content svg {
+  padding-right: 5px;
+}
+
+#authentication .ets_solo_social_wrapper.lgp {
+  border-bottom:none !important;
+  margin-bottom: 0;
+}
+
+.custom-checkbox label em {
+  float: left;
+  display: block;
+  margin-top: 2px;
+  padding-left: 30px;
 }

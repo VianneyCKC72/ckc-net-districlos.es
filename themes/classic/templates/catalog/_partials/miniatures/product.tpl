@@ -23,56 +23,59 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 {block name='product_miniature_item'}
-    <div class="js-product product {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')} list_view col-12 {else}{if !empty($productClasses)} {$productClasses} {/if} {/if}">
+    <div
+            class="js-product product {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')} list_view col-12 {else}{if !empty($productClasses)} {$productClasses} {/if} {/if}">
         <article class="product-miniature js-product-miniature" data-id-product="{$product.id_product}"
-            data-id-product-attribute="{$product.id_product_attribute}">
+                 data-id-product-attribute="{$product.id_product_attribute}">
             <div class="thumbnail-container">
                 <div class="thumbnail-top">
                     {block name='product_thumbnail'}
                         {if $product.cover}
                             <a href="{$product.url}" class="thumbnail product-thumbnail">
+                                <img class="tag-web-price tag-web-price-miniature"
+                                     src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
                                 <picture>
                                     {if !empty($product.cover.bySize.medium_default.sources.avif)}
-                                    <source srcset="{$product.cover.bySize.medium_default.sources.avif}" type="image/avif">{/if}
+                                        <source srcset="{$product.cover.bySize.medium_default.sources.avif}"
+                                                type="image/avif">{/if}
                                     {if !empty($product.cover.bySize.medium_default.sources.webp)}
-                                    <source srcset="{$product.cover.bySize.medium_default.sources.webp}" type="image/webp">{/if}
+                                        <source srcset="{$product.cover.bySize.medium_default.sources.webp}"
+                                                type="image/webp">{/if}
                                     <img src="{$product.cover.bySize.medium_default.url}"
-                                        alt="{if !empty($product.cover.legend)}{$product.cover.legend}{else}{$product.name|truncate:30:'...'}{/if}"
-                                        loading="lazy" data-full-size-image-url="{$product.cover.large.url}"
-                                        width="{$product.cover.bySize.home_default.width}"
-                                        height="{$product.cover.bySize.home_default.height}" />
+                                         alt="{if !empty($product.cover.legend)}{$product.cover.legend}{else}{$product.name|truncate:30:'...'}{/if}"
+                                         loading="lazy" data-full-size-image-url="{$product.cover.large.url}"
+                                         width="{$product.cover.bySize.home_default.width}"
+                                         height="{$product.cover.bySize.home_default.height}"/>
                                 </picture>
                             </a>
                         {else}
                             <a href="{$product.url}" class="thumbnail product-thumbnail">
                                 <picture>
                                     {if !empty($urls.no_picture_image.bySize.home_default.sources.avif)}
-                                        <source srcset="{$urls.no_picture_image.bySize.home_default.sources.avif}" type="image/avif">
+                                        <source srcset="{$urls.no_picture_image.bySize.home_default.sources.avif}"
+                                                type="image/avif">
                                     {/if}
                                     {if !empty($urls.no_picture_image.bySize.home_default.sources.webp)}
-                                        <source srcset="{$urls.no_picture_image.bySize.home_default.sources.webp}" type="image/webp">
+                                        <source srcset="{$urls.no_picture_image.bySize.home_default.sources.webp}"
+                                                type="image/webp">
                                     {/if}
                                     <img src="{$urls.no_picture_image.bySize.home_default.url}" loading="lazy"
-                                        width="{$urls.no_picture_image.bySize.home_default.width}"
-                                        height="{$urls.no_picture_image.bySize.home_default.height}" />
+                                         width="{$urls.no_picture_image.bySize.home_default.width}"
+                                         height="{$urls.no_picture_image.bySize.home_default.height}"/>
                                 </picture>
                             </a>
                         {/if}
                     {/block}
 
-                    <div class="highlighted-informations{if !$product.main_variants} no-variants{/if}">
-                        {* {block name='quick_view'}
-                            <a class="quick-view js-quick-view" href="#" data-link-action="quickview">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> {l s='Quick view' d='Shop.Theme.Actions'}
-                            </a>
-                        {/block} *}
-
-                        {block name='product_variants'}
-                            {if $product.main_variants}
-                                {include file='catalog/_partials/variant-links.tpl' variants=$product.main_variants}
-                            {/if}
-                        {/block}
-                    </div>
+                    {if $product.main_variants}
+                        <div class="highlighted-informations">
+                            {block name='product_variants'}
+                                {if $product.main_variants}
+                                    {include file='catalog/_partials/variant-links.tpl' variants=$product.main_variants}
+                                {/if}
+                            {/block}
+                        </div>
+                    {/if}
                 </div>
 
                 <div class="product-description">
@@ -80,42 +83,29 @@
                         {block name='product_name'}
                             {if $page.page_name == 'index'}
                                 <h3 class="h3 product-title"><a href="{$product.url}"
-                                        content="{$product.url}">{$product.name|truncate:30:'...'}</a></h3>
+                                                                content="{$product.url}">{$product.name}</a></h3>
                             {else}
                                 <h2 class="h3 product-title"><a href="{$product.url}"
-                                        content="{$product.url}">{$product.name|truncate:30:'...'}</a></h2>
+                                                                content="{$product.url}">{$product.name}</a></h2>
                             {/if}
                         {/block}
 
                         {block name='product_price_and_shipping'}
                             {if $product.show_price}
-                                <div class="product-price-and-shipping">
-                                    <span class="price {if $product.has_discount}has-discount{/if}"
-                                        aria-label="{l s='Price' d='Shop.Theme.Catalog'}">
-                                        {capture name='custom_price'}{hook h='displayProductPriceBlock' product=$product type='custom_price' hook_origin='products_list'}{/capture}
-                                        {if '' !== $smarty.capture.custom_price}
-                                            {$smarty.capture.custom_price nofilter}
-                                        {else}
-                                            {$product.price}
-                                        {/if}
+                                <div class="product-price-and-shipping flex_cln">
+{*                                    {hook h='displayProductPriceBlock' product=$product type="before_price"}*}
+                                    <span class="price">
+                                        {$product.price} {if $env_pro == 1}HT{else}TTC{/if}
                                     </span>
 
                                     {if $product.has_discount}
                                         {hook h='displayProductPriceBlock' product=$product type="old_price"}
-
-                                        <span class="regular-price"
-                                            aria-label="{l s='Regular price' d='Shop.Theme.Catalog'}">{$product.regular_price}</span>
-                                        {* {if $product.discount_type === 'percentage'}
-                                            <span class="discount-percentage discount-product">{$product.discount_percentage}</span>
-                                        {elseif $product.discount_type === 'amount'}
-                                            <span class="discount-amount discount-product">{$product.discount_amount_to_display}</span>
-                                        {/if} *}
+                                        <span class="regular-price">{$product.regular_price}{if $env_pro == 1}HT{else}TTC{/if}</span>
                                     {/if}
 
-                                    {hook h='displayProductPriceBlock' product=$product type="before_price"}
+{*                                    {hook h='displayProductPriceBlock' product=$product type='unit_price'}*}
 
-                                    {hook h='displayProductPriceBlock' product=$product type='unit_price'}
-                                    {hook h='displayProductPriceBlock' product=$product type='weight'}
+{*                                    {hook h='displayProductPriceBlock' product=$product type='weight'}*}
                                 </div>
                             {/if}
                         {/block}
@@ -135,7 +125,7 @@
                     <a href="{$product.url}" class="btn btn-primary">Voir le produit</a>
                 </div>
 
-{*                {include file='catalog/_partials/product-flags.tpl'}*}
+                {*                {include file='catalog/_partials/product-flags.tpl'}*}
             </div>
         </article>
     </div>

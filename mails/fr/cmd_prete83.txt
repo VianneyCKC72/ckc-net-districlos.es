@@ -1,0 +1,29 @@
+[{shop_url}]
+
+Bonjour {firstname} {lastname},
+
+Votre commande ayant pour référence {order_name} est prête à être récupérée.
+
+Vous pouvez venir chercher votre commande dans notre magasin du Var:
+
+DISTRICLOS VAR
+1974 Avenue Jean Lachenaud
+Zac du Capitou
+83600 Fréjus
+
+Merci de nous prévenir 48 heures à l'avance si possible.
+
+Vous pouvez accéder à tout moment au suivi de votre commande et
+télécharger votre facture dans "Historique des commandes"
+[{history_url}] de la rubrique "Mon compte"
+[{my_account_url}] sur notre site.
+
+Si vous avez un compte invité, vous pouvez suivre votre commande
+dans la section "Suivi invité"
+[{guest_tracking_url}?id_order={order_name}] de notre
+site.
+
+Nous tenons à vous informer que nous ne pouvons garantir la disponibilité des stocks au-delà de 30 jours après la réception de cet e-mail.
+Nous vous recommandons donc de récupérer votre commande dans les meilleurs délais pour garantir la disponibilité des articles souhaités et restons à votre disposition pour toute question.
+
+{shop_name} [{shop_url}]

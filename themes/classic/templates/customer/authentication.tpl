@@ -50,6 +50,7 @@
 
       {render file='customer/_partials/login-form.tpl' ui=$login_form  show_title=false}
     </section>
+
     {if $espace_pro == 1}
       <div class="col-6 contenair-img-auth">
         <figure>

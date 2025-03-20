@@ -48,6 +48,7 @@
           }
           .product-line-info {
             display: flex;
+            flex-direction: column;
             .current-price .price {
               font-size: 20px;
               line-height: 30px;

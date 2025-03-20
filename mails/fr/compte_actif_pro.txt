@@ -1,0 +1,11 @@
+Cher {firstname} {lastname},
+
+Nous avons le plaisir de vous informer que votre compte professionnel sur notre espace professionnel Districlos a été créé avec succès !
+Vous avez désormais accès à notre vaste catalogue de produits à prix professionnels, spécialement conçus pour répondre à vos besoins en matière d'aménagement paysager.
+
+N'hésitez pas à parcourir notre site pour découvrir nos gammes de clôtures, grillages et portails, ainsi que nos services supplémentaires disponibles.
+Nous restons à votre disposition pour toute question ou demande d'assistance. Notre équipe se tient prête à vous accompagner dans vos achats et à vous fournir le meilleur service possible.
+
+Nous vous remercions de votre confiance et sommes impatients de contribuer à la réussite de vos futurs projets !
+
+{shop_name}

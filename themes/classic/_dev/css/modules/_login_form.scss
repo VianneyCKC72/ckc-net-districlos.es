@@ -110,3 +110,63 @@
     line-height: 18px;
   }
 }
+
+
+.ets_solo_social_wrapper {
+  .ets_solo_social {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    .ets_solo_social_item {
+      width: 100%;
+      .ets_solo_social_btn {
+        height: 52px;
+        margin: 0;
+        padding: 18px 30px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 999px !important;
+        width: 70%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-inline: auto;
+      }
+      &.facebook {
+        .ets_solo_social_btn {
+          background-color: #157dc3;
+          color: $white;
+        }
+      }
+      &.google {
+        .ets_solo_social_btn {
+          background-color: $white;
+          border: 1px solid $black;
+          color: $black;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+}
+
+.page-order {
+  .ets_solo_social_wrapper {
+    .ets_solo_social {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      justify-content: flex-start;
+      .ets_solo_social_item {
+        width: auto;
+
+        .ets_solo_social_btn {
+          width: 220px;
+          max-width: none;
+        }
+      }
+    }
+  }
+}

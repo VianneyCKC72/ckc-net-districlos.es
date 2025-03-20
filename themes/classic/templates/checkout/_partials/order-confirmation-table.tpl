@@ -111,9 +111,9 @@
               </div>
               <div class="col-sm-6 col-xs-12 qty">
                 <div class="row">
-                  <div class="col-xs-4 text-sm-center text-xs-left">{$product.price}</div>
+                  <div class="col-xs-4 text-sm-center text-xs-left">{$product.price} TTC</div>
                   <div class="col-xs-4 text-sm-center">{$product.quantity}</div>
-                  <div class="col-xs-4 text-sm-center text-xs-right bold">{$product.total}</div>
+                  <div class="col-xs-4 text-sm-center text-xs-right bold">{$product.total} TTC</div>
                 </div>
               </div>
             </div>

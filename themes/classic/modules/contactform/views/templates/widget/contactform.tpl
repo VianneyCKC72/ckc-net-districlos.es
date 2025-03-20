@@ -22,8 +22,8 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
-<section class="contact-form">
-  <form action="{$urls.pages.contact}" method="post" {if $contact.allow_file_upload}enctype="multipart/form-data"{/if}>
+<section class="contact-form contact-form-custom">
+  {*<form action="{$urls.pages.contact}" method="post" {if $contact.allow_file_upload}enctype="multipart/form-data"{/if}>
     {if $notifications}
       <div class="col-xs-12 alert {if $notifications.nw_error}alert-danger{else}alert-success{/if}">
         <ul>
@@ -132,5 +132,9 @@
       </footer>
     {/if}
 
-  </form>
+  </form>*}
+  <div class="img-container-contact">
+    <img src="/img/cms/procard-contactform.jpg" alt="contacter nous" width="571" height="818">
+  </div>
+  [contact-form-7 id="1"]
 </section>

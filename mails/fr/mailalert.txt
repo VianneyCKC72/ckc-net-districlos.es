@@ -1,0 +1,9 @@
+{shop_url}
+
+Bonjour,
+
+Attention (!) : Certains de vos produits ont des tarifs Pro supérieurs aux tarifs standard.
+
+Accédez au Backoffice de votre boutique pour obtenir les détails.
+
+[{shop_name}]({shop_url})

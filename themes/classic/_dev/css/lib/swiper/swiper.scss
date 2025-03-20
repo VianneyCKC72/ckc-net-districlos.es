@@ -1,7 +1,6 @@
 @import "swiper-vars";
 @import "_components/pagination";
 @import "_components/navigation";
-@import "_components/other";
 
 
 .swiper-container {
@@ -151,6 +150,23 @@
   }
 }
 
-
-
-
+.swiper-container-fade {
+  &.swiper-container-free-mode {
+    .swiper-slide {
+      transition-timing-function: ease-out;
+    }
+  }
+  .swiper-slide {
+    pointer-events: none;
+    transition-property: opacity;
+    .swiper-slide {
+      pointer-events: none;
+    }
+  }
+  .swiper-slide-active {
+    &,
+    & .swiper-slide-active {
+      pointer-events: auto;
+    }
+  }
+}

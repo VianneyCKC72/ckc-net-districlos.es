@@ -60,11 +60,15 @@ $(document).ready(function () {
 
             // Cacher les filtres par défaut
             $('#PM_ASBlock_1 .card-block').hide();
+            $(".elementor-element-6cb0601").hide();
+            $(".elementor-element-8e5dd50").hide();
         }
 
         // Afficher le toggle et gérer le clic
         $('.filter-toggle').show().click(function () {
             $('#PM_ASBlock_1 .card-block').slideToggle();
+            $(".elementor-element-6cb0601").slideToggle();
+            $(".elementor-element-8e5dd50").slideToggle();
             $('.chevron').toggleClass('open');
         });
     }

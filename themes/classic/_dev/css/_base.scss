@@ -11,6 +11,7 @@ html {
   font-family: "Poppins", sans-serif;
   color: $black;
   background: $white;
+  scroll-behavior: smooth;
   ::-moz-selection {
     background: rgba(2, 100, 115, 0.25);
   }
@@ -3454,7 +3455,10 @@ a.tag:hover {
 }
 
 .alert-success {
-  background-color: lighten($secondary-color, 35%); // Un vert clair basé sur $secondary-color
+  background-color: lighten(
+    $secondary-color,
+    35%
+  ); // Un vert clair basé sur $secondary-color
   border-color: lighten($secondary-color, 20%);
   color: darken($secondary-color, 20%);
 }
@@ -3468,7 +3472,10 @@ a.tag:hover {
 }
 
 .alert-info {
-  background-color: lighten($primary-light-color, 40%); // Un bleu clair basé sur $primary-light-color
+  background-color: lighten(
+    $primary-light-color,
+    40%
+  ); // Un bleu clair basé sur $primary-light-color
   border-color: lighten($primary-light-color, 20%);
   color: darken($primary-light-color, 20%);
 }
@@ -3482,7 +3489,10 @@ a.tag:hover {
 }
 
 .alert-warning {
-  background-color: rgba($pro-color, 0.3); // Utilisation de $pro-color avec opacité
+  background-color: rgba(
+    $pro-color,
+    0.3
+  ); // Utilisation de $pro-color avec opacité
   border-color: $pro-color;
 }
 
@@ -4793,7 +4803,7 @@ a.bg-inverse:hover {
 }
 
 .font-weight-semibold {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .font-italic {
@@ -5793,7 +5803,6 @@ body#checkout section.checkout-step .radio-field label {
   margin-right: 1rem;
 }
 
-
 #order-return-infos .thead-default th,
 .page-addresses .addresses-footer a,
 .page-addresses .addresses-footer a:hover,
@@ -5930,14 +5939,13 @@ body#checkout section.checkout-step .radio-field label {
 }
 
 #history .orders {
-  margin: 0 -1rem
+  margin: 0 -1rem;
 }
 
 #history .orders .order {
-  padding: .75rem 1rem;
-  border-bottom: 1px solid white
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid white;
 }
-
 
 #history .orders {
   margin: 0 -1rem;
@@ -6105,6 +6113,10 @@ body#checkout section.checkout-step .radio-field label {
   background-color: #7a7a7a;
 }
 
+.featured-products, .wrapper__swiper__featured-products, .swiper-wrapper {
+  width:100%;
+}
+
 #products .products,
 .featured-products .products,
 .product-accessories .products {
@@ -6185,7 +6197,7 @@ body#checkout section.checkout-step .radio-field label {
 
 .product-miniature .thumbnail-container:focus .highlighted-informations,
 .product-miniature .thumbnail-container:hover .highlighted-informations {
-  top: unquote("calc(100% - 3.75rem)");
+  top: unquote("calc(100% - 3.5rem)");
 }
 
 .product-miniature .thumbnail-container:focus .highlighted-informations::after,
@@ -6199,7 +6211,7 @@ body#checkout section.checkout-step .radio-field label {
 .product-miniature
   .thumbnail-container:hover
   .highlighted-informations.no-variants {
-  top: unquote("calc(100% - 2.75rem)");
+  top: unquote("calc(100% - 3.5rem)");
 }
 
 .product-miniature .thumbnail-container .product-thumbnail {
@@ -6220,27 +6232,31 @@ body#checkout section.checkout-step .radio-field label {
   font-weight: 500;
   margin-bottom: 0;
 }
-
+.flex_cln {
+  flex-direction: column;
+}
 .product-miniature .product-price-and-shipping {
+  display:flex;
+  justify-content: flex-start;
   .price {
     font-size: 25px;
     font-weight: 700;
+    color:$black;
     &.has-discount {
       color: $red;
     }
   }
   .regular-price {
     font-weight: 700;
-    margin-left: 6px;
+    color: $red;
+    line-height: 15px;
+    margin-bottom: 10px;
   }
 }
 
 .product-miniature .variant-links {
   position: relative;
-  top: -0.25em;
   width: 100%;
-  min-height: 2.5rem;
-  padding-top: 0.5rem;
   text-align: center;
   background: #fff;
   display: flex;
@@ -6265,9 +6281,9 @@ body#checkout section.checkout-step .radio-field label {
   z-index: 2;
   width: 100%;
   height: auto;
-  padding: 0.625rem 0;
+  padding: 1rem 0;
   text-align: center;
-  background: rgb(255 255 255 / 50%);
+  background: rgb(255 255 255);
   -webkit-transition: 0.3s;
   transition: 0.3s;
   backdrop-filter: blur(10px);
@@ -6411,21 +6427,6 @@ body#checkout section.checkout-step .radio-field label {
   justify-content: space-between;
 }
 
-.block-category
-  .block-category-inner
-  #category-description
-  .page-content.page-cms
-  ul,
-.block-category .block-category-inner #category-description p,
-.page-content.page-cms
-  .block-category
-  .block-category-inner
-  #category-description
-  ul {
-  font-weight: 400;
-  margin-bottom: 0;
-  word-break: break-word;
-}
 
 .block-category .block-category-inner #category-description strong {
   font-weight: 400;
@@ -7073,10 +7074,11 @@ body#checkout section.checkout-step .radio-field label {
 .product-prices .tax-shipping-delivery-label {
   font-size: 0.8125rem;
   word-wrap: break-word;
-  font-size: 16px;
   font-weight: 700;
 }
-
+.product-prices .has-discount .tax-shipping-delivery-label {
+  color: #ff144e;
+}
 .product-prices .tax-shipping-delivery-label .delivery-information {
   padding: 0 0 0 2px;
   font-weight: 700;
@@ -7986,7 +7988,9 @@ body#checkout section.checkout-step .radio-field label {
 #footer {
   padding-top: 2.5rem;
 }
-
+#product #footer {
+  padding-bottom: 5rem;
+}
 #blockEmailSubscription_displayFooterBefore {
   float: inherit;
   width: 100%;
