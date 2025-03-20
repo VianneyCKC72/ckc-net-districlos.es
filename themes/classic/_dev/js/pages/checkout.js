@@ -27,5 +27,18 @@ $(document).ready(function() {
                 $(this).hide();
             }
         });
+
+        if(typeof default_address_id != 'undefined'){
+            $("article.address-item").each(function(){
+                if($(this).find("input").val() == default_address_id){
+                    $(this).addClass('selected')
+                    $(this).find("input").prop('checked', true)
+                } else {
+                    $(this).removeClass('selected')
+                    $(this).find("input").prop('checked', false)
+                }
+            })
+        }
+
     }
 });
