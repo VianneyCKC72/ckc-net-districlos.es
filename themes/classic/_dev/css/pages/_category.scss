@@ -554,3 +554,13 @@
     display: inline;
   }
 }
+.product-miniature.js-product-miniature .product-info-custom-block-miniature{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  min-height: 105.5px;
+  .product-info-custom-block-miniature-price-stars{
+    min-height: 61.5px;
+  }
+}

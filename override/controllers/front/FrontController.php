@@ -127,4 +127,26 @@ class FrontController extends FrontControllerCore
         }
         parent::postProcess();
     }
+
+    public function initHeader()
+    {
+
+        $show_emptycart = false;
+
+        $cookie = new Cookie('psAdmin', '', (int)Configuration::get('PS_COOKIE_LIFETIME_BO'));
+
+        if (isset($cookie->id_employee) && $cookie->id_employee) {
+            $show_emptycart = true;
+        }
+        else {
+            $show_emptycart = false;
+        }
+
+        $this->context->smarty->assign('show_emptycart', $show_emptycart);
+
+        //
+
+        //call original method, to maintain default behaviour:
+        return parent::initHeader();
+    }
 }
