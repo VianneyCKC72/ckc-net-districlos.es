@@ -30,4 +30,5 @@
     Connexion
   </button>
   <p class="txt_ou_bien text-center"><strong>Ou bien...</strong></p>
+
 {/block}

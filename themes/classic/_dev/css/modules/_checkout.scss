@@ -6,26 +6,6 @@ body#checkout {
       display: none;
     }
 
-    .progress-container {
-      width: 100%;
-      max-width: 480px;
-      height: 6px;
-      background-color: #f6f2eb;
-      border-radius: 3px;
-      margin-top: 20px;
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 30px;
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background-color: $secondary-color;
-      transition: width 0.5s ease-in-out;
-      border-radius: 3px;
-    }
-
     .step-number {
       display: inline-block;
       font-weight: 700;
@@ -99,6 +79,9 @@ body#checkout {
         .content {
           display: block;
         }
+        .step-number {
+          display:none;
+        }
       }
     }
 
@@ -134,6 +117,27 @@ body#checkout {
   .-current {
     margin-bottom: 30px;
     margin-top: 20px;
+
+
+    .progress-container {
+      width: 100%;
+      max-width: 480px;
+      height: 6px;
+      background-color: #f6f2eb;
+      border-radius: 3px;
+      margin-top: 20px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: $secondary-color;
+      transition: width 0.5s ease-in-out;
+      border-radius: 3px;
+    }
   }
 
   .conditions-to-approve {
@@ -387,16 +391,24 @@ body#checkout {
     }
   }
 
-  #login-form .not-account-yet {
-    display: none;
+  #login-form {
+    .not-account-yet {
+      display: none;
+    }
+    h1 {
+      display:none;
+    }
   }
+
 
   .tab-content {
     #customer-form > div {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 15px;
-
+      .btn {
+        max-width: 320px;
+      }
       &.actions-container-register {
         display: flex;
         align-items: center;
@@ -417,6 +429,7 @@ body#checkout {
             justify-content: center;
             width: 100%;
             flex-direction: column;
+
             .ets_solo_social_btn {
               width: 320px;
             }
@@ -462,7 +475,8 @@ body#checkout {
           display: none;
         }
       }
-      #checkout-addresses-step{
+
+      #checkout-addresses-step {
         .address-item.selected{
           header{
             background-color: $secondary-color;
@@ -485,5 +499,41 @@ body#checkout {
         }
       }
     }
+    #customer-form form {
+      .actions-container-register {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 450px;
+        margin: 0 auto;
+      }
+      .btn {
+        max-width: 320px;
+      }
+    }
+    #login-form {
+      .btn {
+        max-width: 320px;
+      }
+    }
   }
+
+  .js-address-form .form-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .js-address-form .form-group {
+    width: calc(50% - 10px);
+  }
+
+  /* Forcer l'alias à prendre toute la ligne */
+  .js-address-form .form-group-alias,
+  .form-group.row{
+    width: 100%;
+  }
+
+
+
 }
