@@ -23,60 +23,184 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 {block name='address_block_item'}
-  <article id="address-{$address.id}" class="address" data-id-address="{$address.id}">
-    <div class="address-body">
-      <div class="head-addresses">
-        <h4>{$address.alias}</h4>
-        <span class="badge badge-green">adresse par défaut</span>
+  {if isset($default_address_id)}
+    {if $address.id == $default_address_id}
+      <article id="address-{$address.id}" class="address default-address-custom" data-id-address="{$address.id}">
+        <div class="address-body">
+          <div class="head-addresses">
+            <h4>{$address.alias}</h4>
+            <span class="badge badge-green">adresse par défaut</span>
+          </div>
+          <address>
+            {if $address.firstname || $address.lastname}
+              <span class="label-name">{$address.firstname} {$address.lastname}</span><br>
+            {/if}
+
+            {if $address.company}
+              <span class="label-company"><strong>{$address.company}</strong></span><br>
+            {/if}
+            <br>
+            {if $address.vat_number}
+              <span class="label-vat">{$address.vat_number}</span><br>
+            {/if}
+
+            {if $address.address1}
+              <span class="label-address1">{$address.address1}</span><br>
+            {/if}
+
+            {if $address.address2}
+              <span class="label-address2">{$address.address2}</span><br>
+            {/if}
+
+            {if $address.postcode || $address.city}
+              <span class="label-postcode">{$address.postcode} {$address.city}</span><br>
+            {/if}
+
+            {if $address.country}
+              <span class="label-country">{$address.country}</span><br>
+            {/if}
+
+            {if $address.phone}
+              <span class="label-phone">{$address.phone}</span><br>
+            {/if}
+          </address>
+          {* Display the extra field values added in an address from using hook 'additionalCustomerAddressFields' *}
+          {hook h='displayAdditionalCustomerAddressFields' address=$address}
+        </div>
+
+        {block name='address_block_item_actions'}
+          <div class="address-footer">
+            <a href="{url entity=address id=$address.id}" data-link-action="edit-address">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+              <span>modifier</span>
+            </a>
+            <a href="{url entity=address id=$address.id params=['delete' => 1, 'token' => $token]}" data-link-action="delete-address">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+              <span>supprimer</span>
+            </a>
+          </div>
+        {/block}
+      </article>
+    {else}
+      <article id="address-{$address.id}" class="address" data-id-address="{$address.id}">
+        <div class="address-body">
+          <div class="head-addresses">
+            <h4>{$address.alias}</h4>
+          </div>
+          <address>
+            {if $address.firstname || $address.lastname}
+              <span class="label-name">{$address.firstname} {$address.lastname}</span><br>
+            {/if}
+
+            {if $address.company}
+              <span class="label-company"><strong>{$address.company}</strong></span><br>
+            {/if}
+            <br>
+            {if $address.vat_number}
+              <span class="label-vat">{$address.vat_number}</span><br>
+            {/if}
+
+            {if $address.address1}
+              <span class="label-address1">{$address.address1}</span><br>
+            {/if}
+
+            {if $address.address2}
+              <span class="label-address2">{$address.address2}</span><br>
+            {/if}
+
+            {if $address.postcode || $address.city}
+              <span class="label-postcode">{$address.postcode} {$address.city}</span><br>
+            {/if}
+
+            {if $address.country}
+              <span class="label-country">{$address.country}</span><br>
+            {/if}
+
+            {if $address.phone}
+              <span class="label-phone">{$address.phone}</span><br>
+            {/if}
+          </address>
+          {* Display the extra field values added in an address from using hook 'additionalCustomerAddressFields' *}
+          {hook h='displayAdditionalCustomerAddressFields' address=$address}
+        </div>
+
+        {block name='address_block_item_actions'}
+          <div class="address-footer">
+            <form action="#" method="get">
+              <span class="badge badge-empty-green">définir par défaut</span>
+              <input type="hidden" value="{$address.id}" id="addressId">
+            </form>
+            <a href="{url entity=address id=$address.id}" data-link-action="edit-address">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+              <span>modifier</span>
+            </a>
+            <a href="{url entity=address id=$address.id params=['delete' => 1, 'token' => $token]}" data-link-action="delete-address">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+              <span>supprimer</span>
+            </a>
+          </div>
+        {/block}
+      </article>
+    {/if}
+  {else}
+    <article id="address-{$address.id}" class="address" data-id-address="{$address.id}">
+      <div class="address-body">
+        <div class="head-addresses">
+          <h4>{$address.alias}</h4>
+        </div>
+        <address>
+          {if $address.firstname || $address.lastname}
+            <span class="label-name">{$address.firstname} {$address.lastname}</span><br>
+          {/if}
+
+          {if $address.company}
+            <span class="label-company"><strong>{$address.company}</strong></span><br>
+          {/if}
+          <br>
+          {if $address.vat_number}
+            <span class="label-vat">{$address.vat_number}</span><br>
+          {/if}
+
+          {if $address.address1}
+            <span class="label-address1">{$address.address1}</span><br>
+          {/if}
+
+          {if $address.address2}
+            <span class="label-address2">{$address.address2}</span><br>
+          {/if}
+
+          {if $address.postcode || $address.city}
+            <span class="label-postcode">{$address.postcode} {$address.city}</span><br>
+          {/if}
+
+          {if $address.country}
+            <span class="label-country">{$address.country}</span><br>
+          {/if}
+
+          {if $address.phone}
+            <span class="label-phone">{$address.phone}</span><br>
+          {/if}
+        </address>
+        {* Display the extra field values added in an address from using hook 'additionalCustomerAddressFields' *}
+        {hook h='displayAdditionalCustomerAddressFields' address=$address}
       </div>
-      <address>
-        {if $address.firstname || $address.lastname}
-          <span class="label-name">{$address.firstname} {$address.lastname}</span><br>
-        {/if}
 
-        {if $address.company}
-          <span class="label-company"><strong>{$address.company}</strong></span><br>
-        {/if}
-        <br>
-        {if $address.vat_number}
-          <span class="label-vat">{$address.vat_number}</span><br>
-        {/if}
-
-        {if $address.address1}
-          <span class="label-address1">{$address.address1}</span><br>
-        {/if}
-
-        {if $address.address2}
-          <span class="label-address2">{$address.address2}</span><br>
-        {/if}
-
-        {if $address.postcode || $address.city}
-          <span class="label-postcode">{$address.postcode} {$address.city}</span><br>
-        {/if}
-
-        {if $address.country}
-          <span class="label-country">{$address.country}</span><br>
-        {/if}
-
-        {if $address.phone}
-          <span class="label-phone">{$address.phone}</span><br>
-        {/if}
-      </address>
-      {* Display the extra field values added in an address from using hook 'additionalCustomerAddressFields' *}
-      {hook h='displayAdditionalCustomerAddressFields' address=$address}
-    </div>
-
-    {block name='address_block_item_actions'}
-      <div class="address-footer">
-        <a href="{url entity=address id=$address.id}" data-link-action="edit-address">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
-          <span>modifier</span>
-        </a>
-        <a href="{url entity=address id=$address.id params=['delete' => 1, 'token' => $token]}" data-link-action="delete-address">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
-          <span>supprimer</span>
-        </a>
-      </div>
-    {/block}
-  </article>
+      {block name='address_block_item_actions'}
+        <div class="address-footer">
+          <form action="#" method="get">
+            <span class="badge badge-empty-green">définir par défaut</span>
+            <input type="hidden" value="{$address.id}" id="addressId">
+          </form>
+          <a href="{url entity=address id=$address.id}" data-link-action="edit-address">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+            <span>modifier</span>
+          </a>
+          <a href="{url entity=address id=$address.id params=['delete' => 1, 'token' => $token]}" data-link-action="delete-address">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+            <span>supprimer</span>
+          </a>
+        </div>
+      {/block}
+    </article>
+  {/if}
 {/block}

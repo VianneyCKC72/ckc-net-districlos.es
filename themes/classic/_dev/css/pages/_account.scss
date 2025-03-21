@@ -142,6 +142,7 @@
         align-items: center;
         gap: 15px;
         margin-bottom: 15px;
+        min-height: 30px;
 
         h4 {
           font-weight: 600;
@@ -190,6 +191,12 @@
       }
     }
   }
+  .address.default-address-custom{
+    address {
+      background: $secondary-color;
+      color: white;
+    }
+  }
 
   .address-footer {
     color: black;
@@ -198,6 +205,7 @@
     line-height: 20px;
     letter-spacing: 0;
     vertical-align: middle;
+    padding: 1rem !important;
 
     span {
       color: black;
@@ -207,6 +215,39 @@
       color: black;
       width: 10px;
       height: auto;
+    }
+    .badge-empty-green {
+      font-weight: 600;
+      font-size: 13px;
+      line-height: 10px;
+      letter-spacing: 0;
+      vertical-align: middle;
+      border: 1px solid $secondary-color;
+      background: none;
+      color: $secondary-color;
+      width: 156px;
+      height: 30px;
+      gap: 10px;
+      border-radius: 20px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: all .3s ease-out;
+    }
+    .badge-empty-green:hover{
+      background: $secondary-color;
+      color: white;
+      transition: all .3s ease-out;
+    }
+  }
+  .address-footer:has(form .badge-empty-green){
+    padding: 1rem 1rem 1rem 0 !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    form{
+      max-width: 160px;
+      margin-right: 10px;
     }
   }
 }

@@ -55,6 +55,27 @@ class FrontController extends FrontControllerCore
         $isLogged = $this->context->customer->logged;
         if ($isLogged) {
             $env_particulier = !in_array(10, $this->context->customer->getGroups());
+
+            $queryAddress = Db::getInstance()->executeS('SELECT id_address_default FROM `'._DB_PREFIX_.'customer` 
+            WHERE id_customer = '.(int) $this->context->customer->id);
+            if(!isset($queryAddress[0]['id_address_default'])) {
+                $queryAddress = Db::getInstance()->executeS('SELECT id_address_delivery FROM `'._DB_PREFIX_.'orders` 
+                WHERE id_customer = '.(int) $this->context->customer->id.'
+                ORDER BY id_order DESC LIMIT 1');
+                if(!isset($queryAddress[0]['id_address_delivery'])){
+                    $queryAddress = Address::getFirstCustomerAddressId($this->context->customer->id);
+                    if(isset($queryAddress)){
+                        $this->context->smarty->assign(['default_address_id' => (int)$queryAddress]);
+                    }
+                } else {
+                    $this->context->smarty->assign(['default_address_id' => (int)$queryAddress[0]['id_address_delivery']]);
+                }
+            } else {
+                $this->context->smarty->assign(['default_address_id' => (int)$queryAddress[0]['id_address_default']]);
+            }
+            if(isset($this->context->smarty->tpl_vars['default_address_id']->value)){
+                Media::addJsDef([ 'default_address_id' => $this->context->smarty->tpl_vars['default_address_id']->value ]);
+            }
         } else {
             $env_particulier = false;
         }
@@ -91,5 +112,41 @@ class FrontController extends FrontControllerCore
         if(!empty($customer[0]))
          return $customer[0];
         return "";
+    }
+
+    public function postProcess(){
+        $addressId = Tools::getValue('addressId');
+        if(isset($addressId) && !empty($addressId)) {
+
+            $update = Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'customer` SET id_address_default = '.$addressId.'
+            WHERE id_customer = '.(int)$this->context->customer->id);
+
+            Media::addJsDef([ 'default_address_id' => $addressId ]);
+
+            echo "success";
+        }
+        parent::postProcess();
+    }
+
+    public function initHeader()
+    {
+
+        $show_emptycart = false;
+
+        $cookie = new Cookie('psAdmin', '', (int)Configuration::get('PS_COOKIE_LIFETIME_BO'));
+
+        if (isset($cookie->id_employee) && $cookie->id_employee) {
+            $show_emptycart = true;
+        }
+        else {
+            $show_emptycart = false;
+        }
+
+        $this->context->smarty->assign('show_emptycart', $show_emptycart);
+
+        //
+
+        //call original method, to maintain default behaviour:
+        return parent::initHeader();
     }
 }

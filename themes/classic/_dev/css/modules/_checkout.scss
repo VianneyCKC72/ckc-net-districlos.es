@@ -234,14 +234,20 @@ body#checkout {
       row-gap: 12px;
 
       .address-item {
-        background-color: $sand-light-color;
+        background-color: white;
         border-radius: 4px;
-        padding: 20px;
+        padding: 0;
+        margin-bottom: 1rem;
 
         .address {
           margin-top: 6px;
           font-size: 14px;
           font-weight: 500;
+        }
+        header{
+          background-color: $sand-light-color;
+          padding: 20px;
+          margin-bottom: 0.7rem !important;
         }
       }
 
@@ -262,8 +268,9 @@ body#checkout {
           font-weight: 500;
           padding: 4px 8px;
           border-radius: 4px;
-          background-color: rgba($primary-color, 0.1);
-          border: 1px solid rgba($primary-color, 0.3);
+          background-color: white;
+          border: none;
+          text-transform: lowercase;
           transition: all 0.3s;
 
           &:hover {
@@ -455,6 +462,14 @@ body#checkout {
           display: none;
         }
       }
+      #checkout-addresses-step{
+        .address-item.selected{
+          header{
+            background-color: $secondary-color;
+            color: white;
+          }
+        }
+      }
 
       @media (max-width: 768px) {
         grid-template-columns: 1fr;
@@ -471,6 +486,4 @@ body#checkout {
       }
     }
   }
-
-
 }

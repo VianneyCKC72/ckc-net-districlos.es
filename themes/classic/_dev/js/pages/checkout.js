@@ -17,7 +17,9 @@ $(document).ready(function () {
         }
 
         // Masquer le titre "Civilité"
-        $('label[for="field-id_gender"]').hide();
+        if ($('label[for="field-id_gender"]').length) {
+            $('label[for="field-id_gender"]').hide();
+        }
 
         // Masquer les textes "Optionnel"
         $('.form-control-comment').each(function () {
@@ -79,5 +81,6 @@ $(document).ready(function () {
                 }
             })
         }
+
     }
 });

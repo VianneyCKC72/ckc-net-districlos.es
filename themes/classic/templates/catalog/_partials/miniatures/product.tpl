@@ -79,7 +79,7 @@
                 </div>
 
                 <div class="product-description">
-                    <div>
+                    <div class="product-info-custom-block-miniature">
                         {block name='product_name'}
                             {if $page.page_name == 'index'}
                                 <h3 class="h3 product-title"><a href="{$product.url}"
@@ -90,6 +90,7 @@
                             {/if}
                         {/block}
 
+                        <div class="product-info-custom-block-miniature-price-stars">
                         {block name='product_price_and_shipping'}
                             {if $product.show_price}
                                 <div class="product-price-and-shipping flex_cln">
@@ -111,6 +112,7 @@
                         {/block}
 
                         <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
+                        </div>
 
                         {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')}
                             <p class="product_descr">
