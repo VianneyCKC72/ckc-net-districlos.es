@@ -1,70 +1,171 @@
-body#checkout section.checkout-step .content,
-body#checkout section.checkout-step .done,
-body#checkout section.checkout-step .step-edit {
-  display: none;
-}
-body#checkout section.checkout-step.-current .content {
-  display: block;
-}
-body#checkout section.checkout-step.-current.-reachable.-complete .done,
-body#checkout section.checkout-step.-current.-reachable.-complete .step-edit {
-  display: none;
-}
-body#checkout section.checkout-step.-current.-reachable.-complete .step-number {
-  display: inline-block;
-}
-body#checkout section.checkout-step.-current.-reachable.-complete .content {
-  display: block;
-}
-body#checkout section.checkout-step.-reachable.-complete h1 .done {
-  display: inline-block;
-  color: $secondary-color;
-}
-body#checkout section.checkout-step.-reachable.-complete h1 .step-number {
-  display: none;
-}
-body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
-  display: block;
-  float: right;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  color: $black;
-  &:hover {
-    color: $secondary-color;
-  }
-}
+body#checkout {
+  section.checkout-step {
+    .content,
+    .done,
+    .step-edit {
+      display: none;
+    }
 
-#checkout {
+    .progress-container {
+      width: 100%;
+      max-width: 480px;
+      height: 6px;
+      background-color: #f6f2eb;
+      border-radius: 3px;
+      margin-top: 20px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 30px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: $secondary-color;
+      transition: width 0.5s ease-in-out;
+      border-radius: 3px;
+    }
+
+    .step-number {
+      display: inline-block;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 100%;
+      letter-spacing: 0;
+      vertical-align: middle;
+
+    }
+
+    h2.sous-titre {
+      font-weight: 600;
+      font-size: 35px;
+      line-height: 100%;
+      letter-spacing: 0;
+      vertical-align: middle;
+      margin-bottom: 30px;
+    }
+
+    .account-switch {
+      font-weight: 600;
+      font-size: 20px;
+      line-height: 100%;
+      letter-spacing: 0;
+      vertical-align: middle;
+
+      p {
+        display: flex;
+        justify-content: flex-start;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 30px;
+
+        a {
+          color: $secondary-color;
+          text-decoration: none;
+          cursor: pointer;
+          font-weight: 800;
+          font-size: 20px;
+          line-height: 100%;
+          letter-spacing: 0;
+          vertical-align: middle;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+
+
+    &.-current {
+      .content {
+        display: block;
+        margin-top: 20px;
+      }
+
+      h1 {
+        font-weight: 800;
+        font-size: 30px;
+        line-height: 100%;
+        letter-spacing: 0;
+      }
+
+      &.-reachable.-complete {
+        .done,
+        .step-edit {
+          display: none;
+        }
+
+        .content {
+          display: block;
+        }
+      }
+    }
+
+    &.-reachable.-complete {
+      h1 {
+        .done {
+          display: inline-block;
+          color: $secondary-color;
+        }
+
+        .step-number {
+          display: none;
+        }
+
+        .step-edit {
+          display: block;
+          float: right;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 500;
+          color: $black;
+
+          &:hover {
+            color: $secondary-color;
+          }
+        }
+      }
+    }
+  }
+
   margin-top: 0;
+
   .-current {
-    margin-bottom:30px;
+    margin-bottom: 30px;
     margin-top: 20px;
   }
+
   .conditions-to-approve {
     margin-top: 10px;
   }
+
   h4 {
     margin-bottom: 10px;
     margin-top: 25px;
   }
+
   .form-group {
     margin-bottom: 1.5rem;
   }
+
   .cart-summary {
     .cart-summary-line {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 1rem;
+
       &.cart-total {
         display: flex;
         justify-content: space-between;
         align-items: center;
+
         .label {
           font-size: 20px;
           font-weight: 600;
         }
+
         .value {
           font-size: 30px;
           font-weight: 600;
@@ -79,21 +180,26 @@ body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
           height: 60px;
           object-fit: cover;
         }
+
         .media-body {
           font-size: 13px;
           display: flex;
+
           .media-body-content {
             display: flex;
             flex-direction: column;
             flex: auto;
           }
+
           .product-name {
             font-weight: 600;
             display: inline-flex;
           }
+
           .product-quantity {
             display: block;
           }
+
           .product-price {
             font-weight: 600;
             align-self: flex-end;
@@ -101,6 +207,10 @@ body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
         }
       }
     }
+  }
+
+  .cart-grid {
+    margin-bottom: 5rem;
   }
 
   .cart-grid-body {
@@ -122,22 +232,26 @@ body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
       display: flex;
       flex-direction: column;
       row-gap: 12px;
+
       .address-item {
         background-color: $sand-light-color;
         border-radius: 4px;
         padding: 20px;
+
         .address {
           margin-top: 6px;
           font-size: 14px;
           font-weight: 500;
         }
       }
+
       .address-footer {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         column-gap: 12px;
         row-gap: 6px;
+
         .delete-address,
         .edit-address {
           display: flex;
@@ -151,6 +265,7 @@ body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
           background-color: rgba($primary-color, 0.1);
           border: 1px solid rgba($primary-color, 0.3);
           transition: all 0.3s;
+
           &:hover {
             background-color: rgba($primary-color, 0.3);
             border-color: rgba($primary-color, 0.6);
@@ -158,9 +273,11 @@ body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
         }
       }
     }
+
     .add-address {
       margin-top: 16px;
       margin-bottom: 0;
+
       a {
         width: fit-content;
         display: flex;
@@ -173,12 +290,14 @@ body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
         background-color: rgba($secondary-color, 0.1);
         border: 1px solid rgba($secondary-color, 0.3);
         transition: all 0.3s;
+
         &:hover {
           background-color: rgba($secondary-color, 0.3);
           border-color: rgba($secondary-color, 0.6);
         }
       }
     }
+
     .form-footer {
       display: flex;
       flex-wrap: wrap;
@@ -194,22 +313,27 @@ body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
       display: flex;
       flex-direction: column;
       row-gap: 12px;
+
       .js-delivery-option {
         display: flex;
         background-color: $sand-light-color;
         border-radius: 4px;
         padding: 20px;
         font-size: 14px;
+
         .delivery-option-2 {
           display: flex;
           margin-bottom: 0;
+
           .custom-radio {
             flex: none;
             margin-right: 12px;
           }
+
           .carrier-name {
             font-weight: 600;
           }
+
           .carrier-logo {
             width: 40px;
             height: 40px;
@@ -220,13 +344,14 @@ body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
       }
     }
   }
+
   .summary-selected-carrier {
     .carrier-name {
       font-size: 16px;
       font-weight: 600;
     }
   }
-  
+
   .order-confirmation-table {
     .order-lines {
       .order-line {
@@ -236,22 +361,116 @@ body#checkout section.checkout-step.-reachable.-complete h1 .step-edit {
       }
     }
   }
+
   .order-confirmation-total {
     tr td {
       font-size: 16px;
     }
+
     .total-value {
       .label {
         font-size: 20px;
         font-weight: 600;
       }
+
       .value {
         font-size: 30px;
         font-weight: 600;
       }
     }
   }
-  #login-form .not-account-yet img{
+
+  #login-form .not-account-yet {
     display: none;
   }
+
+  .tab-content {
+    #customer-form > div {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+
+      &.actions-container-register {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 450px;
+        margin: 0 auto;
+      }
+
+      &.ets_solo_social_wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        > .ets_solo_wrapper_content {
+          > .ets_solo_social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            flex-direction: column;
+            .ets_solo_social_btn {
+              width: 320px;
+            }
+          }
+        }
+      }
+
+      .form-group-id_gender {
+        grid-column: span 2;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 15px;
+        margin-bottom: 0;
+      }
+
+      // Prénom & Nom (Ligne 2)
+      .form-group-firstname,
+      .form-group-lastname {
+        display: flex;
+        flex-direction: column;
+      }
+
+      // Email & Mot de passe (Ligne 3)
+      .form-group-email,
+      .form-group-password {
+        display: flex;
+        flex-direction: column;
+      }
+
+
+      .form-group-type-checkbox {
+        grid-column: span 2;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0;
+        align-items: flex-start;
+        margin-bottom: 0;
+      }
+
+      .custom-checkbox {
+        em {
+          display: none;
+        }
+      }
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+
+        .form-group-id_gender,
+        .form-group-type-checkbox {
+          grid-column: span 1;
+        }
+
+        .form-group-id_gender {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    }
+  }
+
+
 }

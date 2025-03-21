@@ -175,28 +175,18 @@
             </div>
             <div class="price">
                 <div class="product-line-info product-price h5 mb-0">
-          <span class="product-price">
-                {if !empty($product.is_gift)}
-                    <span class="gift">{l s='Gift' d='Shop.Theme.Checkout'}</span>
-
-{else}
-
-                    <strong>
-                        {$product.total}
-                </strong>
-                {/if}
-            </span>
+                  <span class="product-price">
+                        {if !empty($product.is_gift)}
+                            <span class="gift">{l s='Gift' d='Shop.Theme.Checkout'}</span>
+                           {else}
+                             {if $product.has_discount}
+                                    <strong>{$product.total}</strong>
+                              {else}
+                                <strong>{$product.total}</strong>
+                            {/if}
+                        {/if}
+                    </span>
                 </div>
-
-                {* <span class="product-price">
-                  <strong>
-                    {if !empty($product.is_gift)}
-                      <span class="gift">{l s='Gift' d='Shop.Theme.Checkout'}</span>
-                    {else}
-                      {$product.total}
-                    {/if}
-                  </strong>
-                </span> *}
             </div>
         </div>
         <div class="cart-line-product-actions">

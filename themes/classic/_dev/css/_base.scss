@@ -3522,7 +3522,7 @@ a.tag:hover {
 }
 
 .progress[value] {
-  background-color: #eee;
+  background-color: #f6f2eb;
   border: 0;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -3620,27 +3620,27 @@ base::-moz-progress-bar {
 }
 
 .progress-success[value]::-webkit-progress-value {
-  background-color: #4cbb6c;
+  background-color: $secondary-color;
 }
 
 .progress-success[value]::-moz-progress-bar {
-  background-color: #4cbb6c;
+  background-color:  $secondary-color;
 }
 
 .progress-success[value]::-ms-fill {
-  background-color: #4cbb6c;
+  background-color:  $secondary-color;
 }
 
 .progress-info[value]::-webkit-progress-value {
-  background-color: #5bc0de;
+  background-color: $primary-light-color;
 }
 
 .progress-info[value]::-moz-progress-bar {
-  background-color: #5bc0de;
+  background-color: $primary-light-color;
 }
 
 .progress-info[value]::-ms-fill {
-  background-color: #5bc0de;
+  background-color: $primary-light-color;
 }
 
 .progress-warning[value]::-webkit-progress-value {
@@ -3656,15 +3656,15 @@ base::-moz-progress-bar {
 }
 
 .progress-danger[value]::-webkit-progress-value {
-  background-color: #ff4c4c;
+  background-color: $red;
 }
 
 .progress-danger[value]::-moz-progress-bar {
-  background-color: #ff4c4c;
+  background-color: $red;
 }
 
 .progress-danger[value]::-ms-fill {
-  background-color: #ff4c4c;
+  background-color: $red;
 }
 
 .media,

@@ -42,26 +42,23 @@
     </div>
 
   {else}
-    <ul class="nav nav-inline d-flex flex-wrap gap-16 mb-3" role="tablist">
-      <li class="nav-item m-0">
-        <a class="btn btn-primary-outline {if !$show_login_form}active{/if}" data-toggle="tab" href="#checkout-guest-form"
-          role="tab" aria-controls="checkout-guest-form" {if !$show_login_form} aria-selected="true" {/if}>
-          {if $guest_allowed}
-            {l s='Order as a guest' d='Shop.Theme.Checkout'}
-          {else}
-            {l s='Create an account' d='Shop.Theme.Customeraccount'}
-          {/if}
-        </a>
-      </li>
-
-      <li class="nav-item m-0">
-        <a class="btn btn-primary-outline {if $show_login_form}active{/if}" data-link-action="show-login-form"
-          data-toggle="tab" href="#checkout-login-form" role="tab" aria-controls="checkout-login-form" {if $show_login_form}
-          aria-selected="true" {/if}>
-          {l s='Sign in' d='Shop.Theme.Actions'}
-        </a>
-      </li>
-    </ul>
+    <div class="account-switch texte-left">
+      {if $show_login_form}
+        <p>
+          Vous avez déjà un compte ?
+          <a href="#checkout-guest-form" data-toggle="tab" role="tab" aria-controls="checkout-guest-form" aria-selected="false">
+            Connectez-vous →
+          </a>
+        </p>
+      {else}
+        <p>
+          Pas encore de compte ?
+          <a href="#checkout-login-form" data-toggle="tab" role="tab" aria-controls="checkout-login-form" aria-selected="false">
+            Créez un compte →
+          </a>
+        </p>
+      {/if}
+    </div>
 
     <div class="tab-content">
       <div class="tab-pane {if !$show_login_form}active{/if}" id="checkout-guest-form" role="tabpanel"

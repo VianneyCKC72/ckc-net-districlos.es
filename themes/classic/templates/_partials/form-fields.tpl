@@ -30,7 +30,7 @@
 
 {else}
 
-  <div class="form-group {if !empty($field.errors)}has-error{/if}">
+  <div class="form-group form-group-{$field.name} form-group-type-{$field.type}  {if !empty($field.errors)}has-error{/if}">
 
     {if $field.type !== 'checkbox'}
       <label class="form-control-label{if $field.required} required{/if}" for="field-{$field.name}">
