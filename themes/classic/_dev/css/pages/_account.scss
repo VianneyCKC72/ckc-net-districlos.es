@@ -239,13 +239,13 @@
       transition: all .3s ease-out;
     }
   }
-  .address-footer:has(form .badge-empty-green){
+  .address-footer:has(div .badge-empty-green){
     padding: 1rem 1rem 1rem 0 !important;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    form{
+    > div{
       max-width: 160px;
       margin-right: 10px;
     }

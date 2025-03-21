@@ -400,6 +400,15 @@ body#checkout {
     }
   }
 
+  #checkout-addresses-step {
+    .address-item.selected{
+      header{
+        background-color: $secondary-color;
+        color: white;
+      }
+    }
+  }
+
 
   .tab-content {
     #customer-form > div {
@@ -473,15 +482,6 @@ body#checkout {
       .custom-checkbox {
         em {
           display: none;
-        }
-      }
-
-      #checkout-addresses-step {
-        .address-item.selected{
-          header{
-            background-color: $secondary-color;
-            color: white;
-          }
         }
       }
 

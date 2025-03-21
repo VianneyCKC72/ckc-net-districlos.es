@@ -3,7 +3,7 @@ $(document).ready(function () {
 
         $(".badge-empty-green").click(function(){
 
-            let addressId = $(this).next().val()
+            let addressId = $(this).next().text()
 
             $.ajax({
                 type: "POST",
