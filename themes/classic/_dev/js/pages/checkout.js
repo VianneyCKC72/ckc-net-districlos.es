@@ -2,7 +2,7 @@ $(document).ready(function () {
     if ($('body').hasClass('page-order')) {
 
         // Supprimer le doublon des boutons sociaux
-        $('.ets_solo_social_wrapper:not(:first)').remove();
+        $('#checkout-guest-form .ets_solo_social_wrapper:not(:first)').remove();
 
         // Déplacer "Recevoir les bons plans et promotions par SMS"
         if ($('input[name="sms_optin"]').length && $('input[name="customer_privacy"]').length) {
@@ -36,9 +36,9 @@ $(document).ready(function () {
 
             if (activeTab === "checkout-login-form") {
                 switchContainer.html(`
-<h2 class="sous-titre">Créez un compte</h2>
+<h2 class="sous-titre">Connexion</h2>
                     <p>
-                        Vous avez déjà un compte ?
+                        Pas encore de compte ?
                         <a href="#checkout-guest-form" data-toggle="tab" role="tab" aria-controls="checkout-guest-form">
                             Créez un compte →
                         </a>
@@ -46,9 +46,9 @@ $(document).ready(function () {
                 `);
             } else {
                 switchContainer.html(`
-<h2 class="sous-titre">Connexion</h2>
+<h2 class="sous-titre">Créer un compte</h2>
                     <p>
-                        Pas encore de compte ?
+                        Vous avez déjà un compte ?
                         <a href="#checkout-login-form" data-toggle="tab" role="tab" aria-controls="checkout-login-form">
                             Connectez-vous →
                         </a>
@@ -81,6 +81,5 @@ $(document).ready(function () {
                 }
             })
         }
-
     }
 });
