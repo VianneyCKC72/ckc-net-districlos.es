@@ -79,6 +79,9 @@ body#checkout {
         .content {
           display: block;
         }
+        .step-number {
+          display:none;
+        }
       }
     }
 
@@ -514,4 +517,23 @@ body#checkout {
       }
     }
   }
+
+  .js-address-form .form-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .js-address-form .form-group {
+    width: calc(50% - 10px);
+  }
+
+  /* Forcer l'alias à prendre toute la ligne */
+  .js-address-form .form-group-alias,
+  .form-group.row{
+    width: 100%;
+  }
+
+
+
 }
