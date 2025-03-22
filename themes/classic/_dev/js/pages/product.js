@@ -44,11 +44,11 @@ $(document).ready(function () {
   function getFormData(cart = false, object = null, direction = null, differential = null) {
     if (!cart) {
       let jsProduct = $(object).closest('.js-product-actions');
-      let quantity = $(jsProduct).find("#quantity_wanted").val();
+      let quantity = parseInt($(jsProduct).find("#quantity_wanted").val());
       if (direction === 'up') {
-        quantity = quantity + differential;
+        quantity = quantity + parseInt(differential);
       }else if (direction === 'down') {
-        quantity = quantity - differential;
+        quantity = quantity - parseInt(differential);
       }
       return {
         token: $(jsProduct).find('input[name=token]').val(),
