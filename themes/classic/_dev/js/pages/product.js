@@ -22,10 +22,9 @@ $(document).ready(function () {
 
     let currentValue = parseInt($quantityInput.val()) || 0;
     let newValue = currentValue + 1;
-
-    // Met à jour la valeur uniquement si elle a changé
+    let cart = $('body').hasClass('cart');
     $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
-    checkStock(true, $quantityInput, 'up', 1); // ✅ Appel AJAX unique
+    checkStock(cart, $quantityInput, 'up', 1);
   });
 
   $('body').on('click', '.decrease', function () {
@@ -36,9 +35,10 @@ $(document).ready(function () {
     let minValue = parseInt($quantityInput.attr('min')) || 1;
     let newValue = Math.max(minValue, currentValue - 1);
 
-    // Met à jour la valeur uniquement si elle a changé
     $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
-    checkStock(true, $quantityInput, 'down', 1); // ✅ Appel AJAX unique
+    let cart = $('body').hasClass('cart');
+
+    checkStock(cart, $quantityInput, 'down', 1);
   });
 
   function getFormData(cart = false, object = null, direction = null, differential = null) {
