@@ -45,18 +45,26 @@ window.avisVerifies = {};
 }
 
 if (typeof jQuery !== 'undefined') {
-
     function av_widget_click() {
-        if ($('.netreviews_tab').length) { // Prestashop 1.7
-            if ($('#netreviews_tab').length) {
-                $("#netreviews_tab").triggerHandler("click");
-            } else {
-                var tagclassname_av = $('.netreviews_tab').attr('id');
-                $("a[href='#" + tagclassname_av + "']").triggerHandler("click");
+        let tagId = $('.netreviews_tab').attr('id') || 'netreviews_reviews_tab';
+        let $link = $("a[href='#" + tagId + "']");
+
+        $link.on('shown.bs.tab', function() {
+            let $target = $('#' + tagId);
+            if ($target.length) {
+                $('html, body').animate({
+                    scrollTop: $target.offset().top
+                }, 600);
             }
-        } else {
-            $("a[href='#netreviews_reviews_tab']").triggerHandler("click");
-        }
+        });
+
+        $link.click();
     }
 
+
+    $(document).ready(function () {
+        $("div.product-container div.skeepers_product__stars").on("click", function () {
+            av_widget_click();
+        });
+    });
 }

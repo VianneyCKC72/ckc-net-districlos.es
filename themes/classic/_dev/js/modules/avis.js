@@ -13,7 +13,7 @@ $(document).ready(function () {
 
                             let avisLi = $(`
                                 <li class="nav-item">
-                                    <a class="nav-link avisVerfies" data-toggle="tab" href="#avisverifies" role="tab" aria-controls="avisverifies">
+                                    <a class="nav-link avisVerfies" data-toggle="tab" href="#netreviews_reviews_tab" role="tab" aria-controls="avisverifies">
                                         <img src="/img/avislogo.svg" alt="logo avis vérifiés">
                                         <span class="avis_verifies_inserted">
                                             <svg class="star-svg" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 31.575 30.402">
@@ -86,20 +86,5 @@ $(document).ready(function () {
 
         observer.observe(skeepers[0], { childList: true, subtree: true });
     }
-
-    $('.review__header').on('click', function(e) {
-        e.preventDefault();
-
-        setTimeout(() => {
-            // Active l'onglet
-            $('a.nav-link.avisVerfies').tab('show');
-
-            // Puis scroll
-            $('html, body').animate({
-                scrollTop: $('#tab-content').offset().top
-            }, 600);
-        }, 600);
-    });
-
 
 });
