@@ -19,27 +19,46 @@ $(document).ready(function () {
         const showListBtn = $('.show_list');
         const showGridBtn = $('.show_grid');
         const productsContainer = $('.products');
-        const productDescriptions = $('.product_descr'); // Sélection de la description
+        const productDescriptions = $('.product_descr');
 
-        var classgrid = "col-xs-6 col-md-6 col-lg-4 col-sm-6 col-xl-3";
         if (isListView) {
             setCookie("show_list", "true", 365);
-            productList.removeClass(classgrid)
-                .addClass('list_view col-12');
+
+            productList.each(function () {
+                // Supprime toutes les classes commençant par col-
+                const el = $(this);
+                el.removeClass(function (index, className) {
+                    return (className.match(/col-\S+/g) || []).join(' ');
+                });
+                el.addClass('list_view col-12');
+            });
+
             productDescriptions.show();
             showListBtn.addClass('active');
             showGridBtn.removeClass('active');
-            productsContainer.removeClass('grid-mode').addClass('list-mode list_view'); // 👈 ICI
+            productsContainer
+                .removeClass('grid-mode')
+                .addClass('list-mode list_view');
+
         } else {
             setCookie("show_list", "", -1);
-            productList.removeClass('list_view col-12')
-                .addClass(classgrid);
+
+            productList.each(function () {
+                const el = $(this);
+                el.removeClass(function (index, className) {
+                    return (className.match(/col-\S+/g) || []).join(' ');
+                });
+                el.removeClass('list_view')
+                    .addClass('col-xs-6 col-sm-6 col-md-4 col-lg-3 col-xl-3');
+            });
+
             productDescriptions.hide();
             showGridBtn.addClass('active');
             showListBtn.removeClass('active');
-            productsContainer.removeClass('list-mode list_view').addClass('grid-mode'); // 👈 ICI
+            productsContainer
+                .removeClass('list-mode list_view')
+                .addClass('grid-mode');
         }
-
     }
 
 

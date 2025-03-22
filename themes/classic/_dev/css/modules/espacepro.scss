@@ -24,7 +24,6 @@
     #login-form, #registration-form {
       display: block;
     }
-
     .inside-login-form, .inside-register-form {
       width:100%;
     }
@@ -279,6 +278,14 @@
 
   .margin-bottom-80 {
     margin-bottom: 80px;
+  }
+}
+
+body.espace_pro,
+body.registration-pro {
+  #ckcpromobarre,
+  .btn-configurateur {
+    background-color: $pro-color;
   }
 }
 
