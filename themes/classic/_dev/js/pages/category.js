@@ -72,11 +72,6 @@ $(document).ready(function () {
     });
 
     const redirects = {
-        '/3-cloture-rigide/s-1/couleur-vert_6005': '/s/1/cloture-rigide-verte',
-        '/3-cloture-rigide/s-1/couleur-gris_7035': '/s/2/cloture-rigide-gris',
-        '/3-cloture-rigide/s-1/couleur-gris_7016': '/s/2/cloture-rigide-gris',
-        '/3-cloture-rigide/s-1/couleur-blanc_9010': '/s/4/cloture-rigide-blanche',
-        '/3-cloture-rigide/s-1/couleur-noir_9005': '/s/3/cloture-rigide-noir'
     };
 
     function redirectTo(url) {
