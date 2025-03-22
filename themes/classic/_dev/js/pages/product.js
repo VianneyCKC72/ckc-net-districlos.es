@@ -24,9 +24,7 @@ $(document).ready(function () {
     let newValue = currentValue + 1;
     let cart = $('body').hasClass('cart');
     $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
-    if ($('#quantity_wanted').length) {
-      $('#quantity_wanted').trigger('change');
-    }
+    checkStock(cart, $quantityInput, 'up', 1);
   });
 
   $('body').on('click', '.decrease', function () {
@@ -37,16 +35,12 @@ $(document).ready(function () {
     let minValue = parseInt($quantityInput.attr('min')) || 1;
     let newValue = Math.max(minValue, currentValue - 1);
 
-    $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue)
-    if ($('#quantity_wanted').length) {
-      $('#quantity_wanted').trigger('change');
-    }
+    $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
+    let cart = $('body').hasClass('cart');
+
+    checkStock(cart, $quantityInput, 'down', 1);
   });
 
-  $('#quantity_wanted').on('change', function () {
-    let cart = $('body').hasClass('cart');
-    checkStock(cart, $(this), 'down', 1);
-  })
 
   function getFormData(cart = false, object = null, direction = null, differential = null) {
     if (!cart) {
