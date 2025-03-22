@@ -14,11 +14,26 @@
     width: 100%;
     gap: 20px;
     margin-top: 50px;
+    a{
+      max-width: 295px;
+      padding-right: 15px;
+      padding-left: 15px;
+    }
     @media (max-width: 1290px) {
       gap: 15px;
     }
     @media (max-width: 1090px) {
       gap: 5px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      a, a.bck-blue{
+        padding-top: 10px;
+        padding-bottom: 5px;
+        max-width: 49%;
+        h2{
+          width: 100%;
+        }
+      }
     }
     @media (max-width: 768px) {
       flex-wrap: wrap;
