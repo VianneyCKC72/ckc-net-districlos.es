@@ -2471,30 +2471,37 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         opacity: 1;
         overflow: visible;
         top: 100%;
-        transform: perspective(600px) rotateX(0deg);
-        -webkit-transform: perspective(600px) rotateX(0deg);
-        -moz-transform: perspective(600px) rotateX(0deg);
-        -o-transform: perspective(600px) rotateX(0deg);
-        -ms-transform: perspective(600px) rotateX(0deg);
-        transition: transform 0.5s ease 0s, opacity 0.2s ease 0s, max-height 0s step-end 0s, max-width 0s step-end 0s, padding 0s step-end 0s;
-        -webkit-transition: transform 0.5s ease 0s, opacity 0.2s ease 0s, max-height 0s step-end 0s, max-width 0s step-end 0s, padding 0s step-end 0s;
-        -moz-transition: transform 0.5s ease 0s, opacity 0.2s ease 0s, max-height 0s step-end 0s, max-width 0s step-end 0s, padding 0s step-end 0s;
-        -o-transition: transform 0.5s ease 0s, opacity 0.2s ease 0s, max-height 0s step-end 0s, max-width 0s step-end 0s, padding 0s step-end 0s;
-        -ms-transition: transform 0.5s ease 0s, opacity 0.2s ease 0s, max-height 0s step-end 0s, max-width 0s step-end 0s, padding 0s step-end 0s;
+        /*transform: perspective(600px) rotateX(0deg);*/
+        /*-webkit-transform: perspective(600px) rotateX(0deg);*/
+        /*-moz-transform: perspective(600px) rotateX(0deg);*/
+        /*-o-transform: perspective(600px) rotateX(0deg);*/
+        /*-ms-transform: perspective(600px) rotateX(0deg);*/
+        /*transition: transform 0.5s ease 0s, opacity 0.2s ease 0s, max-height 0s step-end 0s, max-width 0s step-end 0s, padding 0s step-end 0s;*/
+        /*-webkit-transition: transform 0.5s ease 0s, opacity 0.2s ease 0s, max-height 0s step-end 0s, max-width 0s step-end 0s, padding 0s step-end 0s;*/
+        /*-moz-transition: transform 0.5s ease 0s, opacity 0.2s ease 0s, max-height 0s step-end 0s, max-width 0s step-end 0s, padding 0s step-end 0s;*/
+        /*-o-transition: transform 0.5s ease 0s, opacity 0.2s ease 0s, max-height 0s step-end 0s, max-width 0s step-end 0s, padding 0s step-end 0s;*/
+        /*-ms-transition: transform 0.5s ease 0s, opacity 0.2s ease 0s, max-height 0s step-end 0s, max-width 0s step-end 0s, padding 0s step-end 0s;*/
         visibility: visible;
         width: auto;
     }
-    .transition_fadeInUp li:hover .mm_columns_ul {
-        -webkit-animation-name: transition_fadeInUp;
-        animation-name: transition_fadeInUp;
-        -webkit-animation-duration: 0.35s;
-        animation-duration: 0.35s;
-    }
+    /*.transition_fadeInUp li:hover .mm_columns_ul {*/
+    /*    -webkit-animation-name: transition_fadeInUp;*/
+    /*    animation-name: transition_fadeInUp;*/
+    /*    -webkit-animation-duration: 0.35s;*/
+    /*    animation-duration: 0.35s;*/
+    /*}*/
     /*end*/
     .ets-dir-rtl .ybc-menu-button-toggle_icon {
         margin-left: 7px;
         margin-right: 0;
     }
+    .mm_columns_ul_tab,
+    .mm_columns_contents_ul {
+        transition: none !important;
+    }
+
+
+
     .ets-dir-rtl .mm_menus_li > a > img, .ets-dir-rtl .mm_menus_li > a > i.fa {
         float: right;
         margin-right: 0;
@@ -3098,6 +3105,9 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
     .ets_mm_megamenu.layout_layout1.scroll_heading:not(.ybc_vertical_menu) .mm_menus_ul {
         top: 49px !important;
     }
+    .sticky .ets_mm_megamenu.layout_layout1.scroll_heading:not(.ybc_vertical_menu) .mm_menus_ul {
+        top: 82px !important;
+    }
 }
 
 
@@ -3231,11 +3241,19 @@ body.menu-opened::before {
     left: 0;
     width: 100vw;
     height: 100vh;
-    /*background: rgba(0, 0, 0, 0.5); !* Fond semi-transparent gris *!*/
-    background:white;
+    background: rgba(0, 0, 0, 0.5); /* Fond semi-transparent gris */
+    /*background:white;*/
     z-index: 999; /* Assurez-vous que c'est au-dessus du contenu mais en dessous du menu */
     pointer-events: none; /* Empêche l’interaction avec le fond */
 }
+
+body.menu-opened #header .header-top {
+    padding-bottom: 25px;
+}
+body.menu-opened #ckcpromobarre {
+    z-index: 999;
+}
+
 .changestatus .mm_menu_content_title > div:has(img.img-menu-desktop-custom){
     @media (max-width: 768px){
         display: none;
@@ -3557,11 +3575,11 @@ span.mm_menu_content_title > div:nth-child(2){
         overflow: hidden;
         margin-left: 15px;
         margin-top: 20px;
-        transition: max-height 0.4s ease-out;
+        /*transition: max-height 0.4s ease-out;*/
         max-height: 0;
     }
     .ets_mm_block .ets_mm_block_content.ets_mm_block_content_show{
-        transition: max-height .4s ease-out;
+        /*transition: max-height .4s ease-out;*/
         max-height: 700px;
     }
     .ets_mm_block .ets_mm_block_content a{
@@ -3604,4 +3622,8 @@ span.mm_menu_content_title > div:nth-child(2){
 }
 
 
-
+.menu-level-2,
+.menu-level-3 {
+    transition: none !important;
+    animation: none !important;
+}
