@@ -24,10 +24,8 @@ $(document).ready(function () {
     let newValue = currentValue + 1;
 
     // Met à jour la valeur uniquement si elle a changé
-    if (newValue !== currentValue) {
-      $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
-      checkStock(true, $quantityInput, 'up', 1); // ✅ Appel AJAX unique
-    }
+    $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
+    checkStock(true, $quantityInput, 'up', 1); // ✅ Appel AJAX unique
   });
 
   $('body').on('click', '.decrease', function () {
@@ -39,10 +37,8 @@ $(document).ready(function () {
     let newValue = Math.max(minValue, currentValue - 1);
 
     // Met à jour la valeur uniquement si elle a changé
-    if (newValue !== currentValue) {
-      $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
-      checkStock(true, $quantityInput, 'down', 1); // ✅ Appel AJAX unique
-    }
+    $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
+    checkStock(true, $quantityInput, 'down', 1); // ✅ Appel AJAX unique
   });
 
   function getFormData(cart = false, object = null, direction = null, differential = null) {
