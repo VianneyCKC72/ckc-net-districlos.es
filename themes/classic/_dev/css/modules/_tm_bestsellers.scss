@@ -186,8 +186,18 @@
 }
 @media (max-width: 1449px) {
   #left-column .sidebar-bestseller .right-part {
-    width: 51%;
     float: right;
+  }
+}
+@media (max-width: 1361px) {
+  #left-column .sidebar-bestseller .right-part {
+    width: 100%;
+  }
+  #left-column .sidebar-bestseller .left-part {
+    min-width: 70px;
+  }
+  #left-column .sidebar-bestseller .product-item {
+    gap: 0;
   }
 }
 @media (max-width: 1199px) {
