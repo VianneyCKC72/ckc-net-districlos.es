@@ -67,7 +67,7 @@
 
           {block name='cart_voucher_notifications'}
             <div class="alert alert-danger js-error" role="alert">
-              <i class="material-icons">&#xE001;</i><span class="ml-1 js-error-text"></span>
+              <span class="ml-1 js-error-text"></span>
             </div>
           {/block}
         </div>
