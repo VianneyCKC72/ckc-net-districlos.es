@@ -541,9 +541,65 @@
 .evercontentseo img.image-mobile{
   display: none;
 }
+.product-miniature.js-product-miniature .product-info-custom-block-miniature{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  min-height: 105.5px;
+  .product-info-custom-block-miniature-price-stars{
+    min-height: 61.5px;
+  }
+}
+@media (max-width: 1341px) and (min-width: 768px) {
+  .product-info-custom-block-miniature-price-stars .skeepers_product__stars .review__header{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    .stars__rating{
+      margin-left: auto;
+      margin-top: 8px;
+    }
+  }
+  .product-miniature.js-product-miniature .product-info-custom-block-miniature{
+    min-height: 173px;
+  }
+  .product-miniature.js-product-miniature .product-info-custom-block-miniature .product-info-custom-block-miniature-price-stars{
+    min-height: 106px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    .product-price-and-shipping .price{
+      font-size: 22px;
+    }
+  }
+}
+@media (max-width: 1239px) and (min-width: 768px) {
+  .js-product.product.col-xs-6.col-sm-6.col-md-4.col-lg-3.col-xl-3{
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+}
 @media (max-width: 1230px) {
   section.elementor-element-4d6d522{
     display: none;
+  }
+}
+@media (max-width: 1100px) and (min-width: 768px) {
+  .product-miniature.js-product-miniature .product-info-custom-block-miniature .product-info-custom-block-miniature-price-stars{
+    .product-price-and-shipping .price{
+      font-size: 20px;
+    }
+  }
+  #js-product-list .products .product-miniature .product-description{
+    padding: 20px 10px 0;
+  }
+}
+@media (max-width: 802px) and (min-width: 768px) {
+  #js-product-list .products .product-miniature .product-description .btn.btn-primary{
+    padding: 12px 22px !important;
   }
 }
 @media (max-width: 767px) {
@@ -559,14 +615,21 @@
   .evercontentseo img.image-mobile{
     display: inline;
   }
+  .product-miniature.js-product-miniature .product-info-custom-block-miniature{
+    min-height: 129.5px;
+  }
+  .product-miniature.js-product-miniature .product-info-custom-block-miniature .product-info-custom-block-miniature-price-stars {
+    min-height: 85.5px;
+  }
 }
-.product-miniature.js-product-miniature .product-info-custom-block-miniature{
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  min-height: 105.5px;
-  .product-info-custom-block-miniature-price-stars{
-    min-height: 61.5px;
+@media (max-width: 477px) {
+  .js-product.product.col-xs-6.col-sm-6.col-md-4.col-lg-3.col-xl-3{
+    width: 100%;
+  }
+  .product-miniature.js-product-miniature .product-info-custom-block-miniature {
+    justify-content: flex-start;
+  }
+  .product-miniature.js-product-miniature .product-info-custom-block-miniature {
+    min-height: auto;
   }
 }
