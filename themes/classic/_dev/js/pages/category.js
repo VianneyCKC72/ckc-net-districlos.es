@@ -26,19 +26,20 @@ $(document).ready(function () {
             setCookie("show_list", "true", 365);
             productList.removeClass(classgrid)
                 .addClass('list_view col-12');
-            productDescriptions.show(); // Affiche la description des produits en mode liste
+            productDescriptions.show();
             showListBtn.addClass('active');
             showGridBtn.removeClass('active');
-            productsContainer.removeClass('grid-mode').addClass('list-mode');
+            productsContainer.removeClass('grid-mode').addClass('list-mode list_view'); // 👈 ICI
         } else {
             setCookie("show_list", "", -1);
             productList.removeClass('list_view col-12')
                 .addClass(classgrid);
-            productDescriptions.hide(); // Cache la description des produits en mode grille
+            productDescriptions.hide();
             showGridBtn.addClass('active');
             showListBtn.removeClass('active');
-            productsContainer.removeClass('list-mode').addClass('grid-mode');
+            productsContainer.removeClass('list-mode list_view').addClass('grid-mode'); // 👈 ICI
         }
+
     }
 
 
