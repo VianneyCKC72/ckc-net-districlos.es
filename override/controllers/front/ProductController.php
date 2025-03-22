@@ -15,7 +15,7 @@ class ProductController extends ProductControllerCore
         $product['price']           = number_format($product['price_amount'], 2, ',', ' ') . '€';
         $product['regular_price_amount'] = round((float)$product['regular_price_amount'] * $product['quantity_wanted'], 2);
         $product['regular_price']        = number_format($product['regular_price_amount'], 2, ',', ' ') . '€';
-        $product['unit_price_full']     = round((float)$product['price_amount'] / $product['quantity_wanted'], 2);
+        $product['unit_price_full']     = number_format(round((float)$product['price_amount'] / $product['quantity_wanted'], 2), 2, ',', ' ') . '€';
 /*        $product['rounded_display_price'] = round((float)$product['rounded_display_price'] * $product['quantity_wanted'], 2);
         $product['price_without_reduction'] = round((float)$product['price_without_reduction'] * $product['quantity_wanted'], 2);*/
 
