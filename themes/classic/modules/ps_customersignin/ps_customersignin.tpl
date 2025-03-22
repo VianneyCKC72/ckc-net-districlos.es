@@ -22,7 +22,9 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
-{if (!$env_particulier)}
+
+
+{if !$logged || ($logged && $env_pro)}
 <a href="{$urls.pages.authentication}?back=my-account&amp;ep=1" class="ico btn-espace-pro">
     <img src="/themes/classic/assets/img/ico-espace-pro.png" alt="Connexion à Espace pro">
     <span class="text">Espace pro</span>
@@ -40,15 +42,17 @@
 <div id="_desktop_user_info">
   <div class="user-info">
       {if $logged}
-          <a
-                  class="ico"
-                  href="{$urls.pages.my_account}"
-                  title="{l s='View my customer account' d='Shop.Theme.Customeraccount'}"
-                  rel="nofollow"
-          >
-              <img src="/themes/classic/assets/img/ico-compte.png" alt="Connexion">
-              <span class="hidden-sm-down">Mon compte</span>
-          </a>
+          {if $env_pro == false}
+              <a
+                      class="ico"
+                      href="{$urls.pages.my_account}"
+                      title="{l s='View my customer account' d='Shop.Theme.Customeraccount'}"
+                      rel="nofollow"
+              >
+                  <img src="/themes/classic/assets/img/ico-compte.png" alt="Connexion">
+                  <span class="hidden-sm-down">Mon compte</span>
+              </a>
+          {/if}
           {else}
           <a
                   href="{$urls.pages.authentication}?back={$urls.current_url|urlencode}"
