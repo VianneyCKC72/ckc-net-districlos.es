@@ -395,8 +395,8 @@
                     {/if}
                   {/block}
 
-                  <div class="tab-pane fade in" id="avisverifies" role="tabpanel">
-                    <section class="avisverifies d-flex">
+                  <div class="tab-pane fade in" id="netreviews_reviews_tab" role="tabpanel">
+                    <section class="netreviews_reviews_tab d-flex">
 
                       <div class="skeepers_product__reviews"
                            data-product-id="{$product.id}"

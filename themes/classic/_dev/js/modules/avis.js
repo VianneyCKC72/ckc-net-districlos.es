@@ -86,4 +86,20 @@ $(document).ready(function () {
 
         observer.observe(skeepers[0], { childList: true, subtree: true });
     }
+
+    $('.review__header').on('click', function(e) {
+        e.preventDefault();
+
+        setTimeout(() => {
+            // Active l'onglet
+            $('a.nav-link.avisVerfies').tab('show');
+
+            // Puis scroll
+            $('html, body').animate({
+                scrollTop: $('#tab-content').offset().top
+            }, 600);
+        }, 600);
+    });
+
+
 });

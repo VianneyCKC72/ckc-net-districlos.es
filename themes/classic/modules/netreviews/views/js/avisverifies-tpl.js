@@ -274,9 +274,7 @@ $(document).ready(function() {
     }
 
     $("div.product-container div.skeepers_product__stars").on( "click", function() {
-        if(!$(this).parent().parent().hasClass("product-information") && !$(this).parent().parent().parent().hasClass("product-information")){
-            av_widget_click();
-        }
+        av_widget_click();
     } );
 });
 
