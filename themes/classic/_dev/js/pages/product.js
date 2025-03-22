@@ -22,12 +22,9 @@ $(document).ready(function () {
 
     let currentValue = parseInt($quantityInput.val()) || 0;
     let newValue = currentValue + 1;
-
-    // Met à jour la valeur uniquement si elle a changé
-    if (newValue !== currentValue) {
-      $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
-      checkStock(true, $quantityInput, 'up', 1); // ✅ Appel AJAX unique
-    }
+    let cart = $('body').hasClass('cart');
+    $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
+    checkStock(cart, $quantityInput, 'up', 1);
   });
 
   $('body').on('click', '.decrease', function () {
@@ -38,22 +35,27 @@ $(document).ready(function () {
     let minValue = parseInt($quantityInput.attr('min')) || 1;
     let newValue = Math.max(minValue, currentValue - 1);
 
-    // Met à jour la valeur uniquement si elle a changé
-    if (newValue !== currentValue) {
-      $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
-      checkStock(true, $quantityInput, 'down', 1); // ✅ Appel AJAX unique
-    }
+    $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
+    let cart = $('body').hasClass('cart');
+
+    checkStock(cart, $quantityInput, 'down', 1);
   });
+
 
   function getFormData(cart = false, object = null, direction = null, differential = null) {
     if (!cart) {
       let jsProduct = $(object).closest('.js-product-actions');
-
+      let quantity = parseInt($(jsProduct).find("#quantity_wanted").val());
+      if (direction === 'up') {
+        quantity = quantity + parseInt(differential);
+      }else if (direction === 'down') {
+        quantity = quantity - parseInt(differential);
+      }
       return {
         token: $(jsProduct).find('input[name=token]').val(),
         productId: $(jsProduct).find('input[name=id_product]').val(),
         customizationId: $(jsProduct).find('input[name=id_customization]').val(),
-        quantity: $(jsProduct).find(".quantity_wanted").val(),
+        quantity: quantity,
         groupParams: getGroupParams(jsProduct)
       };
     } else {
@@ -130,7 +132,7 @@ $(document).ready(function () {
     let requestURL = '';
 
     if (!cart) {
-      formData = getFormData(cart, object);
+      formData = getFormData(cart, object, direction, differential);
       requestURL = buildRequestURL(formData);
     } else {
       formDataCart = getFormData(cart, object, direction, differential);

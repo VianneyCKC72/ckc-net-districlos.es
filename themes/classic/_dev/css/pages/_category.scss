@@ -541,8 +541,12 @@
 .evercontentseo img.image-mobile{
   display: none;
 }
+@media (max-width: 1230px) {
+  section.elementor-element-4d6d522{
+    display: none;
+  }
+}
 @media (max-width: 767px) {
-  section.elementor-element-4d6d522,
   #category #category-description .category_inline.description_souscat{
     display: none;
   }
