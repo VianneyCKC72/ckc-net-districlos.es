@@ -24,6 +24,9 @@ $(document).ready(function () {
     let newValue = currentValue + 1;
     let cart = $('body').hasClass('cart');
     $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
+    if ($('#quantity_wanted').length) {
+      $('#quantity_wanted').trigger('change');
+    }
   });
 
   $('body').on('click', '.decrease', function () {
@@ -34,7 +37,10 @@ $(document).ready(function () {
     let minValue = parseInt($quantityInput.attr('min')) || 1;
     let newValue = Math.max(minValue, currentValue - 1);
 
-    $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
+    $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue)
+    if ($('#quantity_wanted').length) {
+      $('#quantity_wanted').trigger('change');
+    }
   });
 
   $('#quantity_wanted').on('change', function () {
