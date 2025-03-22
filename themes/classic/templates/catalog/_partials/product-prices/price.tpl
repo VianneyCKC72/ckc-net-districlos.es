@@ -36,12 +36,11 @@
             </div>
         {/if}
     {/block}
-
-    {if $product.quantity_wanted > 1 && !$product.is_configurable && !$product.name|strstr:"sur mesure"}
-        <p class="product-unit-price sub">
-            {$product.unit_price_full}
-            {if $env_pro}
-                HT
-            {/if} à l'unité</p>
-    {/if}
 </div>
+{if $product.quantity_wanted > 1 && !$product.is_configurable && !$product.name|strstr:"sur mesure"}
+    <p class="product-unit-price sub">
+        {$product.unit_price_full}
+        {if $env_pro}
+            HT
+        {/if} à l'unité</p>
+{/if}
