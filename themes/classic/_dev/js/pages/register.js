@@ -37,5 +37,40 @@ $(document).ready(function () {
         if ($privacyCheckbox.length) $form.append($privacyCheckbox);
         if ($newsletterCheckbox.length) $form.append($newsletterCheckbox);
         if ($smsCheckbox.length) $form.append($smsCheckbox);
+
+        $("input[name=newsletter]").val("0")
+        $("input[name=sms_optin]").val("0")
+
+        $("input[name=newsletter]").on('change', function(){
+            if ($(this).is(':checked')){
+                $(this).val("1")
+            } else {
+                $(this).val("0")
+            }
+        })
+
+        $("input[name=sms_optin]").on('change', function(){
+            if ($(this).is(':checked')){
+                $(this).val("1")
+            } else {
+                $(this).val("0")
+            }
+        })
+
+        if($(".js-input-column .help-block ul li").text() == "Cette adresse e-mail est déjà utilisée, choisissez-en une autre ou connectez-vous."){
+
+            localStorage.removeItem("id_gender");
+            localStorage.removeItem("psgdpr");
+            localStorage.removeItem("customer_privacy");
+            localStorage.removeItem("newsletter");
+            localStorage.removeItem("sms_optin");
+
+            $("input[name=psgdpr]").prop("checked", false)
+            $("input[name=customer_privacy]").prop("checked", false)
+            $("input[name=newsletter]").prop("checked", false)
+            $("input[name=sms_optin]").prop("checked", false)
+            $(".radio-inline.id_gender input[value=1]").prop("checked", true)
+            $(".radio-inline.id_gender input[value=2]").prop("checked", false)
+        }
     }
 });
