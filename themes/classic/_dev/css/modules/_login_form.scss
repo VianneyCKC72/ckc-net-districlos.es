@@ -87,8 +87,8 @@
     }
   }
   .help-block ul:has(.tiny-alert.alert-danger){
-    width: 50%;
-    margin-left: 52.5%;
+    width: 100%;
+    margin-left: 0;
     @media (max-width: 1024px){
       width: 100%;
       margin-left: 0;

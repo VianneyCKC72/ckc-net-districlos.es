@@ -125,9 +125,11 @@
   .page-header {
     display: none;
   }
-  .actions-container-register{
+
+  .actions-container-register {
     align-items: flex-start;
-    .btn.btn-primary.form-control-submit{
+
+    .btn.btn-primary.form-control-submit {
       max-width: 162px;
     }
   }
@@ -191,7 +193,8 @@
       }
     }
   }
-  .address.default-address-custom{
+
+  .address.default-address-custom {
     address {
       background: $secondary-color;
       color: white;
@@ -216,6 +219,7 @@
       width: 10px;
       height: auto;
     }
+
     .badge-empty-green {
       font-weight: 600;
       font-size: 13px;
@@ -233,24 +237,28 @@
       cursor: pointer;
       transition: all .3s ease-out;
     }
-    .badge-empty-green:hover{
+
+    .badge-empty-green:hover {
       background: $secondary-color;
       color: white;
       transition: all .3s ease-out;
     }
   }
-  .address-footer:has(div .badge-empty-green){
+
+  .address-footer:has(div .badge-empty-green) {
     padding: 1rem 1rem 1rem 0 !important;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    > div{
+
+    > div {
       max-width: 160px;
       margin-right: 10px;
     }
   }
 }
+
 .txt_ou_bien {
   font-weight: 600;
   font-size: 20px;
@@ -258,12 +266,13 @@
   letter-spacing: 0;
   vertical-align: middle;
 }
+
 .ets_solo_wrapper_content svg {
   padding-right: 5px;
 }
 
 #authentication .ets_solo_social_wrapper.lgp {
-  border-bottom:none !important;
+  border-bottom: none !important;
   margin-bottom: 0;
 }
 

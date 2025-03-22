@@ -202,6 +202,11 @@
 }
 
 .list-mode {
+  &.list_view {
+    .tag-web-price {
+      top: 45px;
+    }
+  }
   .product-miniature {
     margin-bottom: 0;
 
@@ -219,7 +224,6 @@
   .product-miniature {
     border-bottom: 1px solid #CCC4;
     margin-bottom: 30px;
-
   }
 
   .thumbnail-container {
@@ -250,17 +254,15 @@
         max-width: 100%;
         min-width: 100%;
       }
-
-    }
-
-    img {
-      max-width: 240px;
-      min-width: 240px;
-      width: 100%;
-      @media (max-width: 767px) {
-        max-width: 100%;
-        min-width: 100%;
-        object-fit: scale-down;
+      picture > img {
+        max-width: 240px;
+        min-width: 240px;
+        width: 100%;
+        @media (max-width: 767px) {
+          max-width: 100%;
+          min-width: 100%;
+          object-fit: scale-down;
+        }
       }
     }
 
