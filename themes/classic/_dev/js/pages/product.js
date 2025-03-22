@@ -131,7 +131,7 @@ $(document).ready(function () {
     let requestURL = '';
 
     if (!cart) {
-      formData = getFormData(cart, object);
+      formData = getFormData(cart, object, direction, differential);
       requestURL = buildRequestURL(formData);
     } else {
       formDataCart = getFormData(cart, object, direction, differential);
