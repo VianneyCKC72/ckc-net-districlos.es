@@ -106,11 +106,10 @@
                                          class="lucide lucide-check mr-2">
                                         <path d="M20 6 9 17l-5-5"/>
                                     </svg>
-                                    en stock
+                                    En stock
                                 </div>
-                            {else}
-                                <div class="small text-red">Rupture de stock</div>
                             {/if}
+
                             {if $product.reference_to_display}
                                 <div class="small">REF <span
                                             class="font-weight-bold">{$product.reference_to_display}</span></div>
