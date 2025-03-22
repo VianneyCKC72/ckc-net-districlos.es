@@ -49,7 +49,7 @@ $(document).ready(function () {
         token: $(jsProduct).find('input[name=token]').val(),
         productId: $(jsProduct).find('input[name=id_product]').val(),
         customizationId: $(jsProduct).find('input[name=id_customization]').val(),
-        quantity: $(jsProduct).find(".quantity_wanted").val(),
+        quantity: $(jsProduct).find("#quantity_wanted").val(),
         groupParams: getGroupParams(jsProduct)
       };
     } else {
