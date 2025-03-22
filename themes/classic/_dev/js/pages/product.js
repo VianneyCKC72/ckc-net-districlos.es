@@ -39,7 +39,7 @@ $(document).ready(function () {
 
   $('#quantity_wanted').on('change', function () {
     let cart = $('body').hasClass('cart');
-    checkStock(cart, $(this).val(), 'down', 1);
+    checkStock(cart, $(this), 'down', 1);
   })
 
   function getFormData(cart = false, object = null, direction = null, differential = null) {
