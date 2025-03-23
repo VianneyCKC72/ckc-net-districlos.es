@@ -16,6 +16,47 @@
 .form-control {
   max-height: 50px;
 }
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: #6c757d;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+
+  .icon-eye,
+  .icon-eye-off {
+    transition: opacity 0.2s ease;
+  }
+
+  .icon-eye {
+    display: inline;
+  }
+
+  .icon-eye-off {
+    display: none;
+  }
+
+  &.is-visible {
+    .icon-eye {
+      display: none;
+    }
+
+    .icon-eye-off {
+      display: inline;
+    }
+  }
+}
+
+
+
+
 .form-control,
 textarea {
   width: 100%;

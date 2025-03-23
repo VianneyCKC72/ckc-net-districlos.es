@@ -11595,4 +11595,23 @@ $(document).ready(function () {
     })
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.password-toggle').forEach(function (toggleBtn) {
+        toggleBtn.addEventListener('click', function () {
+            // Cherche l'input situé juste avant le bouton
+            const input = toggleBtn.previousElementSibling;
+
+            if (!input || input.tagName !== 'INPUT') return;
+
+            const isVisible = input.type === 'text';
+            input.type = isVisible ? 'password' : 'text';
+            toggleBtn.classList.toggle('is-visible', !isVisible);
+        });
+    });
+});
+
+
+
+
+
 
