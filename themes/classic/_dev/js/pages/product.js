@@ -22,11 +22,13 @@ $(document).ready(function () {
 
     let currentValue = parseInt($quantityInput.val()) || 0;
     let newValue = currentValue + 1;
-    $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
 
     let cart = $('body').prop('id') === 'cart';
     if (cart) {
+      $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
       checkStock(cart, $quantityInput, 'up', 1);
+    }else{
+      $quantityInput.val(newValue).trigger('change');
     }
   });
 
@@ -39,10 +41,12 @@ $(document).ready(function () {
     let newValue = Math.max(minValue, currentValue - 1);
 
     let cart =  $('body').prop('id') === 'cart';
-    $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
 
     if (cart) {
+      $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
       checkStock(cart, $quantityInput, 'down', 1);
+    }else{
+      $quantityInput.val(newValue).trigger('change');
     }
   });
 
@@ -59,6 +63,7 @@ $(document).ready(function () {
     let differential = Math.abs(qty - qtyBefore);
     let direction = qty > qtyBefore ? 'up' : 'down';
     input.attr('data-valueqty', qty);
+
     checkStock(false, input, direction, differential);
   });
 
@@ -71,7 +76,7 @@ $(document).ready(function () {
         token: $(jsProduct).find('input[name=token]').val(),
         productId: $(jsProduct).find('input[name=id_product]').val(),
         customizationId: $(jsProduct).find('input[name=id_customization]').val(),
-        quantity: parseInt($(jsProduct).find("#quantity_wanted").val()),
+        quantity: object.val(),
         groupParams: getGroupParams(jsProduct)
       };
     } else {
@@ -170,7 +175,7 @@ $(document).ready(function () {
           if (cart) {
             refreshCart();
           } else {
-            updateViewProduct(data, formData.quantity);
+            updateViewProductCart(data);
           }
         }
       },
@@ -274,4 +279,3 @@ $(document).ready(function () {
         });
   });
 });
-
