@@ -52,9 +52,9 @@
               </svg>
             </button>
             <input type="number" name="qty" id="quantity_wanted" inputmode="numeric" pattern="[0-9]*"
-              {if $product.quantity_wanted} value="{$product.quantity_wanted}" min="{$product.minimal_quantity}" 
+              {if $product.quantity_wanted} value="{$product.quantity_wanted}" min="{$product.minimal_quantity}"
               {else}
-              value="1" min="1" {/if} class="quantity-input" aria-label="{l s='Quantity' d='Shop.Theme.Actions'}">
+              value="1" min="1" {/if} class="quantity-input js-product-quantity" aria-label="{l s='Quantity' d='Shop.Theme.Actions'}">
             <button type="button" class="btn-quantity increase">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"

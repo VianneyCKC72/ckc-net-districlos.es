@@ -67,6 +67,8 @@
                         {/if}
                     {/block}
 
+                    {hook h='displayCustomProductLabel' product=$product}
+
                     {if $product.main_variants}
                         <div class="highlighted-informations">
                             {block name='product_variants'}

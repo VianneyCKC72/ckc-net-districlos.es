@@ -75,6 +75,7 @@
                     {block name='page_content_container'}
                         {block name='page_content'}
                             {* {include file='catalog/_partials/product-flags.tpl'} *}
+                            {hook h='displayCustomProductLabel' product=$product}
                             {block name='product_cover_thumbnails'}
                                 {include file='catalog/_partials/product-cover-thumbnails.tpl'}
                             {/block}
