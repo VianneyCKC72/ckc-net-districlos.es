@@ -138,7 +138,6 @@ $(document).ready(function () {
     } else {
       formDataCart = getFormData(cart, object, direction, differential);
       requestURL = $(object).attr('data-update-url');
-      alert('test')
     }
 
     $.ajax({
@@ -177,22 +176,22 @@ $(document).ready(function () {
     });
   }
 
-  $('body').on('blur', '.js-cart-line-product-quantity', function (event, direction) {
-    let input = $(this);
-    let qtyBefore = parseInt(input.attr('data-valueqty')) || 1;
-    let qty = parseInt(input.val()) || 1;
-
-    // Bloque la requête AJAX si la valeur n'a pas changé
-    if (qty === qtyBefore) {
-      return false;
-    }
-
-    let differential = Math.abs(qty - qtyBefore);
-    direction = qty > qtyBefore ? 'up' : 'down';
-
-    input.attr('data-valueqty', qty);
-    checkStock(true, input, direction, differential);
-  });
+  // $('body').on('blur', '.js-cart-line-product-quantity', function (event, direction) {
+  //   let input = $(this);
+  //   let qtyBefore = parseInt(input.attr('data-valueqty')) || 1;
+  //   let qty = parseInt(input.val()) || 1;
+  //
+  //   // Bloque la requête AJAX si la valeur n'a pas changé
+  //   if (qty === qtyBefore) {
+  //     return false;
+  //   }
+  //
+  //   let differential = Math.abs(qty - qtyBefore);
+  //   direction = qty > qtyBefore ? 'up' : 'down';
+  //
+  //   input.attr('data-valueqty', qty);
+  //   checkStock(true, input, direction, differential);
+  // });
 
   function updateViewProductCart(data) {
     $.each(data, function (key, value) {
