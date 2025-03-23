@@ -834,28 +834,31 @@ span.nbrcontent {
 #product {
   .custom-color-select {
     position: relative;
-    width: 200px;
-    background: #f6f2eb url("data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2716%27 height=%2716%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27currentColor%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 class=%27lucide lucide-chevron-down%27><path d=%27m6 9 6 6 6-6%27/></svg>") no-repeat right 1rem center/1.25rem 1.25rem;
-    padding: 16px 30px;
+    width: 100%;
+    background: #f6f2eb url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-chevron-down'><path d='m6 9 6 6 6-6'/></svg>") no-repeat right 1rem center / 1.25rem 1.25rem;
+    padding: 0;
     cursor: pointer;
     user-select: none;
-    transition: all .3s;
+    transition: all 0.3s;
     font-weight: 700;
     font-size: 13px;
     line-height: 20px;
     color: #000;
     border: 0;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 10px;
     display: inline-flex;
+    flex-direction: column;
     max-height: 50px;
     border-radius: 999px;
 
     .selected-option {
+      width: 100%;
+      padding: 16px 30px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
+      z-index: 2;
+      position: relative;
+      cursor: pointer;
 
       .color-dot {
         width: 15px;

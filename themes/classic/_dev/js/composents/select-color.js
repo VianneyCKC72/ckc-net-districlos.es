@@ -1,29 +1,31 @@
-$(document).ready(() => {
-
-    /* CHAMP COULEUR CUSTOM SUR LA PAGE PRODUIT */
+function initCustomColorSelect() {
     const $colorGroup = $('#group_2');
-    const $radioButtons = $colorGroup.find('input[type="radio"]');
+    if (!$colorGroup.length) return;
 
-    // Création du menu déroulant personnalisé avec une classe spécifique
-    let $customSelect = $('<div class="custom-color-select"></div>');
-    let $selectedOption = $('<div class="selected-option"></div>');
-    let $optionsList = $('<div class="options-list"></div>');
+    const $radioButtons = $colorGroup.find('input[type="radio"]');
+    if (!$radioButtons.length) return;
+
+    // Supprimer le précédent select custom
+    $('.custom-color-select').remove();
+
+    const $customSelect = $('<div class="custom-color-select"></div>');
+    const $selectedOption = $('<div class="selected-option"></div>');
+    const $optionsList = $('<div class="options-list"></div>');
 
     $radioButtons.each(function () {
         const $radio = $(this);
         const title = $radio.attr('title');
         const value = $radio.val();
-        const isChecked = $radio.is(':checked');
         const color = $radio.siblings('.color').css('background-color');
+        const isChecked = $radio.is(':checked');
 
-        let $option = $(`
+        const $option = $(`
             <div class="option" data-value="${value}" style="display: flex; align-items: center;">
                 <span class="color-dot" style="background-color: ${color};"></span>
                 ${title}
             </div>
         `);
 
-        // Sélection par défaut
         if (isChecked) {
             $selectedOption.html(`<span class="color-dot" style="background-color: ${color};"></span> ${title}`);
         }
@@ -31,40 +33,55 @@ $(document).ready(() => {
         $optionsList.append($option);
     });
 
-    // Ajouter au DOM
     $customSelect.append($selectedOption).append($optionsList);
-    $colorGroup.replaceWith($customSelect);
+    $colorGroup.css('display', 'none').after($customSelect);
 
-    // Afficher/Masquer les options
     $selectedOption.on('click', function (e) {
         e.stopPropagation();
-        $(".options-list").not($optionsList).removeClass("open"); // Ferme les autres sélects ouverts
+        $(".options-list").not($optionsList).removeClass("open");
         $optionsList.toggleClass("open");
     });
 
-    // Gestion du clic sur une option
     $optionsList.on('click', '.option', function (e) {
         e.stopPropagation();
+        const selectedText = $(this).text();
+        const selectedColor = $(this).find('.color-dot').css('background-color');
+        const selectedValue = $(this).data('value');
 
-        let selectedText = $(this).text();
-        let selectedColor = $(this).find('.color-dot').css('background-color');
-        let selectedValue = $(this).data('value');
-
-        // Mettre à jour l'affichage du select
         $selectedOption.html(`<span class="color-dot" style="background-color: ${selectedColor};"></span> ${selectedText}`);
-
-        // Fermer la liste
         $optionsList.removeClass('open');
 
-        // Synchroniser les boutons radio
-        let $relatedRadio = $radioButtons.filter(`[value="${selectedValue}"]`);
+        const $relatedRadio = $radioButtons.filter(`[value="${selectedValue}"]`);
         if ($relatedRadio.length) {
-            $relatedRadio.prop('checked', true).trigger('change'); // Déclencher l'événement pour la mise à jour des autres attributs
+            $relatedRadio.prop('checked', true).trigger('click').trigger('change');
         }
     });
 
-    // Cacher la liste si on clique en dehors
     $(document).on('click', function () {
         $(".options-list").removeClass("open");
     });
+}
+
+$(document).ready(() => {
+    initCustomColorSelect();
+
+    // On observe #product car il ne bouge jamais
+    const target = document.querySelector('#product');
+
+    if (target) {
+        const observer = new MutationObserver(() => {
+            const $newColorGroup = $('#group_2');
+            // S'assurer qu'on relance SEULEMENT si #group_2 est nouveau
+            if ($newColorGroup.length && $('.custom-color-select').length === 0) {
+                setTimeout(() => {
+                    initCustomColorSelect();
+                }, 100);
+            }
+        });
+
+        observer.observe(target, {
+            childList: true,
+            subtree: true
+        });
+    }
 });

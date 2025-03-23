@@ -15,7 +15,7 @@ $(document).ready(function () {
 
   var quantityTimeout;
 
-  // ✅ Correction : Supprime le problème de double appel en bloquant le blur immédiat
+
   $('body').on('click', '.increase', function () {
     let parent = $(this).closest('.custom-quantity-selector');
     let $quantityInput = $(parent).find('input');
@@ -45,12 +45,14 @@ $(document).ready(function () {
   function getFormData(cart = false, object = null, direction = null, differential = null) {
     if (!cart) {
       let jsProduct = $(object).closest('.js-product-actions');
-      let quantity = parseInt($(jsProduct).find("#quantity_wanted").val());
+      let quantity = parseInt($(jsProduct).find('input[name="qty"], .quantity_wanted').val()) || 1;
+
       if (direction === 'up') {
-        quantity = quantity + parseInt(differential);
-      }else if (direction === 'down') {
-        quantity = quantity - parseInt(differential);
+        quantity += parseInt(differential);
+      } else if (direction === 'down') {
+        quantity -= parseInt(differential);
       }
+
       return {
         token: $(jsProduct).find('input[name=token]').val(),
         productId: $(jsProduct).find('input[name=id_product]').val(),
@@ -67,6 +69,7 @@ $(document).ready(function () {
       };
     }
   }
+
 
   function getGroupParams() {
     let groupParams = {};
@@ -235,44 +238,48 @@ $(document).ready(function () {
 
     observer.observe(productPriceElement);
   }
-  prestashop.on('updatedProduct', (event) => {
-    let dataImg = $(event.product_images_modal).filter('.js-product-images-modal').html()
-    let imgSrc = $(dataImg).find('img')
-    $('.img-cover.rounded-4').prop('src', imgSrc.attr('src'));
-    $('.wrapper__swiper__product-img').replaceWith(event.product_cover_thumbnails);
 
-    document
-        .querySelectorAll(".wrapper__swiper__product-img")
-        .forEach((wrapper, index) => {
-          const swiperProductImgThumbnails = new Swiper(
-              wrapper.querySelector(
-                  ".wrapper__swiper__product-img__thumbnails .swiper__product-img__thumbnails"
-              ),
-              {
-                direction: "vertical",
-                loop: true,
-                slidesPerView: "auto",
-                spaceBetween: 24,
-                watchSlidesProgress: true,
-                navigation: {
-                  nextEl: wrapper.querySelector(".swiper-button-next"),
-                  prevEl: wrapper.querySelector(".swiper-button-prev"),
-                },
-              }
-          );
-          const swiperProductImgCover = new Swiper(
-              wrapper.querySelector(".swiper__product-img__cover"),
-              {
-                loop: true,
-                slidesPerView: 1,
-                spaceBetween: 24,
-                watchSlidesProgress: true,
-                thumbs: {
-                  swiper: swiperProductImgThumbnails,
-                },
-              }
-          );
-        });
-  });
+  if (document.querySelector('#product')) {
+    prestashop.on('updatedProduct', (event) => {
+      let dataImg = $(event.product_images_modal).filter('.js-product-images-modal').html()
+      let imgSrc = $(dataImg).find('img')
+      $('.img-cover.rounded-4').prop('src', imgSrc.attr('src'));
+      $('.wrapper__swiper__product-img').replaceWith(event.product_cover_thumbnails);
+
+      document
+          .querySelectorAll(".wrapper__swiper__product-img")
+          .forEach((wrapper, index) => {
+            const swiperProductImgThumbnails = new Swiper(
+                wrapper.querySelector(
+                    ".wrapper__swiper__product-img__thumbnails .swiper__product-img__thumbnails"
+                ),
+                {
+                  direction: "vertical",
+                  loop: true,
+                  slidesPerView: "auto",
+                  spaceBetween: 24,
+                  watchSlidesProgress: true,
+                  navigation: {
+                    nextEl: wrapper.querySelector(".swiper-button-next"),
+                    prevEl: wrapper.querySelector(".swiper-button-prev"),
+                  },
+                }
+            );
+            const swiperProductImgCover = new Swiper(
+                wrapper.querySelector(".swiper__product-img__cover"),
+                {
+                  loop: true,
+                  slidesPerView: 1,
+                  spaceBetween: 24,
+                  watchSlidesProgress: true,
+                  thumbs: {
+                    swiper: swiperProductImgThumbnails,
+                  },
+                }
+            );
+          });
+    });
+  }
 });
+
 
