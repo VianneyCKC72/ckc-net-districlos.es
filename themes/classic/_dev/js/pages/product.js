@@ -24,9 +24,11 @@ $(document).ready(function () {
     let newValue = currentValue + 1;
 
     let cart = $('body').prop('id') === 'cart';
-    $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
     if (cart) {
+      $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
       checkStock(cart, $quantityInput, 'up', 1);
+    }else{
+      $quantityInput.val(newValue).trigger('change')
     }
   });
 
@@ -38,12 +40,30 @@ $(document).ready(function () {
     let minValue = parseInt($quantityInput.attr('min')) || 1;
     let newValue = Math.max(minValue, currentValue - 1);
 
-    $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
     let cart =  $('body').prop('id') === 'cart';
 
     if (cart) {
+      $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
       checkStock(cart, $quantityInput, 'down', 1);
+    }else{
+      $quantityInput.val(newValue).trigger('change')
     }
+  });
+
+  $('body').on('change', '.js-product-quantity', function (event) {
+    let input = $(this);
+    let qtyBefore = parseInt(input.attr('data-valueqty')) || 1;
+    let qty = parseInt(input.val()) || 1;
+
+    // Bloque la requête AJAX si la valeur n'a pas changé
+    if (qty === qtyBefore) {
+      return false;
+    }
+
+    let differential = Math.abs(qty - qtyBefore);
+    let direction = qty > qtyBefore ? 'up' : 'down';
+    input.attr('data-valueqty', qty);
+    checkStock(false, input, direction, differential);
   });
 
 
@@ -179,26 +199,6 @@ $(document).ready(function () {
       }
     });
   }
-
-  $('body').on('change', '.js-product-quantity', function (event) {
-    let input = $(this);
-    let qtyBefore = parseInt(input.attr('data-valueqty')) || 1;
-    let qty = parseInt(input.val()) || 1;
-
-    // Bloque la requête AJAX si la valeur n'a pas changé
-    if (qty === qtyBefore) {
-      return false;
-    }
-
-    let differential = Math.abs(qty - qtyBefore);
-    let direction = qty > qtyBefore ? 'up' : 'down';
-    alert(differential)
-    alert(direction)
-    alert(qty)
-    alert(qtyBefore)
-    input.attr('data-valueqty', qty);
-    checkStock(false, input, direction, differential);
-  });
 
   function updateViewProductCart(data) {
     $.each(data, function (key, value) {
