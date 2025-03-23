@@ -175,7 +175,7 @@ $(document).ready(function () {
           if (cart) {
             refreshCart();
           } else {
-            updateViewProductCart(data);
+            updateViewProduct(data, formData.quantity);
           }
         }
       },
@@ -192,8 +192,35 @@ $(document).ready(function () {
       };
       if (key in selectorMap && value) {
         $(selectorMap[key]).replaceWith(value);
+        if (key === 'product_prices') {
+          refreshPrice();
+        }
       }
     });
+  }
+
+  function refreshPrice() {
+    const productPriceElement = document.querySelector(".product-prices");
+    const bannerQuickView = document.querySelector(".banner-quick-view");
+
+    if (productPriceElement && bannerQuickView) {
+      const options = {
+        root: null,
+        threshold: 0
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            bannerQuickView.classList.add("visible");
+          } else {
+            bannerQuickView.classList.remove("visible");
+          }
+        });
+      }, options);
+
+      observer.observe(productPriceElement);
+    }
   }
 
   function updateViewProductCart(data) {
@@ -218,27 +245,8 @@ $(document).ready(function () {
     $(".cart-products-count").text(total);
   }
 
-  const productPriceElement = document.querySelector(".product-prices");
-  const bannerQuickView = document.querySelector(".banner-quick-view");
+  refreshPrice();
 
-  if (productPriceElement && bannerQuickView) {
-    const options = {
-      root: null,
-      threshold: 0
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) {
-          bannerQuickView.classList.add("visible");
-        } else {
-          bannerQuickView.classList.remove("visible");
-        }
-      });
-    }, options);
-
-    observer.observe(productPriceElement);
-  }
   prestashop.on('updatedProduct', (event) => {
     let dataImg = $(event.product_images_modal).filter('.js-product-images-modal').html()
     let imgSrc = $(dataImg).find('img')
