@@ -25,7 +25,7 @@ $(document).ready(function () {
 
     let cart = $('body').prop('id') === 'cart';
     $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
-    if(cart) {
+    if (cart) {
       checkStock(cart, $quantityInput, 'up', 1);
     }
   });
@@ -180,7 +180,7 @@ $(document).ready(function () {
     });
   }
 
-  $('body').on('blur', '.js-product-quantity', function (event, direction) {
+  $('body').on('blur', '.js-product-quantity', function (event) {
     let input = $(this);
     let qtyBefore = parseInt(input.attr('data-valueqty')) || 1;
     let qty = parseInt(input.val()) || 1;
@@ -191,8 +191,11 @@ $(document).ready(function () {
     }
 
     let differential = Math.abs(qty - qtyBefore);
-    direction = qty > qtyBefore ? 'up' : 'down';
-
+    let direction = qty > qtyBefore ? 'up' : 'down';
+    alert(differential)
+    alert(direction)
+    alert(qty)
+    alert(qtyBefore)
     input.attr('data-valueqty', qty);
     checkStock(false, input, direction, differential);
   });
