@@ -138,6 +138,7 @@ $(document).ready(function () {
     } else {
       formDataCart = getFormData(cart, object, direction, differential);
       requestURL = $(object).attr('data-update-url');
+      alert('test')
     }
 
     $.ajax({
