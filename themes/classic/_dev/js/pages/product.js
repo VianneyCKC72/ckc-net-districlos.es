@@ -28,7 +28,7 @@ $(document).ready(function () {
       $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
       checkStock(cart, $quantityInput, 'up', 1);
     }else{
-      $quantityInput.val(newValue).trigger('change')
+      $quantityInput.trigger('change')
     }
   });
 
@@ -46,7 +46,7 @@ $(document).ready(function () {
       $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
       checkStock(cart, $quantityInput, 'down', 1);
     }else{
-      $quantityInput.val(newValue).trigger('change')
+      $quantityInput.trigger('change')
     }
   });
 
