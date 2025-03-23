@@ -180,7 +180,7 @@ $(document).ready(function () {
     });
   }
 
-  $('body').on('blur', '.js-product-quantity', function (event) {
+  $('body').on('change', '.js-product-quantity', function (event) {
     let input = $(this);
     let qtyBefore = parseInt(input.attr('data-valueqty')) || 1;
     let qty = parseInt(input.val()) || 1;
