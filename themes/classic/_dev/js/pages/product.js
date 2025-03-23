@@ -22,11 +22,10 @@ $(document).ready(function () {
 
     let currentValue = parseInt($quantityInput.val()) || 0;
     let newValue = currentValue + 1;
-    let cart = $('body').hasClass('cart');
+
+    let cart = $('body').prop('id') === 'cart';
     $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
     checkStock(cart, $quantityInput, 'up', 1);
-    alert(currentValue);
-    alert(newValue)
   });
 
   $('body').on('click', '.decrease', function () {
@@ -38,7 +37,7 @@ $(document).ready(function () {
     let newValue = Math.max(minValue, currentValue - 1);
 
     $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
-    let cart = $('body').hasClass('cart');
+    let cart =  $('body').prop('id') === 'cart';
 
     checkStock(cart, $quantityInput, 'down', 1);
   });
