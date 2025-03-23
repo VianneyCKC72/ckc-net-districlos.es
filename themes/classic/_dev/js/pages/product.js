@@ -176,7 +176,7 @@ $(document).ready(function () {
     });
   }
 
-  $('body').on('blur', '#product #quantity_wanted', function (event, direction) {
+  $('body').on('blur', '.js-product-quantity', function (event, direction) {
     let input = $(this);
     let qtyBefore = parseInt(input.attr('data-valueqty')) || 1;
     let qty = parseInt(input.val()) || 1;

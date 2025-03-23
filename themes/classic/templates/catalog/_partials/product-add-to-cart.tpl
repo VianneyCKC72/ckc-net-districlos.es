@@ -51,8 +51,8 @@
                 <path d="M5 12h14" />
               </svg>
             </button>
-            <input type="number" name="qty" id="quantity_wanted" inputmode="numeric" pattern="[0-9]*"
-              {if $product.quantity_wanted} value="{$product.quantity_wanted}" min="{$product.minimal_quantity}" 
+            <input type="number" name="qty" id="quantity_wanted" class="js-product-quantity" inputmode="numeric" pattern="[0-9]*"
+              {if $product.quantity_wanted} value="{$product.quantity_wanted}" min="{$product.minimal_quantity}"
               {else}
               value="1" min="1" {/if} class="quantity-input" aria-label="{l s='Quantity' d='Shop.Theme.Actions'}">
             <button type="button" class="btn-quantity increase">
