@@ -46,9 +46,9 @@ $(document).ready(function () {
     if (!cart) {
       let jsProduct = $(object).closest('.js-product-actions');
       let quantity = parseInt($(jsProduct).find("#quantity_wanted").val());
-      if (direction === 'up') {
+      if (direction === 'up' && differential) {
         quantity = quantity + parseInt(differential);
-      }else if (direction === 'down') {
+      }else if (direction === 'down' && differential) {
         quantity = quantity - parseInt(differential);
       }
       return {
@@ -143,7 +143,7 @@ $(document).ready(function () {
       url: requestURL,
       type: "POST",
       dataType: "json",
-      data: formDataCart,
+      data: cart ? formDataCart : formData,
       cache: false,
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
