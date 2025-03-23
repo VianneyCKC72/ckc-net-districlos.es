@@ -1326,9 +1326,9 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
             $requiredQuantity = $product['minimal_quantity'];
         }
 
-        if ($product['cart_quantity'] >= $requiredQuantity) {
-            return 0;
-        }
+//        if ($product['cart_quantity'] >= $requiredQuantity) {
+//            return 0;
+//        }
 
         return $requiredQuantity;
     }
