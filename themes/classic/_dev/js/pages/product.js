@@ -25,7 +25,9 @@ $(document).ready(function () {
 
     let cart = $('body').prop('id') === 'cart';
     $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
-    checkStock(cart, $quantityInput, 'up', 1);
+    if(cart) {
+      checkStock(cart, $quantityInput, 'up', 1);
+    }
   });
 
   $('body').on('click', '.decrease', function () {
@@ -39,7 +41,9 @@ $(document).ready(function () {
     $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
     let cart =  $('body').prop('id') === 'cart';
 
-    checkStock(cart, $quantityInput, 'down', 1);
+    if (cart) {
+      checkStock(cart, $quantityInput, 'down', 1);
+    }
   });
 
 
