@@ -25,6 +25,8 @@ $(document).ready(function () {
     let cart = $('body').hasClass('cart');
     $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
     checkStock(cart, $quantityInput, 'up', 1);
+    alert(currentValue);
+    alert(newValue)
   });
 
   $('body').on('click', '.decrease', function () {
