@@ -22,13 +22,11 @@ $(document).ready(function () {
 
     let currentValue = parseInt($quantityInput.val()) || 0;
     let newValue = currentValue + 1;
+    $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
 
     let cart = $('body').prop('id') === 'cart';
     if (cart) {
-      $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
       checkStock(cart, $quantityInput, 'up', 1);
-    }else{
-      $quantityInput.trigger('change')
     }
   });
 
@@ -41,12 +39,10 @@ $(document).ready(function () {
     let newValue = Math.max(minValue, currentValue - 1);
 
     let cart =  $('body').prop('id') === 'cart';
+    $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
 
     if (cart) {
-      $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
       checkStock(cart, $quantityInput, 'down', 1);
-    }else{
-      $quantityInput.trigger('change')
     }
   });
 
@@ -70,17 +66,12 @@ $(document).ready(function () {
   function getFormData(cart = false, object = null, direction = null, differential = null) {
     if (!cart) {
       let jsProduct = $(object).closest('.js-product-actions');
-      let quantity = parseInt($(jsProduct).find("#quantity_wanted").val());
-      if (direction === 'up' && differential) {
-        quantity = quantity + parseInt(differential);
-      }else if (direction === 'down' && differential) {
-        quantity = quantity - parseInt(differential);
-      }
+
       return {
         token: $(jsProduct).find('input[name=token]').val(),
         productId: $(jsProduct).find('input[name=id_product]').val(),
         customizationId: $(jsProduct).find('input[name=id_customization]').val(),
-        quantity: quantity,
+        quantity: parseInt($(jsProduct).find("#quantity_wanted").val()),
         groupParams: getGroupParams(jsProduct)
       };
     } else {
