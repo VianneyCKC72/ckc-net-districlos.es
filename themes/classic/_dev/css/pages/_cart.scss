@@ -1,4 +1,7 @@
 #cart {
+  #header {
+    display:none;
+  }
   .swiper__featured-products {
     //max-width: 920px; /* Empêche Swiper de dépasser */
     overflow: hidden; /* Évite que les slides débordent */
