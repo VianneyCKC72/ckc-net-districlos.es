@@ -907,3 +907,34 @@ span.nbrcontent {
     }
   }
 }
+#product {
+  .product-variants.js-product-variants{
+    @media (max-width: 399px){
+      display: block;
+      .product-variants-item:not(:last-child){
+        margin-bottom: 15px;
+      }
+    }
+  }
+  .product-tabs .nav-tabs{
+    @media (max-width: 646px){
+      justify-content: space-between;
+      -moz-column-gap: 0;
+      column-gap: 0;
+    }
+    @media (max-width: 582px){
+      justify-content: space-around;
+    }
+    @media (max-width: 499px){
+      .nav-link.avisVerfies{
+        span.avis_verifies_inserted{
+          display: none;
+        }
+      }
+    }
+    @media (max-width: 376px){
+      justify-content: center;
+      flex-direction: column;
+    }
+  }
+}

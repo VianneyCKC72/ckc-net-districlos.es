@@ -234,14 +234,18 @@ body#checkout {
   .js-address-form {
     .address-selector.js-address-selector {
       display: flex;
-      flex-direction: column;
-      row-gap: 12px;
-
+      flex-direction: row;
+      gap: 20px;
+      flex-wrap: wrap;
+      @media (max-width: 1024px){
+        flex-direction: column;
+      }
       .address-item {
         background-color: white;
         border-radius: 4px;
         padding: 0;
         margin-bottom: 1rem;
+        min-width: 45%;
 
         .address {
           margin-top: 6px;
@@ -293,18 +297,17 @@ body#checkout {
         width: fit-content;
         display: flex;
         align-items: center;
-        color: $black;
+        color: $white;
         font-size: 14px;
         font-weight: 500;
-        padding: 6px 12px;
-        border-radius: 4px;
-        background-color: rgba($secondary-color, 0.1);
-        border: 1px solid rgba($secondary-color, 0.3);
+        padding: 15px 20px;
+        border-radius: 999px;
+        background-color: #026473;
+        border: none;
         transition: all 0.3s;
-
+        margin-bottom: 15px;
         &:hover {
-          background-color: rgba($secondary-color, 0.3);
-          border-color: rgba($secondary-color, 0.6);
+          background-color: #013841;
         }
       }
     }
