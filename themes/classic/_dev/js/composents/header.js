@@ -53,27 +53,26 @@ $(document).ready(function () {
 
 
 
-    var $header = $("#header");
-    var $promoBar = $("#ckcpromobarre");
-    var stickyOffset = $header.offset().top + ($promoBar.length ? $promoBar.outerHeight() : 0);
-    var headerHeight = $header.outerHeight();
+    if (!$("body").is("#cart, .page-order")) {
+        var $header = $("#header");
+        var $promoBar = $("#ckcpromobarre");
+        var stickyOffset = $header.offset().top + ($promoBar.length ? $promoBar.outerHeight() : 0);
+        var headerHeight = $header.outerHeight();
 
-    // Crée un espace réservé pour éviter le saut de contenu
-    var $headerPlaceholder = $("<div id='header-placeholder'></div>").insertBefore($header);
-    $headerPlaceholder.height(headerHeight);
+        // Crée un espace réservé pour éviter le saut de contenu
+        var $headerPlaceholder = $("<div id='header-placeholder'></div>").insertBefore($header);
+        $headerPlaceholder.height(headerHeight);
 
-    $(window).on("scroll", function () {
-        if ($(window).scrollTop() > stickyOffset) {
-            $header.addClass("sticky");
-            $headerPlaceholder.show();
-        } else {
-            $header.removeClass("sticky");
-            $headerPlaceholder.hide();
-        }
-    });
-
-
-
+        $(window).on("scroll", function () {
+            if ($(window).scrollTop() > stickyOffset) {
+                $header.addClass("sticky");
+                $headerPlaceholder.show();
+            } else {
+                $header.removeClass("sticky");
+                $headerPlaceholder.hide();
+            }
+        });
+    }
 
 });
 

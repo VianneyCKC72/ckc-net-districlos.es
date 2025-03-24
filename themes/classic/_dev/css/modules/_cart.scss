@@ -226,3 +226,35 @@
     }
   }
 }
+
+.sticky-summary {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  z-index: 1000;
+  width: 300px;
+
+  // Cache des éléments non essentiels en sticky
+  #openModalShippingCost,
+  .moyen_de_paiement,
+  .block-promo {
+    display: none !important;
+  }
+
+  // Style du résumé total quand sticky
+  .cart-detailed-totals {
+    .cart-summary-line {
+      font-size: 14px;
+
+      &.cart-total {
+        span.label {
+          font-size: 16px;
+        }
+
+        span.value {
+          font-size: 22px;
+        }
+      }
+    }
+  }
+}

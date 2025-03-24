@@ -1,4 +1,4 @@
-<div>
+<div class="moyen_de_paiement">
     <p>Moyens de paiement acceptés</p>
     <div class="d-flex flex-wrap gap-16">
         <img style="width: 70px;" src="/themes/classic/assets/img/payment/mastercard.png"
