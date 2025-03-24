@@ -7,14 +7,14 @@ $(document).ready(function () {
                 if (mutation.addedNodes.length > 0) {
                     let rateElement = skeepers.find('.rate-total');
                     if (rateElement.length > 0) {
-                        let note = rateElement.text().trim();
+                        let note = rateElement.first().text().trim();
 
                         if (note.length > 0) {
 
                             let avisLi = $(`
                                 <li class="nav-item">
                                     <a class="nav-link avisVerfies" data-toggle="tab" href="#netreviews_reviews_tab" role="tab" aria-controls="avisverifies">
-                                        <img src="/img/avislogo.svg" alt="logo avis vérifiés">
+                                        <img src="/img/avislogo.svg" alt="logo avis vérifiés" style="width: 81px;height: 29px;">
                                         <span class="avis_verifies_inserted">
                                             <svg class="star-svg" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 31.575 30.402">
                                                 <defs>
