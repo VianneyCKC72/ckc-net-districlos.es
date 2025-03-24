@@ -76,14 +76,22 @@
                             {hook h='displayShoppingCart'}
                         {/block}
 
-                        <div>
+                        <div class="block-checkout">
                             {block name='cart_totals'}
                                 {include file='checkout/_partials/cart-detailed-totals.tpl' cart=$cart}
                             {/block}
+
                             {block name='cart_actions'}
                                 {include file='checkout/_partials/cart-detailed-actions.tpl' cart=$cart}
                             {/block}
                         </div>
+
+                        <div class="action_sticky">
+                            {block name='cart_actions'}
+                                {include file='checkout/_partials/cart-detailed-actions.tpl' cart=$cart}
+                            {/block}
+                        </div>
+
 
                         {*                        <div>*}
                         {*                            todo : Tony va reprendre le code dans un controller *}
