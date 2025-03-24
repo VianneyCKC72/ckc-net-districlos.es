@@ -229,20 +229,41 @@
 
 .sticky-summary {
   position: fixed;
-  top: 100px;
-  right: 20px;
+  bottom: 0;
+  right: 0;
   z-index: 1000;
-  width: 300px;
+  width: 100%;
+  gap: 20px;
+  margin: 0;
+  padding: 5px !important;
+  flex-direction: row;
+  justify-content: space-between;
 
-  // Cache des éléments non essentiels en sticky
-  #openModalShippingCost,
-  .moyen_de_paiement,
-  .block-promo {
-    display: none !important;
+.cart-summary-inside {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  justify-content: space-between;
+  .checkout {
+    max-width: 220px;
+    margin-top: 10px !important;
+    margin-bottom: 15px;
+    margin-left: 0;
+    margin-right: 0;
   }
-
+  .cart-detailed-complete {
+    flex-direction: column;
+    display: flex;
+  }
+}
   // Style du résumé total quand sticky
   .cart-detailed-totals {
+    display: flex  ;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0;
+    gap:2rem;
     .cart-summary-line {
       font-size: 14px;
 
