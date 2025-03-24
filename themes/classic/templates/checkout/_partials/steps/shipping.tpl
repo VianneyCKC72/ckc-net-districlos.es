@@ -58,7 +58,13 @@
                         <span class="carrier-delay">{$carrier.delay}</span>
                       </div>
                       <div class="col-sm-3 col-xs-12">
-                        <span class="carrier-price">{$carrier.price}</span>
+                        <span class="carrier-price">
+                            {if $carrier.price == 'gratuit'}
+                              <span>{ucfirst($carrier.price)|escape:'html':'UTF-8'}</span>
+                            {else}
+                                <span class="text-line-through color-red">{$carrier.reduc}</span> {$carrier.price|escape:'html':'UTF-8'}
+                            {/if}
+                        </span>
                       </div>
                     </div>
                   </label>
