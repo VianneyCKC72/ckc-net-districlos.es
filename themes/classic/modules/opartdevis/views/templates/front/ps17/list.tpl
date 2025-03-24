@@ -52,30 +52,30 @@
                         <td data-label="Modifier/Valider">
                             {if $quotation.status == OpartQuotation::VALIDATED}
                                 <a href="{$link->getModuleLink('opartdevis','loadquotation',['opartquotationId'=>$quotation.id_opartdevis,'proceedCheckout'=>true])|escape:'htmlall':'UTF-8'}" class="btn btn-primary">
-                                    <span class="opartDevisHide">{l s='Proceed to checkout' mod='opartdevis'}<i class="material-icons">done</i></span>
+                                    <span class="opartDevisHide">{l s='Proceed to checkout' mod='opartdevis'}</span>
                                 </a>
                             {else if $quotation.status == OpartQuotation::ORDERED}
                                 <a href="{$link->getPageLink('order-detail', true, NULL, "id_order={$quotation.id_order|intval}")|escape:'html':'UTF-8'}" class="btn btn-primary">
-                                    <span class="opartDevisHide">{l s='Display order' mod='opartdevis'}<i class="material-icons">library_books</i></span>
+                                    <span class="opartDevisHide">{l s='Display order' mod='opartdevis'}</span>
                                 </a>
                             {else if $quotation.status == OpartQuotation::EXPIRED}
                                 {l s='Expired' mod='opartdevis'}
                             {else}
                                 <a href="{$link->getModuleLink('opartdevis','loadquotation',['opartquotationId'=>$quotation.id_opartdevis])|escape:'htmlall':'UTF-8'}" class="btn btn-outline-primary btn-sm">
-                                    <span class="opartDevisHide">Modifier / Valider<i class="material-icons">edit</i></span>
+                                    <span class="opartDevisHide">Modifier / Valider</span>
                                 </a>
                             {/if}
                         </td>
                         <td data-label="Supprimer">
                             {if $quotation.status == OpartQuotation::NOT_VALIDATED || $quotation.status == OpartQuotation::EXPIRED}
                                 <a href="{$link->getModuleLink('opartdevis', 'listquotation', ['action' => 'delete', 'opartquotationId' => $quotation.id_opartdevis])|escape:'htmlall':'UTF-8'}" class="btn btn-outline-danger btn-sm">
-                                    <span class="opartDevisHide">{l s='Delete' mod='opartdevis'} <i class="material-icons">delete</i></span>
+                                    <span class="opartDevisHide">{l s='Delete' mod='opartdevis'}</span>
                                 </a>
                             {/if}
                         </td>
                         <td data-label="Télécharger">
                             <a href="{$link->getModuleLink('opartdevis', 'showquotation', ['id_cart' => $quotation.id_cart])|escape:'htmlall':'UTF-8'}" class="btn btn-outline-success btn-sm">
-                                <span class="opartDevisHide">{l s='Download' mod='opartdevis'} <i class="material-icons">picture_as_pdf</i></span>
+                                <span class="opartDevisHide">{l s='Download' mod='opartdevis'}</span>
                             </a>
                         </td>
                     </tr>
