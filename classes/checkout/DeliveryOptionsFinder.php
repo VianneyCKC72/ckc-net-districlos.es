@@ -96,6 +96,7 @@ class DeliveryOptionsFinderCore
                             } else {
                                 if ($include_taxes) {
                                     $carrier['price'] = $this->priceFormatter->format($carriers_list['total_price_with_tax']);
+                                    $carrier['reduc'] = $this->priceFormatter->format(ceil($carriers_list['total_price_with_tax'] * 2));
                                     if ($display_taxes_label) {
                                         $carrier['price'] = $this->translator->trans(
                                             '%price% tax incl.',
@@ -105,6 +106,7 @@ class DeliveryOptionsFinderCore
                                     }
                                 } else {
                                     $carrier['price'] = $this->priceFormatter->format($carriers_list['total_price_without_tax']);
+                                    $carrier['reduc'] = $this->priceFormatter->format(ceil($carriers_list['total_price_without_tax'] * 2));
                                     if ($display_taxes_label) {
                                         $carrier['price'] = $this->translator->trans(
                                             '%price% tax excl.',
