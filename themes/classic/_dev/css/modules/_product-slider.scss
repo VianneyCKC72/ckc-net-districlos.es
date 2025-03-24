@@ -97,3 +97,8 @@
 #product .fancybox__carousel .fancybox__nav .f-button svg{
   stroke: #fff;
 }
+#product {
+  .swiper-button-prev, .swiper-button-next{
+    margin-top: calc(0px - (var(--swiper-navigation-size) / 2) - 90px);
+  }
+}
