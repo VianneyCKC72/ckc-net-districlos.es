@@ -49,4 +49,8 @@
             <img class="img-cover" src="/themes/classic/assets/img/photo-portail-newsletter.jpg" alt=""/>
         </div>
     </div>
+{else}
+    <div>
+        {hook h='CETemplate' id=15}
+    </div>
 {/if}
