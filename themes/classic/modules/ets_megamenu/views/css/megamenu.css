@@ -3627,3 +3627,10 @@ span.mm_menu_content_title > div:nth-child(2){
     transition: none !important;
     animation: none !important;
 }
+.mm_tab_name.mm_tab_toggle:not(.mm_tab_has_child){
+    height: 48px;
+    align-content: center;
+    .arrow.YES.closed.niveau2{
+        display: none;
+    }
+}
