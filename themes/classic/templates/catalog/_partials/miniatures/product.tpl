@@ -29,6 +29,13 @@
                  data-id-product-attribute="{$product.id_product_attribute}">
             <div class="thumbnail-container">
                 <div class="thumbnail-top">
+
+                    {if !$product.from_europe}
+                        <div class="pastille_fr">
+                            <img src="/img/pastille_produit_france.svg" alt="Fabriqué en France" class="pastille_fr_icon">
+                        </div>
+                    {/if}
+
                     {block name='product_thumbnail'}
                         {if $product.cover}
                             <a href="{$product.url}" class="thumbnail product-thumbnail">

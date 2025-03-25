@@ -648,3 +648,13 @@
     min-height: auto;
   }
 }
+.pastille_fr_icon {
+  position: absolute !important;
+  left: 0;
+  width: 50px !important;
+  z-index: 999;
+  padding: 10px;
+}
+.products.row.grid-mode .product-miniature .product-title{
+  min-height: 66px;
+}
