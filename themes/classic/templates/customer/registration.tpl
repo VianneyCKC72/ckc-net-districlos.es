@@ -31,7 +31,7 @@
       
       <div class="already-account">
         <div class="img">
-          <img src="https://picsum.photos/{rand(300, 600)}/{rand(300, 600)}" alt="" />
+          <img src="/img/cms/connexion-page-img.jpeg" alt="registration" />
         </div>
         <div class="inside">
           <h2 class="mb-4">{l s='Already have an account?' d='Shop.Theme.Customeraccount'}</h2>

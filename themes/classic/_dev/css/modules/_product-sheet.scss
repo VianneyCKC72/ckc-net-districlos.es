@@ -949,6 +949,15 @@
       margin: 10px 0 7px;
     }
   }
+  .title-banner-quick-view-header-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: baseline;
+    .discount-value{
+      white-space: nowrap;
+    }
+  }
 }
 
 
