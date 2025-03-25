@@ -282,3 +282,17 @@
   margin-top: 2px;
   padding-left: 30px;
 }
+@media (min-width: 1025px){
+  #authentication{
+    .help-block:has(.tiny-alert.alert-danger){
+      display: flex;
+      justify-content: flex-end;
+      ul{
+        width: 50%;
+        li{
+          margin-left: 30px;
+        }
+      }
+    }
+  }
+}
