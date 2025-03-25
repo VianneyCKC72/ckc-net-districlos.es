@@ -35,18 +35,19 @@
                     {/block}
                 {/foreach}
             {/block}
-
-            <div class="actions-container-login">
-                <button type="submit" class="btn btn-primary">
-                    {l s='Se connecter' d='Shop.Theme.Actions'}
-                </button>
-                <div class="forgot-password">
-                    <a href="{$urls.pages.password}" rel="nofollow">
-                        {l s='Forgot your password?' d='Shop.Theme.Customeraccount'}
-                    </a>
+            {if $espace_pro != true}
+                <div class="actions-container-login">
+                    <button type="submit" class="btn btn-primary">
+                        {l s='Se connecter' d='Shop.Theme.Actions'}
+                    </button>
+                    <div class="forgot-password">
+                        <a href="{$urls.pages.password}" rel="nofollow">
+                            {l s='Forgot your password?' d='Shop.Theme.Customeraccount'}
+                        </a>
+                    </div>
+                    <p class="txt_ou_bien text-center"><strong>Ou bien...</strong></p>
                 </div>
-                <p class="txt_ou_bien text-center"><strong>Ou bien...</strong></p>
-            </div>
+            {/if}
         </div>
 
         {if $espace_pro == 1}

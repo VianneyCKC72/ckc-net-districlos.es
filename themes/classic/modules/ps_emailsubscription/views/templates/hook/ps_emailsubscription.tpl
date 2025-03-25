@@ -12,6 +12,12 @@
     </p>
 {/if}
 
+{if $page.page_name == 'module-opartdevis-simplequotation'}
+    <div style="margin-bottom: 50px;">
+        {hook h='CETemplate' id=15}
+    </div>
+{/if}
+
 {if $page.page_name != 'checkout' AND $page.page_name != 'identity' AND $page.page_name != 'authentication' AND $page.page_name != 'registration'}
     <div class="banner__newsletter">
         <div class="col-text">
