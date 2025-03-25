@@ -23,6 +23,7 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 {block name='product_miniature_item'}
+
     <div
             class="js-product product {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')} list_view col-12 {else}{if !empty($productClasses)} {$productClasses} {/if} {/if}">
         <article class="product-miniature js-product-miniature" data-id-product="{$product.id_product}"
@@ -37,41 +38,54 @@
                     {/if}
 
                     {block name='product_thumbnail'}
-                        {if $product.cover}
-                            <a href="{$product.url}" class="thumbnail product-thumbnail">
-                                <img class="tag-web-price tag-web-price-miniature"
-                                     src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
-                                <picture>
+                        <a href="{$product.url}" class="thumbnail product-thumbnail hover-images">
+                            <img class="tag-web-price tag-web-price-miniature"
+                                 src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
+
+                            {* Première image (cover ou fallback) *}
+                            <picture class="product-image first-image">
+                                {if $product.cover}
                                     {if !empty($product.cover.bySize.medium_default.sources.avif)}
-                                        <source srcset="{$product.cover.bySize.medium_default.sources.avif}"
-                                                type="image/avif">{/if}
+                                        <source srcset="{$product.cover.bySize.medium_default.sources.avif}" type="image/avif">
+                                    {/if}
                                     {if !empty($product.cover.bySize.medium_default.sources.webp)}
-                                        <source srcset="{$product.cover.bySize.medium_default.sources.webp}"
-                                                type="image/webp">{/if}
+                                        <source srcset="{$product.cover.bySize.medium_default.sources.webp}" type="image/webp">
+                                    {/if}
                                     <img src="{$product.cover.bySize.medium_default.url}"
                                          alt="{if !empty($product.cover.legend)}{$product.cover.legend}{else}{$product.name|truncate:30:'...'}{/if}"
                                          loading="lazy" data-full-size-image-url="{$product.cover.large.url}"
                                          width="{$product.cover.bySize.home_default.width}"
                                          height="{$product.cover.bySize.home_default.height}"/>
-                                </picture>
-                            </a>
-                        {else}
-                            <a href="{$product.url}" class="thumbnail product-thumbnail">
-                                <picture>
+                                {else}
                                     {if !empty($urls.no_picture_image.bySize.home_default.sources.avif)}
-                                        <source srcset="{$urls.no_picture_image.bySize.home_default.sources.avif}"
-                                                type="image/avif">
+                                        <source srcset="{$urls.no_picture_image.bySize.home_default.sources.avif}" type="image/avif">
                                     {/if}
                                     {if !empty($urls.no_picture_image.bySize.home_default.sources.webp)}
-                                        <source srcset="{$urls.no_picture_image.bySize.home_default.sources.webp}"
-                                                type="image/webp">
+                                        <source srcset="{$urls.no_picture_image.bySize.home_default.sources.webp}" type="image/webp">
                                     {/if}
                                     <img src="{$urls.no_picture_image.bySize.home_default.url}" loading="lazy"
                                          width="{$urls.no_picture_image.bySize.home_default.width}"
                                          height="{$urls.no_picture_image.bySize.home_default.height}"/>
+                                {/if}
+                            </picture>
+
+                            {* Deuxième image (hover) si disponible *}
+                            {if !empty($product.images[2])}
+                                <picture class="product-image second-image">
+                                    {if !empty($product.images[2].bySize.medium_default.sources.avif)}
+                                        <source srcset="{$product.images[2].bySize.medium_default.sources.avif}" type="image/avif">
+                                    {/if}
+                                    {if !empty($product.images[2].bySize.medium_default.sources.webp)}
+                                        <source srcset="{$product.images[2].bySize.medium_default.sources.webp}" type="image/webp">
+                                    {/if}
+                                    <img src="{$product.images[2].bySize.medium_default.url}"
+                                         alt="{if !empty($product.images[2].legend)}{$product.images[2].legend}{else}{$product.name|truncate:30:'...'}{/if}"
+                                         loading="lazy" data-full-size-image-url="{$product.images[2].large.url}"
+                                         width="{$product.images[2].bySize.home_default.width}"
+                                         height="{$product.images[2].bySize.home_default.height}"/>
                                 </picture>
-                            </a>
-                        {/if}
+                            {/if}
+                        </a>
                     {/block}
 
                     {hook h='displayCustomProductLabel' product=$product}
