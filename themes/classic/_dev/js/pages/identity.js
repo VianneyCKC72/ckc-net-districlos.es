@@ -23,6 +23,14 @@ $(document).ready(function () {
             }
         }
 
+        if($(".radio-inline.id_gender input[value=1]").is(":checked")){
+            localStorage.setItem("id_gender", "1");
+        }
+
+        if($(".radio-inline.id_gender input[value=2]").is(":checked")){
+            localStorage.setItem("id_gender", "2");
+        }
+
         if(!$("input[name=newsletter]").is(":checked")){
             $("input[name=newsletter]").val("")
         }
