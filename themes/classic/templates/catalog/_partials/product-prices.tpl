@@ -29,7 +29,7 @@
       {include file='catalog/_partials/product-prices/price.tpl'}
       <div>
         <p class="mb-0">Payez en plusieurs fois<span style="margin-inline: 10px"><img
-              src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt=""></span>en carte
+                    src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt=""></span>en carte
           bancaire sans frais</p>
         <p class="mb-0 thin">Un crédit vous engage et doit être remboursé. vérifiez vos capacités de remboursement avant
           de
@@ -100,12 +100,14 @@
       <div class="container">
         <div class="banner-quick-view-content">
           <div class="price-name">
-            {include file='catalog/_partials/product-prices/has-discount.tpl'}
             <div class="d-flex justify-content-between gap-16">
               <div>
                 {block name='page_header_container'}
                   {block name='page_header'}
-                    <h2 class="h2 mb-0">{block name='page_title'}{$product.name}{/block}</h2>
+                    <div class="title-banner-quick-view-header-container">
+                      <h2 class="h2 mb-0">{block name='page_title'}{$product.name}{/block}</h2>
+                      {include file='catalog/_partials/product-prices/has-discount.tpl'}
+                    </div>
                     <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
                   {/block}
                 {/block}
