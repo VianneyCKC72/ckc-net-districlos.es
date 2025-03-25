@@ -12,7 +12,7 @@
     </p>
 {/if}
 
-{if $page.page_name != 'checkout'}
+{if $page.page_name != 'checkout' AND $page.page_name != 'identity' AND $page.page_name != 'authentication' AND $page.page_name != 'registration'}
     <div class="banner__newsletter">
         <div class="col-text">
             <h2 class="h2">Newsletter</h2>
@@ -49,7 +49,7 @@
             <img class="img-cover" src="/themes/classic/assets/img/photo-portail-newsletter.jpg" alt=""/>
         </div>
     </div>
-{else}
+{elseif $page.page_name == 'checkout'}
     <div>
         {hook h='CETemplate' id=15}
     </div>
