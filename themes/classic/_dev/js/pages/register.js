@@ -39,10 +39,10 @@ $(document).ready(function () {
         if ($smsCheckbox.length) $form.append($smsCheckbox);
 
 
-        $("input[name=psgdpr]").val("0")
-        $("input[name=customer_privacy]").val("0")
-        $("input[name=newsletter]").val("0")
-        $("input[name=sms_optin]").val("0")
+        $("input[name=psgdpr]").val("")
+        $("input[name=customer_privacy]").val("")
+        $("input[name=newsletter]").val("")
+        $("input[name=sms_optin]").val("")
 
         $("input[name=psgdpr]").prop("checked", false)
         $("input[name=customer_privacy]").prop("checked", false)
@@ -55,14 +55,14 @@ $(document).ready(function () {
             if ($(this).is(':checked')){
                 $(this).val("1")
             } else {
-                $(this).val("0")
+                $(this).val("")
             }
         })
         $("input[name=customer_privacy]").on('change', function(){
             if ($(this).is(':checked')){
                 $(this).val("1")
             } else {
-                $(this).val("0")
+                $(this).val("")
             }
         })
 
@@ -70,7 +70,7 @@ $(document).ready(function () {
             if ($(this).is(':checked')){
                 $(this).val("1")
             } else {
-                $(this).val("0")
+                $(this).val("")
             }
         })
 
@@ -78,7 +78,7 @@ $(document).ready(function () {
             if ($(this).is(':checked')){
                 $(this).val("1")
             } else {
-                $(this).val("0")
+                $(this).val("")
             }
         })
 
