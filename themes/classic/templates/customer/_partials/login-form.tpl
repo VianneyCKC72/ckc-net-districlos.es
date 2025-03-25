@@ -47,6 +47,12 @@
                     </div>
                     <p class="txt_ou_bien text-center"><strong>Ou bien...</strong></p>
                 </div>
+            {else}
+                <div class="forgot-password">
+                    <a href="{$urls.pages.password}" rel="nofollow">
+                        {l s='Forgot your password?' d='Shop.Theme.Customeraccount'}
+                    </a>
+                </div>
             {/if}
         </div>
 

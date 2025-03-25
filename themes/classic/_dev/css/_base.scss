@@ -5993,6 +5993,8 @@ body#checkout section.checkout-step .radio-field label {
 
 .forgotten-password .form-fields label.required {
   width: 130px;
+  white-space: nowrap;
+  margin-bottom: 5px;
 }
 
 .send-renew-password-link {
