@@ -27,7 +27,7 @@ $(document).ready(function () {
         if (cart) {
             $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
             checkStock(cart, $quantityInput, 'up', 1);
-        }else{
+        } else {
             $quantityInput.val(newValue).trigger('change');
         }
     });
@@ -40,12 +40,12 @@ $(document).ready(function () {
         let minValue = parseInt($quantityInput.attr('min')) || 1;
         let newValue = Math.max(minValue, currentValue - 1);
 
-        let cart =  $('body').prop('id') === 'cart';
+        let cart = $('body').prop('id') === 'cart';
 
         if (cart) {
             $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
             checkStock(cart, $quantityInput, 'down', 1);
-        }else{
+        } else {
             $quantityInput.val(newValue).trigger('change');
         }
     });
@@ -184,6 +184,7 @@ $(document).ready(function () {
             }
         });
     }
+
     function updateViewProduct(data) {
         $.each(data, function (key, value) {
             let selectorMap = {
@@ -286,4 +287,72 @@ $(document).ready(function () {
                 );
             });
     });
+
+
+    // Page produit uniquement
+
+    // Touchspin + et -
+    if ($('#product').length) {
+
+        // Remplacement des boutons Touchspin
+        $('#product .bootstrap-touchspin-up .touchspin-up').replaceWith(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="lucide lucide-chevron-up">
+        <path d="m18 15-6-6-6 6"/>
+      </svg>
+    `);
+
+        $('#product .bootstrap-touchspin-down .touchspin-down').replaceWith(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+        class="lucide lucide-chevron-down">
+        <path d="m6 9 6 6 6-6"/>
+      </svg>
+    `);
+
+        // Fonction qui injecte le SVG dans l'élément icon
+        function injectChevronIcon(iconElement) {
+            // Ici, on garde l'état (open ou non) pour la classe si besoin
+            const isOpen = iconElement.classList.contains('open');
+            iconElement.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="lucide toggle-accessories">
+          <path d="m6 9 6 6 6-6"/>
+        </svg>
+      `;
+            // Optionnel : si tu souhaites conserver la classe "open" sur le SVG, elle doit rester sur l'élément parent (<i>)
+        }
+
+        // Cible le <h4> qui contient l'icône
+        const target = document.querySelector('#product h4');
+        if (target) {
+            // Utilise MutationObserver pour détecter les remplacements de l'icône
+            const observer = new MutationObserver(() => {
+                const icon = target.querySelector('i.toggle-icon, i.material-icons.remove');
+                // Si l'icône existe et que son contenu ne contient pas de <svg>
+                if (icon && icon.innerHTML.indexOf('<svg') === -1) {
+                    icon.classList.remove('material-icons', 'remove');
+                    icon.classList.add('toggle-icon');
+                    injectChevronIcon(icon);
+                }
+            });
+
+            observer.observe(target, {
+                childList: true,
+                subtree: true
+            });
+
+            // Injection initiale dès le chargement
+            const icon = target.querySelector('i.toggle-icon, i.material-icons.remove');
+            if (icon && icon.innerHTML.indexOf('<svg') === -1) {
+                icon.classList.remove('material-icons', 'remove');
+                icon.classList.add('toggle-icon');
+                injectChevronIcon(icon);
+            }
+        }
+    }
+
+
 });
