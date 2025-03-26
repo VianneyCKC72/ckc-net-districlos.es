@@ -10445,8 +10445,8 @@
                                             }),
                                         n.find(t().selectors.quantityWanted).TouchSpin({
                                             verticalbuttons: !0,
-                                            verticalupclass: "material-icons touchspin-up",
-                                            verticaldownclass: "material-icons touchspin-down",
+                                            verticalupclass: "touchspin-up",
+                                            verticaldownclass: "touchspin-down",
                                             buttondown_class: "btn btn-touchspin js-touchspin",
                                             buttonup_class: "btn btn-touchspin js-touchspin",
                                             min: 1,
@@ -10762,22 +10762,7 @@
 
                 !(function () {
                     //     const e = i()(t().selectors.quantityWanted);
-                    //     e.TouchSpin({
-                    //           verticalbuttons: !0,
-                    //           verticalupclass: "material-icons touchspin-up",
-                    //           verticaldownclass: "material-icons touchspin-down",
-                    //           buttondown_class: "btn btn-touchspin js-touchspin",
-                    //           buttonup_class: "btn btn-touchspin js-touchspin",
-                    //           min: parseInt(e.attr("min"), 10),
-                    //           max: 1e6
-                    //     }), i()(t().themeSelectors.touchspin).off("touchstart.touchspin"), e.on("focusout", (() => {
-                    //           ("" === e.val() || e.val() < e.attr("min")) && (e.val(e.attr("min")), e.trigger("change"))
-                    //     })), i()("body").on("change keyup", t().selectors.quantityWanted, (n => {
-                    //           "" !== e.val() && (i()(n.currentTarget).trigger("touchspin.stopspin"), t().emit("updateProduct", {
-                    //                 eventType: "updatedProductQuantity",
-                    //                 event: n
-                    //           }))
-                    //     }))
+
                 })(),
                     r(),
                     e(),
@@ -10855,8 +10840,8 @@
                 i().each(i()(u), (e, t) => {
                     i()(t).TouchSpin({
                         verticalbuttons: !0,
-                        verticalupclass: "material-icons touchspin-up",
-                        verticaldownclass: "material-icons touchspin-down",
+                        verticalupclass: "touchspin-up",
+                        verticaldownclass: "touchspin-down",
                         buttondown_class:
                             "btn btn-touchspin js-touchspin js-increase-product-quantity",
                         buttonup_class:

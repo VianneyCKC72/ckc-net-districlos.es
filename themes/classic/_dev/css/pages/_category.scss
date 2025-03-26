@@ -155,8 +155,12 @@
   display: flex;
   justify-content: space-between;
   /* align-items: flex-start; */
-  margin-right: 10px;
+  margin-right: 0;
   margin-bottom: 20px;
+  gap: 30px;
+  .tag-discount, h1.h1 {
+    white-space: nowrap;
+  }
 
   @media (max-width: 1390px) {
     flex-direction: column-reverse;
@@ -561,9 +565,9 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
-  min-height: 105.5px;
+  min-height: 130.5px;
   .product-info-custom-block-miniature-price-stars{
-    min-height: 61.5px;
+    min-height: 86.5px;
   }
 }
 @media (max-width: 1341px) and (min-width: 768px) {
@@ -648,3 +652,14 @@
     min-height: auto;
   }
 }
+.pastille_fr_icon {
+  position: absolute !important;
+  left: 0;
+  width: 50px !important;
+  z-index: 9;
+  padding: 10px;
+}
+.products.row.grid-mode .product-miniature .product-title{
+  min-height: 66px;
+}
+

@@ -8,7 +8,7 @@
              loading="lazy" alt="Visa">
         <img style="width: 70px;" src="/themes/classic/assets/img/payment/cb.png" loading="lazy"
              alt="Carte Bleue">
-        <img style="max-width: 70px;" src="/themes/classic/assets/img/payment-methods/paypal.jpg" loading="lazy"
+        <img style="max-width: 70px;" src="/themes/classic/assets/img/payment/paypal.svg" loading="lazy"
              alt="Paypal">
     </div>
 </div>

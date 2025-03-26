@@ -537,6 +537,15 @@ body#checkout {
     width: 100%;
   }
 
-
-
+  #order-summary-content{
+    h2.h2.black{
+      margin-top: 20px;
+    }
+  }
+  form#conditions-to-approve{
+    margin-top: 15px;
+  }
+  .payment-options .custom-radio{
+    border: 1px solid #EAE2D7;
+  }
 }

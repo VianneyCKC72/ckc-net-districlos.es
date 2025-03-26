@@ -16,31 +16,33 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  *}
-<div class="banner-services stack-row__cards my-section">
-    {foreach from=$blocks item=$block key=$key}
-        <div class="service" {if $block['type_link'] !==$LINK_TYPE_NONE && !empty($block['link'])} style="cursor:pointer;"
-            onclick="window.open('{$block['link']}')" {/if}>
-            {if $block['icon'] != 'undefined'}
-                {if $block['custom_icon']}
-                    <img src="{$block['custom_icon']}" loading="lazy" alt="{$block['title']}">
-                {elseif $block['icon']}
-                    <img src="{$block['icon']}" loading="lazy" alt="{$block['title']}">
-                {/if}
-            {/if}
-            <div>
-                {if empty($block['description'])}
-                    <p>{$block['title']|replace:'__':'<br>' nofilter}</p>
-                {else}
-                    <p>{$block['title']}
-{*                    <p>{$block['description'] nofilter}</p>*}
-                    {if $block['description']== '__picto3x4x10x12x'}
-                        <br>
-                        <img class="paiement_plusieurs_fois" height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="Payer en plusieurs fois">
+{if $page.page_name != 'checkout'}
+    <div class="banner-services stack-row__cards my-section">
+        {foreach from=$blocks item=$block key=$key}
+            <div class="service" {if $block['type_link'] !==$LINK_TYPE_NONE && !empty($block['link'])} style="cursor:pointer;"
+                onclick="window.open('{$block['link']}')" {/if}>
+                {if $block['icon'] != 'undefined'}
+                    {if $block['custom_icon']}
+                        <img src="{$block['custom_icon']}" loading="lazy" alt="{$block['title']}">
+                    {elseif $block['icon']}
+                        <img src="{$block['icon']}" loading="lazy" alt="{$block['title']}">
                     {/if}
-                    </p>
                 {/if}
+                <div>
+                    {if empty($block['description'])}
+                        <p>{$block['title']|replace:'__':'<br>' nofilter}</p>
+                    {else}
+                        <p>{$block['title']}
+                            {*                    <p>{$block['description'] nofilter}</p>*}
+                            {if $block['description']== '__picto3x4x10x12x'}
+                                <br>
+                                <img class="paiement_plusieurs_fois" height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="Payer en plusieurs fois">
+                            {/if}
+                        </p>
+                    {/if}
 
+                </div>
             </div>
-        </div>
-    {/foreach}
-</div>
+        {/foreach}
+    </div>
+{/if}

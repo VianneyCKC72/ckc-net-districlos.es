@@ -22,5 +22,45 @@ $(document).ready(function () {
                 $smsCheckbox.insertBefore($submitButton);
             }
         }
+
+        if($(".radio-inline.id_gender input[value=1]").is(":checked")){
+            localStorage.setItem("id_gender", "1");
+        }
+
+        if($(".radio-inline.id_gender input[value=2]").is(":checked")){
+            localStorage.setItem("id_gender", "2");
+        }
+
+        if(!$("input[name=newsletter]").is(":checked")){
+            $("input[name=newsletter]").val("")
+        }
+
+        if($("input[name=newsletter]").val() == ""){
+            $("input[name=newsletter]").prop("checked", false)
+        }
+
+        if(!$("input[name=sms_optin]").is(":checked")){
+            $("input[name=sms_optin]").val("")
+        }
+
+        if($("input[name=sms_optin]").val() == ""){
+            $("input[name=sms_optin]").prop("checked", false)
+        }
+
+        $("input[name=newsletter]").on('change', function(){
+            if ($(this).is(':checked')){
+                $(this).val("1")
+            } else {
+                $(this).val("")
+            }
+        })
+
+        $("input[name=sms_optin]").on('change', function(){
+            if ($(this).is(':checked')){
+                $(this).val("1")
+            } else {
+                $(this).val("")
+            }
+        })
     }
 });
