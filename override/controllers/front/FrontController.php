@@ -80,7 +80,41 @@ class FrontController extends FrontControllerCore
             $env_particulier = false;
         }
 
+        $url_back       = '';
+        $label_back     = '';
+
+        if (!empty($this->context->controller->php_self)) {
+
+            // Vérifie si php_self commence par 'advancedsearch-seo'
+            if ($this->context->controller->php_self == 'module-pm_advancedsearch4-seo') {
+                // Récupère l'ID de la catégorie
+                $page      = $this->context->smarty->getTemplateVars('page');
+                $page_name = $page['page_name'];
+
+                $parts = explode('-', $page_name);
+
+                if (isset($parts[2])) {
+                    $categoryId         = (int)$parts[2];
+                    $redirectCategoryId = null;
+                    // Cloture-rigide
+                    if ($categoryId >= 1 && $categoryId <= 5) {
+                        $redirectCategoryId = 3;
+                        $label_back         = "Voir toutes les clôtures rigides";
+                    }
+
+                    if ($redirectCategoryId) {
+                        $url_back = $this->context->link->getCategoryLink($redirectCategoryId);
+                        $url_back = [
+                            'url'   => base64_encode($url_back),
+                            'label' => $label_back
+                        ];
+                    }
+                }
+            }
+        }
+
         $this->context->smarty->assign([
+                'url_back_category' => $url_back,
                 'display_espace_pro' => $display_espace_pro,
                 'env_pro' => $env_pro,
                 'espace_pro' => $espace_pro,

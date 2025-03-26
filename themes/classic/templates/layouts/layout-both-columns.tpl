@@ -70,6 +70,13 @@
               {if $page.page_name == 'product'}
                 {hook h='displayLeftColumnProduct' product=$product category=$category}
               {else}
+                {if $url_back_category != ''}
+                  <a class="link-obfusacation" href="javascript:void(0)" onclick="window.location.href=atob('{$url_back_category.url}')">
+                    <span>
+                        {$url_back_category.label}
+                    </span>
+                  </a>
+                {/if}
                 {hook h="displayLeftColumn"}
               {/if}
             </div>
