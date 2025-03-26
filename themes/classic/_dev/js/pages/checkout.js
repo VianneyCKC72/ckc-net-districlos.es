@@ -96,10 +96,12 @@ $(document).ready(function () {
         var $cartSummary = $('.cart-summary');
         if ($cartSummary.length === 0) return;
 
+        var $noItems = $('.cart-overview .no-items');
+        if ($noItems.length > 0 && $noItems.is(':visible')) return;
+
         var isSticky = false;
         var stickyOffsetTop = null;
 
-        // On mémorise les éléments détachables
         var $moyenPaiement = null;
         var $blockPromo = null;
         var $h3 = null;
@@ -108,13 +110,18 @@ $(document).ready(function () {
             return $(window).width() >= 992;
         }
 
-        // On récupère et stocke la position initiale du bloc
+        function pageIsTallEnough() {
+            var windowHeight = $(window).height();
+            var documentHeight = $(document).height();
+            return documentHeight > (windowHeight + 200);
+        }
+
         function updateStickyOffset() {
             $cartSummary.removeClass('sticky-summary');
             stickyOffsetTop = $cartSummary.offset().top;
         }
 
-        updateStickyOffset(); // init au chargement
+        updateStickyOffset();
 
         $(window).on('resize', function () {
             if (!isDesktop()) {
@@ -125,7 +132,7 @@ $(document).ready(function () {
         });
 
         $(window).on('scroll', function () {
-            if (!isDesktop()) return;
+            if (!isDesktop() || !pageIsTallEnough()) return;
 
             var currentScroll = $(this).scrollTop();
 
@@ -140,7 +147,6 @@ $(document).ready(function () {
             isSticky = true;
             $cartSummary.addClass('sticky-summary');
 
-            // Détacher les éléments et les stocker
             $moyenPaiement = $cartSummary.find('.moyen_de_paiement').detach();
             $blockPromo = $cartSummary.find('.block-promo').detach();
             $h3 = $cartSummary.find('h3').detach();
@@ -167,21 +173,22 @@ $(document).ready(function () {
         }
     }
 
-    const $chevron = $('.chevron-toggle svg');
-    const $collapse = $('#promoCollapse');
 
-    // Clic manuel sur le chevron
-    $('.chevron-toggle').on('click', function (e) {
-        e.preventDefault();
-        $collapse.collapse('toggle');
-    });
+    if ($('body').hasClass('page-cart') || $('body').hasClass('page-order')) {
+        // Clic manuel sur le chevron
+        $('.chevron-toggle').on('click', function (e) {
+            e.preventDefault();
+            $collapse.collapse('toggle');
+        });
 
-    // Rotation du chevron
-    $collapse.on('show.bs.collapse', function () {
-        $chevron.css('transform', 'rotate(180deg)');
-    });
+        // Rotation du chevron
+        $collapse.on('show.bs.collapse', function () {
+            $chevron.css('transform', 'rotate(180deg)');
+        });
 
-    $collapse.on('hide.bs.collapse', function () {
-        $chevron.css('transform', 'rotate(0deg)');
-    });
+        $collapse.on('hide.bs.collapse', function () {
+            $chevron.css('transform', 'rotate(0deg)');
+        });
+    }
+
 });
