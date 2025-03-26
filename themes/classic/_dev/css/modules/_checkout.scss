@@ -548,4 +548,9 @@ body#checkout {
   .payment-options .custom-radio{
     border: 1px solid #EAE2D7;
   }
+  .payment-option {
+    align-items: center;
+    display: flex;
+    height: 2.5rem;
+  }
 }
