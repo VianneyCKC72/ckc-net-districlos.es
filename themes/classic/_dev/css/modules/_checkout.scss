@@ -553,4 +553,9 @@ body#checkout {
     display: flex;
     height: 2.5rem;
   }
+  @media (max-width: 767px){
+    nav.header-nav .hidden-md-up.text-sm-center.mobile{
+      display: none;
+    }
+  }
 }
