@@ -277,6 +277,34 @@ body#module-opartdevis-createquotation {
     grid-template-columns:repeat(3, 1fr);
     margin-bottom: 30px
   }
+  .video_grid {
+    display: grid;
+    gap: 40px;
+    grid-template-columns: repeat(3, 1fr);
+    margin-bottom: 30px;
+  }
+
+  /* À partir de 1460px, on garde 3 colonnes */
+  @media (max-width: 1459px) {
+    .video_grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Pour les petits écrans type tablette */
+  @media (max-width: 991px) {
+    .video_grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Pour assurer que les iframes s’adaptent aussi */
+  .video_grid iframe {
+    height: auto;
+    aspect-ratio: 16 / 9;
+    max-width: 100%;
+    border: none;
+  }
 
   .prix_juste_icon {
     position: absolute !important;
