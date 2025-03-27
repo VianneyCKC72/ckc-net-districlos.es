@@ -248,6 +248,11 @@
           background-color: $primary-color;
         }
       }
+      @media (max-width: 767px){
+        a.nav-link.avisVerfies{
+          padding: 12px 20px;
+        }
+      }
     }
   }
 
@@ -538,9 +543,6 @@
       -moz-column-gap: 0;
       column-gap: 0;
     }
-    @media (max-width: 582px) {
-      justify-content: space-around;
-    }
     @media (max-width: 499px) {
       .nav-link.avisVerfies {
         span.avis_verifies_inserted {
@@ -551,6 +553,11 @@
     @media (max-width: 376px) {
       justify-content: center;
       flex-direction: column;
+    }
+  }
+  .product-tabs .nav-tabs:has(.nav-item:nth-child(4)){
+    @media (max-width: 499px) {
+      justify-content: space-around;
     }
   }
 
