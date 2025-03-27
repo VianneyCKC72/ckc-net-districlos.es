@@ -25,6 +25,7 @@
 <nav data-depth="{$breadcrumb.count}" class="breadcrumb">
     <ol>
         {block name='breadcrumb'}
+
             {foreach from=$breadcrumb.links item=path name=breadcrumb}
                 {block name='breadcrumb_item'}
                     <li>

@@ -80,11 +80,11 @@
                         </form>
                     {/block}
 
-                    {block name='cart_voucher_notifications'}
+{*                    {block name='cart_voucher_notifications'}*}
                         <div class="alert alert-danger js-error mt-2" role="alert">
                             <span class="ml-1 js-error-text"></span>
                         </div>
-                    {/block}
+{*                    {/block}*}
                 </div>
             </div>
 

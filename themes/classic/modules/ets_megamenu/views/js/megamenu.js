@@ -119,18 +119,13 @@ $(function () {
                     }
                 }
 
-                // Gestion de la position gauche (left) pour éviter le décalage du menu
-                if (windowWidth < 1520) {
-                    leftOffset = '0'; // Aligner à gauche si l'écran est plus petit que 1520px
-                } else {
-                    leftOffset = 'calc(50% - 760px)'; // Centrer sur un conteneur de 1520px
-                }
+                leftOffset = '0'; // Toujours aligné à gauche
 
                 // Application des styles
                 $('.mm_modal_filter, ul.mm_menus_ul').css({
                     'top': `${topOffset}px`,
                     'left': leftOffset,
-                    'width': windowWidth < 1520 ? '100%' : '1520px' // Adapter la largeur
+                    width: windowWidth < 1520 ? '100%' : '100%' // ou même fixe : '100%'
                 });
             }
 

@@ -24,7 +24,7 @@
  *}
 <div id="js-product-list-header">
     {if $listing.pagination.items_shown_from == 1}
-        <div class="block-category card card-block">
+        <div class="block-category card-block">
             <div class="head-top-category">
                 <h1 class="h1">{$category.name}</h1>
                 <div class="has-discount d-flex align-items-center">

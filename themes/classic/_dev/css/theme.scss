@@ -42,6 +42,7 @@ $output-bourbon-deprecation-warnings: false !default;
 @import "pages/contactpage.scss";
 @import "pages/orderconfirmation.scss";
 @import "pages/cart.scss";
+@import "pages/order-detail.scss";
 
 @import "~swiper/css/bundle";
 @import "~swiper/css";

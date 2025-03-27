@@ -3079,12 +3079,26 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         background-color: rgba(0,0,0,.4);
     }
     .ets_mm_megamenu.layout_layout1:not(.ybc_vertical_menu):not(.scroll_heading) .mm_menus_ul {
-        overflow: hidden;
         position: fixed;
         z-index: 9999999999 !important;
-        left: 0;
+        left: calc(50% - 760px);
+        width: 1520px;
         background: #fff;
+        overflow: hidden;
     }
+
+    /* Ajout d'une bande blanche à gauche, en dehors du conteneur */
+    .ets_mm_megamenu.layout_layout1:not(.ybc_vertical_menu):not(.scroll_heading) .mm_menus_ul::before {
+        content: "";
+        position: absolute;
+        left: -100px; /* Décalé vers la gauche */
+        top: 0;
+        height: 100%;
+        width: 100px; /* Largeur de la bande */
+        background: white;
+        z-index: -1; /* Pour ne pas masquer le menu */
+    }
+
 
     .ets_mm_megamenu.layout_layout1:not(.ybc_vertical_menu) .mm_menus_ul.mm_menus_ul_big {
         background: #fff url("/img/cms/menu/fond-menu.jpg") no-repeat top right !important;
@@ -3634,3 +3648,4 @@ span.mm_menu_content_title > div:nth-child(2){
         display: none;
     }
 }
+
