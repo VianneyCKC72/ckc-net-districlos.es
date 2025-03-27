@@ -302,6 +302,11 @@
             background-color: rgba($sand-light-color, 30%);
           }
         }
+        @media (max-width: 767px){
+          .descr_table{
+            overflow-x: scroll;
+          }
+        }
       }
     }
   }
