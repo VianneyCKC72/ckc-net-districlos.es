@@ -13,6 +13,7 @@
 {/block}
 
 {block name='page_content'}
+
     {if isset($deleted) && $deleted=="success"}
         <div class="alert alert-success">{l s='Quotation deleted' mod='opartdevis'}</div>
     {/if}
@@ -84,6 +85,14 @@
         </table>
         <div id="block-order-detail" class="hidden">&nbsp;</div>
     {else}
-        <p class="warning">{l s='You have no quotation' mod='opartdevis'}</p>
+        <p>
+            Vous n'avez pas encore de devis enregistré sur votre compte.
+            <br>
+            <a href="{$link->getModuleLink('opartdevis', 'simplequotation')}" class="mt-2 btn btn-primary">
+                Faire une demande de devis
+            </a>
+        </p>
     {/if}
+    <a href="/identite"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left-icon lucide-move-left"><path d="M6 8L2 12L6 16"/><path d="M2 12H22"/></svg> Mon compte</a>
+
 {/block}
