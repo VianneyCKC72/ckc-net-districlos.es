@@ -130,12 +130,12 @@
                 <div class="product-description">
                     <div class="product-info-custom-block-miniature">
                         {block name='product_name'}
-                            {if $page.page_name == 'index' OR $page.page_name == 'category'}
-                                <h3 class="h3 product-title"><a href="{$product.url}"
-                                                                content="{$product.url}">{$product.name}</a></h3>
-                            {else}
+                            {if $page.page_name == 'category'}
                                 <h2 class="h3 product-title"><a href="{$product.url}"
                                                                 content="{$product.url}">{$product.name}</a></h2>
+                            {else}
+                                <div class="h3 product-title"><a href="{$product.url}"
+                                                                 content="{$product.url}">{$product.name}</a></div>
                             {/if}
                         {/block}
 

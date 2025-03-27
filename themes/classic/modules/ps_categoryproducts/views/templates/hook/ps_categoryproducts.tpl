@@ -23,8 +23,8 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 <section class="featured-products my-section">
-  <h2 class="h2">
+  <h3 class="h2">
     Dans la même catégorie
-  </h2>
+  </h3>
   {include file="catalog/_partials/productlist-slider.tpl" products=$products}
 </section>

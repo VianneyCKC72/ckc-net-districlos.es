@@ -21,7 +21,7 @@
 {if $page.page_name != 'checkout' AND $page.page_name != 'identity' AND $page.page_name != 'authentication' AND $page.page_name != 'registration'}
     <div class="banner__newsletter">
         <div class="col-text">
-            <h2 class="h2">Newsletter</h2>
+            <div class="h2">Newsletter</div>
             <p>Inscrivez-vous à la newsletter Districlos pour rester informés de nos nouveaux produits, bons plans et faire
                 le
                 plein d’inspirations !</p>
