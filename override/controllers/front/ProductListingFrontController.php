@@ -593,6 +593,27 @@ abstract class ProductListingFrontController extends ProductListingFrontControll
      */
     protected function getAjaxProductSearchVariables()
     {
+
+        $display_espace_pro = Configuration::get('CKC_DISPLAY_EP');
+
+        if ($display_espace_pro == 1) {
+            // Vérification si le client est défini pour extraire l'ID
+            if (!empty($this->context->customer)) {
+                $userId = $this->context->customer->id;
+                // Vérification directe de l'état de connexion du client
+                $isLogged = $this->context->customer->logged;
+
+                // Détermination si l'utilisateur appartient au groupe avec l'ID 10
+                $env_pro = $isLogged && in_array(10, $this->context->customer->getGroups());
+                $connecter_avec_un_compte_particulier = (int)($isLogged && !in_array(10, $this->context->customer->getGroups()));
+            }
+        } else {
+            $env_pro = 0;
+        }
+        $this->context->smarty->assign([
+            'env_pro' => $env_pro,
+        ]);
+
         $search = $this->getProductSearchVariables();
 
         $rendered_products_top = $this->render('catalog/_partials/products-top', ['listing' => $search]);
