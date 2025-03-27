@@ -298,7 +298,7 @@
                     <p>COMPTE</p>
                 </a>
             </div>
-            <a href="#" class="btn-configurateur-mobile">
+            <a href="/configurateur" class="btn-configurateur-mobile">
                 <div class="text-btn">
                                 <span class="small-text">
                                     Configurez<br>

@@ -96,6 +96,9 @@
       position: relative;
       padding: 16px 23px 16px 36px;
       color: black;
+      @media (max-width: 991px) and (min-width: 768px){
+        padding: 16px 23px 16px 5px;
+      }
     }
 
     &.active, &:hover {
@@ -255,6 +258,59 @@
     > div {
       max-width: 160px;
       margin-right: 10px;
+    }
+  }
+  .small_container .content_right .col-lg-6.col-md-6.col-sm-6{
+    @media (max-width: 991px) {
+      min-width: 100%;
+    }
+  }
+  .small_container {
+    @media (max-width: 767px){
+      #nav_account{
+        margin: 0 15px 20px;
+      }
+    }
+    .content_right {
+      @media (max-width: 767px){
+        padding-left: 0;
+      }
+      .entete{
+        @media (max-width: 847px){
+          h2{
+            font-size: 30px;
+          }
+          a{
+            max-height: 53px;
+          }
+        }
+        @media (max-width: 440px){
+          flex-direction: column;
+          h2{
+            margin-bottom: 15px;
+          }
+        }
+        @media (max-width: 320px){
+          a.btn{
+            padding: 18px;
+          }
+        }
+      }
+      @media (max-width: 440px){
+        article .address-footer{
+          align-items: flex-start;
+          flex-wrap: wrap;
+          > div{
+            margin-bottom: 10px;
+            min-width: 100%;
+          }
+        }
+      }
+    }
+  }
+  @media (max-width: 767px) {
+    #content-wrapper .row.links {
+      margin: 0 15px 20px;
     }
   }
 }
