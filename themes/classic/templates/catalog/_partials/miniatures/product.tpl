@@ -84,6 +84,32 @@
                                          width="{$product.images[2].bySize.home_default.width}"
                                          height="{$product.images[2].bySize.home_default.height}"/>
                                 </picture>
+                            {else}
+                                <picture class="product-image second-image">
+                                    {if $product.cover}
+                                        {if !empty($product.cover.bySize.medium_default.sources.avif)}
+                                            <source srcset="{$product.cover.bySize.medium_default.sources.avif}" type="image/avif">
+                                        {/if}
+                                        {if !empty($product.cover.bySize.medium_default.sources.webp)}
+                                            <source srcset="{$product.cover.bySize.medium_default.sources.webp}" type="image/webp">
+                                        {/if}
+                                        <img src="{$product.cover.bySize.medium_default.url}"
+                                             alt="{if !empty($product.cover.legend)}{$product.cover.legend}{else}{$product.name|truncate:30:'...'}{/if}"
+                                             loading="lazy" data-full-size-image-url="{$product.cover.large.url}"
+                                             width="{$product.cover.bySize.home_default.width}"
+                                             height="{$product.cover.bySize.home_default.height}"/>
+                                    {else}
+                                        {if !empty($urls.no_picture_image.bySize.home_default.sources.avif)}
+                                            <source srcset="{$urls.no_picture_image.bySize.home_default.sources.avif}" type="image/avif">
+                                        {/if}
+                                        {if !empty($urls.no_picture_image.bySize.home_default.sources.webp)}
+                                            <source srcset="{$urls.no_picture_image.bySize.home_default.sources.webp}" type="image/webp">
+                                        {/if}
+                                        <img src="{$urls.no_picture_image.bySize.home_default.url}" loading="lazy"
+                                             width="{$urls.no_picture_image.bySize.home_default.width}"
+                                             height="{$urls.no_picture_image.bySize.home_default.height}"/>
+                                    {/if}
+                                </picture>
                             {/if}
                         </a>
                     {/block}
@@ -114,27 +140,27 @@
                         {/block}
 
                         <div class="product-info-custom-block-miniature-price-stars">
-                        {block name='product_price_and_shipping'}
-                            {if $product.show_price}
-                                <div class="product-price-and-shipping flex_cln">
-{*                                    {hook h='displayProductPriceBlock' product=$product type="before_price"}*}
-                                    <span class="price">
+                            {block name='product_price_and_shipping'}
+                                {if $product.show_price}
+                                    <div class="product-price-and-shipping flex_cln">
+                                        {*                                    {hook h='displayProductPriceBlock' product=$product type="before_price"}*}
+                                        <span class="price">
                                         {$product.price} {if $env_pro == 1}HT{else}TTC{/if}
                                     </span>
 
-                                    {if $product.has_discount}
-                                        {hook h='displayProductPriceBlock' product=$product type="old_price"}
-                                        <span class="regular-price">{$product.regular_price}{if $env_pro == 1}HT{else}TTC{/if}</span>
-                                    {/if}
+                                        {if $product.has_discount}
+                                            {hook h='displayProductPriceBlock' product=$product type="old_price"}
+                                            <span class="regular-price">{$product.regular_price}{if $env_pro == 1}HT{else}TTC{/if}</span>
+                                        {/if}
 
-{*                                    {hook h='displayProductPriceBlock' product=$product type='unit_price'}*}
+                                        {*                                    {hook h='displayProductPriceBlock' product=$product type='unit_price'}*}
 
-{*                                    {hook h='displayProductPriceBlock' product=$product type='weight'}*}
-                                </div>
-                            {/if}
-                        {/block}
+                                        {*                                    {hook h='displayProductPriceBlock' product=$product type='weight'}*}
+                                    </div>
+                                {/if}
+                            {/block}
 
-                        <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
+                            <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
                         </div>
 
                         {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')}
