@@ -593,9 +593,6 @@ abstract class ProductListingFrontController extends ProductListingFrontControll
      */
     protected function getAjaxProductSearchVariables()
     {
-        if (!empty($data['products']) && is_array($data['products'])) {
-            $data['products'] = $this->prepareProductArrayForAjaxReturn($data['products']);
-        }
 
         $display_espace_pro = Configuration::get('CKC_DISPLAY_EP');
 
@@ -631,6 +628,10 @@ abstract class ProductListingFrontController extends ProductListingFrontControll
             ],
             $search
         );
+
+        if (!empty($data['products']) && is_array($data['products'])) {
+            $data['products'] = $this->prepareProductArrayForAjaxReturn($data['products']);
+        }
 
         return $data;
     }
