@@ -56,17 +56,17 @@ $(document).ready(function () {
             let filterTitle = $('<div class="filter-toggle"><span>Filtres</span> <span class="chevron"></span></div>');
 
             // Insérer le titre avant la card-header
-            $('#PM_ASBlock_1 .card-header').before(filterTitle);
+            $('.PM_ASBlockOutput .card .card-header').before(filterTitle);
 
             // Cacher les filtres par défaut
-            $('#PM_ASBlock_1 .card-block').hide();
+            $('.PM_ASBlockOutput .card-block').hide();
             $(".elementor-element-6cb0601").hide();
             $(".elementor-element-8e5dd50").hide();
         }
 
         // Afficher le toggle et gérer le clic
         $('.filter-toggle').show().click(function () {
-            $('#PM_ASBlock_1 .card-block').slideToggle();
+            $('.PM_ASBlockOutput .card-block').slideToggle();
             $(".elementor-element-6cb0601").slideToggle();
             $(".elementor-element-8e5dd50").slideToggle();
             $('.chevron').toggleClass('open');
