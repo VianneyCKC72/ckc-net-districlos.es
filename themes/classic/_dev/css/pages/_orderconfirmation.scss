@@ -16,6 +16,16 @@
   #order-items{
     padding-right: 0;
     padding-left: 0;
+    .image img {
+      max-width: 80px;
+    }
+    .details{
+      display: flex;
+      align-items: center;
+    }
+    .qty{
+      height: 100%;
+    }
     table.order-confirmation-total{
       background-color: #F6F2EB;
       border-radius: 4px 4px 0 0;

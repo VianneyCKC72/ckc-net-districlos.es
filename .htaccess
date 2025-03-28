@@ -253,7 +253,6 @@ RewriteRule cloture-aluminium-fix-au-detail/1141-platine-aluminium.html /cloture
 
 RewriteRule visiophonie/1264-interphone-came.html /visiophonie/1266-visiophone-came-xts.html [L,R=301]
 RewriteRule 170-portails-aluminium /169-portail-aluminium [L,R=301]
-RewriteRule nous-contacter /contactez-nous [L,R=301]
 RewriteRule haie-en-brins/310-2139-haie-artificielle-126-brins-supra.html /haie-en-brins/1105-11768672-haie-artificielle-en-brins.html [L,R=301]
 RewriteRule haie-en-brins/277-1202-haie-artificielle-110-brins.html /haie-en-brins/1105-11768671-haie-artificielle-en-brins.html [L,R=301]
 RewriteRule haie-en-brins/789-11209868-haie-artificielle-243-brins.html /haie-en-brins/1105-11768673-haie-artificielle-en-brins.html [L,R=301]

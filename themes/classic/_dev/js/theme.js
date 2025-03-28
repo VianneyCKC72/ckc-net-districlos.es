@@ -11593,6 +11593,9 @@ document.addEventListener('DOMContentLoaded', function () {
             toggleBtn.classList.toggle('is-visible', !isVisible);
         });
     });
+
+    $('input.form-control[disabled]').val(''); // vide le champ texte stylisé
+
 });
 
 

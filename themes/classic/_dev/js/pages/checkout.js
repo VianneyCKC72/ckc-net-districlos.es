@@ -4,9 +4,10 @@ $(document).ready(function () {
         // Supprimer le doublon des boutons sociaux
         $('#checkout-guest-form .ets_solo_social_wrapper:not(:first)').remove();
 
-        // Déplacer "Recevoir les bons plans et promotions par SMS"
-        if ($('input[name="sms_optin"]').length && $('input[name="customer_privacy"]').length) {
-            $('input[name="sms_optin"]').closest('.form-group.row').insertAfter($('input[name="customer_privacy"]').closest('.form-group'));
+        // Déplacer "Recevoir les bons plans et promotions par SMS" après la checkbox newsletter
+        if ($('input[name="sms_optin"]').length && $('input[name="newsletter"]').length) {
+            $('input[name="sms_optin"]').closest('.form-group.row')
+                .insertAfter($('input[name="newsletter"]').closest('.form-group'));
         }
 
         // Vérifier et déplacer les boutons Facebook / Google si nécessaire
@@ -28,46 +29,42 @@ $(document).ready(function () {
             }
         });
 
-        // ---- Mise à jour du texte "Connectez-vous" ou "Créez un compte" ----
-
+        // Mise à jour du texte "Connectez-vous" ou "Créez un compte"
         function updateAccountSwitch() {
             let activeTab = $(".tab-pane.active").attr("id");
             let switchContainer = $(".account-switch");
 
             if (activeTab === "checkout-login-form") {
                 switchContainer.html(`
-<h2 class="sous-titre">Connexion</h2>
-                    <p>
-                        Pas encore de compte ?
-                        <a href="#checkout-guest-form" data-toggle="tab" role="tab" aria-controls="checkout-guest-form">
-                            Créez un compte →
-                        </a>
-                    </p>
-                `);
+                <h2 class="sous-titre">Connexion</h2>
+                <p>
+                    Pas encore de compte ?
+                    <a href="#checkout-guest-form" data-toggle="tab" role="tab" aria-controls="checkout-guest-form">
+                        Créez un compte →
+                    </a>
+                </p>
+            `);
             } else {
                 switchContainer.html(`
-<h2 class="sous-titre">Créer un compte</h2>
-                    <p>
-                        Vous avez déjà un compte ?
-                        <a href="#checkout-login-form" data-toggle="tab" role="tab" aria-controls="checkout-login-form">
-                            Connectez-vous →
-                        </a>
-                    </p>
-                `);
+                <h2 class="sous-titre">Créer un compte</h2>
+                <p>
+                    Vous avez déjà un compte ?
+                    <a href="#checkout-login-form" data-toggle="tab" role="tab" aria-controls="checkout-login-form">
+                        Connectez-vous →
+                    </a>
+                </p>
+            `);
             }
 
-            // Réattacher les événements après mise à jour du DOM
             $('a[data-toggle="tab"]').off("click").on("click", function () {
                 setTimeout(updateAccountSwitch, 300);
             });
         }
 
-        // Écoute les changements d'onglet
         $('a[data-toggle="tab"]').on("shown.bs.tab", function () {
             updateAccountSwitch();
         });
 
-        // Mise à jour au chargement de la page
         updateAccountSwitch();
 
         if (typeof default_address_id != 'undefined') {
@@ -81,15 +78,16 @@ $(document).ready(function () {
                 }
             })
         }
-        $(".payment-options .payment-option label span").each(function(){
+
+        $(".payment-options .payment-option label span").each(function () {
             if ($(this).text() == 'Payer par Carte de crédit') {
                 $(this).after('<img style="width: 40px;" src="/themes/classic/assets/img/payment/mastercard.png" alt="Mastercard">')
                 $(this).after('<img style="width: 40px;" src="/themes/classic/assets/img/payment/visa.png" alt="Visa">')
                 $(this).after('<img style="width: 40px; margin-left: 15px;" src="/themes/classic/assets/img/payment/cb.png" alt="Carte Bleue">')
             }
-        })
-
+        });
     }
+
 
     if ($('body').hasClass('page-cart')) {
 

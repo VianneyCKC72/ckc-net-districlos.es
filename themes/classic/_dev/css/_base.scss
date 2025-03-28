@@ -5103,7 +5103,9 @@ form section .form-informations-title {
   margin-bottom: 1rem;
   font-size: 1.25rem;
 }
-
+.payment-options .custom-radio {
+  margin-top: 10px !important;
+}
 .custom-radio {
   position: relative;
   display: inline-block;
@@ -5114,7 +5116,7 @@ form section .form-informations-title {
   cursor: pointer;
   background-color: $sand-light-color;
   border-radius: 50%;
-  margin-top: 10px !important;
+  margin-top: 0px;
   margin-bottom: auto;
   &.white {
     background-color: #fff;
