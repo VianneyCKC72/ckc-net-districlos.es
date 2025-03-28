@@ -3,7 +3,18 @@
     display: none;
   }
 }
-
+#my-account, #identity, .page-addresses, #order-slip, #history.page-history, #discount.page-discount{
+  @media (max-width: 767px){
+    .small_container {
+      .content_right {
+        padding-left: 0;
+      }
+      #nav_account, .row.links {
+        margin: 0 15px 20px;
+      }
+    }
+  }
+}
 .small_container {
   max-width: 1420px;
   margin: 0 auto;
