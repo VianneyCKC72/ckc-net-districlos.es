@@ -190,4 +190,8 @@ $(document).ready(function () {
         });
     }
 
+    if ($('body').hasClass('page-order') && $(window).width() <= 767) {
+        var orderButton = $("#payment-confirmation.js-payment-confirmation").clone()
+        orderButton.insertAfter($("form#conditions-to-approve"))
+    }
 });

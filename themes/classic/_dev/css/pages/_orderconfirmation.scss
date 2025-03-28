@@ -75,4 +75,9 @@
   .definition-list dl dd:nth-of-type(even), .definition-list dl dt:nth-of-type(even) {
     background: #F6F2EB;
   }
+  @media (max-width: 767px){
+    .featured-products{
+      display: none;
+    }
+  }
 }

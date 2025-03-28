@@ -11578,6 +11578,13 @@ $(document).ready(function () {
                 animationLoop: false
             })
     })
+
+    if($("body").hasClass("elementor-page-21070101")){
+        if($("section#content").hasClass("page-cms-21")){
+            var pageTitle = $("section.page-cms-21").prev()
+            pageTitle.insertBefore($("#content-wrapper.js-content-wrapper .container"))
+        }
+    }
 });
 
 document.addEventListener('DOMContentLoaded', function () {
