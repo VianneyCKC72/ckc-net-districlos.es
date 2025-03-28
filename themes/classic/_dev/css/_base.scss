@@ -513,6 +513,9 @@ small {
   font-size: 13px;
   line-height: 1.5;
   font-weight: 400;
+  @media (max-width: 420px) {
+    font-size: 11px;
+  }
 }
 .thin {
   font-size: 10px;
@@ -6133,6 +6136,9 @@ ul {
   -ms-flex-pack: start;
   justify-content: flex-start;
   row-gap: 4.5rem;
+  @media (max-width: 460px) {
+    row-gap: 2.5rem;
+  }
 }
 
 #products .products-section-title,
@@ -6244,6 +6250,9 @@ ul {
   justify-content: flex-start;
   .price {
     font-size: 25px;
+    @media (max-width: 768px) {
+      font-size: 18px;
+    }
     font-weight: 700;
     color:$black;
     &.has-discount {
@@ -6306,6 +6315,12 @@ ul {
   bottom: 0;
   height: 100%;
   padding: 20px 20px 0 20px;
+  @media (max-width: 768px) {
+    padding: 10px 10px 0;
+  }
+  @media (max-width: 420px) {
+    padding: 5px 5px 0;
+  }
   a,
   h2,
   p,
@@ -6316,6 +6331,9 @@ ul {
     font-weight: 500;
     color: $white;
     padding: 12px 28px !important;
+    @media (max-width: 420px) {
+      padding: 12px 18px !important;
+    }
     align-self: flex-start;
   }
 }
@@ -8437,6 +8455,9 @@ form
   @media only screen and (max-width: 1068px) {
     padding-left: 10px;
     padding-right: 10px;
+  }
+  @media only screen and (max-width: 768px) {
+    padding-bottom: 10px;
   }
 }
 

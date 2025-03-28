@@ -1,24 +1,73 @@
 #index {
-  @media (max-width: 991px) {
-    .flexslider {
-      min-height: auto !important;
-    }
+
+  #elm-banner-services {
+    width: 100%;
   }
-
-  @media (max-width: 768px) {
-
-  }
-
 
   .swiper-slide {
-    height : auto;
+    height: auto;
   }
-  .swiper-slide .js-product.product  {
-    height:100%
+
+  .swiper-slide .js-product.product {
+    height: 100%
   }
 
   .ce-widgets-space--gap > .elementor-column-wrap > .elementor-widget-wrap {
     gap: var(--ce-widgets-space, 0px);
+  }
+
+  .block-home-configurateur {
+    .card__bg-image .content {
+      height: 342px;
+      @media only screen and (max-width: 1620px) {
+        gap: 6px;
+        padding: 20px 20px 15px;
+        height: 271px;
+      }
+      @media only screen and (max-width: 768px) {
+        height: 216px;
+      }
+    }
+  }
+
+  .banner-services .elementor-widget-container {
+    width: 100%;
+  }
+
+  .paiement_plusieurs_fois {
+    height: 21px;
+    margin-top: 2px;
+    margin-left: 2px;
+    image-rendering: auto;
+  }
+
+  .elementor-carousel-wrapper.swiper .swiper-button-next {
+    right: -15px;
+    height: 35px !important;
+    width: 35px !important;
+  }
+
+  .elementor-carousel-wrapper.swiper .swiper-button-prev {
+    left: -15px;
+    height: 35px !important;
+    width: 35px !important;
+  }
+
+  .two-col-home-block-magasin {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .home-texte-customs-magasins {
+    max-width: 362px;
+
+  }
+
+  #liste-category-home .btn-primary-arrow {
+    position: absolute;
+    border: 0;
+    bottom: 20px;
   }
 
   @media (max-width: 1024px) {
@@ -68,7 +117,16 @@
       }
     }
   }
-
+  @media (max-width: 991px) {
+    .flexslider {
+      min-height: auto !important;
+    }
+    .block-reassurance-item {
+      .service p {
+        font-size: 14px;
+      }
+    }
+  }
   @media (max-width: 768px) {
     #liste-category-home {
       .elementor-container {
@@ -79,74 +137,49 @@
 
       #bloc-seo-footer .elementor-row {
         flex-direction: column;
-        .elementor-col-50{
+
+        .elementor-col-50 {
           width: 100%;
           margin-bottom: 20px;
         }
-        .elementor-widget-container{
+
+        .elementor-widget-container {
           padding: 0;
         }
       }
     }
+    #block-payer-plusieurs-fois {
+      font-size: 14px;
+    }
   }
-
   @media (max-width: 460px) {
     #liste-category-home {
       .elementor-container {
         .elementor-top-column {
           flex: 0 0 80%;
         }
+        .elementor-row {
+          gap: 15px;
+        }
       }
     }
-  }
 
-
-
-  .block-home-configurateur {
-    .card__bg-image .content {
-      height: 342px;
-      @media only screen and (max-width: 1620px) {
-        gap: 6px;
-        padding: 20px 20px 15px;
-        height: 271px;
-      }
-      @media only screen and (max-width: 768px) {
-        height: 216px;
+    #footer .elementor-social-icon {
+      font-size:18px;
+    }
+    #liste-category-home .elementor-widget-call-to-action {
+      .elementor-cta-content {
+        min-height: 240px;
       }
     }
-  }
-  .banner-services .elementor-widget-container{
-    width: 100%;
-  }
-  .paiement_plusieurs_fois {
-    height: 21px;
-    margin-top: 2px;
-    margin-left: 2px;
-    image-rendering: auto;
-  }
-  .elementor-carousel-wrapper.swiper .swiper-button-next{
-    right: -15px;
-    height: 35px !important;
-    width: 35px !important;
-  }
-  .elementor-carousel-wrapper.swiper .swiper-button-prev{
-    left: -15px;
-    height: 35px !important;
-    width: 35px !important;
-  }
-  .two-col-home-block-magasin {
-    display:flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .home-texte-customs-magasins {
-    max-width: 362px;
-
-  }
-  #liste-category-home .btn-primary-arrow {
-    position: absolute;
-    border: 0;
-    bottom: 20px;
+    .banner-services {
+      .service {
+        align-items: center;
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+    }
   }
 
 }
