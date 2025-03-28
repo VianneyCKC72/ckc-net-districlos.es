@@ -109,6 +109,7 @@
 
   {block name='hook_order_confirmation_2'}
     <section id="content-hook-order-confirmation-footer">
+      {hook h='CETemplate' id=16}
       {hook h='displayOrderConfirmation2'}
     </section>
   {/block}
