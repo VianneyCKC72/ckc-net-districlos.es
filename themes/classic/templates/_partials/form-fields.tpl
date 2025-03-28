@@ -32,9 +32,15 @@
     <div class="form-group form-group-{$field.name} form-group-type-{$field.type}  {if !empty($field.errors)}has-error{/if}">
 
         {if $field.type !== 'checkbox'}
-            <label class="form-control-label{if $field.required} required{/if}" for="field-{$field.name}">
-                {$field.label}
-            </label>
+            {if $field.label == "Alias" && {$field.name} == "alias"}
+                <label class="form-control-label{if $field.required} required{/if}" for="field-{$field.name}">
+                    Titre de votre adresse
+                </label>
+            {else}
+                <label class="form-control-label{if $field.required} required{/if}" for="field-{$field.name}">
+                    {$field.label}
+                </label>
+            {/if}
         {/if}
 
         <div class="js-input-column{if ($field.type === 'radio-buttons')} form-control-valign{/if}">

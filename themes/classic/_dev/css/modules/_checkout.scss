@@ -547,6 +547,15 @@ body#checkout {
   }
   form#conditions-to-approve{
     margin-top: 15px;
+    ul{
+      li {
+        @media (max-width: 631px){
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-start;
+        }
+      }
+    }
   }
   .payment-options .custom-radio{
     border: 1px solid #EAE2D7;
