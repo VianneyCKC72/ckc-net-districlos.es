@@ -25,6 +25,14 @@
     }
     .qty{
       height: 100%;
+      .row {
+        > div {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+        }
+      }
     }
     table.order-confirmation-total{
       background-color: #F6F2EB;
