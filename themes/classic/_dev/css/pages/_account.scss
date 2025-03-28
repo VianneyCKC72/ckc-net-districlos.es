@@ -25,6 +25,9 @@
     padding-left: 15px;
     padding-right: 15px;
     margin-bottom: 30px;
+    @media (max-width: 380px){
+      padding: 0;
+    }
   }
 
   .content_right {
@@ -35,7 +38,13 @@
       font-size: 35px;
       letter-spacing: 0;
       vertical-align: middle;
-
+      @media (max-width: 767px){
+        font-size: 30px;
+      }
+      @media (max-width: 380px){
+        font-weight: 700;
+        font-size: 24px;
+      }
     }
   }
 }
