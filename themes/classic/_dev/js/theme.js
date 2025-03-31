@@ -11590,6 +11590,19 @@ $(document).ready(function () {
         var newsletterBtn = $(".banner__newsletter .form-newsletter .input-newsletter button.btn-primary-light")
         newsletterBtn.insertAfter($(".banner__newsletter .form-newsletter .input-checkbox"))
     }
+    if ($(window).width() <= 767){
+
+        var socialIconFooter = $(".socialIconFooter")
+        var copyrightFooter = $(".copyrightFooter")
+        var linksBlockFooter = $(".linksBlockFooter")
+
+        $(".logoFooterContainer img").attr('src', '/img/logo-text-white.png')
+
+        if (socialIconFooter.length > 0 && copyrightFooter.length > 0 && linksBlockFooter.length > 0){
+            socialIconFooter.insertAfter(linksBlockFooter)
+            copyrightFooter.insertAfter(socialIconFooter)
+        }
+    }
 });
 
 document.addEventListener('DOMContentLoaded', function () {
