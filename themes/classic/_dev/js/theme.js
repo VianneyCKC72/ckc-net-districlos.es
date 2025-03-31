@@ -11585,6 +11585,11 @@ $(document).ready(function () {
             pageTitle.insertBefore($("#content-wrapper.js-content-wrapper .container"))
         }
     }
+
+    if ($(window).width() <= 480 && $(".banner__newsletter .form-newsletter").length > 0) {
+        var newsletterBtn = $(".banner__newsletter .form-newsletter .input-newsletter button.btn-primary-light")
+        newsletterBtn.insertAfter($(".banner__newsletter .form-newsletter .input-checkbox"))
+    }
 });
 
 document.addEventListener('DOMContentLoaded', function () {

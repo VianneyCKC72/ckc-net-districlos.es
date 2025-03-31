@@ -35,7 +35,7 @@
                             aria-labelledby="block-newsletter-label"
                             required
                     >
-                    <button class="btn btn-primary-light d-none d-md-block" name="submitNewsletter">Je m'inscris</button>
+                    <button class="btn btn-primary-light d-md-block" name="submitNewsletter">Je m'inscris</button>
                 </div>
 
                 <label class="input-checkbox">

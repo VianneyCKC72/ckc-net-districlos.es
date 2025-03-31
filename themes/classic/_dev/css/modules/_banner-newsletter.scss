@@ -64,4 +64,9 @@
             display: none;
         }
     }
+    @media (max-width: 480px) {
+        .form-newsletter button.btn-primary-light{
+            padding: 12px 40px;
+        }
+    }
 }
