@@ -73,7 +73,7 @@
       <div class="swiper-wrapper">
         {foreach from=$product.images item=image}
           <div class="swiper-slide">
-            <a href="{$image.bySize.large_default.url}" data-fancybox="product-gallery">
+            <a href="{$image.bySize.large_default.url}" data-fancybox="product-gallery" rel="nofollow">
               <picture>
                 {if !empty($image.bySize.large_default.sources.avif)}
                 <source srcset=" {$image.bySize.large_default.sources.avif}" type="image/avif">{/if}

@@ -11585,6 +11585,24 @@ $(document).ready(function () {
             pageTitle.insertBefore($("#content-wrapper.js-content-wrapper .container"))
         }
     }
+
+    if ($(window).width() <= 480 && $(".banner__newsletter .form-newsletter").length > 0) {
+        var newsletterBtn = $(".banner__newsletter .form-newsletter .input-newsletter button.btn-primary-light")
+        newsletterBtn.insertAfter($(".banner__newsletter .form-newsletter .input-checkbox"))
+    }
+    if ($(window).width() <= 767){
+
+        var socialIconFooter = $(".socialIconFooter")
+        var copyrightFooter = $(".copyrightFooter")
+        var linksBlockFooter = $(".linksBlockFooter")
+
+        $(".logoFooterContainer img").attr('src', '/img/logo-text-white.png')
+
+        if (socialIconFooter.length > 0 && copyrightFooter.length > 0 && linksBlockFooter.length > 0){
+            socialIconFooter.insertAfter(linksBlockFooter)
+            copyrightFooter.insertAfter(socialIconFooter)
+        }
+    }
 });
 
 document.addEventListener('DOMContentLoaded', function () {

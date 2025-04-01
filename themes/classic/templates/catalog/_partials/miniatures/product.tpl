@@ -45,13 +45,13 @@
                             {* Première image (cover ou fallback) *}
                             <picture class="product-image first-image">
                                 {if $product.cover}
-                                    {if !empty($product.cover.bySize.medium_default.sources.avif)}
-                                        <source srcset="{$product.cover.bySize.medium_default.sources.avif}" type="image/avif">
+                                    {if !empty($product.cover.bySize.home_default.sources.avif)}
+                                        <source srcset="{$product.cover.bySize.home_default.sources.avif}" type="image/avif">
                                     {/if}
-                                    {if !empty($product.cover.bySize.medium_default.sources.webp)}
-                                        <source srcset="{$product.cover.bySize.medium_default.sources.webp}" type="image/webp">
+                                    {if !empty($product.cover.bySize.home_default.sources.webp)}
+                                        <source srcset="{$product.cover.bySize.home_default.sources.webp}" type="image/webp">
                                     {/if}
-                                    <img src="{$product.cover.bySize.medium_default.url}"
+                                    <img src="{$product.cover.bySize.home_default.url}"
                                          alt="{if !empty($product.cover.legend)}{$product.cover.legend}{else}{$product.name|truncate:30:'...'}{/if}"
                                          loading="lazy" data-full-size-image-url="{$product.cover.large.url}"
                                          width="{$product.cover.bySize.home_default.width}"
@@ -87,13 +87,13 @@
                             {else}
                                 <picture class="product-image second-image">
                                     {if $product.cover}
-                                        {if !empty($product.cover.bySize.medium_default.sources.avif)}
-                                            <source srcset="{$product.cover.bySize.medium_default.sources.avif}" type="image/avif">
+                                        {if !empty($product.cover.bySize.home_default.sources.avif)}
+                                            <source srcset="{$product.cover.bySize.home_default.sources.avif}" type="image/avif">
                                         {/if}
-                                        {if !empty($product.cover.bySize.medium_default.sources.webp)}
-                                            <source srcset="{$product.cover.bySize.medium_default.sources.webp}" type="image/webp">
+                                        {if !empty($product.cover.bySize.home_default.sources.webp)}
+                                            <source srcset="{$product.cover.bySize.home_default.sources.webp}" type="image/webp">
                                         {/if}
-                                        <img src="{$product.cover.bySize.medium_default.url}"
+                                        <img src="{$product.cover.bySize.home_default.url}"
                                              alt="{if !empty($product.cover.legend)}{$product.cover.legend}{else}{$product.name|truncate:30:'...'}{/if}"
                                              loading="lazy" data-full-size-image-url="{$product.cover.large.url}"
                                              width="{$product.cover.bySize.home_default.width}"

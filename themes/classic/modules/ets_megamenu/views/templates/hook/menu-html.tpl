@@ -293,7 +293,7 @@
                     <img src="/img/menu-mobile-magasins.svg" alt="magasins" width="19px" height="19px">
                     <p>MAGASINS</p>
                 </a>
-                <a class="menu-mobile-useful-link" href="{$urls.pages.authentication}?back={$urls.current_url|urlencode}">
+                <a class="menu-mobile-useful-link" href="javascript:void(0)" onclick="window.location.href='{$urls.pages.authentication}?back={$urls.current_url|urlencode}'">
                     <img src="/img/menu-mobile-compte.svg" alt="compte" width="16px" height="19px">
                     <p>COMPTE</p>
                 </a>

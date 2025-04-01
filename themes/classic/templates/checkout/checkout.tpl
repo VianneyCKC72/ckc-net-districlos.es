@@ -43,6 +43,7 @@
         {include file='checkout/_partials/cart-summary.tpl' cart=$cart}
       {/block}
       {hook h='displayReassurance'}
+      {hook h='displayStockCheckout'}
     </div>
   </section>
 {/block}

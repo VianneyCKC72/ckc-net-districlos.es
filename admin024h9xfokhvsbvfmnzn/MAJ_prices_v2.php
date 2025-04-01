@@ -53,6 +53,41 @@ try {
 			$stmt = $conn->prepare($sql);
 			$stmt->execute(['price' => $final_price_ht, 'id_product' => $value[1]]);
 		}
+
+		if ($value[1] == 485) {
+			if ($value[2] != "") {
+				$sql = 'SELECT * FROM `ps_product_attribute` WHERE (`ps_product_attribute`.`id_product` = 1028 OR `ps_product_attribute`.`id_product` = 1027) AND `ps_product_attribute`.`reference` = :reference';
+				$stmt = $conn->prepare($sql);
+				$stmt->execute(['reference' => $value[0]]);
+				$product_attributes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+				foreach ($product_attributes as $product_attribute) {
+					$sql = 'UPDATE `ps_product` SET `price` = :price WHERE `ps_product`.`id_product` = :id_product';
+					$stmt = $conn->prepare($sql);
+					$stmt->execute(['price' => $product_price, 'id_product' => $product_attribute['id_product']]);
+
+					$sql = 'UPDATE `ps_product_shop` SET `price` = :price WHERE `ps_product_shop`.`id_product` = :id_product';
+					$stmt = $conn->prepare($sql);
+					$stmt->execute(['price' => $product_price, 'id_product' => $product_attribute['id_product']]);
+
+					$sql = 'UPDATE `ps_product_attribute_shop` SET `price` = :price WHERE `ps_product_attribute_shop`.`id_product_attribute` = :id_product_attribute';
+					$stmt = $conn->prepare($sql);
+					$stmt->execute(['price' => $set_price, 'id_product_attribute' => $product_attribute['id_product_attribute']]);
+
+					$sql = 'UPDATE `ps_product_attribute` SET `price` = :price WHERE `ps_product_attribute`.`id_product_attribute` = :id_product_attribute';
+					$stmt = $conn->prepare($sql);
+					$stmt->execute(['price' => $set_price, 'id_product_attribute' => $product_attribute['id_product_attribute']]);
+				}
+			} else {
+				$sql = 'UPDATE `ps_product` SET `price` = :price WHERE `ps_product`.`id_product` = 1028 OR `ps_product`.`id_product` = 1027';
+				$stmt = $conn->prepare($sql);
+				$stmt->execute(['price' => $final_price_ht]);
+
+				$sql = 'UPDATE `ps_product_shop` SET `price` = :price WHERE `ps_product_shop`.`id_product` = 1028 OR `ps_product_shop`.`id_product` = 1027';
+				$stmt = $conn->prepare($sql);
+				$stmt->execute(['price' => $final_price_ht]);
+			}
+		}
 	}
 
 	echo "Prix mis à jour avec succès";
