@@ -323,8 +323,10 @@ $(function () {
                         btnObj.removeClass('closed');
                         btnObj.addClass('opened');
                         wrapper.stop(true, true).addClass('active');
-                        $('.mm_menus_ul.active').removeClass('mm_menus_ul_medium');
-                        $('.mm_menus_ul.active').addClass('mm_menus_ul_big');
+                        if($(this).next().length > 0){
+                            $('.mm_menus_ul.active').removeClass('mm_menus_ul_medium');
+                            $('.mm_menus_ul.active').addClass('mm_menus_ul_big');
+                        }
                     } else {
                         btnObj.removeClass('opened');
                         btnObj.addClass('closed');
