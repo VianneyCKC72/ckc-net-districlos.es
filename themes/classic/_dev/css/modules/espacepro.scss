@@ -343,11 +343,11 @@ body.registration-pro {
 
 #authentication .row.full-width,
 #block-reassurance-custom .row {
-    background: #026473;
-    left: 50%;
-    margin-left: -50vw;
-    position: relative;
-    width: 100vw;
+  background: #026473;
+  left: 50%;
+  margin-left: -50vw;
+  position: relative;
+  width: 100vw;
   .inside {
     margin: 20px auto;
     .cont-inside {
@@ -451,6 +451,47 @@ main#page section#content {
   .espace_pro .contenair-img-auth .block-bas {
     min-width: 85%;
   }
+  .espace_pro .espace_pro #block-reassurance-custom .row .inside{
+    width: 100%;
+    .cont-inside{
+      flex-wrap: wrap;
+      flex-direction: row;
+      width: 100%;
+      gap: 25px;
+    }
+  }
+}
+@media screen and (max-width: 1024px) {
+  .espace_pro .espace_pro .contenair-img{
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-evenly;
+    img{
+      margin-bottom: 15px;
+    }
+  }
+  .registration-pro{
+    .espace_pro .register-form .js-customer-form{
+      max-width: 100%;
+    }
+  }
+
+}
+@media screen and (max-width: 991px) {
+  .espace_pro {
+    .steps-container{
+      width: 100%;
+    }
+    .steps-container::before {
+      left: 19%;
+      right: 19%;
+    }
+    #block-reassurance-custom .row .inside .cont-inside .item{
+      max-height: 290px;
+    }
+  }
 }
 
 @media screen and (max-width: 768px) {
@@ -467,5 +508,95 @@ main#page section#content {
     max-width: 1200px;
     padding-bottom: 0;
     padding-top: 40px;
+  }
+  .espace_pro .espace_pro > #content > .row{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .contenair-img-auth{
+      min-width: 100%;
+      margin-top: 50px;
+    }
+  }
+  .espace_pro .steps-container{
+    margin: 50px auto;
+    .step-text{
+      font-size: 14px;
+    }
+  }
+  .espace_pro .espace_pro h2.picto_rond_title{
+    margin-bottom: 15px;
+  }
+  .espace_pro .contenair-img-auth .img-connect{
+    min-height: 360px;
+  }
+}
+@media screen and (max-width: 480px) {
+  .espace_pro .espace_pro .steps-container{
+    flex-direction: column;
+    justify-content: center;
+    max-width: 255px;
+    .step{
+      display: flex;
+      flex-direction: row;
+      text-align: center;
+      justify-content: flex-start;
+      align-items: center;
+      margin-bottom: 25px;
+      .step-number {
+        margin-right: 15px;
+      }
+      .step-text{
+        text-align: left;
+      }
+    }
+  }
+  .espace_pro .espace_pro .steps-container::before {
+    left: 25px;
+    right: auto;
+    width: 2px;
+    height: 70%;
+  }
+  .espace_pro .espace_pro h2.picto_rond_title{
+    font-size: 25px;
+  }
+  #block-reassurance-custom {
+    .row {
+      .inside {
+        .cont-inside{
+          .item{
+            width: 80%;
+            min-height: 250px;
+          }
+        }
+      }
+    }
+  }
+  .espace_pro .espace_pro .contenair-img{
+    img{
+      max-width: 290px;
+    }
+  }
+}
+@media (max-width: 380px){
+  .espace_pro .espace_pro #login-form .cont-all-btn-login {
+    flex-direction: column;
+    align-items: center;
+    .cont-btn-submit{
+      margin-left: 0;
+      a.btn-secondary{
+        margin-left: 0;
+      }
+    }
+  }
+  .espace_pro .contenair-img-auth .avis{
+    width: 75%;
+  }
+  .espace_pro .contenair-img-auth .block-bas{
+    height: auto;
+    padding: 10px 10px 0;
+  }
+  #registration.registration-pro .already-account .inside h2{
+    font-size: 25px;
   }
 }

@@ -198,6 +198,119 @@
     color: #ff144e;
     display: block;
   }
+  .block-question.block-question-header{
+    display: none;
+  }
+}
+#header.sticky{
+  .row-header {
+    gap: 10px;
+    @media (max-width: 1096px) {
+      gap: 0;
+    }
+    @media (max-width: 768px) {
+      .menu-button.d-md-none{
+        margin-left: 20px;
+      }
+    }
+  }
+  .row-header:has(.ico.btn-espace-pro) {
+    justify-content: flex-start;
+    @media (max-width: 996px) {
+      justify-content: space-between;
+    }
+  }
+  .header-nav{
+    @media (max-width: 824px) {
+      gap: 0;
+    }
+  }
+  .displayTop {
+    gap: 25px;
+    @media (max-width: 1200px) {
+      gap: 15px;
+    }
+    @media (max-width: 824px) {
+      gap: 10px;
+    }
+  }
+  .d-none.d-md-block:has(.logo){
+    width: 131px;
+    min-width: 131px;
+  }
+  .logo {
+    max-width: 85%;
+  }
+  .block-question.block-question-header{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    max-width: 143px;
+    font-size: 14px;
+    @media (max-width: 768px) {
+      display: none;
+    }
+    > div {
+      line-height: 104%;
+    }
+    a{
+      color: $black;
+    }
+  }
+  .link-danger{
+    font-size: 14px;
+    white-space: nowrap;
+    padding-right: 10px;
+  }
+  .ybc-menu-toggle{
+    width: 135px;
+    @media (max-width: 1200px) {
+      width: 95px;
+    }
+    @media (max-width: 1040px) {
+      width: 100%;
+    }
+    .main_menu_label{
+      font-size: 14px;
+      @media (max-width: 1040px) {
+        display: none;
+      }
+    }
+  }
+  #search_widget {
+    min-width: 300px;
+    @media (min-width: 1620px) {
+      min-width: 300px;
+    }
+    @media (max-width: 1370px) {
+      min-width: 220px;
+      form{
+        input {
+          width: 200px;
+        }
+      }
+    }
+    @media (max-width: 1096px) {
+      min-width: 200px;
+    }
+  }
+  .ico.btn-espace-pro{
+    span{
+      white-space: nowrap;
+    }
+  }
+  .btn-configurateur{
+    width: 187px;
+    padding: 18px 25px;
+    .text-btn{
+      .small-text{
+        font-size: 10px;
+      }
+      .medium-text{
+        font-size: 14px;
+      }
+    }
+  }
 }
 
 // Barre de recherche visible par défaut sur desktop
