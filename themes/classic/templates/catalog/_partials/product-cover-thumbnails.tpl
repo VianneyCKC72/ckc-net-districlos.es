@@ -66,9 +66,7 @@
   {block name='product_cover'}
     <div class="swiper swiper__product-img__cover">
 
-      {* Start - Inté static *}
       <img class="tag-web-price" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
-      {* End - Inté static *}
 
       <div class="swiper-wrapper">
         {foreach from=$product.images item=image}
