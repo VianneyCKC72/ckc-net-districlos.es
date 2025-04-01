@@ -472,6 +472,12 @@ main#page section#content {
       margin-bottom: 15px;
     }
   }
+  .registration-pro{
+    .espace_pro .register-form .js-customer-form{
+      max-width: 100%;
+    }
+  }
+
 }
 @media screen and (max-width: 991px) {
   .espace_pro {
@@ -589,5 +595,8 @@ main#page section#content {
   .espace_pro .contenair-img-auth .block-bas{
     height: auto;
     padding: 10px 10px 0;
+  }
+  #registration.registration-pro .already-account .inside h2{
+    font-size: 25px;
   }
 }
