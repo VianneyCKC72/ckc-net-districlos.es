@@ -11621,6 +11621,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     $('input.form-control[disabled]').val(''); // vide le champ texte stylisé
 
+    setTimeout(function() {
+        const inputs = document.querySelectorAll(".bootstrap-filestyle input[disabled]");
+        inputs.forEach(input => {
+            if (input.value === "on") {
+                input.value = "";
+            }
+        });
+    }, 300);
 });
 
 

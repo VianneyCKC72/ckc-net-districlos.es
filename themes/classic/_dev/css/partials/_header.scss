@@ -205,17 +205,19 @@
 #header.sticky{
   .row-header {
     gap: 10px;
-    justify-content: flex-start;
     @media (max-width: 1096px) {
       gap: 0;
-    }
-    @media (max-width: 996px) {
-      justify-content: space-between;
     }
     @media (max-width: 768px) {
       .menu-button.d-md-none{
         margin-left: 20px;
       }
+    }
+  }
+  .row-header:has(.ico.btn-espace-pro) {
+    justify-content: flex-start;
+    @media (max-width: 996px) {
+      justify-content: space-between;
     }
   }
   .header-nav{
