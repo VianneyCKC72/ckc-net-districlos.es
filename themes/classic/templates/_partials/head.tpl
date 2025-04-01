@@ -72,19 +72,6 @@
   <meta name="robots" content="noindex, nofollow">
 {/if}
 
-<!-- Google Tag Manager -->
-<script>(function (w, d, s, l, i){
-    w[l]=w[l]||[];w[l].push({
-      'gtm.start':new Date().getTime(),event:'gtm.js'
-    });
-    var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
-    j.async=true;
-    j.src= 'https://cdn.cloture-discount.fr/lj59djkyo5o1ip3.js?aw='+i.replace(/^GTM-/, '')+dl;
-    f.parentNode.insertBefore(j,f);
-  })(window, document, 'script', 'dataLayer', 'GTM-T3HJWLD');
-</script>
-
-
 {block name='head_viewport'}
   <meta name="viewport" content="width=device-width, initial-scale=1">
 {/block}
@@ -105,6 +92,16 @@
 {block name='javascript_head'}
   {include file="_partials/javascript.tpl" javascript=$javascript.head vars=$js_custom_vars}
   <script defer charset="utf-8" src="https://widgets.rr.skeepers.io/product/084cf537-ed41-0a34-15e7-e45715e81af8/99f3523c-7bf8-4a88-8162-4b28805677e7.js"></script>
+
+{literal}
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-N47J9KT');</script>
+  <!-- End Google Tag Manager -->{/literal}
+
 {/block}
 
 {block name='hook_header'}

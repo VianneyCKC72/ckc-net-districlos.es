@@ -38,6 +38,11 @@
     espace_pro
 {/if} {if $page.page_name == 'registration' && $espace_pro == 1}registration-pro{/if}">
 
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N47J9KT"
+                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
   {block name='hook_after_body_opening_tag'}
     {hook h='displayAfterBodyOpeningTag'}
   {/block}
@@ -116,6 +121,12 @@
   {block name='javascript_bottom'}
     {include file="_partials/password-policy-template.tpl"}
     {include file="_partials/javascript.tpl" javascript=$javascript.bottom}
+
+      <script async type="text/javascript" src="/themes/classic/assets/js/tags.js"></script>
+      <script async type="text/javascript" src="/themes/classic/assets/js/lib/crypto-js.min.js"></script>
+      <script async type="text/javascript" src="/themes/classic/assets/js/lib/jquery.inview.min.js"></script>
+      <script async type="text/javascript" src="/themes/classic/assets/js/lib/js.cookie.min.js"></script>
+      {*<a class="top_button" href="#" style="">&nbsp;</a>*}
   {/block}
 
   {block name='hook_before_body_closing_tag'}
