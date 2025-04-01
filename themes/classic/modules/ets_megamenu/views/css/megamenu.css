@@ -3129,7 +3129,8 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
 
 .mm_columns_ul.mm_columns_ul_tab.active,
 .mm_columns_ul.mm_columns_ul_tab,
-.mm_columns_ul.mm_columns_ul_tab  .mm_tabs_li .mm_tab_name{
+.mm_columns_ul.mm_columns_ul_tab  .mm_tabs_li .mm_tab_name,
+li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name {
     background:#026473 !important;
     color:white !important;
     @media (max-width: 767px){
@@ -3138,6 +3139,12 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
     }
 }
 
+li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name a {
+    color:white;
+}
+
+li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name:hover,
+li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name.active,
 .mm_columns_ul.mm_columns_ul_tab  .mm_tabs_li:hover  .mm_tab_name ,
 .mm_columns_ul.mm_columns_ul_tab  .mm_tabs_li:active  .mm_tab_name,
 .mm_columns_ul.mm_columns_ul_tab > li:hover,

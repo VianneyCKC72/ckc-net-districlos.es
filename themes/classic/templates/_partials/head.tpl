@@ -68,6 +68,23 @@
   {/block}
 {/block}
 
+{if $page.page_name == 'module-responsivegallery-galleryitems'}
+  <meta name="robots" content="noindex, nofollow">
+{/if}
+
+<!-- Google Tag Manager -->
+<script>(function (w, d, s, l, i){
+    w[l]=w[l]||[];w[l].push({
+      'gtm.start':new Date().getTime(),event:'gtm.js'
+    });
+    var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+    j.async=true;
+    j.src= 'https://cdn.cloture-discount.fr/lj59djkyo5o1ip3.js?aw='+i.replace(/^GTM-/, '')+dl;
+    f.parentNode.insertBefore(j,f);
+  })(window, document, 'script', 'dataLayer', 'GTM-T3HJWLD');
+</script>
+
+
 {block name='head_viewport'}
   <meta name="viewport" content="width=device-width, initial-scale=1">
 {/block}

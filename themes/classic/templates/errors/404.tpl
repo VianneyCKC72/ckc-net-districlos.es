@@ -27,14 +27,24 @@
 {block name="breadcrumb"}{/block}
 
 {block name='page_title'}
-  {$page.title}
+  {* {$page.title} *}
+  <h1>404</h1>
+
+  <div class="content__404">
+    <p><strong>Oups !</strong></p>
+    <p>La page que vous cherchez n'a pas été trouvée.</p>
+
+    <a href="/" class="btn btn-primary">Retour à l'accueil</a>
+
+  </div>
+
 {/block}
 
-{capture assign="errorContent"}
+{* {capture assign="errorContent"}
   <h4>{l s='No products available yet' d='Shop.Theme.Catalog'}</h4>
   <p>{l s='Stay tuned! More products will be shown here as they are added.' d='Shop.Theme.Catalog'}</p>
-{/capture}
+{/capture} *}
 
-{block name='page_content_container'}
+{* {block name='page_content_container'}
   {include file='errors/not-found.tpl' errorContent=$errorContent}
-{/block}
+{/block} *}
