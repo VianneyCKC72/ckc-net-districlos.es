@@ -2040,6 +2040,10 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         transform: translateY(-50%);
         -webkit-transform: translateY(-50%);
     }
+
+    li.menu-mobile-custom-container-links.mm_menus_li.distri_megamenu.mm_sub_align_full.info_menu_mobile {
+        padding-left:5px;
+    }
 }
 
 @media (min-width: 768px) {
