@@ -227,6 +227,26 @@ $(function () {
             }
         });
 
+        $(document).on('click', 'body.menu-opened #wrapper', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var wrapper = $('.mm_menus_ul');
+            var $this = $('.menu-button.d-none.d-md-block .ybc-menu-toggle')
+
+            if ($this.hasClass('opened')) {
+                var btnObj = $this;
+                btnObj.removeClass('opened').addClass('closed');
+                $('body').removeClass('menu-opened');
+
+                wrapper.stop(true, true).removeClass('active');
+                $('#netreviewsWidgetNum28990widget03av').show();
+
+                if ($('.transition_slide.transition_default').length !== 0) {
+                    wrapper.hide();
+                }
+            }
+        });
+
         $('.ybc-menu-vertical-button, .mm_menus_back').on('click', function () {
             var wrapper = $('.mm_menus_ul');
             if ($(this).hasClass('closed')) {

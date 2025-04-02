@@ -27,3 +27,28 @@
   line-height: 16px;
   color:black;
 }
+a.nav-link.avisVerfies{
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  .avis-verifie-logo{
+    width: 81px;
+    display: flex;
+    flex-direction: row;
+    margin-right: 15px;
+    span{
+      color: #000;
+      line-height: 13px;
+    }
+    svg{
+      margin-right: 2px;
+    }
+  }
+}
+a.nav-link.avisVerfies.active{
+  .avis-verifie-logo{
+    span {
+      color: #fff;
+    }
+  }
+}
