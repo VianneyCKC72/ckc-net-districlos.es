@@ -239,29 +239,29 @@ function executeEvent(name, replay = false) {
     }
     else if(name === 'DET')
     {
-        var productDetailsData = document.querySelector('#product-details').dataset;
+        var productDetailsData = JSON.parse(document.querySelector('#product-details').dataset.product);
 
         pushEvent('detail_produit', {
             'actionField': {'list': getListName() },
             'detail': {
                 'products': [{
-                    'name': productDetailsData.productName,
-                    'id': productDetailsData.idProduct,
-                    'price': parseFloat(productDetailsData.productPrice.replace(/\s/g,'').replace('€', '').replace(',', '.')),
-                    'reference': productDetailsData.productReference,
-                    'category': productDetailsData.productCategory,
-                    'variant': productDetailsData.idProductAttribute
+                    'name': productDetailsData.name,
+                    'id': productDetailsData.id_product,
+                    'price': parseFloat(productDetailsData.price_amount.replace(/\s/g,'').replace('€', '').replace(',', '.')),
+                    'reference': productDetailsData.reference,
+                    'category': productDetailsData.category_name,
+                    'variant': productDetailsData.id_product_attribute
                 }]
             }
         }, 'ViewContent', {
             'currency': 'EUR',
-            'content_name': productDetailsData.productName,
+            'content_name': productDetailsData.name,
             'content_type': 'product',
             'contents': [
                 {
-                    'id': productDetailsData.idProduct,
-                    'category': productDetailsData.productCategory,
-                    'item_price': parseFloat(productDetailsData.productPrice.replace(/\s/g,'').replace('€', '').replace(',', '.'))
+                    'id': productDetailsData.id_product,
+                    'category': productDetailsData.category_name,
+                    'item_price': parseFloat(productDetailsData.price_amount.replace(/\s/g,'').replace('€', '').replace(',', '.'))
                 }
             ]
         });
