@@ -247,7 +247,7 @@ function executeEvent(name, replay = false) {
                 'products': [{
                     'name': productDetailsData.name,
                     'id': productDetailsData.id_product,
-                    'price': parseFloat(productDetailsData.price_amount.replace(/\s/g,'').replace('€', '').replace(',', '.')),
+                    'price': productDetailsData.price_amount,
                     'reference': productDetailsData.reference,
                     'category': productDetailsData.category_name,
                     'variant': productDetailsData.id_product_attribute
@@ -261,7 +261,7 @@ function executeEvent(name, replay = false) {
                 {
                     'id': productDetailsData.id_product,
                     'category': productDetailsData.category_name,
-                    'item_price': parseFloat(productDetailsData.price_amount.replace(/\s/g,'').replace('€', '').replace(',', '.'))
+                    'item_price': productDetailsData.price_amount
                 }
             ]
         });
