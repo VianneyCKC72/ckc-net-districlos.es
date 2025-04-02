@@ -18,11 +18,75 @@
  * (c) 2022 CKC-NET
  */
 
+/**
+ * CKC Tags Management script
+ * Date : 20/06/2022
+ * Author : CKC-NET / Adrien CABAUD (adrien@ckc-net.com)
+ *
+ * Related files (added or edited) :
+ * - /themes/auto_store/templates/catalog/_partials/miniatures/product.tpl
+ * - /themes/auto_store/templates/catalog/_partials/miniatures/product-listgrid.tpl
+ * - /themes/auto_store/templates/catalog/_partials/product-details.tpl
+ * - /themes/auto_store/templates/checkout/order-confirmation.tpl
+ * - /themes/auto_store/templates/_partials/footer.tpl
+ * - /themes/auto_store/assets/js/tags.js
+ * - /themes/auto_store/assets/js/lib/jquery.inview.min.js
+ * - /themes/auto_store/assets/js/lib/js.cookie.min.js
+ * - /modules/ckc_configurator/views/js/front.js
+ * - /webservice/fbConversionGateway.php
+ *
+ * (c) 2022 CKC-NET
+ */
+
 // Constants
 const currentPage = prestashop.page.page_name;
 const loggedCustomer = prestashop.customer;
+let loggedCustomerPhone = null;
+let firstAddress = {};
 const loggedCustomerState = (localStorage.getItem('customer_logged') === 'true');
 const loggedCustomerSignup = (localStorage.getItem('customer_signup') === 'true');
+// Defining customer phone (either phone or phone_mobile)
+if(Object.keys(loggedCustomer.addresses).length > 0) {
+    firstAddress = loggedCustomer.addresses[Object.keys(loggedCustomer.addresses)[0]];
+    loggedCustomerPhone = firstAddress.phone || firstAddress.phone_mobile;
+}
+
+
+// Checkout steps
+const checkoutSteps = {
+    'checkout-personal-information-step': 2,
+    'checkout-addresses-step': 3,
+    'checkout-delivery-step': 4,
+    'checkout-payment-step': 5
+};
+
+// Define common dataLayer structure
+let dataLayerStructure = {
+    'event': 'pageview',
+    'google_tag_params': {
+        'ecomm_pagetype': getPageType(),
+        'ecomm_prodid': getProductIds(),
+        'ecomm_totalvalue': getTotalValue()
+    },
+    'persister_firstname': loggedCustomer.firstname || '',
+    'persister_firstname_hashed': loggedCustomer.firstname ? CryptoJS.SHA256(loggedCustomer.firstname).toString() : '',
+    'persister_lastname': loggedCustomer.lastname || '',
+    'persister_lastname_hashed': loggedCustomer.lastname ? CryptoJS.SHA256(loggedCustomer.lastname).toString() : '',
+    'persister_email': loggedCustomer.email || '',
+    'persister_email_hashed': loggedCustomer.email ? CryptoJS.SHA256(loggedCustomer.email).toString() : '',
+    'persister_phone': loggedCustomerPhone ? loggedCustomerPhone : '',
+    'persister_phone_hashed': loggedCustomerPhone ? CryptoJS.SHA256(loggedCustomerPhone).toString() : '',
+    'persister_city': firstAddress.city || '',
+    'persister_country': firstAddress.country_iso || '',
+    'persister_postal_code': firstAddress.postcode || '',
+    'userId': loggedCustomer.id,
+    'userLogged': loggedCustomer.is_logged,
+    'newClient': getNewClientStatus(),
+    'conseiller': (typeof window.isAdminConnected !== 'undefined' && window.isAdminConnected)
+};
+
+// Push event on GTM datalayer
+dataLayer.push(dataLayerStructure);
 
 // Watch customer logged state change
 if(!loggedCustomerState && loggedCustomer.is_logged) {
@@ -35,13 +99,6 @@ if(!loggedCustomerState && loggedCustomer.is_logged) {
     localStorage.setItem('customer_signup', false);
 }
 
-// Checkout steps
-const checkoutSteps = {
-    'checkout-personal-information-step': 2,
-    'checkout-addresses-step': 3,
-    'checkout-delivery-step': 4,
-    'checkout-payment-step': 5
-};
 
 // 1: Global events
 executeEvent('IMP5');
@@ -76,6 +133,96 @@ switch(currentPage) {
     case 'configurator':
         executeEvent('CFG');
         break;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    $(document).ajaxSuccess(function(event, xhr, settings) {
+        var data = xhr.responseJSON;
+        if (settings.url.includes('/panier') && settings.data && settings.data.includes('add=')) {
+            var productData = getProductData(data.id_product, data.id_product_attribute);
+
+            dataLayer.push({ ecommerce: null });
+            dataLayer.push({
+                event: 'add_to_cart',
+                ecommerce: {
+                    currency: 'EUR',
+                    value: productData.price,
+                    items: [
+                        {
+                            item_id: productData.id,
+                            item_sku: productData.sku,
+                            item_name: productData.name,
+                            item_category: productData.category,
+                            quantity: data.quantity,
+                            price: productData.price,
+                            discount: productData.discount || 0,
+                        }
+                    ]
+                }
+            });
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    var contactForm = document.querySelector('form#demo-form');
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', function (event) {
+            var formData = new FormData(contactForm);
+            var formObject = {};
+
+            formData.forEach(function (value, key) {
+                formObject[key] = value;
+            });
+
+            let objet = "Demande de devis";
+            if (formObject['id_contact'] === '1') {
+                objet = "Webmaster";
+            }else if (formObject['id_contact'] === '3') {
+                objet = "Service livraison";
+            }else if (formObject['id_contact'] === '4') {
+                objet = "Service SAV";
+            }
+            dataLayer.push({
+                event: 'contact_form',
+                objet: objet || '',
+                mail: formObject['from'] || '',
+                phone: formObject['phone'] || ''
+            });
+        });
+    }
+});
+
+function getProductData(productId, productAttributeId) {
+    var productData = {};
+
+    var productElement = document.querySelector('#product_page_product_id');
+    if (productElement) {
+        productData = {
+            id: productElement.value,
+            sku: productElement.value + (productAttributeId ? '_' + productAttributeId : ''),
+            name: document.querySelector('.product-title').innerText.trim(),
+            category: document.querySelector('[data-product-category]').dataset.productCategory || '',
+            price: getTotalValue() || 0,
+            discount: getDiscount() || 0
+        };
+    }
+
+    // Fallback in case the data is not found in the DOM
+    if (!productData.id) {
+        productData = {
+            id: productId,
+            sku: productId + (productAttributeId ? '_' + productAttributeId : ''),
+            item_sku: productAttributeId,
+            name: '',
+            category: '',
+            price: 0,
+            discount: 0
+        };
+    }
+
+    return productData;
 }
 
 // Execute event
@@ -144,12 +291,44 @@ function executeEvent(name, replay = false) {
     }
     else if(name === 'IMP3')
     {
-        var sameCategoryContainer = document.querySelector('ul#productscategory-carousel');
-        if (sameCategoryContainer) {
-            var sameCategoryList = sameCategoryContainer.querySelectorAll('li.item');
+        // var sameCategoryContainer = document.querySelector('ul#productscategory-carousel');
+        // if (sameCategoryContainer) {
+        //     var sameCategoryList = sameCategoryContainer.querySelectorAll('li.item');
+        //     var products = [];
+        //
+        //     sameCategoryList.forEach(function(el, position) {
+        //         var data = el.querySelector('article.product-miniature').dataset;
+        //         products.push({
+        //             'name': data.productName,
+        //             'id': data.idProduct,
+        //             'price': parseFloat(data.productPrice.replace(/\s/g,'').replace('€', '').replace(',', '.')),
+        //             'reference': data.productReference,
+        //             'category': data.productCategory,
+        //             'variant': data.idProductAttribute,
+        //             'list': 'Même catégorie',
+        //             'position': position + 1
+        //         });
+        //     });
+        //
+        //     sameCategoryContainer.addEventListener('inview', function(event) {
+        //         var isInView = event.detail[0];
+        //         if (isInView) {
+        //             pushEvent('impression_même_catégorie', {
+        //                 'impressions': products
+        //             });
+        //             sameCategoryContainer.removeEventListener('inview', arguments.callee);
+        //         }
+        //     });
+        // }
+    }
+    else if(name === 'IMP4')
+    {
+        var crossSellContainer = document.querySelector('ul#crosssell-carousel');
+        if (crossSellContainer) {
+            var crossSellList = crossSellContainer.querySelectorAll('li.item');
             var products = [];
 
-            sameCategoryList.forEach(function(el, position) {
+            crossSellList.forEach(function(el, position) {
                 var data = el.querySelector('article.product-miniature').dataset;
                 products.push({
                     'name': data.productName,
@@ -158,51 +337,21 @@ function executeEvent(name, replay = false) {
                     'reference': data.productReference,
                     'category': data.productCategory,
                     'variant': data.idProductAttribute,
-                    'list': 'Même catégorie',
+                    'list': 'Similaire',
                     'position': position + 1
                 });
             });
 
-            sameCategoryContainer.addEventListener('inview', function(event) {
+            crossSellContainer.addEventListener('inview', function(event) {
                 var isInView = event.detail[0];
                 if (isInView) {
-                    pushEvent('impression_même_catégorie', {
+                    pushEvent('impression_similaires', {
                         'impressions': products
                     });
-                    sameCategoryContainer.removeEventListener('inview', arguments.callee);
+                    crossSellContainer.removeEventListener('inview', arguments.callee);
                 }
             });
         }
-    }
-    else if(name === 'IMP4')
-    {
-        // var crossSellContainer = document.querySelector('ul#crosssell-carousel');
-        // var crossSellList = crossSellContainer.querySelectorAll('li.item');
-        // var products = [];
-        //
-        // crossSellList.forEach(function(el, position) {
-        //     var data = el.querySelector('article.product-miniature').dataset;
-        //     products.push({
-        //         'name': data.productName,
-        //         'id': data.idProduct,
-        //         'price': parseFloat(data.productPrice.replace(/\s/g,'').replace('€', '').replace(',', '.')),
-        //         'reference': data.productReference,
-        //         'category': data.productCategory,
-        //         'variant': data.idProductAttribute,
-        //         'list': 'Similaire',
-        //         'position': position + 1
-        //     });
-        // });
-        //
-        // crossSellContainer.addEventListener('inview', function(event) {
-        //     var isInView = event.detail[0];
-        //     if (isInView) {
-        //         pushEvent('impression_similaires', {
-        //             'impressions': products
-        //         });
-        //         crossSellContainer.removeEventListener('inview', arguments.callee);
-        //     }
-        // });
     }
     else if(name === 'IMP5')
     {
@@ -284,24 +433,24 @@ function executeEvent(name, replay = false) {
     else if(name === 'ADD')
     {
         document.addEventListener('ajaxSuccess', function(event) {
-            var xhr = event.detail[0];
-            var settings = event.detail[1];
-            var data = event.detail[2];
+            var xhr = event.detail.xhr;
+            var settings = event.detail.settings;
+            var data = xhr.responseJSON;
 
-            if (settings.url.indexOf('/panier') >= 0 && settings.data.indexOf('&add=') >= 0) {
+            if (settings.url.includes('/panier') && settings.data.includes('&add=')) {
                 pushEvent('ajout_panier', {
-                    'currencyCode': 'EUR',
-                    'add': {
-                        'actionField': { 'list': getListName() },
-                        'products': [{
-                            'name': '',
-                            'id': data.id_product,
-                            'price': '',
-                            'reference': '',
-                            'category': '',
-                            'variant': data.id_product_attribute,
-                            'position': '',
-                            'quantity': data.quantity
+                    currencyCode: 'EUR',
+                    add: {
+                        actionField: { list: getListName() },
+                        products: [{
+                            name: '',
+                            id: data.id_product,
+                            price: '',
+                            reference: '',
+                            category: '',
+                            variant: data.id_product_attribute,
+                            position: '',
+                            quantity: data.quantity
                         }]
                     }
                 });
@@ -416,7 +565,18 @@ function executeEvent(name, replay = false) {
     }
     else if(name === 'PUR')
     {
+        // Check if purchase event has already been sent
         var order = document.querySelector('section#content').dataset.order;
+        order = JSON.parse(order);
+
+        var expirationDate = localStorage.getItem('purchase_event_expiration');
+        if (expirationDate && parseInt(expirationDate) > Date.now() && localStorage.getItem('purchase_event_expiration_id') === order.details.reference) {
+            return;
+        }else{
+            localStorage.removeItem('purchase_event_expiration');
+            localStorage.removeItem('purchase_event_expiration_id');
+        }
+
         var orderProducts = [];
         var orderProductsFb = [];
 
@@ -424,8 +584,8 @@ function executeEvent(name, replay = false) {
         var amountTaxExcluded = parseFloat(order.amounts.totals.total_excluding_tax.amount);
         var amountTax = amountTaxIncluded - amountTaxExcluded;
         var amountShipping = parseFloat(order.amounts.subtotals.shipping.amount);
-
-        order.products.forEach(function(data) {
+        var products = Object.values(order.products);
+        products.forEach(function(data) {
             orderProducts.push({
                 'price_tax_exc': data.product_price,
                 'wholesale_price': parseFloat(data.wholesale_price),
@@ -435,7 +595,8 @@ function executeEvent(name, replay = false) {
                 'reference': data.product_reference,
                 'category': data.id_category_default,
                 'variant': data.product_attribute_id,
-                'quantity': parseInt(data.product_quantity)
+                'quantity': parseInt(data.product_quantity),
+                'item_sku': data.product_attribute_id
             });
 
             orderProductsFb.push({
@@ -448,6 +609,7 @@ function executeEvent(name, replay = false) {
 
         pushEvent('purchase', {
             'currencyCode': 'EUR',
+            'order_id': order.details.id,
             'purchase': {
                 'actionField': {
                     'id': order.details.reference,
@@ -465,6 +627,10 @@ function executeEvent(name, replay = false) {
             'content_type': 'product',
             'contents': orderProductsFb
         });
+
+        expirationDate = Date.now() + 3600000;
+        localStorage.setItem('purchase_event_expiration', expirationDate);
+        localStorage.setItem('purchase_event_expiration_id', order.details.reference);
     }
     else if(name === 'CFG')
     {
@@ -493,14 +659,7 @@ function executeEvent(name, replay = false) {
 // Push event to datalayer
 function pushEvent(eventName, eventData = null, fbEventName = null, fbEventData = null)
 {
-    let loggedCustomerPhone = null;
     let randomId = '11035' + Math.round(Date.now() / 1000);
-
-    // Defining customer phone (either phone or phone_mobile)
-    if(Object.keys(loggedCustomer.addresses).length > 0) {
-        let firstAddress = loggedCustomer.addresses[Object.keys(loggedCustomer.addresses)[0]];
-        loggedCustomerPhone = firstAddress.phone || firstAddress.phone_mobile;
-    }
 
     // Clear GTM
     window.dataLayer = window.dataLayer || [];
@@ -555,6 +714,75 @@ function pushEvent(eventName, eventData = null, fbEventName = null, fbEventData 
             'custom_data': fbEventData
         });
     }
+}
+
+function getPageType() {
+    switch (currentPage) {
+        case 'index':
+            return 'home';
+        case 'category':
+            return 'category';
+        case 'product':
+            return 'product';
+        case 'cart':
+            return 'cart';
+        case 'order-confirmation':
+            return 'purchase';
+        default:
+            return 'other';
+    }
+}
+
+function getProductIds() {
+    if (currentPage === 'product') {
+        const productElement = document.querySelector('#product_page_product_id');
+        if (productElement) {
+            return productElement.value;
+        }
+    } else if (currentPage === 'cart' || currentPage === 'checkout') {
+        return prestashop.cart.products.map(product => product.id_product);
+    }
+    return [];
+}
+
+function getTotalValue() {
+    if (currentPage === 'product') {
+        const productElement = document.querySelector('#product');
+        if (productElement) {
+            const priceElement = document.querySelector('.price[itemprop="price"]');
+            if (priceElement) {
+                let priceText = priceElement.textContent || priceElement.innerText;
+                priceText = priceText.replace('€', '').replace(',', '.').trim();
+                return parseFloat(priceText) || 0;
+            }
+        }
+    } else if (currentPage === 'cart' || currentPage === 'checkout') {
+        return prestashop.cart.totals.total.amount;
+    }
+    return 0;
+}
+
+function getDiscount() {
+    if (currentPage === 'product') {
+        const productElement = document.querySelector('#product');
+        if (productElement) {
+            const priceElement = document.querySelector('.regular-price');
+            if (priceElement) {
+                let priceText = priceElement.textContent || priceElement.innerText;
+                priceText = priceText.replace('€', '').replace(',', '.').trim();
+                return parseFloat(priceText) || 0;
+            }
+        }
+    }
+
+    return 0;
+}
+
+function getNewClientStatus() {
+    if (loggedCustomer.is_logged) {
+        return loggedCustomer.hasOrders;
+    }
+    return '';
 }
 
 function getFacebookCookies()
@@ -699,4 +927,3 @@ function pushCheckoutEvent(step) {
         'contents': products_fb
     });
 }
-
