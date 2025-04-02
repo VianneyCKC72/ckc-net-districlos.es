@@ -176,33 +176,33 @@ function executeEvent(name, replay = false) {
     }
     else if(name === 'IMP4')
     {
-        var crossSellContainer = document.querySelector('ul#crosssell-carousel');
-        var crossSellList = crossSellContainer.querySelectorAll('li.item');
-        var products = [];
-
-        crossSellList.forEach(function(el, position) {
-            var data = el.querySelector('article.product-miniature').dataset;
-            products.push({
-                'name': data.productName,
-                'id': data.idProduct,
-                'price': parseFloat(data.productPrice.replace(/\s/g,'').replace('€', '').replace(',', '.')),
-                'reference': data.productReference,
-                'category': data.productCategory,
-                'variant': data.idProductAttribute,
-                'list': 'Similaire',
-                'position': position + 1
-            });
-        });
-
-        crossSellContainer.addEventListener('inview', function(event) {
-            var isInView = event.detail[0];
-            if (isInView) {
-                pushEvent('impression_similaires', {
-                    'impressions': products
-                });
-                crossSellContainer.removeEventListener('inview', arguments.callee);
-            }
-        });
+        // var crossSellContainer = document.querySelector('ul#crosssell-carousel');
+        // var crossSellList = crossSellContainer.querySelectorAll('li.item');
+        // var products = [];
+        //
+        // crossSellList.forEach(function(el, position) {
+        //     var data = el.querySelector('article.product-miniature').dataset;
+        //     products.push({
+        //         'name': data.productName,
+        //         'id': data.idProduct,
+        //         'price': parseFloat(data.productPrice.replace(/\s/g,'').replace('€', '').replace(',', '.')),
+        //         'reference': data.productReference,
+        //         'category': data.productCategory,
+        //         'variant': data.idProductAttribute,
+        //         'list': 'Similaire',
+        //         'position': position + 1
+        //     });
+        // });
+        //
+        // crossSellContainer.addEventListener('inview', function(event) {
+        //     var isInView = event.detail[0];
+        //     if (isInView) {
+        //         pushEvent('impression_similaires', {
+        //             'impressions': products
+        //         });
+        //         crossSellContainer.removeEventListener('inview', arguments.callee);
+        //     }
+        // });
     }
     else if(name === 'IMP5')
     {
@@ -641,7 +641,7 @@ function executeCheckoutEvents() {
     if (step === 2) {
         localStorage.setItem('customer_signup', true);
 
-        document.querySelector('#checkout-personal-information-step .nav-link').addEventListener('click', function() {
+        document.querySelector('.account-switch a').addEventListener('click', function() {
             localStorage.setItem('customer_signup', (this.getAttribute('href') === '#checkout-guest-form') ? true : false);
         });
 
