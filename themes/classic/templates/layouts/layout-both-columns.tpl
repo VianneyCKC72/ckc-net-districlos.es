@@ -122,10 +122,10 @@
     {include file="_partials/password-policy-template.tpl"}
     {include file="_partials/javascript.tpl" javascript=$javascript.bottom}
 
-      <script async type="text/javascript" src="/themes/classic/assets/js/tags.js"></script>
       <script async type="text/javascript" src="/themes/classic/assets/js/lib/crypto-js.min.js"></script>
       <script async type="text/javascript" src="/themes/classic/assets/js/lib/jquery.inview.min.js"></script>
       <script async type="text/javascript" src="/themes/classic/assets/js/lib/js.cookie.min.js"></script>
+      <script async type="text/javascript" src="/themes/classic/assets/js/tags.js"></script>
       {*<a class="top_button" href="#" style="">&nbsp;</a>*}
   {/block}
 
