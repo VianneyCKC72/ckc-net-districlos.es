@@ -203,7 +203,7 @@ function getProductData(productId, productAttributeId) {
             id: productElement.value,
             sku: productElement.value + (productAttributeId ? '_' + productAttributeId : ''),
             name: document.querySelector('.product-title').innerText.trim(),
-            category: document.querySelector('[data-product-category]').dataset.productCategory || '',
+            category: JSON.parse(document.querySelector('#product-details').dataset.product).category_name || '',
             price: getTotalValue() || 0,
             discount: getDiscount() || 0
         };
@@ -747,14 +747,9 @@ function getProductIds() {
 
 function getTotalValue() {
     if (currentPage === 'product') {
-        const productElement = document.querySelector('#product');
+        const productElement = JSON.parse(document.querySelector('#product-details').dataset.product);
         if (productElement) {
-            const priceElement = document.querySelector('.price[itemprop="price"]');
-            if (priceElement) {
-                let priceText = priceElement.textContent || priceElement.innerText;
-                priceText = priceText.replace('€', '').replace(',', '.').trim();
-                return parseFloat(priceText) || 0;
-            }
+            return productElement.price_amount;
         }
     } else if (currentPage === 'cart' || currentPage === 'checkout') {
         return prestashop.cart.totals.total.amount;
