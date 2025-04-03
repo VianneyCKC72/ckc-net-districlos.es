@@ -7,92 +7,91 @@
 @media only screen and (max-width: 1420px) {
   .elementor-2170101 .elementor-element.elementor-element-7c993ab .elementor-social-icon {
     font-size: 16px;
-
   }
+}
 
-  @media (max-width: 767px) {
-    #footer {
-      background-color: $primary-color;
-      color: $white;
+@media (max-width: 767px) {
+  #footer {
+    background-color: $primary-color;
+    color: $white;
 
-      .socialIconFooter, .copyrightFooter {
-        width: 100%;
-      }
+    .socialIconFooter, .copyrightFooter {
+      width: 100%;
+    }
 
-      .socialIconFooter {
-        margin-left: 18px;
-        margin-top: 40px;
-        margin-bottom: 0;
-      }
+    .socialIconFooter {
+      margin-left: 18px;
+      margin-top: 40px;
+      margin-bottom: 0;
+    }
 
-      .copyrightFooter {
-        margin-left: 30px;
-        margin-bottom: 30px;
+    .copyrightFooter {
+      margin-left: 30px;
+      margin-bottom: 30px;
 
-        p:not(#e) {
-          color: $white;
-
-          a {
-            color: $white;
-          }
-        }
-      }
-
-      .linksBlockFooter {
-        margin-left: 15px;
-
-        .elementor-page-link:not(#e) {
-          color: $white;
-        }
-      }
-
-      .elementor-element-61f6f1a {
-        margin-left: 20px;
-      }
-
-      .elementor-heading-title {
-        font-weight: 500;
-        font-size: 20px;
-        line-height: 140%;
+      p:not(#e) {
         color: $white;
-        margin-bottom: 0;
-      }
 
-      .title.h3.block_title.hidden-lg-up {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: none;
-        padding-left: 0;
-        margin-bottom: 0;
-      }
-
-      .navbar-toggler.collapse-icons {
-        svg {
-          stroke: $white;
-          fill: $white;
+        a {
+          color: $white;
         }
       }
+    }
 
-      .logoFooterContainer {
-        margin-bottom: 15px;
+    .linksBlockFooter {
+      margin-left: 15px;
+
+      .elementor-page-link:not(#e) {
+        color: $white;
       }
+    }
 
-      .elementor-2170101 .elementor-element.elementor-element-b1a5e08 {
-        width: 100%;
-        max-width: 380px;
+    .elementor-element-61f6f1a {
+      margin-left: 20px;
+    }
+
+    .elementor-heading-title {
+      font-weight: 500;
+      font-size: 20px;
+      line-height: 140%;
+      color: $white;
+      margin-bottom: 0;
+    }
+
+    .title.h3.block_title.hidden-lg-up {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: none;
+      padding-left: 0;
+      margin-bottom: 0;
+    }
+
+    .navbar-toggler.collapse-icons {
+      svg {
+        stroke: $white;
+        fill: $white;
       }
+    }
 
-      .textFooterDescription {
-        p {
-          span:last-child {
-            font-weight: 400;
-            font-size: 17px;
-            line-height: 140%;
-            @media (max-width: 380px) {
-              font-size: 15px;
-            }
+    .logoFooterContainer {
+      margin-bottom: 15px;
+    }
+
+    .elementor-2170101 .elementor-element.elementor-element-b1a5e08 {
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .textFooterDescription {
+      p {
+        span:last-child {
+          font-weight: 400;
+          font-size: 17px;
+          line-height: 140%;
+          @media (max-width: 380px) {
+            font-size: 15px;
           }
         }
       }
