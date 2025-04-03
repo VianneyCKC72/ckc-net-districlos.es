@@ -101,4 +101,18 @@
   .swiper-button-prev, .swiper-button-next{
     margin-top: calc(0px - (var(--swiper-navigation-size) / 2) - 90px);
   }
+  @media (max-width: 480px){
+    .featured-products:has(h3) {
+      .swiper-button-prev, .swiper-button-next{
+        display: flex;
+        margin-top: calc(0px - (var(--swiper-navigation-size) / 2) - 40px);
+      }
+      .swiper-button-prev{
+        left: 0;
+      }
+      .swiper-button-next{
+        right: 0;
+      }
+    }
+  }
 }
