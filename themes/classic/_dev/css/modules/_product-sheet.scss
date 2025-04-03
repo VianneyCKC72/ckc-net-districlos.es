@@ -1042,6 +1042,17 @@
     #product .banner-quick-view h2 {
       font-size: 14px;
     }
+
+    h2.sous-titre {
+      margin-bottom: 15px;
+    }
+    .account-switch p {
+      font-size: 13px;
+      flex-direction: column;
+      gap: 0;
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
   }
 }
 
