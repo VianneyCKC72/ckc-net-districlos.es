@@ -21,6 +21,20 @@
       max-width: 295px;
       padding-right: 15px;
       padding-left: 15px;
+      transition: background 0.3s ease, color 0.3s ease;
+      .btn-primary-arrow {
+        transition: background 0.3s ease;
+      }
+      &:hover {
+        background:$secondary-color;
+        color:white;
+        .btn-primary-arrow {
+          background:white;
+          svg {
+           color: $secondary-color;
+          }
+        }
+      }
     }
 
     @media (max-width: 1290px) {
@@ -190,6 +204,7 @@
 }
 
 #block-moins-chers, #demander-un-devis {
+  border-radius: 5px;
   .link-arrow {
     font-size: 15px;
   }
