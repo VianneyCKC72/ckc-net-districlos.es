@@ -16,7 +16,9 @@
 
             <!-- Logo Mobile (Visible seulement sur xs et sm) -->
             <div class="d-block d-md-none">
-                <img class="logo img-fluid" src="/img/logo-mobile.png" alt="Districlos" width="42" height="42">
+                <a href="{$urls.base_url}">
+                    <img class="logo img-fluid" src="/img/logo-mobile.png" alt="Districlos" width="42" height="42">
+                </a>
             </div>
 
             {block name='header_nav'}
