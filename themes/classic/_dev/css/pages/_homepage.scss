@@ -197,6 +197,20 @@
       }
     }
   }
+  .fancybox-container:has(#everpspopup_block_center){
+    padding: 0 !important;
+    transform: translate(0, 0);
+    #everpspopup_block_center{
+      display: inline-block;
+      background-color: transparent;
+      max-width: none;
+      text-align: center;
+      .fancybox-button.fancybox-close-small{
+        padding: 0;
+        color: #fff;
+      }
+    }
 
+  }
 
 }
