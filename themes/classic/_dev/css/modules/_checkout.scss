@@ -588,4 +588,9 @@ body#checkout {
     flex-wrap: nowrap;
     gap: 10px;
   }
+  @media (max-width: 480px) {
+    #openModalShippingCost {
+      margin-top: 20px;
+    }
+  }
 }
