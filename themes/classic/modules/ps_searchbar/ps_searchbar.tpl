@@ -24,9 +24,14 @@
  *}
 
 <!-- Bouton Loupe (Affiché seulement sur mobile < 767px) -->
-<div id="search_icon" class="d-block d-md-none">
-    <img src="/img/loupe.png" width="23px" height="23px" alt="recherche">
-</div>
+{if $page.page_name !== "checkout"}
+    <div id="search_icon" class="d-block d-md-none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.3-4.3"/>
+        </svg>
+    </div>
+{/if}
 
 <!-- Barre de Recherche (Visible en permanence sur desktop, cachée sur mobile sauf ouverture) -->
 <div id="search_widget" class="search-widgets" data-search-controller-url="{$search_controller_url}">
