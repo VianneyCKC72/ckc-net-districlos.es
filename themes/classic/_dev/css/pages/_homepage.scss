@@ -301,6 +301,16 @@
         bottom: -40px;
       }
     }
-
+    .product-miniature .product-description{
+      min-height: 209px;
+    }
+  }
+  @media (max-width: 420px){
+    .product-miniature .product-description{
+      min-height: 194px;
+    }
+    .swiper-wrapper .swiper-slide.swiper-slide-prev{
+      visibility: hidden;
+    }
   }
 }

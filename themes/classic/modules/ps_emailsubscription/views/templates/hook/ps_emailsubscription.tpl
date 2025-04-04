@@ -52,7 +52,7 @@
             </form>
         </div>
         <div class="col-img">
-            <img class="img-cover" src="/themes/classic/assets/img/photo-portail-newsletter.jpg" alt=""/>
+            <img class="img-cover" src="/img/photo-portail-newsletter.png" alt=""/>
         </div>
     </div>
 {elseif $page.page_name == 'checkout'}
