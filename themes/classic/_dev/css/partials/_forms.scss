@@ -122,12 +122,22 @@ select.form-control-select {
 
 .header-top .search-widgets form input[type="text"],
 .search-widgets form input[type="text"] {
-  background: $sand-color url("/img/ico-loupe.png") no-repeat 95% 50%;
+  background: $sand-color url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-search-icon lucide-search'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") no-repeat 95% 50%;
   color: $primary-color;
   border-radius: 75px;
   width: 296px;
   height: 50px;
+  stroke: var(--primary-color);
+  &::placeholder,
+  &::-webkit-input-placeholder,
+  &:-moz-placeholder,
+  &::-moz-placeholder,
+  &:-ms-input-placeholder {
+    color: $primary-color;
+    opacity: 1;
+  }
 }
+
 
 .input-checkbox {
   display: block;

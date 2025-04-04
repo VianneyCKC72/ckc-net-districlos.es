@@ -99,40 +99,38 @@
     <div class="banner-quick-view">
       <div class="container">
         <div class="banner-quick-view-content">
-          <div class="price-name">
-            <div class="d-flex justify-content-between gap-16">
-              <div>
-                {block name='page_header_container'}
-                  {block name='page_header'}
-                    <div class="title-banner-quick-view-header-container">
-                      <h2 class="h2 mb-0">{block name='page_title'}{$product.name}{/block}</h2>
-                      {include file='catalog/_partials/product-prices/has-discount.tpl'}
-                    </div>
-                    <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
-                  {/block}
-                {/block}
+
+          {*
+            On regroupe ici les 3 colonnes :
+            - col-title : nom, promo, avis
+            - col-price : prix actuel et barré
+            - col-cart : quantité + bouton
+          *}
+          <div class="banner-quick-view-row d-none d-md-flex row align-items-center gx-3">
+            <div class="col-md-4 col-12 col-title">
+              <div class="title-banner-quick-view-header-container">
+                <h2 class="h2 mb-0">{block name='page_title'}{$product.name}{/block}</h2>
+                {include file='catalog/_partials/product-prices/has-discount.tpl'}
               </div>
-              <div class="price">
-                {block name='product_price'}
-                  {include file='catalog/_partials/product-prices/price.tpl'}
-                {/block}
-              </div>
+              <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
             </div>
-          </div>
-          <div class="product-price-add-to-cart">
-            <div class="price">
+
+            <div class="col-md-4 col-12 col-price">
               {block name='product_price'}
                 {include file='catalog/_partials/product-prices/price.tpl'}
               {/block}
             </div>
-            <div class="add-to-cart">
+
+            <div class="col-md-4 col-12 col-cart text-end">
               {block name='product_add_to_cart'}
                 {include file='catalog/_partials/product-add-to-cart.tpl'}
               {/block}
             </div>
           </div>
+
         </div>
       </div>
     </div>
+
   </div>
 {/if}

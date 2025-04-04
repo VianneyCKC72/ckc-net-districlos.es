@@ -201,28 +201,66 @@ $(document).ready(function () {
     }
 
     function refreshPrice() {
-        const productPriceElement = document.querySelector(".product-prices");
-        const bannerQuickView = document.querySelector(".banner-quick-view");
+        const $productPriceElement = $('.product-prices');
+        const $bannerQuickView = $('.banner-quick-view');
+        let hasInitializedBanner = false;
 
-        if (productPriceElement && bannerQuickView) {
-            const options = {
-                root: null,
-                threshold: 0
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry) => {
+        if ($productPriceElement.length && $bannerQuickView.length) {
+            const observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
                     if (!entry.isIntersecting) {
-                        bannerQuickView.classList.add("visible");
+                        $bannerQuickView.addClass('visible');
+
+                        // Exécuter une seule fois quand la bannière apparaît
+                        if (!hasInitializedBanner) {
+                            initializeBannerQuickView();
+                            hasInitializedBanner = true;
+                        }
                     } else {
-                        bannerQuickView.classList.remove("visible");
+                        $bannerQuickView.removeClass('visible');
                     }
                 });
-            }, options);
+            }, {
+                root: null,
+                threshold: 0
+            });
 
-            observer.observe(productPriceElement);
+            observer.observe($productPriceElement.get(0));
         }
     }
+
+    function initializeBannerQuickView() {
+        const $row = $('.banner-quick-view-row');
+
+        if ($row.length) {
+            $row.hide().fadeIn(400);
+
+            const $titleCol = $row.find('.col-title');
+            const $priceCol = $row.find('.col-price');
+
+            // Sélection de la promo (dans colonne 1)
+            const $promoBlock = $titleCol.find('.product-discount.has-discount');
+
+            // Cible le bloc prix actuel + barré dans colonne 2
+            const $priceContainer = $priceCol.find('.d-flex.align-items-center');
+
+            // Déplace la promo juste AVANT le bloc prix
+            if ($promoBlock.length && $priceContainer.length) {
+                $priceContainer.before($promoBlock);
+            }
+
+            // Hauteurs alignées (facultatif)
+            const maxHeight = Math.max(
+                $row.find('.col-title').outerHeight(),
+                $row.find('.col-price').outerHeight(),
+                $row.find('.col-cart').outerHeight()
+            );
+            $row.find('> div').css('min-height', maxHeight + 'px');
+        }
+    }
+
+
+
 
     function updateViewProductCart(data) {
         $.each(data, function (key, value) {
