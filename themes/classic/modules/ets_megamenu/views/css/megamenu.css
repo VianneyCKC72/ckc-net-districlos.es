@@ -3557,6 +3557,12 @@ span.mm_menu_content_title > div:nth-child(2){
     .mm_columns_contents_ul .mm_columns_li{
         padding: 0 25px;
     }
+    .mm_columns_contents_ul .mm_columns_li.back_menu_parent_li{
+        padding: 10px 31px 10px 25px;
+        span{
+            margin-bottom: 25px;
+        }
+    }
     .mm_columns_contents_ul .mm_columns_li .ets_mm_block .h4 a{
         color: #fff;
         font-weight: 600;
@@ -3643,6 +3649,9 @@ span.mm_menu_content_title > div:nth-child(2){
     }
     .mm_columns_ul.mm_columns_ul_tab.active, .mm_columns_ul.mm_columns_ul_tab{
         min-height: 896px;
+    }
+    .mm_tabs_li .mm_columns_contents_ul.active{
+        padding: 0;
     }
 }
 

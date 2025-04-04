@@ -569,6 +569,20 @@ body#checkout {
     nav.header-nav .hidden-md-up.text-sm-center.mobile{
       display: none;
     }
+    #header {
+      .header-top{
+        padding: 0;
+      }
+      .header-nav{
+        .container{
+          margin-bottom: 20px !important;
+        }
+      }
+    }
+
+    .ets_mm_megamenu.hook-default{
+      margin-top: 0;
+    }
   }
 }
 .moyen_de_paiement .moyen_de_paiement_img_container{
