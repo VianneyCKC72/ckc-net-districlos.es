@@ -394,4 +394,27 @@
     order: 1;
   }
 
+  #header{
+    #_desktop_user_info{
+      .user-info{
+        a{
+          img{
+            height: 23px;
+            width: 20px;
+          }
+        }
+      }
+    }
+    #_desktop_cart{
+      a.ico{
+        img{
+          height: 22px;
+          margin-top: 1px;
+        }
+      }
+    }
+    .header-nav .displayNav2 {
+      padding-left: 5px;
+    }
+  }
 }
