@@ -250,12 +250,14 @@ $(document).ready(function () {
             }
 
             // Hauteurs alignées (facultatif)
-            const maxHeight = Math.max(
-                $row.find('.col-title').outerHeight(),
-                $row.find('.col-price').outerHeight(),
-                $row.find('.col-cart').outerHeight()
-            );
-            $row.find('> div').css('min-height', maxHeight + 'px');
+            // const maxHeight = Math.max(
+            //     $row.find('.col-title').outerHeight(),
+            //     $row.find('.col-price').outerHeight(),
+            //     $row.find('.col-cart').outerHeight()
+            // );
+            //
+            //
+            // $row.find('> div').css('min-height', maxHeight + 'px');
         }
     }
 

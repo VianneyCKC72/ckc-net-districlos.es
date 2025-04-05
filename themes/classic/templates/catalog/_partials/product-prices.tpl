@@ -106,8 +106,8 @@
             - col-price : prix actuel et barré
             - col-cart : quantité + bouton
           *}
-          <div class="banner-quick-view-row d-none d-md-flex row align-items-center gx-3">
-            <div class="col-md-4 col-12 col-title">
+          <div class="banner-quick-view-row row align-items-center gx-3">
+            <div class="col-sm-4 col-12 col-title">
               <div class="title-banner-quick-view-header-container">
                 <h2 class="h2 mb-0">{block name='page_title'}{$product.name}{/block}</h2>
                 {include file='catalog/_partials/product-prices/has-discount.tpl'}
@@ -115,13 +115,13 @@
               <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
             </div>
 
-            <div class="col-md-4 col-12 col-price">
+            <div class="col-sm-4 col-12 col-price">
               {block name='product_price'}
                 {include file='catalog/_partials/product-prices/price.tpl'}
               {/block}
             </div>
 
-            <div class="col-md-4 col-12 col-cart text-end">
+            <div class="col-sm-4 col-12 col-cart text-end">
               {block name='product_add_to_cart'}
                 {include file='catalog/_partials/product-add-to-cart.tpl'}
               {/block}

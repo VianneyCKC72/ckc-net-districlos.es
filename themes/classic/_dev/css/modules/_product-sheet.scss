@@ -29,21 +29,33 @@
     align-items: center;
     gap: 20px;
     justify-content: center;
+
     .tax-shipping-delivery-label {
       display: none;
+    }
+
+    .product-discount .regular-price {
+      margin-left: 5px;
     }
 
     .align-items-center {
       align-items: flex-end !important;
     }
+
+    .product-discount.has-discount {
+      display: none !important;
+    }
   }
+
 }
+
 .product-prices {
   .product-price {
     font-size: 60px;
     line-height: 70px;
     font-weight: 700;
     white-space: nowrap;
+
     span {
       &.price-integer {
         font-size: 36px;
@@ -64,11 +76,13 @@
     align-items: flex-start;
     justify-content: center;
     flex-direction: column;
+
     .discount-value {
       font-size: 16px;
       line-height: 18px;
       font-weight: 700;
       color: $red;
+
       .regular-price {
         white-space: nowrap;
       }
@@ -266,8 +280,9 @@
           background-color: $primary-color;
         }
       }
-      @media (max-width: 767px){
-        a.nav-link.avisVerfies{
+
+      @media (max-width: 767px) {
+        a.nav-link.avisVerfies {
           padding: 12px 20px;
         }
       }
@@ -320,8 +335,9 @@
             background-color: rgba($sand-light-color, 30%);
           }
         }
-        @media (max-width: 767px){
-          .descr_table{
+
+        @media (max-width: 767px) {
+          .descr_table {
             overflow-x: scroll;
           }
         }
@@ -574,7 +590,8 @@
       flex-direction: column;
     }
   }
-  .product-tabs .nav-tabs:has(.nav-item:nth-child(4)){
+
+  .product-tabs .nav-tabs:has(.nav-item:nth-child(4)) {
     @media (max-width: 499px) {
       justify-content: space-around;
     }
@@ -701,6 +718,10 @@
     padding-bottom: 16px;
     opacity: 0;
     visibility: hidden;
+    @media screen and (max-width: 1200px) {
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
 
     &.visible {
       opacity: 1;
@@ -714,8 +735,21 @@
 
     h2 {
       font-size: 30px;
+      @media screen and (max-width: 1200px) {
+        font-size: 24px;
+      }
       @media screen and (max-width: 768px) {
-        font-size: 22px;
+        font-size: 16px;
+      }
+      @media screen and (max-width: 540px) {
+        text-align: center;
+        width: 100%;
+      }
+    }
+
+    .skeepers_product__stars {
+      @media screen and (max-width: 540px) {
+        text-align: center;
       }
     }
 
@@ -728,6 +762,14 @@
       row-gap: 8px;
       @include media-breakpoint-up(md) {
         row-gap: 0;
+      }
+      @media screen and (min-width: 540px) {
+        .has-discount {
+          margin-top: 0;
+        }
+        .product-prices .product-price {
+          font-size: 44px;
+        }
       }
 
       .skeepers_product__stars {
@@ -805,10 +847,13 @@
         flex: none;
 
         .btn-secondary.add-to-cart {
-          width: 100%;
           font-size: 15px;
           font-weight: 500;
           width: 310px;
+          @media screen and (max-width: 1100px) {
+            width: 220px;
+            font-size: 14px;
+          }
           @media screen and (max-width: 540px) {
             width: 100%;
             .add-to-cart-text {
@@ -979,6 +1024,7 @@
     background: radial-gradient(circle at 50% 0, #ff000080, #f000 70.71%), radial-gradient(circle at 6.7% 75%, #0000ff80, #00f0 70.71%), radial-gradient(circle at 93.3% 75%, #00ff0080, #0f00 70.71%) beige;
     text-align: center;
   }
+
   .kitcontent {
     display: flex;
     flex-direction: column;
@@ -1003,13 +1049,16 @@
       white-space: nowrap;
     }
   }
-  .dialog-widget.dialog-lightbox-widget.dialog-type-buttons.dialog-type-lightbox.elementor-lightbox{
+
+  .dialog-widget.dialog-lightbox-widget.dialog-type-buttons.dialog-type-lightbox.elementor-lightbox {
     display: none !important;
   }
+
   .lire-plus {
     margin-top: .25rem;
   }
-  .shipping-block-product-info{
+
+  .shipping-block-product-info {
     justify-content: space-between;
     margin-top: 1.5rem;
   }
@@ -1055,7 +1104,7 @@
     .lire-plus {
       margin-top: 15px;
     }
-    .shipping-block-product-info{
+    .shipping-block-product-info {
       justify-content: center;
       margin-top: 80px;
       gap: 30px;
@@ -1067,10 +1116,11 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
-    .product-container .banner-services{
+    .product-container .banner-services {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      .service{
+
+      .service {
         flex-direction: column;
         gap: 10px;
         text-align: center;

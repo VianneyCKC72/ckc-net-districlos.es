@@ -780,11 +780,18 @@ function getNewClientStatus() {
     return '';
 }
 
-function getFacebookCookies()
-{
+function getFacebookCookies() {
+    if (typeof Cookies === 'undefined') {
+        console.warn('js-cookie non chargé');
+        return {
+            _fbc: getUrlParameter('fbclid') || null,
+            _fbp: null
+        };
+    }
+
     return {
-        _fbc : Cookies.get('_fbc') || getUrlParameter('fbclid'),
-        _fbp : Cookies.get('_fbp')
+        _fbc: Cookies.get('_fbc') || getUrlParameter('fbclid'),
+        _fbp: Cookies.get('_fbp')
     };
 }
 
