@@ -113,7 +113,7 @@
 
                             {if $product.reference_to_display}
                                 <div class="small">REF <span
-                                            class="font-weight-bold">{$product.reference_to_display}</span></div>
+                                            class="font-weight-bold" id="product_reference">{$product.reference_to_display}</span></div>
                             {/if}
                             <a href="javascript:av_widget_click()" id="AV_button">
                             <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>

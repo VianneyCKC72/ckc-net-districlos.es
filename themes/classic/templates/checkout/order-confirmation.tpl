@@ -39,7 +39,7 @@
 {/block}
 
 {block name='page_content_container'}
-  <section id="content" class="page-content page-order-confirmation card">
+  <section id="content" class="page-content page-order-confirmation card" data-order="{$order|json_encode}">
     <div class="card-block">
       <div class="row">
 
@@ -67,7 +67,7 @@
                 </li>
               {/if}
               {if $order.details.recyclable}
-                <li>  
+                <li>
                   <em>{l s='You have given permission to receive your order in recycled packaging.' d="Shop.Theme.Customeraccount"}</em>
                 </li>
               {/if}

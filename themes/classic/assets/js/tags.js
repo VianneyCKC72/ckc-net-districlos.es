@@ -127,8 +127,8 @@ switch(currentPage) {
     case 'order-confirmation':
         executeEvent('PUR');
         break;
-    case 'authentication':
-        localStorage.setItem('customer_signup', getUrlParameter('create_account') ? true : false);
+    case 'registration':
+        localStorage.setItem('customer_signup', true);
         break;
     case 'configurator':
         executeEvent('CFG');
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    var contactForm = document.querySelector('form#demo-form');
+    var contactForm = document.querySelector('.contact-form form');
 
     if (contactForm) {
         contactForm.addEventListener('submit', function (event) {
@@ -176,19 +176,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 formObject[key] = value;
             });
 
-            let objet = "Demande de devis";
-            if (formObject['id_contact'] === '1') {
-                objet = "Webmaster";
-            }else if (formObject['id_contact'] === '3') {
-                objet = "Service livraison";
-            }else if (formObject['id_contact'] === '4') {
-                objet = "Service SAV";
-            }
             dataLayer.push({
                 event: 'contact_form',
-                objet: objet || '',
-                mail: formObject['from'] || '',
-                phone: formObject['phone'] || ''
+                objet: formObject['menu-899'],
+                mail: formObject['email-668'] || '',
+                phone: formObject['tel-534'] || ''
             });
         });
     }
@@ -262,11 +254,11 @@ function executeEvent(name, replay = false) {
     }
     else if(name === 'IMP2')
     {
-        var productsList = document.querySelectorAll('ul.product_list > li.product_item');
+        var productsList = document.querySelectorAll('.products > div.js-product');
         var products = [];
         var categoryPath = [];
 
-        document.querySelectorAll('#breadcrumb_wrapper li > a > span').forEach(function(el, i) {
+        document.querySelectorAll('.breadcrumb li > a > span').forEach(function(el, i) {
             if (i !== 0) categoryPath.push(el.innerText);
         });
 
@@ -389,6 +381,7 @@ function executeEvent(name, replay = false) {
     else if(name === 'DET')
     {
         var productDetailsData = JSON.parse(document.querySelector('#product-details').dataset.product);
+        var productReference = document.getElementById('product_reference');
 
         pushEvent('detail_produit', {
             'actionField': {'list': getListName() },
@@ -397,7 +390,7 @@ function executeEvent(name, replay = false) {
                     'name': productDetailsData.name,
                     'id': productDetailsData.id_product,
                     'price': productDetailsData.price_amount,
-                    'reference': productDetailsData.reference,
+                    'reference': productReference ? productReference.innerText : '',
                     'category': productDetailsData.category_name,
                     'variant': productDetailsData.id_product_attribute
                 }]

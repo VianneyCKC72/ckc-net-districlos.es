@@ -27,7 +27,9 @@
     <div
             class="js-product product {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')} list_view col-12 {else}{if !empty($productClasses)} {$productClasses} {/if} {/if}">
         <article class="product-miniature js-product-miniature" data-id-product="{$product.id_product}"
-                 data-id-product-attribute="{$product.id_product_attribute}">
+                 data-id-product-attribute="{$product.id_product_attribute}" data-product-name="{$product.name}"
+                 data-product-price="{$product.price}" data-product-reference="{$product.reference_to_display}"
+                 data-product-category="{$product.category_name}">
             <div class="thumbnail-container">
                 <div class="thumbnail-top">
 
