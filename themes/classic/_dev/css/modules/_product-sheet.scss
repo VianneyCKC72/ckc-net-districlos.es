@@ -1144,5 +1144,23 @@
     }
   }
 }
+.product-variants {
+  .ap5-attributes {
+    border-left: 1px solid #026473;
+    padding: 0 10px;
+    margin-bottom: 1rem;
+  }
 
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  row-gap: 10px;
+  column-gap: 30px;
+  border-left: 1px solid #026473;
+  padding: 0 10px;
+  margin-bottom: 1rem;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
 

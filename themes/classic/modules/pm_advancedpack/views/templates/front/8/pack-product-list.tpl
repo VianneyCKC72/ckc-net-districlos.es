@@ -1,7 +1,7 @@
 <div id="ap5-product-list">
     {foreach from=$productsPack item=productPack}
         {if !empty($productPack.attributes.groups)}
-            <span class="bold">{$productPack.presentation.name}</span>
+            <span class="font-weight-bold">{$productPack.presentation.name}</span>
             <!-- attributes -->
             <div class="product-variants ap5-attributes" data-id-product-pack="{$productPack.id_product_pack|intval}">
                 {foreach from=$productPack.attributes.groups key=id_attribute_group item=group}
