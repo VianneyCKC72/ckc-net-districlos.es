@@ -2515,6 +2515,48 @@ tbody.collapse.in {
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 4 4%27%3E%3Cpath stroke=%27#fff%27 d=%27M0 2h4%27/%3E%3C/svg%3E");
 }
 
+@media (max-width: 460px) {
+  .custom-checkbox label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+    cursor: pointer;
+
+    input[type="checkbox"] {
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+
+    // Texte principal + lien + <em>
+    .checkbox-label-content {
+      flex: 1;
+
+      // ⚠️ Cette partie empêche les <a> de passer à la ligne chacun de leur côté
+      display: inline;
+
+      a {
+        white-space: nowrap;
+      }
+
+      em {
+        display: block;
+        margin-top: 4px;
+        font-size: 12px;
+        font-style: normal;
+        opacity: 0.7;
+        padding-left:0;
+      }
+    }
+
+    // SVG si utilisé (sinon tu peux cacher comme ici)
+    span svg {
+      display: none;
+    }
+  }
+}
+
 .custom-radio .custom-control-indicator {
   border-radius: 50%;
 }

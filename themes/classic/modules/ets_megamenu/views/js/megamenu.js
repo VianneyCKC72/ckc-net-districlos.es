@@ -98,22 +98,25 @@ $(function () {
                     topOffset = 0;
                 } else if (windowWidth <= 991) {
                     topOffset = 108;
+                } else if (windowWidth <= 1006) {
+                    topOffset = 150;
                 } else if (windowWidth <= 1200) {
                     topOffset = 200;
                 } else {
                     topOffset = 150;
                 }
 
+                console.log(scrollTop)
+
                 // Ajustement dynamique en fonction du scroll
                 if (scrollTop > 0 && scrollTop < 140.5) {
                     topOffset -= scrollTop;
+                    console.log(topOffset)
                 } else if (scrollTop === 0) {
                     if (windowWidth < 768) {
                         topOffset = 0;
-                    } else if (windowWidth <= 991) {
-                        topOffset = 108;
                     } else if (windowWidth <= 1200) {
-                        topOffset = 200;
+                        topOffset = 150;
                     } else {
                         topOffset = 150;
                     }

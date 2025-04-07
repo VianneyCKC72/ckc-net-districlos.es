@@ -102,18 +102,24 @@
 
                 {block name='form_field_item_checkbox'}
                     <span class="custom-checkbox">
-            <label>
-              <input name="{$field.name}" type="checkbox" value="1" {if $field.value}checked="checked" {/if}
-                      {if $field.required}required{/if}>
-              <span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
-                         class="lucide lucide-check checkbox-checked">
-                  <path d="M20 6 9 17l-5-5"/>
-                </svg></span>
-              {$field.label nofilter}
-            </label>
-          </span>
+                        <label>
+                          <input name="{$field.name}" type="checkbox" value="1"
+                                 {if $field.value}checked="checked"{/if}
+                                  {if $field.required}required{/if}>
+                          <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                                 stroke-linejoin="round" class="lucide lucide-check checkbox-checked">
+                              <path d="M20 6 9 17l-5-5"/>
+                            </svg>
+                          </span>
+                            <span class="checkbox-label-content">
+                          {$field.label nofilter}
+                            </span>
+                        </label>
+                      </span>
                 {/block}
+
 
             {elseif $field.type === 'date'}
 
@@ -153,7 +159,7 @@
             {elseif $field.type === 'password'}
 
                 {block name='form_field_item_password'}
-                      <div class="position-relative js-parent-focus">
+                    <div class="position-relative js-parent-focus">
                         <input id="field-{$field.name}"
                                class="form-control js-child-focus js-visible-password pe-5"
                                name="{$field.name}"
@@ -169,34 +175,34 @@
                         >
 
                         <button type="button" class="password-toggle" aria-label="Afficher/Masquer le mot de passe">
-                          <!-- Icône œil -->
-                          <svg class="icon-eye" xmlns="http://www.w3.org/2000/svg"
-                               width="20" height="20" viewBox="0 0 24 24"
-                               fill="none" stroke="currentColor" stroke-width="2"
-                               stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M2.062 12.348a1 1 0 0 1 0-.696
+                            <!-- Icône œil -->
+                            <svg class="icon-eye" xmlns="http://www.w3.org/2000/svg"
+                                 width="20" height="20" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2.062 12.348a1 1 0 0 1 0-.696
                10.75 10.75 0 0 1 19.876 0
                1 1 0 0 1 0 .696
-               10.75 10.75 0 0 1-19.876 0" />
-                            <circle cx="12" cy="12" r="3" />
-                          </svg>
+               10.75 10.75 0 0 1-19.876 0"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
 
-                          <!-- Icône œil barré -->
-                          <svg class="icon-eye-off" xmlns="http://www.w3.org/2000/svg"
-                               width="20" height="20" viewBox="0 0 24 24"
-                               fill="none" stroke="currentColor" stroke-width="2"
-                               stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575
+                            <!-- Icône œil barré -->
+                            <svg class="icon-eye-off" xmlns="http://www.w3.org/2000/svg"
+                                 width="20" height="20" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575
                1 1 0 0 1 0 .696
-               10.747 10.747 0 0 1-1.444 2.49" />
-                            <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
-                            <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151
+               10.747 10.747 0 0 1-1.444 2.49"/>
+                                <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
+                                <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151
                1 1 0 0 1 0-.696
-               10.75 10.75 0 0 1 4.446-5.143" />
-                            <path d="m2 2 20 20" />
-                          </svg>
+               10.75 10.75 0 0 1 4.446-5.143"/>
+                                <path d="m2 2 20 20"/>
+                            </svg>
                         </button>
-                      </div>
+                    </div>
                 {/block}
 
             {else}

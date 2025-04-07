@@ -23,36 +23,40 @@
   outline: none;
   border: none;
   float: left;
-  background: #F8F4EE url("/themes/classic/assets/img/ico-loupe.png") 260px center no-repeat;
+  background: #F8F4EE url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") 260px center no-repeat;
   color: #026473;
   font-size: 12px;
   height: 50px;
+
   @media only screen and (max-width: 1620px) {
     width: 260px;
     padding: 10px 10px 10px 25px;
-    background: #F8F4ED url(/themes/classic/assets/img/ico-loupe.png) 226px center no-repeat;
+    background: #F8F4ED url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") 226px center no-repeat;
     font-size: 11px;
   }
+
   @media only screen and (max-width: 1320px) {
     width: 200px;
     padding: 10px 10px 10px 25px;
-    background: #F8F4ED url(/themes/classic/assets/img/ico-loupe.png) 160px center no-repeat;
+    background: #F8F4ED url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") 160px center no-repeat;
     font-size: 11px;
   }
 
   @media only screen and (max-width: 767px) {
     width: 420px;
     padding: 10px 10px 10px 25px;
-    background: #F8F4ED url(/themes/classic/assets/img/ico-loupe.png) 370px center no-repeat;
+    background: #F8F4ED url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") 370px center no-repeat;
     font-size: 14px;
   }
+
   @media only screen and (max-width: 460px) {
     width: 280px;
     padding: 10px 10px 10px 25px;
-    background: #F8F4ED url(/themes/classic/assets/img/ico-loupe.png) 220px center no-repeat;
+    background: #F8F4ED url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") 220px center no-repeat;
     font-size: 14px;
   }
 }
+
 
 .ui-autocomplete.searchbar-autocomplete {
   width: 100%;

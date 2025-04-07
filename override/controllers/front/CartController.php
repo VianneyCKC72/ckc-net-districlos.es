@@ -4,10 +4,9 @@ class CartController extends CartControllerCore
 {
     protected function updateCart()
     {
-        // Update the cart ONLY if $this->cookies are available, in order to avoid ghost carts created by bots
         if ($this->context->cookie->exists()
             && !$this->errors
-            /*&& !($this->context->customer->isLogged() && !$this->isTokenValid())*/
+
         ) {
             if (Tools::getIsset('add') || Tools::getIsset('update')) {
                 $this->processChangeProductInCart();
@@ -73,7 +72,6 @@ class CartController extends CartControllerCore
         $presented_cart = $presenter->present($this->context->cart, $shouldSeparateGifts = true);
         $prices = [];
         $price_ttc = number_format(round(0, 2), 2, ',', ' ').' €';
-
         foreach ($presented_cart['products'] as $key => $product) {
             $price = $product->total_wt / $product->quantity;
             if ($product->id_customization) {
@@ -219,55 +217,44 @@ class CartController extends CartControllerCore
             }
         }
         $this->context->cart->updateAddressId($tempAddress->id, $originalAddressId);
-
         $carriers_available = array_values($carriers_available);
-
         usort($carriers_available, function ($a, $b) {
             $parsePrice = function ($price) {
                 if ($price === 'Free') {
                     return 0;
                 }
-
                 $normalizedPrice = floatval(str_replace(['€', ',', ' ', 'TTC', 'HT'], ['', '.', '', '', ''], $price));
                 return $normalizedPrice;
             };
-
             $priceA = $parsePrice($a['price']);
             $priceB = $parsePrice($b['price']);
-
             return $priceA <=> $priceB;
         });
-
         return $carriers_available;
     }
     private function isFreeShipping($cart, array $carrier)
     {
         $free_shipping = false;
         $contains_soub = false;
-
         foreach ($cart->getProducts() as $product) {
             if (stripos($product['name'], 'Soub') !== false) {
                 $contains_soub = true;
                 break;
             }
         }
-
         if (!in_array(array_keys($carrier['carrier_list'])[0], DeliveryOptionsFinderCore::CARRIERS) && $contains_soub) {
             return $free_shipping;
         }
-
         if ($carrier['is_free']) {
             $free_shipping = true;
         } else {
             foreach ($cart->getCartRules() as $rule) {
                 if ($rule['free_shipping'] && !$rule['carrier_restriction']) {
                     $free_shipping = true;
-
                     break;
                 }
             }
         }
-
         return $free_shipping;
     }
     private function checkCartProductsMinimalQuantities()
@@ -286,46 +273,6 @@ class CartController extends CartControllerCore
             }
         }
     }
-    /*
-    * module: ets_promotion
-    * date: 2024-03-21 11:28:27
-    * version: 1.1.6
-    */
-    public function postProcess()
-    {
-        parent::postProcess();
-        if(Tools::getIsset('addDiscount') && $this->errors && ($code = Tools::getValue('discount_name')) && Validate::isCleanHtml($code) && !CartRule::cartRuleExists($code)) {
-            Module::getInstanceByName('ets_promotion')->addCartRule($this->errors,$code);
-        }
-        if(Tools::isSubmit('deletePromotionDiscountRule') && ($id_ets_rule = Tools::getValue('deletePromotionDiscountRule')) && Validate::isUnsignedId($id_ets_rule) )
-        {
-            Module::getInstanceByName('ets_promotion')->deleteCartRule($id_ets_rule);
-        }
-    }
-    /*
-    * module: ets_promotion
-    * date: 2024-03-21 11:28:27
-    * version: 1.1.6
-    */
-    public function displayAjaxRefresh()
-    {
-        if (Configuration::isCatalogMode()) {
-            return;
-        }
-        ob_end_clean();
-        header('Content-Type: application/json');
-        $this->ajaxRender(json_encode([
-            'cart_detailed' => Module::isEnabled('ets_extraoptions') ? $this->context->smarty->fetch(_PS_MODULE_DIR_.'ets_extraoptions/views/templates/hook/checkout/cart-detailed.tpl'): $this->render('checkout/_partials/cart-detailed'),
-            'cart_detailed_totals' => $this->render('checkout/_partials/cart-detailed-totals'),
-            'cart_summary_items_subtotal' => $this->render('checkout/_partials/cart-summary-items-subtotal'),
-            'cart_summary_subtotals_container' => $this->render('checkout/_partials/cart-summary-subtotals'),
-            'cart_summary_totals' => $this->render('checkout/_partials/cart-summary-totals'),
-            'cart_detailed_actions' => $this->render('checkout/_partials/cart-detailed-actions'),
-            'cart_voucher' => $this->render('checkout/_partials/cart-voucher'),
-            'cart_summary_products' => $this->render('checkout/_partials/cart-summary-products'),
-        ]));
-    }
-
     public function displayAjaxGetDeliveries() {
         $postalCode = (int)Tools::getValue('postal_code');
         header('Content-Type: application/json');
@@ -348,5 +295,44 @@ class CartController extends CartControllerCore
             'success' => true,
             'deliveries_options' => array_values($deliveries_options)
         ]);
+    }
+    /*
+    * module: ets_promotion
+    * date: 2025-04-03 10:54:57
+    * version: 1.1.6
+    */
+    public function postProcess()
+    {
+        parent::postProcess();
+        if(Tools::getIsset('addDiscount') && $this->errors && ($code = Tools::getValue('discount_name')) && Validate::isCleanHtml($code) && !CartRule::cartRuleExists($code)) {
+            Module::getInstanceByName('ets_promotion')->addCartRule($this->errors,$code);
+        }
+        if(Tools::isSubmit('deletePromotionDiscountRule') && ($id_ets_rule = Tools::getValue('deletePromotionDiscountRule')) && Validate::isUnsignedId($id_ets_rule) )
+        {
+            Module::getInstanceByName('ets_promotion')->deleteCartRule($id_ets_rule);
+        }
+    }
+    /*
+    * module: ets_promotion
+    * date: 2025-04-03 10:54:57
+    * version: 1.1.6
+    */
+    public function displayAjaxRefresh()
+    {
+        if (Configuration::isCatalogMode()) {
+            return;
+        }
+        ob_end_clean();
+        header('Content-Type: application/json');
+        $this->ajaxRender(json_encode([
+            'cart_detailed' => Module::isEnabled('ets_extraoptions') ? $this->context->smarty->fetch(_PS_MODULE_DIR_.'ets_extraoptions/views/templates/hook/checkout/cart-detailed.tpl'): $this->render('checkout/_partials/cart-detailed'),
+            'cart_detailed_totals' => $this->render('checkout/_partials/cart-detailed-totals'),
+            'cart_summary_items_subtotal' => $this->render('checkout/_partials/cart-summary-items-subtotal'),
+            'cart_summary_subtotals_container' => $this->render('checkout/_partials/cart-summary-subtotals'),
+            'cart_summary_totals' => $this->render('checkout/_partials/cart-summary-totals'),
+            'cart_detailed_actions' => $this->render('checkout/_partials/cart-detailed-actions'),
+            'cart_voucher' => $this->context->smarty->fetch(_PS_MODULE_DIR_.'ets_promotion/views/templates/hook/checkout/cart-voucher.tpl'),
+            'cart_sumary_products' => $this->context->smarty->fetch(_PS_MODULE_DIR_.'ets_promotion/views/templates/hook/checkout/cart_sumary_products.tpl'),
+        ]));
     }
 }

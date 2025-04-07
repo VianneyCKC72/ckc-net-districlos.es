@@ -3,45 +3,62 @@
     font-size: 18px;
   }
 }
-@media (max-width: 767px){
-  #footer{
+
+@media only screen and (max-width: 1420px) {
+  .elementor-2170101 .elementor-element.elementor-element-7c993ab .elementor-social-icon {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 767px) {
+  #footer {
     background-color: $primary-color;
     color: $white;
-    .socialIconFooter, .copyrightFooter{
+
+    .socialIconFooter, .copyrightFooter {
       width: 100%;
     }
-    .socialIconFooter{
+
+    .socialIconFooter {
       margin-left: 18px;
       margin-top: 40px;
       margin-bottom: 0;
     }
-    .copyrightFooter{
+
+    .copyrightFooter {
       margin-left: 30px;
       margin-bottom: 30px;
-      p:not(#e){
+
+      p:not(#e) {
         color: $white;
-        a{
+
+        a {
           color: $white;
         }
       }
     }
-    .linksBlockFooter{
+
+    .linksBlockFooter {
       margin-left: 15px;
-      .elementor-page-link:not(#e){
+
+      .elementor-page-link:not(#e) {
         color: $white;
       }
     }
-    .elementor-element-61f6f1a{
+
+    .elementor-element-61f6f1a {
       margin-left: 20px;
     }
-    .elementor-heading-title{
+
+    .elementor-heading-title {
       font-weight: 500;
       font-size: 20px;
       line-height: 140%;
       color: $white;
       margin-bottom: 0;
     }
-    .title.h3.block_title.hidden-lg-up{
+
+    .title.h3.block_title.hidden-lg-up {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
@@ -50,31 +67,34 @@
       padding-left: 0;
       margin-bottom: 0;
     }
-    .navbar-toggler.collapse-icons{
-      svg{
+
+    .navbar-toggler.collapse-icons {
+      svg {
         stroke: $white;
         fill: $white;
       }
     }
-    .logoFooterContainer{
+
+    .logoFooterContainer {
       margin-bottom: 15px;
     }
-    .elementor-2170101 .elementor-element.elementor-element-b1a5e08{
+
+    .elementor-2170101 .elementor-element.elementor-element-b1a5e08 {
       width: 100%;
       max-width: 380px;
     }
+
     .textFooterDescription {
-      p{
-        span:last-child{
+      p {
+        span:last-child {
           font-weight: 400;
           font-size: 17px;
           line-height: 140%;
-          @media (max-width: 380px){
+          @media (max-width: 380px) {
             font-size: 15px;
           }
         }
       }
     }
-
   }
 }

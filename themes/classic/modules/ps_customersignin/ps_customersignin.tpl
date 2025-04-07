@@ -25,10 +25,10 @@
 
 
 {if !$logged || ($logged && $env_pro)}
-<a href="{$urls.pages.authentication}?back=my-account&amp;ep=1" class="ico btn-espace-pro">
-    <img src="/themes/classic/assets/img/ico-espace-pro.png" alt="Connexion à Espace pro">
-    <span class="text">Espace pro</span>
-</a>
+    <a href="{$urls.pages.authentication}?back=my-account&amp;ep=1" class="ico btn-espace-pro">
+        <img src="/themes/classic/assets/img/ico-espace-pro.png" alt="Connexion à Espace pro">
+        <span class="text">Espace pro</span>
+    </a>
 {/if}
 <a href="/module/opartdevis/simplequotation" class="ico btn-devis">
     <img src="/themes/classic/assets/img/ico-devis.png" alt="Page de de demande de Devis">
@@ -40,29 +40,29 @@
 </a>
 
 <div id="_desktop_user_info">
-  <div class="user-info">
-      {if $logged}
-          {if $env_pro == false}
-              <a
-                      class="ico"
-                      href="{$urls.pages.my_account}"
-                      title="{l s='View my customer account' d='Shop.Theme.Customeraccount'}"
-                      rel="nofollow"
-              >
-                  <img src="/themes/classic/assets/img/ico-compte.png" alt="Connexion">
-                  <span class="hidden-sm-down">Mon compte</span>
-              </a>
-          {/if}
-          {else}
-          <a
-                  href="{$urls.pages.authentication}?back={$urls.current_url|urlencode}"
-                  title="{l s='Log in to your customer account' d='Shop.Theme.Customeraccount'}"
-                  class="ico"
-                  rel="nofollow"
-          >
-              <img src="/themes/classic/assets/img/ico-compte.png" alt="Connexion">
-              <span class="hidden-sm-down">{l s='Sign in' d='Shop.Theme.Actions'}</span>
-          </a>
-      {/if}
-  </div>
+    <div class="user-info">
+        {if $logged}
+            {if $env_pro == false}
+                <a
+                        class="ico"
+                        href="{$urls.pages.my_account}"
+                        title="{l s='View my customer account' d='Shop.Theme.Customeraccount'}"
+                        rel="nofollow"
+                >
+                    <img src="/themes/classic/assets/img/ico-compte.svg" alt="Connexion">
+                    <span class="hidden-sm-down">Mon compte</span>
+                </a>
+            {/if}
+        {else}
+            <a
+                    href="{$urls.pages.authentication}?back={$urls.current_url|urlencode}"
+                    title="{l s='Log in to your customer account' d='Shop.Theme.Customeraccount'}"
+                    class="ico"
+                    rel="nofollow"
+            >
+                <img src="/themes/classic/assets/img/ico-compte.svg" alt="Connexion">
+                <span class="hidden-sm-down">{l s='Sign in' d='Shop.Theme.Actions'}</span>
+            </a>
+        {/if}
+    </div>
 </div>
