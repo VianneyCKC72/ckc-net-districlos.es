@@ -106,7 +106,7 @@
                         <div class="product-actions js-product-actions">
 
                             {block name='product_buy'}
-                                <form action="{pm_advancedpack::getPackAddCartURL($product.id)}" method="post" id="add-to-cart-or-refresh">
+                                <form class="ap5-buy-block{if $configuration.is_catalog && $product.quantity > 0} hidden{/if}{if !empty($from_quickview)} ap5-from-modal{/if}" action="{pm_advancedpack::getPackAddCartURL($product.id)}" method="post">
                                     <input type="hidden" name="token" value="{$static_token}">
                                     <input type="hidden" name="id_product" value="{$product.id}" id="product_page_product_id">
                                     {if isset($packAutoChoose)}
