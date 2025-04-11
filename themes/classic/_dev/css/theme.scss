@@ -35,6 +35,7 @@ $output-bourbon-deprecation-warnings: false !default;
 @import "modules/opartdevis.scss";
 @import "modules/prix_juste.scss";
 @import "modules/tm_bestsellers.scss";
+@import "modules/dynamic_product.scss";
 
 @import "pages/homepage.scss";
 @import "pages/category.scss";
