@@ -1,8 +1,8 @@
-<div class="d-flex align-items-center">
+<div class="d-flex align-items-center product-prices">
     {assign var="price_parts" value=","|explode:$product.price}
     {assign var="price_integer" value=$price_parts[0]}
     {assign var="price_decimal" value=$price_parts[1]}
-    <div class="product-price {if $product.has_discount}has-discount{/if} mr-2">
+    <div class="product-price price {if $product.has_discount}has-discount{/if} mr-2" itemprop="price">
         <span class="price-integer">{$price_integer}</span><span class="price-decimal">,{$price_decimal}</span></span>
     </div>
     {hook h='displayProductPriceBlock' product=$product type="weight" hook_origin='product_sheet'}
