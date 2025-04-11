@@ -158,6 +158,12 @@
                                     <input type="hidden" name="id_customization" value="{$product.id_customization}"
                                            id="product_customization_id" class="js-product-customization-id">
 
+                                    {block name='product_additional_info'}
+
+                                        {include file='catalog/_partials/product-additional-info.tpl'}
+
+                                    {/block}
+
                                     {if isset($groups) && $groups|count > 0}
 
                                         {block name='product_variants'}
@@ -212,23 +218,13 @@
 
                                     {/block}
 
-                                    {* Start - Inté static *}
                                     <div class="d-flex flex-wrap gap-16 shipping-block-product-info">
                                         {if file_exists($smarty.const._PS_MODULE_DIR_|cat:'ckc_shipping_estimator/views/templates/front/product/shipping_estimator.tpl')}
                                             {include file="module:ckc_shipping_estimator/views/templates/front/product/shipping_estimator.tpl"}
                                         {/if}
                                         {hook h="displayStockButton" product=$product}
                                     </div>
-                                    {* End - Inté static *}
-
-                                    {block name='product_additional_info'}
-
-                                      {include file='catalog/_partials/product-additional-info.tpl'}
-
-                                    {/block}
                                     {* Input to refresh product HTML removed, block kept for compatibility with themes *}
-
-
 
                                     {block name='product_refresh'}
                                     {/block}
