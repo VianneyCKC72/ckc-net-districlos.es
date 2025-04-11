@@ -221,13 +221,11 @@
                                     </div>
                                     {* End - Inté static *}
 
-                                    {*
-
                                     {block name='product_additional_info'}
 
                                       {include file='catalog/_partials/product-additional-info.tpl'}
 
-                                    {/block} *}
+                                    {/block}
                                     {* Input to refresh product HTML removed, block kept for compatibility with themes *}
 
 
