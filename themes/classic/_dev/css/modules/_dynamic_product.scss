@@ -3,6 +3,7 @@
 }
 fieldset.dp_group {
   border: unset !important;
+  padding: 0 !important;
 }
 label.attribute_label {
   font-weight: bold;
@@ -10,10 +11,10 @@ label.attribute_label {
 .dp_tooltip_btn {
   display: none;
 }
-.dp_type_ouverture {
+#dp_type_ouverture {
   display: flex;
   gap: 1rem;
 }
 .dp-zoom {
-  display: none;
+  display: none !important;
 }
