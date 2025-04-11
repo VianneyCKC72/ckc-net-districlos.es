@@ -5,6 +5,8 @@
     <div class="product-price {if $product.has_discount}has-discount{/if} mr-2">
         <span class="price-integer">{$price_integer}</span><span class="price-decimal">,{$price_decimal}</span></span>
     </div>
+    {hook h='displayProductPriceBlock' product=$product type="weight" hook_origin='product_sheet'}
+
     <div class="tax-shipping-delivery-label">
         {if !$configuration.taxes_enabled}
             {l s='No tax' d='Shop.Theme.Catalog'}
