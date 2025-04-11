@@ -158,21 +158,17 @@
                                     <input type="hidden" name="id_customization" value="{$product.id_customization}"
                                            id="product_customization_id" class="js-product-customization-id">
 
+                                    {block name='product_variants'}
+
+                                        {include file='catalog/_partials/product-variants.tpl'}
+
+                                    {/block}
+
                                     {block name='product_additional_info'}
 
                                         {include file='catalog/_partials/product-additional-info.tpl'}
 
                                     {/block}
-
-                                    {if isset($groups) && $groups|count > 0}
-
-                                        {block name='product_variants'}
-
-                                            {include file='catalog/_partials/product-variants.tpl'}
-
-                                        {/block}
-
-                                    {/if}
 
 
                                     {block name='product_pack'}
