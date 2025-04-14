@@ -129,3 +129,6 @@
 .mm_menu_content_title img{height:auto!important;left:50%;left:50%;max-width:50px;opacity:.2;position:absolute;top:0;top:0;transform:translate(-50%,-90%);width:50%;width:auto}
 .info_menu_mobile{margin-top:auto;padding:0 15px}
 .info_menu_mobile .request_quote::after{-webkit-transform:rotate(45deg);-webkit-transition:all .35s;border-right:1px solid #000;border-top:1px solid #000;content:"";height:10px;margin-top:-3px;position:absolute;right:20px;top:46%;transform:rotate(45deg);transition:all .35s;width:10px}
+#ckcpromobarre .container::after{
+    display: none;
+}
