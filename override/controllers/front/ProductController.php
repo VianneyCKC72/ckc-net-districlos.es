@@ -4,6 +4,23 @@ class ProductController extends ProductControllerCore
 {
     public function initContent()
     {
+        $product = $this->getTemplateVarProduct();
+
+        $from_europe = true;
+        foreach ($product["features"] as $feature) {
+            if ($feature['name'] == 'Provenance') {
+                if ($feature['value'] == 'France') {
+                    $from_europe = false;
+                }
+            }
+        }
+
+        $product->from_europe = $from_europe;
+
+        $this->context->smarty->assign([
+            'from_europe'      => $from_europe,
+        ]);
+
         parent::initContent();
     }
 
@@ -16,8 +33,8 @@ class ProductController extends ProductControllerCore
         $product['regular_price_amount'] = round((float)$product['regular_price_amount'] * $product['quantity_wanted'], 2);
         $product['regular_price']        = number_format($product['regular_price_amount'], 2, ',', ' ') . '€';
         $product['unit_price_full']     = number_format(round((float)$product['price_amount'] / $product['quantity_wanted'], 2), 2, ',', ' ') . '€';
-/*        $product['rounded_display_price'] = round((float)$product['rounded_display_price'] * $product['quantity_wanted'], 2);
-        $product['price_without_reduction'] = round((float)$product['price_without_reduction'] * $product['quantity_wanted'], 2);*/
+        /*        $product['rounded_display_price'] = round((float)$product['rounded_display_price'] * $product['quantity_wanted'], 2);
+                $product['price_without_reduction'] = round((float)$product['price_without_reduction'] * $product['quantity_wanted'], 2);*/
 
         $minimalProductQuantity = $this->getProductMinimalQuantity($product);
 
