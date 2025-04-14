@@ -2928,8 +2928,8 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         opacity: 0.6;
         transform: translatex(-100%);
         -webkit-transform: translatex(-100%);
-        transition: all 0.35s ease 0s;
-        -webkit-transition: all 0.35s ease 0s;
+        transition: all 0.35s ease 0s, background 0s;
+        -webkit-transition: all 0.35s ease 0s, background 0s;
         visibility: hidden;
     }
     .changestatus.transition_floating .mm_menus_ul.active {
