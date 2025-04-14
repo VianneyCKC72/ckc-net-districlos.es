@@ -106,11 +106,11 @@ $(function () {
                     topOffset = 150;
                 }
 
-                console.log(scrollTop)
+                /*               console.log(scrollTop)*/
 
                 // Ajustement dynamique en fonction du scroll
                 if (scrollTop > 0 && scrollTop < 140.5) {
-                    topOffset -= scrollTop;
+                    topOffset -= scrollTop - 32;
                     console.log(topOffset)
                 } else if (scrollTop === 0) {
                     if (windowWidth < 768) {
