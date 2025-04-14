@@ -65,7 +65,8 @@
                                         <div>
                                             {if $product.customizable == "1"}
                                                 <span itemprop="price" class="price">
-                {$listing.prices[$product->id_product][$product->id_product_attribute]['price']}
+{*                {$listing.prices[$product->id_product][$product->id_product_attribute]['price']}*}
+                                                    {$product.price}
               </span>
                                             {/if}
                                             {if $product.customizable != "1"}
