@@ -125,6 +125,7 @@
               {block name='product_add_to_cart'}
                 {include file='catalog/_partials/product-add-to-cart.tpl'}
               {/block}
+              <div class="add-mobile skeepers_product__stars" data-product-id="{$product.id}"></div>
             </div>
             <div class="add-mobile">
               {block name='product_add_to_cart'}
