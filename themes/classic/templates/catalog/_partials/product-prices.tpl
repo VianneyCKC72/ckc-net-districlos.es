@@ -121,7 +121,12 @@
               {/block}
             </div>
 
-            <div class="col-sm-4 col-12 col-cart text-end">
+            <div class="col-sm-4 col-12 col-cart text-end{if $product.has_discount} col-cart-mobile{/if}">
+              {block name='product_add_to_cart'}
+                {include file='catalog/_partials/product-add-to-cart.tpl'}
+              {/block}
+            </div>
+            <div class="add-mobile">
               {block name='product_add_to_cart'}
                 {include file='catalog/_partials/product-add-to-cart.tpl'}
               {/block}
