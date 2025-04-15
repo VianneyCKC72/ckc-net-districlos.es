@@ -175,11 +175,8 @@ $(document).ready(function () {
         const $chevron = $('.chevron-toggle svg');
         const $collapse = $('#promoCollapse');
         if ($('body').hasClass('page-cart') || $('body').hasClass('page-order')) {
-            alert('Promo code');
             // Clic manuel sur le chevron
-            $('.chevron-toggle').on('click', function (e) {
-                alert('Promo code');
-
+            $(document).on('click', '.chevron-toggle', function (e) {
                 e.preventDefault();
                 $collapse.collapse('toggle');
             });
