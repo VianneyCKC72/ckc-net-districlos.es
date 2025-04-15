@@ -68,20 +68,18 @@
                     <a {if isset($menu.menu_open_new_tab) && $menu.menu_open_new_tab == 1} target="_blank"{/if}
                             href="{$menu.menu_link|escape:'html':'UTF-8'}"
                             style="{if $menu.enabled_vertical}{if isset($menu.menu_ver_text_color) && $menu.menu_ver_text_color}color:;{/if}{if isset($menu.menu_ver_background_color) && $menu.menu_ver_background_color}background-color:{$menu.menu_ver_background_color|escape:'html':'UTF-8'};{/if}{/if}{if Configuration::get('ETS_MM_HEADING_FONT_SIZE')}font-size:{Configuration::get('ETS_MM_HEADING_FONT_SIZE')|intval}px;{/if}">
+
                     <span class="mm_menu_content_title">
                         <div>
                             {if $menu.menu_img_link}
-                                <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" class="img-menu-desktop-custom" title="" alt="" width="20"/>
+                                {if $menu.menu_link == "/4-portail-et-portillon"}
+                                    <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" class="img-menu-desktop-custom" style="padding: 5px;" title="" alt="" width="20"/>
+                                {else}
+                                    <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" class="img-menu-desktop-custom" title="" alt="" width="20"/>
+                                {/if}
+    {elseif $menu.menu_icon}
+                                    <i class="fa {$menu.menu_icon|escape:'html':'UTF-8'}"></i>
 
-
-
-
-{elseif $menu.menu_icon}
-
-
-
-
-                                <i class="fa {$menu.menu_icon|escape:'html':'UTF-8'}"></i>
                             {/if}
                         </div>
                         <div>
