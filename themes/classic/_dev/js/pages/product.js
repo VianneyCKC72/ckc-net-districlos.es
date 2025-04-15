@@ -295,6 +295,8 @@ $(document).ready(function () {
         $('.img-cover.rounded-4').prop('src', imgSrc.attr('src'));
         $('.wrapper__swiper__product-img').replaceWith(event.product_cover_thumbnails);
 
+        refreshPrice();
+
         document
             .querySelectorAll(".wrapper__swiper__product-img")
             .forEach((wrapper, index) => {
