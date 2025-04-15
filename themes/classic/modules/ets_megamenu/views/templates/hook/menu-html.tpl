@@ -43,7 +43,7 @@
     <ul class="mm_menus_ul {if isset($mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB) && $mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB} clicktext_show_submenu{/if} {if isset($mm_config.ETS_MM_SHOW_ICON_VERTICAL)&& !$mm_config.ETS_MM_SHOW_ICON_VERTICAL} hide_icon_vertical{/if}">
         <li class="close_menu">
             <a class="pull-left" href="{$urls.base_url}">
-                <img class="logo img-fluid" src="/img/logo-1739869573.jpg" alt="Districlos" width="178" height="48">
+                <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48">
             </a>
             <div class="pull-right">
                 <span class="mm_menus_back">
@@ -206,7 +206,7 @@
                                                     {/if}
                                                 {/foreach}
                                                 <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.base_url}">
-                                                    <img class="logo img-fluid" src="/img/logo-text-white.png" alt="Districlos" width="178" height="48">
+                                                    <img class="logo img-fluid" src="/img/logo-text-white.svg" alt="Districlos" width="178" height="48">
                                                 </a>
                                             </ul>
                                         {/if}
@@ -216,7 +216,7 @@
                                 </li>
                             {/foreach}
                             <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.base_url}">
-                                <img class="logo img-fluid" src="/img/logo-1739869573.jpg" alt="Districlos" width="178" height="48">
+                                <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48">
                             </a>
                         </ul>
                     {/if}
@@ -279,11 +279,11 @@
         <li class="menu-mobile-custom-container-links mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
             <div class="menu-mobile-custom-useful-links">
                 {if (!$env_particulier)}
-                <a class="menu-mobile-useful-link" href="{$urls.pages.authentication}?back=my-account&amp;ep=1">
-                    <img src="/img/menu-mobile-espace-pro.svg" alt="espace pro" width="19px" height="18px">
-                    <p>ESPACE<br>
-                        PRO</p>
-                </a>
+                    <a class="menu-mobile-useful-link" href="{$urls.pages.authentication}?back=my-account&amp;ep=1">
+                        <img src="/img/menu-mobile-espace-pro.svg" alt="espace pro" width="19px" height="18px">
+                        <p>ESPACE<br>
+                            PRO</p>
+                    </a>
                 {/if}
                 <a class="menu-mobile-useful-link" href="/module/opartdevis/simplequotation">
                     <img src="/img/menu-mobile-devis.svg" alt="devis" width="20px" height="19px">
