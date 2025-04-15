@@ -31,7 +31,7 @@
                     {$element.title|replace:'__':'<br>' nofilter}
                     {if $element.description == '__picto3x4x10x12x'}
                         <br>
-                        <img class="paiement_plusieurs_fois" height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="Payer en plusieurs fois">
+                        <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="Paiement en plusieurs fois">
                     {/if}
                 </p>
             </div>

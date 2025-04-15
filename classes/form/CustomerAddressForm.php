@@ -159,6 +159,8 @@ class CustomerAddressFormCore extends AbstractForm
             $address->{$formField->getName()} = $formField->getValue();
         }
 
+        $address->id_customer = Context::getContext()->customer->id;
+
         if (!isset($this->formFields['id_state'])) {
             $address->id_state = 0;
         }
@@ -176,6 +178,9 @@ class CustomerAddressFormCore extends AbstractForm
             $this->getValue('token')
         );
     }
+
+
+
 
     /**
      * @return Address

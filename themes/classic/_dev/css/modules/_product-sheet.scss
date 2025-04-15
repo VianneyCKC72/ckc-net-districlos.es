@@ -24,6 +24,7 @@
 }
 
 .banner-quick-view-row {
+
   .col-price {
     display: flex;
     align-items: center;
@@ -722,7 +723,30 @@
       padding-top: 10px;
       padding-bottom: 10px;
     }
+    @media screen and (max-width: 370px) {
+      .custom-quantity-selector .btn-quantity, .custom-quantity-selector input.quantity-input {
+        height: 40px;
+      }
+      .product-prices .product-price span.price-integer {
+        font-size: 24px;
+      }
+      .banner-quick-view-row .col-price .product-discount .regular-price {
+        margin-left: 0;
+        font-size: 14px;
+      }
+    }
 
+    @media screen and (max-width: 767.98px) {
+      .col-title {
+        display: none !important;
+      }
+
+      .col-price,
+      .col-cart {
+        width: 50% !important;
+        flex: 0 0 50% !important;
+      }
+    }
     &.visible {
       opacity: 1;
       visibility: visible;
@@ -757,11 +781,26 @@
       display: flex;
       flex-wrap: wrap;
       align-items: flex-end;
-      justify-content: space-between;
+      justify-content: space-around;
       column-gap: 32px;
       row-gap: 8px;
+      width: 100%;
       @include media-breakpoint-up(md) {
         row-gap: 0;
+      }
+      @media screen and (max-width: 768px) {
+        > div {
+          justify-content: space-around;
+          width: 100%;
+          .product-quantity {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+          }
+        }
       }
       @media screen and (min-width: 540px) {
         .has-discount {

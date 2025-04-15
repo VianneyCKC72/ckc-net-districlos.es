@@ -65,21 +65,30 @@ class AddressControllerCore extends FrontController
             $this->address_form->loadAddressById($id_address);
         }
 
-        // Fill the form with data
-        $this->address_form->fillWith(Tools::getAllValues());
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $values = Tools::getAllValues();
+            $values['id_customer'] = $this->context->customer->id;
 
-        // Submit the address, don't care if it's an edit or add
-        if (Tools::isSubmit('submitAddress')) {
-            if (!$this->address_form->submit()) {
-                $this->errors[] = $this->trans('Please fix the error below.', [], 'Shop.Notifications.Error');
-            } else {
-                if ($id_address) {
-                    $this->success[] = $this->trans('Address successfully updated.', [], 'Shop.Notifications.Success');
+            $this->address_form->fillWith($values);
+
+            if (Tools::isSubmit('submitAddress')) {
+                if (!$this->address_form->submit()) {
+                    $this->errors[] = $this->trans('Please fix the error below.', [], 'Shop.Notifications.Error');
                 } else {
-                    $this->success[] = $this->trans('Address successfully added.', [], 'Shop.Notifications.Success');
-                }
+                    if ($id_address) {
+                        $this->success[] = $this->trans('Address successfully updated.', [], 'Shop.Notifications.Success');
+                    } else {
+                        $this->success[] = $this->trans('Address successfully added.', [], 'Shop.Notifications.Success');
+                    }
 
-                $this->should_redirect = true;
+                    $this->should_redirect = true;
+                }
+            }
+        } else {
+            // Logique pour les requêtes GET (affichage du formulaire)
+            if ($id_address) {
+                $this->address_form->loadAddressById($id_address);
+                $this->context->smarty->assign('editing', true);
             }
         }
 
