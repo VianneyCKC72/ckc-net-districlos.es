@@ -1,6 +1,11 @@
 $(document).ready(function () {
     var $element = $(".wrapper__swiper__product-img");
 
+    let cart = $('body').prop('id') === 'cart';
+    if (!cart) {
+        $('.js-product-quantity').attr('data-valueqty', 1);
+    }
+
     if ($element.length) {
         function updateWidth() {
             var width = $element.width();
