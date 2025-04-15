@@ -24,10 +24,10 @@ $(document).ready(function () {
 
         let cart = $('body').prop('id') === 'cart';
         if (cart) {
-            $quantityInput.val(newValue).attr('data-valueqty', newValue).trigger('change');
+            $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
             checkStock(cart, $quantityInput, 'up', 1);
         } else {
-            $quantityInput.val(newValue).attr('data-valueqty', newValue).trigger('change');
+            $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
         }
     });
 
@@ -42,16 +42,15 @@ $(document).ready(function () {
         let cart = $('body').prop('id') === 'cart';
 
         if (cart) {
-            $quantityInput.val(newValue).attr('data-valueqty', newValue).trigger('change');
+            $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
             checkStock(cart, $quantityInput, 'down', 1);
         } else {
-            $quantityInput.val(newValue).attr('data-valueqty', newValue).trigger('change');
+            $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
         }
     });
 
 
     $('body').on('change', '.js-product-quantity', function (event) {
-        alert('test')
         let input = $(this);
         let qtyBefore = parseInt(input.attr('data-valueqty')) || 1;
         let qty = parseInt(input.val()) || 1;
