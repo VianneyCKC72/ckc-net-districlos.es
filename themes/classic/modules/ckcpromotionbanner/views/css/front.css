@@ -143,3 +143,6 @@
         width: 50%;
     }
 }
+#ckcpromobarre .container .block-left-banner{
+    white-space: nowrap;
+}
