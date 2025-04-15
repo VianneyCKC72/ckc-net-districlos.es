@@ -3,7 +3,7 @@ $(document).ready(function () {
 
     let cart = $('body').prop('id') === 'cart';
     if (!cart) {
-        $('.js-product-quantity').attr('data-valueqty', 1);
+        $('.js-product-quantity').attr('data-valueqty', $('.js-product-quantity').val());
     }
 
     if ($element.length) {
