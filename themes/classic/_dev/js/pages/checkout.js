@@ -171,37 +171,32 @@ $(document).ready(function () {
         }
     }
 
-    function togglePromoCode() {
-        const $chevron = $('.chevron-toggle svg');
-        const $collapse = $('#promoCollapse');
-        if ($('body').hasClass('page-cart') || $('body').hasClass('page-order')) {
-            // Clic manuel sur le chevron
-            $(document).on('click', '.chevron-toggle', function (e) {
-                e.preventDefault();
-                $collapse.collapse('toggle');
-            });
+    const $chevron = $('.chevron-toggle svg');
+    const $collapse = $('#promoCollapse');
+    if ($('body').hasClass('page-cart') || $('body').hasClass('page-order')) {
+        // Clic manuel sur le chevron
 
-            // Rotation du chevron
-            $collapse.on('show.bs.collapse', function () {
-                $chevron.css('transform', 'rotate(180deg)');
-            });
-
-            $collapse.on('hide.bs.collapse', function () {
-                $chevron.css('transform', 'rotate(0deg)');
-            });
+        $('.chevron-toggle').off('click');
+        $(document).on('click', '.chevron-toggle', function (e) {
+            toggleCollapse(e)
+        });
+        function toggleCollapse(e) {
+            e.preventDefault();
+            $('#promoCollapse').collapse('toggle');
         }
 
-        if ($('body').hasClass('page-order') && $(window).width() <= 767) {
-            var orderButton = $("#payment-confirmation.js-payment-confirmation").clone()
-            orderButton.insertAfter($("form#conditions-to-approve"))
-        }
+        // Rotation du chevron
+        $collapse.on('show.bs.collapse', function () {
+            $chevron.css('transform', 'rotate(180deg)');
+        });
+
+        $collapse.on('hide.bs.collapse', function () {
+            $chevron.css('transform', 'rotate(0deg)');
+        });
     }
 
-    togglePromoCode()
-
-    $(document).on('ajaxComplete', function (event, xhr, settings) {
-        if (settings.url.includes('panier?ajax=1&action=refresh') && $('body').hasClass('page-cart')) {
-            togglePromoCode()
-        }
-    });
+    if ($('body').hasClass('page-order') && $(window).width() <= 767) {
+        var orderButton = $("#payment-confirmation.js-payment-confirmation").clone()
+        orderButton.insertAfter($("form#conditions-to-approve"))
+    }
 });
