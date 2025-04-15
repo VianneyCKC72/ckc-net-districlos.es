@@ -49,24 +49,9 @@ $(document).ready(function () {
         }
     });
 
-    $('body').on('change', '#quantity_wanted', function() {
-        let input = $(this);
-        let qtyBefore = parseInt(input.attr('data-valueqty')) || 1;
-        let qty = parseInt(input.val()) || 1;
-
-        if (qty === qtyBefore) {
-            return false;
-        }
-
-        let differential = Math.abs(qty - qtyBefore);
-        let direction = qty > qtyBefore ? 'up' : 'down';
-        input.attr('data-valueqty', qty);
-
-        checkStock(false, input, direction, differential);
-    })
-
 
     $('body').on('change', '.js-product-quantity', function (event) {
+        alert('test')
         let input = $(this);
         let qtyBefore = parseInt(input.attr('data-valueqty')) || 1;
         let qty = parseInt(input.val()) || 1;
