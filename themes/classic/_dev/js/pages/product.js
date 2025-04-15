@@ -1,11 +1,6 @@
 $(document).ready(function () {
     var $element = $(".wrapper__swiper__product-img");
 
-    let cart = $('body').prop('id') === 'cart';
-    if (!cart) {
-        $('.js-product-quantity').attr('data-valueqty', $('.js-product-quantity').val());
-    }
-
     if ($element.length) {
         function updateWidth() {
             var width = $element.width();
@@ -202,6 +197,7 @@ $(document).ready(function () {
                     refreshPrice();
                 }
             }
+            $('.js-product-quantity').attr('data-valueqty', $('.js-product-quantity').val());
         });
     }
 
