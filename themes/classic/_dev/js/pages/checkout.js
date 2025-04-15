@@ -175,7 +175,7 @@ $(document).ready(function () {
     const $collapse = $('#promoCollapse');
     if ($('body').hasClass('page-cart') || $('body').hasClass('page-order')) {
         // Clic manuel sur le chevron
-        $('.chevron-toggle').on('click', function (e) {
+        $(document).on('click', '.chevron-toggle', function (e) {
             e.preventDefault();
             $collapse.collapse('toggle');
         });
