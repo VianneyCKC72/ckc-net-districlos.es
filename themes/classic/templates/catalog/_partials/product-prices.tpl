@@ -110,7 +110,6 @@
             <div class="col-sm-4 col-12 col-title">
               <div class="title-banner-quick-view-header-container">
                 <h2 class="h2 mb-0">{block name='page_title'}{$product.name}{/block}</h2>
-                {include file='catalog/_partials/product-prices/has-discount.tpl'}
               </div>
               <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
             </div>
@@ -118,6 +117,7 @@
             <div class="col-sm-4 col-12 col-price">
               {block name='product_price'}
                 {include file='catalog/_partials/product-prices/price.tpl'}
+                {include file='catalog/_partials/product-prices/has-discount.tpl'}
               {/block}
             </div>
 
