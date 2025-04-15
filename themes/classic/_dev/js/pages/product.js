@@ -27,7 +27,7 @@ $(document).ready(function () {
             $quantityInput.val(newValue).attr('data-valueqty', newValue).trigger('change');
             checkStock(cart, $quantityInput, 'up', 1);
         } else {
-            $quantityInput.val(newValue).trigger('change');
+            $quantityInput.val(newValue).attr('data-valueqty', newValue).trigger('change');
         }
     });
 
@@ -45,7 +45,7 @@ $(document).ready(function () {
             $quantityInput.val(newValue).attr('data-valueqty', newValue).trigger('change');
             checkStock(cart, $quantityInput, 'down', 1);
         } else {
-            $quantityInput.val(newValue).trigger('change');
+            $quantityInput.val(newValue).attr('data-valueqty', newValue).trigger('change');
         }
     });
 
