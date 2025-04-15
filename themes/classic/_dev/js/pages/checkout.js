@@ -200,6 +200,7 @@ $(document).ready(function () {
     togglePromoCode()
 
     $(document).on('ajaxComplete', function (event, xhr, settings) {
+        alert(settings.url.includes('panier?ajax=1&action=refresh'))
         if (settings.url.includes('panier?ajax=1&action=refresh') && $('body').hasClass('page-cart')) {
             togglePromoCode()
         }
