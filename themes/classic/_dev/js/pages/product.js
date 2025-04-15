@@ -15,7 +15,6 @@ $(document).ready(function () {
 
     var quantityTimeout;
 
-    // ✅ Correction : Supprime le problème de double appel en bloquant le blur immédiat
     $('body').on('click', '.increase', function () {
         let parent = $(this).closest('.custom-quantity-selector');
         let $quantityInput = $(parent).find('input');
@@ -28,7 +27,7 @@ $(document).ready(function () {
             $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
             checkStock(cart, $quantityInput, 'up', 1);
         } else {
-            $quantityInput.val(newValue).trigger('change');
+            $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
         }
     });
 
@@ -46,9 +45,10 @@ $(document).ready(function () {
             $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
             checkStock(cart, $quantityInput, 'down', 1);
         } else {
-            $quantityInput.val(newValue).trigger('change');
+            $quantityInput.val(newValue).trigger('change').attr('data-valueqty', newValue);
         }
     });
+
 
     $('body').on('change', '.js-product-quantity', function (event) {
         let input = $(this);
@@ -197,6 +197,7 @@ $(document).ready(function () {
                     refreshPrice();
                 }
             }
+            $('.js-product-quantity').attr('data-valueqty', $('.js-product-quantity').val());
         });
     }
 
@@ -293,6 +294,8 @@ $(document).ready(function () {
         let imgSrc = $(dataImg).find('img')
         $('.img-cover.rounded-4').prop('src', imgSrc.attr('src'));
         $('.wrapper__swiper__product-img').replaceWith(event.product_cover_thumbnails);
+
+        refreshPrice();
 
         document
             .querySelectorAll(".wrapper__swiper__product-img")

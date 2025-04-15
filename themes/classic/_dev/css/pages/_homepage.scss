@@ -311,3 +311,12 @@
     }
   }
 }
+#everpspopup_block_center{
+  background-color: transparent;
+  max-width: none;
+  text-align: center;
+  .fancybox-button.fancybox-close-small {
+    padding: 0;
+    color: #fff;
+  }
+}

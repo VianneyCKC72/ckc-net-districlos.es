@@ -11596,7 +11596,7 @@ $(document).ready(function () {
         var copyrightFooter = $(".copyrightFooter")
         var linksBlockFooter = $(".linksBlockFooter")
 
-        $(".logoFooterContainer img").attr('src', '/img/logo-text-white.png')
+        $(".logoFooterContainer img").attr('src', '/img/logo-text-white.svg')
 
         if (socialIconFooter.length > 0 && copyrightFooter.length > 0 && linksBlockFooter.length > 0){
             socialIconFooter.insertAfter(linksBlockFooter)
