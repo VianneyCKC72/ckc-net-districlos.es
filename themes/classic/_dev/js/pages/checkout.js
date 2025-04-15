@@ -171,27 +171,37 @@ $(document).ready(function () {
         }
     }
 
-    const $chevron = $('.chevron-toggle svg');
-    const $collapse = $('#promoCollapse');
-    if ($('body').hasClass('page-cart') || $('body').hasClass('page-order')) {
-        // Clic manuel sur le chevron
-        $(document).on('click', '.chevron-toggle', function (e) {
-            e.preventDefault();
-            $collapse.collapse('toggle');
-        });
+    function togglePromoCode() {
+        const $chevron = $('.chevron-toggle svg');
+        const $collapse = $('#promoCollapse');
+        if ($('body').hasClass('page-cart') || $('body').hasClass('page-order')) {
+            // Clic manuel sur le chevron
+            $(document).on('click', '.chevron-toggle', function (e) {
+                e.preventDefault();
+                $collapse.collapse('toggle');
+            });
 
-        // Rotation du chevron
-        $collapse.on('show.bs.collapse', function () {
-            $chevron.css('transform', 'rotate(180deg)');
-        });
+            // Rotation du chevron
+            $collapse.on('show.bs.collapse', function () {
+                $chevron.css('transform', 'rotate(180deg)');
+            });
 
-        $collapse.on('hide.bs.collapse', function () {
-            $chevron.css('transform', 'rotate(0deg)');
-        });
+            $collapse.on('hide.bs.collapse', function () {
+                $chevron.css('transform', 'rotate(0deg)');
+            });
+        }
+
+        if ($('body').hasClass('page-order') && $(window).width() <= 767) {
+            var orderButton = $("#payment-confirmation.js-payment-confirmation").clone()
+            orderButton.insertAfter($("form#conditions-to-approve"))
+        }
     }
 
-    if ($('body').hasClass('page-order') && $(window).width() <= 767) {
-        var orderButton = $("#payment-confirmation.js-payment-confirmation").clone()
-        orderButton.insertAfter($("form#conditions-to-approve"))
-    }
+    togglePromoCode()
+
+    $(document).on('ajaxComplete', function (event, xhr, settings) {
+        if (settings.url.includes('panier?ajax=1&action=refresh') && $('body').hasClass('page-cart')) {
+            togglePromoCode()
+        }
+    });
 });
