@@ -34,7 +34,7 @@
                       <span style="margin-inline: 10px">
                           <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
                       </span>
-                  {elseif $product.price_amount * $product.quantity_wanted >= 500 && $clean_value|floatval < 2000}
+                  {elseif ($product.price_amount * $product.quantity_wanted >= 500) && ($product.price_amount * $product.quantity_wanted < 2000)}
                       <span style="margin-inline: 10px">
                           <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
                       </span>
