@@ -29,7 +29,7 @@
 {/block}
 
 {block name='page_content'}
-    <form action="{$urls.pages.password}" method="post">
+  <form action="{$urls.pages.password}" method="post">
     <ul class="ps-alert-error">
       {foreach $errors as $error}
         <li class="item">
@@ -42,54 +42,54 @@
         </li>
       {/foreach}
     </ul>
-      <section class="form-fields renew-password">
+    <section class="form-fields renew-password">
 
-        <div class="email">
-          {l
-            s='Email address: %email%'
-            d='Shop.Theme.Customeraccount'
-            sprintf=['%email%' => $customer_email|stripslashes]}
-        </div>
+      <div class="email">
+        {l
+        s='Email address: %email%'
+        d='Shop.Theme.Customeraccount'
+        sprintf=['%email%' => $customer_email|stripslashes]}
+      </div>
 
-        <div class="container-fluid field-password-policy">
-          <div class="row form-group">
-            <label class="form-control-label col-md-3 offset-md-2">{l s='New password' d='Shop.Forms.Labels'}</label>
-            <div class="col-md-4 js-input-column">
+      <div class="container-fluid field-password-policy">
+        <div class="row form-group">
+          <label class="form-control-label col-md-3">{l s='New password' d='Shop.Forms.Labels'}</label>
+          <div class="col-md-4 js-input-column">
             <input
-              class="form-control"
-              type="password"
-              data-validate="isPasswd"
-              name="passwd"
-              value=""
-              {if isset($configuration.password_policy.minimum_length)}data-minlength="{$configuration.password_policy.minimum_length}"{/if}
-              {if isset($configuration.password_policy.maximum_length)}data-maxlength="{$configuration.password_policy.maximum_length}"{/if}
-              {if isset($configuration.password_policy.minimum_score)}data-minscore="{$configuration.password_policy.minimum_score}"{/if}
+                    class="form-control"
+                    type="password"
+                    data-validate="isPasswd"
+                    name="passwd"
+                    value=""
+                    {if isset($configuration.password_policy.minimum_length)}data-minlength="{$configuration.password_policy.minimum_length}"{/if}
+                    {if isset($configuration.password_policy.maximum_length)}data-maxlength="{$configuration.password_policy.maximum_length}"{/if}
+                    {if isset($configuration.password_policy.minimum_score)}data-minscore="{$configuration.password_policy.minimum_score}"{/if}
             >
-            </div>
-          </div>
-
-          <div class="row form-group">
-            <label class="form-control-label col-md-3 offset-md-2">{l s='Confirmation' d='Shop.Forms.Labels'}</label>
-            <div class="col-md-4">
-              <input class="form-control" type="password" data-validate="isPasswd" name="confirmation" value="">
-            </div>
-          </div>
-
-          <input type="hidden" name="token" id="token" value="{$customer_token}">
-          <input type="hidden" name="id_customer" id="id_customer" value="{$id_customer}">
-          <input type="hidden" name="reset_token" id="reset_token" value="{$reset_token}">
-
-          <div class="row form-group">
-            <div class="offset-md-5">
-              <button class="btn btn-primary" type="submit" name="submit">
-                {l s='Change Password' d='Shop.Theme.Actions'}
-              </button>
-            </div>
           </div>
         </div>
 
-      </section>
-    </form>
+        <div class="row form-group">
+          <label class="form-control-label col-md-3">{l s='Confirmation' d='Shop.Forms.Labels'}</label>
+          <div class="col-md-4">
+            <input class="form-control" type="password" data-validate="isPasswd" name="confirmation" value="">
+          </div>
+        </div>
+
+        <input type="hidden" name="token" id="token" value="{$customer_token}">
+        <input type="hidden" name="id_customer" id="id_customer" value="{$id_customer}">
+        <input type="hidden" name="reset_token" id="reset_token" value="{$reset_token}">
+
+        <div class="row form-group">
+          <div>
+            <button class="btn btn-primary" type="submit" name="submit">
+              {l s='Change Password' d='Shop.Theme.Actions'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </form>
 {/block}
 
 {block name='page_footer'}
