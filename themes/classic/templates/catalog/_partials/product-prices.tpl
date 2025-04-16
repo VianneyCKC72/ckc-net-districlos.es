@@ -44,7 +44,7 @@
                   </span>
               {/if}
               en carte bancaire sans frais <a href="#" id="oneySimulation" style="color: black;">
-                  <strong>simuler</strong>
+                  <strong>Simuler</strong>
               </a>.</p>
           <p class="mb-0 thin">Un crédit vous engage et doit être remboursé. vérifiez vos capacités de remboursement avant
             de vous engager.</p>
