@@ -30,25 +30,25 @@
       {if ($product.price_amount * $product.quantity_wanted > 300)}
         <div>
           <p class="mb-0">Payez en plusieurs fois
-                  {if $product.price_amount * $product.quantity_wanted >= 2000}
-                      <span style="margin-inline: 10px">
-                          <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
-                      </span>
-                  {elseif ($product.price_amount * $product.quantity_wanted >= 500) && ($product.price_amount * $product.quantity_wanted < 2000)}
-                      <span style="margin-inline: 10px">
-                          <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
-                      </span>
-                  {else}
-                      <span style="margin-inline: 10px">
-                          <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
-                      </span>
-                  {/if}
-                  en carte bancaire sans frais</p>
+              {if $product.price_amount * $product.quantity_wanted >= 2000}
+                  <span style="margin-inline: 10px">
+                      <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
+                  </span>
+              {elseif ($product.price_amount * $product.quantity_wanted >= 500) && ($product.price_amount * $product.quantity_wanted < 2000)}
+                  <span style="margin-inline: 10px">
+                      <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
+                  </span>
+              {else}
+                  <span style="margin-inline: 10px">
+                      <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
+                  </span>
+              {/if}
+              en carte bancaire sans frais</p>
+            <a href="#" onclick="showOneyWidget(event)" style="color: black;">
+                <strong>Simuler</strong>
+            </a><br>
           <p class="mb-0 thin">Un crédit vous engage et doit être remboursé. vérifiez vos capacités de remboursement avant
             de vous engager.</p>
-          <p>
-            UN CRÉDIT VOUS ENGAGE ET DOIT ÊTRE REMBOURSÉ. VÉRIFIEZ VOS CAPACITÉS DE REMBOURSEMENT AVANT DE VOUS ENGAGER.
-          </p>
         </div>
       {/if}
 
