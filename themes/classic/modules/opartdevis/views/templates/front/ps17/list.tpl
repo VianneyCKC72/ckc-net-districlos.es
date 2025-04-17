@@ -19,8 +19,9 @@
     {/if}
 
     {if $quotations && count($quotations)}
-        <table id="order-list" class="table table-bordered table-striped">
-            <thead>
+        <div class="wrapper-table-myaccount-page-devis">
+            <table id="order-list" class="table table-bordered table-striped">
+                <thead>
                 <tr>
                     <th class="item"></th>
                     <th class="item">{l s='Date' mod='opartdevis'}</th>
@@ -32,16 +33,16 @@
                     <th class="item">&nbsp;</th>
                     <th class="last_item">&nbsp;</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 {foreach from=$quotations item=quotation name=myLoop}
-                {assign var="date_districlos" value=$quotation.date_add|date_format:"%Y-%m-%d"}
-                {$futurdate = date("Y-m-d",strtotime("+7days",strtotime($date_districlos)))}
-                {assign var="date_districlos_today" value=$smarty.now|date_format:"%Y-%m-%d"}<br/>
-                {assign var="difference_date" value=(strtotime($date_districlos_today) - strtotime($futurdate)) / 24 / 60 / 60}
-                {if $date_districlos_today > $futurdate}
-                    {$quotation.status=3}
-                {/if}
+                    {assign var="date_districlos" value=$quotation.date_add|date_format:"%Y-%m-%d"}
+                    {$futurdate = date("Y-m-d",strtotime("+7days",strtotime($date_districlos)))}
+                    {assign var="date_districlos_today" value=$smarty.now|date_format:"%Y-%m-%d"}<br/>
+                    {assign var="difference_date" value=(strtotime($date_districlos_today) - strtotime($futurdate)) / 24 / 60 / 60}
+                    {if $date_districlos_today > $futurdate}
+                        {$quotation.status=3}
+                    {/if}
 
                     <tr>
                         <td data-label="ID">{$quotation.id_opartdevis|escape:'htmlall':'UTF-8'}</td>
@@ -81,9 +82,10 @@
                         </td>
                     </tr>
                 {/foreach}
-            </tbody>
-        </table>
-        <div id="block-order-detail" class="hidden">&nbsp;</div>
+                </tbody>
+            </table>
+            <div id="block-order-detail" class="hidden">&nbsp;</div>
+        </div>
     {else}
         <p>
             Vous n'avez pas encore de devis enregistré sur votre compte.
