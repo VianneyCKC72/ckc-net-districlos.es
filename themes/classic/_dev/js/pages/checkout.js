@@ -1,4 +1,10 @@
 $(document).ready(function () {
+
+    $('.exitCart').click(function(e) {
+        e.preventDefault()
+        $('#confirmModal').modal('show')
+    })
+
     if ($('body').hasClass('page-order')) {
 
         // Supprimer le doublon des boutons sociaux

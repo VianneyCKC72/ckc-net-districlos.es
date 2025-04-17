@@ -54,7 +54,7 @@
             <div class="cart-grid-right">
 
                 <div class="text-right">
-                    <a style="margin-bottom:5px; font-size:12px;" href="/">
+                    <a class="exitCart" style="margin-bottom:5px; font-size:12px;" href="/">
                         <svg style="max-width: 15px" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                              stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left">
@@ -118,6 +118,8 @@
                 </div>
             </div>
         </div>
+
+        {include file='checkout/_partials/alert-exit-cart.tpl'}
 
         <div class="col-12">
             <!-- shipping informations -->
