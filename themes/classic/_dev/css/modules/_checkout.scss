@@ -209,7 +209,8 @@ body#checkout {
 
           .product-price {
             font-weight: 600;
-            align-self: flex-end;
+            /*            align-self: flex-end;*/
+            margin-left: 30px;
           }
         }
       }
@@ -544,6 +545,9 @@ body#checkout {
     h2.h2.black{
       margin-top: 20px;
     }
+  }
+  #payment-confirmation{
+    margin-bottom: 25px;
   }
   form#conditions-to-approve{
     margin-top: 15px;
