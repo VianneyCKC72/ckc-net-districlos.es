@@ -512,3 +512,16 @@
     margin-top: 15px;
   }
 }
+.block-notre-magasin-custom  > .elementor-container > .elementor-row{
+  gap: 20px;
+}
+@media (min-width: 768px){
+  .block-notre-magasin-custom > .elementor-container > .elementor-row{
+    flex-wrap: nowrap;
+  }
+  .block-notre-magasin-custom-img .elementor-widget-wrap img{
+    min-height: 269px;
+    object-fit: cover;
+  }
+}
+
