@@ -228,7 +228,7 @@
 
         </div>
 
-        {if (!$field.required && !in_array($field.type, ['radio-buttons', 'checkbox']) && $page.page_name != 'identity')}
+        {if (!$field.required && !in_array($field.type, ['radio-buttons', 'checkbox']) && $page.page_name != 'identity' && $page.page_name != 'registration')}
             <div class="form-control-comment">
                 {block name='form_field_comment'}
                     {l s='Optional' d='Shop.Forms.Labels'}
