@@ -91,7 +91,7 @@ $(document).ready(function () {
 
     function getGroupParams() {
         let groupParams = {};
-        let elements = $('input[name^="group["], select[name^="group["]');
+        let elements = $('input[name^="group["]:checked, select[name^="group["]');
 
         if (elements.length > 0) {
             elements.each(function (index) {

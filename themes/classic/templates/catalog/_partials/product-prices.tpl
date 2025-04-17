@@ -27,14 +27,29 @@
     {block name='product_price'}
       {include file='catalog/_partials/product-prices/has-discount.tpl'}
       {include file='catalog/_partials/product-prices/price.tpl'}
-      <div>
-        <p class="mb-0">Payez en plusieurs fois<span style="margin-inline: 10px"><img
-                    src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt=""></span>en carte
-          bancaire sans frais</p>
-        <p class="mb-0 thin">Un crédit vous engage et doit être remboursé. vérifiez vos capacités de remboursement avant
-          de
-          vous engager.</p>
-      </div>
+      {if ($product.price_amount * $product.quantity_wanted > 300)}
+        <div>
+          <p class="mb-0">Payez en plusieurs fois
+              {if $product.price_amount * $product.quantity_wanted >= 2000}
+                  <span style="margin-inline: 10px">
+                      <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
+                  </span>
+              {elseif ($product.price_amount * $product.quantity_wanted >= 500) && ($product.price_amount * $product.quantity_wanted < 2000)}
+                  <span style="margin-inline: 10px">
+                      <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
+                  </span>
+              {else}
+                  <span style="margin-inline: 10px">
+                      <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
+                  </span>
+              {/if}
+              en carte bancaire sans frais <a href="#" id="oneySimulation" style="color: black;">
+                  <strong>Simuler</strong>
+              </a>.</p>
+          <p class="mb-0 thin">Un crédit vous engage et doit être remboursé. vérifiez vos capacités de remboursement avant
+            de vous engager.</p>
+        </div>
+      {/if}
 
       {* <div class="product-price{if $product.has_discount}has-discount{/if}">
 
@@ -125,6 +140,7 @@
               {block name='product_add_to_cart'}
                 {include file='catalog/_partials/product-add-to-cart.tpl'}
               {/block}
+              <div class="add-mobile skeepers_product__stars" data-product-id="{$product.id}"></div>
             </div>
             <div class="add-mobile">
               {block name='product_add_to_cart'}

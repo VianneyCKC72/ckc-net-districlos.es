@@ -511,17 +511,19 @@
   }
 
   // En cas de résidus de Material Icons
-  .material-icons.remove {
-    font-family: inherit !important;
-    font-style: normal !important;
-    display: none !important;
-    align-items: center;
-    justify-content: center;
+  #wrapper{
+    .material-icons.remove {
+      font-family: inherit !important;
+      font-style: normal !important;
+      display: none !important;
+      align-items: center;
+      justify-content: center;
 
-    svg {
-      width: 18px;
-      height: 18px;
-      stroke: #232323;
+      svg {
+        width: 18px;
+        height: 18px;
+        stroke: #232323;
+      }
     }
   }
 
@@ -951,12 +953,62 @@
           }
 
         }
+        .add-mobile.skeepers_product__stars{
+          margin-top: 10px;
+          min-height: 29px;
+          .skeepers_product__stars{
+            text-align: left;
+            padding-left: 15px;
+            .stars__rating{
+              white-space: nowrap;
+            }
+          }
+        }
+        .col-cart:has(.skeepers_product__stars){
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-top: 10px;
+        }
+      }
+      @media (max-width: 640px) {
+        .add-mobile.skeepers_product__stars{
+          .skeepers_product__stars{
+            padding-left: 0;
+          }
+        }
       }
       @media (max-width: 575px) {
         .add-mobile {
           .add {
             button.btn-secondary.add-to-cart{
               width: 95%;
+            }
+          }
+        }
+        .add-mobile.skeepers_product__stars{
+          margin-top: 25px;
+        }
+      }
+      @media (max-width: 450px) {
+        .add-mobile.skeepers_product__stars{
+          .skeepers_product__stars{
+            text-align: left;
+          }
+        }
+      }
+      @media (max-width: 380px) {
+        .add-mobile.skeepers_product__stars{
+          .review__header{
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: space-between;
+            .stars__rating{
+              margin-top: 10px;
+              line-height: 0;
+              margin-left: 0;
             }
           }
         }
