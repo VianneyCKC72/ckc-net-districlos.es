@@ -26,16 +26,16 @@
 
 {if !$logged || ($logged && $env_pro)}
     <a href="{$urls.pages.authentication}?back=my-account&amp;ep=1" class="ico btn-espace-pro">
-        <img src="/themes/classic/assets/img/ico-espace-pro.png" alt="Connexion à Espace pro">
+        <img src="/themes/classic/assets/img/ico-espace-pro.svg" alt="Connexion à Espace pro" width="20" height="19">
         <span class="text">Espace pro</span>
     </a>
 {/if}
 <a href="/module/opartdevis/simplequotation" class="ico btn-devis">
-    <img src="/themes/classic/assets/img/ico-devis.png" alt="Page de de demande de Devis">
+    <img src="/themes/classic/assets/img/ico-devis.svg" alt="Page de de demande de Devis" width="21" height="21">
     <span class="text">Devis</span>
 </a>
 <a href="/content/11-nos-magasins-de-cloture" class="ico btn-magasin">
-    <img src="/themes/classic/assets/img/ico-magasins.png" alt="Consultez nos magasins">
+    <img src="/themes/classic/assets/img/ico-magasins.svg" alt="Consultez nos magasins" width="20" height="20">
     <span class="text">Magasins</span>
 </a>
 

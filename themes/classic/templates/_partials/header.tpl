@@ -38,7 +38,7 @@
                                 </span>
                                 <span class="medium-text">votre clôture</span>
                             </div>
-                            <img width="29px" height="26px" alt="cloture" src="/img/ico-cloture.png">
+                            <img width="37px" height="35px" alt="cloture" src="/img/menu-mobile-fence.svg">
                         </a>
                         <div class="block-question block-question-header">
                             <img src="/img/menu-mobile-phone.svg" width="22" height="20" class="ico-question" alt="des question?">
