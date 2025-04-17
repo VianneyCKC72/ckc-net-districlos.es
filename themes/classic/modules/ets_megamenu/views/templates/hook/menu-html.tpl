@@ -274,6 +274,9 @@
                 </div>
             </li>
         {/foreach}
+        <li class="info-menu-mobile-only mm_menus_li distri_megamenu mm_sub_align_full"><a href="/365-premiers-prix">
+                <span class="mm_menu_content_title">Premiers prix</span>
+            </a></li>
         <li class="menu-mobile-custom-container-links mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
             <div class="menu-mobile-custom-useful-links">
                 {if (!$env_particulier)}

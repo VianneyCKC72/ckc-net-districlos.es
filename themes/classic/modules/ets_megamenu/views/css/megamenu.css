@@ -3322,6 +3322,15 @@ body.menu-opened #ckcpromobarre {
         justify-content: space-around;
     }
 }
+.info-menu-mobile-only{
+    display: none;
+    @media (max-width: 768px){
+        display: list-item;
+        span{
+            color: #ff0946;
+        }
+    }
+}
 .changestatus .mm_menus_li.menu-mobile-custom-container-links{
     @media (max-width: 768px) {
         height: auto;
