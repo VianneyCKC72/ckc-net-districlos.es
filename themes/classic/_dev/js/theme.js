@@ -11539,25 +11539,6 @@ $(document).ready(function () {
         }
     }
 
-    var $quantityInput = $("#quantity_wanted");
-    var $increaseBtn = $(".increase");
-    var $decreaseBtn = $(".decrease");
-
-    if ($quantityInput.length && $increaseBtn.length && $decreaseBtn.length) {
-        $increaseBtn.on("click", function () {
-            // commenté parce qu'il est en double et provoque un bug
-            /* $quantityInput[0].stepUp();*/ // jQuery retourne un objet, on accède au DOM avec [0]
-        });
-
-        $decreaseBtn.on("click", function () {
-            var minValue = parseInt($quantityInput.attr("min")) || 0; // Récupère la valeur min ou 0 si non définie
-            if ($quantityInput.val() > minValue) {
-                $quantityInput[0].stepDown();
-            }
-        });
-    } else {
-        console.warn("Un ou plusieurs éléments ne sont pas trouvés dans le DOM.");
-    }
     // Loading image before flex slider load
     $(window).load(function () {
         $(".loadingdiv").remove()
@@ -11604,6 +11585,27 @@ $(document).ready(function () {
             copyrightFooter.insertAfter(socialIconFooter)
         }
     }
+
+    var $quantityInput = $("#quantity_wanted");
+    var $increaseBtn = $(".increase");
+    var $decreaseBtn = $(".decrease");
+
+    if ($quantityInput.length && $increaseBtn.length && $decreaseBtn.length) {
+        $increaseBtn.on("click", function () {
+            // commenté parce qu'il est en double et provoque un bug
+            /* $quantityInput[0].stepUp();*/ // jQuery retourne un objet, on accède au DOM avec [0]
+        });
+
+        $decreaseBtn.on("click", function () {
+            var minValue = parseInt($quantityInput.attr("min")) || 0; // Récupère la valeur min ou 0 si non définie
+            if ($quantityInput.val() > minValue) {
+                $quantityInput[0].stepDown();
+            }
+        });
+    } else {
+        console.warn("Un ou plusieurs éléments ne sont pas trouvés dans le DOM.");
+    }
+
 });
 
 document.addEventListener('DOMContentLoaded', function () {

@@ -527,7 +527,7 @@
     }
   }
 
-  .container {
+  .container:not(:has(.ckcpromobarre-text-change-container)) {
     max-width: 1394px !important;
   }
 
