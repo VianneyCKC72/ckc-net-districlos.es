@@ -581,9 +581,17 @@ body#checkout {
       margin-top: 20px;
     }
   }
+
   #payment-confirmation{
     margin-bottom: 25px;
+    .ps-shown-by-js{
+      .btn.disabled{
+        background-color: $primary-color;
+        opacity: 0.5;
+      }
+    }
   }
+
   form#conditions-to-approve {
     margin-top: 15px;
 

@@ -1,0 +1,18 @@
+.tutos_content{display:flex;justify-content:space-between;text-align:center}
+.tutos_head{background-color:#ded2c6;padding:20px;text-align:center;width:100%}
+.tuto_video h3{font-weight:400;margin-bottom:15px;margin-top:50px}
+.tuto_video{height:100%;width:30%}
+.tuto_video span{display:block;font-weight:800}
+@media screen and (max-width: 992px) {
+  .tuto_video iframe{height:auto}
+}
+@media screen and (max-width:720px) {
+  .tutos_content {
+    display: block;
+    justify-content: normal;
+    width: 100%
+  }
+  .tuto_video {
+    width: 100%
+  }
+}
