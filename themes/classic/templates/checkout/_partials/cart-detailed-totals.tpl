@@ -36,12 +36,19 @@
                                   {$subtotal.label}
                               {/if}
                             </span>
-                            <span class="value">{if 'discount' == $subtotal.type}-&nbsp;{/if}{$subtotal.value}</span>
-{*                            {if $subtotal.type === 'shipping'}*}
-{*                                <div>*}
-{*                                    <small class="value">{hook h='displayCheckoutSubtotalDetails' subtotal=$subtotal}</small>*}
-{*                                </div>*}
-{*                            {/if}*}
+                            <span class="value">
+                                {if $subtotal.type == "shipping" && $subtotal.value == "gratuit"}
+                                    à définir
+                                {else}
+                                    {if 'discount' == $subtotal.type}-&nbsp;{/if}
+                                    {$subtotal.value}
+                                {/if}
+                            </span>
+                            {*                            {if $subtotal.type === 'shipping'}*}
+                            {*                                <div>*}
+                            {*                                    <small class="value">{hook h='displayCheckoutSubtotalDetails' subtotal=$subtotal}</small>*}
+                            {*                                </div>*}
+                            {*                            {/if}*}
                         </div>
                     {/if}
                 {/foreach}
