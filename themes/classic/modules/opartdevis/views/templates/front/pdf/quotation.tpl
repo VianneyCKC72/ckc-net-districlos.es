@@ -363,7 +363,7 @@
             </thead>
             {foreach $tax_details as $tax}
                 <tr>
-                    <td style="width: 40%;">{$tax.prefix|escape:'htmlall':'UTF-8'}</td>
+                    <td style="width: 40%;">{if isset($tax.prefix)}{$tax.prefix|escape:'htmlall':'UTF-8'}{/if}</td>
                     <td style="width: 20%;">{$tax.name|escape:'htmlall':'UTF-8'}</td>
                     <td style="width: 20%;">{Tools::displayPrice($tax.total_ht)}</td>
                     <td style="width: 20%;text-align: right;">{Tools::displayPrice($tax.total_tax)}</td>
