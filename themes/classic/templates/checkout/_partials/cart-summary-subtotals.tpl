@@ -30,16 +30,16 @@
       <div class="cart-summary-line cart-summary-subtotals" id="cart-subtotal-{$subtotal.type}">
 
         <span class="label">
+          {if $subtotal.type == 'shipping' && $subtotal.value == "gratuit"}
+            Retrait
+          {else}
             {$subtotal.label}
+          {/if}
         </span>
 
         <span class="value">
           {if 'discount' == $subtotal.type}-&nbsp;{/if}
-          {if $subtotal.value == "gratuit"}
-            à définir
-          {else}
-            {$subtotal.value}
-          {/if}
+          {$subtotal.value}
         </span>
       </div>
     {/if}
