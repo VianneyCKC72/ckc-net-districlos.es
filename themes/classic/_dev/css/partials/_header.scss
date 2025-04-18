@@ -39,6 +39,16 @@
       font-size: 8px;
     }
   }
+  .ico.btn-espace-pro img{
+    margin-bottom: 1px;
+  }
+  .ico.btn-devis{
+    gap: 2px;
+    @media only screen and (max-width: 1620px) {
+      gap: 3px;
+    }
+  }
+
 
   @media only screen and (max-width: 1200px) {
     .main_menu_label {
