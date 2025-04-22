@@ -359,7 +359,7 @@
   padding-left: 30px;
 }
 @media (min-width: 1025px){
-  #authentication{
+  #authentication:not(.espace_pro){
     .help-block:has(.tiny-alert.alert-danger){
       display: flex;
       justify-content: flex-end;
