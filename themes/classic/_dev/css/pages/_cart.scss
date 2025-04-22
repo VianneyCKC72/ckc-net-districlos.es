@@ -55,5 +55,21 @@
       }
     }
   }
-
+  @media screen and (max-width: 992px) {
+    .cart-detailed-actions {
+      background-color: #FFF;
+      bottom: 0;
+      left: 0;
+      padding: 0;
+      position: fixed;
+      width: 100%;
+      z-index: 9999;
+      a {
+        border-radius: unset;
+      }
+    }
+    .ygpts-widgetBtnOuter {
+      margin-bottom: 3rem;
+    }
+  }
 }
