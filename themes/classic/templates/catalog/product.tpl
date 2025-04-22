@@ -59,14 +59,17 @@
                         {/block}
                     {/block}
 
-                    {* Start - Inté static *}
                     <div class="has-discount d-flex align-items-center">
+                    {hook h='displayPromoProductDescription'}
+                    </div>
+                    {* Start - Inté static *}
+{*                    <div class="has-discount d-flex align-items-center">
                         <div class="tag-discount mr-2">% SOLDES</div>
                         <p class="small mb-0">100 € offerts par tranche de 1 000 € d’achat & 150 € offerts par tranche
                             de 3 000 €
                             d’achat
                         </p>
-                    </div>
+                    </div>*}
                     {* End - Inté static *}
                 </div>
             </div>
@@ -85,7 +88,6 @@
                 <div class="col-lg-5">
 
                     <div class="product-information">
-                        {hook h='displayPromoProductDescription'}
                         <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mb-3">
                             <div>
                                 <p class="small mb-0 font-weight-bold mb-1">
