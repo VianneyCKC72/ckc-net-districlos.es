@@ -123,7 +123,7 @@
                         {block name='product_description_short'}
                             <div id="product-description-short-{$product.id}" class="product-description mb-4">
                                 {$product.description_short nofilter}
-                                <a href="#description"
+                                <a href="#block-description-long"
                                    class="lire-plus small font-weight-bold text-black d-flex align-items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                          fill="none"
@@ -237,7 +237,7 @@
                     {/block}
 
                     {block name='product_tabs'}
-                        <div class="tabs product-tabs">
+                        <div class="tabs product-tabs" id="block-description-long">
                             <ul class="nav nav-tabs" role="tablist">
 
                                 {if $product.description}
