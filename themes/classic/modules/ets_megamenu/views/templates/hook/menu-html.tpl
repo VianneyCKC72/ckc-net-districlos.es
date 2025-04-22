@@ -318,10 +318,11 @@
         </li>
         <li class="mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
             <div class="hide_pro image-fw-mm">
-                <a href="/363-les-essentiels-a-petit-prix">
-                    <img src="/img/cms/menu/slide-post-soldes-mobile.webp"
-                         alt="Bannière post soldes">
-                </a>
+                {*                <a href="/363-les-essentiels-a-petit-prix">
+                                    <img src="/img/cms/menu/slide-post-soldes-mobile.webp"
+                                         alt="Bannière post soldes">
+                                </a>*}
+                {hook h='displayPromoMenuImage'}
             </div>
         </li>
     </ul>

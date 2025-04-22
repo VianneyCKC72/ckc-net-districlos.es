@@ -85,7 +85,7 @@
                 <div class="col-lg-5">
 
                     <div class="product-information">
-
+                        {hook h='displayPromoProductDescription'}
                         <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mb-3">
                             <div>
                                 <p class="small mb-0 font-weight-bold mb-1">
