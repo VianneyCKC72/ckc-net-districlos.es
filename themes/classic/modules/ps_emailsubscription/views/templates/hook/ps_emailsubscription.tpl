@@ -22,7 +22,7 @@
     <div class="banner__newsletter">
         <div class="col-text">
             {if $msg}
-                <p class="notification {if $nw_error}notification-error{else}notification-success{/if}">{$msg}</p>
+                <p class="notification newsletter-message {if $nw_error}notification-error{else}notification-success{/if}">{$msg}</p>
             {/if}
             <div class="h2">Newsletter</div>
             <p>Inscrivez-vous à la newsletter Districlos pour rester informés de nos nouveaux produits, bons plans et faire

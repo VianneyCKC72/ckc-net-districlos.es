@@ -11634,6 +11634,49 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 300);
 });
 
+$(document).ready(function () {
+    const $notif = $('.newsletter-message');
+
+    if ($notif.length) {
+        const alertType = $notif.hasClass('notification-error') ? 'danger' : 'success';
+        const messageText = $notif.text();
+
+        const $alert = $(`
+            <article class="alert alert-${alertType}" role="alert" data-alert="${alertType}">
+                <ul><li>${messageText}</li></ul>
+            </article>
+        `);
+
+        const $notificationsContainer = $(`
+            <aside id="notifications">
+                <div class="notifications-container container"></div>
+            </aside>
+        `);
+
+        $notificationsContainer.find('.notifications-container').append($alert);
+
+        // Insertion dans #wrapper
+        const $wrapper = $('#wrapper');
+        if ($wrapper.length) {
+            $wrapper.prepend($notificationsContainer);
+        } else {
+            // Si #wrapper pas trouvé, on met en fallback dans body
+            $('body').prepend($notificationsContainer);
+        }
+
+        $notif.remove();
+
+        // Scroll vers le haut
+        $('html, body').animate({ scrollTop: 0 }, 500);
+
+        // Disparition après 5 secondes
+        setTimeout(() => {
+            $alert.fadeOut(500);
+        }, 5000);
+    }
+});
+
+
 
 
 
