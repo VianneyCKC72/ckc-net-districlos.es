@@ -21,10 +21,9 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $idProduct = $row['id_product'];
     $idLang = $row['id_lang'];
     $description = $row['description'];
-
     $newDescription = $description;
 
-    // Supprimer tous les blocs HTML avec ces classes
+    // Liste des classes à supprimer (peu importe leur ordre dans le class="")
     $classesToRemove = [
         'descr_color',
         'descr_conseils',
@@ -33,7 +32,7 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     ];
 
     foreach ($classesToRemove as $class) {
-        $pattern = '/<div class="' . preg_quote($class, '/') . '">.*?<\/div>/is';
+        $pattern = '/<div\b[^>]*class="[^"]*\b' . preg_quote($class, '/') . '\b[^"]*"[^>]*>.*?<\/div>/is';
         $newDescription = preg_replace($pattern, '', $newDescription);
     }
 
@@ -44,8 +43,8 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             ':id' => $idProduct,
             ':lang' => $idLang
         ]);
-        echo "✅ Nettoyé : produit ID {$idProduct}, langue {$idLang}\n";
+        echo "✅ Produit ID {$idProduct}, langue {$idLang} nettoyé.\n";
     }
 }
 
-echo "🎉 Nettoyage complet terminé.\n";
+echo "🎉 Nettoyage terminé.\n";
