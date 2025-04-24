@@ -21,11 +21,16 @@
 {if $page.page_name != 'checkout' AND $page.page_name != 'identity' AND $page.page_name != 'authentication' AND $page.page_name != 'registration'}
     <div class="banner__newsletter">
         <div class="col-text">
+            {if $msg}
+                <p class="notification newsletter-message {if $nw_error}notification-error{else}notification-success{/if}">{$msg}</p>
+            {/if}
             <div class="h2">Newsletter</div>
             <p>Inscrivez-vous à la newsletter Districlos pour rester informés de nos nouveaux produits, bons plans et faire
                 le
                 plein d’inspirations !</p>
             <form class="form-newsletter" action="{$urls.current_url}#blockEmailSubscription_{$hookName}" method="post">
+                <input type="hidden" name="blockHookName" value="{$hookName}" />
+
                 <div class="input-newsletter">
                     <input
                             name="email"
@@ -48,7 +53,7 @@
                         {hook h='displayGDPRConsent' id_module=$id_module}
                     {/if}
                 </label>
-
+                <input type="hidden" name="action" value="0" />
             </form>
         </div>
         <div class="col-img">

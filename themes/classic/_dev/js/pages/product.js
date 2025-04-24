@@ -397,5 +397,16 @@ $(document).ready(function () {
         }
     }
 
+    $('a[href="#block-description-long"]').on('click', function(e) {
+        e.preventDefault();
+        var target = $('#block-description-long');
+
+        if (target.length) {
+            var offset = target.offset().top - 100; // scroll 150px plus haut
+            $('html, body').animate({
+                scrollTop: offset
+            }, 200); // durée de l'animation en ms
+        }
+    });
 
 });

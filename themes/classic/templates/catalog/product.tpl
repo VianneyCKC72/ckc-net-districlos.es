@@ -58,15 +58,15 @@
                             <h1 class="h2">{block name='page_title'}{$product.name}{/block}</h1>
                         {/block}
                     {/block}
-
+                        {hook h='displayPromoProductDescription'}
                     {* Start - Inté static *}
-                    <div class="has-discount d-flex align-items-center">
+{*                    <div class="has-discount d-flex align-items-center">
                         <div class="tag-discount mr-2">% SOLDES</div>
                         <p class="small mb-0">100 € offerts par tranche de 1 000 € d’achat & 150 € offerts par tranche
                             de 3 000 €
                             d’achat
                         </p>
-                    </div>
+                    </div>*}
                     {* End - Inté static *}
                 </div>
             </div>
@@ -85,7 +85,6 @@
                 <div class="col-lg-5">
 
                     <div class="product-information">
-
                         <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mb-3">
                             <div>
                                 <p class="small mb-0 font-weight-bold mb-1">
@@ -123,7 +122,7 @@
                         {block name='product_description_short'}
                             <div id="product-description-short-{$product.id}" class="product-description mb-4">
                                 {$product.description_short nofilter}
-                                <a href="#description"
+                                <a href="#block-description-long"
                                    class="lire-plus small font-weight-bold text-black d-flex align-items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                          fill="none"
@@ -237,7 +236,7 @@
                     {/block}
 
                     {block name='product_tabs'}
-                        <div class="tabs product-tabs">
+                        <div class="tabs product-tabs" id="block-description-long">
                             <ul class="nav nav-tabs" role="tablist">
 
                                 {if $product.description}
