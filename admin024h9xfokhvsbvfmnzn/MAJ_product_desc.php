@@ -11,7 +11,10 @@ $pdo = new PDO($dsn, $username, $password);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $sql = "SELECT id_product, id_lang, description FROM ps_product_lang 
-        WHERE description LIKE '%descr_color%' OR description LIKE '%descr_conseils%'";
+        WHERE description LIKE '%descr_color%' 
+           OR description LIKE '%descr_conseils%' 
+           OR description LIKE '%descr_conseil_content%' 
+           OR description LIKE '%descr_couleur%'";
 $stmt = $pdo->query($sql);
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -21,9 +24,18 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
     $newDescription = $description;
 
-    $newDescription = preg_replace('/<div class="descr_color">.*?<\/div>/is', '', $newDescription);
+    // Supprimer tous les blocs HTML avec ces classes
+    $classesToRemove = [
+        'descr_color',
+        'descr_conseils',
+        'descr_conseil_content',
+        'descr_couleur',
+    ];
 
-    $newDescription = preg_replace('/<div class="descr_conseils">.*?<\/div>/is', '', $newDescription);
+    foreach ($classesToRemove as $class) {
+        $pattern = '/<div class="' . preg_quote($class, '/') . '">.*?<\/div>/is';
+        $newDescription = preg_replace($pattern, '', $newDescription);
+    }
 
     if ($description !== $newDescription) {
         $updateStmt = $pdo->prepare("UPDATE ps_product_lang SET description = :desc WHERE id_product = :id AND id_lang = :lang");
@@ -32,8 +44,8 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             ':id' => $idProduct,
             ':lang' => $idLang
         ]);
-        echo "Nettoyé produit ID {$idProduct} / Lang {$idLang}\n";
+        echo "✅ Nettoyé : produit ID {$idProduct}, langue {$idLang}\n";
     }
 }
 
-echo "Nettoyage terminé.\n";
+echo "🎉 Nettoyage complet terminé.\n";
