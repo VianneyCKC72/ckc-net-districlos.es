@@ -27,6 +27,7 @@
 namespace PrestaShop\PrestaShop\Adapter\Presenter\Product;
 
 use DateTime;
+use Db;
 use Language;
 use Link;
 use PrestaShop\Decimal\DecimalNumber;
@@ -140,6 +141,35 @@ class ProductLazyArray extends AbstractLazyArray
         );
 
         parent::__construct();
+
+        $from_europe = true;
+
+        $sql = "
+            SELECT 
+                fvl.id_feature_value,
+                fl.name AS feature_name,
+                fvl.value AS feature_value
+            FROM "._DB_PREFIX_."feature_product fp
+            JOIN "._DB_PREFIX_."feature_value_lang fvl 
+                ON fp.id_feature_value = fvl.id_feature_value AND fvl.id_lang = 1
+            JOIN "._DB_PREFIX_."feature_value fv 
+                ON fvl.id_feature_value = fv.id_feature_value
+            JOIN "._DB_PREFIX_."feature_lang fl 
+                ON fv.id_feature = fl.id_feature AND fl.id_lang = 1
+            WHERE fp.id_product = ".(int)$this->product['id_product'];
+
+        $features = Db::getInstance()->executeS($sql);
+
+        foreach ($features as $feature) {
+            if ($feature['feature_name'] == 'Provenance') {
+                if ($feature['feature_value'] == 'France') {
+                    $from_europe = false;
+                }
+            }
+        }
+
+        $this->product['from_europe'] = $from_europe;
+
         $this->appendArray($this->product);
     }
 
