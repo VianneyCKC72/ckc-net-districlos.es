@@ -247,26 +247,26 @@ var ap5Plugin = {
             prestashop.removeAllListeners('updateProduct');
         }
 
-        $('#quantity_wanted').TouchSpin({
-            verticalbuttons: true,
-            verticalupclass: 'material-icons touchspin-up',
-            verticaldownclass: 'material-icons touchspin-down',
-            buttondown_class: 'btn btn-touchspin js-touchspin',
-            buttonup_class: 'btn btn-touchspin js-touchspin',
-            min: 1,
-            max: (typeof(jsonData) == 'object' && typeof(jsonData.packAvailableQuantity) != 'undefined' && jsonData.packAvailableQuantity > 0 ? jsonData.packAvailableQuantity : 1000000)
-        });
-        $('.ap5-quantity-wanted').each(function (index, element) {
-            $(element).TouchSpin({
-                verticalbuttons: true,
-                verticalupclass: 'material-icons touchspin-up',
-                verticaldownclass: 'material-icons touchspin-down',
-                buttondown_class: 'btn btn-touchspin js-touchspin',
-                buttonup_class: 'btn btn-touchspin js-touchspin',
-                min: 1,
-                max: $(element).data('available-quantity') || 10000
-            });
-        });
+        // $('#quantity_wanted').TouchSpin({
+        //     verticalbuttons: true,
+        //     verticalupclass: 'material-icons touchspin-up',
+        //     verticaldownclass: 'material-icons touchspin-down',
+        //     buttondown_class: 'btn btn-touchspin js-touchspin',
+        //     buttonup_class: 'btn btn-touchspin js-touchspin',
+        //     min: 1,
+        //     max: (typeof(jsonData) == 'object' && typeof(jsonData.packAvailableQuantity) != 'undefined' && jsonData.packAvailableQuantity > 0 ? jsonData.packAvailableQuantity : 1000000)
+        // });
+        // $('.ap5-quantity-wanted').each(function (index, element) {
+        //     $(element).TouchSpin({
+        //         verticalbuttons: true,
+        //         verticalupclass: 'material-icons touchspin-up',
+        //         verticaldownclass: 'material-icons touchspin-down',
+        //         buttondown_class: 'btn btn-touchspin js-touchspin',
+        //         buttonup_class: 'btn btn-touchspin js-touchspin',
+        //         min: 1,
+        //         max: $(element).data('available-quantity') || 10000
+        //     });
+        // });
         if (ap5_displayMode != 'bundle') {
             $('[data-button-action="add-to-cart"]').attr('data-button-action', 'add-pack-to-cart');
         }
