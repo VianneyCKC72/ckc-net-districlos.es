@@ -500,7 +500,25 @@ var ap5Plugin = {
 
                                     // Exécuter une seule fois quand la bannière apparaît
                                     if (!hasInitializedBanner) {
-                                        initializeBannerQuickView();
+                                        const $row = $('.banner-quick-view-row');
+
+                                        if ($row.length) {
+                                            $row.hide().fadeIn(400);
+
+                                            const $titleCol = $row.find('.col-title');
+                                            const $priceCol = $row.find('.col-price');
+
+                                            // Sélection de la promo (dans colonne 1)
+                                            const $promoBlock = $titleCol.find('.product-discount.has-discount');
+
+                                            // Cible le bloc prix actuel + barré dans colonne 2
+                                            const $priceContainer = $priceCol.find('.d-flex.align-items-center');
+
+                                            // Déplace la promo juste AVANT le bloc prix
+                                            if ($promoBlock.length && $priceContainer.length) {
+                                                $priceContainer.before($promoBlock);
+                                            }
+                                        }
                                         hasInitializedBanner = true;
                                     }
                                 } else {
