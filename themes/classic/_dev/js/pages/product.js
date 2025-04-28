@@ -418,4 +418,10 @@ $(document).ready(function () {
         $button.find('.loader').show();
     });
 
+    prestashop.on('updateCart', function() {
+        var $button = $('.add-to-cart');
+        $button.prop('disabled', false);
+        $button.find('.loader').hide();
+    });
+
 });
