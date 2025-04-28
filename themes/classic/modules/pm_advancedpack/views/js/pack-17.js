@@ -488,7 +488,33 @@ var ap5Plugin = {
             if (typeof (jsonData.packPriceContainer) !== 'undefined') {
                 $('.product-prices').each(function() {
                     $(this).replaceWith(jsonData.packPriceContainer);
-                    refreshPrice()
+
+                    const $productPriceElement = $('.product-prices');
+                    const $bannerQuickView = $('.banner-quick-view');
+                    let hasInitializedBanner = false;
+
+                    if ($productPriceElement.length && $bannerQuickView.length) {
+                        const observer = new IntersectionObserver(function (entries) {
+                            entries.forEach(function (entry) {
+                                if (!entry.isIntersecting) {
+                                    $bannerQuickView.addClass('visible');
+
+                                    // Exécuter une seule fois quand la bannière apparaît
+                                    if (!hasInitializedBanner) {
+                                        initializeBannerQuickView();
+                                        hasInitializedBanner = true;
+                                    }
+                                } else {
+                                    $bannerQuickView.removeClass('visible');
+                                }
+                            });
+                        }, {
+                            root: null,
+                            threshold: 0
+                        });
+
+                        observer.observe($productPriceElement.get(0));
+                    }
                 })
             }
             if (typeof (jsonData.HOOK_EXTRA_RIGHT) !== 'undefined') {
