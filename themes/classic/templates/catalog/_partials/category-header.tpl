@@ -30,8 +30,6 @@
                 <div class="has-discount d-flex align-items-center">
                     {if $page.page_name == "category"}
                         {hook h='displayPromoCategoryDescription'}
-                    {elseif $page.page_name == "prices-drop"}
-                        {hook h='displayPromoPageText'}
                     {/if}
                     {*                    <div class="tag-discount mr-2">% SOLDES</div>
                                         <p class="small mb-0">100 € offerts par tranche de 1 000 € d’achat &amp; 150 € offerts par tranche
