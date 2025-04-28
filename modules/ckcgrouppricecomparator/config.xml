@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>ckcgrouppricecomparator</name>
+	<displayName><![CDATA[Comparateur des prix selon des groupes des clients]]></displayName>
+	<version><![CDATA[1.0.0]]></version>
+	<description><![CDATA[Ce module permet de comparer des tarifs des produits selon des groupes de clients et afficher des produits pro qui sont plus cher que ceux en particulier]]></description>
+	<author><![CDATA[ckc-net]]></author>
+	<tab><![CDATA[administration]]></tab>
+	<is_configurable>1</is_configurable>
+	<need_instance>1</need_instance>
+</module>

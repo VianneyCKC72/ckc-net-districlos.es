@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>ckc_favorite_stores</name>
+	<displayName><![CDATA[Magasins favoris]]></displayName>
+	<version><![CDATA[1.0.0]]></version>
+	<description><![CDATA[Permet aux clients d’ajouter un magasin en favoris.]]></description>
+	<author><![CDATA[ckc-net]]></author>
+	<is_configurable>0</is_configurable>
+	<need_instance>1</need_instance>
+</module>

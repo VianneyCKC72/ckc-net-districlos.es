@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>ckc_honeypot</name>
+	<displayName><![CDATA[Honeypot]]></displayName>
+	<version><![CDATA[1.0.0]]></version>
+	<description><![CDATA[Ajoute un champ honeypot dans le formulaire d'inscription pour bloquer les bots]]></description>
+	<author><![CDATA[ckc-net]]></author>
+	<is_configurable>0</is_configurable>
+	<need_instance>1</need_instance>
+</module>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>ckc_smsoptin</name>
+	<displayName><![CDATA[SMS Opt In]]></displayName>
+	<version><![CDATA[1.0.0]]></version>
+	<description><![CDATA[Ajoute une case pour recevoir les bons plans et promotions par SMS]]></description>
+	<author><![CDATA[ckc-net]]></author>
+	<is_configurable>0</is_configurable>
+	<need_instance>1</need_instance>
+</module>

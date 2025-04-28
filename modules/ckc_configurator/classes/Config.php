@@ -1,0 +1,830 @@
+<?php
+
+namespace CkcConfigurator;
+
+interface Config
+{
+    const CONFIGURATOR_ID         = 172;
+    const RIGIDES_ID              = 173;
+    const PROS_ID                 = 177;
+    const PROS_PLUS_ID            = 178;
+    const SOUPLES_ID              = 174;
+    const ALUMINIUM_ID            = 308;
+    const SOUDES_ID               = 179;
+    const SIMPLES_ID              = 180;
+    const AGRICOLES_ID            = 181;
+    const BARREAUDAGES_ID         = 175;
+    const INDUSTRIELS_ID          = 182;
+    const DECORATIFS_ID           = 183;
+    const NATURES_ID              = 184;
+    const CATEG_HAS_ESPACEMENT    = [310];
+    const LAMES_PLEINES_ID        = 309;
+    const LAMES_AJOUREES_ID       = 310;
+    const OPTIONS_ID              = 176;
+    const SOUBASSEMENTS_ID        = 185;
+    const PORTILLONS_RIGIDES_ID   = 226;
+    const PORTILLONS_SOUPLES_ID   = 227;
+    const PORTILLONS_ALUMINIUM_ID = 320;
+    const OCCULTATIONS_RIGIDES_ID = 223;
+    const OCCULTATIONS_SOUPLES_ID = 225;
+    const PANNEAUX_DECO_ALUMINIUM_ID   =   361;
+    const KITSDEMONTAGE_ID        = 188;
+    const KITSCELLEMENT_ID        = 207;
+    const KITSPLATINE_ID          = 208;
+
+    const POTEAUX_RIGIDE_ID       = 190;
+
+    const INSTALLATIONS = [
+        ["id" => "scellement", "name" => "Scellement en terre"],
+        ["id" => "scellement-sur-muret", "name" => "Scellement sur muret"],
+        ["id" => "scellement-sur-platine", "name" => "Pose sur platine"],
+    ];
+
+    const ACCESSORIES_ID = [
+        self::RIGIDES_ID      => [
+            "poteaux"       => 190,
+            "bouchons"      => 191,
+            "cales"         => 192,
+            "chevilles"     => 193,
+            "platines"      => 194,
+            "soubassements" => 195,
+            "clips"         => 347,
+            "pince_clips"   => 348,
+        ],
+        self::SOUPLES_ID      => [
+            "poteaux"    => 197,
+            "jambes"     => 198,
+            "tension"    => 199,
+            "tendeurs"   => 200,
+            "barres"     => 201,
+            "agrafes"    => 202,
+            "boulons"    => 203,
+            "chevilles"  => 210,
+            "platines"   => 209,
+            "agrafeuses" => 229,
+        ],
+        self::BARREAUDAGES_ID => [
+            "poteaux"   => 205,
+            "colliers"  => 206,
+            "chevilles" => 212,
+            "platines"  => 211,
+        ],
+        self::ALUMINIUM_ID    => [
+            "poteaux"               => 312,
+            "u-finition"            => 313,
+            "demi-poteaux"          => 314,
+            "entretoise"            => 317,
+            "platines"              => 315,
+            //            "agrafeuses" => 316,
+            "bouchons"              => 318,
+            "bouchons-demi-poteaux" => 319,
+            "profil-finition"         =>  362,
+        ]
+    ];
+
+    const STEPS_HIGHT_ALU =
+        [1 => '0m403', 2 => '0m766', 3 => '1m129'];
+
+    const STEPS_HIGHT_ALU_LAMES_PLEINES =
+        [1 => '0m515', 2 => '0m960', 3 => '1m41'];
+
+    const ALU_QUANTITIES_PLEINES = [
+        'scellement-sur-muret' => [
+            "0.515" => [
+                "2.09" => [
+                    'poteaux' => 2,
+                    'profil-finition' => 1,
+                ],
+                "4.115" => [
+                    'poteaux' => 3,
+                    'profil-finition' => 2,
+                ],
+                "6.14" => [
+                    'poteaux' => 4,
+                    'profil-finition' => 3,
+                ],
+                "8.165" => [
+                    'poteaux' => 5,
+                    'profil-finition' => 4,
+                ],
+                "10.19" => [
+                    'poteaux' => 6,
+                    'profil-finition' => 5,
+                ],
+                "12.215" => [
+                    'poteaux' => 7,
+                    'profil-finition' => 6,
+                ],
+                "14.24" => [
+                    'poteaux' => 8,
+                    'profil-finition' => 7,
+                ],
+                "16.265" => [
+                    'poteaux' => 9,
+                    'profil-finition' => 8,
+                ],
+                "18.29" => [
+                    'poteaux' => 10,
+                    'profil-finition' => 9,
+                ],
+                "20.315" => [
+                    'poteaux' => 11,
+                    'profil-finition' => 10,
+                ],
+                "22.34" => [
+                    'poteaux' => 12,
+                    'profil-finition' => 11,
+                ],
+                "24.365" => [
+                    'poteaux' => 13,
+                    'profil-finition' => 12,
+                ],
+                "26.39" => [
+                    'poteaux' => 14,
+                    'profil-finition' => 13,
+                ],
+            ],
+            "0.96" => [
+                "2.09" => [
+                    'poteaux' => 2,
+                    'profil-finition' => 1,
+                ],
+                "4.115" => [
+                    'poteaux' => 3,
+                    'profil-finition' => 2,
+                ],
+                "6.14" => [
+                    'poteaux' => 4,
+                    'profil-finition' => 3,
+                ],
+                "8.165" => [
+                    'poteaux' => 5,
+                    'profil-finition' => 4,
+                ],
+                "10.19" => [
+                    'poteaux' => 6,
+                    'profil-finition' => 5,
+                ],
+                "12.215" => [
+                    'poteaux' => 7,
+                    'profil-finition' => 6,
+                ],
+                "14.24" => [
+                    'poteaux' => 8,
+                    'profil-finition' => 7,
+                ],
+                "16.265" => [
+                    'poteaux' => 9,
+                    'profil-finition' => 8,
+                ],
+                "18.29" => [
+                    'poteaux' => 10,
+                    'profil-finition' => 9,
+                ],
+                "20.315" => [
+                    'poteaux' => 11,
+                    'profil-finition' => 10,
+                ],
+                "22.34" => [
+                    'poteaux' => 12,
+                    'profil-finition' => 11,
+                ],
+                "24.365" => [
+                    'poteaux' => 13,
+                    'profil-finition' => 12,
+                ],
+                "26.39" => [
+                    'poteaux' => 14,
+                    'profil-finition' => 13,
+                ],
+            ],
+            "1.41" => [
+                "2.09" => [
+                    'poteaux' => 2,
+                    'profil-finition' => 1,
+                ],
+                "4.115" => [
+                    'poteaux' => 3,
+                    'profil-finition' => 2,
+                ],
+                "6.14" => [
+                    'poteaux' => 4,
+                    'profil-finition' => 3,
+                ],
+                "8.165" => [
+                    'poteaux' => 5,
+                    'profil-finition' => 4,
+                ],
+                "10.19" => [
+                    'poteaux' => 6,
+                    'profil-finition' => 5,
+                ],
+                "12.215" => [
+                    'poteaux' => 7,
+                    'profil-finition' => 6,
+                ],
+                "14.24" => [
+                    'poteaux' => 8,
+                    'profil-finition' => 7,
+                ],
+                "16.265" => [
+                    'poteaux' => 9,
+                    'profil-finition' => 8,
+                ],
+                "18.29" => [
+                    'poteaux' => 10,
+                    'profil-finition' => 9,
+                ],
+                "20.315" => [
+                    'poteaux' => 11,
+                    'profil-finition' => 10,
+                ],
+                "22.34" => [
+                    'poteaux' => 12,
+                    'profil-finition' => 11,
+                ],
+                "24.365" => [
+                    'poteaux' => 13,
+                    'profil-finition' => 12,
+                ],
+                "26.39" => [
+                    'poteaux' => 14,
+                    'profil-finition' => 13,
+                ],
+            ]
+        ],
+        'scellement-sur-platine' => [
+            "0.515" => [
+                "2.09" => [
+                    'poteaux' => 2,
+                    'profil-finition' => 1,
+                ],
+                "4.115" => [
+                    'poteaux' => 3,
+                    'profil-finition' => 2,
+                ],
+                "6.14" => [
+                    'poteaux' => 4,
+                    'profil-finition' => 3,
+                ],
+                "8.165" => [
+                    'poteaux' => 5,
+                    'profil-finition' => 4,
+                ],
+                "10.19" => [
+                    'poteaux' => 6,
+                    'profil-finition' => 5,
+                ],
+                "12.215" => [
+                    'poteaux' => 7,
+                    'profil-finition' => 6,
+                ],
+                "14.24" => [
+                    'poteaux' => 8,
+                    'profil-finition' => 7,
+                ],
+                "16.265" => [
+                    'poteaux' => 9,
+                    'profil-finition' => 8,
+                ],
+                "18.29" => [
+                    'poteaux' => 10,
+                    'profil-finition' => 9,
+                ],
+                "20.315" => [
+                    'poteaux' => 11,
+                    'profil-finition' => 10,
+                ],
+                "22.34" => [
+                    'poteaux' => 12,
+                    'profil-finition' => 11,
+                ],
+                "24.365" => [
+                    'poteaux' => 13,
+                    'profil-finition' => 12,
+                ],
+                "26.39" => [
+                    'poteaux' => 14,
+                    'profil-finition' => 13,
+                ],
+            ],
+            "0.96" => [
+                "2.09" => [
+                    'poteaux' => 2,
+                    'profil-finition' => 1,
+                ],
+                "4.115" => [
+                    'poteaux' => 3,
+                    'profil-finition' => 2,
+                ],
+                "6.14" => [
+                    'poteaux' => 4,
+                    'profil-finition' => 3,
+                ],
+                "8.165" => [
+                    'poteaux' => 5,
+                    'profil-finition' => 4,
+                ],
+                "10.19" => [
+                    'poteaux' => 6,
+                    'profil-finition' => 5,
+                ],
+                "12.215" => [
+                    'poteaux' => 7,
+                    'profil-finition' => 6,
+                ],
+                "14.24" => [
+                    'poteaux' => 8,
+                    'profil-finition' => 7,
+                ],
+                "16.265" => [
+                    'poteaux' => 9,
+                    'profil-finition' => 8,
+                ],
+                "18.29" => [
+                    'poteaux' => 10,
+                    'profil-finition' => 9,
+                ],
+                "20.315" => [
+                    'poteaux' => 11,
+                    'profil-finition' => 10,
+                ],
+                "22.34" => [
+                    'poteaux' => 12,
+                    'profil-finition' => 11,
+                ],
+                "24.365" => [
+                    'poteaux' => 13,
+                    'profil-finition' => 12,
+                ],
+                "26.39" => [
+                    'poteaux' => 14,
+                    'profil-finition' => 13,
+                ],
+            ],
+            "1.41" => [
+                "2.09" => [
+                    'pack-lames' => 3,
+                    'poteaux' => 2,
+                    'platines' => 2,
+                    'profil-finition' => 1,
+                ],
+                "4.115" => [
+                    'pack-lames' => 6,
+                    'poteaux' => 3,
+                    'platines' => 3,
+                    'profil-finition' => 2,
+                ],
+                "6.14" => [
+                    'pack-lames' => 9,
+                    'poteaux' => 4,
+                    'platines' => 4,
+                    'profil-finition' => 3,
+                ],
+                "8.165" => [
+                    'pack-lames' => 12,
+                    'poteaux' => 5,
+                    'platines' => 5,
+                    'profil-finition' => 4,
+                ],
+                "10.19" => [
+                    'pack-lames' => 15,
+                    'poteaux' => 6,
+                    'platines' => 6,
+                    'profil-finition' => 5,
+                ],
+                "12.215" => [
+                    'pack-lames' => 18,
+                    'poteaux' => 7,
+                    'platines' => 7,
+                    'profil-finition' => 6,
+                ],
+                "14.24" => [
+                    'pack-lames' => 21,
+                    'poteaux' => 8,
+                    'platines' => 8,
+                    'profil-finition' => 7,
+                ],
+                "16.265" => [
+                    'pack-lames' => 24,
+                    'poteaux' => 9,
+                    'platines' => 9,
+                    'profil-finition' => 8,
+                ],
+                "18.29" => [
+                    'pack-lames' => 27,
+                    'poteaux' => 10,
+                    'platines' => 10,
+                    'profil-finition' => 9,
+                ],
+                "20.315" => [
+                    'pack-lames' => 30,
+                    'poteaux' => 11,
+                    'platines' => 11,
+                    'profil-finition' => 10,
+                ],
+                "22.34" => [
+                    'pack-lames' => 33,
+                    'poteaux' => 12,
+                    'platines' => 12,
+                    'profil-finition' => 11,
+                ],
+                "24.365" => [
+                    'pack-lames' => 36,
+                    'poteaux' => 13,
+                    'platines' => 13,
+                    'profil-finition' => 12,
+                ],
+                "26.39" => [
+                    'pack-lames' => 39,
+                    'poteaux' => 14,
+                    'platines' => 14,
+                    'profil-finition' => 13,
+                ],
+            ]
+        ]
+    ];
+
+    const ALU_QUANTITIES_AJOURES = [
+        'scellement-sur-muret' => [
+            "0.403" => [
+                "2.09" => [
+                    'pack-lames' => 1,
+                    'poteaux' => 2,
+                ],
+                "4.115" => [
+                    'pack-lames' => 2,
+                    'poteaux' => 3,
+                ],
+                "6.14" => [
+                    'pack-lames' => 3,
+                    'poteaux' => 4,
+                ],
+                "8.165" => [
+                    'pack-lames' => 4,
+                    'poteaux' => 5,
+                ],
+                "10.19" => [
+                    'pack-lames' => 5,
+                    'poteaux' => 6,
+                ],
+                "12.215" => [
+                    'pack-lames' => 6,
+                    'poteaux' => 7,
+                ],
+                "14.24" => [
+                    'pack-lames' => 7,
+                    'poteaux' => 8,
+                ],
+                "16.265" => [
+                    'pack-lames' => 8,
+                    'poteaux' => 9,
+                ],
+                "18.29" => [
+                    'pack-lames' => 9,
+                    'poteaux' => 10,
+                ],
+                "20.315" => [
+                    'pack-lames' => 10,
+                    'poteaux' => 11,
+                ],
+                "22.34" => [
+                    'pack-lames' => 11,
+                    'poteaux' => 12,
+                ],
+                "24.365" => [
+                    'pack-lames' => 12,
+                    'poteaux' => 13,
+                ],
+                "26.39" => [
+                    'pack-lames' => 13,
+                    'poteaux' => 14,
+                ],
+            ],
+            "0.766" => [
+                "2.09" => [
+                    'pack-lames' => 2,
+                    'poteaux' => 2,
+                ],
+                "4.115" => [
+                    'pack-lames' => 4,
+                    'poteaux' => 3,
+                ],
+                "6.14" => [
+                    'pack-lames' => 6,
+                    'poteaux' => 4,
+                ],
+                "8.165" => [
+                    'pack-lames' => 8,
+                    'poteaux' => 5,
+                ],
+                "10.19" => [
+                    'pack-lames' => 10,
+                    'poteaux' => 6,
+                ],
+                "12.215" => [
+                    'pack-lames' => 12,
+                    'poteaux' => 7,
+                ],
+                "14.24" => [
+                    'pack-lames' => 14,
+                    'poteaux' => 8,
+                ],
+                "16.265" => [
+                    'pack-lames' => 16,
+                    'poteaux' => 9,
+                ],
+                "18.29" => [
+                    'pack-lames' => 18,
+                    'poteaux' => 10,
+                ],
+                "20.315" => [
+                    'pack-lames' => 20,
+                    'poteaux' => 11,
+                ],
+                "22.34" => [
+                    'pack-lames' => 22,
+                    'poteaux' => 12,
+                ],
+                "24.365" => [
+                    'pack-lames' => 24,
+                    'poteaux' => 13,
+                ],
+                "26.39" => [
+                    'pack-lames' => 26,
+                    'poteaux' => 14,
+                ],
+            ],
+            "1.129" => [
+                "2.09" => [
+                    'pack-lames' => 3,
+                    'poteaux' => 2,
+                    'platines' => 2,
+                ],
+                "4.115" => [
+                    'pack-lames' => 6,
+                    'poteaux' => 3,
+                    'platines' => 3,
+                ],
+                "6.14" => [
+                    'pack-lames' => 9,
+                    'poteaux' => 4,
+                    'platines' => 4,
+                ],
+                "8.165" => [
+                    'pack-lames' => 12,
+                    'poteaux' => 5,
+                    'platines' => 5,
+                ],
+                "10.19" => [
+                    'pack-lames' => 15,
+                    'poteaux' => 6,
+                    'platines' => 6,
+                ],
+                "12.215" => [
+                    'pack-lames' => 18,
+                    'poteaux' => 7,
+                    'platines' => 7,
+                ],
+                "14.24" => [
+                    'pack-lames' => 21,
+                    'poteaux' => 8,
+                    'platines' => 8,
+                ],
+                "16.265" => [
+                    'pack-lames' => 24,
+                    'poteaux' => 9,
+                    'platines' => 9,
+                ],
+                "18.29" => [
+                    'pack-lames' => 27,
+                    'poteaux' => 10,
+                    'platines' => 10,
+                ],
+                "20.315" => [
+                    'pack-lames' => 30,
+                    'poteaux' => 11,
+                    'platines' => 11,
+                ],
+                "22.34" => [
+                    'pack-lames' => 33,
+                    'poteaux' => 12,
+                    'platines' => 12,
+                ],
+                "24.365" => [
+                    'pack-lames' => 36,
+                    'poteaux' => 13,
+                    'platines' => 13,
+                ],
+                "26.39" => [
+                    'pack-lames' => 39,
+                    'poteaux' => 14,
+                    'platines' => 14,
+                ],
+            ],
+        ],
+        'scellement-sur-platine' => [
+            "0.403" => [
+                "2.09" => [
+                    'pack-lames' => 1,
+                    'poteaux' => 2,
+                    'platines' => 2,
+                ],
+                "4.115" => [
+                    'pack-lames' => 2,
+                    'poteaux' => 3,
+                    'platines' => 3,
+                ],
+                "6.14" => [
+                    'pack-lames' => 3,
+                    'poteaux' => 4,
+                    'platines' => 4,
+                ],
+                "8.165" => [
+                    'pack-lames' => 4,
+                    'poteaux' => 5,
+                    'platines' => 5,
+                ],
+                "10.19" => [
+                    'pack-lames' => 5,
+                    'poteaux' => 6,
+                    'platines' => 6,
+                ],
+                "12.215" => [
+                    'pack-lames' => 6,
+                    'poteaux' => 7,
+                    'platines' => 7,
+                ],
+                "14.24" => [
+                    'pack-lames' => 7,
+                    'poteaux' => 8,
+                    'platines' => 8,
+                ],
+                "16.265" => [
+                    'pack-lames' => 8,
+                    'poteaux' => 9,
+                    'platines' => 9,
+                ],
+                "18.29" => [
+                    'pack-lames' => 9,
+                    'poteaux' => 10,
+                    'platines' => 10,
+                ],
+                "20.315" => [
+                    'pack-lames' => 10,
+                    'poteaux' => 11,
+                    'platines' => 11,
+                ],
+                "22.34" => [
+                    'pack-lames' => 11,
+                    'poteaux' => 12,
+                    'platines' => 12,
+                ],
+                "24.365" => [
+                    'pack-lames' => 12,
+                    'poteaux' => 13,
+                    'platines' => 13,
+                ],
+                "26.39" => [
+                    'pack-lames' => 13,
+                    'poteaux' => 14,
+                    'platines' => 14,
+                ],
+            ],
+            "0.766" => [
+                "2.09" => [
+                    'pack-lames' => 2,
+                    'poteaux' => 2,
+                    'platines' => 2,
+                ],
+                "4.115" => [
+                    'pack-lames' => 4,
+                    'poteaux' => 3,
+                    'platines' => 3,
+                ],
+                "6.14" => [
+                    'pack-lames' => 6,
+                    'poteaux' => 4,
+                    'platines' => 4,
+                ],
+                "8.165" => [
+                    'pack-lames' => 8,
+                    'poteaux' => 5,
+                    'platines' => 5,
+                ],
+                "10.19" => [
+                    'pack-lames' => 10,
+                    'poteaux' => 6,
+                    'platines' => 6,
+                ],
+                "12.215" => [
+                    'pack-lames' => 12,
+                    'poteaux' => 7,
+                    'platines' => 7,
+                ],
+                "14.24" => [
+                    'pack-lames' => 14,
+                    'poteaux' => 8,
+                    'platines' => 8,
+                ],
+                "16.265" => [
+                    'pack-lames' => 16,
+                    'poteaux' => 9,
+                    'platines' => 9,
+                ],
+                "18.29" => [
+                    'pack-lames' => 18,
+                    'poteaux' => 10,
+                    'platines' => 10,
+                ],
+                "20.315" => [
+                    'pack-lames' => 20,
+                    'poteaux' => 11,
+                    'platines' => 11,
+                ],
+                "22.34" => [
+                    'pack-lames' => 22,
+                    'poteaux' => 12,
+                    'platines' => 12,
+                ],
+                "24.365" => [
+                    'pack-lames' => 24,
+                    'poteaux' => 13,
+                    'platines' => 13,
+                ],
+                "26.39" => [
+                    'pack-lames' => 26,
+                    'poteaux' => 14,
+                    'platines' => 14,
+                ],
+            ],
+            "1.129" => [
+                "2.09" => [
+                    'pack-lames' => 3,
+                    'poteaux' => 2,
+                    'platines' => 2,
+                ],
+                "4.115" => [
+                    'pack-lames' => 6,
+                    'poteaux' => 3,
+                    'platines' => 3,
+                ],
+                "6.14" => [
+                    'pack-lames' => 9,
+                    'poteaux' => 4,
+                    'platines' => 4,
+                ],
+                "8.165" => [
+                    'pack-lames' => 12,
+                    'poteaux' => 5,
+                    'platines' => 5,
+                ],
+                "10.19" => [
+                    'pack-lames' => 15,
+                    'poteaux' => 6,
+                    'platines' => 6,
+                ],
+                "12.215" => [
+                    'pack-lames' => 18,
+                    'poteaux' => 7,
+                    'platines' => 7,
+                ],
+                "14.24" => [
+                    'pack-lames' => 21,
+                    'poteaux' => 8,
+                    'platines' => 8,
+                ],
+                "16.265" => [
+                    'pack-lames' => 24,
+                    'poteaux' => 9,
+                    'platines' => 9,
+                ],
+                "18.29" => [
+                    'pack-lames' => 27,
+                    'poteaux' => 10,
+                    'platines' => 10,
+                ],
+                "20.315" => [
+                    'pack-lames' => 30,
+                    'poteaux' => 11,
+                    'platines' => 11,
+                ],
+                "22.34" => [
+                    'pack-lames' => 33,
+                    'poteaux' => 12,
+                    'platines' => 12,
+                ],
+                "24.365" => [
+                    'pack-lames' => 36,
+                    'poteaux' => 13,
+                    'platines' => 13,
+                ],
+                "26.39" => [
+                    'pack-lames' => 39,
+                    'poteaux' => 14,
+                    'platines' => 14,
+                ],
+            ],
+        ],
+    ];
+}
