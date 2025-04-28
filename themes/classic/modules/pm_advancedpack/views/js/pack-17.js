@@ -482,7 +482,6 @@ var ap5Plugin = {
             if (typeof (jsonData.packContentTable) !== 'undefined') {
                 $('#ap5-product-list').replaceWith(jsonData.packContentTable);
                 setTimeout(function() {
-                    fillInput()
                     ap5Plugin.initChangesLi();
                 }, 500);
             }
