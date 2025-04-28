@@ -488,6 +488,7 @@ var ap5Plugin = {
             if (typeof (jsonData.packPriceContainer) !== 'undefined') {
                 $('.product-prices').each(function() {
                     $(this).replaceWith(jsonData.packPriceContainer);
+                    refreshPrice()
                 })
             }
             if (typeof (jsonData.HOOK_EXTRA_RIGHT) !== 'undefined') {
