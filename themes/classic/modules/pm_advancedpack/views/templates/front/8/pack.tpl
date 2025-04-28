@@ -192,7 +192,6 @@
                                         {if file_exists($smarty.const._PS_MODULE_DIR_|cat:'ckc_shipping_estimator/views/templates/front/product/shipping_estimator.tpl')}
                                             {include file="module:ckc_shipping_estimator/views/templates/front/product/shipping_estimator.tpl"}
                                         {/if}
-                                        {hook h="displayStockButton" product=$product}
                                     </div>
                                     {* End - Inté static *}
 
