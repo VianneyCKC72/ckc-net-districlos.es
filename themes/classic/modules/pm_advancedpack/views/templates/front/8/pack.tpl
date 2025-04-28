@@ -13,15 +13,15 @@
                             <h1 class="h2">{block name='page_title'}{$product.name}{/block}</h1>
                         {/block}
                     {/block}
-
+                    {hook h='displayPromoProductDescription'}
                     {* Start - Inté static *}
-                    <div class="has-discount d-flex align-items-center">
-                        <div class="tag-discount mr-2">% SOLDES</div>
-                        <p class="small mb-0">100 € offerts par tranche de 1 000 € d’achat & 150 € offerts par tranche
-                            de 3 000 €
-                            d’achat
-                        </p>
-                    </div>
+                    {*                    <div class="has-discount d-flex align-items-center">
+                                            <div class="tag-discount mr-2">% SOLDES</div>
+                                            <p class="small mb-0">100 € offerts par tranche de 1 000 € d’achat & 150 € offerts par tranche
+                                                de 3 000 €
+                                                d’achat
+                                            </p>
+                                        </div>*}
                     {* End - Inté static *}
                 </div>
             </div>
