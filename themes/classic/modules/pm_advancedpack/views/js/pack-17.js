@@ -488,7 +488,6 @@ var ap5Plugin = {
             if (typeof (jsonData.packPriceContainer) !== 'undefined') {
                 $('.product-prices').each(function() {
                     $(this).replaceWith(jsonData.packPriceContainer);
-
                     const $productPriceElement = $('.product-prices');
                     const $bannerQuickView = $('.banner-quick-view');
                     let hasInitializedBanner = false;
