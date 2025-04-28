@@ -24,36 +24,47 @@
  *}
 
 <div id="ckcpromobarre" class="{$class} alert hide_alert alert-warning" role="alert" style="color:#ffffff; background-color: {if $env_pro == 1 OR Tools::getValue("ep") == 1}#ffa400{else}{$CKC_BARREPROMO_COLOR}{/if};">
-    {if $ckcpromobarretexts AND $CKC_BARREPROMO_DISPLAY == 1}
+    {if $CKC_BARREPROMO_DISPLAY == 1}
         <span>
             <div class="container">
-                {if $ckcpromobarretexts|@count > 1}
-                    <div class="ckcpromobarre-text-change-container">
+                <div>
+                    {if $ckcpromobarretexts|@count > 1 && isset($ckcpromobarretexts)}
+                        <div class="ckcpromobarre-text-change-container">
                     {foreach $ckcpromobarretexts as $promotext}
                         <div class="ckcpromobarre-text" style="display: none;">
                             {$promotext nofilter}
                         </div>
                     {/foreach}
                     </div>
-                {else}
-                    {$ckcpromobarretexts[0] nofilter}
-                {/if}
+                    {elseif isset($ckcpromobarretexts)}
+                        {$ckcpromobarretexts[0] nofilter}
+                    {/if}
+                    {if $CKC_BARREPROMO_TIMER_DISPLAY == 1 && isset($CKC_BARREPROMO_TIMER) && $CKC_BARREPROMO_TIMER !== ""}
+                        -
+                    {/if}
+                    <strong><span id="ckctimer" style="color: {$CKC_BARREPROMO_TIMER_COLOR} !important;"></span></strong>
+                </div>
                 <div class="block-question"><img src="/img/cms/ico-question.png" width="22" height="20" class="ico-question" alt="des question?" />Des questions ?<a href="tel:0422531034"><strong>04 22 53 10 34</strong></a></div>
                 <div class="clients">Nos clients sont satisfaits : <strong>9.5/10</strong><img class="ico-stars" src="/img/cms/ico-stars.png" alt="ico-stars.png" /></div>
             </div>
         </span>
-        {if $CKC_BARREPROMO_TIMER_DISPLAY == 1}
-            -
-        {/if}
-        <strong><span id="ckctimer" style="color: {$CKC_BARREPROMO_TIMER_COLOR} !important;"></span></strong>
         <button type="button" class="close close_once" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true" class="button_barrepromo"><span class="button_text_barrepromo">{l s='Hide' mod='ckcpromotionbanner'}</span> &times;</span>
         </button>
+    {else}
+        <span>
+            <div class="container">
+                <div class="ckcpromobarre-text-change-container">
+                </div>
+                <div class="block-question"><img src="/img/cms/ico-question.png" width="22" height="20" class="ico-question" alt="des question?" />Des questions ?<a href="tel:0422531034"><strong>04 22 53 10 34</strong></a></div>
+                <div class="clients">Nos clients sont satisfaits : <strong>9.5/10</strong><img class="ico-stars" src="/img/cms/ico-stars.png" alt="ico-stars.png" /></div>
+            </div>
+        </span>
     {/if}
 </div>
 
 {*Push the timer *}
-{if $CKC_BARREPROMO_TIMER_DISPLAY == 1}
+{if $CKC_BARREPROMO_TIMER_DISPLAY == 1 && isset($CKC_BARREPROMO_TIMER) && $CKC_BARREPROMO_TIMER !== ""}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 
     <script type="text/javascript">

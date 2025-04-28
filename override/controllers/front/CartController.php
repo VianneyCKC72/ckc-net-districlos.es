@@ -324,6 +324,9 @@ class CartController extends CartControllerCore
         }
         ob_end_clean();
         header('Content-Type: application/json');
+
+        Hook::exec('displayAfterCartDetailedActions', array());
+
         $this->ajaxRender(json_encode([
             'cart_detailed' => Module::isEnabled('ets_extraoptions') ? $this->context->smarty->fetch(_PS_MODULE_DIR_.'ets_extraoptions/views/templates/hook/checkout/cart-detailed.tpl'): $this->render('checkout/_partials/cart-detailed'),
             'cart_detailed_totals' => $this->render('checkout/_partials/cart-detailed-totals'),
@@ -333,6 +336,7 @@ class CartController extends CartControllerCore
             'cart_detailed_actions' => $this->render('checkout/_partials/cart-detailed-actions'),
             'cart_voucher' => $this->context->smarty->fetch(_PS_MODULE_DIR_.'ets_promotion/views/templates/hook/checkout/cart-voucher.tpl'),
             'cart_sumary_products' => $this->context->smarty->fetch(_PS_MODULE_DIR_.'ets_promotion/views/templates/hook/checkout/cart_sumary_products.tpl'),
+            'cart_promos' => $this->context->smarty->fetch(_PS_MODULE_DIR_.'ckcadcampaignconfigurator/views/templates/front/hook/promo_content_cart.tpl'),
         ]));
     }
 }

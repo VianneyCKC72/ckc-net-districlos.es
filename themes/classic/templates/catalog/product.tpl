@@ -58,10 +58,7 @@
                             <h1 class="h2">{block name='page_title'}{$product.name}{/block}</h1>
                         {/block}
                     {/block}
-
-                    <div class="has-discount d-flex align-items-center">
-                    {hook h='displayPromoProductDescription'}
-                    </div>
+                        {hook h='displayPromoProductDescription'}
                     {* Start - Inté static *}
 {*                    <div class="has-discount d-flex align-items-center">
                         <div class="tag-discount mr-2">% SOLDES</div>

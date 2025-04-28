@@ -273,7 +273,8 @@ $(document).ready(function () {
                 'cart_summary_products': '.js-cart-summary-products',
                 'cart_summary_subtotals_container': '.js-cart-summary-subtotals-container',
                 'cart_summary_top': '.js-cart-summary-top',
-                'cart_summary_totals': '.cart-summary-totals'
+                'cart_summary_totals': '.cart-summary-totals',
+                'cart_promos' : '.cart-promos'
             };
             if (key in selectorMap && value) {
                 $(selectorMap[key]).replaceWith(value);
