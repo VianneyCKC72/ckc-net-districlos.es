@@ -752,61 +752,6 @@ $(window).on('load', function () {
 
     buyBlock = $('form.ap5-buy-block');
 
-    if (ap5Plugin.autoScrollBuyBlockEnabled) {
-        if (buyBlock.length == 0) {
-            return;
-        }
-        if (buyBlock.hasClass('ap5-from-modal')) {
-            ap5Plugin.autoScrollBuyBlockEnabled = false;
-            return;
-        }
-        ap5Plugin.topLimit = buyBlock.offset().top + parseFloat(buyBlock.css('marginTop').replace(/auto/, 0));
-        $(window).on('scroll', function () {
-            ap5_windowWidth = (navigator.userAgent.indexOf('Macintosh') > -1 && navigator.userAgent.indexOf('Safari/') > -1 ? $(window).width() : window.innerWidth);
-            var ap5_scrollTop = $(window).scrollTop();
-            var ap5_buyBlockHeight = buyBlock.height();
-
-            ap5_maxScrollAdd = 0;
-            if ($('#ap5-pack-description-block').length > 0) {
-                ap5_maxScrollAdd += $('#ap5-pack-description-block').offset().top;
-            } else if ($('#ap5-pack-content-block').length > 0) {
-                ap5_maxScrollAdd += $('#ap5-pack-content-block').offset().top;
-            } else {
-                ap5_maxScrollAdd += $('#ap5-product-list').offset().top + $('#ap5-product-list').height();
-            }
-            var ap5_maxScroll = -10 + ap5_maxScrollAdd;
-
-            if (ap5_windowWidth >= 768 && ap5_scrollTop >= ap5Plugin.topLimit) {
-                buyBlock.addClass('ap5-fixed');
-                marginLeftBuyBlock = buyBlock.css('marginLeft');
-                if (typeof(marginLeftBuyBlock) == 'undefined') {
-                    marginLeftBuyBlock = 0;
-                } else {
-                    marginLeftBuyBlock = parseFloat(marginLeftBuyBlock.replace(/auto/, 0));
-                }
-                buyBlock.css('width', buyBlock.parent().width() - marginLeftBuyBlock);
-                if ((ap5_scrollTop + ap5_buyBlockHeight) >= ap5_maxScroll) {
-                    if (ap5_scrollTop > (ap5_maxScroll - ap5_buyBlockHeight)) {
-                        if (ap5_scrollTop < ap5_maxScroll) {
-                            toTop = (ap5_scrollTop - ap5_maxScroll + ap5_buyBlockHeight) * -1;
-                            buyBlock.css('top', toTop);
-                        } else {
-                            buyBlock.css('top', -ap5_buyBlockHeight);
-                        }
-                    }
-                } else {
-                    buyBlock.css('top', '');
-                }
-            } else {
-                buyBlock.css('top', '');
-                buyBlock.css('width', '');
-                buyBlock.removeClass('ap5-fixed');
-            }
-        });
-
-        $(window).trigger('scroll');
-    }
-
     $(window).on('resize', function () {
         if (ap5Plugin.autoScrollBuyBlockEnabled) {
             ap5_formOffset = $('form.ap5-buy-block').offset();
