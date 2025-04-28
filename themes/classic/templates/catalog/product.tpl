@@ -150,7 +150,7 @@
                         <div class="product-actions js-product-actions">
 
                             {block name='product_buy'}
-                                <form action="{$urls.pages.cart}" method="post" id="add-to-cart-or-refresh">
+                               <form action="{$urls.pages.cart}" method="post" id="add-to-cart-or-refresh">
                                     <input type="hidden" name="token" value="{$static_token}">
                                     <input type="hidden" name="id_product" value="{$product.id}"
                                            id="product_page_product_id">

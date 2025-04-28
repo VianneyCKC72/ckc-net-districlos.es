@@ -410,4 +410,12 @@ $(document).ready(function () {
         }
     });
 
+
+    $('.add-to-cart').on('click', function (e) {
+        var $button = $(this);
+
+        // Afficher le loader
+        $button.find('.loader').show();
+    });
+
 });
