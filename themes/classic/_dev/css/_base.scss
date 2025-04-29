@@ -676,6 +676,7 @@ pre code {
   overflow-y: scroll;
 }
 
+.cn_content,
 .container {
   max-width: 1648px !important;
   width: 100%;
@@ -6266,10 +6267,12 @@ ul {
   top: unquote("calc(100% - 3.5rem)");
 }
 
+[class^="cn_element_products_"][class$="_image"] ,
 .product-miniature .thumbnail-container .product-thumbnail {
   position: relative;
 }
 
+[class^="cn_element_products_"][class$="_image"] img,
 .product-miniature .thumbnail-container .product-thumbnail img {
   position: relative;
   display: block;
@@ -6277,7 +6280,7 @@ ul {
   height: auto;
   margin: auto;
 }
-
+[class^="cn_element_products_"][class$="_name"],
 .product-miniature .product-title {
   font-size: 16px;
   line-height: 22px;
@@ -6319,7 +6322,7 @@ ul {
   justify-content: center;
   column-gap: 0.5rem;
 }
-
+[class^="cn_element_products_"][class$="_image"],
 .product-miniature .thumbnail-top {
   flex: none;
   aspect-ratio: 1/1;
@@ -6369,7 +6372,7 @@ ul {
   span {
     color: $black;
   }
-  .btn.btn-primary {
+  .btn.btn-primary, .cn_element_products_2_button > a {
     font-weight: 500;
     color: $white;
     padding: 12px 28px !important;
@@ -8327,7 +8330,8 @@ li:not([data-depth="0"]):not([data-depth="1"])::before {
 form
 .row
 .col-xs-12:first-of-type
-.btn-primary:first-of-type {
+.btn-primary:first-of-type,
+.cn_element_products_2_button > a {
   margin-left: 0.5rem;
 }
 

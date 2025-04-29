@@ -527,6 +527,7 @@
     }
   }
 
+  .cn_content,
   .container:not(:has(.ckcpromobarre-text-change-container)) {
     max-width: 1394px !important;
   }
@@ -1246,6 +1247,22 @@
     margin-top: 1.5rem;
   }
 
+  .cn_titulo {
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1.2;
+    font-family: "Poppins", sans-serif;
+    @media only screen and (max-width: 1620px) {
+      font-size: 26px;
+    }
+    @media only screen and (max-width: 1280px) {
+      font-size: 24px;
+    }
+    @media only screen and (max-width: 768px) {
+      font-size: 22px;
+    }
+  }
+
   @media screen and (max-width: 992px) {
     .descrL_color {
       column-gap: 10px;
@@ -1327,6 +1344,7 @@
     }
   }
 }
+
 .product-variants {
   .ap5-attributes {
     border-left: 1px solid #026473;

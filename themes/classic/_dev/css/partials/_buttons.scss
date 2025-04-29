@@ -1,4 +1,5 @@
-.btn {
+.btn,
+.cn_element_products_2_button > a {
   padding: 18px 30px;
   font-size: 13px;
   font-weight: 600;
@@ -11,6 +12,7 @@
     outline: none !important;
   }
 }
+.cn_element_products_2_button > a,
 .btn-primary {
   color: $white;
   background-color: $primary-color;
