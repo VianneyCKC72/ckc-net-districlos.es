@@ -1,0 +1,124 @@
+<div class="col-sm">
+    <div class="d-block">
+        <h4>Ajouter des liens à afficher :</h4>
+        <div class="input-group mb-3">
+            <input type="text" id="idInputName" class="form-control" placeholder="Titre du lien" style="margin-right: 15px;">
+            <input type="text" id="idInput" class="form-control" placeholder="Ajouter un lien">
+            <div class="btn btn-primary" id="addIdButton">+</div>
+        </div>
+        <div id="selectedIds"></div>
+        <input type="hidden" value="{{ links }}" id="category_categoryFieldContent2" name="category[categoryFieldContent]" class="form-control" aria-label="category_categoryFieldContent saisie">
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    let exceptions = $("#category_categoryFieldContent2").val()
+    let selectedIds = exceptions.split(",");
+    selectedIds.forEach(id => {
+        if(id.length > 0) {
+            for (const [key, value] of Object.entries(JSON.parse(id))) {
+                elementTag = '<span class="tag" data-id="'+value+'">'+key+' : '+value+' <span class="remove">✖</span></span>'
+                $("#selectedIds").append(elementTag);
+            }
+        }
+    });
+
+    $(document).ready(function() {
+
+        $("#addIdButton").click(function(e) {
+            e.preventDefault();
+            let newTitle = $("#idInputName").val().trim();
+            let newlink = $("#idInput").val().trim();
+
+            let newVal = {
+                [newTitle] : newlink
+            }
+
+            if (newlink && selectedIds.indexOf(newlink) < 0 && newTitle && selectedIds.indexOf(newTitle) < 0) {
+                selectedIds.push(JSON.stringify(newVal));
+                updateIdsDisplay();
+                $("#idInputName").val("");
+                $("#idInput").val("");
+            }
+        });
+
+        $(document).on("click", ".remove", function() {
+            let idToRemove = $(this).parent().attr("data-id");
+            console.log(selectedIds)
+            selectedIds = selectedIds.filter(id => {
+                if(id.length > 0) {
+                    for (const [key, value] of Object.entries(JSON.parse(id))) {
+                        return value !== idToRemove
+                    }
+                }
+            } );
+            updateIdsDisplay();
+        });
+
+        function updateIdsDisplay() {
+            $("#selectedIds").empty();
+            selectedIds.forEach((id) => {
+                if(id.length > 0) {
+                    for (const [key, value] of Object.entries(JSON.parse(id))) {
+                        console.log(`${key}: ${value}`);
+                        elementTag = '<span class="tag" data-id="'+value+'">'+key+' : '+value+' <span class="remove">✖</span></span>'
+                        $("#selectedIds").append(elementTag);
+                    }
+                }
+            });
+            $("#category_categoryFieldContent").val(selectedIds.join(","));
+            $("#category_categoryFieldContent2").val(selectedIds.join(","));
+        }
+    })
+
+</script>
+<style>
+    .tag {
+        display: inline-block;
+        background: #F6F2EB;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 19px;
+        color: #026473;
+        padding:5px;
+        border-radius:4px;
+        margin: 5px;
+    }
+    .tag .remove {
+        margin-left: 10px;
+        cursor: pointer;
+    }
+    li.ui-menu-item .ui-menu-item-wrapper{
+        align-content: start;
+        text-align: left;
+        max-width: 500px;
+        padding: 10px 0;
+    }
+    .ui-menu.ui-widget{
+        max-width: 500px;
+        align-content: start;
+    }
+    #idInput,
+    #idInputName{
+        max-width: 400px;
+    }
+    #addIdButton{
+        height: 39px;
+        margin-left: 15px;
+        background-color: #FF375C;
+        border-color: #FF375C;
+    }
+    .saveExceptions{
+        margin-top: 20px;
+        text-transform: uppercase;
+    }
+    .input-group{
+        width: 500px;
+        margin-bottom: 15px;
+    }
+    #selectedIds{
+        flex-wrap: wrap;
+    }
+</style>
+

@@ -1,0 +1,652 @@
+<?php
+/**
+* 2007-2025 PrestaShop
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Academic Free License (AFL 3.0)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/afl-3.0.php
+* If you did not receive a copy of the license and are unable to
+* obtain it through the world-wide-web, please send an email
+* to license@prestashop.com so we can send you a copy immediately.
+*
+* DISCLAIMER
+*
+* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+* versions in the future. If you wish to customize PrestaShop for your
+* needs please refer to http://www.prestashop.com for more information.
+*
+*  @author    PrestaShop SA <contact@prestashop.com>
+*  @copyright 2007-2025 PrestaShop SA
+*  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+*  International Registered Trademark & Property of PrestaShop SA
+*/
+
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
+use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
+
+class Ckcstorespresentation extends Module implements WidgetInterface
+{
+    protected $config_form = false;
+    protected $_postErrors = [];
+    protected $_output = '';
+
+    protected $templateFile;
+
+    public function __construct()
+    {
+        $this->name = 'ckcstorespresentation';
+        $this->tab = 'front_office_features';
+        $this->version = '1.0.1';
+        $this->author = 'ckc-net';
+        $this->need_instance = 0;
+
+        /**
+         * Set $this->bootstrap to true if your module is compliant with bootstrap (PrestaShop 1.6)
+         */
+        $this->bootstrap = true;
+
+        parent::__construct();
+
+        $this->displayName = $this->l('Ckc Stores Presentation');
+        $this->description = $this->l('Optimisez la gestion de vos magasins avec ce module Prestashop. Créez, modifiez et administrez facilement vos points de vente en leur attribuant des coordonnées précises et en les rattachant à une boutique spécifique');
+
+        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+
+        $this->templateFile = 'module:ckcstorespresentation/views/templates/front/nos-magasins.tpl';
+    }
+
+    /**
+     * Don't forget to create update methods if needed:
+     * http://doc.prestashop.com/display/PS16/Enabling+the+Auto-Update
+     */
+    public function install()
+    {
+        Configuration::updateValue('CKCSTORESPRESENTATION_LIVE_MODE', false);
+        require_once __DIR__ . '/sql/install.php'; // sql querries
+
+        return parent::install() &&
+            $this->registerHook('header') &&
+            $this->registerHook('displayFooter') &&
+            $this->registerHook('displayElementor') &&
+            $this->registerHook('displayLeftColumn') &&
+            $this->registerHook('displayHeader') &&
+            $this->registerHook('displayBackOfficeHeader');
+    }
+
+    public function uninstall()
+    {
+        Configuration::deleteByName('CKCSTORESPRESENTATION_LIVE_MODE');
+
+        return parent::uninstall();
+    }
+
+    /**
+     * Load the configuration form
+     */
+    public function getContent()
+    {
+        /**
+         * If values have been submitted in the form, process.
+         */
+
+        if (((bool)Tools::isSubmit('edit_store')) == true) {
+            $this->context->smarty->assign('module_dir', $this->_path);
+
+            $idStore = Tools::getValue('ID');
+
+            $this->_output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/form.tpl');
+            $this->_output .= $this->renderForm($idStore);
+    
+        } elseif (((bool)Tools::isSubmit('create_store')) == true) {
+            $this->context->smarty->assign('module_dir', $this->_path);
+
+            $this->_output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/form.tpl');
+            $this->_output .= $this->renderForm();
+
+        } elseif (((bool)Tools::isSubmit('ReturnToList')) == true) {
+
+            Tools::redirect($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]));
+
+        } elseif (((bool)Tools::isSubmit('submitCkcstorespresentationModule')) == true) {
+
+            $idStore = Tools::getValue('CKCSTORESPRESENTATION_ID') == "" ? null : Tools::getValue('CKCSTORESPRESENTATION_ID');
+
+            $this->postValidation();
+            if (!count($this->_postErrors)) {
+                $this->postProcess();
+                Tools::redirect($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]));
+            } else {
+
+                foreach ($this->_postErrors as $err) {
+                    $this->_output = $this->displayError($err);
+                }
+                $this->context->smarty->assign('module_dir', $this->_path);
+
+                $this->_output .= $this->context->smarty->fetch($this->local_path.'views/templates/admin/form.tpl');
+                $this->_output .= $this->renderForm($idStore);
+            }
+        } elseif(((bool)Tools::isSubmit('delete_store')) == true) {
+
+            $idStore = Tools::getValue('ID');
+
+            $delete = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckcstorespresentation` WHERE `id_ckcstorespresentation` = '.$idStore);
+
+            Tools::redirect($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]));
+                
+        } else {
+
+            $stores = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckcstorespresentation');
+
+            // dump(Context::getContext()->link->getModuleLink($this->name, 'NosMagasins'));
+
+            $this->context->smarty->assign( array(
+                'module_dir' => $this->_path,
+                'stores' => $stores,
+                'current_url' => $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]),
+            ));
+
+            $this->_output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
+        }
+
+        return $this->_output;
+        
+    }
+
+    /**
+     * Create the form that will be displayed in the configuration of your module.
+     */
+    protected function renderForm($idStore = null)
+    {
+        $helper = new HelperForm();
+
+        $helper->show_toolbar = false;
+        $helper->table = $this->table;
+        $helper->module = $this;
+        $helper->default_form_language = $this->context->language->id;
+        $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG', 0);
+
+        $helper->identifier = $this->identifier;
+        $helper->submit_action = 'submitCkcstorespresentationModule';
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
+            .'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
+        $helper->token = Tools::getAdminTokenLite('AdminModules');
+
+        $helper->tpl_vars = array(
+            'fields_value' => $this->getConfigFormValues($idStore), /* Add values for your inputs */
+            'languages' => $this->context->controller->getLanguages(),
+            'id_language' => $this->context->language->id,
+        );
+
+        return $helper->generateForm(array($this->getConfigForm($idStore)));
+    }
+
+    protected function postValidation()
+    {
+        if (Tools::isSubmit('submitCkcstorespresentationModule')) {
+
+            if (!Tools::getValue('CKCSTORESPRESENTATION_DEPARTEMENT')) {
+                $this->_postErrors[] = $this->trans(
+                    'This field is required.',
+                    [],
+                    'Modules.ckcstorespresentation.Admin'
+                );
+            } elseif (!Tools::getValue('CKCSTORESPRESENTATION_ADRESSE')) {
+                $this->_postErrors[] = $this->trans(
+                    'This field is required.',
+                    [],
+                    'Modules.ckcstorespresentation.Admin'
+                );
+            } elseif (!Tools::getValue('CKCSTORESPRESENTATION_VILLE')) {
+                $this->_postErrors[] = $this->trans(
+                    'This field is required.',
+                    [],
+                    'Modules.ckcstorespresentation.Admin'
+                );
+            } elseif (!Tools::getValue('CKCSTORESPRESENTATION_CODE_POSTAL')) {
+                $this->_postErrors[] = $this->trans(
+                    'This field is required.',
+                    [],
+                    'Modules.ckcstorespresentation.Admin'
+                );
+            } elseif (!Tools::getValue('CKCSTORESPRESENTATION_EMAIL')) {
+                $this->_postErrors[] = $this->trans(
+                    'This field is required.',
+                    [],
+                    'Modules.ckcstorespresentation.Admin'
+                );
+            }
+            if (!Tools::getValue('CKCSTORESPRESENTATION_TELEPHONE')) {
+                $this->_postErrors[] = $this->trans(
+                    'This field is required.',
+                    [],
+                    'Modules.ckcstorespresentation.Admin'
+                );
+            } elseif (!Tools::getValue('CKCSTORESPRESENTATION_HORAIRES_JOURS')) {
+                $this->_postErrors[] = $this->trans(
+                    'This field is required.',
+                    [],
+                    'Modules.ckcstorespresentation.Admin'
+                );
+            } elseif (!Tools::getValue('CKCSTORESPRESENTATION_HORAIRES_HEURES')) {
+                $this->_postErrors[] = $this->trans(
+                    'This field is required.',
+                    [],
+                    'Modules.ckcstorespresentation.Admin'
+                );
+            } elseif (!Tools::getValue('CKCSTORESPRESENTATION_IMG_PATH') && !Tools::getValue('CKCSTORESPRESENTATION_ID')) {
+                $this->_postErrors[] = $this->trans(
+                    'The image is required.',
+                    [],
+                    'Modules.ckcstorespresentation.Admin'
+                );
+            }
+        }
+    }
+
+    /**
+     * Create the structure of your form.
+     */
+    protected function getConfigForm($id = null)
+    {
+
+        $multiBoutiqueSelect = \Db::getInstance()->ExecuteS('SELECT `id_store` as id, `name` FROM `' . _DB_PREFIX_ . 'ckcstockstores_stores`');
+        $cmsPageSelect = \Db::getInstance()->ExecuteS('SELECT cl.id_cms as id, cl.meta_title as name FROM `' . _DB_PREFIX_ . 'cms_lang` cl
+        LEFT JOIN `' . _DB_PREFIX_ . 'cms` c ON c.id_cms = cl.id_cms
+        WHERE c.id_cms_category = 5');
+
+        if(isset($id)) {
+            $background_image = Db::getInstance()->executeS('SELECT img_path FROM ' . _DB_PREFIX_ . 'ckcstorespresentation WHERE id_ckcstorespresentation = '.$id);
+            $image_url = $background_image[0]["img_path"] ? _MODULE_DIR_.'ckcstorespresentation'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR.$background_image[0]["img_path"] : '';
+            $image = '<div class="col-lg-6"><img src="' . $image_url . '" class="img-thumbnail"></div>';
+        } else {
+            $image = '';
+        }
+
+        return array(
+            'form' => array(
+                'legend' => array(
+                'title' => $this->l('Création de la présentation'),
+                'icon' => 'icon-cogs',
+                ),
+                'buttons' => array(
+                    'Return'=> array(
+                        'type' => 'submit',
+                        'name' => 'ReturnToList',
+                        'title' => $this->l('Annuler'),
+                        'class' => 'btn btn-default pull-left',
+                        'id'   => 'mybutton',
+                        'icon' => 'icon-foo',
+                    ),
+                ),
+                'input' => array(
+                    array(
+                        'col' => 3,
+                        'type' => 'text',
+                        'name' => 'CKCSTORESPRESENTATION_DEPARTEMENT',
+                        'label' => $this->l('Département'),
+                    ),
+                    array(
+                        'col' => 3,
+                        'type' => 'text',
+                        'label' => $this->l('Adresse'),
+                        'name' => 'CKCSTORESPRESENTATION_ADRESSE',
+                    ),
+                    array(
+                        'col' => 3,
+                        'type' => 'text',
+                        'name' => 'CKCSTORESPRESENTATION_EMAIL',
+                        'label' => $this->l('Email'),
+                    ),
+                    array(
+                        'col' => 3,
+                        'type' => 'text',
+                        'name' => 'CKCSTORESPRESENTATION_VILLE',
+                        'label' => $this->l('Ville'),
+                    ),
+                    array(
+                        'col' => 3,
+                        'type' => 'text',
+                        'name' => 'CKCSTORESPRESENTATION_CODE_POSTAL',
+                        'label' => $this->l('Code postal'),
+                    ),
+                    array(
+                        'col' => 3,
+                        'type' => 'text',
+                        'name' => 'CKCSTORESPRESENTATION_TELEPHONE',
+                        'label' => $this->l('Téléphone'),
+                    ),
+                    array(
+                        'col' => 3,
+                        'type' => 'text',
+                        'label' => $this->l('Horaires Jours'),
+                        'name' => 'CKCSTORESPRESENTATION_HORAIRES_JOURS',
+                    ),
+                    array(
+                        'col' => 3,
+                        'type' => 'text',
+                        'label' => $this->l('Horaires Heures'),
+                        'name' => 'CKCSTORESPRESENTATION_HORAIRES_HEURES',
+                    ),
+                    // array(
+                    //     'col' => 3,
+                    //     'type' => 'text',
+                    //     'label' => $this->l('Latitude'),
+                    //     'name' => 'CKCSTORESPRESENTATION_HORAIRES_LATITUDE',
+                    // ),
+                    // array(
+                    //     'col' => 3,
+                    //     'type' => 'text',
+                    //     'label' => $this->l('Longitude'),
+                    //     'name' => 'CKCSTORESPRESENTATION_HORAIRES_LONGITUDE',
+                    // ),
+                    array(
+                        'type' => 'file',
+                        'label' => $this->l('Image magasin'),
+                        'name' => 'CKCSTORESPRESENTATION_IMG_PATH',
+                        'desc' => $this->l('Maximum image size: '),
+                        'display_image' => true,
+                        'image' => $image  // Afficher l'image
+                    ),
+                    array(
+                        'type'    => 'select',
+                        'label'   => $this->l('Sélectionner le magasin concerné'),
+                        'name'    => 'CKCSTORESPRESENTATION_MULTIBOUTIQUE_ID',
+                        'options' => [
+                            'query' => $multiBoutiqueSelect,
+                            'id'    => 'id',
+                            'name'  => 'name',
+                        ],
+                    ),
+                    array(
+                        'type'    => 'select',
+                        'label'   => $this->l('Page de détails'),
+                        'name'    => 'CKCSTORESPRESENTATION_PAGE_DETAIL',
+                        'options' => [
+                            'query' => $cmsPageSelect,
+                            'id'    => 'id',
+                            'name'  => 'name',
+                        ],
+                    ),
+                    array(
+                        'type' => 'hidden',
+                        'name' => 'CKCSTORESPRESENTATION_ID',
+                    ),
+                ),
+                'submit' => array(
+                    'title' => $this->l('Enregistrer'),
+                ),
+            ),
+        );
+    }
+
+    /**
+     * Set values for the inputs.
+     */
+    protected function getConfigFormValues(&$idStore = null)
+    {
+        if(!isset($idStore)) {
+            $data = array(
+                'CKCSTORESPRESENTATION_DEPARTEMENT' => "",
+                'CKCSTORESPRESENTATION_ADRESSE' => "",
+                'CKCSTORESPRESENTATION_VILLE' => "",
+                'CKCSTORESPRESENTATION_CODE_POSTAL' => "",
+                'CKCSTORESPRESENTATION_EMAIL' => "",
+                'CKCSTORESPRESENTATION_TELEPHONE' => "",
+                'CKCSTORESPRESENTATION_HORAIRES_JOURS' => "",
+                'CKCSTORESPRESENTATION_HORAIRES_HEURES' => "",
+                'CKCSTORESPRESENTATION_IMG_PATH' => "",
+                'CKCSTORESPRESENTATION_MULTIBOUTIQUE_ID' => "",
+                'CKCSTORESPRESENTATION_ID' => "",
+                'CKCSTORESPRESENTATION_PAGE_DETAIL' => "",
+            );
+        } else {
+            $query =  Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckcstorespresentation WHERE id_ckcstorespresentation = '.$idStore);
+
+            $data = array(
+                'CKCSTORESPRESENTATION_DEPARTEMENT' => $query[0]["departement"],
+                'CKCSTORESPRESENTATION_ADRESSE' => $query[0]["adresse"],
+                'CKCSTORESPRESENTATION_VILLE' => $query[0]["ville"],
+                'CKCSTORESPRESENTATION_CODE_POSTAL' => $query[0]["code_postal"],
+                'CKCSTORESPRESENTATION_EMAIL' => $query[0]["email"],
+                'CKCSTORESPRESENTATION_TELEPHONE' => $query[0]["telephone"],
+                'CKCSTORESPRESENTATION_HORAIRES_JOURS' => $query[0]["horaires_jours"],
+                'CKCSTORESPRESENTATION_HORAIRES_HEURES' => $query[0]["horaires_heures"],
+                'CKCSTORESPRESENTATION_IMG_PATH' => $query[0]["img_path"],
+                'CKCSTORESPRESENTATION_MULTIBOUTIQUE_ID' => $query[0]["id_multiboutique"],
+                'CKCSTORESPRESENTATION_ID' => $idStore,
+                'CKCSTORESPRESENTATION_PAGE_DETAIL' => $query[0]["id_cms_detail"]
+            );
+        }
+
+        return $data;
+    }
+
+
+    public function renderWidget($hookName, array $configuration)
+    {
+        $key = 'ckcstorespresentation|' . $hookName;
+
+        $template = $this->templateFile;
+
+        if (!$this->isCached($template, $this->getCacheId($key))) {
+            $this->smarty->assign($this->getWidgetVariables($hookName, $configuration));
+        }
+
+        return $this->fetch($template, $this->getCacheId($key));
+    }
+
+    /**
+     * @param string $hookName
+     *
+     * @return array
+     *
+     * @throws PrestaShopDatabaseException
+     */
+    public function getWidgetVariables($hookName = null, array $configuration = [])
+    {
+        $magasins = Db::getInstance()->executeS('SELECT * from `' . _DB_PREFIX_ . 'ckcstorespresentation`');
+
+        return [
+            'modulePath' => $this->context->link->getModuleLink('ckcstorespresentation', 'NosMagasins'),
+            'lang' => Context::getContext()->language->iso_code,
+            'elements' => $magasins,
+        ];
+    }
+
+    public function getCoordinatesFromAddress($address)
+    {
+        $url = "https://nominatim.openstreetmap.org/search?format=json&q=" . urlencode($address);
+        $options = [
+            "http" => [
+                "header" => "User-Agent: MyGeocoder/1.0"
+            ]
+        ];
+        $context = stream_context_create($options);
+        $response = file_get_contents($url, false, $context);
+        if ($response === false) {
+            return ["error" => "Impossible de récupérer les données"];
+        }
+        $data = json_decode($response, true);
+        if (!empty($data) && isset($data[0]['lat']) && isset($data[0]['lon'])) {
+            return [
+                'latitude' => $data[0]['lat'],
+                'longitude' => $data[0]['lon']
+            ];
+        }
+        return ["error" => "Adresse introuvable"];
+    }
+
+    /**
+     * Save form data.
+     */
+    protected function postProcess()
+    {
+
+        $CKCSTORESPRESENTATION_DEPARTEMENT = Tools::getValue('CKCSTORESPRESENTATION_DEPARTEMENT');
+        $CKCSTORESPRESENTATION_ADRESSE = Tools::getValue('CKCSTORESPRESENTATION_ADRESSE');
+        $CKCSTORESPRESENTATION_VILLE = Tools::getValue('CKCSTORESPRESENTATION_VILLE');
+        $CKCSTORESPRESENTATION_CODE_POSTAL = Tools::getValue('CKCSTORESPRESENTATION_CODE_POSTAL');
+        $CKCSTORESPRESENTATION_EMAIL = Tools::getValue('CKCSTORESPRESENTATION_EMAIL');
+        $CKCSTORESPRESENTATION_TELEPHONE = Tools::getValue('CKCSTORESPRESENTATION_TELEPHONE');
+        $CKCSTORESPRESENTATION_HORAIRES_JOURS = Tools::getValue('CKCSTORESPRESENTATION_HORAIRES_JOURS');
+        $CKCSTORESPRESENTATION_HORAIRES_HEURES = Tools::getValue('CKCSTORESPRESENTATION_HORAIRES_HEURES');
+
+        $address = $CKCSTORESPRESENTATION_ADRESSE.' '.$CKCSTORESPRESENTATION_CODE_POSTAL.' '.$CKCSTORESPRESENTATION_VILLE;
+
+        $coordinates = $this->getCoordinatesFromAddress($address);
+
+        $CKCSTORESPRESENTATION_HORAIRES_LATITUDE = $coordinates["latitude"];
+        $CKCSTORESPRESENTATION_HORAIRES_LONGITUDE = $coordinates["longitude"];
+        $CKCSTORESPRESENTATION_MULTIBOUTIQUE_ID = Tools::getValue('CKCSTORESPRESENTATION_MULTIBOUTIQUE_ID');
+        $CKCSTORESPRESENTATION_ID = Tools::getValue('CKCSTORESPRESENTATION_ID') == "" ? null : Tools::getValue('CKCSTORESPRESENTATION_ID');
+        $CKCSTORESPRESENTATION_PAGE_DETAIL =  Tools::getValue('CKCSTORESPRESENTATION_PAGE_DETAIL');
+
+        if(isset($CKCSTORESPRESENTATION_ID)){
+           
+            if(isset($_FILES['CKCSTORESPRESENTATION_IMG_PATH']) && strlen($_FILES['CKCSTORESPRESENTATION_IMG_PATH']['name']) > 0) {
+                $file_name = $_FILES['CKCSTORESPRESENTATION_IMG_PATH']['name'];
+    
+                $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
+                $file_base_name = pathinfo($file_name, PATHINFO_FILENAME);
+            
+                $file_base_name = preg_replace('/[^\w\-]/u', '-', $file_base_name); // Remplace les caractères non alphanumériques
+                $file_base_name = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $file_base_name); // Convertit les caractères accentués en non accentués
+            
+                $file_name = $file_base_name . '.' . $file_extension;
+        
+                $checkIfTheSameName = Db::getInstance()->getValue('SELECT `img_path` FROM `' . _DB_PREFIX_ . 'ckcstorespresentation`
+                WHERE id_ckcstorespresentation = '.$CKCSTORESPRESENTATION_ID.' AND img_path LIKE "'.$file_name.'"');
+                while ($checkIfTheSameName) {
+                    $randomSuffix = rand(1000, 9999);
+                    $newFileName = $file_base_name . '-' . $randomSuffix . '.' . $file_extension;
+        
+                    // Revérifier avec le nouveau nom de fichier
+                    $checkIfTheSameName = Db::getInstance()->getValue(
+                        'SELECT `img_path` FROM `' . _DB_PREFIX_ . 'ckcstorespresentation`
+                        WHERE id_ckcstorespresentation = '.$CKCSTORESPRESENTATION_ID.' AND img_path LIKE "'.$newFileName.'"'
+                    );
+                }
+        
+                $file_name = isset($newFileName) ? $newFileName : $file_name;
+                
+                
+                if($file_name) {
+                    if (is_uploaded_file($_FILES['CKCSTORESPRESENTATION_IMG_PATH']['tmp_name'])) {
+                        // Vérifier si le dossier 'uploads' existe, sinon le créer
+                        $uploadsDir =  __DIR__ . DIRECTORY_SEPARATOR . 'uploads';
+                        if (!file_exists($uploadsDir)) {
+                            mkdir($uploadsDir, 0755, true); // 
+                        }
+                        $moveResult = move_uploaded_file($_FILES['CKCSTORESPRESENTATION_IMG_PATH']['tmp_name'], $uploadsDir . DIRECTORY_SEPARATOR . $file_name);
+    
+                        if ($moveResult) {
+                            $upload = true;
+                        } else {
+                            throw new Exception('Le document n\'a pas pu être enregistré.');
+                        }
+                    } else {
+                        throw new FileNotFoundException('Error while file upload');
+                    }
+                }
+                $updateStoreInfo = Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckcstorespresentation` 
+                SET `departement` = \''.$CKCSTORESPRESENTATION_DEPARTEMENT.'\',
+                `adresse` = \''.$CKCSTORESPRESENTATION_ADRESSE.'\',
+                `ville` = \''.$CKCSTORESPRESENTATION_VILLE.'\',
+                `code_postal` = \''.$CKCSTORESPRESENTATION_CODE_POSTAL.'\',
+                `email` = \''.$CKCSTORESPRESENTATION_EMAIL.'\',
+                `telephone` = \''.$CKCSTORESPRESENTATION_TELEPHONE.'\',
+                `horaires_jours` = \''.$CKCSTORESPRESENTATION_HORAIRES_JOURS.'\',
+                `horaires_heures` = \''.$CKCSTORESPRESENTATION_HORAIRES_HEURES.'\',
+                `img_path` = \''.$file_name.'\',
+                `latitude` = \''.$CKCSTORESPRESENTATION_HORAIRES_LATITUDE.'\',
+                `longitude` = \''.$CKCSTORESPRESENTATION_HORAIRES_LONGITUDE.'\',
+                `id_multiboutique` = '.$CKCSTORESPRESENTATION_MULTIBOUTIQUE_ID.',
+                `id_cms_detail` = '.$CKCSTORESPRESENTATION_PAGE_DETAIL.' 
+                WHERE id_ckcstorespresentation = '.$CKCSTORESPRESENTATION_ID);
+            } else {
+                $updateStoreInfo = Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckcstorespresentation` 
+                SET `departement` = \''.$CKCSTORESPRESENTATION_DEPARTEMENT.'\',
+                `adresse` = \''.$CKCSTORESPRESENTATION_ADRESSE.'\',
+                `ville` = \''.$CKCSTORESPRESENTATION_VILLE.'\',
+                `code_postal` = \''.$CKCSTORESPRESENTATION_CODE_POSTAL.'\',
+                `email` = \''.$CKCSTORESPRESENTATION_EMAIL.'\',
+                `telephone` = \''.$CKCSTORESPRESENTATION_TELEPHONE.'\',
+                `horaires_jours` = \''.$CKCSTORESPRESENTATION_HORAIRES_JOURS.'\',
+                `horaires_heures` = \''.$CKCSTORESPRESENTATION_HORAIRES_HEURES.'\',
+                `latitude` = \''.$CKCSTORESPRESENTATION_HORAIRES_LATITUDE.'\',
+                `longitude` = \''.$CKCSTORESPRESENTATION_HORAIRES_LONGITUDE.'\',
+                `id_multiboutique` = '.$CKCSTORESPRESENTATION_MULTIBOUTIQUE_ID.',
+                `id_cms_detail` = '.$CKCSTORESPRESENTATION_PAGE_DETAIL.' 
+                WHERE id_ckcstorespresentation = '.$CKCSTORESPRESENTATION_ID);
+            }
+
+        } else {
+
+            $file_name = $_FILES['CKCSTORESPRESENTATION_IMG_PATH']['name'];
+    
+            $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
+            $file_base_name = pathinfo($file_name, PATHINFO_FILENAME);
+        
+            $file_base_name = preg_replace('/[^\w\-]/u', '-', $file_base_name); // Remplace les caractères non alphanumériques
+            $file_base_name = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $file_base_name); // Convertit les caractères accentués en non accentués
+        
+            $file_name = $file_base_name . '.' . $file_extension;
+
+            if($file_name) {
+                if (is_uploaded_file($_FILES['CKCSTORESPRESENTATION_IMG_PATH']['tmp_name'])) {
+                    // Vérifier si le dossier 'uploads' existe, sinon le créer
+                    $uploadsDir =  __DIR__ . DIRECTORY_SEPARATOR . 'uploads';
+                    if (!file_exists($uploadsDir)) {
+                        mkdir($uploadsDir, 0755, true); // 
+                    }
+                    $moveResult = move_uploaded_file($_FILES['CKCSTORESPRESENTATION_IMG_PATH']['tmp_name'], $uploadsDir . DIRECTORY_SEPARATOR . $file_name);
+
+                    if ($moveResult) {
+                        $upload = true;
+                    } else {
+                        throw new Exception('Le document n\'a pas pu être enregistré.');
+                    }
+                } else {
+                    throw new FileNotFoundException('Error while file upload');
+                }
+            }
+
+            $createStoreInfo = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckcstorespresentation` 
+            (`id_ckcstorespresentation`, `departement`, `adresse`,`ville`, `code_postal`,`email`, `telephone`, `horaires_jours`, `horaires_heures`, `img_path`, `latitude`, `longitude`, `id_multiboutique`,`id_cms_detail`, `date_add`)
+            VALUES (NULL, \''.$CKCSTORESPRESENTATION_DEPARTEMENT.'\', \''.$CKCSTORESPRESENTATION_ADRESSE.'\',\''.$CKCSTORESPRESENTATION_VILLE.'\',
+            \''.$CKCSTORESPRESENTATION_CODE_POSTAL.'\', \''.$CKCSTORESPRESENTATION_EMAIL.'\',
+            \''.$CKCSTORESPRESENTATION_TELEPHONE.'\', \''.$CKCSTORESPRESENTATION_HORAIRES_JOURS.'\', \''.$CKCSTORESPRESENTATION_HORAIRES_HEURES.'\',
+            \''.$file_name.'\', \''.$CKCSTORESPRESENTATION_HORAIRES_LATITUDE.'\', \''.$CKCSTORESPRESENTATION_HORAIRES_LONGITUDE.'\',
+            '.$CKCSTORESPRESENTATION_MULTIBOUTIQUE_ID.','.$CKCSTORESPRESENTATION_PAGE_DETAIL.' , CURRENT_TIMESTAMP())');
+        }
+    }
+
+    /**
+    * Add the CSS & JavaScript files you want to be loaded in the BO.
+    */
+    public function hookDisplayBackOfficeHeader()
+    {
+        if (Tools::getValue('configure') == $this->name) {
+            $this->context->controller->addJS($this->_path.'views/js/back.js');
+            $this->context->controller->addCSS($this->_path.'views/css/back.css');
+        }
+    }
+
+    /**
+     * Add the CSS & JavaScript files you want to be added on the FO.
+     */
+    public function hookHeader()
+    {
+        $this->context->controller->addJS($this->_path.'/views/js/front.js');
+        $this->context->controller->addCSS($this->_path.'/views/css/front.css');
+    }
+}

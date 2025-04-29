@@ -1,0 +1,34 @@
+<?php
+
+global $_MODULE;
+$_MODULE = array();
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_ce53f8cf340ee89e3a03fe2a3f5acca0'] = 'Barre de promotion';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_099381b795999928ff6cc3cb4e59a28e'] = 'Générez une barre de promotion personnalisable avec un timer à l\'aide de ce module.';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_7b06c001493a539596e475e197b6e198'] = 'Êtes-vous sûr?';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_3dd3de1500c0bd6b9d72c9e2a835cf94'] = 'Barre de promotion';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_254f642527b45bc260048e30704edb39'] = 'Configuration';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_ac9147e93385352a2bc4934ee1c838cf'] = 'Afficher la barre de promotion';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_93295fac75bfc5950a600142e6ae0ee0'] = 'La barre de promotion sera affichée en haut ou bas de page';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_6197256e71a3b14a902e4b481c2f78f9'] = 'Affichez en bas de page';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_8fda0825899a59fcbd96b91ea158fea1'] = 'Par défaut, la barre de promotion est affichée en haut de page';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_93cba07454f06a4a960172bbd6e2a435'] = 'Oui';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_bafd7322c6e97d25b6299b5d6fe8920b'] = 'Non';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_3ef457d5c6ccdab445d9064d8b29b62e'] = 'Couleur de fond de la barre';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_1eb1d6f52f31470a1054980180f80743'] = 'Choisissez la couleur de fond de la bannière';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_159f7d51b9a4ff702c9b5543b8f7980f'] = 'Date limite';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_1fd57ffcd065daee841d0458202ac853'] = 'Date d\'expiration de la promotion, s\'affichera sous forme de timer.';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_86f2ff44d6e0b0dd1ddd4fad044adb5a'] = 'Couleur du texte du timer';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_fe03d436e920662a063cde2727c53b7c'] = 'Choisissez la couleur du texte du timer';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_498f79c4c5bbde77f1bceb6c86fd0f6d'] = 'Afficher';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_62a5e490880a92eef74f167d9dc6dca0'] = 'Masquer';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_c9cc8cce247e49bae79f15173ce97354'] = 'Enregistrer';
+$_MODULE['<{ckcpromotionbanner}prestashop>configure_ce53f8cf340ee89e3a03fe2a3f5acca0'] = 'Barre de promotion';
+$_MODULE['<{ckcpromotionbanner}prestashop>configure_bba714c79f7284465cd12951f3c3da1c'] = 'Barre de promotion refermable';
+$_MODULE['<{ckcpromotionbanner}prestashop>configure_821404532ab0b607444bfa293ff56f8b'] = 'en bas / haut de page (avec message personnalisable)';
+$_MODULE['<{ckcpromotionbanner}prestashop>configure_d8ae7313b5a0f90c2b180e9db1e9f7bd'] = 'Avec ou sans timer';
+$_MODULE['<{ckcpromotionbanner}prestashop>configure_1c1a1efe23966b92accecdcc3c40a846'] = 'Ajouter du/des texte(s) pour la promotion';
+$_MODULE['<{ckcpromotionbanner}prestashop>configure_ec41b22f4db034eead45c71d21214301'] = 'Si vous avez plusieurs textes promotionnels à afficher, vous pouvez en ajouter autant que nécessaire ici (même un seul aussi)';
+$_MODULE['<{ckcpromotionbanner}prestashop>configure_aebf29982400ac46b14cf782e4e099ca'] = 'Mettez un texte promotionnel à ajouter :';
+$_MODULE['<{ckcpromotionbanner}prestashop>configure_ae91330360ee794972aacd1d6afd590b'] = 'Mettez un texte promotionnel à ajouter :';
+$_MODULE['<{ckcpromotionbanner}prestashop>configure_a2388e5908cce37681a83146dbbeb339'] = 'Enregistrer la liste des textes promotionnels';
+$_MODULE['<{ckcpromotionbanner}prestashop>alert_62a5e490880a92eef74f167d9dc6dca0'] = 'Masquer';

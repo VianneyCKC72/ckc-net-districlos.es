@@ -1,0 +1,70 @@
+#stock-summary-content {
+	margin-top: 1.75rem;
+}
+
+#stock-summary-content span.nameStore {
+	font-weight: 600;
+}
+
+#stock-summary-content div.text p {
+	font-size: 13px;
+	font-weight: 500;
+	margin-bottom: 0;
+}
+
+#stock-summary-content p.productLimit {
+	color: #79c046;
+	font-weight: 600;
+	margin: 0.5rem 0;
+}
+
+#stock-summary-content p.productQuantity {
+	font-size: 14px;
+	font-weight: 600;
+	margin: 0.5rem 0;
+	display: flex;
+	gap: 10px;
+}
+
+#stock-summary-content p.productQuantity img {
+	display: flex;
+	height: 18px;
+	margin: auto 0;
+	width: 18px;
+}
+
+#stock-summary-content div.card div.card-block {
+	border: 1px solid #e6e6e6;
+	padding: 1.25rem;
+}
+
+#stock-summary-content div.card div.card-block span.nameStore {
+	font-size: 20px;
+	font-weight: 600;
+	text-decoration: none !important;
+}
+
+@media screen and (max-width: 992px) {
+	#stock-summary-content {
+		margin-top: 1rem;
+	}
+
+	#stock-summary-content.page-content.page-order-confirmation > div.card {
+		margin-bottom: 0.75rem;
+	}
+
+	#stock-summary-content.page-content.page-order-confirmation {
+		margin-top: 15px;
+	}
+}
+@media screen and (max-width: 768px) {
+	#modalSelectShop .modal-body {
+		padding: 0;
+	}
+	#modalSelectShop .store-description {
+		padding: 0;
+	}
+	#modalSelectShop .store-description .btn {
+		padding: 18px 20px !important;
+	}
+}

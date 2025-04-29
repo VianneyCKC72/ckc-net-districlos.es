@@ -1,0 +1,22 @@
+{
+    "name": "prestashop/ckccategorycustomlinks",
+    "license": "AFL-3.0",
+    "authors": [
+      {
+        "name": "ckc",
+        "email": "info@ckc-net.com"
+      },
+      {
+          "name": "PrestaShop Core Team"
+      }
+    ],
+    "autoload": {
+      "psr-4": {
+        "PrestaShop\\Module\\Ckccategorycustomlinks\\": "src/"
+      },
+      "config": {
+        "prepend-autoloader": false
+      },
+      "type": "prestashop-module"
+    }
+  }

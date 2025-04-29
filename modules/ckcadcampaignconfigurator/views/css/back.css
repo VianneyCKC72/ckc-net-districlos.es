@@ -1,0 +1,173 @@
+/**
+* 2007-2025 PrestaShop
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Academic Free License (AFL 3.0)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/afl-3.0.php
+* If you did not receive a copy of the license and are unable to
+* obtain it through the world-wide-web, please send an email
+* to license@prestashop.com so we can send you a copy immediately.
+*
+* DISCLAIMER
+*
+* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+* versions in the future. If you wish to customize PrestaShop for your
+* needs please refer to http://www.prestashop.com for more information.
+*
+*  @author    PrestaShop SA <contact@prestashop.com>
+*  @copyright 2007-2025 PrestaShop SA
+*  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+*  International Registered Trademark & Property of PrestaShop SA
+*
+* Don't forget to prefix your containers with your own identifier
+* to avoid any conflicts with others containers.
+*/
+
+.addons-hide {
+    display: none;
+}
+div#ckcadcampaignconfigurator-menu{
+    min-height: 75px;
+}
+h3.ckch3{
+    border-bottom: none;
+    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Segoe Pro Display', sans-serif;
+    text-transform: uppercase;
+    font-weight: bold !important;
+}
+h3.h3-ckctitle{
+    background-color: #fff !important;
+}
+
+a.list-group-item{
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    font-weight: 600 !important;
+    font-size: 14px;
+    color: #000 !important;
+    background-color: #F7F7F7 !important;
+    border: none !important;
+    width: 170px !important;
+    height: 50px !important;
+    border-radius: 5px !important;
+    margin-right: 20px !important;
+}
+a.list-group-item:hover{
+    background-color: #d5d5d5 !important;
+}
+
+a.list-group-item.active{
+    background-color: #FF375C !important;
+    color: #fff !important;
+}
+
+.list-group-item i.material-icons{
+    font-size: 14px;
+    margin-right: 3px;
+}
+.links-ckc-action{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.img-thumbnail{
+    object-fit: contain;
+    max-width: 340px !important;
+}
+.tag {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.tag .remove {
+    margin-left: 10px;
+    cursor: pointer;
+}
+li.ui-menu-item .ui-menu-item-wrapper{
+    align-content: start;
+    text-align: left;
+    max-width: 500px;
+    padding: 10px 0;
+}
+.ui-menu.ui-widget{
+    max-width: 500px;
+    align-content: start;
+}
+#idInput,
+#idInputName{
+    max-width: 400px;
+}
+#addIdButton{
+    height: 39px;
+    margin-left: 15px;
+    background-color: #FF375C;
+    border-color: #FF375C;
+}
+.saveExceptions{
+    margin-top: 20px;
+    text-transform: uppercase;
+}
+.input-group{
+    width: 500px;
+    margin-bottom: 15px;
+}
+#selectedIds{
+    flex-wrap: wrap;
+}
+.product-search-container,
+.category-search-container{
+    display: flex !important;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+.suggested-product{
+    border: 2px solid #e5e5e5;
+    display: flex;
+    min-height: 39px;
+    max-width: 500px;
+    border-radius: 5px;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 8px;
+    color: #000;
+    font-size: 14px;
+}
+.suggested-product .btn.btn-primary{
+    float: right;
+}
+.product-search-container #idInput,
+.category-search-container #idInput{
+    max-width: 500px;
+    margin-bottom: 15px;
+}
+.product-selection-container,
+.category-selection-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+.selected-products-container,
+.selected-categories-container{
+    margin-left: 50px;
+}
+.btn-delete-img-campaign{
+    margin-top: 15px;
+    margin-left: 10px;
+}
+@media (max-width: 1633px) {
+    div#ckcadcampaignconfigurator-menu{
+        min-height: 150px;
+    }
+    .bootstrap a.list-group-item {
+        margin-bottom: 20px;
+    }
+}

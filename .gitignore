@@ -251,6 +251,7 @@ app/config/config.php
 # Themes, modules and overrides
 
 modules/*
+!modules/ckc*/
 #override/*
 themes/*/
 !themes/classic/

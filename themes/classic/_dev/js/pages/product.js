@@ -410,4 +410,18 @@ $(document).ready(function () {
         }
     });
 
+
+    $('.add-to-cart').on('click', function (e) {
+        var $button = $(this);
+
+        // Afficher le loader
+        $button.find('.loader').show();
+    });
+
+    prestashop.on('updateCart', function() {
+        var $button = $('.add-to-cart');
+        $button.prop('disabled', false);
+        $button.find('.loader').hide();
+    });
+
 });

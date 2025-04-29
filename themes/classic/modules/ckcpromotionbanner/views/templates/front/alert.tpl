@@ -100,7 +100,7 @@
                 if (distance < 0) {
                     clearInterval(x);
                     // document.getElementById("ckctimer").innerHTML = "la date limite est dépassée.";
-                    $('#ckcpromobarre').hide();
+                    $('#ckcpromobarre .ckcpromobarre-text-change-container').parent().hide();
                 }
             }, 1000);
         });

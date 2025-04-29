@@ -1,0 +1,7 @@
+services:
+  prestashop.module.ckccategorycustomlinks.repository.category_additional_fields_repository:
+    class: PrestaShop\Module\Ckccategorycustomlinks\Repository\CategoryAdditionalFieldsRepository
+    public: true
+    factory: ['@doctrine.orm.entity_manager', getRepository]
+    arguments:
+      - PrestaShop\Module\Ckccategorycustomlinks\Entity\CategoryAdditionalFields

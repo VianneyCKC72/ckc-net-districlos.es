@@ -1,0 +1,22 @@
+.bootstrap select[name*=product_ids].fixed-width-xl {
+    width: 100% !important;
+    height: 500px;
+}
+.discount_type_flag,#category .discount_type_flag{
+    background:#DD3124;border:none;
+    border-radius:5px;
+    bottom:4px;
+    height:40px;
+    left:auto;
+    position:absolute;
+    right:0;top:unset;
+    transform:translate(-4px,2px);
+    width:40px;
+    z-index:2
+}
+#category .discount_type_flag span.discount-percentage{
+    font-weight:600!important;
+    right:3px;
+    top:10px!important;
+    transform:none!important
+}

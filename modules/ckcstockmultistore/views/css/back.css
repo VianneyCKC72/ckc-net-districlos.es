@@ -1,0 +1,87 @@
+/**
+* 2007-2025 PrestaShop
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Academic Free License (AFL 3.0)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/afl-3.0.php
+* If you did not receive a copy of the license and are unable to
+* obtain it through the world-wide-web, please send an email
+* to license@prestashop.com so we can send you a copy immediately.
+*
+* DISCLAIMER
+*
+* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+* versions in the future. If you wish to customize PrestaShop for your
+* needs please refer to http://www.prestashop.com for more information.
+*
+*  @author    PrestaShop SA <contact@prestashop.com>
+*  @copyright 2007-2025 PrestaShop SA
+*  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+*  International Registered Trademark & Property of PrestaShop SA
+*
+* Don't forget to prefix your containers with your own identifier
+* to avoid any conflicts with others containers.
+*/
+.panel{
+    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Segoe Pro Display', sans-serif;
+    color: #000;
+}
+.addons-hide {
+    display: none;
+}
+div#ckcobfuscation-menu{
+    min-height: 40px;
+}
+h3.ckch3{
+    border-bottom: none;
+    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Segoe Pro Display', sans-serif;
+    text-transform: uppercase;
+    font-weight: bold !important;
+}
+h3.h3-ckctitle{
+    background-color: #fff !important;
+}
+
+a.list-group-item{
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    font-weight: 600 !important;
+    font-size: 14px;
+    color: #000 !important;
+    background-color: #F7F7F7 !important;
+    border: none !important;
+    width: 170px !important;
+    height: 50px !important;
+    border-radius: 5px !important;
+    margin-right: 20px !important;
+}
+a.list-group-item:hover{
+    background-color: #d5d5d5 !important;
+}
+
+a.list-group-item.active{
+    background-color: #FF375C !important;
+    color: #fff !important;
+}
+
+.list-group-item i.material-icons{
+    font-size: 14px;
+    margin-right: 3px;
+}
+.links-ckc-action{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.dataTables_filter{
+    margin-bottom: 20px;
+    float: left !important;
+    text-align: left !important;
+    margin-top: 10px;
+}

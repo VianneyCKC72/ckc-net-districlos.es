@@ -132,17 +132,22 @@
 #ckcpromobarre .container::after{
     display: none;
 }
-
-@media (min-width: 997px) {
-    #ckcpromobarre .ckcpromobarre-text-change-container {
-        width: 30%;
-    }
-}
-@media (min-width: 768px) and (max-width: 996px) {
-    #ckcpromobarre .ckcpromobarre-text-change-container {
-        width: 50%;
-    }
-}
 #ckcpromobarre .container .block-left-banner{
     white-space: nowrap;
+}
+.ckcpromobarre-text{
+    white-space: nowrap;
+}
+#ckcpromobarre > span > .container > div:first-child{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    min-width: 31.5%;
+}
+@media (max-width: 550px){
+    #ckcpromobarre > span > .container > div:first-child{
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
 }
