@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>ckcpromotionbanner</name>
+	<displayName><![CDATA[Promotion banner]]></displayName>
+	<version><![CDATA[1.0.0]]></version>
+	<description><![CDATA[Generate a customizable promo banner with a timer with the help of this module.]]></description>
+	<author><![CDATA[Agence CKC]]></author>
+	<tab><![CDATA[pricing_promotion]]></tab>
+	<is_configurable>1</is_configurable>
+	<need_instance>1</need_instance>
+</module>
