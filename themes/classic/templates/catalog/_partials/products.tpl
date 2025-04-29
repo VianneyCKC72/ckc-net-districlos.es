@@ -26,7 +26,7 @@
   {include file="catalog/_partials/productlist.tpl" products=$listing.products cssClass="row"}
 
   {block name='pagination'}
-    {include file='_partials/pagination.tpl' pagination=$listing.pagination}
+    {include file='_partials/pagination_product.tpl' pagination=$listing.pagination products=$listing.products}
   {/block}
 
   {*<div class="hidden-md-up text-xs-right up">
