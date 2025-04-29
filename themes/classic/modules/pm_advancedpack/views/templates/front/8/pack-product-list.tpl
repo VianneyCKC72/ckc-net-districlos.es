@@ -15,9 +15,6 @@
                             {/if}
                             {assign var="groupName" value="group_`$productPack.id_product`_$id_attribute_group"}
                             {assign var=ap5_isCurrentSelectedIdAttribute value=((isset($productsPackErrors[$productPack.id_product_pack]) && isset($packCompleteAttributesList[$productPack.id_product_pack]) && in_array($id_attribute, $packCompleteAttributesList[$productPack.id_product_pack])) || $group.default == $id_attribute)}
-                            {if ($group.group_type == 'color')}
-                                <input class="product-pack-variant-radio input-color ap5-attribute-radio" type="radio" data-product="{$productPack.id_product}" data-product-attribute="{$id_attribute_group}" name="{$groupName}" value="{$id_attribute|intval}" {if $ap5_isCurrentSelectedIdAttribute} checked="checked"{/if} data-position="{$indexCounter}">
-                            {/if}
                         {/foreach}
 
                         {if !empty($group.attributes) && in_array($group.group_type, ['select', 'color', 'radio'])}
