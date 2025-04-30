@@ -192,6 +192,9 @@
 
                                     {/block}
 
+                                   {block name='hook_display_accessories'}
+                                       {hook h='displayAccessories'}
+                                   {/block}
 
                                     {block name='product_discounts'}
 
