@@ -1,6 +1,6 @@
 $(document).ready(function () {
 
-    $('.exitCart').click(function(e) {
+    $('.exitCart').click(function (e) {
         e.preventDefault()
         $('#confirmModal').modal('show')
     })
@@ -186,6 +186,7 @@ $(document).ready(function () {
         $(document).on('click', '.chevron-toggle', function (e) {
             toggleCollapse(e)
         });
+
         function toggleCollapse(e) {
             e.preventDefault();
             $('#promoCollapse').collapse('toggle');
@@ -199,10 +200,39 @@ $(document).ready(function () {
         $collapse.on('hide.bs.collapse', function () {
             $chevron.css('transform', 'rotate(0deg)');
         });
+
+
+        // 1. Ajouter un * aux labels des champs requis
+        $('input[required], select[required], textarea[required]').each(function () {
+            const label = $("label[for='" + $(this).attr("id") + "']");
+            if (label.length && !label.html().includes("*")) {
+                label.append(' <span style="color:red">*</span>');
+            }
+        });
+
+        // 2. Ajouter la mention "* champ requis" en bas du formulaire (si pas déjà présent)
+        if ($('#delivery-address .required-note').length === 0) {
+            $('#delivery-address .form-footer').before('<div class="required-note" style="margin-top: 1em; color: #666;"><span style="color:red">*</span> champ requis</div>');
+        }
+
+        // 3. Vérification à la soumission
+        $('.js-address-form form, .js-address-form').on('submit', function (e) {
+            let valid = true;
+            $('input[required], select[required], textarea[required]').each(function () {
+                if (!$(this).val()) {
+                    $(this).addClass('is-invalid'); // Ajoute une classe pour le style si souhaité
+                    valid = false;
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+            });
+
+            if (!valid) {
+                alert("Veuillez remplir tous les champs obligatoires.");
+                e.preventDefault();
+            }
+        });
     }
 
-/*    if ($('body').hasClass('page-order') && $(window).width() <= 767) {
-        var orderButton = $("#payment-confirmation.js-payment-confirmation").clone()
-        orderButton.insertAfter($("form#conditions-to-approve"))
-    }*/
+
 });
