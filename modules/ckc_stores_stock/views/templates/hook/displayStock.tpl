@@ -1,6 +1,6 @@
 {if !in_array(294,Product::getProductCategories($product->id|intval)) and !in_array(295,Product::getProductCategories($product->id|intval)) and !in_array(293,Product::getProductCategories($product->id|intval)) and (!$isKit || ($isKit and $seuil))}
     <div>
-        <div class="d-flex align-items-center mb-2">
+        <div class="d-flex align-items-center mb-2 blockDeliveryDisplayStock">
             <img src="/modules/ckc_stores_stock/assets/img/delivery.svg" loading="lazy" alt="Icone livraison">
             <div class="small ml-4">
                 Stock en magasin<br>

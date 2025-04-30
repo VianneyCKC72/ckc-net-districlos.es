@@ -68,3 +68,15 @@
 		padding: 18px 20px !important;
 	}
 }
+
+.blockDeliveryDisplayStock {
+	min-height: 60px;
+}
+
+#showDelivery:hover {
+	opacity: 0.8;
+}
+
+#selectShop:hover {
+	opacity: 0.8;
+}

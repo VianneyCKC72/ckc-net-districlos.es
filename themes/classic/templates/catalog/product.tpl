@@ -282,7 +282,11 @@
                     {/if}" id="description" role="tabpanel">
 
                                     {block name='product_description'}
+{*                                        <hr>*}
+{*                                        {$product.description}*}
+{*                                        <hr>*}
                                         <div class="product-description">{$product.description nofilter}</div>
+{*                                        <div class="product-description">test</div>*}
                                     {/block}
 
                                     {if isset($groups) && $groups|count > 0}
