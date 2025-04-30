@@ -33,9 +33,9 @@
         </div>
 
         <div class="hidden-sm-down total-products">
-            {if $listing.pagination.total_items > 1}
-                <p class="mb-0">{l s='There are %product_count% products.' d='Shop.Theme.Catalog' sprintf=['%product_count%' => $listing.pagination.total_items]}</p>
-            {elseif $listing.pagination.total_items > 0}
+            {if sizeof($listing.products) > 1}
+                <p class="mb-0">{l s='There are %product_count% products.' d='Shop.Theme.Catalog' sprintf=['%product_count%' => sizeof($listing.products)]}</p>
+            {elseif sizeof($listing.products) > 0}
                 <p class="mb-0">{l s='There is 1 product.' d='Shop.Theme.Catalog'}</p>
             {/if}
         </div>

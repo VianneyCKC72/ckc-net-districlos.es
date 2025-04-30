@@ -4,7 +4,7 @@
         <div class="small ml-4">
             Livraison à domicile<br>
             {hook h='displayPromoImpactFranco'}
-
+            <br>
             {if in_array(294,Product::getProductCategories($product->id|intval)) or in_array(295,Product::getProductCategories($product->id|intval)) or in_array(293,Product::getProductCategories($product->id|intval))}
                 <span class="thin">Sous 3 à 4 semaines.</span>
 
