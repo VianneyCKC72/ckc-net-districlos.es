@@ -50,6 +50,11 @@
             de vous engager.</p>
         </div>
       {/if}
+        {block name='product_add_to_cart'}
+
+            {include file='catalog/_partials/product-add-to-cart.tpl'}
+
+        {/block}
 
       {* <div class="product-price{if $product.has_discount}has-discount{/if}">
 

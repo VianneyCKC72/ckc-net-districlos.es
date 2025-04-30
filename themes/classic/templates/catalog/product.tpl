@@ -206,13 +206,6 @@
 
                                     {/block}
 
-
-                                    {block name='product_add_to_cart'}
-
-                                        {include file='catalog/_partials/product-add-to-cart.tpl'}
-
-                                    {/block}
-
                                     <div class="d-flex flex-wrap gap-16 shipping-block-product-info">
                                         {if file_exists($smarty.const._PS_MODULE_DIR_|cat:'ckc_shipping_estimator/views/templates/front/product/shipping_estimator.tpl')}
                                             {include file="module:ckc_shipping_estimator/views/templates/front/product/shipping_estimator.tpl"}

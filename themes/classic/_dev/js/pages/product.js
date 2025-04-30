@@ -423,12 +423,4 @@ $(document).ready(function () {
         $button.prop('disabled', false);
         $button.find('.loader').hide();
     });
-
-    $(document).on('ajaxComplete', function (event, xhr, settings) {
-        if (url.includes('controller=product') && settings.data && settings.data.includes('action=refresh')) {
-            let quantity = $('.quantity-input').val();
-            $('.js-product-quantity').val(quantity).attr('data-valueqty', quantity);
-        }
-    });
-
 });
