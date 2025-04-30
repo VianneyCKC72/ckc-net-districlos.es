@@ -524,4 +524,12 @@
     object-fit: cover;
   }
 }
-
+.store-search-input:active,
+.store-search-input:focus {
+  outline: none;
+  box-shadow: none;
+  border: none;
+  -webkit-appearance: none; // pour Safari/iOS
+  -moz-appearance: none;    // pour Firefox
+  appearance: none;         // standard moderne
+}

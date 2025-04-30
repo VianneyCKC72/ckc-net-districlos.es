@@ -618,6 +618,7 @@
   display: none;
 }
 
+[class^="cn_element_products_"][class$="_card"],
 .product-miniature.js-product-miniature .product-info-custom-block-miniature {
   display: flex;
   flex-direction: column;
