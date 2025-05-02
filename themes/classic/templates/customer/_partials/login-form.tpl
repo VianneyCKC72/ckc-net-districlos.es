@@ -10,7 +10,10 @@
         {if $espace_pro != true && (!isset($show_title) || $show_title===false)}
             <div class="not-account-yet">
                 <div class="img">
-                    <img src="/img/cms/connexion-page-img.jpeg" alt="connexion" />
+                    <picture>
+                        <source srcset="/img/cms/image-connexion-particulier.webp" type="image/webp">
+                        <img src="/img/cms/image-connexion-particulier.jpg" alt="connexion" />
+                    </picture>
                 </div>
                 <div class="inside">
                     <h2 class="mb-4">Pas encore de compte ?</h2>
@@ -20,6 +23,7 @@
                 </div>
             </div>
         {/if}
+
 
         <div class="inside-login-form my-4">
             {if $espace_pro != true && (!isset($show_title) || $show_title===false)}
