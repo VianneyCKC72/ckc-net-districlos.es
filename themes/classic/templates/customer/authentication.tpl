@@ -54,8 +54,12 @@
     {if $espace_pro == 1}
       <div class="col-6 contenair-img-auth">
         <figure>
-          <img class="img-connect" alt="Authentification Districlos" src="/img/cms/auth/img-espace-pro.jpeg">
+          <picture>
+            <source srcset="/img/cms/auth/img-espace-pro2.webp" type="image/webp">
+            <img class="img-connect" alt="Authentification Districlos" src="/img/cms/auth/img-espace-pro2.jpeg">
+          </picture>
         </figure>
+
         <div class="avis">
           <div class="texte">
             <p>"Mon expérience avec Districlos a été géniale, et je suis convaincu que toute collaboration
