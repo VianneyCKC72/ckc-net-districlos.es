@@ -65,45 +65,51 @@
 
 {*Push the timer *}
 {if $CKC_BARREPROMO_TIMER_DISPLAY == 1 && isset($CKC_BARREPROMO_TIMER) && $CKC_BARREPROMO_TIMER !== ""}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-
     <script type="text/javascript">
-        jQuery( document ).ready(function($) {
-            // Set the date we're counting down to
+        document.addEventListener("DOMContentLoaded", function () {
+            // Récupère la date cible depuis la variable Smarty
             var countDownDate = new Date("{$CKC_BARREPROMO_TIMER}").getTime();
 
-            // Update the count down every 1 second
+            // Met à jour le compte à rebours chaque seconde
             var x = setInterval(function () {
-
-                if ($('#ckcpromobarre').length == 0) {
+                // Vérifie si l'élément existe encore
+                if (!document.getElementById("ckcpromobarre")) {
                     clearInterval(x);
                     return;
                 }
 
-                // Get today's date and time
+                // Heure actuelle
                 var now = new Date().getTime();
 
-                // Find the distance between now and the count down date
+                // Calcul du temps restant
                 var distance = countDownDate - now;
 
-                // Time calculations for days, hours, minutes and seconds
+                // Conversion en jours, heures, minutes, secondes
                 var days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                // Output the result in an element with id="demo"
-                document.getElementById("ckctimer").innerHTML = days + "d " + hours + "h "
-                    + minutes + "m " + seconds + "s ";
+                // Affichage du compte à rebours
+                var timerElement = document.getElementById("ckctimer");
+                if (timerElement) {
+                    timerElement.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+                }
 
-                // If the count down is over, write some text
+                // Si le compte à rebours est terminé
                 if (distance < 0) {
                     clearInterval(x);
-                    // document.getElementById("ckctimer").innerHTML = "la date limite est dépassée.";
-                    $('#ckcpromobarre .ckcpromobarre-text-change-container').parent().hide();
+                    var promoBar = document.getElementById("ckcpromobarre");
+                    if (promoBar) {
+                        var container = promoBar.querySelector(".ckcpromobarre-text-change-container");
+                        if (container && container.parentElement) {
+                            container.parentElement.style.display = "none";
+                        }
+                    }
                 }
             }, 1000);
         });
+
 
     </script>
 {/if}
