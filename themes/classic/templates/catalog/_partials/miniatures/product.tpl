@@ -40,7 +40,7 @@
                     {/if}
 
                     {block name='product_thumbnail'}
-                        <a href="{$product.url}" class="thumbnail product-thumbnail hover-images">
+                        <a href="{$link->getProductLink($product.id_product, $product.link_rewrite)}" class="thumbnail product-thumbnail hover-images">
                             <img class="tag-web-price tag-web-price-miniature"
                                  src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
 
