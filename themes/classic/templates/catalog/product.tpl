@@ -132,7 +132,7 @@
                                         <path d="M5 12h14"/>
                                         <path d="M12 5v14"/>
                                     </svg>
-                                    Lire d'avantage</a>
+                                    Lire davantage</a>
                             </div>
                         {/block}
 
