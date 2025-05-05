@@ -474,9 +474,14 @@
                         processData: false,
                         contentType: false,
                         success: function(responseData){
+                            var href = ''
                             if (responseData !== '') {
-
-                                let href = $(location).attr('href') + '&edit_campaign&ID=' + responseData;
+                                if ($(location).attr('href').includes("create_new_campaign")) {
+                                    let substr = $(location).attr('href').replace("&create_new_campaign", "&edit_campaign&ID=")
+                                    href = substr + responseData;
+                                } else {
+                                    href = $(location).attr('href') + '&edit_campaign&ID=' + responseData;
+                                }
 
                                 window.location.href = href;
                             }
