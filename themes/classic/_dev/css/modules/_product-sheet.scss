@@ -678,9 +678,15 @@
     .accessory_price {
       vertical-align: bottom;
       margin-left: 8px;
-      display: inline-block;
-      margin-bottom: 5px;
       font-weight: 600;
+      height: 50px;
+      margin-bottom: 0;
+      align-items: center;
+      display: inline-flex;
+
+      span {
+        margin: auto;
+      }
     }
 
     #group_accessories {

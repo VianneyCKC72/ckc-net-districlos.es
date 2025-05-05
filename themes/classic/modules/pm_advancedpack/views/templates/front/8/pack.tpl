@@ -88,7 +88,7 @@
                                         <path d="M5 12h14"/>
                                         <path d="M12 5v14"/>
                                     </svg>
-                                    Lire d'avantage</a>
+                                    Lire davantage</a>
                             </div>
                         {/block}
 
@@ -152,6 +152,10 @@
 
                                     {/block}
 
+                                    {block name='hook_display_accessories'}
+                                        {hook h='displayMultiAccessoriesProduct'}
+                                    {/block}
+
                                     {if isset($packMlChoose) && $packMlChoose}
                                         <span class="bold">Dimensions</span>
 
@@ -178,13 +182,6 @@
 
                                     {block name='product_prices'}
                                         {include file='module:pm_advancedpack/views/templates/front/8/pack-price-container.tpl'}
-                                    {/block}
-
-
-                                    {block name='product_add_to_cart'}
-
-                                        {include file='catalog/_partials/product-add-to-cart.tpl'}
-
                                     {/block}
 
                                     {* Start - Inté static *}

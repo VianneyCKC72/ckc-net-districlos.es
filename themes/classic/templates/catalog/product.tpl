@@ -132,7 +132,7 @@
                                         <path d="M5 12h14"/>
                                         <path d="M12 5v14"/>
                                     </svg>
-                                    Lire d'avantage</a>
+                                    Lire davantage</a>
                             </div>
                         {/block}
 
@@ -193,7 +193,7 @@
                                     {/block}
 
                                    {block name='hook_display_accessories'}
-                                       {hook h='displayAccessories'}
+                                       {hook h='displayMultiAccessoriesProduct'}
                                    {/block}
 
                                     {block name='product_discounts'}
