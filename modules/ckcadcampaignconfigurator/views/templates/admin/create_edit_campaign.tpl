@@ -12,6 +12,9 @@
     Lien du module <strong>Module de gestion d'étiquettes</strong> : <strong><a href="{Context::getContext()->link->getAdminLink('AdminModules', true, [], ['configure' => 'ckc_label'])}" target="_blank">{Context::getContext()->link->getAdminLink('AdminModules', true, [], ['configure' => 'ckc_label'])}</a></strong>
     <br>
     <br>
+    Lien du module <strong>Module Countdown setter (Districlos)</strong> : <strong><a href="{Context::getContext()->link->getAdminLink('AdminModules', true, [], ['configure' => 'dtc_countdown_setter'])}" target="_blank">{Context::getContext()->link->getAdminLink('AdminModules', true, [], ['configure' => 'dtc_countdown_setter'])}</a></strong>
+    <br>
+    <br>
 </div>
 <div>
     {$form_main}
