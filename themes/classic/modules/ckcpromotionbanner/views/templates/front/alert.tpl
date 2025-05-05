@@ -28,16 +28,18 @@
         <span>
             <div class="container">
                 <div>
-                    {if $ckcpromobarretexts|@count > 1 && isset($ckcpromobarretexts)}
-                        <div class="ckcpromobarre-text-change-container">
-                    {foreach $ckcpromobarretexts as $promotext}
-                        <div class="ckcpromobarre-text" style="display: none;">
-                            {$promotext nofilter}
+                    {if isset($ckcpromobarretexts) && !empty($ckcpromobarretexts)}
+                        {if $ckcpromobarretexts|@count > 1}
+                            <div class="ckcpromobarre-text-change-container">
+                        {foreach $ckcpromobarretexts as $promotext}
+                            <div class="ckcpromobarre-text" style="display: none;">
+                                {$promotext nofilter}
+                            </div>
+                        {/foreach}
                         </div>
-                    {/foreach}
-                    </div>
-                    {elseif isset($ckcpromobarretexts)}
-                        {$ckcpromobarretexts[0] nofilter}
+                        {elseif "" !== $ckcpromobarretexts}
+                            {$ckcpromobarretexts[0] nofilter}
+                        {/if}
                     {/if}
                     {if $CKC_BARREPROMO_TIMER_DISPLAY == 1 && isset($CKC_BARREPROMO_TIMER) && $CKC_BARREPROMO_TIMER !== ""}
                         -
