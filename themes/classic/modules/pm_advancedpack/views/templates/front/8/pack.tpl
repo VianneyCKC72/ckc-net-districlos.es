@@ -152,6 +152,10 @@
 
                                     {/block}
 
+                                    {block name='hook_display_accessories'}
+                                        {hook h='displayMultiAccessoriesProduct'}
+                                    {/block}
+
                                     {if isset($packMlChoose) && $packMlChoose}
                                         <span class="bold">Dimensions</span>
 
