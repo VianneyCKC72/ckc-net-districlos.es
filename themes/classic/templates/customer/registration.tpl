@@ -31,7 +31,10 @@
       
       <div class="already-account">
         <div class="img">
-          <img src="/img/cms/connexion-page-img.jpeg" alt="registration" />
+          <picture>
+            <source srcset="/img/cms/image-connexion-particulier.webp" type="image/webp">
+            <img src="/img/cms/image-connexion-particulier.jpg" alt="connexion" />
+          </picture>
         </div>
         <div class="inside">
           <h2 class="mb-4">{l s='Already have an account?' d='Shop.Theme.Customeraccount'}</h2>

@@ -37,11 +37,8 @@ class CkcstorespresentationNosMagasinsModuleFrontController extends ModuleFrontC
 
     public function initContent()
     {
-
         $magasins = Db::getInstance()->executeS('SELECT * from `' . _DB_PREFIX_ . 'ckcstorespresentation`');
-
         $this->context->controller->addJquery();
-
 
         $this->context->smarty->assign(array(
             'magasins' => $magasins,
@@ -53,7 +50,7 @@ class CkcstorespresentationNosMagasinsModuleFrontController extends ModuleFrontC
             $this->setTemplate('nos-magasins.tpl');
         } else {
             $this->setTemplate('module:ckcstorespresentation/views/templates/front/nos-magasins.tpl');
-        };
+        }
 
         return parent::initContent();
     }
@@ -61,19 +58,50 @@ class CkcstorespresentationNosMagasinsModuleFrontController extends ModuleFrontC
     public function postProcess()
     {
         $query = Tools::getValue('query');
+        $lat = Tools::getValue('latitude');
+        $lng = Tools::getValue('longitude');
+        $search = [];
 
-        if ($query) {
-            $search = Db::getInstance()->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'ckcstorespresentation`
-            WHERE id_ckcstorespresentation LIKE "%' . pSQL($query) . '%"
-            OR departement LIKE "%' . pSQL($query) . '%"
-            OR adresse LIKE "%' . pSQL($query) . '%"
-            OR ville LIKE "%' . pSQL($query) . '%"
-            OR code_postal LIKE "%' . pSQL($query) . '%"
-            OR email LIKE "%' . pSQL($query) . '%"
-            OR telephone LIKE "%' . pSQL($query) . '%"
-            OR horaires_jours LIKE "%' . pSQL($query) . '%"
-            OR horaires_heures LIKE "%' . pSQL($query) . '%"');
+        // Si coordonnées de géolocalisation fournies
+        if (!empty($lat) && !empty($lng)) {
+            $lat = (float) $lat;
+            $lng = (float) $lng;
 
+            $search = Db::getInstance()->executeS(
+                "SELECT *, (
+                6371 * acos(
+                    cos(radians(" . pSQL($lat) . ")) * cos(radians(latitude)) *
+                    cos(radians(longitude) - radians(" . pSQL($lng) . ")) +
+                    sin(radians(" . pSQL($lat) . ")) * sin(radians(latitude))
+                )
+            ) AS distance
+            FROM `" . _DB_PREFIX_ . "ckcstorespresentation`
+            WHERE latitude IS NOT NULL AND longitude IS NOT NULL
+            ORDER BY distance ASC
+            LIMIT 20"
+            );
+        }
+
+        // Sinon, recherche textuelle
+        elseif ($query !== false) {
+            $querySql = '%' . pSQL($query) . '%';
+
+            $search = Db::getInstance()->executeS(
+                "SELECT * FROM `" . _DB_PREFIX_ . "ckcstorespresentation`
+            WHERE id_ckcstorespresentation LIKE '$querySql'
+            OR departement LIKE '$querySql'
+            OR adresse LIKE '$querySql'
+            OR ville LIKE '$querySql'
+            OR code_postal LIKE '$querySql'
+            OR email LIKE '$querySql'
+            OR telephone LIKE '$querySql'
+            OR horaires_jours LIKE '$querySql'
+            OR horaires_heures LIKE '$querySql'"
+            );
+        }
+
+        // Affichage des résultats si recherche effectuée
+        if (!empty($search)) {
             $this->context->smarty->assign([
                 'magasins' => $search,
                 'modulePath' => $this->context->link->getModuleLink('ckcstorespresentation', 'NosMagasins'),
@@ -82,22 +110,11 @@ class CkcstorespresentationNosMagasinsModuleFrontController extends ModuleFrontC
             ]);
 
             $html = $this->context->smarty->fetch('module:ckcstorespresentation/views/templates/front/ajax.tpl');
-
-            die($html);
-        } elseif ($query == '') {
-            $search = Db::getInstance()->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'ckcstorespresentation`');
-
-            $this->context->smarty->assign([
-                'magasins' => $search,
-                'modulePath' => $this->context->link->getModuleLink('ckcstorespresentation', 'NosMagasins'),
-                'lang' => Context::getContext()->language->iso_code,
-                'elements' => $search
-            ]);
-
-            $html = $this->context->smarty->fetch('module:ckcstorespresentation/views/templates/front/ajax.tpl');
-
             die($html);
         }
+
+        // Optionnel : si aucune recherche ou résultat vide
+        die('<p class="no-results">Aucun magasin trouvé.</p>');
     }
 
 }
