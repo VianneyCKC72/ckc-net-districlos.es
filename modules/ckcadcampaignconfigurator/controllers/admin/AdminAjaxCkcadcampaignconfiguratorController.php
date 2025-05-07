@@ -48,7 +48,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
         }
         $menuLink = Tools::getValue("menuLink");
 
-        $isActiveHeader = Tools::getValue("isActiveHeader");    
+        $isActiveHeader = Tools::getValue("isActiveHeader");
         $headertext = Tools::getValue("headertext");
         $headerBackColor = Tools::getValue("headerBackColor");
         $isActiveCategory = Tools::getValue("isActiveCategory");
@@ -66,31 +66,31 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
 
                 if(isset($logoPath) && isset($logoFile)) {
                     $file_name = $logoFile['name'];
-    
+
                     $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
                     $file_base_name = pathinfo($file_name, PATHINFO_FILENAME);
-                
+
                     $file_base_name = preg_replace('/[^\w\-]/u', '-', $file_base_name); // Remplace les caractères non alphanumériques
                     $file_base_name = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $file_base_name); // Convertit les caractères accentués en non accentués
-                
+
                     $file_name = $file_base_name . '.' . $file_extension;
-            
+
                     $checkIfTheSameName = Db::getInstance()->getValue('SELECT `logo_path` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_list`
                     WHERE id = '.$id.' AND logo_path LIKE "'.$file_name.'"');
                     while ($checkIfTheSameName) {
                         $randomSuffix = rand(1000, 9999);
                         $newFileName = $file_base_name . '-' . $randomSuffix . '.' . $file_extension;
-            
+
                         // Revérifier avec le nouveau nom de fichier
                         $checkIfTheSameName = Db::getInstance()->getValue(
                             'SELECT `logo_path` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_list`
                             WHERE id = '.$id.' AND logo_path LIKE "'.$newFileName.'"'
                         );
                     }
-            
+
                     $file_name = isset($newFileName) ? $newFileName : $file_name;
-                    
-                    
+
+
                     if($file_name) {
                         if (is_uploaded_file($logoFile['tmp_name'])) {
                             // Vérifier si le dossier 'uploads' existe, sinon le créer
@@ -99,7 +99,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
                                 mkdir($uploadsDir, 0755, true); // 
                             }
                             $moveResult = move_uploaded_file($logoFile['tmp_name'], $uploadsDir . DIRECTORY_SEPARATOR . $file_name);
-        
+
                             if ($moveResult) {
                                 $updatelogo = Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckccampaign_config_list` 
                                 SET `logo_path` = "'.$file_name.'" WHERE id = '.$id);
@@ -116,7 +116,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
                 $updateCampaign = Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckccampaign_config_list` 
                 SET `title` = "'.$titleCampaign.'", `id_client_group` = \''.$clientGroup.'\', `active` = '.$isActiveCampaign.', `franco_impact` = NULLIF('.$francoImpact.', 0), `date_start` = "'.$startingDate.'", `date_end` = "'.$endingDate.'" WHERE id = '.$id);
             }
-            
+
         }
 
 
@@ -127,31 +127,31 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
 
             if(null != $queryMenu) {
                 $file_name = $menuImgFile['name'];
-    
+
                 $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
                 $file_base_name = pathinfo($file_name, PATHINFO_FILENAME);
-            
+
                 $file_base_name = preg_replace('/[^\w\-]/u', '-', $file_base_name); // Remplace les caractères non alphanumériques
                 $file_base_name = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $file_base_name); // Convertit les caractères accentués en non accentués
-            
+
                 $file_name = $file_base_name . '.' . $file_extension;
-        
+
                 $checkIfTheSameName = Db::getInstance()->getValue('SELECT `img_path` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_menu`
                 WHERE id = '.$id.' AND img_path LIKE "'.$file_name.'"');
                 while ($checkIfTheSameName) {
                     $randomSuffix = rand(1000, 9999);
                     $newFileName = $file_base_name . '-' . $randomSuffix . '.' . $file_extension;
-        
+
                     // Revérifier avec le nouveau nom de fichier
                     $checkIfTheSameName = Db::getInstance()->getValue(
                         'SELECT `img_path` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_menu`
                         WHERE id = '.$id.' AND img_path LIKE "'.$newFileName.'"'
                     );
                 }
-        
+
                 $file_name = isset($newFileName) ? $newFileName : $file_name;
-                
-                
+
+
                 if($file_name) {
                     if (is_uploaded_file($menuImgFile['tmp_name'])) {
                         // Vérifier si le dossier 'uploads' existe, sinon le créer
@@ -160,7 +160,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
                             mkdir($uploadsDir, 0755, true); // 
                         }
                         $moveResult = move_uploaded_file($menuImgFile['tmp_name'], $uploadsDir . DIRECTORY_SEPARATOR . $file_name);
-    
+
                         if ($moveResult) {
                             $updatelogo = Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckccampaign_config_content_menu` 
                             SET `img_path` = "'.$file_name.'" WHERE id = '.$id);
@@ -177,31 +177,31 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
             } else {
 
                 $file_name = $menuImgFile['name'];
-    
+
                 $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
                 $file_base_name = pathinfo($file_name, PATHINFO_FILENAME);
-            
+
                 $file_base_name = preg_replace('/[^\w\-]/u', '-', $file_base_name); // Remplace les caractères non alphanumériques
                 $file_base_name = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $file_base_name); // Convertit les caractères accentués en non accentués
-            
+
                 $file_name = $file_base_name . '.' . $file_extension;
-        
+
                 $checkIfTheSameName = Db::getInstance()->getValue('SELECT `img_path` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_menu`
                 WHERE id = '.$id.' AND img_path LIKE "'.$file_name.'"');
                 while ($checkIfTheSameName) {
                     $randomSuffix = rand(1000, 9999);
                     $newFileName = $file_base_name . '-' . $randomSuffix . '.' . $file_extension;
-        
+
                     // Revérifier avec le nouveau nom de fichier
                     $checkIfTheSameName = Db::getInstance()->getValue(
                         'SELECT `img_path` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_menu`
                         WHERE id = '.$id.' AND img_path LIKE "'.$newFileName.'"'
                     );
                 }
-        
+
                 $file_name = isset($newFileName) ? $newFileName : $file_name;
-                
-                
+
+
                 if($file_name) {
                     if (is_uploaded_file($menuImgFile['tmp_name'])) {
                         // Vérifier si le dossier 'uploads' existe, sinon le créer
@@ -210,7 +210,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
                             mkdir($uploadsDir, 0755, true); // 
                         }
                         $moveResult = move_uploaded_file($menuImgFile['tmp_name'], $uploadsDir . DIRECTORY_SEPARATOR . $file_name);
-    
+
                         if ($moveResult) {
                             $upload = true;
                         } else {
@@ -255,7 +255,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
         if(isset($isActiveCategory) && isset($categoryText) && isset($categoryBackColor) && isset($isAllCategories)) {
             $queryCategory = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_category ccl
             WHERE ccl.id = '.$id);
-    
+
             if(null != $queryCategory) {
                 $updateMenu =  Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` 
                 SET `text`  = \'' . $categoryText . '\',
@@ -301,7 +301,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
 
         if(isset($selectedCategories) && "" !== $selectedCategories) {
             $deleteOld = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_category_show` WHERE id_campaign = '.$id);
-            
+
             $selectedCatArr = explode(",",$selectedCategories);
 
             foreach ($selectedCatArr as $category) {
@@ -311,9 +311,9 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
 
         }
         echo $id;
-        
+
         exit();
-        
+
     }
 
     public function ajaxProcessCreateCampaign(){
@@ -343,7 +343,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
         }
         $menuLink = Tools::getValue("menuLink");
 
-        $isActiveHeader = Tools::getValue("isActiveHeader");    
+        $isActiveHeader = Tools::getValue("isActiveHeader");
         $headertext = Tools::getValue("headertext");
         $headerBackColor = Tools::getValue("headerBackColor");
         $isActiveCategory = Tools::getValue("isActiveCategory");
@@ -356,105 +356,53 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
 
         if(isset($isActiveCampaign) && isset($titleCampaign) && isset($clientGroup) && isset($startingDate) && isset($endingDate)){
 
-                $createCampaign = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_list` (`id`, `title`, `id_client_group`,`active`,`franco_impact`,`date_start`, `date_end`, `date_add`)
-                VALUES (NULL, "'.$titleCampaign.'", '.$clientGroup.','.$isActiveCampaign.',NULLIF('.$francoImpact.', 0),"'.$startingDate.'","'.$endingDate.'", CURRENT_TIMESTAMP())');
+            $createCampaign = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_list` (`id`, `title`, `id_client_group`,`active`,`franco_impact`,`date_start`, `date_end`, `date_add`)
+                VALUES (NULL, "'.$titleCampaign.'", "'.$clientGroup.'",'.$isActiveCampaign.', NULLIF('.$francoImpact.', 0), "'.$startingDate.'","'.$endingDate.'", CURRENT_TIMESTAMP())');
 
-                $newIdQuery = Db::getInstance()->executeS('SELECT id FROM `' . _DB_PREFIX_ . 'ckccampaign_config_list`
-                WHERE `title` LIKE "'.$titleCampaign.'" AND `id_client_group` = '.$clientGroup.' AND `date_start` = "'.$startingDate.'"');
+            $newIdQuery = Db::getInstance()->executeS('SELECT id FROM `' . _DB_PREFIX_ . 'ckccampaign_config_list`
+                WHERE `title` LIKE "'.$titleCampaign.'" AND `id_client_group` LIKE "'.$clientGroup.'" AND `date_start` = "'.$startingDate.'"');
 
-                $newId = $newIdQuery[0]["id"];
+            $newId = $newIdQuery[0]["id"];
 
-                if(isset($logoPath) && isset($logoFile)) {
-                    $file_name = $logoFile['name'];
-    
-                    $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
-                    $file_base_name = pathinfo($file_name, PATHINFO_FILENAME);
-                
-                    $file_base_name = preg_replace('/[^\w\-]/u', '-', $file_base_name); // Remplace les caractères non alphanumériques
-                    $file_base_name = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $file_base_name); // Convertit les caractères accentués en non accentués
-                
-                    $file_name = $file_base_name . '.' . $file_extension;
-            
-                    $checkIfTheSameName = Db::getInstance()->getValue('SELECT `logo_path` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_list`
-                    WHERE id = '.$newId.' AND logo_path LIKE "'.$file_name.'"');
-                    while ($checkIfTheSameName) {
-                        $randomSuffix = rand(1000, 9999);
-                        $newFileName = $file_base_name . '-' . $randomSuffix . '.' . $file_extension;
-            
-                        // Revérifier avec le nouveau nom de fichier
-                        $checkIfTheSameName = Db::getInstance()->getValue(
-                            'SELECT `logo_path` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_list`
-                            WHERE id = '.$newId.' AND logo_path LIKE "'.$newFileName.'"'
-                        );
-                    }
-            
-                    $file_name = isset($newFileName) ? $newFileName : $file_name;
-                    
-                    
-                    if($file_name) {
-                        if (is_uploaded_file($logoFile['tmp_name'])) {
-                            // Vérifier si le dossier 'uploads' existe, sinon le créer
-                            $uploadsDir = __DIR__ . DIRECTORY_SEPARATOR . '..'. DIRECTORY_SEPARATOR .'..'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR .'campaigns';
-                            if (!file_exists($uploadsDir)) {
-                                mkdir($uploadsDir, 0755, true); // 
-                            }
-                            $moveResult = move_uploaded_file($logoFile['tmp_name'], $uploadsDir . DIRECTORY_SEPARATOR . $file_name);
-        
-                            if ($moveResult) {
-                                $updatelogo = Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckccampaign_config_list` 
-                                SET `logo_path` = "'.$file_name.'" WHERE id = '.$newId);
-                            } else {
-                                throw new Exception('Le document n\'a pas pu être enregistré.');
-                            }
-                        } else {
-                            throw new FileNotFoundException('Error while file upload');
-                        }
-                    }
-                }
-            
-        }
+            if(isset($logoPath) && isset($logoFile)) {
+                $file_name = $logoFile['name'];
 
-
-        if(isset($isActiveMenu) && isset($menuImgPath) && isset($menuImgFile)){
-
-
-                $file_name = $menuImgFile['name'];
-    
                 $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
                 $file_base_name = pathinfo($file_name, PATHINFO_FILENAME);
-            
+
                 $file_base_name = preg_replace('/[^\w\-]/u', '-', $file_base_name); // Remplace les caractères non alphanumériques
                 $file_base_name = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $file_base_name); // Convertit les caractères accentués en non accentués
-            
+
                 $file_name = $file_base_name . '.' . $file_extension;
-        
-                $checkIfTheSameName = Db::getInstance()->getValue('SELECT `img_path` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_menu`
-                WHERE id = '.$newId.' AND img_path LIKE "'.$file_name.'"');
+
+                $checkIfTheSameName = Db::getInstance()->getValue('SELECT `logo_path` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_list`
+                    WHERE id = '.$newId.' AND logo_path LIKE "'.$file_name.'"');
                 while ($checkIfTheSameName) {
                     $randomSuffix = rand(1000, 9999);
                     $newFileName = $file_base_name . '-' . $randomSuffix . '.' . $file_extension;
-        
+
                     // Revérifier avec le nouveau nom de fichier
                     $checkIfTheSameName = Db::getInstance()->getValue(
-                        'SELECT `img_path` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_menu`
-                        WHERE id = '.$newId.' AND img_path LIKE "'.$newFileName.'"'
+                        'SELECT `logo_path` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_list`
+                            WHERE id = '.$newId.' AND logo_path LIKE "'.$newFileName.'"'
                     );
                 }
-        
+
                 $file_name = isset($newFileName) ? $newFileName : $file_name;
-                
-                
+
+
                 if($file_name) {
-                    if (is_uploaded_file($menuImgFile['tmp_name'])) {
+                    if (is_uploaded_file($logoFile['tmp_name'])) {
                         // Vérifier si le dossier 'uploads' existe, sinon le créer
-                        $uploadsDir =  __DIR__ . DIRECTORY_SEPARATOR . '..'. DIRECTORY_SEPARATOR .'..'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR .'menus';
+                        $uploadsDir = __DIR__ . DIRECTORY_SEPARATOR . '..'. DIRECTORY_SEPARATOR .'..'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR .'campaigns';
                         if (!file_exists($uploadsDir)) {
-                            mkdir($uploadsDir, 0755, true); // 
+                            mkdir($uploadsDir, 0755, true); //
                         }
-                        $moveResult = move_uploaded_file($menuImgFile['tmp_name'], $uploadsDir . DIRECTORY_SEPARATOR . $file_name);
-    
+                        $moveResult = move_uploaded_file($logoFile['tmp_name'], $uploadsDir . DIRECTORY_SEPARATOR . $file_name);
+
                         if ($moveResult) {
-                            $upload = true;
+                            $updatelogo = Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckccampaign_config_list` 
+                                SET `logo_path` = "'.$file_name.'" WHERE id = '.$newId);
                         } else {
                             throw new Exception('Le document n\'a pas pu être enregistré.');
                         }
@@ -462,52 +410,104 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
                         throw new FileNotFoundException('Error while file upload');
                     }
                 }
+            }
 
-                $createMenu = Db::getInstance()->execute(
-                    'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_menu` (`id`, `id_campaign`, `img_path`, `link`, `active`, `date_add`)
-                                VALUES (NULL, '.$newId.', \''.$file_name.'\',\''.$menuLink.'\','.(int)$isActiveMenu.', CURRENT_TIMESTAMP())'
+        }
+
+
+        if(isset($isActiveMenu) && isset($menuImgPath) && isset($menuImgFile)){
+
+
+            $file_name = $menuImgFile['name'];
+
+            $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
+            $file_base_name = pathinfo($file_name, PATHINFO_FILENAME);
+
+            $file_base_name = preg_replace('/[^\w\-]/u', '-', $file_base_name); // Remplace les caractères non alphanumériques
+            $file_base_name = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $file_base_name); // Convertit les caractères accentués en non accentués
+
+            $file_name = $file_base_name . '.' . $file_extension;
+
+            $checkIfTheSameName = Db::getInstance()->getValue('SELECT `img_path` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_menu`
+                WHERE id = '.$newId.' AND img_path LIKE "'.$file_name.'"');
+            while ($checkIfTheSameName) {
+                $randomSuffix = rand(1000, 9999);
+                $newFileName = $file_base_name . '-' . $randomSuffix . '.' . $file_extension;
+
+                // Revérifier avec le nouveau nom de fichier
+                $checkIfTheSameName = Db::getInstance()->getValue(
+                    'SELECT `img_path` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_menu`
+                        WHERE id = '.$newId.' AND img_path LIKE "'.$newFileName.'"'
                 );
+            }
+
+            $file_name = isset($newFileName) ? $newFileName : $file_name;
+
+
+            if($file_name) {
+                if (is_uploaded_file($menuImgFile['tmp_name'])) {
+                    // Vérifier si le dossier 'uploads' existe, sinon le créer
+                    $uploadsDir =  __DIR__ . DIRECTORY_SEPARATOR . '..'. DIRECTORY_SEPARATOR .'..'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR .'menus';
+                    if (!file_exists($uploadsDir)) {
+                        mkdir($uploadsDir, 0755, true); //
+                    }
+                    $moveResult = move_uploaded_file($menuImgFile['tmp_name'], $uploadsDir . DIRECTORY_SEPARATOR . $file_name);
+
+                    if ($moveResult) {
+                        $upload = true;
+                    } else {
+                        throw new Exception('Le document n\'a pas pu être enregistré.');
+                    }
+                } else {
+                    throw new FileNotFoundException('Error while file upload');
+                }
+            }
+
+            $createMenu = Db::getInstance()->execute(
+                'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_menu` (`id`, `id_campaign`, `img_path`, `link`, `active`, `date_add`)
+                                VALUES (NULL, '.$newId.', \''.$file_name.'\',\''.$menuLink.'\','.(int)$isActiveMenu.', CURRENT_TIMESTAMP())'
+            );
         }
 
         if (isset($isActiveHeader) && isset($headertext) && isset($headerBackColor)) {
 
-                $createMenu = Db::getInstance()->execute(
-                    'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_header` (`id`, `id_campaign`, `active`, `text`, `background_color`, `date_add`)
+            $createMenu = Db::getInstance()->execute(
+                'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_header` (`id`, `id_campaign`, `active`, `text`, `background_color`, `date_add`)
                                 VALUES (NULL, '.$newId.', '.(int)$isActiveHeader.', \''.$headertext.'\', \''.$headerBackColor.'\', CURRENT_TIMESTAMP())'
-                );
+            );
         }
 
         if(isset($isActiveCategory) && isset($categoryText) && isset($categoryBackColor) && isset($isAllCategories)) {
-                $createMenu = Db::getInstance()->execute(
-                    'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` (`id`, `id_campaign`, `text`, `background_color`, `active`,`show_all`, `date_add`)
+            $createMenu = Db::getInstance()->execute(
+                'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` (`id`, `id_campaign`, `text`, `background_color`, `active`,`show_all`, `date_add`)
                                 VALUES (NULL, '.$newId.', \''.$categoryText.'\', \''.$categoryBackColor.'\', 
                                 '.(int)$isActiveCategory.', '.(int)$isAllCategories.', CURRENT_TIMESTAMP())'
-                );
+            );
         }
 
         if (isset($devisText) && isset($devisColor)){
-                $createDevis =  Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_devis` (`id`, `id_campaign`, `text`, `background_color`, `date_add`)
+            $createDevis =  Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_devis` (`id`, `id_campaign`, `text`, `background_color`, `date_add`)
                                 VALUES (NULL, '.$newId.', \''.$devisText.'\', \''.$devisColor.'\', CURRENT_TIMESTAMP())');
         }
 
         if(isset($promoPageText)){
-                $createPromoPage = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_promopage` (`id`, `id_campaign`, `text`, `date_add`)
+            $createPromoPage = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_promopage` (`id`, `id_campaign`, `text`, `date_add`)
                 VALUES (NULL, '.$newId.', \''.$promoPageText.'\', CURRENT_TIMESTAMP())');
         }
 
         $newIdQuery = Db::getInstance()->executeS('SELECT id FROM `' . _DB_PREFIX_ . 'ckccampaign_config_list`
-                WHERE `title` LIKE "'.$titleCampaign.'" AND `id_client_group` = '.$clientGroup.' AND `date_start` = "'.$startingDate.'"');
+                WHERE `title` LIKE "'.$titleCampaign.'" AND `id_client_group` LIKE "'.$clientGroup.'" AND `date_start` = "'.$startingDate.'"');
 
         $newId = $newIdQuery[0]["id"];
 
         echo $newId;
 
         exit();
-        
+
     }
 
     public function ajaxProcessSearchProduct(){
-        
+
         $query = Tools::getValue('query');
 
         $queryProduct = Db::getInstance()->executeS('SELECT DISTINCT p.id_product, pl.name, cl.name as category FROM `' . _DB_PREFIX_ . 'product_lang` pl
@@ -518,7 +518,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
         AND (pl.name LIKE "%'.$query.'%" OR p.id_product = "'.$query.'" OR cl.name LIKE "%'.$query.'%")');
 
         echo json_encode($queryProduct);
-        
+
         exit();
     }
 

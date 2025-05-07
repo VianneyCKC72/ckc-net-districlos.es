@@ -348,6 +348,11 @@ $(document).ready(function () {
             });
     });
 
+    prestashop.on('updatedCart', (event) => {
+        if(typeof $(".cart-promos") !== "undefined"){
+            $(".cart-promos").replaceWith(event.resp.cart_promos)
+        }
+    });
 
     // Page produit uniquement
 

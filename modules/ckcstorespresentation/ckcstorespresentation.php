@@ -1,28 +1,28 @@
 <?php
 /**
-* 2007-2025 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author    PrestaShop SA <contact@prestashop.com>
-*  @copyright 2007-2025 PrestaShop SA
-*  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+ * 2007-2025 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ *  @author    PrestaShop SA <contact@prestashop.com>
+ *  @copyright 2007-2025 PrestaShop SA
+ *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ *  International Registered Trademark & Property of PrestaShop SA
+ */
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -105,7 +105,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
 
             $this->_output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/form.tpl');
             $this->_output .= $this->renderForm($idStore);
-    
+
         } elseif (((bool)Tools::isSubmit('create_store')) == true) {
             $this->context->smarty->assign('module_dir', $this->_path);
 
@@ -141,7 +141,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
             $delete = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckcstorespresentation` WHERE `id_ckcstorespresentation` = '.$idStore);
 
             Tools::redirect($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]));
-                
+
         } else {
 
             $stores = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckcstorespresentation');
@@ -158,7 +158,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
         }
 
         return $this->_output;
-        
+
     }
 
     /**
@@ -274,8 +274,8 @@ class Ckcstorespresentation extends Module implements WidgetInterface
         return array(
             'form' => array(
                 'legend' => array(
-                'title' => $this->l('Création de la présentation'),
-                'icon' => 'icon-cogs',
+                    'title' => $this->l('Création de la présentation'),
+                    'icon' => 'icon-cogs',
                 ),
                 'buttons' => array(
                     'Return'=> array(
@@ -336,18 +336,18 @@ class Ckcstorespresentation extends Module implements WidgetInterface
                         'label' => $this->l('Horaires Heures'),
                         'name' => 'CKCSTORESPRESENTATION_HORAIRES_HEURES',
                     ),
-                    // array(
-                    //     'col' => 3,
-                    //     'type' => 'text',
-                    //     'label' => $this->l('Latitude'),
-                    //     'name' => 'CKCSTORESPRESENTATION_HORAIRES_LATITUDE',
-                    // ),
-                    // array(
-                    //     'col' => 3,
-                    //     'type' => 'text',
-                    //     'label' => $this->l('Longitude'),
-                    //     'name' => 'CKCSTORESPRESENTATION_HORAIRES_LONGITUDE',
-                    // ),
+                    array(
+                        'col' => 3,
+                        'type' => 'text',
+                        'label' => $this->l('Latitude'),
+                        'name' => 'CKCSTORESPRESENTATION_HORAIRES_LATITUDE',
+                    ),
+                    array(
+                        'col' => 3,
+                        'type' => 'text',
+                        'label' => $this->l('Longitude'),
+                        'name' => 'CKCSTORESPRESENTATION_HORAIRES_LONGITUDE',
+                    ),
                     array(
                         'type' => 'file',
                         'label' => $this->l('Image magasin'),
@@ -401,6 +401,8 @@ class Ckcstorespresentation extends Module implements WidgetInterface
                 'CKCSTORESPRESENTATION_CODE_POSTAL' => "",
                 'CKCSTORESPRESENTATION_EMAIL' => "",
                 'CKCSTORESPRESENTATION_TELEPHONE' => "",
+                'CKCSTORESPRESENTATION_HORAIRES_LATITUDE' => "",
+                'CKCSTORESPRESENTATION_HORAIRES_LONGITUDE' => "",
                 'CKCSTORESPRESENTATION_HORAIRES_JOURS' => "",
                 'CKCSTORESPRESENTATION_HORAIRES_HEURES' => "",
                 'CKCSTORESPRESENTATION_IMG_PATH' => "",
@@ -418,6 +420,8 @@ class Ckcstorespresentation extends Module implements WidgetInterface
                 'CKCSTORESPRESENTATION_CODE_POSTAL' => $query[0]["code_postal"],
                 'CKCSTORESPRESENTATION_EMAIL' => $query[0]["email"],
                 'CKCSTORESPRESENTATION_TELEPHONE' => $query[0]["telephone"],
+                'CKCSTORESPRESENTATION_HORAIRES_LATITUDE' => $query[0]["latitude"],
+                'CKCSTORESPRESENTATION_HORAIRES_LONGITUDE' => $query[0]["longitude"],
                 'CKCSTORESPRESENTATION_HORAIRES_JOURS' => $query[0]["horaires_jours"],
                 'CKCSTORESPRESENTATION_HORAIRES_HEURES' => $query[0]["horaires_heures"],
                 'CKCSTORESPRESENTATION_IMG_PATH' => $query[0]["img_path"],
@@ -502,43 +506,49 @@ class Ckcstorespresentation extends Module implements WidgetInterface
 
         $address = $CKCSTORESPRESENTATION_ADRESSE.' '.$CKCSTORESPRESENTATION_CODE_POSTAL.' '.$CKCSTORESPRESENTATION_VILLE;
 
-        $coordinates = $this->getCoordinatesFromAddress($address);
+        if(empty(Tools::getValue('CKCSTORESPRESENTATION_HORAIRES_LATITUDE')) OR empty(Tools::getValue('CKCSTORESPRESENTATION_HORAIRES_LONGITUDE'))){
+            $coordinates = $this->getCoordinatesFromAddress($address);
 
-        $CKCSTORESPRESENTATION_HORAIRES_LATITUDE = $coordinates["latitude"];
-        $CKCSTORESPRESENTATION_HORAIRES_LONGITUDE = $coordinates["longitude"];
+            $CKCSTORESPRESENTATION_HORAIRES_LATITUDE = $coordinates["latitude"];
+            $CKCSTORESPRESENTATION_HORAIRES_LONGITUDE = $coordinates["longitude"];
+        } else {
+            $CKCSTORESPRESENTATION_HORAIRES_LATITUDE = Tools::getValue('CKCSTORESPRESENTATION_HORAIRES_LATITUDE');
+            $CKCSTORESPRESENTATION_HORAIRES_LONGITUDE = Tools::getValue('CKCSTORESPRESENTATION_HORAIRES_LONGITUDE');
+        }
+
         $CKCSTORESPRESENTATION_MULTIBOUTIQUE_ID = Tools::getValue('CKCSTORESPRESENTATION_MULTIBOUTIQUE_ID');
         $CKCSTORESPRESENTATION_ID = Tools::getValue('CKCSTORESPRESENTATION_ID') == "" ? null : Tools::getValue('CKCSTORESPRESENTATION_ID');
         $CKCSTORESPRESENTATION_PAGE_DETAIL =  Tools::getValue('CKCSTORESPRESENTATION_PAGE_DETAIL');
 
         if(isset($CKCSTORESPRESENTATION_ID)){
-           
+
             if(isset($_FILES['CKCSTORESPRESENTATION_IMG_PATH']) && strlen($_FILES['CKCSTORESPRESENTATION_IMG_PATH']['name']) > 0) {
                 $file_name = $_FILES['CKCSTORESPRESENTATION_IMG_PATH']['name'];
-    
+
                 $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
                 $file_base_name = pathinfo($file_name, PATHINFO_FILENAME);
-            
+
                 $file_base_name = preg_replace('/[^\w\-]/u', '-', $file_base_name); // Remplace les caractères non alphanumériques
                 $file_base_name = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $file_base_name); // Convertit les caractères accentués en non accentués
-            
+
                 $file_name = $file_base_name . '.' . $file_extension;
-        
+
                 $checkIfTheSameName = Db::getInstance()->getValue('SELECT `img_path` FROM `' . _DB_PREFIX_ . 'ckcstorespresentation`
                 WHERE id_ckcstorespresentation = '.$CKCSTORESPRESENTATION_ID.' AND img_path LIKE "'.$file_name.'"');
                 while ($checkIfTheSameName) {
                     $randomSuffix = rand(1000, 9999);
                     $newFileName = $file_base_name . '-' . $randomSuffix . '.' . $file_extension;
-        
+
                     // Revérifier avec le nouveau nom de fichier
                     $checkIfTheSameName = Db::getInstance()->getValue(
                         'SELECT `img_path` FROM `' . _DB_PREFIX_ . 'ckcstorespresentation`
                         WHERE id_ckcstorespresentation = '.$CKCSTORESPRESENTATION_ID.' AND img_path LIKE "'.$newFileName.'"'
                     );
                 }
-        
+
                 $file_name = isset($newFileName) ? $newFileName : $file_name;
-                
-                
+
+
                 if($file_name) {
                     if (is_uploaded_file($_FILES['CKCSTORESPRESENTATION_IMG_PATH']['tmp_name'])) {
                         // Vérifier si le dossier 'uploads' existe, sinon le créer
@@ -547,7 +557,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
                             mkdir($uploadsDir, 0755, true); // 
                         }
                         $moveResult = move_uploaded_file($_FILES['CKCSTORESPRESENTATION_IMG_PATH']['tmp_name'], $uploadsDir . DIRECTORY_SEPARATOR . $file_name);
-    
+
                         if ($moveResult) {
                             $upload = true;
                         } else {
@@ -592,13 +602,13 @@ class Ckcstorespresentation extends Module implements WidgetInterface
         } else {
 
             $file_name = $_FILES['CKCSTORESPRESENTATION_IMG_PATH']['name'];
-    
+
             $file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
             $file_base_name = pathinfo($file_name, PATHINFO_FILENAME);
-        
+
             $file_base_name = preg_replace('/[^\w\-]/u', '-', $file_base_name); // Remplace les caractères non alphanumériques
             $file_base_name = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $file_base_name); // Convertit les caractères accentués en non accentués
-        
+
             $file_name = $file_base_name . '.' . $file_extension;
 
             if($file_name) {
@@ -631,8 +641,8 @@ class Ckcstorespresentation extends Module implements WidgetInterface
     }
 
     /**
-    * Add the CSS & JavaScript files you want to be loaded in the BO.
-    */
+     * Add the CSS & JavaScript files you want to be loaded in the BO.
+     */
     public function hookDisplayBackOfficeHeader()
     {
         if (Tools::getValue('configure') == $this->name) {

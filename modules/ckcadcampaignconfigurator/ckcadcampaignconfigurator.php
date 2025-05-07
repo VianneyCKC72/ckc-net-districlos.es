@@ -568,7 +568,7 @@ class Ckcadcampaignconfigurator extends Module
 
         if(isset($id)) {
             $background_image = Db::getInstance()->executeS('SELECT logo_path FROM ' . _DB_PREFIX_ . 'ckccampaign_config_list WHERE id = '.$id);
-            $image_url = $background_image[0]["logo_path"] ? _MODULE_DIR_.'ckcadcampaignconfigurator'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR .'campaigns'. DIRECTORY_SEPARATOR.$background_image[0]["logo_path"] : '';
+            $image_url = isset($background_image[0]["logo_path"]) ? _MODULE_DIR_.'ckcadcampaignconfigurator'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR .'campaigns'. DIRECTORY_SEPARATOR.$background_image[0]["logo_path"] : '';
             $image = '<div class="col-lg-6"><img src="' . $image_url . '" class="img-thumbnail"></div>';
         } else {
             $image = '';
@@ -672,7 +672,7 @@ class Ckcadcampaignconfigurator extends Module
 
         if(isset($id)) {
             $background_image = Db::getInstance()->executeS('SELECT img_path FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_menu WHERE id_campaign = '.$id);
-            $image_url = $background_image[0]["img_path"] ? _MODULE_DIR_.'ckcadcampaignconfigurator'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR .'menus'. DIRECTORY_SEPARATOR.$background_image[0]["img_path"] : '';
+            $image_url = isset($background_image[0]["img_path"]) ? _MODULE_DIR_.'ckcadcampaignconfigurator'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR .'menus'. DIRECTORY_SEPARATOR.$background_image[0]["img_path"] : '';
             $image = '<div class="col-lg-6"><img src="' . $image_url . '" class="img-thumbnail"></div>';
         } else {
             $image = '';
