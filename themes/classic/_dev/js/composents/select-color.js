@@ -72,7 +72,7 @@ $(document).ready(() => {
         const observer = new MutationObserver(() => {
             const $newColorGroup = $('#group_2');
             // S'assurer qu'on relance SEULEMENT si #group_2 est nouveau
-            if ($newColorGroup.length && $('.custom-color-select').length === 0) {
+            if (($newColorGroup.length && $('.custom-color-select').length === 0) || $('#ap5-product-list').length) {
                 setTimeout(() => {
                     initCustomColorSelect();
                 }, 100);
