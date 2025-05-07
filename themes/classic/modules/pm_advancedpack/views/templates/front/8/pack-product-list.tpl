@@ -36,17 +36,19 @@
                                             <div class="selected-option">
                                                 {assign var="default_colorpicker" value=""}
                                                 {foreach from=$group.attributes key=id_attribute item=group_attribute}
+                                                    {assign var=ap5_isCurrentSelectedIdAttribute value=((isset($productsPackErrors[$productPack.id_product_pack]) && isset($packCompleteAttributesList[$productPack.id_product_pack]) && in_array($id_attribute, $packCompleteAttributesList[$productPack.id_product_pack])) || $group.default == $id_attribute)}
                                                     {if $default_colorpicker = $id_attribute}
-                                                        <span class="color-dot"><img src="{$urls.img_col_url}{$id_attribute|intval}.jpg" alt="{$productPack.attributes.colors.$id_attribute.name}" /></span> {$group_attribute.name}
+                                                        <img src="{$urls.img_col_url}{$id_attribute|intval}.jpg" alt="{$productPack.attributes.colors.$id_attribute.name}" /> {$group_attribute.name}
                                                     {/if}
                                                 {/foreach}
                                             </div>
                                             <div class="options-list">
                                                 {assign var="default_colorpicker" value=""}
                                                 {foreach from=$group.attributes key=id_attribute item=group_attribute}
+                                                    {assign var=ap5_isCurrentSelectedIdAttribute value=((isset($productsPackErrors[$productPack.id_product_pack]) && isset($packCompleteAttributesList[$productPack.id_product_pack]) && in_array($id_attribute, $packCompleteAttributesList[$productPack.id_product_pack])) || $group.default == $id_attribute)}
                                                     <div class="option" data-value="26" style="display: flex; align-items: center;">
                                                         {if $productPack.attributes.colors.$id_attribute.image_exists}
-                                                            <span class="color-dot"><img src="{$urls.img_col_url}{$id_attribute|intval}.jpg" alt="{$productPack.attributes.colors.$id_attribute.name}" /></span>
+                                                            <img src="{$urls.img_col_url}{$id_attribute|intval}.jpg" alt="{$productPack.attributes.colors.$id_attribute.name}" />
                                                         {/if}
                                                         {$group_attribute.name}
                                                     </div>
