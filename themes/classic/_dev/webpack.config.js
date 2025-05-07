@@ -18,6 +18,7 @@ let config = {
             "./js/pages/product.js",
             "./js/composents/header.js",
             "./js/composents/select-color.js",
+            "./js/composents/select-color-pack.js",
             "./js/pages/homepage.js",
             "./js/pages/category.js",
             "./js/pages/register.js",
