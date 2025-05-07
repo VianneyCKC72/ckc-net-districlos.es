@@ -11,6 +11,11 @@
             {if isset($magasin.departement) && $magasin.departement}
                 <span class="departement">{$magasin.departement}</span>
             {/if}
+            {if isset($magasin.distance)}
+                <div class="distance">
+                    ~ {($magasin.distance)|round:0} km
+                </div>
+            {/if}
         </div>
 
         <address class="block block-adresse" itemprop="address" itemscope

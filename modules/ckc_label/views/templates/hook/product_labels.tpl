@@ -10,8 +10,8 @@
                 width: auto;
                 font-size: 12px;
                 position: absolute;
-                bottom: 0;
-                right: 5px;
+                top: 0;
+                left: 5px;
                 z-index: 9;">
             <span class="discount-percentage" style="position: unset;display: flex;margin:auto;color: {$label.color};">
                 {$label.text|escape:'html':'UTF-8'}
@@ -33,8 +33,8 @@
             width: auto;
             font-size: 12px;
             position: absolute;
-            bottom: 0;
-            right: 5px;
+            top: 0;
+            left: 5px;
             z-index: 99;">
             <span class="discount-percentage" style="position: unset;display: flex;margin:auto;">
                 {if $ckc_labels_product.discount_type === 'percentage'}

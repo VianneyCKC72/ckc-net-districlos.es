@@ -568,7 +568,7 @@ class Ckcadcampaignconfigurator extends Module
 
         if(isset($id)) {
             $background_image = Db::getInstance()->executeS('SELECT logo_path FROM ' . _DB_PREFIX_ . 'ckccampaign_config_list WHERE id = '.$id);
-            $image_url = $background_image[0]["logo_path"] ? _MODULE_DIR_.'ckcadcampaignconfigurator'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR .'campaigns'. DIRECTORY_SEPARATOR.$background_image[0]["logo_path"] : '';
+            $image_url = isset($background_image[0]["logo_path"]) ? _MODULE_DIR_.'ckcadcampaignconfigurator'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR .'campaigns'. DIRECTORY_SEPARATOR.$background_image[0]["logo_path"] : '';
             $image = '<div class="col-lg-6"><img src="' . $image_url . '" class="img-thumbnail"></div>';
         } else {
             $image = '';
@@ -672,7 +672,7 @@ class Ckcadcampaignconfigurator extends Module
 
         if(isset($id)) {
             $background_image = Db::getInstance()->executeS('SELECT img_path FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_menu WHERE id_campaign = '.$id);
-            $image_url = $background_image[0]["img_path"] ? _MODULE_DIR_.'ckcadcampaignconfigurator'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR .'menus'. DIRECTORY_SEPARATOR.$background_image[0]["img_path"] : '';
+            $image_url = isset($background_image[0]["img_path"]) ? _MODULE_DIR_.'ckcadcampaignconfigurator'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR .'menus'. DIRECTORY_SEPARATOR.$background_image[0]["img_path"] : '';
             $image = '<div class="col-lg-6"><img src="' . $image_url . '" class="img-thumbnail"></div>';
         } else {
             $image = '';
@@ -1360,8 +1360,15 @@ class Ckcadcampaignconfigurator extends Module
                             $discount_above_3000 = $cartPromo['discount_range_max'];
 
                             $total_product = Context::getContext()->cart->getOrderTotal(true, Cart::BOTH);
+                            $decimal = fmod($total_product, $promotion_threshold);
+                            $modulo = $total_product % $promotion_threshold;
 
-                            $is_round = ($total_product % $promotion_threshold === 0);
+                            if($decimal == 0 && $modulo == 0){
+                                $is_round = 1;
+                            } else {
+                                $is_round = 0;
+                            }
+
                             $next_promotion_target = (ceil($total_product / $promotion_threshold) + ($is_round ? 1 : 0)) * $promotion_threshold;
                             $amount_left_for_next_promotion = $next_promotion_target - $total_product;
 
@@ -1370,20 +1377,29 @@ class Ckcadcampaignconfigurator extends Module
 
                             if ($total_product <= $cartPromo['price_range_max']) {
                                 $promotion_discount = floor($total_product / $promotion_threshold) * $discount_below_3000;
-                                $next_promotion_discount = $discount_below_3000 * ($coef1000 + ($is_round ? 1 : 0));
-                            } else {
-                                $coef1000 = 2;
-                                $coef3000 = ceil($total_product / $promotion_threshold) - $coef1000;
-                                $promotion_discount = floor($total_product / $promotion_threshold) * $discount_above_3000;
-                                $next_promotion_discount = ($discount_above_3000 * ($coef3000 + ($is_round ? 1 : 0))) + ($discount_below_3000 * $coef1000);
+
+                                $calcul_next_promotion_discount = $discount_below_3000 * ($coef1000 + ($is_round ? 1 : 0));
+                                if($calcul_next_promotion_discount <= $cartPromo['discount_range_max']) {
+                                    $next_promotion_discount = $calcul_next_promotion_discount;
+                                } else {
+                                    $next_promotion_discount = $cartPromo['discount_range_max'];
+                                }
                             }
+                            /*                            else {
+                                                            $coef1000 = 2;
+                                                            $coef3000 = ceil($total_product / $promotion_threshold) - $coef1000;
+                                                            $promotion_discount = floor($total_product / $promotion_threshold) * $discount_above_3000;
+                                                            $next_promotion_discount = ($discount_above_3000 * ($coef3000 + ($is_round ? 1 : 0))) + ($discount_below_3000 * $coef1000);
+                                                        }*/
 
-                            $next_promotion_winter = round($amount_left_for_next_promotion, 2);
-                            $next_promotion_winter_discount = $next_promotion_discount;
+                            if (isset($next_promotion_discount) && isset($amount_left_for_next_promotion)){
+                                $next_promotion_winter = round($amount_left_for_next_promotion, 2);
+                                $next_promotion_winter_discount = $next_promotion_discount;
 
-                            $str1 = str_replace('[total_price]', $next_promotion_winter, $promoText);
-                            $str2 = str_replace('[discount_ranged]', number_format($next_promotion_winter_discount, 0), $str1);
-                            $cartPromo['textFinal'] = $str2;
+                                $str1 = str_replace('[total_price]', $next_promotion_winter, $promoText);
+                                $str2 = str_replace('[discount_ranged]', number_format($next_promotion_winter_discount, 0), $str1);
+                                $cartPromo['textFinal'] = $str2;
+                            }
                         }
 
                     }

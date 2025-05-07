@@ -1,4 +1,20 @@
 $(document).ready(function () {
+
+    $(document).ready(function() {
+        if ($('body#product').length) {
+            $('.product-container.js-product-container').each(function() {
+                const $container = $(this);
+                const $swiper = $container.find('.swiper.swiper__product-img__cover.swiper-initialized.swiper-horizontal.swiper-watch-progress.swiper-backface-hidden');
+                const $discount = $container.find('.discount_type_flag');
+
+                if ($swiper.length && $discount.length) {
+                    $discount.appendTo($swiper);
+                }
+            });
+        }
+    });
+
+
     var $element = $(".wrapper__swiper__product-img");
 
     if ($element.length) {
@@ -332,6 +348,11 @@ $(document).ready(function () {
             });
     });
 
+    prestashop.on('updatedCart', (event) => {
+        if(typeof $(".cart-promos") !== "undefined"){
+            $(".cart-promos").replaceWith(event.resp.cart_promos)
+        }
+    });
 
     // Page produit uniquement
 

@@ -12,6 +12,9 @@
     Lien du module <strong>Module de gestion d'étiquettes</strong> : <strong><a href="{Context::getContext()->link->getAdminLink('AdminModules', true, [], ['configure' => 'ckc_label'])}" target="_blank">{Context::getContext()->link->getAdminLink('AdminModules', true, [], ['configure' => 'ckc_label'])}</a></strong>
     <br>
     <br>
+    Lien du module <strong>Module Countdown setter (Districlos)</strong> : <strong><a href="{Context::getContext()->link->getAdminLink('AdminModules', true, [], ['configure' => 'dtc_countdown_setter'])}" target="_blank">{Context::getContext()->link->getAdminLink('AdminModules', true, [], ['configure' => 'dtc_countdown_setter'])}</a></strong>
+    <br>
+    <br>
 </div>
 <div>
     {$form_main}
@@ -471,9 +474,14 @@
                         processData: false,
                         contentType: false,
                         success: function(responseData){
+                            var href = ''
                             if (responseData !== '') {
-
-                                let href = $(location).attr('href') + '&edit_campaign&ID=' + responseData;
+                                if ($(location).attr('href').includes("create_new_campaign")) {
+                                    let substr = $(location).attr('href').replace("&create_new_campaign", "&edit_campaign&ID=")
+                                    href = substr + responseData;
+                                } else {
+                                    href = $(location).attr('href') + '&edit_campaign&ID=' + responseData;
+                                }
 
                                 window.location.href = href;
                             }
