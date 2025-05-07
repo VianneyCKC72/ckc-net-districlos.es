@@ -7,7 +7,7 @@ function initCustomColorSelect() {
 
     $selectedOption.on('click', function (e) {
         e.stopPropagation();
-        $(this).find(".options-list").removeClass("open").toggleClass("open");
+        $(this).next().removeClass("open").toggleClass("open");
     });
 
     $('.options-list').on('click', '.option', function (e) {
