@@ -1,7 +1,4 @@
 function initCustomColorSelect() {
-    const $colorGroup = $('#group_2');
-    if (!$colorGroup.length) return;
-
     const $radioButtons = $('.options-list .option');
     if (!$radioButtons.length) return;
 
