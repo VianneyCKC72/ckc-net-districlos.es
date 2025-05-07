@@ -3,23 +3,22 @@ function initCustomColorSelect() {
     if (!$radioButtons.length) return;
 
     // Supprimer le précédent select custom
-    const $selectedOption = $('<div class="selected-option"></div>');
-    const $optionsList = $('<div class="options-list"></div>');
+    const $selectedOption = $('.selected-option');
 
     $selectedOption.on('click', function (e) {
         e.stopPropagation();
-        $(".options-list").not($optionsList).removeClass("open");
-        $optionsList.toggleClass("open");
+        $(this).find(".options-list").removeClass("open").toggleClass("open");
     });
 
-    $optionsList.on('click', '.option', function (e) {
+    $('.options-list').on('click', '.option', function (e) {
         e.stopPropagation();
         const selectedValue = $(this).data('value');
+        const selectedName = $(this).data('name');
 
         $selectedOption.html(`<span class="color-dot" style="background-color: ${selectedColor};"></span> ${selectedText}`);
-        $optionsList.removeClass('open');
+        $('.options-list').removeClass('open');
 
-        const $relatedRadio = $(`input[type=radio][value="${selectedValue}"]`);
+        const $relatedRadio = $(`input[name="${selectedName}"][value="${selectedValue}"]`);
         if ($relatedRadio.length) {
             $relatedRadio.prop('checked', true).trigger('click').trigger('change');
         }

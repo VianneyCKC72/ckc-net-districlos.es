@@ -46,7 +46,7 @@
                                                 {assign var="default_colorpicker" value=""}
                                                 {foreach from=$group.attributes key=id_attribute item=group_attribute}
                                                     {assign var=ap5_isCurrentSelectedIdAttribute value=((isset($productsPackErrors[$productPack.id_product_pack]) && isset($packCompleteAttributesList[$productPack.id_product_pack]) && in_array($id_attribute, $packCompleteAttributesList[$productPack.id_product_pack])) || $group.default == $id_attribute)}
-                                                    <div class="option" data-value="{$id_attribute}" style="display: flex; align-items: center;">
+                                                    <div class="option" data-value="{$id_attribute}" data-name="{$groupName}" style="display: flex; align-items: center;">
                                                         {if $productPack.attributes.colors.$id_attribute.image_exists}
                                                             <img src="{$urls.img_col_url}{$id_attribute|intval}.jpg" alt="{$productPack.attributes.colors.$id_attribute.name}" />
                                                         {/if}
