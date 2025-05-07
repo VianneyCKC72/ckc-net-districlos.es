@@ -39,7 +39,7 @@
                                                     {if $default_colorpicker = $id_attribute}
                                                         <span class="color-dot"><img src="{$urls.img_col_url}{$id_attribute|intval}.jpg" alt="{$productPack.attributes.colors.$id_attribute.name}" /></span> {$group_attribute.name}
                                                     {/if}
-                                                {/if}
+                                                {/foreach}
                                             </div>
                                             <div class="options-list">
                                                 {assign var="default_colorpicker" value=""}
@@ -53,7 +53,7 @@
                                                     {if $ap5_isCurrentSelectedIdAttribute}
                                                         {$default_colorpicker = $id_attribute}
                                                     {/if}
-                                                {/if}
+                                                {/foreach}
                                             </div>
                                         </div>
 {*                                        <ul class="ap5-color-to-pick-list ap5-color-to-pick-list-{$productPack.id_product_pack|intval}-{$id_attribute_group|intval}">*}
