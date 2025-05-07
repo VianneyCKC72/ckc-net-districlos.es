@@ -32,25 +32,49 @@
                                             {/foreach}
                                         </select>
                                     {elseif ($group.group_type == 'color')}
-                                        <ul class="ap5-color-to-pick-list ap5-color-to-pick-list-{$productPack.id_product_pack|intval}-{$id_attribute_group|intval}">
-                                            {assign var="default_colorpicker" value=""}
-                                            {foreach from=$group.attributes key=id_attribute item=group_attribute}
-                                                {assign var=ap5_isCurrentSelectedIdAttribute value=((isset($productsPackErrors[$productPack.id_product_pack]) && isset($packCompleteAttributesList[$productPack.id_product_pack]) && in_array($id_attribute, $packCompleteAttributesList[$productPack.id_product_pack])) || $group.default == $id_attribute)}
-                                                <li class="float-left float-xs-left pull-xs-left input-container{if $ap5_isCurrentSelectedIdAttribute} selected{/if}">
-                                                    <label aria-label="{$group_attribute.name|escape:'html':'UTF-8'}">
-                                                        <a href="{$productPack.presentation.url}" data-id-product-pack="{$productPack.id_product_pack|intval}" data-id-attribute-group="{$id_attribute_group|intval}" data-id-attribute="{$id_attribute|intval}" id="color_{$id_attribute|intval}" name="{$productPack.attributes.colors.$id_attribute.name}" class="ap5-color color color_pick{if $ap5_isCurrentSelectedIdAttribute} selected{/if}{if in_array($productPack.id_product_pack, $packExcludeList)} disabled{/if}" style="background: {$productPack.attributes.colors.$id_attribute.value};" title="{$productPack.attributes.colors.$id_attribute.name}">
-                                                            {if $productPack.attributes.colors.$id_attribute.image_exists}
-                                                                <img src="{$urls.img_col_url}{$id_attribute|intval}.jpg" alt="{$productPack.attributes.colors.$id_attribute.name}" />
-                                                            {/if}
-                                                            {$group_attribute.name}
-                                                        </a>
-                                                    </label>
-                                                </li>
-                                                {if $ap5_isCurrentSelectedIdAttribute}
-                                                    {$default_colorpicker = $id_attribute}
+                                        <div class="custom-color-select">
+                                            <div class="selected-option">
+                                                {assign var="default_colorpicker" value=""}
+                                                {foreach from=$group.attributes key=id_attribute item=group_attribute}
+                                                    {if $default_colorpicker = $id_attribute}
+                                                        <span class="color-dot"><img src="{$urls.img_col_url}{$id_attribute|intval}.jpg" alt="{$productPack.attributes.colors.$id_attribute.name}" /></span> {$group_attribute.name}
+                                                    {/if}
                                                 {/if}
-                                            {/foreach}
-                                        </ul>
+                                            </div>
+                                            <div class="options-list">
+                                                {assign var="default_colorpicker" value=""}
+                                                {foreach from=$group.attributes key=id_attribute item=group_attribute}
+                                                    <div class="option" data-value="26" style="display: flex; align-items: center;">
+                                                        {if $productPack.attributes.colors.$id_attribute.image_exists}
+                                                            <span class="color-dot"><img src="{$urls.img_col_url}{$id_attribute|intval}.jpg" alt="{$productPack.attributes.colors.$id_attribute.name}" /></span>
+                                                        {/if}
+                                                        {$group_attribute.name}
+                                                    </div>
+                                                    {if $ap5_isCurrentSelectedIdAttribute}
+                                                        {$default_colorpicker = $id_attribute}
+                                                    {/if}
+                                                {/if}
+                                            </div>
+                                        </div>
+{*                                        <ul class="ap5-color-to-pick-list ap5-color-to-pick-list-{$productPack.id_product_pack|intval}-{$id_attribute_group|intval}">*}
+{*                                            {assign var="default_colorpicker" value=""}*}
+{*                                            {foreach from=$group.attributes key=id_attribute item=group_attribute}*}
+{*                                                {assign var=ap5_isCurrentSelectedIdAttribute value=((isset($productsPackErrors[$productPack.id_product_pack]) && isset($packCompleteAttributesList[$productPack.id_product_pack]) && in_array($id_attribute, $packCompleteAttributesList[$productPack.id_product_pack])) || $group.default == $id_attribute)}*}
+{*                                                <li class="float-left float-xs-left pull-xs-left input-container{if $ap5_isCurrentSelectedIdAttribute} selected{/if}">*}
+{*                                                    <label aria-label="{$group_attribute.name|escape:'html':'UTF-8'}">*}
+{*                                                        <a href="{$productPack.presentation.url}" data-id-product-pack="{$productPack.id_product_pack|intval}" data-id-attribute-group="{$id_attribute_group|intval}" data-id-attribute="{$id_attribute|intval}" id="color_{$id_attribute|intval}" name="{$productPack.attributes.colors.$id_attribute.name}" class="ap5-color color color_pick{if $ap5_isCurrentSelectedIdAttribute} selected{/if}{if in_array($productPack.id_product_pack, $packExcludeList)} disabled{/if}" style="background: {$productPack.attributes.colors.$id_attribute.value};" title="{$productPack.attributes.colors.$id_attribute.name}">*}
+{*                                                            {if $productPack.attributes.colors.$id_attribute.image_exists}*}
+{*                                                                <img src="{$urls.img_col_url}{$id_attribute|intval}.jpg" alt="{$productPack.attributes.colors.$id_attribute.name}" />*}
+{*                                                            {/if}*}
+{*                                                            {$group_attribute.name}*}
+{*                                                        </a>*}
+{*                                                    </label>*}
+{*                                                </li>*}
+{*                                                {if $ap5_isCurrentSelectedIdAttribute}*}
+{*                                                    {$default_colorpicker = $id_attribute}*}
+{*                                                {/if}*}
+{*                                            {/foreach}*}
+{*                                        </ul>*}
                                     {elseif ($group.group_type == 'radio')}
                                         <ul>
                                             {foreach from=$group.attributes key=id_attribute item=group_attribute}
