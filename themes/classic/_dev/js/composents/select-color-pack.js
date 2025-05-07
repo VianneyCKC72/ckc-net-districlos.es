@@ -16,7 +16,6 @@ function initCustomColorSelect() {
         const selectedValue = $(this).data('value');
         const selectedName = $(this).data('name');
 
-        $selectedOption.html(`<span class="color-dot" style="background-color: ${selectedColor};"></span> ${selectedText}`);
         $('.options-list').removeClass('open');
 
         const $relatedRadio = $(`input[name="${selectedName}"][value="${selectedValue}"]`);
