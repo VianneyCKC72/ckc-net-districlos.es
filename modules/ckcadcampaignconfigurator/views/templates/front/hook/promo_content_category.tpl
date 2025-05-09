@@ -2,7 +2,7 @@
     {foreach $categoryPromos as $categoryPromo}
         {if isset($categoryPromo['categoryText'])}
             <div style="background-color: {$categoryPromo['categoryColor']};" class="has-discount d-flex align-items-center">
-                    {$categoryPromo['categoryText'] nofilter}
+                {html_entity_decode($categoryPromo['categoryText']) nofilter}
             </div>
         {/if}
     {/foreach}

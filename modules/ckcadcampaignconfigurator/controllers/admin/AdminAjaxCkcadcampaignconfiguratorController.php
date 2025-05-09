@@ -49,15 +49,15 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
         $menuLink = Tools::getValue("menuLink");
 
         $isActiveHeader = Tools::getValue("isActiveHeader");
-        $headertext = Tools::getValue("headertext");
+        $headertext = htmlentities(Tools::getValue("headertext"));
         $headerBackColor = Tools::getValue("headerBackColor");
         $isActiveCategory = Tools::getValue("isActiveCategory");
-        $categoryText = Tools::getValue("categoryText");
+        $categoryText = htmlentities(Tools::getValue("categoryText"));
         $categoryBackColor = Tools::getValue("categoryBackColor");
         $isAllCategories = Tools::getValue("isAllCategories");
-        $devisText = Tools::getValue("devisText");
+        $devisText = htmlentities(Tools::getValue("devisText"));
         $devisColor = Tools::getValue("devisColor");
-        $promoPageText = Tools::getValue("promoPageText");
+        $promoPageText = htmlentities(Tools::getValue("promoPageText"));
         $selectedCategories = Tools::getValue("selectedCategories");
 
         if(isset($isActiveCampaign) && isset($titleCampaign) && isset($clientGroup) && isset($startingDate) && isset($endingDate)){
@@ -96,7 +96,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
                             // Vérifier si le dossier 'uploads' existe, sinon le créer
                             $uploadsDir = __DIR__ . DIRECTORY_SEPARATOR . '..'. DIRECTORY_SEPARATOR .'..'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR .'campaigns';
                             if (!file_exists($uploadsDir)) {
-                                mkdir($uploadsDir, 0755, true); // 
+                                mkdir($uploadsDir, 0755, true); //
                             }
                             $moveResult = move_uploaded_file($logoFile['tmp_name'], $uploadsDir . DIRECTORY_SEPARATOR . $file_name);
 
@@ -123,7 +123,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
         if(isset($isActiveMenu) && isset($menuImgPath) && isset($menuImgFile)){
 
             $queryMenu = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_menu ccl
-            WHERE ccl.id = '.$id);
+            WHERE ccl.id_campaign = '.$id);
 
             if(null != $queryMenu) {
                 $file_name = $menuImgFile['name'];
@@ -157,7 +157,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
                         // Vérifier si le dossier 'uploads' existe, sinon le créer
                         $uploadsDir = __DIR__ . DIRECTORY_SEPARATOR . '..'. DIRECTORY_SEPARATOR .'..'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR .'menus';
                         if (!file_exists($uploadsDir)) {
-                            mkdir($uploadsDir, 0755, true); // 
+                            mkdir($uploadsDir, 0755, true); //
                         }
                         $moveResult = move_uploaded_file($menuImgFile['tmp_name'], $uploadsDir . DIRECTORY_SEPARATOR . $file_name);
 
@@ -207,7 +207,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
                         // Vérifier si le dossier 'uploads' existe, sinon le créer
                         $uploadsDir =  __DIR__ . DIRECTORY_SEPARATOR . '..'. DIRECTORY_SEPARATOR .'..'. DIRECTORY_SEPARATOR .'uploads'. DIRECTORY_SEPARATOR .'menus';
                         if (!file_exists($uploadsDir)) {
-                            mkdir($uploadsDir, 0755, true); // 
+                            mkdir($uploadsDir, 0755, true); //
                         }
                         $moveResult = move_uploaded_file($menuImgFile['tmp_name'], $uploadsDir . DIRECTORY_SEPARATOR . $file_name);
 
@@ -236,7 +236,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
 
         if (isset($isActiveHeader) && isset($headertext) && isset($headerBackColor)) {
             $queryHeader = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_header ccl
-            WHERE ccl.id = '.$id);
+            WHERE ccl.id_campaign = '.$id);
 
             if(null != $queryHeader) {
                 $updateMenu =  Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckccampaign_config_content_header` 
@@ -254,7 +254,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
 
         if(isset($isActiveCategory) && isset($categoryText) && isset($categoryBackColor) && isset($isAllCategories)) {
             $queryCategory = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_category ccl
-            WHERE ccl.id = '.$id);
+            WHERE ccl.id_campaign = '.$id);
 
             if(null != $queryCategory) {
                 $updateMenu =  Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` 
@@ -299,16 +299,16 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
             }
         }
 
-        if(isset($selectedCategories) && "" !== $selectedCategories) {
+        if(isset($selectedCategories)) {
             $deleteOld = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_category_show` WHERE id_campaign = '.$id);
+            if("" !== $selectedCategories) {
+                $selectedCatArr = explode(",",$selectedCategories);
 
-            $selectedCatArr = explode(",",$selectedCategories);
-
-            foreach ($selectedCatArr as $category) {
-                $updateNew = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_category_show` (`id`, `id_campaign`, `id_category`)
+                foreach ($selectedCatArr as $category) {
+                    $updateNew = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_category_show` (`id`, `id_campaign`, `id_category`)
                 VALUES (NULL, '.$id.', '.$category.')');
+                }
             }
-
         }
         echo $id;
 

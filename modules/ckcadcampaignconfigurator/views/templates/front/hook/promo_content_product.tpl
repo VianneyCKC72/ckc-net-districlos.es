@@ -2,7 +2,7 @@
     {foreach $productPromos as $productPromo}
         {if isset($productPromo['text'])}
             <div class="has-discount d-flex align-items-center">
-                    {$productPromo['text'] nofilter}
+                {html_entity_decode($productPromo['text']) nofilter}
             </div>
         {/if}
     {/foreach}
