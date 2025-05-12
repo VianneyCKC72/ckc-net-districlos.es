@@ -99,14 +99,14 @@ class Accessory extends ProductFactory
     static private function matchProduct($id_category, $language_id, $soubassement = false)
     {
         $category                  = new \Category($id_category, $language_id);
-        $products                  = $category->getProducts($language_id, 1, 1000000, null, null, false, true, false, 1, false);
+        $products                  = $category->getProducts($language_id, 1, 1000000, null, null, false, true);
         $selected_height           = floatval(str_replace('m', '.', self::$session->height));
         $match_height              = self::matchHeight($selected_height, $soubassement);
         $max_height                = null;
         $higher_product            = null;
         $arrProductAttributeHeight = [];
         $heightEstUnAttribute      = false;
-        
+
         if (!empty($products[0])) {
             $current_height = Helper::getCurrentHeight($products[0]['name']);
             if (empty($current_height)) {
@@ -177,7 +177,11 @@ class Accessory extends ProductFactory
         $espacement  = ["entretoise"];
 
         if (self::$session->isRigide()) {
-            $accessories = ["poteaux", "bouchons", "cales", "clips", "pince_clips"];
+            $accessories = ["poteaux", "bouchons", "clips", "pince_clips"];
+
+            if (self::$session->poteaux == 1223) {
+                $accessories[] = "cales";
+            }
         }
         elseif (self::$session->isSouple()) {
             $accessories = ["poteaux", "jambes", "boulons", "tension", "tendeurs", "agrafes", "agrafeuses"];
@@ -233,8 +237,9 @@ class Accessory extends ProductFactory
                 case 'jambes':
                 case 'boulons':
                     return intval($length / 20);
-                case 'barres':
                 case 'cales':
+                    return $panneau_times / 2;
+                case 'barres':
                 case 'tension':
                     return $panneau_times;
                 case 'entretoise' :
@@ -292,7 +297,7 @@ class Accessory extends ProductFactory
                 case 'poteaux':
                     return (int) self::ALU_QUANTITIES_PLEINES[self::$session->installation][(string)$height][(string)$length]['poteaux'] - (int) $depart_du_mur;
                 case 'platines':
-                    return isset(self::ALU_QUANTITIES_PLEINES[self::$session->installation][(string)$height][(string)$length]['platines']) ? (int) self::ALU_QUANTITIES_PLEINES[self::$session->installation][(string)$height][(string)$length]['platines'] : 0;
+                    return (int) self::ALU_QUANTITIES_PLEINES[self::$session->installation][(string)$height][(string)$length]['platines'];
                 case 'bouchons-demi-poteaux':
                 case 'demi-poteaux' :
                     return (int) $depart_du_mur;
@@ -363,7 +368,7 @@ class Accessory extends ProductFactory
     {
         $colors = [];
         $ids    = [];
-    
+
         // Cas particulier de l'entretoise
         if ($id_product == 1258) {
             switch (self::$session->espacement) {
@@ -375,12 +380,12 @@ class Accessory extends ProductFactory
                     return 11774976;
             }
         }
-    
+
         $heightString    = self::$session->height;
         $heightString    = str_replace('m', '.', $heightString);
         $heightFloat     = floatval($heightString);
         $height_selected = intval($heightFloat * 100);
-    
+
         if ($id_product == 1331 && self::$session->isAluminium()) {
             if ((($heightFloat == 0.515 || $heightFloat == 0.96 || $heightFloat == 0.403 || $heightFloat == 0.766 || $heightFloat == 1.129) && self::$session->installation == 'scellement-sur-muret') || (($heightFloat == 1.41 || $heightFloat == 1.129) && self::$session->installation == 'scellement-sur-platine')) {
                 return 11780051;
@@ -390,22 +395,22 @@ class Accessory extends ProductFactory
                 return 11780052;
             }
         }
-    
+
         if ($id_product == 1329 && self::$session->isAluminium()) {
             return 11780032;
         }
-    
+
         if ($id_product == 1333 && self::$session->isAluminium()) {
             return 11780036;
         }
-    
+
         if ($id_product == 1328 && self::$session->isAluminium()) {
             return 11780057;
         }
         if ($id_product == 1135 && self::$session->isAluminium()) {
             return 11768852;
         }
-    
+
         // Cas particulier pour poteau alu.
         if ($id_product == 1136 && self::$session->isAluminium()) {
             if ($height_selected <= 80) {
@@ -414,62 +419,61 @@ class Accessory extends ProductFactory
             else
                 return 11768854;
         }
-    
+
         if (self::$session->isAluminium()) {
             if (!isset(self::$session->id_product_attribut) || !self::$session->id_product_attribut) {
                 return null;
             }
         }
-    
+
         $sql = new \DbQuery();
         $sql->select('name');
         $sql->from('product_attribute_combination', 'pac');
         $sql->leftJoin('attribute_lang', 'al', 'pac.id_attribute = al.id_attribute');
         $sql->where('id_product_attribute = ' . self::$session->id_product_attribute . ' AND id_lang = ' . $language_id);
-    
         $names = \Db::getInstance()->executeS($sql);
-    
+
         foreach ($names as $name) {
             if (strpos($name['name'], 'Ht ') !== false || strpos($name['name'], '0m') !== false || strpos($name['name'], '1m') !== false || strpos($name['name'], '2m') !== false) {
                 $height = floatval(str_replace(['Ht ', 'm'], ['', '.'], $name['name']));
             }
         }
-    
+
         $needed_height = self::matchHeight($height, $soubassement, null, ($id_product == 158), ($id_product == 1162)); // Barre de tension (ID 158)
-        $combinations  = static::getAttributesInformationsByProduct($id_product);
-        
+        $combinations  = \Product::getAttributesInformationsByProduct($id_product);
+
         // Height
         foreach ($combinations as $combination) {
             $current_height = floatval(str_replace('m', '.', $combination['attribute']));
             $group          = strtolower(str_replace([' ', ':'], ['-', ''], $combination['group']));
-    
+
             if (($group == 'hauteur' || $group == 'hauteur-du-poteau') && $current_height == $needed_height) {
                 $ids[] = $combination['id_product_attribute'];
             }
         }
-    
+
         // Platines
         if ($id_product == 150) {
             foreach ($combinations as $combination) {
                 $ids[] = $combination['id_product_attribute'];
             }
         }
-    
+
         // Colors
         foreach ($combinations as $combination) {
             $group = strtolower(str_replace([' ', ':'], ['-', ''], $combination['group']));
-    
+
             if ($group == 'couleur' && ((count($ids) > 0 && in_array($combination['id_product_attribute'], $ids)) || count($ids) == 0)) {
                 $colors[$combination['id_product_attribute']] = $combination['attribute'];
             }
         }
-    
+
         $id_product_attribute = null;
         foreach ($colors as $id_product_attribute => $color) {
             $color = explode('-', strtolower(str_replace(' ', '-', $color)));
             $count = count($color);
             $color = end($color);
-    
+
             if ($count > 1) {
                 foreach ($names as $name) {
                     $recherche_couleur = strpos($name['name'], $color);
@@ -486,33 +490,13 @@ class Accessory extends ProductFactory
                 }
             }
         }
-    
+
         // Si le produit possède des déclinaisons, alors on sélectionne la première
         if (count($combinations) > 0) {
             $id_product_attribute = $combinations[0]['id_product_attribute'];
         }
-    
+
         return $id_product_attribute;
-    }
-    
-    public static function getAttributesInformationsByProduct($id_product)
-    {
-        $result = \Db::getInstance()->executeS('
-            SELECT DISTINCT a.`id_attribute`, a.`id_attribute_group`, al.`name` as `attribute`, agl.`name` as `group`, pac.`id_product_attribute`
-            FROM `'._DB_PREFIX_.'attribute` a
-            LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al
-                ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int)\Context::getContext()->language->id.')
-            LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl
-                ON (a.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = '.(int)\Context::getContext()->language->id.')
-            LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac
-                ON (a.`id_attribute` = pac.`id_attribute`)
-            LEFT JOIN `'._DB_PREFIX_.'product_attribute` pa
-                ON (pac.`id_product_attribute` = pa.`id_product_attribute`)
-            '.\Shop::addSqlAssociation('product_attribute', 'pa').'
-            '.\Shop::addSqlAssociation('attribute', 'pac').'
-            WHERE pa.`id_product` = '.(int)$id_product);
-    
-        return $result;
     }
 
     // Get height depending on grillage's height and type of pose
@@ -589,7 +573,7 @@ class Accessory extends ProductFactory
                             return 1.97;
                         }
                         elseif ($soubassement == 0.50) {
-                            return 1.17;
+                            return 2.17;
                         }
                         return 1.57;
                     case 1.43:

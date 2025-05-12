@@ -25,18 +25,18 @@ class Portillon extends ProductFactory
 
         $category_configurator = self::PORTILLONS_RIGIDES_ID;
         if ($is_aluminium) {
-            $category_configurator = self::PORTILLONS_ALUMINIUM_ID;
+            $category_configurator = self::PORTILLONS_SOUPLES_ID;
         }
         elseif ($is_souple) {
-            $category_configurator = self::PORTILLONS_SOUPLES_ID;
+            $category_configurator = self::PORTILLONS_ALUMINIUM_ID;
         }
 
         $category = new \Category($category_configurator);
-        $products = $category->getProducts($language_id, 1, 1000000, null, null, false, true, false, 1, false);
+        $products = $category->getProducts($language_id, 1, 1000000);
         $items    = [];
 
         foreach ($products as $product) {
-            $combinations = static::getAttributesInformationsByProduct($product['id_product']);
+            $combinations = \Product::getAttributesInformationsByProduct($product['id_product']);
             $changed      = false;
             $heights      = [];
 
@@ -65,45 +65,17 @@ class Portillon extends ProductFactory
                 $current_height = floatval(str_replace(['Ht ', 'ht-', 'm'], ['', '', '.'], $combination['attribute']));
 
                 if (($combination['group'] == 'Hauteur' || $combination['group'] == 'hauteur') && ($current_height == $wantedHeight)) {
-                    $short_name = explode(' : ', \Product::getProductName($product['id_product'], $combination['id_product_attribute'], $language_id))[0];
-                    $description = str_replace($short_name, '', \Product::getProductName($product['id_product'], $combination['id_product_attribute'], $language_id));
-                    $description = str_replace(' :', '', $description);
-                    $description = explode(' ,', $description);
-                    $description = implode('<br>', $description);
-
                     $items[] = [
                         "id"                   => $product['id_product'],
                         "image_url"            => self::getImageUrl(\Product::getCombinationImageById($combination['id_product_attribute'], $language_id)),
                         "name"                 => \Product::getProductName($product['id_product'], $combination['id_product_attribute'], $language_id),
-                        "id_product_attribute" => $combination['id_product_attribute'],
-                        "short_name"           => explode(' : ', \Product::getProductName($product['id_product'], $combination['id_product_attribute'], $language_id))[0],
-                        "description"          => $description,
+                        "id_product_attribute" => $combination['id_product_attribute']
                     ];
                 }
             }
         }
 
         return $items;
-    }
-
-    public static function getAttributesInformationsByProduct($id_product)
-    {
-        $result = \Db::getInstance()->executeS('
-            SELECT DISTINCT a.`id_attribute`, a.`id_attribute_group`, al.`name` as `attribute`, agl.`name` as `group`, pac.`id_product_attribute`
-            FROM `'._DB_PREFIX_.'attribute` a
-            LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al
-                ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int)\Context::getContext()->language->id.')
-            LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl
-                ON (a.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = '.(int)\Context::getContext()->language->id.')
-            LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac
-                ON (a.`id_attribute` = pac.`id_attribute`)
-            LEFT JOIN `'._DB_PREFIX_.'product_attribute` pa
-                ON (pac.`id_product_attribute` = pa.`id_product_attribute`)
-            '.\Shop::addSqlAssociation('product_attribute', 'pa').'
-            '.\Shop::addSqlAssociation('attribute', 'pac').'
-            WHERE pa.`id_product` = '.(int)$id_product);
-
-        return $result;
     }
 
     // Set needed portillon
@@ -135,7 +107,15 @@ class Portillon extends ProductFactory
     {
         $closest = null;
         foreach ($arr as $item) {
-            if ($closest === null || abs($search - $closest) > abs($item - $search)) {
+            if ($search == 1.03 && $item == 1.00) {
+                $closest = $item;
+            }else if ($search == 1.23 && $item == 1.25) {
+                $closest = $item;
+            } else if ($search == 1.53 && $item == 1.50) {
+                $closest = $item;
+            } else if ($search == 1.73 && $item == 1.75) {
+                $closest = $item;
+            } else if ($search == 1.93 && $item == 1.90) {
                 $closest = $item;
             }
         }

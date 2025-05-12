@@ -129,10 +129,6 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     $selected_occultation_id_product_attribute = Tools::getValue('occultation')['id_product_attribute'];
                 }
 
-                if (!empty(Tools::getValue('portillon')['id_product_attribute'])) {
-                    $selected_portillon_id_product_attribute = Tools::getValue('portillon')['id_product_attribute'];
-                }
-
                 if (!empty(Tools::getValue('panneau_deco')['id_product_attribute'])) {
                     $selected_panneau_deco_id_product_attribute = Tools::getValue('panneau_deco')['id_product_attribute'];
                 }
@@ -161,6 +157,15 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     }
                 }
                 $products = $this->session->getProducts($this->language_id, $this->session);
+
+                if (!empty(Tools::getValue('portillon')['id_product_attribute'])) {
+                    foreach ($products as $product) {
+                        if (strpos($product['name'], 'Portillon') !== false) {
+                            $selected_portillon_id_product_attribute = Tools::getValue('portillon')['id_product_attribute'];
+                        }
+                    }
+                }
+
                 $price = $this->session->totalPrice();
                 $price = number_format($price, 2);
 
@@ -399,6 +404,9 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                 $clips = 1;
             }
         }
+
+        $heightChanged = $grillage['height'] != $this->session->height;
+
         $this->session->change(
             ['id_type', 'length', 'installation', 'height', 'color', 'id_product_attribute', 'id_category', 'espacement', 'depart_mur', 'nombre_angle', 'poteaux', 'clips'],
             [$type->id, $grillage['length'], $grillage['installation'], $grillage['height'], $grillage['color'], $id_product_attribute, $id_category, $espacement, $grillage['depart_mur'], $grillage['nombre_angle'], $grillage['poteaux'], $clips]
@@ -415,7 +423,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         $grillage = Grillage::get($this->session, $this->language_id);
 
         // Add options
-        $this->addOptions($sousbassement, $occultation, $kitmontage, $portillon, $panneau_deco, $grillage['quantity']);
+        $this->addOptions($sousbassement, $occultation, $kitmontage, $portillon, $panneau_deco, $grillage['quantity'], $heightChanged);
 
         $grillage = Grillage::get($this->session, $this->language_id);
 
@@ -437,14 +445,17 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         $accessories  = Accessory::get($this->session, $this->language_id, $soubassement);
 
         foreach ($accessories as $accessory) {
+            if ($heightChanged && $accessory['id'] == 1182) {
 
-            $this->session->insertEntry([
-                'id_configurator_session' => $this->session->id,
-                'id_product'              => $accessory['id'],
-                'id_product_attribute'    => $accessory['id_attribute'],
-                'quantity'                => $accessory['quantity'],
-                'type'                    => 'accessory'
-            ]);
+            }else{
+                $this->session->insertEntry([
+                    'id_configurator_session' => $this->session->id,
+                    'id_product'              => $accessory['id'],
+                    'id_product_attribute'    => $accessory['id_attribute'],
+                    'quantity'                => $accessory['quantity'],
+                    'type'                    => 'accessory'
+                ]);
+            }
         }
 
         return true;
@@ -611,7 +622,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
     }
 
     // Add selected options
-    public function addOptions($sousbassement, $occultation, $kitmontage, $portillon, $panneau_deco, $nbGrillage)
+    public function addOptions($sousbassement, $occultation, $kitmontage, $portillon, $panneau_deco, $nbGrillage, $heightChanged)
     {
         $this->session->deleteEntryByType('soubassement');
         $this->session->deleteEntryByType('kitmontage');
@@ -680,7 +691,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         }
 
         // Portillons
-        if (isset($portillon['active']) && $portillon['active'] == 'true' && !empty($portillon['id']) && !empty($portillon['id_product_attribute'])) {
+        if (isset($portillon['active']) && $portillon['active'] == 'true' && !empty($portillon['id']) && !empty($portillon['id_product_attribute']) && !$heightChanged) {
             $this->session->insertEntry([
                 'id_configurator_session' => $this->session->id,
                 'id_product'              => $portillon['id'],
