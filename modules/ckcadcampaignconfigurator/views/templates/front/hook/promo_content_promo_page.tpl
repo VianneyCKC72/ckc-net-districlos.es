@@ -3,7 +3,7 @@
         {foreach $promoPagePromos as $promoPagePromo}
             {if isset($promoPagePromo['promoPageText']) && "" !== $promoPagePromo['promoPageText']}
                 <div class="promo-page-promo-content">
-                    {$promoPagePromo['promoPageText'] nofilter}
+                    {html_entity_decode($promoPagePromo['promoPageText']) nofilter}
                 </div>
             {/if}
         {/foreach}

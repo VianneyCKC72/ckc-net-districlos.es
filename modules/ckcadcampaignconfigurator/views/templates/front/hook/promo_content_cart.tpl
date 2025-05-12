@@ -3,7 +3,7 @@
         {foreach $cartPromos as $cartPromo}
             {if isset($cartPromo['textFinal'])}
                 <div style="color: {$cartPromo['text_color']};">
-                    {$cartPromo['textFinal'] nofilter}
+                    {html_entity_decode($cartPromo['textFinal']) nofilter}
                 </div>
             {/if}
         {/foreach}

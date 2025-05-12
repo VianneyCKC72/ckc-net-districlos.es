@@ -76,7 +76,7 @@ class CampaignModel extends ObjectModel
 
         $queryDevis = Db::getInstance()->executeS('SELECT ccd.id as idDevis, ccd.text as textDevis, ccd.background_color as colorDevis FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_devis ccd
         WHERE ccd.id_campaign = '.$id);
-        
+
         $queryPromoPage = Db::getInstance()->executeS('SELECT ccpp.id as idPromoPage, ccpp.text as promoPageText FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_promopage ccpp
         WHERE ccpp.id_campaign = '.$id);
 
@@ -129,7 +129,7 @@ class CampaignModel extends ObjectModel
             $info["textDevis"] = "";
             $info["colorDevis"] = "";
         }
-        
+
         if(null != $queryPromoPage){
             $info["idPromoPage"] = $queryPromoPage[0]["idPromoPage"];
             $info["promoPageText"] = $queryPromoPage[0]["promoPageText"];
@@ -143,7 +143,7 @@ class CampaignModel extends ObjectModel
 
     public function getCampaignInfoCart(&$id, &$idElement){
 
-          $queryCart = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_cart ccl
+        $queryCart = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_cart ccl
             WHERE ccl.id_campaign = '.$id.' AND ccl.id = '.$idElement);
         return $queryCart[0];
 
@@ -200,14 +200,16 @@ class CampaignModel extends ObjectModel
                 `active` = ' . $data['PRODUCT_ACTIVE'] . ',
                 `show_all` = ' . $data['PRODUCT_SHOW_ALL'] . ' 
                 WHERE `id` = '.$data["PRODUCT_ID"].' AND `id_campaign` = ' .$data["ID"]);
-            if(isset($data['PRODUCT_SELECTION']) && "" !== $data['PRODUCT_SELECTION']){
-                $productsArr = explode(",", $data['PRODUCT_SELECTION']);
+            if(isset($data['PRODUCT_SELECTION'])){
                 $deleteOld = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_product_show` WHERE `id_product_content` = '.$data["PRODUCT_ID"]);
-                foreach($productsArr as $productId){
-                    if($productId !== "") {
-                        $insertProductSelection = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_product_show` 
+                if("" !== $data['PRODUCT_SELECTION']){
+                    $productsArr = explode(",", $data['PRODUCT_SELECTION']);
+                    foreach($productsArr as $productId){
+                        if($productId !== "") {
+                            $insertProductSelection = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_product_show` 
                         (`id`, `id_product_content`, `id_product`)
                             VALUES (NULL, '.$data["PRODUCT_ID"].','.$productId.')');
+                        }
                     }
                 }
             }
