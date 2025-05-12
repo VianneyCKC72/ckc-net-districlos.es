@@ -16,6 +16,7 @@ class FrontController extends FrontControllerCore
         $kbis = [];
         $isLogged = 0;
         $env_pro = 0;
+        $newClient                            = 0;
         $tva = 0;
         $connecter_avec_un_compte_particulier = 0;
         $espace_pro = !empty($_GET['ep']);
@@ -32,6 +33,17 @@ class FrontController extends FrontControllerCore
                 // Détermination si l'utilisateur appartient au groupe avec l'ID 10
                 $env_pro = $isLogged && in_array(10, $this->context->customer->getGroups());
                 $connecter_avec_un_compte_particulier = (int)($isLogged && !in_array(10, $this->context->customer->getGroups()));
+            }
+        }
+
+        $isConfirmationPage = strpos($_SERVER['REQUEST_URI'], 'confirmation') !== false;
+
+        if ($isLogged) {
+            $orders    = Order::getCustomerOrders($userId);
+            $newClient = count($orders) == 0 ? 1 : 0;
+
+            if (count($orders) == 1 && $isConfirmationPage) {
+                $newClient = 1;
             }
         }
 
@@ -90,6 +102,7 @@ class FrontController extends FrontControllerCore
                 'tva' => $tva,
                 'siret' => $siret,
                 'kbis' => $kbis,
+                'newClient' => $newClient,
                 'env_particulier' => $env_particulier,
             ]
         );

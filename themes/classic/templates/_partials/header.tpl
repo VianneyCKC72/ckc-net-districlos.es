@@ -1,3 +1,15 @@
+<script>
+    if (typeof prestashop !== 'undefined') {
+        prestashop.customer = prestashop.customer;
+        if (prestashop.customer && prestashop.customer.is_logged) {
+            {if $customer.id}
+            prestashop.customer.id = {$customer.id};
+            {/if}
+            prestashop.customer.newClient = {$newClient};
+        }
+    }
+</script>
+
 {block name='header_top'}
     <div class="header-top">
         <div class="row-header d-flex align-items-center">

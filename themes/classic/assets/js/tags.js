@@ -79,7 +79,7 @@ let dataLayerStructure = {
     'persister_city': firstAddress.city || '',
     'persister_country': firstAddress.country_iso || '',
     'persister_postal_code': firstAddress.postcode || '',
-    'userId': loggedCustomer.id,
+    'userId': loggedCustomer.id || '',
     'userLogged': loggedCustomer.is_logged,
     'newClient': getNewClientStatus(),
     'conseiller': (typeof window.isAdminConnected !== 'undefined' && window.isAdminConnected)
