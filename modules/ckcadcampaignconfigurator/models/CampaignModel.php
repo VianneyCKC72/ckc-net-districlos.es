@@ -70,9 +70,9 @@ class CampaignModel extends ObjectModel
         $queryHeader = Db::getInstance()->executeS('SELECT cch.id as idHeader, cch.active as headerActive, cch.text as headerText, cch.background_color as headerColor FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_header cch
         WHERE cch.id_campaign = '.$id);
 
-        $queryCategory = Db::getInstance()->executeS('SELECT ccc.id as idCategory, ccc.text as categoryText, ccc.background_color as categoryColor, ccc.active as categoryActive, ccc.show_all as categoryShowAll
-        FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_category ccc
-        WHERE ccc.id_campaign = '.$id);
+        /*        $queryCategory = Db::getInstance()->executeS('SELECT ccc.id as idCategory, ccc.text as categoryText, ccc.background_color as categoryColor, ccc.active as categoryActive, ccc.show_all as categoryShowAll
+                FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_category ccc
+                WHERE ccc.id_campaign = '.$id);*/
 
         $queryDevis = Db::getInstance()->executeS('SELECT ccd.id as idDevis, ccd.text as textDevis, ccd.background_color as colorDevis FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_devis ccd
         WHERE ccd.id_campaign = '.$id);
@@ -106,19 +106,19 @@ class CampaignModel extends ObjectModel
             $info["headerColor"] = "";
         }
 
-        if(null != $queryCategory){
-            $info["idCategory"] = $queryCategory[0]["idCategory"];
-            $info["categoryText"] = $queryCategory[0]["categoryText"];
-            $info["categoryColor"] = $queryCategory[0]["categoryColor"];
-            $info["categoryActive"] = $queryCategory[0]["categoryActive"];
-            $info["categoryShowAll"] = $queryCategory[0]["categoryShowAll"];
-        } else {
-            $info["idCategory"] = "";
-            $info["categoryText"] = "";
-            $info["categoryColor"] = "";
-            $info["categoryActive"] = "";
-            $info["categoryShowAll"] = "";
-        }
+        /*        if(null != $queryCategory){
+                    $info["idCategory"] = $queryCategory[0]["idCategory"];
+                    $info["categoryText"] = $queryCategory[0]["categoryText"];
+                    $info["categoryColor"] = $queryCategory[0]["categoryColor"];
+                    $info["categoryActive"] = $queryCategory[0]["categoryActive"];
+                    $info["categoryShowAll"] = $queryCategory[0]["categoryShowAll"];
+                } else {
+                    $info["idCategory"] = "";
+                    $info["categoryText"] = "";
+                    $info["categoryColor"] = "";
+                    $info["categoryActive"] = "";
+                    $info["categoryShowAll"] = "";
+                }*/
 
         if(null != $queryDevis){
             $info["idDevis"] = $queryDevis[0]["idDevis"];
@@ -238,5 +238,56 @@ class CampaignModel extends ObjectModel
 
             return $idCreatedPromo[0]['id'];
         }
+    }
+
+    public function getCampaignInfoCategory(&$id, &$idElement) {
+
+        $queryCategory = Db::getInstance()->executeS('SELECT ccc.id as idCategory, ccc.text as categoryText, ccc.background_color as categoryColor, ccc.active as categoryActive, ccc.show_all as categoryShowAll
+        FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_category ccc
+        WHERE ccc.id_campaign = '.$id.' AND ccc.id = '.$idElement);
+
+        return $queryCategory[0];
+    }
+
+    public function saveCategoryPromo(&$data){
+        if(isset($data["ID"]) && isset($data["CATEGORY_ID"]) && null !== $data["CATEGORY_ID"]) {
+            $updateCategory =  Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` 
+                SET `text`  = \'' . $data["CATEGORY_TEXT"] . '\',
+                    `background_color`  = \'' . $data["CATEGORY_BACKGROUND_COLOR"] . '\',
+                    `active`  = ' . (int)$data["CATEGORY_ACTIVE"] . ',
+                    `show_all`  = ' . (int)$data["CATEGORY_SHOW_ALL"] . '
+                    WHERE  `id` = '.$data["CATEGORY_ID"].' AND `id_campaign` = ' .$data["ID"]);
+            if(isset($data['CATEGORY_LIST'])){
+                $deleteOld = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_category_show` WHERE id_campaign = '.$data["CATEGORY_ID"]);
+                if("" !== $data['CATEGORY_LIST']) {
+                    $selectedCatArr = explode(",",$data['CATEGORY_LIST']);
+
+                    foreach ($selectedCatArr as $category) {
+                        $updateNew = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_category_show` (`id`, `id_campaign`, `id_category`)
+                            VALUES (NULL, '.$data["CATEGORY_ID"].', '.$category.')');
+                    }
+                }
+            }
+            return $data["CATEGORY_ID"];
+
+        } elseif (isset($data["ID"])){
+            $createCategory = Db::getInstance()->execute(
+                'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` (`id`, `id_campaign`, `text`, `background_color`, `active`,`show_all`, `date_add`)
+                                VALUES (NULL, '.$data["ID"].', \''.$data["CATEGORY_TEXT"].'\', \''.$data["CATEGORY_BACKGROUND_COLOR"].'\', 
+                                '.(int)$data["CATEGORY_ACTIVE"].', '.(int)$data["CATEGORY_SHOW_ALL"].', CURRENT_TIMESTAMP())'
+            );
+            $queryCategory = Db::getInstance()->executeS('SELECT id FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` WHERE `id_campaign` = '.$data['ID'].' AND `text` LIKE \'' .$data['CATEGORY_TEXT'].'\'');
+            if(isset($data['CATEGORY_LIST'])){
+                if("" !== $data['CATEGORY_LIST']) {
+                    $selectedCatArr = explode(",",$data['CATEGORY_LIST']);
+                    foreach ($selectedCatArr as $category) {
+                        $updateNew = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_category_show` (`id`, `id_campaign`, `id_category`)
+                        VALUES (NULL, '.$queryCategory[0]["id"].', '.$category.')');
+                    }
+                }
+            }
+            return $queryCategory[0]["id"];
+        }
+
     }
 }

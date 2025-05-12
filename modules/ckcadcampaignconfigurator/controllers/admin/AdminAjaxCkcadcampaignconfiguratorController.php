@@ -51,14 +51,14 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
         $isActiveHeader = Tools::getValue("isActiveHeader");
         $headertext = htmlentities(Tools::getValue("headertext"));
         $headerBackColor = Tools::getValue("headerBackColor");
-        $isActiveCategory = Tools::getValue("isActiveCategory");
-        $categoryText = htmlentities(Tools::getValue("categoryText"));
-        $categoryBackColor = Tools::getValue("categoryBackColor");
-        $isAllCategories = Tools::getValue("isAllCategories");
+        /*        $isActiveCategory = Tools::getValue("isActiveCategory");
+                $categoryText = htmlentities(Tools::getValue("categoryText"));
+                $categoryBackColor = Tools::getValue("categoryBackColor");
+                $isAllCategories = Tools::getValue("isAllCategories");*/
         $devisText = htmlentities(Tools::getValue("devisText"));
         $devisColor = Tools::getValue("devisColor");
         $promoPageText = htmlentities(Tools::getValue("promoPageText"));
-        $selectedCategories = Tools::getValue("selectedCategories");
+        /*        $selectedCategories = Tools::getValue("selectedCategories");*/
 
         if(isset($isActiveCampaign) && isset($titleCampaign) && isset($clientGroup) && isset($startingDate) && isset($endingDate)){
 
@@ -252,25 +252,25 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
             }
         }
 
-        if(isset($isActiveCategory) && isset($categoryText) && isset($categoryBackColor) && isset($isAllCategories)) {
-            $queryCategory = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_category ccl
-            WHERE ccl.id_campaign = '.$id);
+        /*        if(isset($isActiveCategory) && isset($categoryText) && isset($categoryBackColor) && isset($isAllCategories)) {
+                    $queryCategory = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_category ccl
+                    WHERE ccl.id_campaign = '.$id);
 
-            if(null != $queryCategory) {
-                $updateMenu =  Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` 
-                SET `text`  = \'' . $categoryText . '\',
-                    `background_color`  = \'' . $categoryBackColor . '\',
-                    `active`  = ' . (int)$isActiveCategory . ',
-                    `show_all`  = ' . (int)$isAllCategories . '
-                                    WHERE  `id_campaign` = ' .(int)$id);
-            } else {
-                $createMenu = Db::getInstance()->execute(
-                    'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` (`id`, `id_campaign`, `text`, `background_color`, `active`,`show_all`, `date_add`)
-                                VALUES (NULL, '.$id.', \''.$categoryText.'\', \''.$categoryBackColor.'\', 
-                                '.(int)$isActiveCategory.', '.(int)$isAllCategories.', CURRENT_TIMESTAMP())'
-                );
-            }
-        }
+                    if(null != $queryCategory) {
+                        $updateMenu =  Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckccampaign_config_content_category`
+                        SET `text`  = \'' . $categoryText . '\',
+                            `background_color`  = \'' . $categoryBackColor . '\',
+                            `active`  = ' . (int)$isActiveCategory . ',
+                            `show_all`  = ' . (int)$isAllCategories . '
+                                            WHERE  `id_campaign` = ' .(int)$id);
+                    } else {
+                        $createMenu = Db::getInstance()->execute(
+                            'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` (`id`, `id_campaign`, `text`, `background_color`, `active`,`show_all`, `date_add`)
+                                        VALUES (NULL, '.$id.', \''.$categoryText.'\', \''.$categoryBackColor.'\',
+                                        '.(int)$isActiveCategory.', '.(int)$isAllCategories.', CURRENT_TIMESTAMP())'
+                        );
+                    }
+                }*/
 
         if (isset($devisText) && isset($devisColor)){
             $queryDevis = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_devis ccd
@@ -299,17 +299,17 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
             }
         }
 
-        if(isset($selectedCategories)) {
-            $deleteOld = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_category_show` WHERE id_campaign = '.$id);
-            if("" !== $selectedCategories) {
-                $selectedCatArr = explode(",",$selectedCategories);
+        /*        if(isset($selectedCategories)) {
+                    $deleteOld = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_category_show` WHERE id_campaign = '.$id);
+                    if("" !== $selectedCategories) {
+                        $selectedCatArr = explode(",",$selectedCategories);
 
-                foreach ($selectedCatArr as $category) {
-                    $updateNew = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_category_show` (`id`, `id_campaign`, `id_category`)
-                VALUES (NULL, '.$id.', '.$category.')');
-                }
-            }
-        }
+                        foreach ($selectedCatArr as $category) {
+                            $updateNew = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_category_show` (`id`, `id_campaign`, `id_category`)
+                        VALUES (NULL, '.$id.', '.$category.')');
+                        }
+                    }
+                }*/
         echo $id;
 
         exit();
@@ -477,13 +477,13 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
             );
         }
 
-        if(isset($isActiveCategory) && isset($categoryText) && isset($categoryBackColor) && isset($isAllCategories)) {
-            $createMenu = Db::getInstance()->execute(
-                'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` (`id`, `id_campaign`, `text`, `background_color`, `active`,`show_all`, `date_add`)
-                                VALUES (NULL, '.$newId.', \''.$categoryText.'\', \''.$categoryBackColor.'\', 
-                                '.(int)$isActiveCategory.', '.(int)$isAllCategories.', CURRENT_TIMESTAMP())'
-            );
-        }
+        /*        if(isset($isActiveCategory) && isset($categoryText) && isset($categoryBackColor) && isset($isAllCategories)) {
+                    $createMenu = Db::getInstance()->execute(
+                        'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` (`id`, `id_campaign`, `text`, `background_color`, `active`,`show_all`, `date_add`)
+                                        VALUES (NULL, '.$newId.', \''.$categoryText.'\', \''.$categoryBackColor.'\',
+                                        '.(int)$isActiveCategory.', '.(int)$isAllCategories.', CURRENT_TIMESTAMP())'
+                    );
+                }*/
 
         if (isset($devisText) && isset($devisColor)){
             $createDevis =  Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_devis` (`id`, `id_campaign`, `text`, `background_color`, `date_add`)
