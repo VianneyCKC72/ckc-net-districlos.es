@@ -33,7 +33,7 @@ $(document).ready(function () {
 
     $('body').on('click', '.increase', function () {
         let parent = $(this).closest('.custom-quantity-selector');
-        let $quantityInput = $(parent).find('input');
+        let $quantityInput = $(parent).find('input#quantity_wanted');
 
         let currentValue = parseInt($quantityInput.val()) || 0;
         let newValue = currentValue + 1;
@@ -49,7 +49,7 @@ $(document).ready(function () {
 
     $('body').on('click', '.decrease', function () {
         let parent = $(this).closest('.custom-quantity-selector');
-        let $quantityInput = $(parent).find('input');
+        let $quantityInput = $(parent).find('input#quantity_wanted');
 
         let currentValue = parseInt($quantityInput.val()) || 0;
         let minValue = parseInt($quantityInput.attr('min')) || 1;
