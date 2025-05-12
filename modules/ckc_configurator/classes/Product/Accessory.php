@@ -99,7 +99,7 @@ class Accessory extends ProductFactory
     static private function matchProduct($id_category, $language_id, $soubassement = false)
     {
         $category                  = new \Category($id_category, $language_id);
-        $products                  = $category->getProducts($language_id, 1, 1000000, null, null, false, true, false, 1, false);
+        $products                  = $category->getProducts($language_id, 1, 1000000, null, null, false, true);
         $selected_height           = floatval(str_replace('m', '.', self::$session->height));
         $match_height              = self::matchHeight($selected_height, $soubassement);
         $max_height                = null;
@@ -297,7 +297,7 @@ class Accessory extends ProductFactory
                 case 'poteaux':
                     return (int) self::ALU_QUANTITIES_PLEINES[self::$session->installation][(string)$height][(string)$length]['poteaux'] - (int) $depart_du_mur;
                 case 'platines':
-                    return isset(self::ALU_QUANTITIES_PLEINES[self::$session->installation][(string)$height][(string)$length]['platines']) ? (int) self::ALU_QUANTITIES_PLEINES[self::$session->installation][(string)$height][(string)$length]['platines'] : 0;
+                    return (int) self::ALU_QUANTITIES_PLEINES[self::$session->installation][(string)$height][(string)$length]['platines'];
                 case 'bouchons-demi-poteaux':
                 case 'demi-poteaux' :
                     return (int) $depart_du_mur;
@@ -431,7 +431,6 @@ class Accessory extends ProductFactory
         $sql->from('product_attribute_combination', 'pac');
         $sql->leftJoin('attribute_lang', 'al', 'pac.id_attribute = al.id_attribute');
         $sql->where('id_product_attribute = ' . self::$session->id_product_attribute . ' AND id_lang = ' . $language_id);
-
         $names = \Db::getInstance()->executeS($sql);
 
         foreach ($names as $name) {
@@ -441,7 +440,7 @@ class Accessory extends ProductFactory
         }
 
         $needed_height = self::matchHeight($height, $soubassement, null, ($id_product == 158), ($id_product == 1162)); // Barre de tension (ID 158)
-        $combinations  = static::getAttributesInformationsByProduct($id_product);
+        $combinations  = \Product::getAttributesInformationsByProduct($id_product);
 
         // Height
         foreach ($combinations as $combination) {
@@ -498,26 +497,6 @@ class Accessory extends ProductFactory
         }
 
         return $id_product_attribute;
-    }
-
-    public static function getAttributesInformationsByProduct($id_product)
-    {
-        $result = \Db::getInstance()->executeS('
-            SELECT DISTINCT a.`id_attribute`, a.`id_attribute_group`, al.`name` as `attribute`, agl.`name` as `group`, pac.`id_product_attribute`
-            FROM `'._DB_PREFIX_.'attribute` a
-            LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al
-                ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int)\Context::getContext()->language->id.')
-            LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl
-                ON (a.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = '.(int)\Context::getContext()->language->id.')
-            LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac
-                ON (a.`id_attribute` = pac.`id_attribute`)
-            LEFT JOIN `'._DB_PREFIX_.'product_attribute` pa
-                ON (pac.`id_product_attribute` = pa.`id_product_attribute`)
-            '.\Shop::addSqlAssociation('product_attribute', 'pa').'
-            '.\Shop::addSqlAssociation('attribute', 'pac').'
-            WHERE pa.`id_product` = '.(int)$id_product);
-
-        return $result;
     }
 
     // Get height depending on grillage's height and type of pose
