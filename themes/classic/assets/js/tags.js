@@ -263,7 +263,7 @@ function executeEvent(name, replay = false) {
         });
 
         productsList.forEach(function(el, position) {
-            var data = el.querySelector('div.product-miniature').dataset;
+            var data = el.querySelector('article.product-miniature').dataset;
             products.push({
                 'name': data.productName,
                 'id': data.idProduct,
