@@ -594,7 +594,7 @@ class Accessory extends ProductFactory
                             return 1.97;
                         }
                         elseif ($soubassement == 0.50) {
-                            return 1.17;
+                            return 2.17;
                         }
                         return 1.57;
                     case 1.43:
