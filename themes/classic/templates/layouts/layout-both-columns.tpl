@@ -39,7 +39,7 @@
 {/if} {if $page.page_name == 'registration' && $espace_pro == 1}registration-pro{/if}">
 
 <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N47J9KT"
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T3HJWLD"
                   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
