@@ -7,10 +7,10 @@
         {if $ignoreDivalto}
             <div class="alert alert-danger" role="alert">Le statut actuel de cette commande ne permet pas de l'envoyer à Divalto.</div>
         {else}
-            <form action="{$currentIndex|escape:'htmlall':'UTF-8'}&amp;id_order={$id_order|escape:'htmlall':'UTF-8'}&amp;vieworder&amp;token={$smarty.get.token|escape:'htmlall':'UTF-8'}" method="post" style="height: 120px;">
-                {if $transferDivalto}
-                    <div class="alert alert-success" role="alert">La commande a été envoyée vers Divalto avec succès.</div>
-                {/if}
+            <form action="index.php&id_order={$id_order|escape:'htmlall':'UTF-8'}&vieworder&token={$smarty.get.token|escape:'htmlall':'UTF-8'}" method="post" style="height: 120px;">
+{*                {if $transferDivalto}*}
+{*                    <div class="alert alert-success" role="alert">La commande a été envoyée vers Divalto avec succès.</div>*}
+{*                {/if}*}
                 <div class="alert alert-info">
                     Utilisez cette fonctionnalité pour renvoyer manuellement cette commande vers Divalto.
                 </div>
