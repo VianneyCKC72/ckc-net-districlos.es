@@ -441,7 +441,8 @@ class Accessory extends ProductFactory
 
         $needed_height = self::matchHeight($height, $soubassement, null, ($id_product == 158), ($id_product == 1162)); // Barre de tension (ID 158)
         $combinations  = \Product::getAttributesInformationsByProduct($id_product);
-
+        dump($combinations);
+        die;
         // Height
         foreach ($combinations as $combination) {
             $current_height = floatval(str_replace('m', '.', $combination['attribute']));
