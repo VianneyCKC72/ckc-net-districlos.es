@@ -65,7 +65,7 @@ class Ckc_Stores_Stock extends Module
                 )
             );
 
-            return $this->display(__FILE__, 'admin-order.tpl');
+            return $this->display(__FILE__, 'views/templates/hook/admin-order.tpl');
         }
     }
 
