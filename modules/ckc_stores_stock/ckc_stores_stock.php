@@ -26,7 +26,7 @@ class Ckc_Stores_Stock extends Module
             && $this->registerHook('displayStockButton')
             && $this->registerHook('displayFooterProduct')
             && $this->registerHook('displayStockCheckout')
-            && $this->registerHook('displayAdminOrderMain');
+            && $this->registerHook('displayAdminOrder');
     }
 
     public function uninstall()
@@ -40,7 +40,7 @@ class Ckc_Stores_Stock extends Module
         $this->context->controller->addCSS($this->_path . 'assets/css/stores_stock.css');
     }
 
-    public function hookDisplayAdminOrderMain($params)
+    public function hookDisplayAdminOrder($params)
     {
         $order = new Order((int)$params['id_order']);
         $transferDivalto = false;
