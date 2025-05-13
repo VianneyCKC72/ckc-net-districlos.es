@@ -25,7 +25,8 @@ class Ckc_Stores_Stock extends Module
             && $this->registerHook('displayHeader')
             && $this->registerHook('displayStockButton')
             && $this->registerHook('displayFooterProduct')
-            && $this->registerHook('displayStockCheckout');
+            && $this->registerHook('displayStockCheckout')
+            && $this->registerHook('displayAdminOrder');
     }
 
     public function uninstall()
@@ -37,6 +38,35 @@ class Ckc_Stores_Stock extends Module
     {
         $this->context->controller->addJS($this->_path . 'assets/js/stores_stock.js');
         $this->context->controller->addCSS($this->_path . 'assets/css/stores_stock.css');
+    }
+
+    public function hookDisplayAdminOrder($params)
+    {
+        $order = new Order((int)$params['id_order']);
+        $transferDivalto = false;
+
+        $ignoreDivalto = in_array($order->current_state, [3, 4, 5, 6, 7, 14, 15, 18, 25, 26, 29, 30, 443, 448]);
+
+        if (Tools::isSubmit('submitOrderToDivalto') && !$ignoreDivalto) {
+            include _PS_MODULE_DIR_ . "divaltoInfinityConnec/divaltoOrderCtl.php";
+            DivaltoCreateOrder((int)$order->id);
+            $transferDivalto = true;
+        }
+
+        if (Validate::isLoadedObject($order)) {
+
+            $customer = new Customer($order->id_customer);
+
+            $this->context->smarty->assign(
+                array(
+                    'customer' => $customer,
+                    'transferDivalto' => $transferDivalto,
+                    'ignoreDivalto' => $ignoreDivalto,
+                )
+            );
+
+            return $this->display(__FILE__, 'admin-order.tpl');
+        }
     }
 
     public function hookDisplayStockButton($params)
@@ -62,15 +92,15 @@ class Ckc_Stores_Stock extends Module
     {
         return $this->display(__FILE__, 'views/templates/hook/modal.tpl');
     }
-    
+
     public function hookDisplayStockCheckout($params)
     {
         require_once _PS_MODULE_DIR_ . 'ckc_stores_stock/classes/StockManager.php';
         $stockManager = new StockManager();
         $stockData = $stockManager->getDelivery($this->context->cart->id_carrier);
-    
+
         $this->context->smarty->assign($stockData);
-    
+
         return $this->fetch('module:ckc_stores_stock/views/templates/hook/displayStockCheckout.tpl');
     }
 }
