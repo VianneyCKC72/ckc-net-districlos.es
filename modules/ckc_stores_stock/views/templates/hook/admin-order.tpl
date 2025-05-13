@@ -6,7 +6,7 @@
                 {l s='Transférer une commande' mod='wic_disabledfrontmultishop'}
             </h3>
             <div class="card-body">
-                <form action="{$currentIndex|escape:'htmlall':'UTF-8'}&amp;id_order={$orderId|escape:'htmlall':'UTF-8'}&amp;vieworder&amp;token={$smarty.get.token|escape:'htmlall':'UTF-8'}" method="post">
+                <form action="{$currentIndex|escape:'htmlall':'UTF-8'}&amp;id_order={$id_order|escape:'htmlall':'UTF-8'}&amp;vieworder&amp;token={$smarty.get.token|escape:'htmlall':'UTF-8'}" method="post">
                     {if $transfer}
                         <div class="alert alert-success" role="alert">{l s='La commande a été tranférée avec succès.' mod='wic_disabledfrontmultishop'}</div>
                     {/if}
