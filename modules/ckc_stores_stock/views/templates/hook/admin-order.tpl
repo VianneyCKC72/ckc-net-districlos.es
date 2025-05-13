@@ -1,5 +1,5 @@
-{if isset($orderId)}
-    {if $orderId}
+{if isset($id_order)}
+    {if $id_order}
         <div class="card">
             <h3 class="card-header">
                 <i class="material-icons">bookmark_outline</i>
@@ -11,7 +11,7 @@
                         <div class="alert alert-success" role="alert">{l s='La commande a été tranférée avec succès.' mod='wic_disabledfrontmultishop'}</div>
                     {/if}
                     <div class="alert alert-info">
-                        {l s='Le commande' mod='wic_disabledfrontmultishop'} <b>{$orderId}</b> {l s='est actuellement associé à la boutique :' mod='wic_disabledfrontmultishop'} <b>{$shopOrder['name']}</b>
+                        {l s='Le commande' mod='wic_disabledfrontmultishop'} <b>{$id_order}</b> {l s='est actuellement associé à la boutique :' mod='wic_disabledfrontmultishop'} <b>{$shopOrder['name']}</b>
                     </div>
                     <div>
                         <label>{l s='Transférer la commande vers la boutique :' mod='wic_disabledfrontmultishop'}</label>
