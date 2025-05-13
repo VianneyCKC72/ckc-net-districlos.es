@@ -7521,6 +7521,18 @@ li:not([data-depth="0"]):not([data-depth="1"])::before {
   row-gap: 12px;
 }
 
+.dp_input_container select {
+  width: 100% !important;
+}
+
+.dp_input_container .ui-spinner {
+  border: unset;
+}
+
+.dp_input_container input.form-control {
+  background:#f6f2eb !important;
+}
+
 .product-variants .product-variants-item select, .dp_input_container select {
   width: 100%;
   height: auto;
