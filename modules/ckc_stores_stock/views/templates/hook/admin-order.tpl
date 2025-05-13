@@ -6,7 +6,7 @@
                 {l s='Transférer une commande' mod='wic_disabledfrontmultishop'}
             </h3>
             <div class="card-body">
-                <form action="{$currentIndex|escape:'htmlall':'UTF-8'}&amp;id_order={$id_order|escape:'htmlall':'UTF-8'}&amp;vieworder&amp;token={$smarty.get.token|escape:'htmlall':'UTF-8'}" method="post">
+                <form action="{$currentIndex|escape:'htmlall':'UTF-8'}&amp;id_order={$id_order|escape:'htmlall':'UTF-8'}&amp;vieworder&amp;token={$smarty.get.token|escape:'htmlall':'UTF-8'}" method="post" style="height: 220px;">
                     {if $transfer}
                         <div class="alert alert-success" role="alert">{l s='La commande a été tranférée avec succès.' mod='wic_disabledfrontmultishop'}</div>
                     {/if}
@@ -43,7 +43,7 @@
         {if $ignoreDivalto}
             <div class="alert alert-danger" role="alert">Le statut actuel de cette commande ne permet pas de l'envoyer à Divalto.</div>
         {else}
-            <form action="index.php&id_order={$id_order|escape:'htmlall':'UTF-8'}&vieworder&token={$smarty.get.token|escape:'htmlall':'UTF-8'}" method="post" style="height: 120px;">
+            <form action="index.php&id_order={$id_order|escape:'htmlall':'UTF-8'}&vieworder&token={$smarty.get.token|escape:'htmlall':'UTF-8'}" method="post" style="height: 220px;">
                 {if $transferDivalto}
                     <div class="alert alert-success" role="alert">La commande a été envoyée vers Divalto avec succès.</div>
                 {/if}
