@@ -161,6 +161,7 @@ class Ckcadcampaignconfigurator extends Module
 
             $cartPromos = Db::getInstance()->executeS('SELECT `id`, `text`, `is_fixed`, `active` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_cart` WHERE id_campaign = '.$idCampaign);
             $productPromos = Db::getInstance()->executeS('SELECT `id`, `text`, `date_add`, `active` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_product` WHERE id_campaign = '.$idCampaign);
+            $categoryPromos = Db::getInstance()->executeS('SELECT `id`, `text`, `date_add`, `active` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` WHERE id_campaign = '.$idCampaign);
 
             $allCategories = Db::getInstance()->executeS('SELECT `id_category`, `name` FROM `' . _DB_PREFIX_ . 'category_lang` 
             WHERE id_lang = '.Context::getContext()->language->id.' AND id_shop = '.Context::getContext()->shop->id);
@@ -186,6 +187,7 @@ class Ckcadcampaignconfigurator extends Module
                 'formPromoPage' => $formPromoPage,
                 'cartPromos' => $cartPromos,
                 'productPromos' => $productPromos,
+                'categoryPromos' => $categoryPromos,
                 'selectedClients' => $selectedClients,
                 'categorySelection' => isset($categorySelection) ? json_encode($categorySelection) : (int)0,
                 /*                'queryCategories' => json_encode($queryCategories),*/
@@ -352,6 +354,95 @@ class Ckcadcampaignconfigurator extends Module
 
                 Tools::redirect($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => 'ckcadcampaignconfigurator', 'edit_campaign' => true, 'ID' => $idCampaign]));
             }
+        } elseif (((bool)Tools::isSubmit('create_edit_new_category_promo')) == true) {
+
+            $idCampaign = Tools::getValue('campaignId');
+            $idPromo = Tools::getValue('promoId');
+
+            $formCategory = $this->renderFormMain('category', $idCampaign ,$idPromo);
+
+            $allCategories = Db::getInstance()->executeS('SELECT `id_category`, `name` FROM `' . _DB_PREFIX_ . 'category_lang` 
+            WHERE id_lang = '.Context::getContext()->language->id.' AND id_shop = '.Context::getContext()->shop->id);
+
+            if($idPromo) {
+                $categorySelection = Db::getInstance()->executeS('SELECT DISTINCT cccs.id_category, cl.name FROM ' . _DB_PREFIX_ . 'ckccampaign_config_category_show cccs
+                LEFT JOIN  `' . _DB_PREFIX_ . 'category_lang` cl ON cl.id_category = cccs.id_category
+                WHERE cccs.id_campaign = '.$idPromo.' AND cl.id_lang = '.Context::getContext()->language->id. ' AND cl.id_shop = '.Context::getContext()->shop->id);
+            } else {
+                $categorySelection = 0;
+            }
+
+            $this->context->smarty->assign(array(
+                'idCampaign' => $idCampaign,
+                'formCategory'=> $formCategory,
+                'current_url' => $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]),
+                'isPs17'      => $this->ps_version,
+                'ps_base_dir' => Tools::getHttpHost(true),
+                'categorySelection' => isset($categorySelection) ? json_encode($categorySelection) : (int)0,
+                'allCategories' => json_encode($allCategories),
+                'module_name' => $this->name,
+                'currentPage' => "",
+                'moduleAdminLink' => $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]),
+                'modulePath' => $this->context->link->getAdminLink('AdminAjaxCkcadcampaignconfigurator'),
+            ));
+
+            $this->_output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/tabs/categoryContent.tpl');
+
+        } elseif (((bool)Tools::isSubmit('saveNewCampaignCategory')) == true) {
+            $this->postValidation();
+            if (!count($this->_postErrors)) {
+                $idPromo = $this->postProcessSaveCampaignCategory();
+
+                $idCampaign = Tools::getValue('ID');
+                Tools::redirect($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => 'ckcadcampaignconfigurator', 'create_edit_new_category_promo' => true, 'campaignId' => $idCampaign, 'promoId' => $idPromo]));
+            } else {
+                foreach ($this->_postErrors as $err) {
+                    $this->_output .= $this->displayError($err);
+                }
+
+                $idCampaign = Tools::getValue('ID');
+                $idPromo = Tools::getValue('CATEGORY_ID');
+
+                $formCategory = $this->renderFormMain('category', $idCampaign ,$idPromo);
+
+                $allCategories = Db::getInstance()->executeS('SELECT `id_category`, `name` FROM `' . _DB_PREFIX_ . 'category_lang` 
+                WHERE id_lang = '.Context::getContext()->language->id.' AND id_shop = '.Context::getContext()->shop->id);
+
+                if($idPromo) {
+                    $categorySelection = Db::getInstance()->executeS('SELECT DISTINCT cccs.id_category, cl.name FROM ' . _DB_PREFIX_ . 'ckccampaign_config_category_show cccs
+                    LEFT JOIN  `' . _DB_PREFIX_ . 'category_lang` cl ON cl.id_category = cccs.id_category
+                    WHERE cccs.id_campaign = '.$idPromo.' AND cl.id_lang = '.Context::getContext()->language->id. ' AND cl.id_shop = '.Context::getContext()->shop->id);
+                } else {
+                    $categorySelection = 0;
+                }
+
+                $this->context->smarty->assign(array(
+                    'idCampaign' => $idCampaign,
+                    'formCategory'=> $formCategory,
+                    'current_url' => $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]),
+                    'isPs17'      => $this->ps_version,
+                    'ps_base_dir' => Tools::getHttpHost(true),
+                    'categorySelection' => isset($categorySelection) ? json_encode($categorySelection) : (int)0,
+                    'allCategories' => json_encode($allCategories),
+                    'module_name' => $this->name,
+                    'currentPage' => "",
+                    'moduleAdminLink' => $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]),
+                    'modulePath' => $this->context->link->getAdminLink('AdminAjaxCkcadcampaignconfigurator'),
+                ));
+
+                $this->_output .= $this->context->smarty->fetch($this->local_path.'views/templates/admin/tabs/categoryContent.tpl');
+
+            }
+
+        } elseif (((bool)Tools::isSubmit('delete_category_promo')) == true) {
+
+            $idCampaign = Tools::getValue('campaignId');
+            $idPromo = Tools::getValue('promoId');
+
+            $deletePromo = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` WHERE `id` = '.$idPromo.' AND `id_campaign` = ' .$idCampaign);
+            // Rafraîchir la page
+            Tools::redirect($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => 'ckcadcampaignconfigurator', 'edit_campaign' => true, 'ID' => $idCampaign]));
+
         } else {
             $campaigns = Db::getInstance()->executeS("SELECT * FROM " . _DB_PREFIX_ . "ckccampaign_config_list");
 
@@ -441,6 +532,16 @@ class Ckcadcampaignconfigurator extends Module
                 );
             }
         }
+
+        if (Tools::isSubmit('saveNewCampaignCategory')) {
+            if (!Tools::getValue('CATEGORY_TEXT')) {
+                $this->_postErrors[] = $this->trans(
+                    'This field is required.',
+                    [],
+                    'Modules.ckcadcampaignconfigurator.Admin'
+                );
+            }
+        }
     }
 
     protected function postProcessSaveCampaignCart(){
@@ -496,6 +597,27 @@ class Ckcadcampaignconfigurator extends Module
         return $campaignInfo;
     }
 
+    protected function postProcessSaveCampaignCategory(){
+        $CATEGORY_ID = Tools::getValue('CATEGORY_ID') == "" ? null : Tools::getValue('CATEGORY_ID');
+        $CATEGORY_ACTIVE = Tools::getValue('CATEGORY_ACTIVE') == "" ? 0 : 1;
+        $CATEGORY_SHOW_ALL = Tools::getValue('CATEGORY_SHOW_ALL') == "" ? 0 : 1;
+
+        $data = array(
+            'ID' => Tools::getValue('ID'),
+            'CATEGORY_ID' => $CATEGORY_ID,
+            'CATEGORY_ACTIVE' => $CATEGORY_ACTIVE,
+            'CATEGORY_SHOW_ALL' => $CATEGORY_SHOW_ALL,
+            'CATEGORY_TEXT' => htmlentities(Tools::getValue('CATEGORY_TEXT')),
+            'CATEGORY_LIST' => Tools::getValue('CATEGORY_LIST'),
+            'CATEGORY_BACKGROUND_COLOR' => Tools::getValue('CATEGORY_BACKGROUND_COLOR'),
+        );
+
+        // dump($data);
+        $campaignModel = new CampaignModel;
+        $campaignInfo = $campaignModel->saveCategoryPromo($data);
+        return $campaignInfo;
+    }
+
     public function renderFormMain($typeForm, $id = null, $idElement = null)
     {
         $helper = new HelperForm();
@@ -512,7 +634,7 @@ class Ckcadcampaignconfigurator extends Module
             .'&configure='.$this->name.'&tab_module='.$this->tab.'&module_name='.$this->name;
         $helper->token = Tools::getAdminTokenLite('AdminModules');
 
-        if($typeForm !== 'cart' && $typeForm !== 'product') {
+        if($typeForm !== 'cart' && $typeForm !== 'product' && $typeForm !== 'category') {
             $helper->tpl_vars = array(
                 'fields_value' => $this->getConfigFormValuesMain($id), /* Add values for your inputs */
                 'languages' => $this->context->controller->getLanguages(),
@@ -541,6 +663,12 @@ class Ckcadcampaignconfigurator extends Module
             $helper->submit_action = 'saveNewCampaignCart';
             return $helper->generateForm(array($this->getConfigFormCartContent()));
         } elseif ($typeForm == 'category'){
+            $helper->tpl_vars = array(
+                'fields_value' => $this->getConfigFormValuesCategory($id, $idElement), /* Add values for your inputs */
+                'languages' => $this->context->controller->getLanguages(),
+                'id_language' => $this->context->language->id,
+            );
+
             $helper->submit_action = 'saveNewCampaignCategory';
             return $helper->generateForm(array($this->getConfigFormCategoryContent()));
         } elseif ($typeForm == 'product'){
@@ -922,6 +1050,16 @@ class Ckcadcampaignconfigurator extends Module
                     'title' => $this->l('Category Content Configuration'),
                     'icon' => 'icon-cogs',
                 ),
+                'buttons' => array(
+                    'Return'=> array(
+                        'type' => 'submit',
+                        'name' => 'ReturnToCampaignPage',
+                        'title' => $this->l('Return'),
+                        'class' => 'btn btn-default pull-left',
+                        'id'   => 'mybutton',
+                        'icon' => 'icon-foo',
+                    ),
+                ),
                 'input' => array(
                     array(
                         'type' => 'switch',
@@ -979,6 +1117,14 @@ class Ckcadcampaignconfigurator extends Module
                     ),
                     array(
                         'type' => 'hidden',
+                        'name' => 'ID',
+                    ),
+                    array(
+                        'type' => 'hidden',
+                        'name' => 'CATEGORY_ID',
+                    ),
+                    array(
+                        'type' => 'hidden',
                         'name' => 'CATEGORY_LIST',
                         'id' => 'CATEGORY_LIST'
                     ),
@@ -994,9 +1140,9 @@ class Ckcadcampaignconfigurator extends Module
                                             ],
                                         )*/
                 ),
-                // 'submit' => array(
-                //     'title' => $this->l('Save'),
-                // ),
+                'submit' => array(
+                    'title' => $this->l('Save'),
+                ),
             ),
         );
     }
@@ -1172,14 +1318,14 @@ class Ckcadcampaignconfigurator extends Module
                 'HEADER_TEXT' => '',
                 'HEADER_COLOR' => '',
                 'CART_TEXT_COLOR' => '',
-                'CATEGORY_ACTIVE' => '',
-                'CATEGORY_TEXT' => '',
-                'CATEGORY_BACKGROUND_COLOR' => '',
-                'CATEGORY_SHOW_ALL' => '',
+                /*                'CATEGORY_ACTIVE' => '',
+                                'CATEGORY_TEXT' => '',
+                                'CATEGORY_BACKGROUND_COLOR' => '',
+                                'CATEGORY_SHOW_ALL' => '',*/
                 'DEVIS_TEXT' => "",
                 'DEVIS_BACKGROUND_COLOR' => "",
                 'PROMO_PAGE_TEXT' => "",
-                'CATEGORY_LIST[]' => ""
+                /*                'CATEGORY_LIST[]' => ""*/
             );
         } else {
             $campaignModel = new CampaignModel;
@@ -1201,14 +1347,14 @@ class Ckcadcampaignconfigurator extends Module
                 'HEADER_ACTIVE' => $campaignInfo['headerActive'],
                 'HEADER_TEXT' => html_entity_decode($campaignInfo['headerText']),
                 'HEADER_COLOR' => $campaignInfo['headerColor'],
-                'CATEGORY_ACTIVE' => $campaignInfo['categoryActive'],
-                'CATEGORY_TEXT' => html_entity_decode($campaignInfo['categoryText']),
-                'CATEGORY_BACKGROUND_COLOR' => $campaignInfo['categoryColor'],
-                'CATEGORY_SHOW_ALL' => $campaignInfo['categoryShowAll'],
+                /*                'CATEGORY_ACTIVE' => $campaignInfo['categoryActive'],
+                                'CATEGORY_TEXT' => html_entity_decode($campaignInfo['categoryText']),
+                                'CATEGORY_BACKGROUND_COLOR' => $campaignInfo['categoryColor'],
+                                'CATEGORY_SHOW_ALL' => $campaignInfo['categoryShowAll'],*/
                 'DEVIS_TEXT' => html_entity_decode($campaignInfo['textDevis']),
                 'DEVIS_BACKGROUND_COLOR' => $campaignInfo['colorDevis'],
                 'PROMO_PAGE_TEXT' => html_entity_decode($campaignInfo['promoPageText']),
-                'CATEGORY_LIST[]' => ''
+                /*                'CATEGORY_LIST[]' => ''*/
             );
         }
 
@@ -1282,6 +1428,37 @@ class Ckcadcampaignconfigurator extends Module
         }
 
     }
+
+    protected function getConfigFormValuesCategory($id = null, $idElement = null)
+    {
+        if(null == $idElement){
+            return array(
+                'ID' => $id,
+                'CATEGORY_ID' => '',
+                'CATEGORY_ACTIVE' => '',
+                'CATEGORY_TEXT' => '',
+                'CATEGORY_BACKGROUND_COLOR' => '',
+                'CATEGORY_SHOW_ALL' => '',
+                'CATEGORY_LIST[]' => ""
+            );
+        } else {
+            $campaignModel = new CampaignModel;
+
+            $campaignPromoInfo = $campaignModel->getCampaignInfoCategory($id, $idElement);
+
+            return array(
+                'ID' => $id,
+                'CATEGORY_ID' => $campaignPromoInfo['idCategory'],
+                'CATEGORY_ACTIVE' => $campaignPromoInfo['categoryActive'],
+                'CATEGORY_TEXT' => html_entity_decode($campaignPromoInfo['categoryText']),
+                'CATEGORY_BACKGROUND_COLOR' => $campaignPromoInfo['categoryColor'],
+                'CATEGORY_SHOW_ALL' => $campaignPromoInfo['categoryShowAll'],
+                'CATEGORY_LIST[]' => ""
+            );
+        }
+
+    }
+
     /**
      * Add the CSS & JavaScript files you want to be loaded in the BO.
      */
@@ -1467,7 +1644,7 @@ class Ckcadcampaignconfigurator extends Module
 
         $categoryId = Context::getContext()->controller->getCategory()->id;
 
-        $categoryPromosSql = Db::getInstance()->executeS('SELECT ccc.id_campaign, ccl.id_client_group, ccc.text as categoryText, ccc.background_color as categoryColor, ccc.active as categoryActive,ccc.show_all as categoryShowAll
+        $categoryPromosSql = Db::getInstance()->executeS('SELECT ccc.id, ccc.id_campaign, ccl.id_client_group, ccc.text as categoryText, ccc.background_color as categoryColor, ccc.active as categoryActive,ccc.show_all as categoryShowAll
         FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_category ccc
         LEFT JOIN ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccc.id_campaign');
 
@@ -1482,7 +1659,7 @@ class Ckcadcampaignconfigurator extends Module
                     if($categoryPromo['categoryShowAll']){
                         $categoryPromos[] = $categoryPromo;
                     } else {
-                        $categoryIdsSql = Db::getInstance()->executeS('SELECT GROUP_CONCAT(id_category) FROM ' . _DB_PREFIX_ . 'ckccampaign_config_category_show WHERE id_campaign = '.$categoryPromo['id_campaign']);
+                        $categoryIdsSql = Db::getInstance()->executeS('SELECT GROUP_CONCAT(id_category) FROM ' . _DB_PREFIX_ . 'ckccampaign_config_category_show WHERE id_campaign = '.$categoryPromo['id']);
                         $categoryIds = explode(",", $categoryIdsSql[0]['GROUP_CONCAT(id_category)']);
 
                         if(isset($categoryIds[0])){
