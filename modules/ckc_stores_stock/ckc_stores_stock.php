@@ -44,8 +44,13 @@ class Ckc_Stores_Stock extends Module
     {
         $order = new Order((int)$params['id_order']);
         $transferDivalto = false;
+        $transfer = false;
+        $shopOrder = Db::getInstance()->getRow('SELECT * FROM ' . _DB_PREFIX_ . 'orders WHERE id_order = ' . (int)$order->id);
+        $shopOrder = $shopOrder['id_store'];
+        $shopOrder = Db::getInstance()->getRow('SELECT * FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores WHERE id_store = ' . (int)$shopOrder);
 
         $ignoreDivalto = in_array($order->current_state, [3, 4, 5, 6, 7, 14, 15, 18, 25, 26, 29, 30, 443, 448]);
+        $shopList =  Db::getInstance()->ExecuteS('SELECT * FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
 
         if (Tools::isSubmit('submitOrderToDivalto') && !$ignoreDivalto) {
             include _PS_MODULE_DIR_ . "divaltoInfinityConnec/divaltoOrderCtl.php";
@@ -53,14 +58,34 @@ class Ckc_Stores_Stock extends Module
             $transferDivalto = true;
         }
 
+        if (Tools::isSubmit('submitOrderTransfer') && Tools::getValue('shop_transfer')) {
+            $this->transferOrderShop((int)$order->id, (int)Tools::getValue('shop_transfer'));
+            $transfer = true;
+        }
+
         $this->context->smarty->assign(
             array(
                 'transferDivalto' => $transferDivalto,
                 'ignoreDivalto' => $ignoreDivalto,
+                'transfer' => $transfer,
+                'shopOrder' => $shopOrder,
+                'shopList' => $shopList,
             )
         );
 
         return $this->fetch('module:ckc_stores_stock/views/templates/hook/admin-order.tpl');
+    }
+
+    public function transferOrderShop($id_order, $id_shop)
+    {
+        $order = new Order((int) $id_order);
+
+        if (Validate::isLoadedObject($order)) {
+            $order->id_store = $id_shop;
+            return $order->save();
+        } else {
+            return false;
+        }
     }
 
     public function hookDisplayStockButton($params)
