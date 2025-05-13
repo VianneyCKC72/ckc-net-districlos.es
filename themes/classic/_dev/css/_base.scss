@@ -7523,6 +7523,7 @@ li:not([data-depth="0"]):not([data-depth="1"])::before {
 
 .dp_input_container select {
   width: 100% !important;
+  background: $sand-light-color !important;
 }
 
 .dp_input_container .ui-spinner {
@@ -7531,6 +7532,7 @@ li:not([data-depth="0"]):not([data-depth="1"])::before {
 
 .dp_input_container input.form-control {
   background:#f6f2eb !important;
+  height: 50px;
 }
 
 .product-variants .product-variants-item select, .dp_input_container select {
