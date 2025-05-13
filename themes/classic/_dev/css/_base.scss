@@ -5030,7 +5030,7 @@ input:active:-moz-placeholder,
 textarea:active:-moz-placeholder {
 }
 
-.form-control-select {
+.form-control-select, .dp_input_container select {
   height: 2.625rem;
   padding: 0 0.5rem;
   background: #f6f6f6
@@ -7521,7 +7521,7 @@ li:not([data-depth="0"]):not([data-depth="1"])::before {
   row-gap: 12px;
 }
 
-.product-variants .product-variants-item select {
+.product-variants .product-variants-item select, .dp_input_container select {
   width: 100%;
   height: auto;
   font-weight: 700;

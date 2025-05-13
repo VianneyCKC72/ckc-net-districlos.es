@@ -86,7 +86,7 @@ textarea {
   border-radius: 8px;
 }
 
-select.form-control-select {
+select.form-control-select, .dp_input_container select {
   width: max-content;
   height: auto;
   padding: 16px 50px 16px 30px;
