@@ -53,20 +53,14 @@ class Ckc_Stores_Stock extends Module
             $transferDivalto = true;
         }
 
-        if (Validate::isLoadedObject($order)) {
+        $this->context->smarty->assign(
+            array(
+                'transferDivalto' => $transferDivalto,
+                'ignoreDivalto' => $ignoreDivalto,
+            )
+        );
 
-            $customer = new Customer($order->id_customer);
-
-            $this->context->smarty->assign(
-                array(
-                    'customer' => $customer,
-                    'transferDivalto' => $transferDivalto,
-                    'ignoreDivalto' => $ignoreDivalto,
-                )
-            );
-
-            return $this->fetch('module:ckc_stores_stock/views/templates/hook/admin-order.tpl');
-        }
+        return $this->fetch('module:ckc_stores_stock/views/templates/hook/admin-order.tpl');
     }
 
     public function hookDisplayStockButton($params)
