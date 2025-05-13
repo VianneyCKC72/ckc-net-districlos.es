@@ -463,7 +463,7 @@ class Accessory extends ProductFactory
         foreach ($combinations as $combination) {
             $group = strtolower(str_replace([' ', ':'], ['-', ''], $combination['group']));
 
-            if ($group == 'couleur' && ((count($ids) > 0 && in_array($combination['id_product_attribute'], $ids)) || count($ids) == 0)) {
+            if (isset($combination['id_product_attribute']) && $group == 'couleur' && ((count($ids) > 0 && in_array($combination['id_product_attribute'], $ids)) || count($ids) == 0)) {
                 $colors[$combination['id_product_attribute']] = $combination['attribute'];
             }
         }
