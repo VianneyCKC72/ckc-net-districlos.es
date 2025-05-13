@@ -7523,6 +7523,7 @@ li:not([data-depth="0"]):not([data-depth="1"])::before {
 
 .dp_input_container select {
   width: 100% !important;
+  background: $sand-light-color !important;
 }
 
 .dp_input_container .ui-spinner {
