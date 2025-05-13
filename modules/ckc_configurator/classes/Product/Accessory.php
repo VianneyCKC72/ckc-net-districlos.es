@@ -447,7 +447,7 @@ class Accessory extends ProductFactory
             $current_height = floatval(str_replace('m', '.', $combination['attribute']));
             $group          = strtolower(str_replace([' ', ':'], ['-', ''], $combination['group']));
 
-            if (($group == 'hauteur' || $group == 'hauteur-du-poteau') && $current_height == $needed_height) {
+            if (($group == 'hauteur' || $group == 'hauteur-du-poteau') && $current_height == $needed_height && isset($combination['id_product_attribute'])) {
                 $ids[] = $combination['id_product_attribute'];
             }
         }
