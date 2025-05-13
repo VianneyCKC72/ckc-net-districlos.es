@@ -81,8 +81,9 @@ class Ckc_Stores_Stock extends Module
         $order = new Order((int) $id_order);
 
         if (Validate::isLoadedObject($order)) {
-            $order->id_store = $id_shop;
-            return $order->save();
+            Db::getInstance()->update('orders', array('id_store' => (int)$id_shop), 'id_order = ' . (int)$order->id);
+
+            return true;
         } else {
             return false;
         }
