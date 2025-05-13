@@ -95,7 +95,7 @@
                 // Affichage du compte à rebours
                 var timerElement = document.getElementById("ckctimer");
                 if (timerElement) {
-                    timerElement.innerHTML = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+                    timerElement.innerHTML = days + "j " + hours + "h " + minutes + "m " + seconds + "s ";
                 }
 
                 // Si le compte à rebours est terminé
