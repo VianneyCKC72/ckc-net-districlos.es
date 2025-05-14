@@ -14,6 +14,19 @@ $(document).ready(function () {
         }
     });
 
+    $(document).on('ajaxComplete', function (event, xhr, settings) {
+        if (settings.url.includes('calculator')) {
+            alert('ok');
+            let price = $('.product-price.price').html()
+            price = price.replace('&nbsp;€', '');
+            price = price.replace(',', '.');
+            price = price.replace(/\s/g, '');
+            let price_integer = price.split('.')[0];
+            let price_decimal = price.split('.')[1];
+            $('.product-price.price').html('<span class="price-integer">' + price_integer + '</span><span class="price-decimal">,' + price_decimal + '</span></span>');
+        }
+    });
+
 
     var $element = $(".wrapper__swiper__product-img");
 
@@ -443,17 +456,5 @@ $(document).ready(function () {
         var $button = $('.add-to-cart');
         $button.prop('disabled', false);
         $button.find('.loader').hide();
-    });
-
-    $(document).on('ajaxComplete', function (event, xhr, settings) {
-        if (settings.url.includes('calculator')) {
-            let price = $('.product-price.price').html()
-            price = price.replace('&nbsp;€', '');
-            price = price.replace(',', '.');
-            price = price.replace(/\s/g, '');
-            let price_integer = price.split('.')[0];
-            let price_decimal = price.split('.')[1];
-            $('.product-price.price').html('<span class="price-integer">' + price_integer + '</span><span class="price-decimal">,' + price_decimal + '</span></span>');
-        }
     });
 });
