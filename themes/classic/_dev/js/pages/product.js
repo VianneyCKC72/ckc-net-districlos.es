@@ -446,7 +446,7 @@ $(document).ready(function () {
     });
 
     $(document).on('ajaxComplete', function (event, xhr, settings) {
-        if (settings.url.includes('module/dynamicproduct/calculator')) {
+        if (settings.url.includes('calculator')) {
             let price = $('.product-price.price').html()
             price = price.replace('&nbsp;€', '');
             price = price.replace(',', '.');
