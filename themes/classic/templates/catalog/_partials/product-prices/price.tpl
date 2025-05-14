@@ -3,7 +3,7 @@
     {assign var="price_integer" value=$price_parts[0]}
     {assign var="price_decimal" value=$price_parts[1]}
     <div class="product-price price {if $product.has_discount}has-discount{/if} mr-2" itemprop="price">
-        <span class="price-integer">{$price_integer}</span><span class="price-decimal">,{$price_decimal}</span></span>
+        <span class="price-integer">{$price_integer}</span><span class="price-decimal">,{$price_decimal}</span>
     </div>
     {hook h='displayProductPriceBlock' product=$product type="weight" hook_origin='product_sheet'}
 
