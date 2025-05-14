@@ -1072,6 +1072,10 @@
     grid-template-columns: repeat(3, 1fr);
     row-gap: 2em;
   }
+  .descr_contenance {
+    display: flex;
+    flex-direction: column;
+  }
 
   span.nbrcontent {
     padding: 5px 10px;
