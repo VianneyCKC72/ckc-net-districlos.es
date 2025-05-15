@@ -1078,6 +1078,10 @@
     grid-template-columns: repeat(3, 1fr);
     row-gap: 2em;
   }
+  .descr_contenance {
+    display: flex;
+    flex-direction: column;
+  }
 
   span.nbrcontent {
     padding: 5px 10px;
@@ -1257,6 +1261,10 @@
   .shipping-block-product-info {
     justify-content: space-between;
     margin-top: 1.5rem;
+  }
+
+  .dp-layers {
+    display: none !important;
   }
 
   .cn_titulo {

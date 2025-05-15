@@ -25,7 +25,8 @@ class Ckc_Stores_Stock extends Module
             && $this->registerHook('displayHeader')
             && $this->registerHook('displayStockButton')
             && $this->registerHook('displayFooterProduct')
-            && $this->registerHook('displayStockCheckout');
+            && $this->registerHook('displayStockCheckout')
+            && $this->registerHook('displayAdminOrder');
     }
 
     public function uninstall()
@@ -37,6 +38,55 @@ class Ckc_Stores_Stock extends Module
     {
         $this->context->controller->addJS($this->_path . 'assets/js/stores_stock.js');
         $this->context->controller->addCSS($this->_path . 'assets/css/stores_stock.css');
+    }
+
+    public function hookDisplayAdminOrder($params)
+    {
+        $order = new Order((int)$params['id_order']);
+        $transferDivalto = false;
+        $transfer = false;
+        $shopOrder = Db::getInstance()->getRow('SELECT * FROM ' . _DB_PREFIX_ . 'orders WHERE id_order = ' . (int)$order->id);
+        $shopOrder = $shopOrder['id_store'];
+        $shopOrder = Db::getInstance()->getRow('SELECT * FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores WHERE id_store = ' . (int)$shopOrder);
+
+        $ignoreDivalto = in_array($order->current_state, [3, 4, 5, 6, 7, 14, 15, 18, 25, 26, 29, 30, 443, 448]);
+        $shopList =  Db::getInstance()->ExecuteS('SELECT * FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
+
+        if (Tools::isSubmit('submitOrderToDivalto') && !$ignoreDivalto) {
+            include _PS_MODULE_DIR_ . "divaltoInfinityConnec/divaltoOrderCtl.php";
+            DivaltoCreateOrder((int)$order->id);
+            $transferDivalto = true;
+        }
+
+        if (Tools::isSubmit('submitOrderTransfer') && Tools::getValue('shop_transfer')) {
+            $this->transferOrderShop((int)$order->id, (int)Tools::getValue('shop_transfer'));
+            $transfer = true;
+        }
+
+        $this->context->smarty->assign(
+            array(
+                'transferDivalto' => $transferDivalto,
+                'ignoreDivalto' => $ignoreDivalto,
+                'transfer' => $transfer,
+                'shopOrder' => $shopOrder,
+                'shopList' => $shopList,
+            )
+        );
+
+        return $this->fetch('module:ckc_stores_stock/views/templates/hook/admin-order.tpl');
+    }
+
+    public function transferOrderShop($id_order, $id_shop)
+    {
+        $order = new Order((int) $id_order);
+
+        if (Validate::isLoadedObject($order)) {
+            Db::getInstance()->update('orders', array('id_store' => (int)$id_shop), 'id_order = ' . (int)$order->id);
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function hookDisplayStockButton($params)
@@ -62,15 +112,15 @@ class Ckc_Stores_Stock extends Module
     {
         return $this->display(__FILE__, 'views/templates/hook/modal.tpl');
     }
-    
+
     public function hookDisplayStockCheckout($params)
     {
         require_once _PS_MODULE_DIR_ . 'ckc_stores_stock/classes/StockManager.php';
         $stockManager = new StockManager();
         $stockData = $stockManager->getDelivery($this->context->cart->id_carrier);
-    
+
         $this->context->smarty->assign($stockData);
-    
+
         return $this->fetch('module:ckc_stores_stock/views/templates/hook/displayStockCheckout.tpl');
     }
 }

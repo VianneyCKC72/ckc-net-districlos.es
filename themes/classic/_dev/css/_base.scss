@@ -7535,6 +7535,10 @@ li:not([data-depth="0"]):not([data-depth="1"])::before {
   height: 50px;
 }
 
+.dp_input_container .ui-spinner-button:hover {
+  background-color: transparent !important;
+}
+
 .product-variants .product-variants-item select, .dp_input_container select {
   width: 100%;
   height: auto;
