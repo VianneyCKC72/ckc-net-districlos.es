@@ -382,7 +382,6 @@
                     updateIdsDisplay();
             });*/
 
-
     $("button[name=saveNewCampaign]").click(function(e) {
         e.preventDefault()
 
@@ -505,7 +504,9 @@
                         if ($(location).attr('href').includes("create_new_campaign")) {
                             let substr = $(location).attr('href').replace("&create_new_campaign", "&edit_campaign&ID=")
                             href = substr + responseData;
-                        } else {
+                        } else if ($(location).attr('href').includes("edit_campaign")) {
+                            href = $(location).attr('href')
+                        } else{
                             href = $(location).attr('href') + '&edit_campaign&ID=' + responseData;
                         }
 
