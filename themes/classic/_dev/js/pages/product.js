@@ -1,8 +1,8 @@
 $(document).ready(function () {
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         if ($('body#product').length) {
-            $('.product-container.js-product-container').each(function() {
+            $('.product-container.js-product-container').each(function () {
                 const $container = $(this);
                 const $swiper = $container.find('.swiper.swiper__product-img__cover.swiper-initialized.swiper-horizontal.swiper-watch-progress.swiper-backface-hidden');
                 const $discount = $container.find('.discount_type_flag');
@@ -279,8 +279,6 @@ $(document).ready(function () {
     }
 
 
-
-
     function updateViewProductCart(data) {
         $.each(data, function (key, value) {
             let selectorMap = {
@@ -290,7 +288,7 @@ $(document).ready(function () {
                 'cart_summary_subtotals_container': '.js-cart-summary-subtotals-container',
                 'cart_summary_top': '.js-cart-summary-top',
                 'cart_summary_totals': '.cart-summary-totals',
-                'cart_promos' : '.cart-promos'
+                'cart_promos': '.cart-promos'
             };
             if (key in selectorMap && value) {
                 $(selectorMap[key]).replaceWith(value);
@@ -349,7 +347,7 @@ $(document).ready(function () {
     });
 
     prestashop.on('updatedCart', (event) => {
-        if(typeof $(".cart-promos") !== "undefined"){
+        if (typeof $(".cart-promos") !== "undefined") {
             $(".cart-promos").replaceWith(event.resp.cart_promos)
         }
     });
@@ -419,7 +417,7 @@ $(document).ready(function () {
         }
     }
 
-    $('a[href="#block-description-long"]').on('click', function(e) {
+    $('a[href="#block-description-long"]').on('click', function (e) {
         e.preventDefault();
         var target = $('#block-description-long');
 
@@ -432,16 +430,57 @@ $(document).ready(function () {
     });
 
 
-    $('.add-to-cart').on('click', function (e) {
-        var $button = $(this);
+    // 1. Ajoute le loader à droite du texte (si pas déjà présent)
+    $(document).on('mousedown', 'button[data-button-action^="add"]', function () {
 
-        // Afficher le loader
-        $button.find('.loader').show();
+        const $button = $(this);
+
+        // Évite de l'ajouter plusieurs fois
+        if ($button.find('.inline-loader').length === 0) {
+            const $loader = $(`
+        <span class="inline-loader" style="display:inline-block; margin-left:10px; vertical-align:middle;">
+          <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+            <circle cx="50" cy="50" r="35" stroke-width="10" stroke="currentColor" stroke-dasharray="164"
+                    stroke-linecap="round" fill="none">
+              <animateTransform attributeName="transform" type="rotate" dur="1s"
+                                repeatCount="indefinite" from="0 50 50" to="360 50 50" />
+            </circle>
+          </svg>
+        </span>
+      `);
+            $button.append($loader);
+        }
     });
 
-    prestashop.on('updateCart', function() {
-        var $button = $('.add-to-cart');
-        $button.prop('disabled', false);
-        $button.find('.loader').hide();
-    });
+    // 2. Cache le loader
+    function hideLoader() {
+        $('.inline-loader').remove(); // supprime tous les loaders ajoutés
+    }
+
+    // 3. Observer zone panier
+    let cartElement = document.querySelector('#_desktop_cart')
+        || document.querySelector('.blockcart')
+        || document.querySelector('.cart-preview')
+        || document.querySelector('[data-refresh-url*="cart"]')
+        || document.querySelector('[data-block="cart"]');
+
+    if (cartElement) {
+        const observerForLoader = new MutationObserver(function () {
+            hideLoader();
+        });
+        observerForLoader.observe(cartElement, { childList: true, subtree: true });
+    } else {
+        const observerFallback = new MutationObserver(function () {
+            hideLoader();
+        });
+        observerFallback.observe(document.body, { childList: true, subtree: true });
+    }
+
+    // 4. Fallback PrestaShop
+    if (typeof prestashop !== 'undefined' && typeof prestashop.on === 'function') {
+        prestashop.on('updateCart', function () {
+            hideLoader();
+        });
+    }
+
 });
