@@ -61,7 +61,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_cont
 $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `id_campaign` int(11) NOT NULL,
-    `text` varchar(5000) NOT NULL,
+    `text` varchar(20000) NOT NULL,
     `background_color` varchar(20) NULL,
     `active` tinyint NOT NULL,
     `show_all` tinyint NOT NULL,
@@ -79,7 +79,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_cont
     `discount_range_max` decimal(20,6) NULL,
     `price_range_min` decimal(20,6) NULL,
     `price_range_max` decimal(20,6) NULL,
-    `text` varchar(5000) NOT NULL,
+    `text` varchar(20000) NOT NULL,
     `text_color` varchar(20) NULL,
     `active` tinyint NOT NULL,
     `date_add` datetime NOT NULL,
@@ -96,7 +96,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_cate
 $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_content_product` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `id_campaign` int(11) NOT NULL,
-    `text` varchar(5000) NOT NULL,
+    `text` varchar(20000) NOT NULL,
     `active` tinyint NOT NULL,
     `show_all` tinyint NOT NULL,
     `date_add` datetime NOT NULL,
@@ -113,7 +113,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_prod
 $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_content_devis` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `id_campaign` int(11) NOT NULL,
-    `text` varchar(5000) NOT NULL,
+    `text` varchar(20000) NOT NULL,
     `background_color` varchar(20) NULL,
     `date_add` datetime NOT NULL,
     PRIMARY KEY  (`id`)
@@ -122,7 +122,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_cont
 $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_content_promopage` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `id_campaign` int(11) NOT NULL,
-    `text` varchar(5000) NOT NULL,
+    `text` varchar(20000) NOT NULL,
     `date_add` datetime NOT NULL,
     PRIMARY KEY  (`id`)
 ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
