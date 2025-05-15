@@ -439,7 +439,7 @@
                 }*/
 
         let devisText = $("#DEVIS_TEXT_ifr").contents().find("body").html()
-        let devisColor = $("#color_2").val()
+        let devisColor = $("#color_1").val()
 
         let promoPageText = $("#PROMO_PAGE_TEXT_ifr").contents().find("body").html()
 
