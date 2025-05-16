@@ -1,5 +1,5 @@
 {if isset($ckc_labels) && $ckc_labels|count > 0}
-    {foreach from=$ckc_labels item=label}
+    {foreach from=$ckc_labels key=key item=label}
         <div class="discount_type_flag" style="
                 background-color: {$label.background_color};
                 padding: 5px;
@@ -10,7 +10,7 @@
                 width: auto;
                 font-size: 12px;
                 position: absolute;
-                top: 0;
+                top: {$key * 28}px;
                 left: 5px;
                 z-index: 9;">
             <span class="discount-percentage" style="position: unset;display: flex;margin:auto;color: {$label.color};">

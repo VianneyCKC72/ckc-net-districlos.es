@@ -5,25 +5,13 @@ $(document).ready(function () {
             $('.product-container.js-product-container').each(function () {
                 const $container = $(this);
                 const $swiper = $container.find('.swiper.swiper__product-img__cover.swiper-initialized.swiper-horizontal.swiper-watch-progress.swiper-backface-hidden');
-                const $discount = $container.find('.discount_type_flag');
+                const $discount = $container.find('.row > .col-lg-7 > .discount_type_flag');
 
                 if ($swiper.length && $discount.length) {
                     $discount.appendTo($swiper);
                 }
             });
-        }
-    });
 
-    $(document).on('ajaxComplete', function (event, xhr, settings) {
-        if (settings.url.includes('calculator')) {
-            alert('ok');
-            let price = $('.product-price.price').html()
-            price = price.replace('&nbsp;€', '');
-            price = price.replace(',', '.');
-            price = price.replace(/\s/g, '');
-            let price_integer = price.split('.')[0];
-            let price_decimal = price.split('.')[1];
-            $('.product-price.price').html('<span class="price-integer">' + price_integer + '</span><span class="price-decimal">,' + price_decimal + '</span></span>');
         }
     });
 
