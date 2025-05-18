@@ -1,8 +1,8 @@
 <?php
 require_once dirname(__DIR__) . '/config/config.inc.php';
 
-$token = Tools::getValue('token');
-if ($token !== 'TON_TOKEN_SECRET') {
+$token = $_GET['token'] ?? null;
+if ($token !== 'djit6a0f1c4b8d3e2c5f7b9d8e4a5b3') {
     http_response_code(403);
     exit('Unauthorized');
 }
