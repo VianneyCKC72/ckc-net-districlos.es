@@ -1,5 +1,6 @@
 <?php
-require_once dirname(__DIR__, 2) . '/config/config.inc.php';
+require dirname(__FILE__) . '/config/config.inc.php';
+require_once dirname(__FILE__) . '/init.php';
 
 use PrestaShop\PrestaShop\Adapter\Configuration;
 
@@ -13,6 +14,6 @@ if ($token !== $expectedToken) {
 
 $mode = (int) ($_GET['maintenance'] ?? 1);
 
-Configuration::getInstance()->set('PS_SHOP_ENABLE', $mode ? 0 : 1);
+Configuration::updateValue('PS_SHOP_ENABLE', $mode ? 0 : 1);
 
 echo 'OK';
