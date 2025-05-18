@@ -1,28 +1,28 @@
 <?php
 /**
-* 2007-2025 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author    PrestaShop SA <contact@prestashop.com>
-*  @copyright 2007-2025 PrestaShop SA
-*  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+ * 2007-2025 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ *  @author    PrestaShop SA <contact@prestashop.com>
+ *  @copyright 2007-2025 PrestaShop SA
+ *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ *  International Registered Trademark & Property of PrestaShop SA
+ */
 $sql = array();
 
 $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_list` (
@@ -52,7 +52,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_cont
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `id_campaign` int(11) NOT NULL,
     `active` tinyint NOT NULL,
-    `text` varchar(500) NOT NULL,
+    `text` varchar(5000) NOT NULL,
     `background_color` varchar(20) NULL,
     `date_add` datetime NOT NULL,
     PRIMARY KEY  (`id`)
@@ -61,7 +61,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_cont
 $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `id_campaign` int(11) NOT NULL,
-    `text` varchar(500) NOT NULL,
+    `text` varchar(20000) NOT NULL,
     `background_color` varchar(20) NULL,
     `active` tinyint NOT NULL,
     `show_all` tinyint NOT NULL,
@@ -79,7 +79,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_cont
     `discount_range_max` decimal(20,6) NULL,
     `price_range_min` decimal(20,6) NULL,
     `price_range_max` decimal(20,6) NULL,
-    `text` varchar(500) NOT NULL,
+    `text` varchar(20000) NOT NULL,
     `text_color` varchar(20) NULL,
     `active` tinyint NOT NULL,
     `date_add` datetime NOT NULL,
@@ -96,7 +96,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_cate
 $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_content_product` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `id_campaign` int(11) NOT NULL,
-    `text` varchar(500) NOT NULL,
+    `text` varchar(20000) NOT NULL,
     `active` tinyint NOT NULL,
     `show_all` tinyint NOT NULL,
     `date_add` datetime NOT NULL,
@@ -113,7 +113,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_prod
 $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_content_devis` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `id_campaign` int(11) NOT NULL,
-    `text` varchar(500) NOT NULL,
+    `text` varchar(20000) NOT NULL,
     `background_color` varchar(20) NULL,
     `date_add` datetime NOT NULL,
     PRIMARY KEY  (`id`)
@@ -122,7 +122,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_cont
 $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_content_promopage` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `id_campaign` int(11) NOT NULL,
-    `text` varchar(500) NOT NULL,
+    `text` varchar(20000) NOT NULL,
     `date_add` datetime NOT NULL,
     PRIMARY KEY  (`id`)
 ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';

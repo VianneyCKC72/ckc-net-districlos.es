@@ -18,6 +18,8 @@ class Ckc_Syncdata_Tx extends Module
 
         $this->displayName = $this->l('Synchronisation de données (TX)');
         $this->description = $this->l('Synchronise clients, commandes, paniers et devis entre deux boutiques.');
+
+        require_once __DIR__.'/classes/CkcSyncQueue.php';
     }
 
     public function install()
@@ -224,6 +226,7 @@ class Ckc_Syncdata_Tx extends Module
 
         $object = null;
         $datas = [];
+        $payload = null;
 
         switch ($type) {
             case 'customer':
@@ -302,7 +305,6 @@ class Ckc_Syncdata_Tx extends Module
                     $datas['new_order_state'] = is_object($additionnalData) ? $additionnalData->id : (int)$additionnalData;
                 }
                 break;
-
             case 'order_slip':
                 $object = new Order($id);
                 if (Validate::isLoadedObject($object)) {
@@ -348,18 +350,37 @@ class Ckc_Syncdata_Tx extends Module
                 $object = new Cart($id);
                 if (Validate::isLoadedObject($object)) {
                     $datas = $object->getFields();
-                    $datas['products'] = Db::getInstance()->executeS('
-                    SELECT cp.id_product, cp.id_product_attribute, cp.quantity, p.id_tax_rules_group
-                    FROM '._DB_PREFIX_.'cart_product cp
-                    LEFT JOIN '._DB_PREFIX_.'product p ON (p.id_product = cp.id_product)
-                    WHERE cp.id_cart = '.(int)$object->id);
-                    
-                    $datas['cart_cart_rule'] = Db::getInstance()->executeS('
-                        SELECT * FROM '._DB_PREFIX_.'cart_cart_rule WHERE id_cart = '.(int)$object->id
+                    $datas['products'] = Db::getInstance()->executeS(
+                        'SELECT cp.id_product, cp.id_product_attribute, cp.quantity, p.id_tax_rules_group
+                     FROM '._DB_PREFIX_.'cart_product cp
+                     LEFT JOIN '._DB_PREFIX_.'product p ON (p.id_product = cp.id_product)
+                     WHERE cp.id_cart = '.(int)$object->id
+                    );
+                    $datas['cart_cart_rule'] = Db::getInstance()->executeS(
+                        'SELECT * FROM '._DB_PREFIX_.'cart_cart_rule WHERE id_cart = '.(int)$object->id
                     );
 
+                    $payload = json_encode([
+                        'entity_type' => $type,
+                        'entity_id' => $id,
+                        'action' => $action,
+                        'datas' => $datas
+                    ]);
+
+                    // Enregistrement dans la queue avec ou sans payload
+                    $queue = new CkcSyncQueue();
+                    $queue->type = $type;
+                    $queue->entity_id = $id;
+                    $queue->action = $action;
+                    $queue->payload = $payload;
+                    $queue->add();
                 }
                 break;
+        }
+
+        if ($type === 'cart') {
+            // La synchro du panier est déjà dans la queue, on ne fait pas de cURL ;)
+            return;
         }
 
         if ($object && Validate::isLoadedObject($object) && empty($datas)) {
