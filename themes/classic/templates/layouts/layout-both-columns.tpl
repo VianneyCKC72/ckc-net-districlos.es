@@ -121,6 +121,54 @@
   {block name='javascript_bottom'}
     {include file="_partials/password-policy-template.tpl"}
     {include file="_partials/javascript.tpl" javascript=$javascript.bottom}
+      {assign var=css_path value=$asset_url|cat:'css/'}
+      {assign var=js_path value=$asset_url|cat:'js/'}
+
+  {if $page.page_name == 'index'}
+  <link rel="stylesheet" href="{$css_path}common.css">
+  <link rel="stylesheet" href="{$css_path}home.css">
+      <script src="{$js_path}common.js" defer></script>
+      <script src="{$js_path}home.js" defer></script>
+
+      {elseif $page.page_name == 'product'}
+  <link rel="stylesheet" href="{$css_path}common.css">
+  <link rel="stylesheet" href="{$css_path}product.css">
+      <script src="{$js_path}common.js" defer></script>
+      <script src="{$js_path}product.js" defer></script>
+
+      {elseif $page.page_name == 'category'}
+  <link rel="stylesheet" href="{$css_path}common.css">
+  <link rel="stylesheet" href="{$css_path}category.css">
+      <script src="{$js_path}common.js" defer></script>
+      <script src="{$js_path}category.js" defer></script>
+
+      {elseif $page.page_name == 'checkout'}
+  <link rel="stylesheet" href="{$css_path}common.css">
+  <link rel="stylesheet" href="{$css_path}checkout.css">
+      <script src="{$js_path}common.js" defer></script>
+      <script src="{$js_path}checkout.js" defer></script>
+
+      {elseif $page.page_name == 'register'}
+  <link rel="stylesheet" href="{$css_path}common.css">
+  <link rel="stylesheet" href="{$css_path}register.css">
+      <script src="{$js_path}common.js" defer></script>
+      <script src="{$js_path}register.js" defer></script>
+
+      {elseif $page.page_name == 'identity'}
+  <link rel="stylesheet" href="{$css_path}common.css">
+      <script src="{$js_path}common.js" defer></script>
+      <script src="{$js_path}identity.js" defer></script>
+
+      {elseif $page.page_name == 'address'}
+  <link rel="stylesheet" href="{$css_path}common.css">
+      <script src="{$js_path}common.js" defer></script>
+      <script src="{$js_path}address.js" defer></script>
+
+      {else}
+      {* fallback générique (page CMS, contact, etc.) *}
+  <link rel="stylesheet" href="{$css_path}common.css">
+      <script src="{$js_path}common.js" defer></script>
+  {/if}
 
       <script type="text/javascript" src="/themes/classic/assets/js/lib/crypto-js.min.js"></script>
       <script type="text/javascript" src="/themes/classic/assets/js/lib/jquery.inview.min.js"></script>
