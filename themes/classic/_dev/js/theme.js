@@ -11550,7 +11550,7 @@ $(document).ready(function () {
     $(window).ready(() => {
         const isMobile = $(window).width() < 768
 
-        isMobile ?
+        isMobile && $(".flexslider-mobile").length && $(".flexslider-desktop").length ?
             $(".flexslider-mobile").flexslider({
                 slideshowSpeed: $(".flexslider-mobile").data("interval"),
                 pauseOnHover: $(".flexslider-mobile").data("pause"),
