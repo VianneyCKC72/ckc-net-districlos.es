@@ -50,9 +50,9 @@
                 <div class="clients">Nos clients sont satisfaits : <strong>9.5/10</strong><img class="ico-stars" src="/img/cms/ico-stars.png" alt="ico-stars.png" /></div>
             </div>
         </span>
-        <button type="button" class="close close_once" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true" class="button_barrepromo"><span class="button_text_barrepromo">{l s='Hide' mod='ckcpromotionbanner'}</span> &times;</span>
-        </button>
+{*        <button type="button" class="close close_once" data-dismiss="alert" aria-label="Close">*}
+{*            <span aria-hidden="true" class="button_barrepromo"><span class="button_text_barrepromo">{l s='Hide' mod='ckcpromotionbanner'}</span> &times;</span>*}
+{*        </button>*}
     {else}
         <span>
             <div class="container">

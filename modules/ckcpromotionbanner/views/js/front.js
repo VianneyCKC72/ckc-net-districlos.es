@@ -27,16 +27,16 @@
 */
 
 
-$(document).on('click', '.close_once', function() {
-    localStorage.setItem('hideAlert', 'true');
-})
-
-$(document).ready(function() {
-    let hide = localStorage.getItem('hideAlert');
-    if (hide !== 'true') {
-        $('#ckcpromobarre').removeClass('hide_alert');
-    }
-})
+// $(document).on('click', '.close_once', function() {
+//     localStorage.setItem('hideAlert', 'true');
+// })
+//
+// $(document).ready(function() {
+//     let hide = localStorage.getItem('hideAlert');
+//     if (hide !== 'true') {
+//         $('#ckcpromobarre').removeClass('hide_alert');
+//     }
+// })
 $(document).on('mouseover', '.button_barrepromo', function() {
     $('.button_text_barrepromo').show();
 })
