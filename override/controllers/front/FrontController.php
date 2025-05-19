@@ -7,6 +7,7 @@
 
 class FrontController extends FrontControllerCore
 {
+    protected $proCustomerCache = [];
 
     public function initContent()
     {
@@ -22,6 +23,7 @@ class FrontController extends FrontControllerCore
         $espace_pro = !empty($_GET['ep']);
         $display_espace_pro = Configuration::get('CKC_DISPLAY_EP');
         $siret = 'Non renseigné';
+
 
         if ($display_espace_pro == 1) {
             // Vérification si le client est défini pour extraire l'ID
@@ -144,12 +146,30 @@ class FrontController extends FrontControllerCore
      */
     public function getInfosProCustomer($id)
     {
-        $sql = 'SELECT * FROM ps_customer c WHERE id_default_group = 10 AND c.id_customer = ' . (int)$id;
+        if (isset($this->proCustomerCache[$id])) {
+            return $this->proCustomerCache[$id];
+        }
 
-        $customer = Db::getInstance()->ExecuteS($sql);
+        if (isset($this->context->cookie->{"pro_customer_info_$id"})) {
+            $info = json_decode($this->context->cookie->{"pro_customer_info_$id"}, true);
+            $this->proCustomerCache[$id] = $info;
+            return $info;
+        }
 
-        if (!empty($customer[0]))
-            return $customer[0];
+        $sql = 'SELECT * FROM `'._DB_PREFIX_.'customer` 
+            WHERE id_default_group = 10 AND id_customer = '.(int)$id;
+        $customer = Db::getInstance()->getRow($sql); // Utilise `getRow` pour une seule ligne
+
+        if (!empty($customer)) {
+            // Mise en cache dans l'objet
+            $this->proCustomerCache[$id] = $customer;
+
+            // Mise en cache dans le cookie (sérialisé)
+            $this->context->cookie->{"pro_customer_info_$id"} = json_encode($customer);
+
+            return $customer;
+        }
+
         return "";
     }
 
