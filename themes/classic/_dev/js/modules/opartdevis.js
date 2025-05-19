@@ -33,4 +33,34 @@ $(document).ready(function () {
             $backDrop.remove();
         });
     };
+
+    // prestashop.on('updateCart', function (event) {
+    //     if (event.resp && event.resp.hasError && event.resp.modal) {
+    //         prestashop.blockcart.showModal(event.resp.modal);
+    //         return;
+    //     }
+    //
+    //     var refreshURL = $('.blockcart').data('refresh-url');
+    //     var requestData = {};
+    //
+    //     if (event.reason) {
+    //         requestData = {
+    //             id_product_attribute: event.reason.idProductAttribute,
+    //             id_product: event.reason.idProduct,
+    //             action: event.reason.linkAction,
+    //             id_customization: event.reason.idCustomization
+    //         };
+    //     }
+    //
+    //     $.post(refreshURL, requestData)
+    //         .then(function (resp) {
+    //             $('.blockcart').replaceWith($(resp.preview).find('.blockcart'));
+    //             if (resp.modal) {
+    //                 blockCartModal(resp.modal);
+    //             }
+    //         })
+    //         .fail(function (resp) {
+    //             prestashop.emit('handleError', {eventType: 'updateShoppingCart', resp: resp});
+    //         });
+    // });
 });
