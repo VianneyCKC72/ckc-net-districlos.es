@@ -11540,8 +11540,8 @@ $(document).ready(function () {
     }
 
     $(window).load(function () {
-        $(".loadingdiv").remove()
         setTimeout(function () {
+            $(".loadingdiv").remove()
             $('.slides').show()
         }, 500);
     });
