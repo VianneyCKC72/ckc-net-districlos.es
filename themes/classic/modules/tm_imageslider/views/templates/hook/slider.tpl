@@ -26,6 +26,12 @@
 {if !$env_pro}
     {if $tmhomeslider.slides}
         <div class="flexslider flexslider-desktop" data-interval="{$tmhomeslider.speed}" data-pause="{$tmhomeslider.pause}" style="min-height: 291px">
+            <div class="loadingdiv"></div>
+            {if $tmhomeslider.slides[0]}
+                <div class="loadingdiv">
+                    <img src="{$tmhomeslider.slides[0].image_url}" alt="{$tmhomeslider.slides[0].legend}" />
+                </div>
+            {/if}
             <ul class="slides">
                 {foreach from=$tmhomeslider.slides item=slide}
                     <li class="slide">
@@ -42,12 +48,12 @@
             </ul>
         </div>
         <div class="flexslider flexslider-mobile" data-interval="{$tmhomeslider.speed}" data-pause="{$tmhomeslider.pause}" style="min-height: 500px">
-            {*			<div class="loadingdiv"></div>
-                        {if $tmhomeslider.slides[0]}
-                            <div class="loadingdiv">
-                                <img src="{$tmhomeslider.slides[0].image_mobile_url}" alt="{$tmhomeslider.slides[0].legend}" title="{$tmhomeslider.slides[0].title}" />
-                            </div>
-                        {/if}*}
+            <div class="loadingdiv"></div>
+            {if $tmhomeslider.slides[0]}
+                <div class="loadingdiv">
+                    <img src="{$tmhomeslider.slides[0].image_mobile_url}" alt="{$tmhomeslider.slides[0].legend}" title="{$tmhomeslider.slides[0].title}" />
+                </div>
+            {/if}
             <ul class="slides">
                 {foreach from=$tmhomeslider.slides item=slide}
                     <li class="slide">
