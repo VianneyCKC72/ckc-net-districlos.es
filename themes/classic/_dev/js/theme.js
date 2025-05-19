@@ -11543,7 +11543,7 @@ $(document).ready(function () {
         $(".loadingdiv").remove()
         setTimeout(function () {
             $('.slides').show()
-        }, 1000);
+        }, 500);
     });
 
 // // Countdown function 29/01/2024
