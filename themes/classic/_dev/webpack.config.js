@@ -20,30 +20,29 @@ let config = {
             "./js/pages/homepage.js",
             "./js/modules/faq.js",
             "./js/modules/avis.js",
-            "./css/pages/home.scss",
+            "./css/home.scss",
         ],
 
         product: [
             "./js/pages/product.js",
             "./js/composents/select-color.js",
             "./js/composents/select-color-pack.js",
-            "./css/pages/product.scss",
+            "./css/product.scss",
         ],
 
         category: [
             "./js/pages/category.js",
             "./js/modules/facet.js",
-            "./css/pages/category.scss",
+            "./css/category.scss",
         ],
 
         checkout: [
             "./js/pages/checkout.js",
-            "./css/pages/checkout.scss",
+            "./css/checkout.scss",
         ],
 
         register: [
             "./js/pages/register.js",
-            "./css/pages/register.scss",
         ],
 
         identity: [
