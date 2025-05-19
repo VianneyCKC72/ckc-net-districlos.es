@@ -48,6 +48,7 @@
   <link rel="preconnect" href="https://bat.bing.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
 {*  {if $page.meta.robots !== 'index'}*}
 {*    <meta name="robots" content="{$page.meta.robots}">*}
 {*  {/if}*}
