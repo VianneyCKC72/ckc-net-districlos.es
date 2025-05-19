@@ -7,26 +7,53 @@ const LicensePlugin = require("webpack-license-plugin");
 
 let config = {
     entry: {
-        theme: [
+        common: [
             "./js/theme.js",
-            "./js/modules/facet.js",
-            "./js/modules/opartdevis.js",
-            "./js/modules/swiper.js",
             "./js/modules/social.js",
+            "./js/modules/swiper.js",
+            "./js/composents/header.js",
+            "./js/modules/opartdevis.js",
+            "./css/common.scss",
+        ],
+
+        home: [
+            "./js/pages/homepage.js",
             "./js/modules/faq.js",
             "./js/modules/avis.js",
+            "./css/pages/home.scss",
+        ],
+
+        product: [
             "./js/pages/product.js",
-            "./js/composents/header.js",
             "./js/composents/select-color.js",
             "./js/composents/select-color-pack.js",
-            "./js/pages/homepage.js",
-            "./js/pages/category.js",
-            "./js/pages/register.js",
-            "./js/pages/identity.js",
-            "./js/pages/checkout.js",
-            "./js/pages/address.js",
-            "./css/theme.scss"
+            "./css/pages/product.scss",
         ],
+
+        category: [
+            "./js/pages/category.js",
+            "./js/modules/facet.js",
+            "./css/pages/category.scss",
+        ],
+
+        checkout: [
+            "./js/pages/checkout.js",
+            "./css/pages/checkout.scss",
+        ],
+
+        register: [
+            "./js/pages/register.js",
+            "./css/pages/register.scss",
+        ],
+
+        identity: [
+            "./js/pages/identity.js",
+        ],
+
+        address: [
+            "./js/pages/address.js",
+        ],
+
         error: ["./css/error.scss"],
     },
     output: {
