@@ -5,6 +5,7 @@
     margin: 0 auto;
     border-radius: 0;
     border:none;
+    min-height: 45px;
     @media only screen and (max-width: 1620px) {
         padding-left: 0;
         padding-right: 0;
