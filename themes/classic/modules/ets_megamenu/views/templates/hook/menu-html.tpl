@@ -43,7 +43,7 @@
     <ul class="mm_menus_ul {if isset($mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB) && $mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB} clicktext_show_submenu{/if} {if isset($mm_config.ETS_MM_SHOW_ICON_VERTICAL)&& !$mm_config.ETS_MM_SHOW_ICON_VERTICAL} hide_icon_vertical{/if}">
         <li class="close_menu">
             <a class="pull-left" href="{$urls.base_url}">
-                <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48">
+                <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48" loading="lazy">
             </a>
             <div class="pull-right">
                 <span class="mm_menus_back">
@@ -204,7 +204,7 @@
                                                     {/if}
                                                 {/foreach}
                                                 <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.base_url}">
-                                                    <img class="logo img-fluid" src="/img/logo-text-white.svg" alt="Districlos" width="178" height="48">
+                                                    <img class="logo img-fluid" src="/img/logo-text-white.svg" alt="Districlos" width="178" height="48" loading="lazy">
                                                 </a>
                                             </ul>
                                         {/if}
@@ -214,7 +214,7 @@
                                 </li>
                             {/foreach}
                             <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.base_url}">
-                                <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48">
+                                <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48" loading="lazy">
                             </a>
                         </ul>
                     {/if}
@@ -313,7 +313,7 @@
                 <span class="menu-mobile-phone-text">Des questions ?&nbsp;</span>
                 <span class="menu-mobile-phone-number">04 22 53 10 34</span>
             </a>
-            <img src="/img/menu-mobile-stars.svg" alt="note" width="72px" height="11px" class="menu-mobile-stars">
+            <img src="/img/menu-mobile-stars.svg" alt="note" width="72px" height="11px" class="menu-mobile-stars" loading="lazy">
             <p class="menu-mobile-note-text">Nos clients sont satisfaits :&nbsp;<span>9.5/10</span></p>
         </li>
         <li class="mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
