@@ -139,7 +139,7 @@
       plein d’inspirations !</p>
     <form action="" class="form-newsletter" method="post">
       <div class="input-newsletter">
-        <input type="email" value="" name="email" class="email" required>
+        <input type="email" value="" name="email" class="email" required aria-label="Email">
         <button class="btn btn-primary-light d-none d-md-block">Je m'inscris</button>
       </div>
       <label class="input-checkbox">J’accepte de recevoir d’autres communications de Districlos. Vous pourrez vous
