@@ -64,33 +64,59 @@ class FrontController extends FrontControllerCore
                 $siret = $infos['siret'];
             }
         }
-        $isLogged = $this->context->customer->logged;
+
+        $isLogged = $this->context->customer->isLogged();
+
         if ($isLogged) {
+            // Vérifie si le client n'est PAS dans le groupe 10 (env_particulier)
             $env_particulier = !in_array(10, $this->context->customer->getGroups());
 
-            $queryAddress = Db::getInstance()->executeS('SELECT id_address_default FROM `' . _DB_PREFIX_ . 'customer` 
-            WHERE id_customer = ' . (int)$this->context->customer->id);
-            if (!isset($queryAddress[0]['id_address_default'])) {
-                $queryAddress = Db::getInstance()->executeS('SELECT id_address_delivery FROM `' . _DB_PREFIX_ . 'orders` 
-                WHERE id_customer = ' . (int)$this->context->customer->id . '
-                ORDER BY id_order DESC LIMIT 1');
-                if (!isset($queryAddress[0]['id_address_delivery'])) {
-                    $queryAddress = Address::getFirstCustomerAddressId($this->context->customer->id);
-                    if (isset($queryAddress)) {
-                        $this->context->smarty->assign(['default_address_id' => (int)$queryAddress]);
-                    }
-                } else {
-                    $this->context->smarty->assign(['default_address_id' => (int)$queryAddress[0]['id_address_delivery']]);
-                }
+            $id_customer = (int)$this->context->customer->id;
+            $default_address_id = null;
+
+            // Vérifie si une valeur est déjà stockée en cache dans le cookie
+            if (isset($this->context->cookie->default_address_id_cached)) {
+                $default_address_id = (int)$this->context->cookie->default_address_id_cached;
             } else {
-                $this->context->smarty->assign(['default_address_id' => (int)$queryAddress[0]['id_address_default']]);
+                // Sinon, récupération en BDD
+                $id_address_default = (int)Db::getInstance()->getValue('
+            SELECT id_address_default FROM `'._DB_PREFIX_.'customer` 
+            WHERE id_customer = '.$id_customer
+                );
+
+                if ($id_address_default) {
+                    $default_address_id = $id_address_default;
+                } else {
+                    $id_address_delivery = (int)Db::getInstance()->getValue('
+                SELECT id_address_delivery FROM `'._DB_PREFIX_.'orders`
+                WHERE id_customer = '.$id_customer.'
+                ORDER BY id_order DESC LIMIT 1
+            ');
+
+                    if ($id_address_delivery) {
+                        $default_address_id = $id_address_delivery;
+                    } else {
+                        $default_address_id = (int)Address::getFirstCustomerAddressId($id_customer);
+                    }
+                }
+
+                // Met en cache dans le cookie
+                if ($default_address_id) {
+                    $this->context->cookie->default_address_id_cached = $default_address_id;
+                }
             }
-            if (isset($this->context->smarty->tpl_vars['default_address_id']->value)) {
-                Media::addJsDef(['default_address_id' => $this->context->smarty->tpl_vars['default_address_id']->value]);
+
+            if ($default_address_id) {
+                $this->context->smarty->assign(['default_address_id' => $default_address_id]);
+                Media::addJsDef(['default_address_id' => $default_address_id]);
             }
+
         } else {
             $env_particulier = false;
+            // Nettoyage éventuel du cache si déconnecté
+            unset($this->context->cookie->default_address_id_cached);
         }
+
 
         $this->context->smarty->assign([
                 'display_espace_pro' => $display_espace_pro,
