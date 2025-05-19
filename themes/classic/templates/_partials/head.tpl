@@ -37,6 +37,16 @@
   <meta name="description" content="{block name='head_seo_description'}{$page.meta.description}{/block}">
   <meta name="keywords" content="{block name='head_seo_keywords'}{$page.meta.keywords}{/block}">
   <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://f.vimeocdn.com">
+  <link rel="preconnect" href="https://arclight.vimeo.com">
+  <link rel="preconnect" href="https://i.vimeocdn.com">
+  <link rel="preconnect" href="https://cdn.connectif.cloud">
+  <link rel="preconnect" href="https://cdn.cloture-discount.fr">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://static.axept.io">
+  <link rel="preconnect" href="https://www.gstatic.com">
+  <link rel="preconnect" href="https://bat.bing.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
 {*  {if $page.meta.robots !== 'index'}*}
 {*    <meta name="robots" content="{$page.meta.robots}">*}
 {*  {/if}*}
