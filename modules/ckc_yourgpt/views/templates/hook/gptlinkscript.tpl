@@ -24,14 +24,14 @@
  *}
 {if $show_your_gpt_link}
  <script type="text/javascript">
-  // Vérifier si le script est déjà chargé
-  if (!document.getElementById('yourgpt-chatbot')) {
-   // Si non, créer et ajouter le script
-   var gptScript = document.createElement('script');
-   gptScript.src = "https://widget.yourgpt.ai/script.js";
-   gptScript.id = "yourgpt-chatbot";
-   gptScript.setAttribute('data-widget', '{$gpt_link_id}');
-   document.body.appendChild(gptScript);
-  }
+  document.addEventListener('DOMContentLoaded', function () {
+   if (!document.getElementById('yourgpt-chatbot')) {
+    var gptScript = document.createElement('script');
+    gptScript.src = "https://widget.yourgpt.ai/script.js";
+    gptScript.id = "yourgpt-chatbot";
+    gptScript.setAttribute('data-widget', '{$gpt_link_id}');
+    document.body.appendChild(gptScript);
+   }
+  });
  </script>
 {/if}
