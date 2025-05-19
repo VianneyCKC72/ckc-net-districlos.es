@@ -11539,12 +11539,11 @@ $(document).ready(function () {
         }
     }
 
-    // Loading image before flex slider load
     $(window).load(function () {
         $(".loadingdiv").remove()
         setTimeout(function () {
             $('.slides').show()
-        }, 500);
+        }, 1000);
     });
 
 // // Countdown function 29/01/2024
