@@ -41,4 +41,9 @@
 {/if}
 
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
-<script type="module" src="https://cdn.jsdelivr.net/npm/lite-vimeo-embed/+esm"></script>
+<script type="module" src="/themes/classic/assets/js/lib/lite-vimeo.js"></script>
+
+
+{*<div style="position: relative; width: 100%; padding-top: 56.25%;"><iframe width="300" height="150" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://player.vimeo.com/video/1079777003?h=55cf8a4d10&amp;title=0&amp;byline=0&amp;portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen="allowfullscreen" title="Vidéo de présentation">      </iframe></div><div class="home-texte-customs-magasins"></div>*}
+
+{*<div style="position: relative; width: 100%; padding-top: 56.25%;"><lite-vimeo videoid="1079777003" style="background-image: url('https://i.vimeocdn.com/video/1079777003.webp?mw=300&amp;mh=150&amp;q=70');"><div class="ltv-playbtn"></div></lite-vimeo></div><div class="home-texte-customs-magasins"></div>*}
