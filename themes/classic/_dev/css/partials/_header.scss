@@ -326,6 +326,11 @@
   }
 }
 
+.pc_displayNav2_8 {
+  display: flex;
+  gap: 15px;
+}
+
 // Barre de recherche visible par défaut sur desktop
 #search_widget {
   position: relative;
