@@ -37,7 +37,7 @@
                             class="email"
                             type="email"
                             value="{$value}"
-                            aria-labelledby="block-newsletter-label"
+                            aria-label="Email"
                             required
                     >
                     <button class="btn btn-primary-light d-md-block" name="submitNewsletter">Je m'inscris</button>
