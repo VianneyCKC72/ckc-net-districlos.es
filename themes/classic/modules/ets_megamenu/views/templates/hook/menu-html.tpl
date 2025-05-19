@@ -73,9 +73,9 @@
                         <div>
                             {if $menu.menu_img_link}
                                 {if $menu.menu_link == "/4-portail-et-portillon"}
-                                    <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" class="img-menu-desktop-custom" style="padding: 5px;" title="" alt="" width="20"/>
+                                    <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" class="img-menu-desktop-custom" style="padding: 5px;" title="" alt="" width="20" loading="lazy"/>
                                 {else}
-                                    <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" class="img-menu-desktop-custom" title="" alt="" width="20"/>
+                                    <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" class="img-menu-desktop-custom" title="" alt="" width="20" loading="lazy"/>
                                 {/if}
     {elseif $menu.menu_icon}
                                     <i class="fa {$menu.menu_icon|escape:'html':'UTF-8'}"></i>
@@ -257,7 +257,7 @@
                     <span class="mm_menu_content_title">
                         <div>
                             {if $menu.menu_img_link}
-                                <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" class="img-menu-desktop-custom" title="" alt="" width="20"/>
+                                <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" class="img-menu-desktop-custom" title="" alt="" width="20" loading="lazy"/>
 
 
 {elseif $menu.menu_icon}
