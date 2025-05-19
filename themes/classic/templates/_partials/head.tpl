@@ -51,6 +51,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://www.googletagmanager.com">
   <link rel="preconnect" href="https://assets.motive.co">
+  <link rel="preload" href="https://nouveau.cloture-discount.fr/img/cms/MOBILE%20MAI.webp" as="image">
 {*  {if $page.meta.robots !== 'index'}*}
 {*    <meta name="robots" content="{$page.meta.robots}">*}
 {*  {/if}*}
