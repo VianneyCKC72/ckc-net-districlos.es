@@ -11555,9 +11555,7 @@ $(document).ready(function () {
                 slideshowSpeed: $(".flexslider-mobile").data("interval"),
                 pauseOnHover: $(".flexslider-mobile").data("pause"),
                 animation: "none",
-                start: function (slider) {
-
-                }
+                animationLoop: false
             })
             : $(".flexslider-desktop").flexslider({
                 slideshowSpeed: $(".flexslider-desktop").data("interval"),
