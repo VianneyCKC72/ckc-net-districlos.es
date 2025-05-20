@@ -71,23 +71,31 @@
                                 {/if}
                             </picture>
 
-                            {* Deuxième image (hover) si disponible *}
-                            {if !empty($product.images[2])}
-                                <picture class="product-image second-image">
-                                    {if !empty($product.images[2].bySize.medium_default.sources.avif)}
-                                        <source srcset="{$product.images[2].bySize.medium_default.sources.avif}" type="image/avif">
+                            {* Détection de la première image non-cover *}
+                            {assign var="hoverImage" value=null}
+                            {foreach from=$product.images item=image name=imgLoop}
+                                {if !$image.cover}
+                                    {assign var="hoverImage" value=$image}
+                                    {break}
+                                {/if}
+                            {/foreach}
+
+                            {* Image en hover *}
+                            <picture class="product-image second-image">
+                                {if $hoverImage}
+                                    {if !empty($hoverImage.bySize.medium_default.sources.avif)}
+                                        <source srcset="{$hoverImage.bySize.medium_default.sources.avif}" type="image/avif">
                                     {/if}
-                                    {if !empty($product.images[2].bySize.medium_default.sources.webp)}
-                                        <source srcset="{$product.images[2].bySize.medium_default.sources.webp}" type="image/webp">
+                                    {if !empty($hoverImage.bySize.medium_default.sources.webp)}
+                                        <source srcset="{$hoverImage.bySize.medium_default.sources.webp}" type="image/webp">
                                     {/if}
-                                    <img src="{$product.images[2].bySize.medium_default.url}"
-                                         alt="{if !empty($product.images[2].legend)}{$product.images[2].legend}{else}{$product.name|truncate:30:'...'}{/if}"
-                                         loading="lazy" data-full-size-image-url="{$product.images[2].large.url}"
-                                         width="{$product.images[2].bySize.home_default.width}"
-                                         height="{$product.images[2].bySize.home_default.height}"/>
-                                </picture>
-                            {else}
-                                <picture class="product-image second-image">
+                                    <img src="{$hoverImage.bySize.medium_default.url}"
+                                         alt="{$hoverImage.legend|default:$product.name|truncate:30:'...'}"
+                                         loading="lazy" data-full-size-image-url="{$hoverImage.large.url}"
+                                         width="{$hoverImage.bySize.medium_default.width}"
+                                         height="{$hoverImage.bySize.medium_default.height}"/>
+                                {else}
+                                    {* fallback si pas d’image hover trouvée *}
                                     {if $product.cover}
                                         {if !empty($product.cover.bySize.home_default.sources.avif)}
                                             <source srcset="{$product.cover.bySize.home_default.sources.avif}" type="image/avif">
@@ -111,10 +119,16 @@
                                              width="{$urls.no_picture_image.bySize.home_default.width}"
                                              height="{$urls.no_picture_image.bySize.home_default.height}"/>
                                     {/if}
-                                </picture>
-                            {/if}
+                                {/if}
+                            </picture>
                         </a>
+
+                        {* Pour debug : afficher les images disponibles *}
+{*                        {if isset($smarty.get.debughover)}*}
+{*                            <pre>{debug var=$product.images}</pre>*}
+{*                        {/if}*}
                     {/block}
+
 
                     {hook h='displayCustomProductLabel' product=$product}
 
