@@ -675,5 +675,9 @@ function logMessage($message)
     global $logFilePath;
     $timestamp = date('Y-m-d H:i:s');
     $logEntry  = "[$timestamp] $message\n";
+
+    dump($logFilePath);
+    exit;
+
     file_put_contents($logFilePath, $logEntry, FILE_APPEND | LOCK_EX);
 }

@@ -76,33 +76,30 @@ class FrontController extends FrontControllerCore
             $id_customer = (int)$this->context->customer->id;
             $default_address_id = null;
 
-            // Vérifie si une valeur est déjà stockée en cache dans le cookie
             if (isset($this->context->cookie->default_address_id_cached)) {
                 $default_address_id = (int)$this->context->cookie->default_address_id_cached;
             } else {
-                // Sinon, récupération en BDD
-                $id_address_default = (int)Db::getInstance()->getValue('
-            SELECT id_address_default FROM `'._DB_PREFIX_.'customer` 
-            WHERE id_customer = '.$id_customer
-                );
+                $sql = "SELECT id_address_default FROM ps_customer WHERE id_customer = $id_customer LIMIT 1";
 
-                if ($id_address_default) {
-                    $default_address_id = $id_address_default;
+                $row = Db::getInstance()->executeS($sql);
+
+                if (!empty($row) && isset($row['id_address_default']) && $row['id_address_default']) {
+                    $default_address_id = (int)$row['id_address_default'];
                 } else {
-                    $id_address_delivery = (int)Db::getInstance()->getValue('
-                SELECT id_address_delivery FROM `'._DB_PREFIX_.'orders`
-                WHERE id_customer = '.$id_customer.'
-                ORDER BY id_order DESC LIMIT 1
-            ');
+                    $sql = 'SELECT id_address_delivery 
+                FROM `'._DB_PREFIX_.'orders` 
+                WHERE id_customer = '.(int)$id_customer.' 
+                ORDER BY id_order DESC 
+                LIMIT 1';
+                    $row = Db::getInstance()->executeS($sql);
 
-                    if ($id_address_delivery) {
-                        $default_address_id = $id_address_delivery;
+                    if (!empty($row) && isset($row['id_address_delivery']) && $row['id_address_delivery']) {
+                        $default_address_id = (int)$row['id_address_delivery'];
                     } else {
                         $default_address_id = (int)Address::getFirstCustomerAddressId($id_customer);
                     }
                 }
 
-                // Met en cache dans le cookie
                 if ($default_address_id) {
                     $this->context->cookie->default_address_id_cached = $default_address_id;
                 }
