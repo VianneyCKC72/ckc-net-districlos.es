@@ -269,7 +269,7 @@
                                         <div class="row">
                                             <div class="col-md-2 position-relative d-flex">
                                                 {assign var=productPackImageIds value="`$productPack.id_product`-`$productPack.image.id_image`"}
-                                                <div style="padding: 20px;box-shadow: 0 10px 20px #0000000d;width: 100%;" class="dis_flex">
+                                                <div style="padding: 20px;box-shadow: 0 10px 20px #0000000d;width: 100%;" class="d-flex">
                                                     <img src="{$pmlink->getImageLink($productPack.presentation.link_rewrite, $productPackImageIds, $imageFormatProductSlideshow)}" alt="{$productPack.image.legend}" style="width: auto;max-height: 190px;max-width: 100%;margin: auto;">
                                                 </div>
                                                 <div class="position-absolute w-100 d-flex" style="bottom: -16px !important;">
