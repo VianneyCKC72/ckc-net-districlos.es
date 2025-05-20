@@ -220,20 +220,17 @@
                     {block name='product_tabs'}
                         <div class="tabs product-tabs">
                             <ul class="nav nav-tabs" role="tablist">
-                                <li class="nav-item position-relative active">
+                                <li class="nav-item">
                                     <a class="nav-link active js-product-nav-active" href="#kit_content"
-                                       role="tab">
+                                       data-toggle="tab" role="tab" aria-controls="kit_content" aria-selected="true">
                                         Contenu du kit
                                     </a>
                                 </li>
                                 {if $product.description}
                                     <li class="nav-item">
-                                        <a class="nav-link" data-toggle="tab" href="#description" role="tab" aria-controls="description"
-
-                                                {if $product.description} aria-selected="true"
-                                                {/if}>
-
-                                            {l s='Description' d='Shop.Theme.Catalog'}</a>
+                                        <a class="nav-link" data-toggle="tab" href="#description" role="tab" aria-controls="description">
+                                            {l s='Description' d='Shop.Theme.Catalog'}
+                                        </a>
                                     </li>
                                 {/if}
                                 <li class="nav-item">
