@@ -57,7 +57,7 @@
             </form>
         </div>
         <div class="col-img">
-            <img class="img-cover" src="/img/photo-portail-newsletter.png" alt=""/>
+            <img class="img-cover" src="/img/photo-portail-newsletter.png" alt="Banière newsletter" loading="lazy"/>
         </div>
     </div>
 {elseif $page.page_name == 'checkout'}

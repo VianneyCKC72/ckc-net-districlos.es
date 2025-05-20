@@ -22,13 +22,14 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
- 
+
 {function renderLogo}
   <a href="{$urls.pages.index}">
     <img
       class="logo img-fluid"
       src="{$shop.logo_details.src}"
       alt="{$shop.name}"
+      loading="lazy"
       width="{$shop.logo_details.width}"
       height="{$shop.logo_details.height}">
   </a>
