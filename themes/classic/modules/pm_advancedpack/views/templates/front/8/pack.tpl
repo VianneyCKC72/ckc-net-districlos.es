@@ -221,19 +221,14 @@
                         <div class="tabs product-tabs">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item position-relative active">
-                                    <a class="nav-link" href="#kit_content"
+                                    <a class="nav-link active js-product-nav-active" href="#kit_content"
                                        role="tab">
                                         Contenu du kit
-                                        <span class="arrow_tab"> > </span>
                                     </a>
                                 </li>
                                 {if $product.description}
                                     <li class="nav-item">
-                                        <a class="nav-link
-
-                      {if $product.description} active js-product-nav-active
-
-                      {/if}" data-toggle="tab" href="#description" role="tab" aria-controls="description"
+                                        <a class="nav-link" data-toggle="tab" href="#description" role="tab" aria-controls="description"
 
                                                 {if $product.description} aria-selected="true"
                                                 {/if}>
@@ -418,9 +413,9 @@
 
                                 {foreach from=$product.extraContent item=extra key=extraKey}
                                 <div class="tab-pane fade in {$extra.attr.class}" id="extra-{$extraKey}" role="tabpanel"
-                                {foreach $extra.attr as $key => $val} {$key}="{$val}" {/foreach}>
-                                {$extra.content nofilter}
-                            </div>
+                                    {foreach $extra.attr as $key => $val} {$key}="{$val}" {/foreach}>
+                                    {$extra.content nofilter}
+                                </div>
                             {/foreach}
                         </div>
                     {/block}
