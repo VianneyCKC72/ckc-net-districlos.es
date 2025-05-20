@@ -266,7 +266,7 @@
                             <div class="tab-content" id="tab-content">
                                 <div class="tab-pane active js-product-tab-active" id="kit_content" role="tabpanel">
                                     {foreach from=$productsPackUnique item=productPack name=productPack_list}
-                                        <div class="row">
+                                        <div class="row mb-5">
                                             <div class="col-md-2 position-relative d-flex">
                                                 {assign var=productPackImageIds value="`$productPack.id_product`-`$productPack.image.id_image`"}
                                                 <div style="padding: 20px;box-shadow: 0 10px 20px #0000000d;width: 100%;" class="d-flex">
