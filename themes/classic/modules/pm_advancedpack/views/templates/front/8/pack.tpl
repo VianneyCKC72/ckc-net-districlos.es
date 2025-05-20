@@ -267,12 +267,12 @@
                                 <div class="tab-pane active js-product-tab-active" id="kit_content" role="tabpanel">
                                     {foreach from=$productsPackUnique item=productPack name=productPack_list}
                                         <div class="row">
-                                            <div class="col-md-2 pos_relative dis_flex">
+                                            <div class="col-md-2 position-relative d-flex">
                                                 {assign var=productPackImageIds value="`$productPack.id_product`-`$productPack.image.id_image`"}
                                                 <div style="padding: 20px;box-shadow: 0 10px 20px #0000000d;width: 100%;" class="dis_flex">
                                                     <img src="{$pmlink->getImageLink($productPack.presentation.link_rewrite, $productPackImageIds, $imageFormatProductSlideshow)}" alt="{$productPack.image.legend}" style="width: auto;max-height: 190px;max-width: 100%;margin: auto;">
                                                 </div>
-                                                <div class="pos_absolute w-100 dis_flex" style="bottom: -16px !important;">
+                                                <div class="position-absolute w-100 d-flex" style="bottom: -16px !important;">
                                                     <span class="text-center m-auto" style="padding: 5px 20px;background-color: #79C144;width: 83px;color: #fff;font-weight: 600;font-size: 16px;">x{$productPack.quantity}</span>
                                                 </div>
                                             </div>
