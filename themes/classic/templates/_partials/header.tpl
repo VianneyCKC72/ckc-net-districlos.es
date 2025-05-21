@@ -16,10 +16,13 @@
 
             <!-- Logo Desktop (Visible seulement à partir de md) -->
             <div class="d-none d-md-block">
-                {if $shop.logo_details}
+                {if (($page.page_name == 'authentication' || $page.page_name == 'registration') && $espace_pro == 1) || $env_pro == 1}
+                    <img class="desktop_only" width="180" src="/img/DISTRICLOS_pro_logo.png" alt="{$shop.name} Pro" />
+                {elseif $shop.logo_details}
                     {renderLogo}
                 {/if}
             </div>
+
 
             <!-- Bouton menu (Visible uniquement sur Desktop) -->
             <div class="menu-button d-none d-md-block">

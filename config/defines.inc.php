@@ -24,10 +24,19 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
 
+$authorizedDebugIps = array('91.172.226.76'); // Ajoute d'autres IP ici si besoin
+
 /* Debug only */
-if (!defined('_PS_MODE_DEV_')) {
-define('_PS_MODE_DEV_', true);
+if (in_array($_SERVER['REMOTE_ADDR'], $authorizedDebugIps)) {
+    if (!defined('_PS_MODE_DEV_')) {
+        define('_PS_MODE_DEV_', true);
+    }
+} else {
+    if (!defined('_PS_MODE_DEV_')) {
+        define('_PS_MODE_DEV_', false);
+    }
 }
+
 /* Compatibility warning */
 if (!defined('_PS_DISPLAY_COMPATIBILITY_WARNING_')) {
 define('_PS_DISPLAY_COMPATIBILITY_WARNING_', false);
