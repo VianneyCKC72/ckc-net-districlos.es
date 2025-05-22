@@ -36,6 +36,7 @@ class Ckc_Syncdata_Tx extends Module
             && $this->registerhook('actionOrderSlipAdd')
             && $this->registerHook('actionCartSave')
             && $this->registerHook('actionPaymentCCAdd')
+            && $this->registerHook('actionObjectOrderCarrierAddAfter')
             && $this->installDb()
             && Configuration::updateValue('CKC_SYNCDATA_TX_TARGET_URL', '')
             && Configuration::updateValue('CKC_SYNCDATA_TX_API_TOKEN', '');
