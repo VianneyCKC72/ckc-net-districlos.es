@@ -394,7 +394,7 @@ class Ckc_Syncdata_Tx extends Module
                 break;
         }
 
-        if ($type === 'cart') {
+        if ($type === 'cart' || $type === 'order_carrier') {
             // La synchro du panier est déjà dans la queue, on ne fait pas de cURL ;)
             return;
         }
