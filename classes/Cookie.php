@@ -369,6 +369,8 @@ class CookieCore
          * count in case of multi-byte characters.
          */
         if (strlen($this->_name . $content) > 4096) {
+            die('Cookie too large: ' . strlen($this->_name . $content));
+
             throw new PrestaShopException('Error during setting a cookie. Combined size of name and value cannot exceed 4096 characters. Larger cookie is not compliant with RFC 2965 and will not be accepted by the browser.');
         }
 
