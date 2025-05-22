@@ -78,17 +78,6 @@ class OrderCarrierCore extends ObjectModel
         ],
     ];
 
-    public function add($autodate = true, $nullValues = false)
-    {
-        if (parent::add($autodate, $nullValues)) {
-            Hook::exec('actionObjectOrderCarrierAddAfter', ['object' => $this]);
-
-            return true;
-        }
-
-        return false;
-    }
-
     /**
      * @param Order $order Required
      *
