@@ -344,6 +344,13 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
 
                 $result = ['status' => 'order_payment_created', 'id_order_payment' => $detail['id_order_payment']];
                 break;
+            case 'order_carrier':
+                foreach ($datas['order_carrier'] as $detail) {
+                    Db::getInstance()->insert('order_carrier', $detail);
+                }
+
+                $result = ['status' => 'order_carrier_created', 'id_order_carrier' => $detail['id_order_carrier']];
+                break;
             case 'order_state':
                 $id_order = (int)$payload['entity_id'];
                 $new_state = (int)$datas['new_order_state'];

@@ -195,7 +195,7 @@ class Ckc_Syncdata_Tx extends Module
     {
         $this->syncToRemote('order', $params['order']->id, 'create');
     }
-    
+
     public function hookActionOrderStatusUpdate($params)
     {
         $order = new Order((int)$params['id_order']);
@@ -208,15 +208,20 @@ class Ckc_Syncdata_Tx extends Module
     {
         $this->syncToRemote('cart', $params['cart']->id, 'update');
     }
-    
+
     public function hookActionOrderSlipAdd($params)
     {
         $this->syncToRemote('order_slip', $params['order']->id, 'create', $params);
     }
-    
+
     public function hookActionPaymentCCAdd($params)
     {
         $this->syncToRemote('order_payment', $params['paymentCC']->id, 'create', $params);
+    }
+
+    public function hookActionObjectOrderCarrierAddAfter($params)
+    {
+        $this->syncToRemote('order_carrier', $params['object']->id, 'create', $params);
     }
 
     private function syncToRemote($type, $id, $action, $additionnalData = null)
@@ -234,14 +239,14 @@ class Ckc_Syncdata_Tx extends Module
                 if (Validate::isLoadedObject($object)) {
                     $datas = [];
                     $datas['customer'] = $object->getFields();
-                
+
                     // Récupération des groupes associés
                     $groups = Db::getInstance()->executeS('
                         SELECT id_group 
                         FROM '._DB_PREFIX_.'customer_group 
                         WHERE id_customer = '.(int)$object->id
                     );
-                
+
                     $datas['customer_groups'] = array_map(function ($g) {
                         return (int)$g['id_group'];
                     }, $groups);
@@ -260,30 +265,30 @@ class Ckc_Syncdata_Tx extends Module
                     $datas = [];
                     // Commande principale
                     $datas['order'] = $object->getFields();
-                    
+
                     // Détails de la commande
                     $datas['order_details'] = $object->getOrderDetailList();
-                    
+
                     // Historique
                     $datas['order_history'] = Db::getInstance()->executeS(
                         'SELECT * FROM '._DB_PREFIX_.'order_history WHERE id_order = '.(int)$object->id
                     );
-                    
+
                     // Invoices
                     $datas['order_invoice'] = Db::getInstance()->executeS(
                         'SELECT * FROM '._DB_PREFIX_.'order_invoice WHERE id_order = '.(int)$object->id
                     );
-                    
+
                     // Payments
                     $datas['order_payment'] = Db::getInstance()->executeS(
                         'SELECT * FROM '._DB_PREFIX_.'order_payment WHERE order_reference = "'.pSQL($object->reference).'"'
                     );
-                    
+
                     // Carriers
                     $datas['order_carrier'] = Db::getInstance()->executeS(
                         'SELECT * FROM '._DB_PREFIX_.'order_carrier WHERE id_order = '.(int)$object->id
                     );
-                    
+
                     // Cart rules (réductions)
                     $datas['order_cart_rule'] = Db::getInstance()->executeS(
                         'SELECT * FROM '._DB_PREFIX_.'order_cart_rule WHERE id_order = '.(int)$object->id
@@ -294,13 +299,13 @@ class Ckc_Syncdata_Tx extends Module
                 $object = new Order($id);
                 if (Validate::isLoadedObject($object)) {
                     $datas = $object->getFields();
-                
+
                     $orderHistory = Db::getInstance()->executeS('
                         SELECT * FROM '._DB_PREFIX_.'order_history
                         WHERE id_order = '.(int)$object->id.'
                         ORDER BY date_add DESC
                     ');
-                
+
                     $datas['order_history'] = $orderHistory;
                     $datas['new_order_state'] = is_object($additionnalData) ? $additionnalData->id : (int)$additionnalData;
                 }
@@ -311,29 +316,29 @@ class Ckc_Syncdata_Tx extends Module
                     $datas = [];
                     // Commande principale
                     $datas['order'] = $object->getFields();
-                    
+
                     // Order slip
                     $datas['order_slip'] = Db::getInstance()->executeS(
                         'SELECT * FROM '._DB_PREFIX_.'order_slip WHERE id_order = "'.pSQL($object->id).'"'
                     );
-                    
+
                     $datas['order_details'] = Db::getInstance()->executeS(
                         'SELECT * FROM '._DB_PREFIX_.'order_detail WHERE id_order = "'.pSQL($object->id).'"'
                     );
-                                        
+
                     $orderSlipIdsRaw = Db::getInstance()->executeS(
                         'SELECT id_order_slip FROM '._DB_PREFIX_.'order_slip WHERE id_order = '.(int)$object->id
                     );
                     $orderSlipIds = array_map('intval', array_column($orderSlipIdsRaw, 'id_order_slip'));
-                    
+
                     $datas['order_slip_detail'] = !empty($orderSlipIds)
                         ? Db::getInstance()->executeS(
                             'SELECT * FROM '._DB_PREFIX_.'order_slip_detail WHERE id_order_slip IN ('.implode(',', $orderSlipIds).')'
                         )
                         : [];
-                            
+
                 }
-                
+
                 break;
             case 'order_payment':
                 $object = new OrderPayment($id);
@@ -344,8 +349,19 @@ class Ckc_Syncdata_Tx extends Module
                         'SELECT * FROM '._DB_PREFIX_.'order_payment WHERE id_order_payment = "'.pSQL($object->id).'"'
                     );
                 }
-                
-                break;    
+
+                break;
+            case 'order_carrier':
+                $object = new OrderCarrier($id);
+                if (Validate::isLoadedObject($object)) {
+                    $datas = [];
+                    // Paiement
+                    $datas['order_carrier'] = Db::getInstance()->executeS(
+                        'SELECT * FROM '._DB_PREFIX_.'order_carrier WHERE id_order_carrier = "'.pSQL($object->id).'"'
+                    );
+                }
+
+                break;
             case 'cart':
                 $object = new Cart($id);
                 if (Validate::isLoadedObject($object)) {
