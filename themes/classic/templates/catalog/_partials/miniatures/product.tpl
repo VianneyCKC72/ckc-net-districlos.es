@@ -147,7 +147,7 @@
                     <div class="product-info-custom-block-miniature">
                         {block name='product_name'}
                             {if $page.page_name == 'category'}
-                                <h2 class="h3 product-title"><a href="{$product.url}"
+                                <h2 class="h3 product-title"><a href="{$link->getProductLink($product.id_product, $product.link_rewrite)}"
                                                                 content="{$product.url}">{$product.name}</a></h2>
                             {else}
                                 <div class="h3 product-title"><a href="{$product.url}"
