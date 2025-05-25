@@ -26,7 +26,7 @@ function initCustomColorSelect() {
             </div>
         `);
 
-        if (isChecked) {
+        if (isChecked && $selectedOption.children().length === 0) {
             $selectedOption.html(`<span class="color-dot" style="background-color: ${color};"></span> ${title}`);
         }
 
