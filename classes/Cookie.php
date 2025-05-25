@@ -228,6 +228,7 @@ class CookieCore
         if (!$this->_modified && (!array_key_exists($key, $this->_content) || $this->_content[$key] != $value)) {
             $this->_modified = true;
         }
+
         $this->_content[$key] = $value;
     }
 
