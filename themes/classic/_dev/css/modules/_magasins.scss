@@ -126,7 +126,17 @@
           display: block;
           font-size: 1rem;
           font-weight: 400;
+          padding-right: 5px;
         }
+        .cp {
+          padding-right: 5px;
+        }
+      }
+
+      .telephone {
+        float: left;
+        width: 100%;
+        margin-bottom: 5px;
       }
 
       // Contact
@@ -187,6 +197,9 @@
         font-size: 13px;
         color: $black;
         font-weight: 400;
+        .jours {
+          padding-right: 5px;
+        }
       }
 
       // Bouton
@@ -239,12 +252,22 @@
   min-height: 0;
   max-width: 250px;
 
+  .email {
+    width: 100%;
+    float:left;
+  }
+  .jours {
+    padding-right:5px;
+  }
+  .telephone {
+    margin-bottom: 15px;
+  }
   .block-title {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-direction: row;
-
+    margin-bottom: 5px;
     .zone-titre {
       display: flex;
       flex-direction: column;
@@ -268,7 +291,6 @@
       }
     }
   }
-
   .block-contact,
   .telephone,
   .small-title,
@@ -276,7 +298,9 @@
   .block-horaire,
   .block-adresse {
     color: white;
-
+    .adresse, .cp {
+      padding-right: 5px;
+    }
     img {
       filter: invert(1) brightness(1000%);
     }
