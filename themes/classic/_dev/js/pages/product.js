@@ -16,7 +16,6 @@ $(document).ready(function () {
 
     $(document).on('ajaxComplete', function (event, xhr, settings) {
         if (settings.url.includes('calculator')) {
-            alert('ok');
             let price = $('.product-price.price').html()
             price = price.replace('&nbsp;€', '');
             price = price.replace(',', '.');
