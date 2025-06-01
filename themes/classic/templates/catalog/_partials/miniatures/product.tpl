@@ -182,6 +182,7 @@
                         {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')}
                             <p class="product_descr">
                                 {$product.description|truncate:200|strip_tags:0}
+                                {hook h='displayCkcProductExtraAdvice' product=$product}
                             </p>
                         {/if}
 
