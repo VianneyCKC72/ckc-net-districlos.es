@@ -288,7 +288,10 @@
 {*                                        <hr>*}
 {*                                        {$product.description}*}
 {*                                        <hr>*}
-                                        <div class="product-description">{$product.description nofilter}</div>
+                                        <div class="product-description">
+                                            {$product.description nofilter}
+                                            {hook h='displayCkcProductExtraAdvice' product=$product}
+                                        </div>
 {*                                        <div class="product-description">test</div>*}
                                     {/block}
 
