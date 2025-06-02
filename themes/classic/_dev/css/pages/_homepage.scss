@@ -320,7 +320,8 @@
     color: #fff;
   }
 }
-.btn-rouge-custom{
+.btn-rouge-custom,
+.has-discount .btn-rouge-custom{
   background-color: $red;
   color: $white;
   padding: 8px 18px;
@@ -333,7 +334,8 @@
   transition: all 0.3s ease-out;
 }
 
-.btn-rouge-custom:hover{
+.btn-rouge-custom:hover,
+.has-discount .btn-rouge-custom:hover{
   background-color: transparent;
   color: $red;
   border: 2px solid $red;

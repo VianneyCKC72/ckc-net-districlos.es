@@ -136,7 +136,7 @@ $(document).ready(function () {
             `);
         }
     });
-    if ($('body#category').length) {
+    if ($('body#category').length || $('body#index').length || $('body#product').length) {
         $('.discount_type_flag').each(function () {
             let elementFlagParent = $(this).parent()
             if (elementFlagParent.find(".pastille_fr").length !== 0){
