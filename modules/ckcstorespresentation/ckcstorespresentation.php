@@ -74,7 +74,6 @@ class Ckcstorespresentation extends Module implements WidgetInterface
         require_once __DIR__ . '/sql/install.php'; // sql querries
 
         return parent::install() &&
-            $this->registerHook('header') &&
             $this->registerHook('displayFooter') &&
             $this->registerHook('displayElementor') &&
             $this->registerHook('displayLeftColumn') &&
@@ -554,7 +553,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
                         // Vérifier si le dossier 'uploads' existe, sinon le créer
                         $uploadsDir =  __DIR__ . DIRECTORY_SEPARATOR . 'uploads';
                         if (!file_exists($uploadsDir)) {
-                            mkdir($uploadsDir, 0755, true); // 
+                            mkdir($uploadsDir, 0755, true); //
                         }
                         $moveResult = move_uploaded_file($_FILES['CKCSTORESPRESENTATION_IMG_PATH']['tmp_name'], $uploadsDir . DIRECTORY_SEPARATOR . $file_name);
 
@@ -616,7 +615,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
                     // Vérifier si le dossier 'uploads' existe, sinon le créer
                     $uploadsDir =  __DIR__ . DIRECTORY_SEPARATOR . 'uploads';
                     if (!file_exists($uploadsDir)) {
-                        mkdir($uploadsDir, 0755, true); // 
+                        mkdir($uploadsDir, 0755, true); //
                     }
                     $moveResult = move_uploaded_file($_FILES['CKCSTORESPRESENTATION_IMG_PATH']['tmp_name'], $uploadsDir . DIRECTORY_SEPARATOR . $file_name);
 
@@ -654,7 +653,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
     /**
      * Add the CSS & JavaScript files you want to be added on the FO.
      */
-    public function hookHeader()
+    public function hookDisplayHeader()
     {
         $this->context->controller->addJS($this->_path.'/views/js/front.js');
         $this->context->controller->addCSS($this->_path.'/views/css/front.css');

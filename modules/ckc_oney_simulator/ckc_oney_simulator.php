@@ -20,13 +20,13 @@ class ckc_oney_simulator extends Module
     {
         return parent::install() &&
             $this->registerHook('displayShoppingCartFooter') &&
-            $this->registerHook('header');
+            $this->registerHook('displayHeader');
     }
 
-    public function hookHeader()
+    public function hookDisplayHeader()
     {
         $controller = Tools::getValue('controller');
-    
+
         if ($controller === 'cart') {
             $this->context->controller->registerStylesheet(
                 'oneysimulator-css',
@@ -45,7 +45,7 @@ class ckc_oney_simulator extends Module
                 ]
             );
         }
-        
+
         if ($controller === 'product') {
             $this->context->controller->registerJavascript(
                 'oney-loader',

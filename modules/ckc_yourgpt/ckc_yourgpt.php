@@ -55,7 +55,7 @@ class Ckc_yourgpt extends Module
         Configuration::updateValue('CKC_YOURGPT_LIVE_MODE', false);
 
         return parent::install() &&
-            $this->registerHook('header') &&
+            $this->registerHook('displayHeader') &&
             $this->registerHook('displayBackOfficeHeader') &&
             $this->registerHook('displayBeforeBodyClosingTag');
     }
@@ -117,7 +117,7 @@ class Ckc_yourgpt extends Module
 
         $options_week = array(
             array(
-              'id_option' => 1,  
+              'id_option' => 1,
               'name' => $this->l('Monday'),
               'value' => 'Monday'
             ),
@@ -310,7 +310,7 @@ class Ckc_yourgpt extends Module
     /**
      * Add the CSS & JavaScript files you want to be added on the FO.
      */
-    public function hookHeader()
+    public function hookDisplayHeader()
     {
         $this->context->controller->addJS($this->_path.'/views/js/front.js');
         $this->context->controller->addCSS($this->_path.'/views/css/front.css');

@@ -20,11 +20,11 @@ class ckc_honeypot extends Module
     {
         return parent::install() &&
             $this->registerHook('additionalCustomerFormFields') &&
-            $this->registerHook('header') &&
+            $this->registerHook('displayHeader') &&
             $this->registerHook('actionObjectCustomerAddBefore');
     }
 
-    public function hookHeader()
+    public function hookDisplayHeader()
     {
         $this->context->controller->registerStylesheet(
             'honeypotmodule-css',
