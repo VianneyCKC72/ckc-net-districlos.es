@@ -49,9 +49,28 @@
 		</form>
 	</div>
 </div>
+
+<div class="panel panel-promobanner">
+	<h3 style="margin-top: 1px !important; border: none; margin-bottom: 5px; margin-left: -7px; background: none;" class="h3-ckctitle ckch3"><i class="icon icon-link"></i> {l s='Ajouter du/des texte(s) pour la promotion PRO' mod='ckcpromotionbanner'}</h3>
+	<p class="help-block">{l s='If you have several promotional texts to show, you can add as many as necessary here (if only one too)' mod='ckcpromotionbanner'}</p>
+	<div class="mt-5 id-select-container">
+		<form id="id_promotextsPro" class="context-form" action="{$moduleAdminLink}" method="post" enctype="multipart/form-data" novalidate>
+			<h4>{l s='Mettez un texte promotionnel PRO à ajouter :' mod='ckcpromotionbanner'}</h4>
+			<div class="input-group mb-3">
+				<input type="text" id="idInputPro" class="form-control" placeholder="{l s='Put a promo text to add' mod='ckcpromotionbanner'}">
+				<div class="btn btn-primary" id="addIdButtonPro">+</div>
+			</div>
+			<div id="selectedIdsPro"></div>
+			<input type="hidden" id="idsFieldPro" name="id_promotextsPro" form="id_promotextsPro">
+			<input class="btn btn-success mt-3 saveExceptions" type="submit" value="{l s='Save the list of promo texts' mod='ckcpromotionbanner'}" form="id_promotextsPro">
+		</form>
+	</div>
+</div>
+
 <script type="text/javascript">
 	var moduleAdminLink = "{$moduleAdminLink|escape:'htmlall':'UTF-8'}";
 	var promotexts = `{$promotexts}`;
+	var promotextsPro = `{$promotextsPro}`;
 
 	let selectedPromotexts = promotexts.split(",");
 	selectedPromotexts.forEach(function callback (text, index) {
@@ -93,6 +112,47 @@
 				}
 			});
 			$("#idsField").val(selectedPromotexts.join(","));
+		}
+
+		// Enregistrement textes promo Pro
+
+		let selectedPromotextsPro = promotextsPro.split(",");
+		selectedPromotextsPro.forEach(function callback (text, index) {
+			if(text != ""){
+				elementTagPro = '<span class="tag" data-id="'+index+'">'+text+' <span class="removePro">✖</span></span>'
+				$("#selectedIdsPro").append(elementTagPro);
+			}
+		});
+
+		$("#idsFieldPro").val(promotextsPro)
+
+		$("#addIdButtonPro").click(function(e) {
+			e.preventDefault();
+			let newIdPro = $("#idInputPro").val().trim();
+			if (newIdPro && selectedPromotextsPro.indexOf(newIdPro) < 0) {
+				if(newIdPro != ""){
+					selectedPromotextsPro.push(newIdPro);
+					updateIdsDisplayPro();
+					$("#idInputPro").val("");
+				}
+			}
+		});
+
+		$(document).on("click", ".removePro", function() {
+			let indexPro = $(this).parent().attr("data-id");
+			selectedPromotextsPro = selectedPromotextsPro.filter(text => text !== selectedPromotextsPro[indexPro]);
+			updateIdsDisplayPro();
+		});
+
+		function updateIdsDisplayPro() {
+			$("#selectedIdsPro").empty();
+			selectedPromotextsPro.forEach(function callback (text, index) {
+				if(text != ""){
+					elementTagPro = '<span class="tag" data-id="'+index+'">'+text+' <span class="removePro">✖</span></span>'
+					$("#selectedIdsPro").append(elementTagPro);
+				}
+			});
+			$("#idsFieldPro").val(selectedPromotextsPro.join(","));
 		}
 	});
 
