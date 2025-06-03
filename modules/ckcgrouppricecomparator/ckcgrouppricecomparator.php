@@ -62,7 +62,7 @@ class Ckcgrouppricecomparator extends Module
         Configuration::updateValue('CKCGROUPPRICECOMPARATOR_LIVE_MODE', false);
 
         return parent::install() &&
-            $this->registerHook('header') &&
+            $this->registerHook('displayHeader') &&
             $this->registerHook('displayBackOfficeHeader');
     }
 
@@ -119,7 +119,7 @@ class Ckcgrouppricecomparator extends Module
                         $productsResult[$key]['name'] = $tempName;
                         $productsResult[$key]['priceStandard'] = number_format($productInstance->price + $combination->price, 2);
                         $productsResult[$key]['reduction'] = number_format(($pricePro['price'] - $productInstance->price - $combination->price), 2);
-                    } 
+                    }
             } else {
                 if(null != $pricePro && $pricePro['price'] > $productInstance->price && $pricePro['id_group'] == 10) {
                     $productsResult[$key]['id_product'] = $product['id_product'];
@@ -246,7 +246,7 @@ class Ckcgrouppricecomparator extends Module
     /**
      * Add the CSS & JavaScript files you want to be added on the FO.
      */
-    public function hookHeader()
+    public function hookDisplayHeader()
     {
         $this->context->controller->addJS($this->_path.'/views/js/front.js');
         $this->context->controller->addCSS($this->_path.'/views/css/front.css');
