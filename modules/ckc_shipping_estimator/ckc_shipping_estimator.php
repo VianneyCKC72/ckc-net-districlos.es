@@ -23,10 +23,10 @@ class Ckc_Shipping_Estimator extends Module
     {
         return parent::install()
             && $this->registerHook('displayFooterProduct')
-            && $this->registerHook('header');
+            && $this->registerHook('displayHeader');
     }
 
-    public function hookHeader()
+    public function hookDisplayHeader()
     {
         $this->context->controller->registerStylesheet(
             'ckc_shipping_estimator-css',
