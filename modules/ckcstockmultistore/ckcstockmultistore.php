@@ -129,7 +129,7 @@ class Ckcstockmultistore extends Module
         include(dirname(__FILE__) . '/sql/install.php');
 
         return parent::install() &&
-            $this->registerHook('header') &&
+            $this->registerHook('displayHeader') &&
             $this->registerHook('displayAdminOrderMain') &&
             $this->registerHook('actionOrderGridDefinitionModifier') &&
             $this->registerHook('actionOrderGridQueryBuilderModifier') &&
@@ -420,7 +420,7 @@ class Ckcstockmultistore extends Module
     /**
      * Add the CSS & JavaScript files you want to be added on the FO.
      */
-    public function hookHeader()
+    public function hookDisplayHeader()
     {
         $this->context->controller->addJS($this->_path.'/views/js/front.js');
         $this->context->controller->addCSS($this->_path.'/views/css/front.css');

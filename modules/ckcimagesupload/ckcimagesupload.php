@@ -61,10 +61,10 @@ class Ckcimagesupload extends Module
      */
     public function install()
     {
-    
+
 
         return parent::install() &&
-            $this->registerHook('header') &&
+            $this->registerHook('displayHeader') &&
             $this->registerHook('displayBackOfficeHeader');
     }
 
@@ -85,7 +85,7 @@ class Ckcimagesupload extends Module
             'module_dir' => $this->_path,
             'domain' =>  Tools::getShopDomain(true)
         ]);
-    
+
         return $output . $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
     }
 
@@ -124,57 +124,57 @@ class Ckcimagesupload extends Module
     //     return $helper->generateForm([$form]);
     // }
 
-    protected function getUploadedImages() 
+    protected function getUploadedImages()
     {
         $uploadDir = _PS_MODULE_DIR_.$this->name.'/uploads/';
         $images = [];
-    
+
         foreach (glob($uploadDir . '*.{jpg,jpeg,png,webp}', GLOB_BRACE) as $filePath) {
             $images[] = basename($filePath);
         }
-    
+
         return $images;
     }
 
     protected function handleImageUpload()
     {
         $errors = [];
-    
+
         if (isset($_FILES['module_images']) && !empty($_FILES['module_images']['name'][0])) {
             $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
             $maxSize = 500 * 1024; // 500 Ko
             $maxFiles = 8;
-    
+
             $fileCount = count($_FILES['module_images']['name']);
-    
+
             if ($fileCount > $maxFiles) {
                 $errors[] = "Vous ne pouvez pas uploader plus de $maxFiles fichiers à la fois.";
                 return $errors;
             }
-    
+
             foreach ($_FILES['module_images']['name'] as $key => $name) {
                 $tmpName = $_FILES['module_images']['tmp_name'][$key];
                 $type = $_FILES['module_images']['type'][$key];
                 $size = $_FILES['module_images']['size'][$key];
-    
+
                 if (!in_array($type, $allowedTypes)) {
                     $errors[] = "Le fichier $name a un format non autorisé.";
                     continue;
                 }
-    
+
                 if ($size > $maxSize) {
                     $errors[] = "Le fichier $name dépasse la taille maximale autorisée de 500 Ko.";
                     continue;
                 }
-    
+
                 $ext = pathinfo($name, PATHINFO_EXTENSION);
                 $newName = uniqid() . '.' . $ext;
                 $uploadDir = _PS_MODULE_DIR_ . $this->name . '/uploads/';
-    
+
                 if (!file_exists($uploadDir)) {
                     mkdir($uploadDir, 0755, true);
                 }
-    
+
                 $destination = $uploadDir . $newName;
                 if (!move_uploaded_file($tmpName, $destination)) {
                     $errors[] = "Échec de l’upload du fichier $name.";
@@ -183,7 +183,7 @@ class Ckcimagesupload extends Module
         }
         return $errors;
     }
-    
+
 
     protected function handleImageDeletion($images)
     {
@@ -254,7 +254,7 @@ class Ckcimagesupload extends Module
     /**
      * Add the CSS & JavaScript files you want to be added on the FO.
      */
-    public function hookHeader()
+    public function hookDisplayHeader()
     {
         $this->context->controller->addJS($this->_path.'/views/js/front.js');
         $this->context->controller->addCSS($this->_path.'/views/css/front.css');

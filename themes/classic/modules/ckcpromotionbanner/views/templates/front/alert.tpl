@@ -28,18 +28,34 @@
         <span>
             <div class="container">
                 <div>
-                    {if isset($ckcpromobarretexts) && !empty($ckcpromobarretexts)}
+                    {if $env_pro == 1 OR Tools::getValue("ep") == 1}
+                        {if isset($ckcpromobarretextsPro) && !empty($ckcpromobarretextsPro)}
+                            {if $ckcpromobarretextsPro|@count > 1}
+                                <div class="ckcpromobarre-text-change-container">
+                            {foreach $ckcpromobarretextsPro as $promotextPro}
+                                <div class="ckcpromobarre-text" style="display: none;">
+                                    {$promotextPro nofilter}
+                                </div>
+                            {/foreach}
+                            </div>
+                            {elseif "" !== $ckcpromobarretextsPro}
+                                {$ckcpromobarretextsPro[0] nofilter}
+                            {/if}
+                        {/if}
+                    {else}
+                        {if isset($ckcpromobarretexts) && !empty($ckcpromobarretexts)}
                         {if $ckcpromobarretexts|@count > 1}
                             <div class="ckcpromobarre-text-change-container">
-                        {foreach $ckcpromobarretexts as $promotext}
-                            <div class="ckcpromobarre-text" style="display: none;">
-                                {$promotext nofilter}
+                            {foreach $ckcpromobarretexts as $promotext}
+                                <div class="ckcpromobarre-text" style="display: none;">
+                                    {$promotext nofilter}
+                                </div>
+                            {/foreach}
                             </div>
-                        {/foreach}
-                        </div>
                         {elseif "" !== $ckcpromobarretexts}
                             {$ckcpromobarretexts[0] nofilter}
                         {/if}
+                    {/if}
                     {/if}
                     {if $CKC_BARREPROMO_TIMER_DISPLAY == 1 && isset($CKC_BARREPROMO_TIMER) && $CKC_BARREPROMO_TIMER !== ""}
                         -
@@ -50,9 +66,9 @@
                 <div class="clients">Nos clients sont satisfaits : <strong>9.5/10</strong><img class="ico-stars" src="/img/cms/ico-stars.png" alt="ico-stars.png" /></div>
             </div>
         </span>
-{*        <button type="button" class="close close_once" data-dismiss="alert" aria-label="Close">*}
-{*            <span aria-hidden="true" class="button_barrepromo"><span class="button_text_barrepromo">{l s='Hide' mod='ckcpromotionbanner'}</span> &times;</span>*}
-{*        </button>*}
+        {*        <button type="button" class="close close_once" data-dismiss="alert" aria-label="Close">*}
+        {*            <span aria-hidden="true" class="button_barrepromo"><span class="button_text_barrepromo">{l s='Hide' mod='ckcpromotionbanner'}</span> &times;</span>*}
+        {*        </button>*}
     {else}
         <span>
             <div class="container">

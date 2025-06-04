@@ -59,7 +59,7 @@ class Ckc_configurator extends Module
 
         Configuration::updateValue('CKC_CONFIGURATOR_LIVE_MODE', false);
 
-        return parent::install() && $this->registerHook('header');
+        return parent::install() && $this->registerHook('displayHeader');
     }
 
     public function uninstall()
@@ -171,7 +171,7 @@ class Ckc_configurator extends Module
         }
     }
 
-    public function hookHeader()
+    public function hookDisplayHeader()
     {
         if($this->isLive()) {
             $this->context->controller->addCSS($this->_path.'/views/css/front.css');

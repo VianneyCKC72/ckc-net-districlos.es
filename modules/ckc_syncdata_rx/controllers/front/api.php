@@ -90,9 +90,9 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                 }
 
                 $id_order = (int)$datas['order']['id_order'];
-                $existing = new Order($id_order);
+                $existing = (int)Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'orders WHERE id_order = '.(int)$id_order) > 0;
 
-                if (Validate::isLoadedObject($existing)) {
+                if ($existing) {
                     if ($datas['order']['id_shop'] != 1) {
                         switch ($datas['order']['id_shop']) {
                             case 2: // DISTRICLOS LANGUEDOC
@@ -146,6 +146,57 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                         }
 
                         $datas['order']['id_shop'] = 1;
+                    }else if ($datas['order']['id_store']){
+                        switch ($datas['order']['id_store']) {
+                            case 8:  // DISTRICLOS LANGUEDOC
+                                $datas['order']['id_shop'] = 2;
+                                break;
+                            case 9:  // DISTRICLOS MAINE ET LOIRE
+                                $datas['order']['id_shop'] = 3;
+                                break;
+                            case 15: // DISTRICLOS VAR
+                                $datas['order']['id_shop'] = 4;
+                                break;
+                            case 5:  // DISTRICLOS EST
+                                $datas['order']['id_shop'] = 5;
+                                break;
+                            case 13: // DISTRICLOS SAVOIE
+                                $datas['order']['id_shop'] = 6;
+                                break;
+                            case 4:  // DISTRICLOS DROME
+                                $datas['order']['id_shop'] = 7;
+                                break;
+                            case 2:  // DISTRICLOS BOURGOGNE
+                                $datas['order']['id_shop'] = 8;
+                                break;
+                            case 10: // DISTRICLOS NORD
+                                $datas['order']['id_shop'] = 9;
+                                break;
+                            case 1:  // DISTRICLOS AUVERGNE
+                                $datas['order']['id_shop'] = 10;
+                                break;
+                            case 6:  // DISTRICLOS EURE
+                                $datas['order']['id_shop'] = 11;
+                                break;
+                            case 7:  // DISTRICLOS GIRONDE
+                                $datas['order']['id_shop'] = 17;
+                                break;
+                            case 14: // DISTRICLOS SEINE ET MARNE
+                                $datas['order']['id_shop'] = 21;
+                                break;
+                            case 12: // DISTRICLOS RHONE
+                                $datas['order']['id_shop'] = 22;
+                                break;
+                            case 11: // DISTRICLOS OCCITANIE
+                                $datas['order']['id_shop'] = 23;
+                                break;
+                            case 3:  // DISTRICLOS BRETAGNE
+                                $datas['order']['id_shop'] = 24;
+                                break;
+                            case 16: // DISTRICLOS LA GARDE
+                                $datas['order']['id_shop'] = 25;
+                                break;
+                        }
                     }
                     Db::getInstance()->update('orders', $datas['order'], 'id_order = ' . $id_order);
 
@@ -321,6 +372,57 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                         }
 
                         $datas['order']['id_shop'] = 1;
+                    }else{
+                        switch ($datas['order']['id_store']) {
+                            case 8:  // DISTRICLOS LANGUEDOC
+                                $datas['order']['id_shop'] = 2;
+                                break;
+                            case 9:  // DISTRICLOS MAINE ET LOIRE
+                                $datas['order']['id_shop'] = 3;
+                                break;
+                            case 15: // DISTRICLOS VAR
+                                $datas['order']['id_shop'] = 4;
+                                break;
+                            case 5:  // DISTRICLOS EST
+                                $datas['order']['id_shop'] = 5;
+                                break;
+                            case 13: // DISTRICLOS SAVOIE
+                                $datas['order']['id_shop'] = 6;
+                                break;
+                            case 4:  // DISTRICLOS DROME
+                                $datas['order']['id_shop'] = 7;
+                                break;
+                            case 2:  // DISTRICLOS BOURGOGNE
+                                $datas['order']['id_shop'] = 8;
+                                break;
+                            case 10: // DISTRICLOS NORD
+                                $datas['order']['id_shop'] = 9;
+                                break;
+                            case 1:  // DISTRICLOS AUVERGNE
+                                $datas['order']['id_shop'] = 10;
+                                break;
+                            case 6:  // DISTRICLOS EURE
+                                $datas['order']['id_shop'] = 11;
+                                break;
+                            case 7:  // DISTRICLOS GIRONDE
+                                $datas['order']['id_shop'] = 17;
+                                break;
+                            case 14: // DISTRICLOS SEINE ET MARNE
+                                $datas['order']['id_shop'] = 21;
+                                break;
+                            case 12: // DISTRICLOS RHONE
+                                $datas['order']['id_shop'] = 22;
+                                break;
+                            case 11: // DISTRICLOS OCCITANIE
+                                $datas['order']['id_shop'] = 23;
+                                break;
+                            case 3:  // DISTRICLOS BRETAGNE
+                                $datas['order']['id_shop'] = 24;
+                                break;
+                            case 16: // DISTRICLOS LA GARDE
+                                $datas['order']['id_shop'] = 25;
+                                break;
+                        }
                     }
                     Db::getInstance()->update('orders', $datas['order'], 'id_order = ' . $id_order);
 

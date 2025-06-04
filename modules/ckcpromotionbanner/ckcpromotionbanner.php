@@ -124,7 +124,7 @@ class Ckcpromotionbanner extends Module
         include(dirname(__FILE__) . '/sql/install.php');
 
         return parent::install() &&
-            $this->registerHook('header') &&
+            $this->registerHook('displayHeader') &&
             $this->callInstallTab() &&
             $this->registerHook('displayBackOfficeHeader') &&
             $this->registerHook('displayAfterBodyOpeningTag');
@@ -184,22 +184,40 @@ class Ckcpromotionbanner extends Module
             Tools::redirectAdmin($_SERVER['REQUEST_URI']);
         }
 
+        if (((bool)\Tools::isSubmit('id_promotextsPro')) == true) {
+            $this->saveExceptionsPro();
+
+            // Rafraîchir la page
+            Tools::redirectAdmin($_SERVER['REQUEST_URI']);
+        }
+
         $moduleAdminLink = $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]);
 
         $idPromotextsResult = \Configuration::get('CKC_BARREPROMO_TEXTE');
 
 
         if(null !== $idPromotextsResult && '' !== $idPromotextsResult ) {
-                $idPromotexts = unserialize(base64_decode($idPromotextsResult));
-                $promotexts = implode(",", $idPromotexts);
+            $idPromotexts = unserialize(base64_decode($idPromotextsResult));
+            $promotexts = implode(",", $idPromotexts);
         } else {
             $promotexts = '';
+        }
+
+        $idPromotextsResultPro = \Configuration::get('CKC_BARREPROMO_TEXTE_PRO');
+
+
+        if(null !== $idPromotextsResultPro && '' !== $idPromotextsResultPro ) {
+            $idPromotextsPro = unserialize(base64_decode($idPromotextsResultPro));
+            $promotextsPro = implode(",", $idPromotextsPro);
+        } else {
+            $promotextsPro = '';
         }
 
         $this->context->smarty->assign(array(
             'module_dir' => $this->_path,
             'moduleAdminLink' => $moduleAdminLink,
-            'promotexts' => $promotexts
+            'promotexts' => $promotexts,
+            'promotextsPro' => $promotextsPro
         ));
 
 
@@ -221,6 +239,21 @@ class Ckcpromotionbanner extends Module
             }
             $serializedData = base64_encode(serialize($tableauIdsExclure));
             Configuration::updateValue('CKC_BARREPROMO_TEXTE', $serializedData);
+        }
+    }
+
+    public function saveExceptionsPro(){
+        $exceptions = \Tools::getValue('id_promotextsPro');
+        if(null !== $exceptions) {
+            $arr = explode(',', $exceptions);
+            $tableauIdsExclure = [];
+            foreach ($arr as $exception) {
+                if($exception !== ''){
+                    $tableauIdsExclure[] = trim($exception);
+                }
+            }
+            $serializedData = base64_encode(serialize($tableauIdsExclure));
+            Configuration::updateValue('CKC_BARREPROMO_TEXTE_PRO', $serializedData);
         }
     }
 
@@ -370,6 +403,7 @@ class Ckcpromotionbanner extends Module
             'CKC_BARREPROMO_COLOR' => Configuration::get('CKC_BARREPROMO_COLOR',false),
             'CKC_BARREPROMO_TIMER' => Configuration::get('CKC_BARREPROMO_TIMER', false),
             'CKC_BARREPROMO_TEXTE' => Configuration::get('CKC_BARREPROMO_TEXTE',false),
+            'CKC_BARREPROMO_TEXTE_PRO' => Configuration::get('CKC_BARREPROMO_TEXTE_PRO',false),
             'CKC_BARREPROMO_TIMER_COLOR' => Configuration::get('CKC_BARREPROMO_TIMER_COLOR', false),
             'CKC_BARREPROMO_TIMER_DISPLAY' => Configuration::get('CKC_BARREPROMO_TIMER_DISPLAY', false),
         );
@@ -403,7 +437,7 @@ class Ckcpromotionbanner extends Module
     /**
      * Add the CSS & JavaScript files you want to be added on the FO.
      */
-    public function hookHeader()
+    public function hookDisplayHeader()
     {
         $this->context->controller->addJS($this->_path . '/views/js/front.js');
         $this->context->controller->addCSS($this->_path . '/views/css/front.css');
@@ -438,6 +472,17 @@ class Ckcpromotionbanner extends Module
 
                 $this->smarty->assign('ckcpromobarretexts', $promotexts);
 
+            } elseif ($key == 'CKC_BARREPROMO_TEXTE_PRO') {
+                $idPromotextsResultPro = Configuration::get($key);
+
+                if(null !== $idPromotextsResultPro && '' !== $idPromotextsResultPro ) {
+                    $promotextsPro = unserialize(base64_decode($idPromotextsResultPro));
+                } else {
+                    $promotextsPro = '';
+                }
+
+
+                $this->smarty->assign('ckcpromobarretextsPro', $promotextsPro);
             } else {
                 $this->smarty->assign($key, Configuration::get($key));
             }

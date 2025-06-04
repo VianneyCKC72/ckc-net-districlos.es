@@ -136,4 +136,27 @@ $(document).ready(function () {
             `);
         }
     });
+    if ($('body#category').length || $('body#index').length || $('body#product').length) {
+        $('.discount_type_flag').each(function () {
+            let elementFlagParent = $(this).parent()
+            if (elementFlagParent.find(".pastille_fr").length !== 0){
+                let top = parseInt($(this).css("top"), 10)
+                let topNew = top + 45;
+                $(this).css("top", topNew + "px")
+            }
+        });
+    }
+
+    prestashop.on('updateProductList', (event) => {
+        if ($('body#category').length) {
+            $('.discount_type_flag').each(function () {
+                let elementFlagParent = $(this).parent()
+                if (elementFlagParent.find(".pastille_fr").length !== 0){
+                    let top = parseInt($(this).css("top"), 10)
+                    let topNew = top + 45;
+                    $(this).css("top", topNew + "px")
+                }
+            });
+        }
+    });
 });

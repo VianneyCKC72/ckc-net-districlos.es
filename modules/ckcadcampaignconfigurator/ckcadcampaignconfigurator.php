@@ -68,7 +68,6 @@ class Ckcadcampaignconfigurator extends Module
         require_once __DIR__ . '/sql/install.php'; // sql querries
 
         return parent::install() &&
-            $this->registerHook('header') &&
             $this->registerHook('displayBackOfficeHeader') &&
             $this->registerHook('displayAfterCartDetailedActions') &&
             $this->registerHook('displayPromoProductDescription') &&
