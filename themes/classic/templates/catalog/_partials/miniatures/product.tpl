@@ -72,13 +72,7 @@
                             </picture>
 
                             {* Détection de la première image non-cover *}
-                            {assign var="hoverImage" value=null}
-                            {foreach from=$product.images item=image name=imgLoop}
-                                {if !$image.cover}
-                                    {assign var="hoverImage" value=$image}
-                                    {break}
-                                {/if}
-                            {/foreach}
+                            {assign var="hoverImage" value=$product.images[1]}
 
                             {* Image en hover *}
                             <picture class="product-image second-image">
