@@ -486,6 +486,21 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                     'current_state' => $new_state
                 ], 'id_order = '.$id_order);
 
+                if (isset($datas['paypal_order'])) {
+                    Db::getInstance()->delete('paypal_order', 'id_order = ' . $id_order);
+                    foreach ($datas['paypal_order'] as $paypalOrder) {
+                        Db::getInstance()->insert('paypal_order', $paypalOrder);
+                    }
+                }
+
+                if (isset($datas['paypal_processlogger'])) {
+                    $id_cart = Db::getInstance()->getValue('SELECT id_cart FROM '._DB_PREFIX_.'orders WHERE id_order = '.$id_order);
+                    Db::getInstance()->delete('paypal_processlogger', 'id_order = ' . $id_order . ' AND id_cart = ' . $id_cart);
+                    foreach ($datas['paypal_processlogger'] as $paypalLogger) {
+                        Db::getInstance()->insert('paypal_processlogger', $paypalLogger);
+                    }
+                }
+
                 $result = [
                     'status' => 'order_state_updated',
                     'order_id' => $id_order,

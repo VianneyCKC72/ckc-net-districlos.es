@@ -309,6 +309,12 @@ class Ckc_Syncdata_Tx extends Module
 
                     $datas['order_history'] = $orderHistory;
                     $datas['new_order_state'] = is_object($additionnalData) ? $additionnalData->id : (int)$additionnalData;
+                    $datas['paypal_order'] = Db::getInstance()->executeS(
+                        'SELECT * FROM '._DB_PREFIX_.'paypal_order WHERE id_order = '.(int)$object->id
+                    );
+                    $datas['paypal_processlogger'] = Db::getInstance()->executeS(
+                        'SELECT * FROM '._DB_PREFIX_.'paypal_processlogger WHERE id_order = '.(int)$object->id
+                    );
                 }
                 break;
             case 'order_slip':
