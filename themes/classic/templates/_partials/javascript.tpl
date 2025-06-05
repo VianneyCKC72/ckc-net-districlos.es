@@ -35,13 +35,13 @@
 {if isset($vars) && $vars|@count}
   <script type="text/javascript">
     {foreach from=$vars key=var_name item=var_value}
-      var {$var_name} = {$var_value|json_encode nofilter};
+    var {$var_name} = {$var_value|json_encode nofilter};
     {/foreach}
   </script>
 {/if}
 
-<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
-<script type="module" src="/themes/classic/assets/js/lib/lite-vimeo.js"></script>
+{*<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+<script type="module" src="/themes/classic/assets/js/lib/lite-vimeo.js"></script>*}
 
 
 {*<div style="position: relative; width: 100%; padding-top: 56.25%;"><iframe width="300" height="150" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" src="https://player.vimeo.com/video/1079777003?h=55cf8a4d10&amp;title=0&amp;byline=0&amp;portrait=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen="allowfullscreen" title="Vidéo de présentation">      </iframe></div><div class="home-texte-customs-magasins"></div>*}
