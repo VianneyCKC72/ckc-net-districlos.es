@@ -304,6 +304,8 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                     foreach ($datas['order_payment'] as $payment) {
                         Db::getInstance()->insert('order_payment', $payment);
                     }
+
+                    Db::getInstance()->delete('order_carrier', 'id_order = ' . $id_order);
                     foreach ($datas['order_carrier'] as $carrier) {
                         Db::getInstance()->insert('order_carrier', $carrier);
                     }
