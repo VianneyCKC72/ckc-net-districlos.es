@@ -89,8 +89,8 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                     die(json_encode(['error' => 'Invalid customer for order']));
                 }
 
-                $id_order = (int)$datas['order']['id_order'];
-                $existing = (int)Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'orders WHERE id_order = '.(int)$id_order) > 0;
+                $id_order = (int)$payload['entity_id'];
+                $existing = ((int)Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'orders WHERE id_order = '.(int)$id_order)) > 0;
 
                 if ($existing) {
                     if ($datas['order']['id_shop'] != 1) {
