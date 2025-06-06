@@ -241,9 +241,9 @@ let LiteVimeoEmbed = /** @class */ (() => {
                  *    allow="autoplay; fullscreen" allowfullscreen>
                  *  </iframe>
                  */
-                // FIXME: add a setting for autoplay
+                    // FIXME: add a setting for autoplay
                 let apValue = ((this.autoLoad && this.autoPlay) || (!this.autoLoad)) ?
-                    "autoplay=1" : "";
+                        "autoplay=1" : "";
                 if (this.videoHash) {
                     if (apValue.length > 0) {
                         apValue += `&h=${this.videoHash}`;
@@ -270,18 +270,30 @@ let LiteVimeoEmbed = /** @class */ (() => {
             // TODO(slightlyoff): TODO: cache API responses
             // we don't know which image type to preload, so warm the connection
             LiteVimeoEmbed.addPrefetch('preconnect', 'https://i.vimeocdn.com/');
-            // API is the video-id based
-            // http://vimeo.com/api/v2/video/364402896.json
-            let api_url = `https://vimeo.com/api/v2/video/${this.videoId}.json`;
-            // Now fetch the JSON that locates our placeholder from vimeo's JSON API
-            let api_response = (await (await fetch(api_url)).json())[0];
-            // Extract the image id, e.g. 819916979, from a URL like:
-            // thumbnail_large: "https://i.vimeocdn.com/video/819916979_640.jpg"
-            let tn_large = api_response.thumbnail_large;
-            let imgId = (tn_large.substr(tn_large.lastIndexOf("/") + 1)).split("_")[0];
-            // const posterUrlWebp = `https://i.ytimg.com/vi_webp/${this.videoId}/hqdefault.webp`;
-            const posterUrlWebp = `https://i.vimeocdn.com/video/${imgId}.webp?mw=1100&mh=619&q=70`;
-            const posterUrlJpeg = `https://i.vimeocdn.com/video/${imgId}.jpg?mw=1100&mh=619&q=70`;
+            var posterUrlWebp = ``;
+            var posterUrlJpeg = ``;
+
+            if (this.videoId == 1079777003){
+                posterUrlWebp = `https://i.vimeocdn.com/video/2010231943-3810b7aae4617d0cac1c128dfe2ae902a10555b6e1cde9e79f2eae5819b4db16-d_1420x800.webp?mw=1100&mh=619&q=70`;
+                posterUrlJpeg = `https://i.vimeocdn.com/video/2010231943-3810b7aae4617d0cac1c128dfe2ae902a10555b6e1cde9e79f2eae5819b4db16-d_1420x800.jpg?mw=1100&mh=619&q=70`;
+            } else {
+                // API is the video-id based
+                // http://vimeo.com/api/v2/video/364402896.json
+                let api_url = `https://vimeo.com/api/v2/video/${this.videoId}.json`;
+                // Now fetch the JSON that locates our placeholder from vimeo's JSON API
+                let api_response = (await (await fetch(api_url)).json())[0];
+                // Extract the image id, e.g. 819916979, from a URL like:
+                // thumbnail_large: "https://i.vimeocdn.com/video/819916979_640.jpg"
+                let tn_large = api_response.thumbnail_large;
+                let imgId = (tn_large.substr(tn_large.lastIndexOf("/") + 1)).split("_")[0];
+                // const posterUrlWebp = `https://i.ytimg.com/vi_webp/${this.videoId}/hqdefault.webp`;
+
+                /*                const posterUrlWebp = `https://i.vimeocdn.com/video/${imgId}.webp?mw=1100&mh=619&q=70`;
+                                const posterUrlJpeg = `https://i.vimeocdn.com/video/${imgId}.jpg?mw=1100&mh=619&q=70`;*/
+                posterUrlWebp = `https://i.vimeocdn.com/video/${imgId}.webp?mw=1100&mh=619&q=70`;
+                posterUrlJpeg = `https://i.vimeocdn.com/video/${imgId}.jpg?mw=1100&mh=619&q=70`;
+            }
+
             this.domRefImg.webp.srcset = posterUrlWebp;
             this.domRefImg.jpeg.srcset = posterUrlJpeg;
             this.domRefImg.fallback.src = posterUrlJpeg;

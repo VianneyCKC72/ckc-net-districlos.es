@@ -341,3 +341,47 @@
   border: 2px solid $red;
   transition: all 0.3s ease-out;
 }
+
+.close-video-button{
+  position: absolute;
+  top: -18px;
+  right: -20px;
+  font-weight: 600;
+  font-size: 20px;
+  color: $white;
+  z-index: 9999;
+  border-radius: 50px;
+  background-color: $primary-color;
+  padding: 3px 12px;
+  cursor: pointer;
+  transition-property: color, background-color;
+  transition-duration: 0.3s;
+  transition-timing-function: ease-out;
+}
+
+.close-video-button:hover{
+  color: $primary-color;
+  background-color: $white;
+  transition-property: color, background-color;
+  transition-duration: 0.3s;
+  transition-timing-function: ease-out;
+}
+.video-player-presentation-img{
+  max-height: 400px;
+  display: inline;
+  @media (max-width: 767px){
+    width: 100%;
+    object-fit: cover;
+  }
+}
+.home-play-icon{
+  position: absolute;
+  top: -20px;
+  left: 250px;
+  @media (max-width: 767px){
+    left: 80%;
+  }
+  @media (max-width: 460px){
+    left: 70%;
+  }
+}
