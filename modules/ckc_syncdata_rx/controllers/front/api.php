@@ -295,12 +295,19 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                     foreach ($datas['order_details'] as $detail) {
                         Db::getInstance()->insert('order_detail', $detail);
                     }
+
                     foreach ($datas['order_history'] as $history) {
                         Db::getInstance()->insert('order_history', $history);
                     }
+
+                    Db::getInstance()->delete('order_invoice', 'id_order = ' . $id_order);
+
                     foreach ($datas['order_invoice'] as $invoice) {
                         Db::getInstance()->insert('order_invoice', $invoice);
                     }
+
+                    Db::getInstance()->delete('order_payment', 'id_order = ' . $id_order);
+
                     foreach ($datas['order_payment'] as $payment) {
                         Db::getInstance()->insert('order_payment', $payment);
                     }
@@ -309,6 +316,8 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                     foreach ($datas['order_carrier'] as $carrier) {
                         Db::getInstance()->insert('order_carrier', $carrier);
                     }
+
+                    Db::getInstance()->delete('order_cart_rule', 'id_order = ' . $id_order);
                     foreach ($datas['order_cart_rule'] as $rule) {
                         Db::getInstance()->insert('order_cart_rule', $rule);
                     }
