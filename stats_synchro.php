@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 require(__DIR__.'/config/config.inc.php');
 require_once(__DIR__.'/init.php');
 
-$startDate = new DateTime('2025-05-19');
+$startDate = new DateTime('2025-04-01');
 $endDate = new DateTime();
 $endDate->setTime(23, 59, 59);
 
