@@ -267,6 +267,12 @@ class Ckc_Syncdata_Tx extends Module
                     // Commande principale
                     $datas['order'] = $object->getFields();
 
+                    $orderValid = Db::getInstance()->getValue(
+                        'SELECT valid FROM '._DB_PREFIX_.'orders WHERE id_order = '.(int)$object->id
+                    );
+
+                    $datas['order']['valid'] = $orderValid ? (int)$orderValid : 0;
+
                     // Détails de la commande
                     $datas['order_details'] = $object->getOrderDetailList();
 
@@ -307,6 +313,12 @@ class Ckc_Syncdata_Tx extends Module
                         ORDER BY date_add DESC
                     ');
 
+                    $orderValid = Db::getInstance()->getValue(
+                        'SELECT valid FROM '._DB_PREFIX_.'orders WHERE id_order = '.(int)$object->id
+                    );
+
+                    $datas['order_valid'] = $orderValid ? (int)$orderValid : 0;
+
                     $datas['order_history'] = $orderHistory;
                     $datas['new_order_state'] = is_object($additionnalData) ? $additionnalData->id : (int)$additionnalData;
                     $datas['paypal_order'] = Db::getInstance()->executeS(
@@ -323,6 +335,12 @@ class Ckc_Syncdata_Tx extends Module
                     $datas = [];
                     // Commande principale
                     $datas['order'] = $object->getFields();
+
+                    $orderValid = Db::getInstance()->getValue(
+                        'SELECT valid FROM '._DB_PREFIX_.'orders WHERE id_order = '.(int)$object->id
+                    );
+
+                    $datas['order']['valid'] = $orderValid ? (int)$orderValid : 0;
 
                     // Order slip
                     $datas['order_slip'] = Db::getInstance()->executeS(
