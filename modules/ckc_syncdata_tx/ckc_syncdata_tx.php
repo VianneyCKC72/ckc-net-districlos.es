@@ -273,6 +273,12 @@ class Ckc_Syncdata_Tx extends Module
 
                     $datas['order']['valid'] = $orderValid ? (int)$orderValid : 0;
 
+                    $orderValidatedAt = Db::getInstance()->getValue(
+                        'SELECT validated_at FROM '._DB_PREFIX_.'orders WHERE id_order = '.$id
+                    );
+
+                    $datas['order']['validated_at'] = $orderValidatedAt ? $orderValidatedAt : null;
+
                     // Détails de la commande
                     $datas['order_details'] = $object->getOrderDetailList();
 
@@ -319,6 +325,12 @@ class Ckc_Syncdata_Tx extends Module
 
                     $datas['order_valid'] = $orderValid ? (int)$orderValid : 0;
 
+                    $orderValidatedAt = Db::getInstance()->getValue(
+                        'SELECT validated_at FROM '._DB_PREFIX_.'orders WHERE id_order = '.$id
+                    );
+
+                    $datas['order_validated_at'] = $orderValidatedAt ? $orderValidatedAt : null;
+
                     $datas['order_history'] = $orderHistory;
                     $datas['new_order_state'] = is_object($additionnalData) ? $additionnalData->id : (int)$additionnalData;
                     $datas['paypal_order'] = Db::getInstance()->executeS(
@@ -341,6 +353,12 @@ class Ckc_Syncdata_Tx extends Module
                     );
 
                     $datas['order']['valid'] = $orderValid ? (int)$orderValid : 0;
+
+                    $orderValidatedAt = Db::getInstance()->getValue(
+                        'SELECT validated_at FROM '._DB_PREFIX_.'orders WHERE id_order = '.$id
+                    );
+
+                    $datas['order']['validated_at'] = $orderValidatedAt ? $orderValidatedAt : null;
 
                     // Order slip
                     $datas['order_slip'] = Db::getInstance()->executeS(

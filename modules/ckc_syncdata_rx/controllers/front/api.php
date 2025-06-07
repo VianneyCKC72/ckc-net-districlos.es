@@ -493,7 +493,8 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                 // On met à jour le champ current_state dans orders
                 Db::getInstance()->update('orders', [
                     'current_state' => $new_state,
-                    'valid' => $datas['order_valid']
+                    'valid' => $datas['order_valid'],
+                    'validated_at' => $datas['order_validated_at']
                 ], 'id_order = '.$id_order);
 
                 if (isset($datas['paypal_order'])) {
