@@ -268,7 +268,7 @@ class Ckc_Syncdata_Tx extends Module
                     $datas['order'] = $object->getFields();
 
                     $orderValid = Db::getInstance()->getValue(
-                        'SELECT valid FROM '._DB_PREFIX_.'orders WHERE id_order = '.(int)$object->id
+                        'SELECT valid FROM '._DB_PREFIX_.'orders WHERE id_order = '.$id
                     );
 
                     $datas['order']['valid'] = $orderValid ? (int)$orderValid : 0;
@@ -314,7 +314,7 @@ class Ckc_Syncdata_Tx extends Module
                     ');
 
                     $orderValid = Db::getInstance()->getValue(
-                        'SELECT valid FROM '._DB_PREFIX_.'orders WHERE id_order = '.(int)$object->id
+                        'SELECT valid FROM '._DB_PREFIX_.'orders WHERE id_order = '.$id
                     );
 
                     $datas['order_valid'] = $orderValid ? (int)$orderValid : 0;
@@ -337,7 +337,7 @@ class Ckc_Syncdata_Tx extends Module
                     $datas['order'] = $object->getFields();
 
                     $orderValid = Db::getInstance()->getValue(
-                        'SELECT valid FROM '._DB_PREFIX_.'orders WHERE id_order = '.(int)$object->id
+                        'SELECT valid FROM '._DB_PREFIX_.'orders WHERE id_order = '.$id
                     );
 
                     $datas['order']['valid'] = $orderValid ? (int)$orderValid : 0;

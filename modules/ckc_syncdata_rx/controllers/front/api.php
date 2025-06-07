@@ -306,7 +306,7 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                         Db::getInstance()->insert('order_invoice', $invoice);
                     }
 
-                    Db::getInstance()->delete('order_payment', 'id_order = ' . $id_order);
+                    Db::getInstance()->delete('order_payment', 'order_reference = "' . pSQL($datas['order']['reference']) . '"');
 
                     foreach ($datas['order_payment'] as $payment) {
                         Db::getInstance()->insert('order_payment', $payment);
