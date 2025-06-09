@@ -133,6 +133,10 @@ $localCustomers = Db::getInstance()->executeS($sqlLocalCustomers);
 
 // Initialisation tableau clients
 $clientStats = [];
+$totalCustomerStats = [
+    'missing_from_local' => [],
+    'missing_from_remote' => [],
+];
 foreach ($period as $date) {
     $key = $date->format('Y-m-d');
     $clientStats[$key] = [
@@ -153,6 +157,8 @@ foreach ($remoteCustomers as $c) {
 foreach ($clientStats as $date => &$row) {
     $row['missing_from_local'] = array_diff($row['remote'], $row['local']);
     $row['missing_from_remote'] = array_diff($row['local'], $row['remote']);
+    $totalCustomerStats['missing_from_local'] = array_merge($totalCustomerStats['missing_from_local'], $row['missing_from_local']);
+    $totalCustomerStats['missing_from_remote'] = array_merge($totalCustomerStats['missing_from_remote'], $row['missing_from_remote']);
 
     // Exemple de client manquant (depuis cloture-discount.fr)
     if (!empty($row['missing_from_local'])) {
@@ -371,7 +377,13 @@ foreach ($addressStats as $date => &$row) {
             <?php endif; ?>
         <?php endif; ?>
     <?php endforeach; ?>
-
+    <tr>
+        <td>TOTAL</td>
+        <td></td>
+        <td></td>
+        <td class="warn"><?= empty($totalCustomerStats['missing_from_local']) ? '-' : implode(', ', $totalCustomerStats['missing_from_local']) ?></td>
+        <td class="warn"><?= empty($totalCustomerStats['missing_from_remote']) ? '-' : implode(', ', $totalCustomerStats['missing_from_remote']) ?></td>
+    </tr>
     </tbody>
 </table>
 
