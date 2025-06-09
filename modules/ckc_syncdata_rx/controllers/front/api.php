@@ -296,6 +296,8 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                         Db::getInstance()->insert('order_detail', $detail);
                     }
 
+
+
                     foreach ($datas['order_history'] as $history) {
                         Db::getInstance()->insert('order_history', $history);
                     }

@@ -42,6 +42,10 @@ $localOrders = Db::getInstance()->executeS($sqlLocalOrders);
 
 // Initialisation tableau commandes
 $orderStats = [];
+$totalOrderStats = [
+    'missing_from_local' => [],
+    'missing_from_remote' => [],
+];
 $period = new DatePeriod($startDate, new DateInterval('P1D'), (clone $endDate)->modify('+1 day'));
 foreach ($period as $date) {
     $key = $date->format('Y-m-d');
@@ -67,7 +71,9 @@ foreach ($orderStats as $date => &$row) {
 
 foreach ($orderStats as $date => &$row) {
     $row['missing_from_local'] = array_diff($row['remote'], $row['local']);
+    $totalOrderStats['missing_from_local'] = array_merge($totalOrderStats['missing_from_local'], $row['missing_from_local']);
     $row['missing_from_remote'] = array_diff($row['local'], $row['remote']);
+    $totalOrderStats['missing_from_remote'] = array_merge($totalOrderStats['missing_from_remote'], $row['missing_from_remote']);
 
     // Exemple de commande manquante
     if (!empty($row['missing_from_local'])) {
@@ -341,7 +347,13 @@ foreach ($addressStats as $date => &$row) {
             <?php endif; ?>
         <?php endif; ?>
     <?php endforeach; ?>
-
+    <tr>
+        <td>TOTAL</td>
+        <td></td>
+        <td></td>
+        <td class="warn"><?= empty($totalOrderStats['missing_from_local']) ? '-' : implode(', ', $totalOrderStats['missing_from_local']) ?></td>
+        <td class="warn"><?= empty($totalOrderStats['missing_from_remote']) ? '-' : implode(', ', $totalOrderStats['missing_from_remote']) ?></td>
+    </tr>
     </tbody>
 </table>
 
