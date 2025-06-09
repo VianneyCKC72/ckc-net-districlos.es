@@ -73,6 +73,11 @@ class Ckc_Syncdata_Tx extends Module
 
     public function getContent()
     {
+        if (Tools::getIsset('resend_order') && Tools::getIsset('id_order')) {
+            $this->syncToRemote('order', (int)Tools::getValue('id_order'), 'manual_resend');
+            Tools::redirectAdmin($this->context->link->getAdminLink('AdminOrders').'&conf=4');
+        }
+
         $output = '';
         if (Tools::isSubmit('submit_syncdata_config')) {
             Configuration::updateValue('CKC_SYNCDATA_TX_TARGET_URL', Tools::getValue('CKC_SYNCDATA_TX_TARGET_URL'));
@@ -487,9 +492,7 @@ class Ckc_Syncdata_Tx extends Module
             return '';
         }
 
-        $url = $this->context->link->getAdminLink('AdminCkcSyncResend', true, [], [
-            'id_order' => $order->id,
-        ]);
+        $url = $this->context->link->getAdminLink('AdminModules', true).'&configure='.$this->name.'&resend_order=1&id_order='.$order->id;
 
         return '<div class="panel">
         <h3><i class="icon-random"></i> '.$this->l('Synchronisation manuelle').'</h3>
