@@ -258,6 +258,10 @@ $localAddresses = Db::getInstance()->executeS($sqlLocalAddresses);
 
 // Initialisation tableau adresses
 $addressStats = [];
+$totalAddressStats = [
+    'missing_from_local' => [],
+    'missing_from_remote' => [],
+];
 foreach ($period as $date) {
     $key = $date->format('Y-m-d');
     $addressStats[$key] = [
@@ -277,7 +281,9 @@ foreach ($remoteAddresses as $a) {
 
 foreach ($addressStats as $date => &$row) {
     $row['missing_from_local'] = array_diff($row['remote'], $row['local']);
+    $totalAddressStats['missing_from_local'] = array_merge($totalAddressStats['missing_from_local'], $row['missing_from_local']);
     $row['missing_from_remote'] = array_diff($row['local'], $row['remote']);
+    $totalAddressStats['missing_from_remote'] = array_merge($totalAddressStats['missing_from_remote'], $row['missing_from_remote']);
 }
 
 
@@ -427,6 +433,13 @@ foreach ($addressStats as $date => &$row) {
             </tr>
         <?php endif; ?>
     <?php endforeach; ?>
+    <tr>
+        <td>TOTAL</td>
+        <td></td>
+        <td></td>
+        <td class="warn"><?= empty($totalAddressStats['missing_from_local']) ? '-' : implode(', ', $totalAddressStats['missing_from_local']) ?></td>
+        <td class="warn"><?= empty($totalAddressStats['missing_from_remote']) ? '-' : implode(', ', $totalAddressStats['missing_from_remote']) ?></td>
+    </tr>
     </tbody>
 </table>
 
