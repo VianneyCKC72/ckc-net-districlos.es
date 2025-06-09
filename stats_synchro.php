@@ -417,8 +417,8 @@ foreach ($addressStats as $date => &$row) {
         <th>Date</th>
         <th>Adresses nouveau.cloture-discount.fr</th>
         <th>Adresses cloture-discount.fr</th>
-        <th class="warn">Manquantes ici</th>
-        <th class="warn">Manquantes là-bas</th>
+        <th class="warn">Présents sur cloture-discount.fr uniquement</th>
+        <th class="warn">Présents sur nouveau.cloture-discount.fr uniquement</th>
     </tr>
     </thead>
     <tbody>
