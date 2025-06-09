@@ -205,6 +205,10 @@ $localCarts = Db::getInstance()->executeS($sqlLocalCarts);
 
 // Initialisation tableau paniers
 $cartStats = [];
+$totalCartStats = [
+    'missing_from_local' => [],
+    'missing_from_remote' => [],
+];
 foreach ($period as $date) {
     $key = $date->format('Y-m-d');
     $cartStats[$key] = [
@@ -224,7 +228,9 @@ foreach ($remoteCarts as $c) {
 
 foreach ($cartStats as $date => &$row) {
     $row['missing_from_local'] = array_diff($row['remote'], $row['local']);
+    $totalCartStats['missing_from_local'] = array_merge($totalCartStats['missing_from_local'], $row['missing_from_local']);
     $row['missing_from_remote'] = array_diff($row['local'], $row['remote']);
+    $totalCartStats['missing_from_remote'] = array_merge($totalCartStats['missing_from_remote'], $row['missing_from_remote']);
 }
 
 // === ADRESSES ===
@@ -305,20 +311,22 @@ foreach ($addressStats as $date => &$row) {
     </thead>
     <tbody>
     <?php foreach ($orderStats as $date => $row): ?>
-        <tr>
-            <td><?= date('d/m/Y', strtotime($date)) ?></td>
-            <td><?= count($row['local']) ?></td>
-            <td><?= count($row['remote']) ?></td>
-            <td class="warn"><?= empty($row['missing_from_local']) ? '-' : implode(', ', $row['missing_from_local']) ?></td>
-            <td class="warn"><?= empty($row['missing_from_remote']) ? '-' : implode(', ', $row['missing_from_remote']) ?></td>
-        </tr>
-        <?php if (!empty($row['example_missing_from_local'])): ?>
+        <?php if (!empty($row['missing_from_local']) || !empty($row['missing_from_remote'])) : ?>
             <tr>
-                <td colspan="5" style="text-align:left; font-size: 0.95em; background-color:#fefae0;">
-                    🧩 <strong>Exemple de commande manquante :</strong><br>
-                    <?= htmlspecialchars($row['example_missing_from_local']) ?>
-                </td>
+                <td><?= date('d/m/Y', strtotime($date)) ?></td>
+                <td><?= count($row['local']) ?></td>
+                <td><?= count($row['remote']) ?></td>
+                <td class="warn"><?= empty($row['missing_from_local']) ? '-' : implode(', ', $row['missing_from_local']) ?></td>
+                <td class="warn"><?= empty($row['missing_from_remote']) ? '-' : implode(', ', $row['missing_from_remote']) ?></td>
             </tr>
+            <?php if (!empty($row['example_missing_from_local'])): ?>
+                <tr>
+                    <td colspan="5" style="text-align:left; font-size: 0.95em; background-color:#fefae0;">
+                        🧩 <strong>Exemple de commande manquante :</strong><br>
+                        <?= htmlspecialchars($row['example_missing_from_local']) ?>
+                    </td>
+                </tr>
+            <?php endif; ?>
         <?php endif; ?>
     <?php endforeach; ?>
 
@@ -339,20 +347,22 @@ foreach ($addressStats as $date => &$row) {
     </thead>
     <tbody>
     <?php foreach ($clientStats as $date => $row): ?>
-        <tr>
-            <td><?= date('d/m/Y', strtotime($date)) ?></td>
-            <td><?= count($row['local']) ?></td>
-            <td><?= count($row['remote']) ?></td>
-            <td class="warn"><?= empty($row['missing_from_local']) ? '-' : implode(', ', $row['missing_from_local']) ?></td>
-            <td class="warn"><?= empty($row['missing_from_remote']) ? '-' : implode(', ', $row['missing_from_remote']) ?></td>
-        </tr>
-        <?php if (!empty($row['example_missing_from_local'])): ?>
+        <?php if (!empty($row['missing_from_local']) || !empty($row['missing_from_remote'])) : ?>
             <tr>
-                <td colspan="5" style="text-align:left; font-size: 0.95em; background-color:#fefae0;">
-                    🧩 <strong>Exemple de client manquant :</strong><br>
-                    <?= htmlspecialchars($row['example_missing_from_local']) ?>
-                </td>
+                <td><?= date('d/m/Y', strtotime($date)) ?></td>
+                <td><?= count($row['local']) ?></td>
+                <td><?= count($row['remote']) ?></td>
+                <td class="warn"><?= empty($row['missing_from_local']) ? '-' : implode(', ', $row['missing_from_local']) ?></td>
+                <td class="warn"><?= empty($row['missing_from_remote']) ? '-' : implode(', ', $row['missing_from_remote']) ?></td>
             </tr>
+            <?php if (!empty($row['example_missing_from_local'])): ?>
+                <tr>
+                    <td colspan="5" style="text-align:left; font-size: 0.95em; background-color:#fefae0;">
+                        🧩 <strong>Exemple de client manquant :</strong><br>
+                        <?= htmlspecialchars($row['example_missing_from_local']) ?>
+                    </td>
+                </tr>
+            <?php endif; ?>
         <?php endif; ?>
     <?php endforeach; ?>
 
@@ -373,14 +383,23 @@ foreach ($addressStats as $date => &$row) {
     </thead>
     <tbody>
     <?php foreach ($cartStats as $date => $row): ?>
-        <tr>
-            <td><?= date('d/m/Y', strtotime($date)) ?></td>
-            <td><?= count($row['local']) ?></td>
-            <td><?= count($row['remote']) ?></td>
-            <td class="warn"><?= empty($row['missing_from_local']) ? '-' : implode(', ', $row['missing_from_local']) ?></td>
-            <td class="warn"><?= empty($row['missing_from_remote']) ? '-' : implode(', ', $row['missing_from_remote']) ?></td>
-        </tr>
+        <?php if (!empty($row['missing_from_local']) || !empty($row['missing_from_remote'])) : ?>
+            <tr>
+                <td><?= date('d/m/Y', strtotime($date)) ?></td>
+                <td><?= count($row['local']) ?></td>
+                <td><?= count($row['remote']) ?></td>
+                <td class="warn"><?= empty($row['missing_from_local']) ? '-' : implode(', ', $row['missing_from_local']) ?></td>
+                <td class="warn"><?= empty($row['missing_from_remote']) ? '-' : implode(', ', $row['missing_from_remote']) ?></td>
+            </tr>
+        <?php endif; ?>
     <?php endforeach; ?>
+    <tr>
+        <td>TOTAL</td>
+        <td></td>
+        <td></td>
+        <td class="warn"><?= empty($totalCartStats['missing_from_local']) ? '-' : implode(', ', $totalCartStats['missing_from_local']) ?></td>
+        <td class="warn"><?= empty($totalCartStats['missing_from_remote']) ? '-' : implode(', ', $totalCartStats['missing_from_remote']) ?></td>
+    </tr>
     </tbody>
 </table>
 
@@ -398,13 +417,15 @@ foreach ($addressStats as $date => &$row) {
     </thead>
     <tbody>
     <?php foreach ($addressStats as $date => $row): ?>
-        <tr>
-            <td><?= date('d/m/Y', strtotime($date)) ?></td>
-            <td><?= count($row['local']) ?></td>
-            <td><?= count($row['remote']) ?></td>
-            <td class="warn"><?= empty($row['missing_from_local']) ? '-' : implode(', ', $row['missing_from_local']) ?></td>
-            <td class="warn"><?= empty($row['missing_from_remote']) ? '-' : implode(', ', $row['missing_from_remote']) ?></td>
-        </tr>
+        <?php if (!empty($row['missing_from_local']) || !empty($row['missing_from_remote'])) : ?>
+            <tr>
+                <td><?= date('d/m/Y', strtotime($date)) ?></td>
+                <td><?= count($row['local']) ?></td>
+                <td><?= count($row['remote']) ?></td>
+                <td class="warn"><?= empty($row['missing_from_local']) ? '-' : implode(', ', $row['missing_from_local']) ?></td>
+                <td class="warn"><?= empty($row['missing_from_remote']) ? '-' : implode(', ', $row['missing_from_remote']) ?></td>
+            </tr>
+        <?php endif; ?>
     <?php endforeach; ?>
     </tbody>
 </table>
