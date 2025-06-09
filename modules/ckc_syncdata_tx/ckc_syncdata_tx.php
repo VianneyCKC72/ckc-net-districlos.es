@@ -37,6 +37,7 @@ class Ckc_Syncdata_Tx extends Module
             && $this->registerHook('actionCartSave')
             && $this->registerHook('actionPaymentCCAdd')
             && $this->registerHook('actionObjectOrderCarrierAddAfter')
+            && $this->registerHook('displayAdminOrder')
             && $this->installDb()
             && Configuration::updateValue('CKC_SYNCDATA_TX_TARGET_URL', '')
             && Configuration::updateValue('CKC_SYNCDATA_TX_API_TOKEN', '');
@@ -474,8 +475,30 @@ class Ckc_Syncdata_Tx extends Module
         $status = $response ? 'success' : 'error';
         $message = $response ?: $error;
 
+        $message = ($action === 'manual_resend') ? 'Manual resend: '.$message : $message;
+
         $this->logSync($type, $id, $action, $status, $message);
     }
+
+    public function hookDisplayAdminOrder($params)
+    {
+        $order = new Order((int)$params['id_order']);
+        if (!Validate::isLoadedObject($order)) {
+            return '';
+        }
+
+        $url = $this->context->link->getAdminLink('AdminCkcSyncResend', true, [], [
+            'id_order' => $order->id,
+        ]);
+
+        return '<div class="panel">
+        <h3><i class="icon-random"></i> '.$this->l('Synchronisation manuelle').'</h3>
+        <a href="'.htmlspecialchars($url).'" class="btn btn-warning">
+            <i class="icon-refresh"></i> '.$this->l('Renvoyer cette commande à la boutique distante').'
+        </a>
+    </div>';
+    }
+
 
     private function logSync($type, $id, $action, $status, $message = '')
     {
