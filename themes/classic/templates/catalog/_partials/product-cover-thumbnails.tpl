@@ -36,7 +36,7 @@
                     <source srcset="{$image.bySize.small_default.sources.avif}" type="image/avif">{/if}
                   {if !empty($image.bySize.small_default.sources.webp)}
                     <source srcset="{$image.bySize.small_default.sources.webp}" type="image/webp">{/if}
-                  <img class="img-cover" src="{$image.bySize.small_default.url}"
+                  <img loading="lazy" class="img-cover" src="{$image.bySize.small_default.url}"
                        alt="{if !empty($image.legend)}{$image.legend}{else}{$product.name}{/if}" />
                 </picture>
               </div>
@@ -69,20 +69,36 @@
       <img class="tag-web-price" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
 
       <div class="swiper-wrapper">
-        {foreach from=$product.images item=image}
-          <div class="swiper-slide">
-            {*            <a href="{$image.bySize.large_default.url}" data-fancybox="product-gallery" rel="nofollow">*}
-            <a href="{$image.bySize.large_default.url}" rel="nofollow">
-              <picture>
-                {if !empty($image.bySize.large_default.sources.avif)}
-                  <source srcset=" {$image.bySize.large_default.sources.avif}" type="image/avif">{/if}
-                {if !empty($image.bySize.large_default.sources.webp)}
-                  <source srcset="{$image.bySize.large_default.sources.webp}" type="image/webp">{/if}
-                <img class="img-cover rounded-4" src="{$image.bySize.large_default.url}"
-                     alt="{if !empty($image.legend)}{$image.legend}{else}{$product.name}{/if}" />
-              </picture>
-            </a>
-          </div>
+        {foreach from=$product.images key=key item=image}
+          {if $key == 0}
+            <div class="swiper-slide">
+              {*            <a href="{$image.bySize.large_default.url}" data-fancybox="product-gallery" rel="nofollow">*}
+              <a href="{$image.bySize.large_default.url}" rel="nofollow">
+                <picture>
+                  {if !empty($image.bySize.large_default.sources.avif)}
+                    <source srcset=" {$image.bySize.large_default.sources.avif}" type="image/avif">{/if}
+                  {if !empty($image.bySize.large_default.sources.webp)}
+                    <source srcset="{$image.bySize.large_default.sources.webp}" type="image/webp">{/if}
+                  <img class="img-cover rounded-4" src="{$image.bySize.large_default.url}"
+                       alt="{if !empty($image.legend)}{$image.legend}{else}{$product.name}{/if}" />
+                </picture>
+              </a>
+            </div>
+          {else}
+            <div class="swiper-slide">
+              {*            <a href="{$image.bySize.large_default.url}" data-fancybox="product-gallery" rel="nofollow">*}
+              <a href="{$image.bySize.large_default.url}" rel="nofollow">
+                <picture>
+                  {if !empty($image.bySize.large_default.sources.avif)}
+                    <source srcset=" {$image.bySize.large_default.sources.avif}" type="image/avif">{/if}
+                  {if !empty($image.bySize.large_default.sources.webp)}
+                    <source srcset="{$image.bySize.large_default.sources.webp}" type="image/webp">{/if}
+                  <img loading="lazy" class="img-cover rounded-4" src="{$image.bySize.large_default.url}"
+                       alt="{if !empty($image.legend)}{$image.legend}{else}{$product.name}{/if}" />
+                </picture>
+              </a>
+            </div>
+          {/if}
         {/foreach}
       </div>
     </div>
