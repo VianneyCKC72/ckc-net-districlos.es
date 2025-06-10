@@ -18,7 +18,7 @@
             <div class="d-none d-md-block">
                 {if (($page.page_name == 'authentication' || $page.page_name == 'registration') && $espace_pro == 1) || $env_pro == 1}
                     <a href="/">
-                    <img class="desktop_only" width="180" src="/img/DISTRICLOS_pro_logo.png" alt="{$shop.name} Pro" />
+                        <img class="desktop_only" width="180" src="/img/DISTRICLOS_pro_logo.png" alt="{$shop.name} Pro" />
                     </a>
                 {elseif $shop.logo_details}
                     {renderLogo}
@@ -58,7 +58,7 @@
                             <img width="37px" height="35px" alt="cloture" src="/img/menu-mobile-fence.svg">
                         </a>
                         <div class="block-question block-question-header">
-                            <img src="/img/menu-mobile-phone.svg" width="22" height="20" class="ico-question" alt="des question?">
+                            <img loading="lazy" src="/img/menu-mobile-phone.svg" width="22" height="20" class="ico-question" alt="des question?">
                             <div>
                                 Des questions ?
                                 <a href="tel:0422531034"><strong>04 22 53 10 34</strong></a>
