@@ -159,4 +159,13 @@ $(document).ready(function () {
             });
         }
     });
+
+    if ($('body#category.category-id-3').length && $(".evercontentseo").length){
+        $(".evercontentseo img.cms-banner-desktop").attr('loading', 'lazy')
+        $(".evercontentseo img.image-mobile").attr('loading', 'lazy')
+    }
+
+    if ($('body#category').length && $("#js-product-list").length){
+        $("#js-product-list .products .js-product.product").first().find(".thumbnail.product-thumbnail.hover-images .product-image.first-image img").removeAttr("loading")
+    }
 });

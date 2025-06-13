@@ -309,7 +309,7 @@
                 <img width="63px" height="63px" alt="cloture" src="/img/menu-mobile-fence.svg">
             </a>
             <a href="tel:+33422531034" class="menu-mobile-phone-contact">
-                <img src="/img/menu-mobile-phone.svg" alt="contact téléphone" width="27px" height="25px">
+                <img loading="lazy" src="/img/menu-mobile-phone.svg" alt="contact téléphone" width="27px" height="25px">
                 <span class="menu-mobile-phone-text">Des questions ?&nbsp;</span>
                 <span class="menu-mobile-phone-number">04 22 53 10 34</span>
             </a>

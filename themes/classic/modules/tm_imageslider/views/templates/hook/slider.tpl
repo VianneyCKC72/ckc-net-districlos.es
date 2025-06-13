@@ -36,7 +36,7 @@
                 {foreach from=$tmhomeslider.slides item=slide}
                     <li class="slide">
                         <a href="{$slide.url}" title="{$slide.title}" aria-label="{$slide.title}">
-                            <img src="{$slide.image_url}" alt="{$slide.title}" title="{$slide.title}" />
+                            <img loading="lazy" src="{$slide.image_url}" alt="{$slide.title}" title="{$slide.title}" />
                         </a>
                         {if $slide.description }
                             <div class="caption-description">
@@ -59,7 +59,7 @@
                     <li class="slide">
                         <a href="{$slide.url}" title="{$slide.title}" aria-label="{$slide.title}">
                             {*<img class="lazyload" data-src="{$slide.image_mobile_url}" alt="{$slide.title}" title="{$slide.title}" />*}
-                            <img src="{$slide.image_mobile_url}" alt="{$slide.title}" title="{$slide.title}" />
+                            <img loading="lazy" src="{$slide.image_mobile_url}" alt="{$slide.title}" title="{$slide.title}" />
                         </a>
                         {if $slide.description }
                             <div class="caption-description">
