@@ -1,5 +1,10 @@
 #index {
 
+  .slide {
+    img{
+      image-rendering: pixelated;
+    }
+  }
   #elm-banner-services {
     width: 100%;
   }

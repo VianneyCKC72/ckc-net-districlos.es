@@ -11575,6 +11575,7 @@ $(document).ready(function () {
         var copyrightFooter = $(".copyrightFooter")
         var linksBlockFooter = $(".linksBlockFooter")
 
+        $(".logoFooterContainer img").attr('loading', 'lazy')
         $(".logoFooterContainer img").attr('src', '/img/logo-text-white.svg')
 
         if (socialIconFooter.length > 0 && copyrightFooter.length > 0 && linksBlockFooter.length > 0){
@@ -11671,6 +11672,8 @@ $(document).ready(function () {
             $alert.fadeOut(500);
         }, 5000);
     }
+
+    $("#everpspopup_block_center img").attr('loading', 'lazy')
 });
 
 
