@@ -81,50 +81,41 @@ $(function () {
         $(function () {
 
             function adjustMenuPosition() {
-                // Vérifier si le menu doit être ajusté
-                if ($('.ets_mm_megamenu').hasClass('scroll_heading') || !$('.ets_mm_megamenu.sticky_enabled').length) {
-                    return;
-                }
+                const $megamenu = $('.ets_mm_megamenu');
+                const $menus = $('.mm_modal_filter, ul.mm_menus_ul');
 
-                const windowWidth = $(window).width();
+                if ($megamenu.hasClass('scroll_heading') || !$megamenu.hasClass('sticky_enabled')) return;
+
+                const width = $(window).width();
                 const scrollTop = $(window).scrollTop();
-                let topOffset, leftOffset;
 
-                // Définition de topOffset selon la largeur de l'écran
-                if (windowWidth < 768) {
-                    topOffset = 0;
-                } else if (windowWidth <= 991) {
-                    topOffset = 108;
-                } else if (windowWidth <= 1006) {
+                // Déterminer le topOffset par tranches
+                let topOffset = 0;
+                if (width > 1200) {
                     topOffset = 150;
-                } else if (windowWidth <= 1200) {
+                } else if (width > 1006) {
                     topOffset = 200;
-                } else {
+                } else if (width > 991) {
                     topOffset = 150;
+                } else if (width >= 768) {
+                    topOffset = 108;
                 }
 
-                // Ajustement dynamique en fonction du scroll
+                // Ajustement au scroll
                 if (scrollTop > 0 && scrollTop < 140.5) {
-                    topOffset -= scrollTop - 32;
-                } else if (scrollTop === 0) {
-                    if (windowWidth < 768) {
-                        topOffset = 0;
-                    } else if (windowWidth <= 1200) {
-                        topOffset = 150;
-                    } else {
-                        topOffset = 150;
-                    }
+                    topOffset -= (scrollTop - 32);
                 }
 
-                leftOffset = '0'; // Toujours aligné à gauche
-
-                // Application des styles
-                $('.mm_modal_filter, ul.mm_menus_ul').css({
-                    'top': `${topOffset}px`,
-                    'left': leftOffset,
-                    width: windowWidth < 1520 ? '100%' : '100%' // ou même fixe : '100%'
+                $menus.css({
+                    top: `${topOffset}px`,
+                    left: '0',
+                    width: '100%' // Valeur fixe assumée ici
                 });
             }
+
+            $(window).on('scroll resize', adjustMenuPosition);
+            adjustMenuPosition();
+
 
             // Appliquer l'ajustement au chargement, au défilement et au redimensionnement
             $(window).on('scroll resize', adjustMenuPosition);
