@@ -502,13 +502,21 @@ class CartCore extends ObjectModel
             $virtual_context->virtualTotalTaxIncluded = $virtual_context->cart->getOrderTotal(true, self::ONLY_PRODUCTS);
         }
 
-        foreach ($result as &$row) {
-            $row['obj'] = new CartRule($row['id_cart_rule'], (int) $this->id_lang);
-            $row['value_real'] = $row['obj']->getContextualValue(true, $virtual_context, $filter);
-            $row['value_tax_exc'] = $row['obj']->getContextualValue(false, $virtual_context, $filter);
-            // Retro compatibility < 1.5.0.2
-            $row['id_discount'] = $row['id_cart_rule'];
-            $row['description'] = $row['obj']->description;
+        foreach ($result as $key => &$row) {
+            $cartRuleGroups = Db::getInstance()->executeS('SELECT id_group FROM ' . _DB_PREFIX_ . 'cart_rule_group  WHERE id_cart_rule = ' . (int) $row['id_cart_rule']);
+
+            $cartRuleGroupIds = array_column($cartRuleGroups, 'id_group');
+
+            if (sizeof($cartRuleGroupIds) > 0 && Context::getContext()->customer->id_default_group == 10 && !in_array(10, $cartRuleGroupIds)) {
+                unset($result[$key]);
+            }else{
+                $row['obj'] = new CartRule($row['id_cart_rule'], (int) $this->id_lang);
+                $row['value_real'] = $row['obj']->getContextualValue(true, $virtual_context, $filter);
+                $row['value_tax_exc'] = $row['obj']->getContextualValue(false, $virtual_context, $filter);
+                // Retro compatibility < 1.5.0.2
+                $row['id_discount'] = $row['id_cart_rule'];
+                $row['description'] = $row['obj']->description;
+            }
         }
 
         return $result;
