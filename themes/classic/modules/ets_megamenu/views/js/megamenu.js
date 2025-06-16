@@ -41,44 +41,43 @@ $(function () {
         });
 
         displayHeightTab();
-        if ($('.ets_mm_megamenu.sticky_enabled').length > 0 && $(window).width() > 768) {
-            var sticky_navigation_offset_top = $('.ets_mm_megamenu.sticky_enabled').offset().top;
-            var headerFloatingHeight = $('.ets_mm_megamenu.sticky_enabled').height() + ($('#header').length > 0 ? parseInt($('.ets_mm_megamenu.sticky_enabled').css('marginTop').replace('px', '')) + parseInt($('.ets_mm_megamenu.sticky_enabled').css('marginBottom').replace('px', '')) : 0);
-            var oldHeaderMarginBottom = $('#header').length > 0 ? parseInt($('#header').css('marginBottom').replace('px', '')) : 0;
-            var windowWidth = $(window).width();
-            var sticky_navigation = function () {
-                if (!$('.ets_mm_megamenu').hasClass('sticky_enabled'))
-                    return false;
-                var scroll_top = $(window).scrollTop();
+        const $megamenu = $('.ets_mm_megamenu.sticky_enabled');
+        const $header = $('#header');
 
-                if (scroll_top > sticky_navigation_offset_top) {
-                    $('.ets_mm_megamenu.sticky_enabled').addClass('scroll_heading');
-                    if ($('#header').length > 0) {
-                        $('#header').css({'marginBottom': headerFloatingHeight + 'px'});
-                    }
-                    if (windowWidth > 1200 && $('.ets_mm_megamenu.sticky_enabled').hasClass('scroll_heading')) {
-                        $('.mm_modal_filter, ul.mm_menus_ul').css('top', ''); // Enlever 'top'
-                        $('.mm_modal_filter, ul.mm_menus_ul').css('left', ''); // Enlever 'left'
-                    }
-                } else {
-                    $('.ets_mm_megamenu.sticky_enabled').removeClass('scroll_heading');
-                    if ($('#header').length > 0)
-                        $('#header').css({'marginBottom': oldHeaderMarginBottom + 'px'});
+        if ($megamenu.length && $(window).width() > 768) {
+            const offsetTop = $megamenu.offset().top;
+            const headerMarginTop = parseInt($megamenu.css('marginTop')) || 0;
+            const headerMarginBottom = parseInt($megamenu.css('marginBottom')) || 0;
+            const headerFloatingHeight = $megamenu.outerHeight() + headerMarginTop + headerMarginBottom;
+            const oldHeaderMarginBottom = parseInt($header.css('marginBottom')) || 0;
+
+            const handleSticky = () => {
+                const scrollTop = $(window).scrollTop();
+                const isSticky = scrollTop > offsetTop;
+
+                $megamenu.toggleClass('scroll_heading', isSticky);
+                if ($header.length) {
+                    $header.css('marginBottom', isSticky ? headerFloatingHeight : oldHeaderMarginBottom);
+                }
+
+                if ($(window).width() > 1200 && isSticky) {
+                    $('.mm_modal_filter, ul.mm_menus_ul').css({ top: '', left: '' });
                 }
             };
-            sticky_navigation();
-            $(window).scroll(function () {
-                sticky_navigation();
-            });
-            if ($(window).width() < 768 && !$('body').hasClass('disable-sticky'))
-                $('body').addClass('disable-sticky');
-            $(window).on('resize', function (e) {
-                if ($(window).width() < 768 && !$('body').hasClass('disable-sticky'))
-                    $('body').addClass('disable-sticky');
-                else if ($(window).width() >= 768 && $('body').hasClass('disable-sticky'))
-                    $('body').removeClass('disable-sticky');
-            });
+
+            handleSticky();
+            $(window).on('scroll', handleSticky);
         }
+
+        // Gestion de la classe disable-sticky selon la taille d'écran
+        const toggleStickyBody = () => {
+            const isMobile = $(window).width() < 768;
+            $('body').toggleClass('disable-sticky', isMobile);
+        };
+
+        toggleStickyBody();
+        $(window).on('resize', toggleStickyBody);
+
         $(function () {
 
             function adjustMenuPosition() {
