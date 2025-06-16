@@ -20,28 +20,26 @@
  */
 $(function () {
 
-        $(document).mouseup(function (e) {
-            var container_block_search = $('.mm_extra_item.active');
-            if (!container_block_search.is(e.target) && container_block_search.has(e.target).length === 0) {
-                $('.mm_extra_item').removeClass('active');
+        $(document).on('mouseup', function (e) {
+            const $activeItem = $('.mm_extra_item.active');
+            if ($activeItem.length && !$activeItem.is(e.target) && $activeItem.has(e.target).length === 0) {
+                $activeItem.removeClass('active');
             }
         });
 
-        if ($('.mm_extra_item button[type="submit"]').length) {
-            $(document).on('click', '.mm_extra_item button[type="submit"]', function () {
-                if (!$(this).closest('.mm_extra_item').hasClass('mm_display_search_default')) {
-                    if (!$(this).closest('.mm_extra_item').hasClass('active')) {
-                        $(this).closest('.mm_extra_item').addClass('active');
-                        return false;
-                    } else {
-                        if ($(this).prev('input').val() == 0) {
-                            $('.mm_extra_item').removeClass('active');
-                            return false;
-                        }
-                    }
-                }
-            });
-        }
+        // Gestion du clic sur le bouton submit
+        $(document).on('click', '.mm_extra_item button[type="submit"]', function () {
+            const $item = $(this).closest('.mm_extra_item');
+            if ($item.hasClass('mm_display_search_default')) return;
+
+            if (!$item.hasClass('active')) {
+                $item.addClass('active');
+            } else if ($(this).prev('input').val() == 0) {
+                $item.removeClass('active');
+            }
+            return false;
+        });
+
         displayHeightTab();
         if ($('.ets_mm_megamenu.sticky_enabled').length > 0 && $(window).width() > 768) {
             var sticky_navigation_offset_top = $('.ets_mm_megamenu.sticky_enabled').offset().top;
