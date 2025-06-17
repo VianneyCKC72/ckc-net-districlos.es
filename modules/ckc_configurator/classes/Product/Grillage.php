@@ -72,7 +72,7 @@ class Grillage extends ProductFactory
         if ($id_product == 1324) {
             $session->id_product_attribute = 11780062;
         }else if ($id_product == 1323) {
-            $session->id_product_attribute = 11797173;
+            $session->id_product_attribute = 11780060;
         }
         $name = \Product::getProductName($id_product, $session->id_product_attribute, $language_id);
 
