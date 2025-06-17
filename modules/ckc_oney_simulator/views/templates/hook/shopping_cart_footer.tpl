@@ -30,12 +30,6 @@
         </div>
         <div class="payment-method">
             <div class="img">
-                <img src="/themes/classic/assets/img/payment-methods/fintecture.jpg" loading="lazy" alt="Fintecture">
-            </div>
-            <p>Fintecture</p>
-        </div>
-        <div class="payment-method">
-            <div class="img">
                 <img src="/themes/classic/assets/img/payment-methods/oney.jpg" loading="lazy" alt="Oney">
             </div>
             <p>Oney
