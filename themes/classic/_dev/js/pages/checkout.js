@@ -162,12 +162,14 @@ $(document).ready(function () {
 
             var $inside = $cartSummary.find('.cart-summary-inside');
 
+            var $cartDetailedTotals = $inside.find(".cart-detailed-totals");
+
             if ($h3) {
                 $inside.prepend($h3);
                 $h3 = null;
             }
-            if ($blockPromo) {
-                $inside.append($blockPromo);
+            if ($blockPromo && !$(".cart-summary .cart-detailed-totals .block-promo").length) {
+                $cartDetailedTotals.append($blockPromo);
                 $blockPromo = null;
             }
             if ($moyenPaiement) {
