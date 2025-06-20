@@ -153,7 +153,7 @@ class FrontController extends FrontControllerCore
             return $info;
         }
 
-        $sql = 'SELECT `id_customer`, `id_shop_group`, `id_gender`, `company`, `siret`, `ape`, `firstname`, `lastname`, `email`, `birthday`, `outstanding_allow_amount`, `show_public_prices`, `is_guest`, `deleted`, `date_add`, `pays`, `tva`, `adresse`, `adresse2`, `cp`, `ville`, `tel`, `fileUpload`, `rib`, `naf`, `refuse`, `sms_optin` FROM `'._DB_PREFIX_.'customer` 
+        $sql = 'SELECT `tva`, `adresse`, `adresse2`, `cp`, `ville`, `tel`, `fileUpload`, `rib`, `naf` FROM `'._DB_PREFIX_.'customer` 
             WHERE id_default_group = 10 AND id_customer = '.(int)$id;
 
         $customer = Db::getInstance()->getRow($sql); // Utilise `getRow` pour une seule ligne
