@@ -312,6 +312,8 @@ class Ckc_Syncdata_Tx extends Module
                     $datas['order_cart_rule'] = Db::getInstance()->executeS(
                         'SELECT * FROM '._DB_PREFIX_.'order_cart_rule WHERE id_order = '.(int)$object->id
                     );
+
+                    Tools::file_get_contents('https://nouveau.cloture-discount.fr/modules/ckc_syncdata_tx/cron.php');
                 }
                 break;
             case 'order_state':
