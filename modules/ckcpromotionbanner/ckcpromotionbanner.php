@@ -198,7 +198,7 @@ class Ckcpromotionbanner extends Module
 
         if(null !== $idPromotextsResult && '' !== $idPromotextsResult ) {
             $idPromotexts = unserialize(base64_decode($idPromotextsResult));
-            $promotexts = implode(",", $idPromotexts);
+            $promotexts = implode(",,", $idPromotexts);
         } else {
             $promotexts = '';
         }
@@ -208,7 +208,7 @@ class Ckcpromotionbanner extends Module
 
         if(null !== $idPromotextsResultPro && '' !== $idPromotextsResultPro ) {
             $idPromotextsPro = unserialize(base64_decode($idPromotextsResultPro));
-            $promotextsPro = implode(",", $idPromotextsPro);
+            $promotextsPro = implode(",,", $idPromotextsPro);
         } else {
             $promotextsPro = '';
         }
@@ -230,7 +230,7 @@ class Ckcpromotionbanner extends Module
     public function saveExceptions(){
         $exceptions = \Tools::getValue('id_promotexts');
         if(null !== $exceptions) {
-            $arr = explode(',', $exceptions);
+            $arr = explode(',,', $exceptions);
             $tableauIdsExclure = [];
             foreach ($arr as $exception) {
                 if($exception !== ''){
@@ -245,7 +245,7 @@ class Ckcpromotionbanner extends Module
     public function saveExceptionsPro(){
         $exceptions = \Tools::getValue('id_promotextsPro');
         if(null !== $exceptions) {
-            $arr = explode(',', $exceptions);
+            $arr = explode(',,', $exceptions);
             $tableauIdsExclure = [];
             foreach ($arr as $exception) {
                 if($exception !== ''){

@@ -72,7 +72,7 @@
 	var promotexts = `{$promotexts}`;
 	var promotextsPro = `{$promotextsPro}`;
 
-	let selectedPromotexts = promotexts.split(",");
+	let selectedPromotexts = promotexts.split(",,");
 	selectedPromotexts.forEach(function callback (text, index) {
 		if(text != ""){
 			elementTag = '<span class="tag" data-id="'+index+'">'+text+' <span class="remove">✖</span></span>'
@@ -111,12 +111,12 @@
 					$("#selectedIds").append(elementTag);
 				}
 			});
-			$("#idsField").val(selectedPromotexts.join(","));
+			$("#idsField").val(selectedPromotexts.join(",,"));
 		}
 
 		// Enregistrement textes promo Pro
 
-		let selectedPromotextsPro = promotextsPro.split(",");
+		let selectedPromotextsPro = promotextsPro.split(",,");
 		selectedPromotextsPro.forEach(function callback (text, index) {
 			if(text != ""){
 				elementTagPro = '<span class="tag" data-id="'+index+'">'+text+' <span class="removePro">✖</span></span>'
@@ -152,7 +152,7 @@
 					$("#selectedIdsPro").append(elementTagPro);
 				}
 			});
-			$("#idsFieldPro").val(selectedPromotextsPro.join(","));
+			$("#idsFieldPro").val(selectedPromotextsPro.join(",,"));
 		}
 	});
 
