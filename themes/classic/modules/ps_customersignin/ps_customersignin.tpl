@@ -53,6 +53,16 @@
                     <span class="hidden-sm-down">Mon compte</span>
                 </a>
             {/if}
+        {elseif $page.page_name == 'registration' && Tools::getValue("ep") == 1}
+            <a
+                    href="{$urls.pages.authentication}?back=my-account&amp;ep=1"
+                    title="{l s='Log in to your customer account' d='Shop.Theme.Customeraccount'}"
+                    class="ico"
+                    rel="nofollow"
+            >
+                <img src="/themes/classic/assets/img/ico-compte.svg" alt="Connexion">
+                <span class="hidden-sm-down">{l s='Sign in' d='Shop.Theme.Actions'}</span>
+            </a>
         {else}
             <a
                     href="{$urls.pages.authentication}?back={$urls.current_url|urlencode}"
