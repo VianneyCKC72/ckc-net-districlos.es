@@ -279,6 +279,12 @@ class Ckc_Syncdata_Tx extends Module
 
                     $datas['order']['valid'] = $orderValid ? (int)$orderValid : 0;
 
+                    $orderStore = Db::getInstance()->getValue(
+                        'SELECT id_store FROM '._DB_PREFIX_.'orders WHERE id_order = '.$id
+                    );
+
+                    $datas['order']['id_store'] = $orderStore ? (int)$orderStore : 0;
+
                     $orderValidatedAt = Db::getInstance()->getValue(
                         'SELECT validated_at FROM '._DB_PREFIX_.'orders WHERE id_order = '.$id
                     );
