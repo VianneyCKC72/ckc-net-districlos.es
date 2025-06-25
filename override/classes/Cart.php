@@ -17,8 +17,8 @@ class Cart extends CartCore
         parent::__construct($id, $id_lang, $id_currency);
 
         // Injecte le champ new_site dans la définition du modèle pour qu'il soit persisté
-        if (!isset(static::$definition['fields']['new_site'])) {
-            static::$definition['fields']['new_site'] = [
+        if (!isset(static::$definition['fields']['synchro'])) {
+            static::$definition['fields']['synchro'] = [
                 'type' => self::TYPE_BOOL,
                 'validate' => 'isBool',
                 'required' => false,
@@ -95,7 +95,7 @@ class Cart extends CartCore
         // 2. Si insertion réussie, fais un UPDATE direct du champ new_site
         if ($result && $this->id) {
             Db::getInstance()->update('cart', [
-                'new_site' => 1
+                'synchro' => 0
             ], 'id_cart = '.(int)$this->id);
         }
 
