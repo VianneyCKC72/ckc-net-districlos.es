@@ -11,6 +11,21 @@ if (!defined('_PS_VERSION_')) {
 }
 class Cart extends CartCore
 {
+
+    public function __construct($id = null, $id_lang = null, $id_currency = null)
+    {
+        parent::__construct($id, $id_lang, $id_currency);
+
+        // Injecte le champ new_site dans la définition du modèle pour qu'il soit persisté
+        if (!isset(static::$definition['fields']['new_site'])) {
+            static::$definition['fields']['new_site'] = [
+                'type' => self::TYPE_BOOL,
+                'validate' => 'isBool',
+                'required' => false,
+            ];
+        }
+    }
+
     /*
     * module: orderfees_shipping
     * date: 2025-02-24 17:50:29
@@ -71,7 +86,22 @@ class Cart extends CartCore
         
         return $cache[$cache_key];
     }
-    
+
+    public function add($autoDate = true, $nullValues = false)
+    {
+        // 1. Exécute l'insertion normale
+        $result = parent::add($autoDate, $nullValues);
+
+        // 2. Si insertion réussie, fais un UPDATE direct du champ new_site
+        if ($result && $this->id) {
+            Db::getInstance()->update('cart', [
+                'new_site' => 1
+            ], 'id_cart = '.(int)$this->id);
+        }
+
+        return $result;
+    }
+
     /*
     * module: orderfees_shipping
     * date: 2025-02-24 17:50:29
