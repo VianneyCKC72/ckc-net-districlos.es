@@ -28,7 +28,7 @@
   {block name='register_form_container'}
     {$hook_create_account_top nofilter}
     <section class="register-form" id="registration-form">
-      
+
       <div class="already-account">
         <div class="img">
           <picture>
@@ -38,9 +38,15 @@
         </div>
         <div class="inside">
           <h2 class="mb-4">{l s='Already have an account?' d='Shop.Theme.Customeraccount'}</h2>
-          <a href="{$urls.pages.authentication}" class="btn btn-secondary" id="inscription">
-            {l s='Log in instead!' d='Shop.Theme.Customeraccount'}
-          </a>
+          {if Tools::getValue("ep") == 1}
+            <a href="{$urls.pages.authentication}?back=my-account&amp;ep=1" class="btn btn-secondary" id="inscription">
+              {l s='Log in instead!' d='Shop.Theme.Customeraccount'}
+            </a>
+          {else}
+            <a href="{$urls.pages.authentication}" class="btn btn-secondary" id="inscription">
+              {l s='Log in instead!' d='Shop.Theme.Customeraccount'}
+            </a>
+          {/if}
         </div>
       </div>
 

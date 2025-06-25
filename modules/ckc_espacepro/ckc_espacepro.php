@@ -83,8 +83,8 @@ class ckc_espacepro extends Module
 
         // Appel à la méthode parent pour compléter la désinstallation
         return parent::uninstall() &&
-               $this->unregisterHook('displayCustomerAccountForm') &&
-               $this->unregisterHook('actionCustomerAccountAdd');
+            $this->unregisterHook('displayCustomerAccountForm') &&
+            $this->unregisterHook('actionCustomerAccountAdd');
     }
 
     /**
@@ -102,6 +102,7 @@ class ckc_espacepro extends Module
         $this->registerHook('actionOrderGridDefinitionModifier');
         $this->registerHook('actionCustomerLogoutAfter');
         $this->registerHook('actionFrontControllerSetMedia');
+        $this->registerHook('actionAuthentification');
 
         $this->clear_the_cache();
 
@@ -120,6 +121,18 @@ class ckc_espacepro extends Module
         Cache::clear();
     }
 
+    public function hookActionAuthentification($customer)
+    {
+
+        $my_env_pro = Context::getContext()->smarty->getTemplateVars()['env_pro'];
+        if(!empty($my_env_pro)){
+            if($my_env_pro == 1){
+                $this->_clearCache('module:tm_imageslider/views/templates/hook/slider.tpl');
+                Media::clearCache();
+            }
+        }
+    }
+
 
     public function hookActionOrderGridQueryBuilderModifier(array $params)
     {
@@ -128,12 +141,12 @@ class ckc_espacepro extends Module
         /** @var CustomerFilters $searchCriteria */
         $searchCriteria = $params['search_criteria'];
         $searchQueryBuilder->addSelect('pl.`name`')
-                           ->addSelect('cu.company')
-                           ->innerJoin(
-                               'cu',
-                               'ps_group_lang',
-                               'pl',
-                               'pl.id_group = cu.id_default_group');
+            ->addSelect('cu.company')
+            ->innerJoin(
+                'cu',
+                'ps_group_lang',
+                'pl',
+                'pl.id_group = cu.id_default_group');
         foreach ($searchCriteria->getFilters() as $filterName => $filterValue) {
             if ('groupe' === $filterName && $filterValue) {
                 $searchQueryBuilder->where('pl.`name` = \'' . $filterValue . '\'');
@@ -230,7 +243,7 @@ class ckc_espacepro extends Module
         $helper->identifier               = $this->identifier;
         $helper->submit_action            = $submitAction;
         $helper->currentIndex             = $this->context->link->getAdminLink('AdminModules', false)
-                                            . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+            . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
         $helper->token                    = Tools::getAdminTokenLite('AdminModules');
         $helper->tpl_vars                 = [
             'fields_value' => $fieldsValue,
