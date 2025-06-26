@@ -24,8 +24,8 @@
 
                     <div class="review-logo">
                         <picture>
-                            <source srcset="{$module_dir}views/img/avis-verifies-logo.webp" type="image/webp">
-                            <img src="{$module_dir}views/img/avis-verifies-logo.png" alt="Avis Vérifiés" class="img-fluid" loading="lazy">
+                            <source srcset="{$module_dir}views/img/avis-verifies-logo-new.webp" type="image/webp">
+                            <img src="{$module_dir}views/img/avis-verifies-logo-new.png" alt="Avis Vérifiés" class="img-fluid" loading="lazy">
                         </picture>
                     </div>
 

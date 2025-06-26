@@ -31,7 +31,9 @@
 .review-logo {
     margin-bottom: 10px;
 }
-
+.review-logo img {
+    max-width: 170px;
+}
 .review-note {
     font-weight: 400;
     font-style: italic;

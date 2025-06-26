@@ -17,6 +17,7 @@ class CkcProductReviews extends Module implements WidgetInterface
         $this->tab = 'front_office_features';
         $this->need_instance = true;
         $this->multishop_context = true;
+        $this->logo_path     = $this->_path . 'logo.png';
 
         parent::__construct();
         $this->_path_assets = $this->_path.'views/assets/';
