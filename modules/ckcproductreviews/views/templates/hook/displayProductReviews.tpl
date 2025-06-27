@@ -17,7 +17,7 @@
                         </div>
                     </div>
                     <div class="review-count">
-                        <div>Calculé à partir de <span itemprop="reviewCount">564</span> avis
+                        <div>Calculé à partir de <span itemprop="reviewCount">{$nb_reviews_12_months}</span> avis
                             <br>
                             obtenus sur les 12 derniers mois</div>
                         <div style="font-size: 12px;"><span itemprop="reviewCount">6917</span> avis depuis le 09/01/2015</div>

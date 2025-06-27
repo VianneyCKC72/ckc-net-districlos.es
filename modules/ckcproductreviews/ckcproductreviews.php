@@ -153,26 +153,40 @@ class CkcProductReviews extends Module implements WidgetInterface
         $enableCarousel = (int) Configuration::get('CKC_REVIEWS_ENABLE_CAROUSEL');
 
 
-        $sql = "SELECT *
+        $sql = "SELECT DISTINCT *
             FROM "._DB_PREFIX_."av_products_reviews
             WHERE rate >= $minRating
+                        GROUP BY horodate_order
             ORDER BY horodate DESC
             LIMIT 10";
 
         $results = Db::getInstance()->executeS($sql);
 
+        $infoTotal = file_get_contents("https://cl.avis-verifies.com/fr/cache/0/8/4/084cf537-ed41-0a34-15e7-e45715e81af8/AWS/084cf537-ed41-0a34-15e7-e45715e81af8_infosite.txt");
+
+        if(!empty($infoTotal)){
+            $infoArr = explode(";", $infoTotal);
+            $nb_reviews_12_months = $infoArr[0];
+        } else {
+            $nb_reviews_12_months = '';
+        }
+
         // Préparation des avis
         $reviews = [];
         foreach ($results as $row) {
+            $row['customer_name'] = urldecode($row['customer_name']);
             $row['date_experience'] = $row['horodate_order']; // On ajoute la date de commande avec un nom plus parlant
             $reviews[] = $row;
         }
+
+
 
         $this->context->controller->addCSS($this->_path_assets.'ckcproductreviews.css');
         $this->context->controller->addJS($this->_path_assets.'ckcproductreviews.js');
         $this->context->smarty->assign([
             'reviews' => $reviews,
             'enable_carousel' => $enableCarousel,
+            'nb_reviews_12_months' => $nb_reviews_12_months,
         ]);
 
         return $this->display(__FILE__, 'views/templates/hook/displayProductReviews.tpl');
