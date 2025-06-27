@@ -1,3 +1,9 @@
+/* Important ! : sinon il casse la largeur du swiper en mobile */
+.elementor-element-826041c{
+    max-width: 100%;
+}
+/* Important ! */
+
 .review-card {
     max-width: 300px;
     border-radius: 12px;
@@ -19,9 +25,13 @@
 }
 
 .review-count {
-    font-size: 15px;
+    font-size: 13px;
+    text-align: center;
     font-weight: 500;
     margin-bottom: 10px;
+    span{
+        font-weight: bold;
+    }
 }
 
 .btn-review {
@@ -136,25 +146,16 @@
     padding:25px;
 }
 @media (max-width: 996px) {
-    .ckc-review-carousel .swiper-wrapper {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        transform: translate3d(0, 0, 0) !important;
-    }
-
-    .ckc-review-carousel .swiper-slide {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box;
+    #ckcproductreviews > .line-review > .col-md-4.mb-3{
+        width: 50%;
+        max-width: 50%;
     }
     .ckc-avis-items {
         width: 100%;
         max-width: 100%;
     }
-    .swiper-slide.review-card {
-        flex: 1 1 calc(33.333% - 16px);
-        max-width: calc(33.333% - 16px);
-        box-sizing: border-box;
+    .review-card {
+        max-width: 328px;
     }
 
     .ckc-review-top-item {
@@ -167,14 +168,6 @@
         text-align: left !important;
     }
 
-    .ckc-review-carousel .swiper-button-next,
-    .ckc-review-carousel .swiper-button-prev {
-        display: none;
-    }
-
-    .ckc-review-carousel .swiper-pagination {
-        margin-top: 10px;
-    }
 
     .line-review {
         flex-direction: column;
@@ -189,5 +182,25 @@
         display: block !important;
     }
 }
+#index{
+    .ckc-avis-items{
+        .ckc-review-carousel{
+            @media (max-width: 996px) {
+                .swiper-button-next, .swiper-button-prev{
+                    display: flex;
+                }
+                .swiper-pagination{
+                    display: none;
+                }
+            }
 
+        }
+    }
+}
+@media (max-width: 699px) {
+    #ckcproductreviews > .line-review > .col-md-4.mb-3{
+        width: 100%;
+        max-width: 100%;
+    }
+}
 
