@@ -2,7 +2,23 @@ document.addEventListener('DOMContentLoaded', function () {
     new Swiper('.ckc-review-carousel', {
         loop: false,
         spaceBetween: 20,
-        slidesPerView: 1, // par défaut sur mobile
+        slidesPerView: 3, // par défaut sur mobile
+        breakpoints: {
+            0: {
+                slidesPerView: 1,
+                spaceBetween: 20
+            },
+            461: {
+                slidesPerView: 2,
+                spaceBetween: 24
+            },
+            768: {
+                slidesPerView: 3,
+                spaceBetween: 24
+            },
+        },
+        observer: true,
+        observeParents: true,
         autoplay: {
             delay: 5000,
             disableOnInteraction: false,
@@ -15,10 +31,5 @@ document.addEventListener('DOMContentLoaded', function () {
             nextEl: '.swiper-button-next',
             prevEl: '.swiper-button-prev',
         },
-        breakpoints: {
-            996: {
-                slidesPerView: 3, // Desktop : 3 slides visibles
-            }
-        }
     });
 });

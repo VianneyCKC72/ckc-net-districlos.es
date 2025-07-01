@@ -17,15 +17,18 @@
                         </div>
                     </div>
                     <div class="review-count">
-                        Basé sur <span itemprop="reviewCount">433</span> avis
+                        <div>Calculé à partir de <span itemprop="reviewCount">{$nb_reviews_12_months}</span> avis
+                            <br>
+                            obtenus sur les 12 derniers mois</div>
+                        <div style="font-size: 12px;"><span itemprop="reviewCount">6917</span> avis depuis le 09/01/2015</div>
                     </div>
                     <meta itemprop="ratingValue" content="4.8" />
                     <meta itemprop="bestRating" content="5" />
 
                     <div class="review-logo">
                         <picture>
-                            <source srcset="{$module_dir}views/img/avis-verifies-logo.webp" type="image/webp">
-                            <img src="{$module_dir}views/img/avis-verifies-logo.png" alt="Avis Vérifiés" class="img-fluid" loading="lazy">
+                            <source srcset="{$module_dir}views/img/avis-verifies-logo-new.webp" type="image/webp">
+                            <img src="{$module_dir}views/img/avis-verifies-logo-new.png" alt="Avis Vérifiés" class="img-fluid" loading="lazy">
                         </picture>
                     </div>
 
