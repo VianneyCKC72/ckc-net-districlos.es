@@ -211,10 +211,10 @@ class Ckc_Syncdata_Tx extends Module
         }
     }
 
-    public function hookActionCartSave($params)
-    {
-        $this->syncToRemote('cart', $params['cart']->id, 'update');
-    }
+//    public function hookActionCartSave($params)
+//    {
+//        $this->syncToRemote('cart', $params['cart']->id, 'update');
+//    }
 
     public function hookActionOrderSlipAdd($params)
     {
@@ -319,7 +319,24 @@ class Ckc_Syncdata_Tx extends Module
                         'SELECT * FROM '._DB_PREFIX_.'order_cart_rule WHERE id_order = '.(int)$object->id
                     );
 
-                    Tools::file_get_contents('https://nouveau.cloture-discount.fr/modules/ckc_syncdata_tx/cron.php');
+                    // mise a jour du panier a ce niveau la maintenant (vu avec districlos et tony)
+                    $cart = new Cart($object->id_cart);
+                    if (Validate::isLoadedObject($cart)) {
+                        $cart_data = $cart->getFields();
+                        $cart_data['products'] = Db::getInstance()->executeS(
+                            'SELECT cp.id_product, cp.id_product_attribute, cp.quantity, p.id_tax_rules_group
+         FROM '._DB_PREFIX_.'cart_product cp
+         LEFT JOIN '._DB_PREFIX_.'product p ON (p.id_product = cp.id_product)
+         WHERE cp.id_cart = '.(int)$cart->id
+                        );
+                        $cart_data['cart_cart_rule'] = Db::getInstance()->executeS(
+                            'SELECT * FROM '._DB_PREFIX_.'cart_cart_rule WHERE id_cart = '.(int)$cart->id
+                        );
+
+                        $datas['cart'] = $cart_data;
+                    }
+
+//                    Tools::file_get_contents('https://nouveau.cloture-discount.fr/modules/ckc_syncdata_tx/cron.php');
                 }
                 break;
             case 'order_state':
@@ -419,36 +436,21 @@ class Ckc_Syncdata_Tx extends Module
                 }
 
                 break;
-            case 'cart':
-                $object = new Cart($id);
-                if (Validate::isLoadedObject($object)) {
-                    $datas = $object->getFields();
-                    $datas['products'] = Db::getInstance()->executeS(
-                        'SELECT cp.id_product, cp.id_product_attribute, cp.quantity, p.id_tax_rules_group
-                     FROM '._DB_PREFIX_.'cart_product cp
-                     LEFT JOIN '._DB_PREFIX_.'product p ON (p.id_product = cp.id_product)
-                     WHERE cp.id_cart = '.(int)$object->id
-                    );
-                    $datas['cart_cart_rule'] = Db::getInstance()->executeS(
-                        'SELECT * FROM '._DB_PREFIX_.'cart_cart_rule WHERE id_cart = '.(int)$object->id
-                    );
-
-                    $payload = json_encode([
-                        'entity_type' => $type,
-                        'entity_id' => $id,
-                        'action' => $action,
-                        'datas' => $datas
-                    ]);
-
-                    // Enregistrement dans la queue avec ou sans payload
-                    $queue = new CkcSyncQueue();
-                    $queue->type = $type;
-                    $queue->entity_id = $id;
-                    $queue->action = $action;
-                    $queue->payload = $payload;
-                    $queue->add();
-                }
-                break;
+//            case 'cart':
+//                $object = new Cart($id);
+//                if (Validate::isLoadedObject($object)) {
+//                    $datas = $object->getFields();
+//                    $datas['products'] = Db::getInstance()->executeS(
+//                        'SELECT cp.id_product, cp.id_product_attribute, cp.quantity, p.id_tax_rules_group
+//             FROM '._DB_PREFIX_.'cart_product cp
+//             LEFT JOIN '._DB_PREFIX_.'product p ON (p.id_product = cp.id_product)
+//             WHERE cp.id_cart = '.(int)$object->id
+//                    );
+//                    $datas['cart_cart_rule'] = Db::getInstance()->executeS(
+//                        'SELECT * FROM '._DB_PREFIX_.'cart_cart_rule WHERE id_cart = '.(int)$object->id
+//                    );
+//                }
+//                break;
         }
 
         if ($type === 'cart' || $type === 'order_carrier') {
