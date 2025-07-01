@@ -325,7 +325,43 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                         Db::getInstance()->insert('order_cart_rule', $rule);
                     }
 
-                    $result = ['status' => 'order_created', 'order_id' => $datas['order']['id_order']];
+//   **** Nouveau code --   creation panier
+                    $id_cart = (int)$payload['entity_id'];
+                    $cartExists = Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'cart WHERE id_cart = '.$id_cart);
+
+                    $cartFields = $datas;
+                    unset($cartFields['products'], $cartFields['cart_cart_rule']);
+
+                    if ($cartExists) {
+                        Db::getInstance()->update('cart', $cartFields, 'id_cart = '.$id_cart);
+                        Db::getInstance()->delete('cart_product', 'id_cart = '.$id_cart);
+                        Db::getInstance()->delete('cart_cart_rule', 'id_cart = '.$id_cart);
+                    } else {
+                        $cartFields['id_cart'] = $id_cart;
+                        Db::getInstance()->insert('cart', $cartFields);
+                    }
+
+                    if (!empty($datas['products']) && is_array($datas['products'])) {
+                        foreach ($datas['products'] as $product) {
+                            if (!isset($product['id_product']) || !isset($product['quantity'])) {
+                                continue;
+                            }
+
+                            $row = [
+                                'id_cart'              => $id_cart,
+                                'id_product'           => (int)$product['id_product'],
+                                'id_product_attribute' => (int)($product['id_product_attribute'] ?? 0),
+                                'quantity'             => (int)$product['quantity'],
+                                'date_add'             => date('Y-m-d H:i:s'),
+                            ];
+
+                            Db::getInstance()->insert('cart_product', $row);
+                        }
+
+
+                        $result = ['status' => 'order_created', 'order_id' => $datas['order']['id_order']];
+
+                    }
                 }
                 break;
             case 'order_slip':
@@ -522,53 +558,53 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                 ];
                 break;
 
-            case 'cart':
-                $id_cart = (int)$payload['entity_id'];
-                $cartExists = Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'cart WHERE id_cart = '.$id_cart);
-
-                $cartFields = $datas;
-                unset($cartFields['products'], $cartFields['cart_cart_rule']);
-
-                if ($cartExists) {
-                    Db::getInstance()->update('cart', $cartFields, 'id_cart = '.$id_cart);
-                    Db::getInstance()->delete('cart_product', 'id_cart = '.$id_cart);
-                    Db::getInstance()->delete('cart_cart_rule', 'id_cart = '.$id_cart);
-                } else {
-                    $cartFields['id_cart'] = $id_cart;
-                    Db::getInstance()->insert('cart', $cartFields);
-                }
-
-                if (!empty($datas['products']) && is_array($datas['products'])) {
-                    foreach ($datas['products'] as $product) {
-                        if (!isset($product['id_product']) || !isset($product['quantity'])) {
-                            continue;
-                        }
-
-                        $row = [
-                            'id_cart' => $id_cart,
-                            'id_product' => (int)$product['id_product'],
-                            'id_product_attribute' => (int)($product['id_product_attribute'] ?? 0),
-                            'quantity' => (int)$product['quantity'],
-                            'date_add' => date('Y-m-d H:i:s'),
-                        ];
-
-                        Db::getInstance()->insert('cart_product', $row);
-                    }
-                }
-
-                if (!empty($datas['cart_cart_rule']) && is_array($datas['cart_cart_rule'])) {
-                    Db::getInstance()->delete('cart_cart_rule', 'id_cart = ' . $id_cart);
-                    foreach ($datas['cart_cart_rule'] as $rule) {
-                        $rule['id_cart'] = $id_cart;
-                        Db::getInstance()->insert('cart_cart_rule', $rule);
-                    }
-                }
-
-                $result = [
-                    'status' => $cartExists ? 'cart_updated' : 'cart_created',
-                    'cart_id' => $id_cart
-                ];
-                break;
+//            case 'cart':
+//                $id_cart = (int)$payload['entity_id'];
+//                $cartExists = Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'cart WHERE id_cart = '.$id_cart);
+//
+//                $cartFields = $datas;
+//                unset($cartFields['products'], $cartFields['cart_cart_rule']);
+//
+//                if ($cartExists) {
+//                    Db::getInstance()->update('cart', $cartFields, 'id_cart = '.$id_cart);
+//                    Db::getInstance()->delete('cart_product', 'id_cart = '.$id_cart);
+//                    Db::getInstance()->delete('cart_cart_rule', 'id_cart = '.$id_cart);
+//                } else {
+//                    $cartFields['id_cart'] = $id_cart;
+//                    Db::getInstance()->insert('cart', $cartFields);
+//                }
+//
+//                if (!empty($datas['products']) && is_array($datas['products'])) {
+//                    foreach ($datas['products'] as $product) {
+//                        if (!isset($product['id_product']) || !isset($product['quantity'])) {
+//                            continue;
+//                        }
+//
+//                        $row = [
+//                            'id_cart' => $id_cart,
+//                            'id_product' => (int)$product['id_product'],
+//                            'id_product_attribute' => (int)($product['id_product_attribute'] ?? 0),
+//                            'quantity' => (int)$product['quantity'],
+//                            'date_add' => date('Y-m-d H:i:s'),
+//                        ];
+//
+//                        Db::getInstance()->insert('cart_product', $row);
+//                    }
+//                }
+//
+//                if (!empty($datas['cart_cart_rule']) && is_array($datas['cart_cart_rule'])) {
+//                    Db::getInstance()->delete('cart_cart_rule', 'id_cart = ' . $id_cart);
+//                    foreach ($datas['cart_cart_rule'] as $rule) {
+//                        $rule['id_cart'] = $id_cart;
+//                        Db::getInstance()->insert('cart_cart_rule', $rule);
+//                    }
+//                }
+//
+//                $result = [
+//                    'status' => $cartExists ? 'cart_updated' : 'cart_created',
+//                    'cart_id' => $id_cart
+//                ];
+//                break;
             default:
                 http_response_code(400);
                 die(json_encode(['error' => 'Unsupported entity type']));
