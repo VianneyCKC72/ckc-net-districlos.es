@@ -291,14 +291,8 @@ class Ckc_Syncdata_Tx extends Module
 
                     $datas['order']['validated_at'] = $orderValidatedAt ? $orderValidatedAt : null;
 
-                    $orderDetails = $object->getOrderDetailList();
-
-                    foreach ($orderDetails as $key => $detail) {
-                        unset($orderDetails[$key]['id_order_detail']);
-                    }
-
                     // Détails de la commande
-                    $datas['order_details'] = $orderDetails;
+                    $datas['order_details'] = $object->getOrderDetailList();
 
                     // Historique
                     $datas['order_history'] = Db::getInstance()->executeS(
