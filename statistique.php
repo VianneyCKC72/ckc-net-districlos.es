@@ -75,7 +75,7 @@ function getStatsBySynchro(PDO $db, string $start, string $end, int $synchro): a
 }
 
 $statsA = getStatsBySynchro($dbA, $start, $now, 0); // site A, synchro = 0
-$statsB = getStatsBySynchro($dbB, $start, $now, 1); // site B, synchro = 0 todo : a mettre ensuite 0
+$statsB = getStatsBySynchro($dbB, $start, $now, 0); // site B, synchro = 0
 $statsSynchro = getStatsBySynchro($dbB, $start, $now, 1); // site B, synchro = 1
 
 // 🧠 Trafic réel
