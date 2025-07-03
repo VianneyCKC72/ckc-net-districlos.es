@@ -209,6 +209,7 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                     Db::getInstance()->delete('order_history', 'id_order = ' . $id_order);
                     foreach ($datas['order_history'] as $history) {
                         $history['id_order'] = $id_order;
+                        unset($history['id_order_history']);
                         Db::getInstance()->insert('order_history', $history);
                     }
 
