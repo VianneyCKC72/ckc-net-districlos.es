@@ -203,6 +203,7 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                     Db::getInstance()->delete('order_detail', 'id_order = ' . $id_order);
                     foreach ($datas['order_details'] as $detail) {
                         $detail['id_order'] = $id_order;
+                        $detail['product_name'] = htmlspecialchars($detail['product_name']);
                         Db::getInstance()->insert('order_detail', $detail);
                     }
 
