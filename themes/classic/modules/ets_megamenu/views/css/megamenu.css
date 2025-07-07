@@ -891,7 +891,7 @@ span.mm_alert.alert-warning:before {
         width: 130px;
     }
     @media only screen and (max-width: 860px) {
-        width: 70px;
+        width: 50px;
     }
     @media only screen and (max-width: 830px) {
         flex-direction: column;
@@ -899,7 +899,7 @@ span.mm_alert.alert-warning:before {
         gap: 0px;
     }
     @media only screen and (max-width: 767px) {
-        width: 70px;
+        width: 50px;
     }
 
 }
