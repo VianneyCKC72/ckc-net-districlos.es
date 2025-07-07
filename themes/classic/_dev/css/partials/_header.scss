@@ -291,23 +291,24 @@
     }
   }
   #search_widget {
-    min-width: 300px;
-    @media (min-width: 1620px) {
-      min-width: 220px;
-      form{
-        input {
-          width: 200px;
-        }
+    min-width: 220px;
+    form{
+      input {
+        width: 200px;
       }
     }
-    @media (max-width: 1370px) {
-      min-width: 220px;
-      form{
-        input {
-          width: 200px;
-        }
-      }
-    }
+    //min-width: 300px;
+    //@media (min-width: 1620px) {
+    //  min-width: 300px;
+    //}
+    //@media (max-width: 1370px) {
+    //  min-width: 220px;
+    //  form{
+    //    input {
+    //      width: 200px;
+    //    }
+    //  }
+    //}
     @media (max-width: 1096px) {
       min-width: 200px;
     }
