@@ -297,12 +297,15 @@
 
                                         {block name='product_variants'}
                                             <div class="my-5">
+                                                {assign var="color_find" value=0}
 
                                                 {foreach from=$groups key=id_attribute_group item=group}
 
                                                     {if !empty($group.attributes)}
 
-                                                        {if $group.group_type == 'color'}
+                                                        {if $group.group_type == 'color' && !$color_find}
+                                                            {assign var="color_find" value=1}
+
                                                             <h3>Couleurs disponibles</h3>
                                                             <div class="color-variants">
 
