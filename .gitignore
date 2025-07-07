@@ -189,6 +189,7 @@ fabric.properties
 !/img/su/index.php
 !/img/t/index.php
 !/img/tmp/index.php
+!/img/Logo_Groupama_FDJ.svg
 
 # Videos
 /videos/*
