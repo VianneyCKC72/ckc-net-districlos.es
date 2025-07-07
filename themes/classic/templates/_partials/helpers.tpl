@@ -24,7 +24,7 @@
  *}
 
 {function renderLogo}
-  <a href="{$urls.pages.index}">
+  <a href="{$urls.pages.index}" class="d-flex">
     <img
       class="logo img-fluid"
       src="{$shop.logo_details.src}"
@@ -32,5 +32,7 @@
       loading="lazy"
       width="{$shop.logo_details.width}"
       height="{$shop.logo_details.height}">
+    <div style="width: 1px; height: 50px; background-color: #ccc;margin-left: 10px;" class="desktop_only"></div>
+    <img  class="desktop_only" src="/img/Logo_Groupama_FDJ.svg" alt="Groupama-FDJ" style="margin-left: 10px;width: 180px;height: 47px;" />
   </a>
 {/function}

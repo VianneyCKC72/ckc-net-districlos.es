@@ -19,8 +19,6 @@
                 {if (($page.page_name == 'authentication' || $page.page_name == 'registration') && $espace_pro == 1) || $env_pro == 1}
                     <a href="/">
                         <img class="desktop_only" width="180" src="/img/DISTRICLOS_pro_logo.png" alt="{$shop.name} Pro" />
-                        <div style="width: 1px; height: 50px; background-color: #ccc;margin-left: 10px;" class="desktop_only"></div>
-                        <img  class="desktop_only" src="/img/Logo_Groupama_FDJ.svg" alt="Groupama-FDJ" style="margin-left: 10px;width: 180px;height: 47px;" />
                     </a>
                 {elseif $shop.logo_details}
                     {renderLogo}
@@ -35,7 +33,7 @@
 
             <!-- Logo Mobile (Visible seulement sur xs et sm) -->
             <div class="d-block d-md-none">
-                <a href="{$urls.base_url}">
+                <a href="{$urls.base_url}" class="d-flex">
                     <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="42" height="42" loading="lazy">
                     <div style="width: 1px; height: 50px; background-color: #ccc;margin-left: 10px;" class="desktop_only"></div>
                     <img  class="desktop_only" src="/img/Logo_Groupama_FDJ.svg" alt="Groupama-FDJ" style="margin-left: 10px;width: 180px;height: 47px;" />
