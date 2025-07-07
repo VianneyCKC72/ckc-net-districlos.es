@@ -377,6 +377,10 @@
                         $datas['paypal_processlogger'] = Db::getInstance()->executeS(
                             'SELECT * FROM '._DB_PREFIX_.'paypal_processlogger WHERE id_order = '.(int)$object->id
                         );
+
+                        $datas['id_store'] = Db::getInstance()->getValue(
+                            'SELECT id_store FROM '._DB_PREFIX_.'orders WHERE id_order = '.$id
+                        );
                     }
                     break;
                 case 'order_slip':
