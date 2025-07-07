@@ -396,8 +396,10 @@
         {block name='product_accessories'}
             {if $accessories}
                 <section class="product-accessories clearfix">
-                    <p class="h5 text-uppercase">{l s='You might also like' d='Shop.Theme.Catalog'}</p>
-                    <div class="products row">
+                    <h2 class="h2">
+                        Produits associés
+                    </h2>
+                    <div class="products row mt-5">
                         {foreach from=$accessories item="product_accessory" key="position"}
                             {block name='product_miniature'}
                                 {include file='catalog/_partials/miniatures/product.tpl' product=$product_accessory position=$position productClasses="col-xs-6 col-sm-4 col-lg-3 col-xl-3"}
