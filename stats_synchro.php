@@ -399,39 +399,39 @@ foreach ($addressStats as $date => &$row) {
     </tbody>
 </table>
 
-<h1 style="margin-top:50px;">🛒 Comparaison des paniers</h1>
-<p>Du <strong><?= $startDate->format('d/m/Y') ?></strong> au <strong><?= $endDate->format('d/m/Y') ?></strong></p>
-<table>
-    <thead>
-    <tr>
-        <th>Date</th>
-        <th>Paniers nouveau.cloture-discount.fr</th>
-        <th>Paniers cloture-discount.fr</th>
-        <th class="warn">Présents sur cloture-discount.fr uniquement</th>
-        <th class="warn">Présents sur nouveau.cloture-discount.fr uniquement</th>
-    </tr>
-    </thead>
-    <tbody>
-    <?php foreach ($cartStats as $date => $row): ?>
-        <?php if (!empty($row['missing_from_local']) || !empty($row['missing_from_remote'])) : ?>
-            <tr>
-                <td><?= date('d/m/Y', strtotime($date)) ?></td>
-                <td><?= count($row['local']) ?></td>
-                <td><?= count($row['remote']) ?></td>
-                <td class="warn"><?= empty($row['missing_from_local']) ? '-' : implode(', ', $row['missing_from_local']) ?></td>
-                <td class="warn"><?= empty($row['missing_from_remote']) ? '-' : implode(', ', $row['missing_from_remote']) ?></td>
-            </tr>
-        <?php endif; ?>
-    <?php endforeach; ?>
-    <tr>
-        <td>TOTAL</td>
-        <td></td>
-        <td></td>
-        <td class="warn"><?= empty($totalCartStats['missing_from_local']) ? '-' : implode(', ', $totalCartStats['missing_from_local']) ?></td>
-        <td class="warn"><?= empty($totalCartStats['missing_from_remote']) ? '-' : implode(', ', $totalCartStats['missing_from_remote']) ?></td>
-    </tr>
-    </tbody>
-</table>
+<!--<h1 style="margin-top:50px;">🛒 Comparaison des paniers</h1>-->
+<!--<p>Du <strong>--><?php //= $startDate->format('d/m/Y') ?><!--</strong> au <strong>--><?php //= $endDate->format('d/m/Y') ?><!--</strong></p>-->
+<!--<table>-->
+<!--    <thead>-->
+<!--    <tr>-->
+<!--        <th>Date</th>-->
+<!--        <th>Paniers nouveau.cloture-discount.fr</th>-->
+<!--        <th>Paniers cloture-discount.fr</th>-->
+<!--        <th class="warn">Présents sur cloture-discount.fr uniquement</th>-->
+<!--        <th class="warn">Présents sur nouveau.cloture-discount.fr uniquement</th>-->
+<!--    </tr>-->
+<!--    </thead>-->
+<!--    <tbody>-->
+<!--    --><?php //foreach ($cartStats as $date => $row): ?>
+<!--        --><?php //if (!empty($row['missing_from_local']) || !empty($row['missing_from_remote'])) : ?>
+<!--            <tr>-->
+<!--                <td>--><?php //= date('d/m/Y', strtotime($date)) ?><!--</td>-->
+<!--                <td>--><?php //= count($row['local']) ?><!--</td>-->
+<!--                <td>--><?php //= count($row['remote']) ?><!--</td>-->
+<!--                <td class="warn">--><?php //= empty($row['missing_from_local']) ? '-' : implode(', ', $row['missing_from_local']) ?><!--</td>-->
+<!--                <td class="warn">--><?php //= empty($row['missing_from_remote']) ? '-' : implode(', ', $row['missing_from_remote']) ?><!--</td>-->
+<!--            </tr>-->
+<!--        --><?php //endif; ?>
+<!--    --><?php //endforeach; ?>
+<!--    <tr>-->
+<!--        <td>TOTAL</td>-->
+<!--        <td></td>-->
+<!--        <td></td>-->
+<!--        <td class="warn">--><?php //= empty($totalCartStats['missing_from_local']) ? '-' : implode(', ', $totalCartStats['missing_from_local']) ?><!--</td>-->
+<!--        <td class="warn">--><?php //= empty($totalCartStats['missing_from_remote']) ? '-' : implode(', ', $totalCartStats['missing_from_remote']) ?><!--</td>-->
+<!--    </tr>-->
+<!--    </tbody>-->
+<!--</table>-->
 
 <h1 style="margin-top:50px;">🏠 Comparaison des adresses</h1>
 <p>Du <strong><?= $startDate->format('d/m/Y') ?></strong> au <strong><?= $endDate->format('d/m/Y') ?></strong></p>
