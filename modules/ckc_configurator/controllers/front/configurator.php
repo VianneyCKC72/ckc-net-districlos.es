@@ -125,10 +125,6 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                 $selected_occultation_id_product_attribute = '';
                 $selected_panneau_deco_id_product_attribute = '';
 
-                if (!empty(Tools::getValue('occultation')['id_product_attribute'])) {
-                    $selected_occultation_id_product_attribute = Tools::getValue('occultation')['id_product_attribute'];
-                }
-
                 if (!empty(Tools::getValue('panneau_deco')['id_product_attribute'])) {
                     $selected_panneau_deco_id_product_attribute = Tools::getValue('panneau_deco')['id_product_attribute'];
                 }
@@ -162,6 +158,14 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     foreach ($products as $product) {
                         if (strpos($product['name'], 'Portillon') !== false) {
                             $selected_portillon_id_product_attribute = Tools::getValue('portillon')['id_product_attribute'];
+                        }
+                    }
+                }
+
+                if (!empty(Tools::getValue('occultation')['id_product_attribute'])) {
+                    foreach ($products as $product) {
+                        if (strpos($product['name'], 'Occultation') !== false || strpos($product['name'], 'Brise vue') !== false) {
+                            $selected_occultation_id_product_attribute = Tools::getValue('occultation')['id_product_attribute'];
                         }
                     }
                 }
