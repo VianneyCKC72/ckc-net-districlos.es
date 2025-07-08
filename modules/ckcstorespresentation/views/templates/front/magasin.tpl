@@ -63,6 +63,12 @@
             {if isset($magasin.horaires_heures) && $magasin.horaires_heures}
                 <span class="heures" itemprop="openingHours">{$magasin.horaires_heures}</span>
             {/if}
+            <span class="heures" itemprop="openingHours">Samedi</span>
+            {if isset($magasin.horaires_samedi) && $magasin.horaires_samedi}
+                <span class="heures" itemprop="openingHours">{$magasin.horaires_samedi}</span>
+            {else}
+                <span class="heures" itemprop="openingHours">Fermé</span>
+            {/if}
         </div>
 
         <div class="block block-actions">

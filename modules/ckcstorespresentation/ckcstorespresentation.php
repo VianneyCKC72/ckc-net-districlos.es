@@ -338,6 +338,12 @@ class Ckcstorespresentation extends Module implements WidgetInterface
                     array(
                         'col' => 3,
                         'type' => 'text',
+                        'label' => $this->l('Horaires Heures Samedi'),
+                        'name' => 'CKCSTORESPRESENTATION_HORAIRES_SAMEDI',
+                    ),
+                    array(
+                        'col' => 3,
+                        'type' => 'text',
                         'label' => $this->l('Latitude'),
                         'name' => 'CKCSTORESPRESENTATION_HORAIRES_LATITUDE',
                     ),
@@ -404,6 +410,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
                 'CKCSTORESPRESENTATION_HORAIRES_LONGITUDE' => "",
                 'CKCSTORESPRESENTATION_HORAIRES_JOURS' => "",
                 'CKCSTORESPRESENTATION_HORAIRES_HEURES' => "",
+                'CKCSTORESPRESENTATION_HORAIRES_SAMEDI' => "",
                 'CKCSTORESPRESENTATION_IMG_PATH' => "",
                 'CKCSTORESPRESENTATION_MULTIBOUTIQUE_ID' => "",
                 'CKCSTORESPRESENTATION_ID' => "",
@@ -423,6 +430,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
                 'CKCSTORESPRESENTATION_HORAIRES_LONGITUDE' => $query[0]["longitude"],
                 'CKCSTORESPRESENTATION_HORAIRES_JOURS' => $query[0]["horaires_jours"],
                 'CKCSTORESPRESENTATION_HORAIRES_HEURES' => $query[0]["horaires_heures"],
+                'CKCSTORESPRESENTATION_HORAIRES_SAMEDI' => $query[0]["horaires_samedi"],
                 'CKCSTORESPRESENTATION_IMG_PATH' => $query[0]["img_path"],
                 'CKCSTORESPRESENTATION_MULTIBOUTIQUE_ID' => $query[0]["id_multiboutique"],
                 'CKCSTORESPRESENTATION_ID' => $idStore,
@@ -502,6 +510,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
         $CKCSTORESPRESENTATION_TELEPHONE = Tools::getValue('CKCSTORESPRESENTATION_TELEPHONE');
         $CKCSTORESPRESENTATION_HORAIRES_JOURS = Tools::getValue('CKCSTORESPRESENTATION_HORAIRES_JOURS');
         $CKCSTORESPRESENTATION_HORAIRES_HEURES = Tools::getValue('CKCSTORESPRESENTATION_HORAIRES_HEURES');
+        $CKCSTORESPRESENTATION_HORAIRES_SAMEDI = Tools::getValue('CKCSTORESPRESENTATION_HORAIRES_SAMEDI') == "" ? null : Tools::getValue('CKCSTORESPRESENTATION_HORAIRES_SAMEDI');
 
         $address = $CKCSTORESPRESENTATION_ADRESSE.' '.$CKCSTORESPRESENTATION_CODE_POSTAL.' '.$CKCSTORESPRESENTATION_VILLE;
 
@@ -575,6 +584,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
                 `telephone` = \''.$CKCSTORESPRESENTATION_TELEPHONE.'\',
                 `horaires_jours` = \''.$CKCSTORESPRESENTATION_HORAIRES_JOURS.'\',
                 `horaires_heures` = \''.$CKCSTORESPRESENTATION_HORAIRES_HEURES.'\',
+                `horaires_samedi` = \''.$CKCSTORESPRESENTATION_HORAIRES_SAMEDI.'\',
                 `img_path` = \''.$file_name.'\',
                 `latitude` = \''.$CKCSTORESPRESENTATION_HORAIRES_LATITUDE.'\',
                 `longitude` = \''.$CKCSTORESPRESENTATION_HORAIRES_LONGITUDE.'\',
@@ -591,6 +601,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
                 `telephone` = \''.$CKCSTORESPRESENTATION_TELEPHONE.'\',
                 `horaires_jours` = \''.$CKCSTORESPRESENTATION_HORAIRES_JOURS.'\',
                 `horaires_heures` = \''.$CKCSTORESPRESENTATION_HORAIRES_HEURES.'\',
+                `horaires_samedi` = \''.$CKCSTORESPRESENTATION_HORAIRES_SAMEDI.'\',
                 `latitude` = \''.$CKCSTORESPRESENTATION_HORAIRES_LATITUDE.'\',
                 `longitude` = \''.$CKCSTORESPRESENTATION_HORAIRES_LONGITUDE.'\',
                 `id_multiboutique` = '.$CKCSTORESPRESENTATION_MULTIBOUTIQUE_ID.',
@@ -630,10 +641,10 @@ class Ckcstorespresentation extends Module implements WidgetInterface
             }
 
             $createStoreInfo = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckcstorespresentation` 
-            (`id_ckcstorespresentation`, `departement`, `adresse`,`ville`, `code_postal`,`email`, `telephone`, `horaires_jours`, `horaires_heures`, `img_path`, `latitude`, `longitude`, `id_multiboutique`,`id_cms_detail`, `date_add`)
+            (`id_ckcstorespresentation`, `departement`, `adresse`,`ville`, `code_postal`,`email`, `telephone`, `horaires_jours`, `horaires_heures`, `horaires_samedi`, `img_path`, `latitude`, `longitude`, `id_multiboutique`,`id_cms_detail`, `date_add`)
             VALUES (NULL, \''.$CKCSTORESPRESENTATION_DEPARTEMENT.'\', \''.$CKCSTORESPRESENTATION_ADRESSE.'\',\''.$CKCSTORESPRESENTATION_VILLE.'\',
             \''.$CKCSTORESPRESENTATION_CODE_POSTAL.'\', \''.$CKCSTORESPRESENTATION_EMAIL.'\',
-            \''.$CKCSTORESPRESENTATION_TELEPHONE.'\', \''.$CKCSTORESPRESENTATION_HORAIRES_JOURS.'\', \''.$CKCSTORESPRESENTATION_HORAIRES_HEURES.'\',
+            \''.$CKCSTORESPRESENTATION_TELEPHONE.'\', \''.$CKCSTORESPRESENTATION_HORAIRES_JOURS.'\', \''.$CKCSTORESPRESENTATION_HORAIRES_HEURES.'\', \''.$CKCSTORESPRESENTATION_HORAIRES_SAMEDI.'\',
             \''.$file_name.'\', \''.$CKCSTORESPRESENTATION_HORAIRES_LATITUDE.'\', \''.$CKCSTORESPRESENTATION_HORAIRES_LONGITUDE.'\',
             '.$CKCSTORESPRESENTATION_MULTIBOUTIQUE_ID.','.$CKCSTORESPRESENTATION_PAGE_DETAIL.' , CURRENT_TIMESTAMP())');
         }
