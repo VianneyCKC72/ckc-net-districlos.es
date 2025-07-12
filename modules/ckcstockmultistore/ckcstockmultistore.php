@@ -215,7 +215,9 @@ class Ckcstockmultistore extends Module
         $helper->token = Tools::getAdminTokenLite('AdminModules');
 
         $helper->tpl_vars = array(
-            'fields_value' => $this->getConfigFormValues(), /* Add values for your inputs */
+            'fields_value' => [
+                'CKCSTOCKMULTISTORE_ORDER_STATUS[]' => explode(';', Configuration::get('CKCSTOCKMULTISTORE_ORDER_STATUS')),
+            ],
             'languages' => $this->context->controller->getLanguages(),
             'id_language' => $this->context->language->id,
         );
@@ -238,7 +240,8 @@ class Ckcstockmultistore extends Module
                     array(
                         'type' => 'select',
                         'label' => $this->l('Statut de commande pour la déduction du stock'),
-                        'name' => 'CKCSTOCKMULTISTORE_ORDER_STATUS',
+                        'name' => 'CKCSTOCKMULTISTORE_ORDER_STATUS[]',
+                        'multiple' => true,
                         'options' => array(
                             'query' => OrderState::getOrderStates($this->context->language->id),
                             'id' => 'id_order_state',
@@ -353,7 +356,7 @@ class Ckcstockmultistore extends Module
     protected function getConfigFormValues()
     {
         return array(
-            'CKCSTOCKMULTISTORE_ORDER_STATUS' => Configuration::get('CKCSTOCKMULTISTORE_ORDER_STATUS', null),
+            'CKCSTOCKMULTISTORE_ORDER_STATUS' => Configuration::get('CKCSTOCKMULTISTORE_ORDER_STATUS', []),
         );
     }
 
@@ -385,7 +388,12 @@ class Ckcstockmultistore extends Module
                 $this->installModuleTab('AdminCkcstockmultistoreTab', 'SELL', 'CKC Stock Multiboutique');
             }
         }else{
-            Configuration::updateValue('CKCSTOCKMULTISTORE_ORDER_STATUS', (int) Tools::getValue('CKCSTOCKMULTISTORE_ORDER_STATUS'));
+            $orderStatuses = Tools::getValue('CKCSTOCKMULTISTORE_ORDER_STATUS');
+            if (is_array($orderStatuses)) {
+                Configuration::updateValue('CKCSTOCKMULTISTORE_ORDER_STATUS', implode(';', array_map('intval', $orderStatuses)));
+            } else {
+                Configuration::updateValue('CKCSTOCKMULTISTORE_ORDER_STATUS', '');
+            }
         }
     }
 
@@ -450,10 +458,10 @@ class Ckcstockmultistore extends Module
         $id_order = (int) $params['id_order'];
         $new_status = (int) $params['newOrderStatus']->id;
 
-        $trigger_status = (int) Configuration::get('CKCSTOCKMULTISTORE_ORDER_STATUS');
+        $trigger_statuses = explode(';', Configuration::get('CKCSTOCKMULTISTORE_ORDER_STATUS'));
 
-        if ($new_status != $trigger_status) {
-            PrestaShopLogger::addLog('Order status is not the trigger status '.$new_status.' - '.$trigger_status, 3, null, 'Ckcstockmultistore', $id_order, true);
+        if (!in_array((string) $new_status, $trigger_statuses)) {
+            PrestaShopLogger::addLog('Order status is not a trigger status: '.$new_status.' - Allowed: '.implode(', ', $trigger_statuses), 3, null, 'Ckcstockmultistore', $id_order, true);
             return;
         }
 
