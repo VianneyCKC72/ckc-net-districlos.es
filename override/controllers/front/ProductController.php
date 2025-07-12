@@ -82,6 +82,7 @@ class ProductController extends ProductControllerCore
             'id_customization' => $product['id_customization'],
             'product_title' => $this->getTemplateVarPage()['meta']['title'],
             'is_quick_view' => $this->isQuickView(),
+            'product_reference' => $product['reference_to_display'],
         ]));
     }
 }

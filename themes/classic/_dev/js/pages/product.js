@@ -324,10 +324,10 @@ $(document).ready(function () {
 
         refreshPrice();
 
-        if (event && event.product && event.product.reference) {
+        if (event && event.product_reference) {
             const refEl = document.getElementById('product_reference');
             if (refEl) {
-                refEl.textContent = event.product.reference;
+                refEl.textContent = event.product_reference;
             }
         }
 
