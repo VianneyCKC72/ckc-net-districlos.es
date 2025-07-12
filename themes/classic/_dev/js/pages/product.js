@@ -324,6 +324,13 @@ $(document).ready(function () {
 
         refreshPrice();
 
+        if (event && event.product && event.product.reference) {
+            const refEl = document.getElementById('product_reference');
+            if (refEl) {
+                refEl.textContent = event.product.reference;
+            }
+        }
+
         document
             .querySelectorAll(".wrapper__swiper__product-img")
             .forEach((wrapper, index) => {

@@ -111,10 +111,8 @@
                             {/if}
 
                             {if $product.reference_to_display}
-                                {block name='product_reference'}
-                                    <div class="small product-reference">REF <span
+                                <div class="small">REF <span
                                             class="font-weight-bold" id="product_reference">{$product.reference_to_display}</span></div>
-                                {/block}
                             {/if}
                             <a href="javascript:av_widget_click()" id="AV_button">
                                 <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
