@@ -1817,7 +1817,7 @@ class Ckcadcampaignconfigurator extends Module
     public function hookDisplayPromoImpactFranco(){
         $customerGroupId = Context::getContext()->customer->id_default_group;
 
-        $getCampaigns =  Db::getInstance()->executeS('SELECT id, franco_impact, id_client_group, active FROM ' . _DB_PREFIX_ . 'ckccampaign_config_list
+        $getCampaigns =  Db::getInstance()->executeS('SELECT id, franco_impact, franco_impact_pro, id_client_group, active FROM ' . _DB_PREFIX_ . 'ckccampaign_config_list
         ORDER BY id ASC');
 
         $promoFrancoImpact = "1 499";
@@ -1840,8 +1840,12 @@ class Ckcadcampaignconfigurator extends Module
                     $promoFrancoImpact = number_format($campaign['franco_impact'], 0, '.', ' ');
                     break;
                 }
+            } else if ($customerGroupId == 10 && isset($campaign['franco_impact_pro']) && $checkDate && $campaign['active']){
+                $promoFrancoImpact = number_format($campaign['franco_impact_pro'], 0, '.', ' ');
+                break;
             }
         }
+
 
         $this->context->smarty->assign(array(
             'promoFrancoImpact' => $promoFrancoImpact,
