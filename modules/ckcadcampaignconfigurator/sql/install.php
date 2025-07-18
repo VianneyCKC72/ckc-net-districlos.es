@@ -32,6 +32,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_list
     `active` tinyint NOT NULL,
     `logo_path` varchar(500) NULL,
     `franco_impact` decimal(20,6) NULL,
+    `franco_impact_pro` decimal(20,6) NULL,
     `date_start` datetime NOT NULL,
     `date_end` datetime NOT NULL,
     `date_add` datetime NOT NULL,

@@ -783,6 +783,12 @@ class Ckcadcampaignconfigurator extends Module
                         'label' => $this->l('Saisissez le franco en €'),
                     ),
                     array(
+                        'col' => 3,
+                        'type' => 'text',
+                        'name' => 'FRANCO_IMPACT_PRO',
+                        'label' => $this->l('Saisissez le franco Pro en €'),
+                    ),
+                    array(
                         'type' => 'hidden',
                         'name' => 'ID',
                     ),
@@ -1310,6 +1316,7 @@ class Ckcadcampaignconfigurator extends Module
                 'DATE_END' => '',
                 'LOGO_PATH' => '',
                 'FRANCO_IMPACT' => '',
+                'FRANCO_IMPACT_PRO' => '',
                 'MENU_ACTIVE' => '',
                 'MENU_IMG' => '',
                 'MENU_LINK' => '',
@@ -1340,6 +1347,7 @@ class Ckcadcampaignconfigurator extends Module
                 'DATE_END' => $campaignInfo['date_end'],
                 'LOGO_PATH' => $campaignInfo['logo_path'],
                 'FRANCO_IMPACT' => isset($campaignInfo['franco_impact']) ? number_format($campaignInfo['franco_impact'], 2, '.', '') : "",
+                'FRANCO_IMPACT_PRO' => isset($campaignInfo['franco_impact_pro']) ? number_format($campaignInfo['franco_impact_pro'], 2, '.', '') : "",
                 'MENU_ACTIVE' => $campaignInfo['menuActive'],
                 'MENU_IMG' => $campaignInfo['imgMenuPath'],
                 'MENU_LINK' => $campaignInfo['menuLink'],
@@ -1820,8 +1828,18 @@ class Ckcadcampaignconfigurator extends Module
 
             if(in_array($customerGroupId, explode(',',$campaign['id_client_group'])) && $checkDate && $campaign['active'] && isset($campaign['franco_impact'])){
 
-                $promoFrancoImpact = number_format($campaign['franco_impact'], 0, '.', ' ');
-                break;
+                if(in_array(10, explode(',',$campaign['id_client_group']))){
+                    if($customerGroupId == 10 && isset($campaign['franco_impact_pro'])){
+                        $promoFrancoImpact = number_format($campaign['franco_impact_pro'], 0, '.', ' ');
+                        break;
+                    } else {
+                        $promoFrancoImpact = number_format($campaign['franco_impact'], 0, '.', ' ');
+                        break;
+                    }
+                } else {
+                    $promoFrancoImpact = number_format($campaign['franco_impact'], 0, '.', ' ');
+                    break;
+                }
             }
         }
 
