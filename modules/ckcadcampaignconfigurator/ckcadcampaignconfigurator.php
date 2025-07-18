@@ -1514,7 +1514,7 @@ class Ckcadcampaignconfigurator extends Module
                             $promotion_amount = $cartPromo['price_fixed'];
 
                             // $total_product = $this->includeTaxes() ? $total_including_tax_cart : $total_excluding_tax_cart;
-                            $total_product = Context::getContext()->cart->getOrderTotal(true, Cart::BOTH);
+                            $total_product = Context::getContext()->cart->getOrderTotal(true, Cart::ONLY_PRODUCTS);
                             if ($total_product < $promotion_amount) {
                                 $amountLeftForNextPromotion = $promotion_amount - $total_product;
                             } else {
@@ -1543,7 +1543,7 @@ class Ckcadcampaignconfigurator extends Module
                             $discount_below_3000 = $cartPromo['discount_range'];
                             $discount_above_3000 = $cartPromo['discount_range_max'];
 
-                            $total_product = Context::getContext()->cart->getOrderTotal(true, Cart::BOTH);
+                            $total_product = Context::getContext()->cart->getOrderTotal(true, Cart::ONLY_PRODUCTS);
                             $decimal = fmod($total_product, $promotion_threshold);
                             $modulo = $total_product % $promotion_threshold;
 
