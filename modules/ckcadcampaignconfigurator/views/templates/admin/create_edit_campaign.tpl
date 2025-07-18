@@ -406,6 +406,7 @@
         let logoPath = $("#LOGO_PATH-name").val()
         let logoFile = $("#LOGO_PATH")[0].files[0];
         let francoImpact = $("#FRANCO_IMPACT").val()
+        let francoImpactPro = $("#FRANCO_IMPACT_PRO").val()
 
         if($("#MENU_ACTIVE_on").prop('checked')==true){
             var isActiveMenu = 1
@@ -464,6 +465,7 @@
             dataMain.append('logoPath', logoPath)
             dataMain.append('logoFile', logoFile)
             dataMain.append('francoImpact', francoImpact)
+            dataMain.append('francoImpactPro', francoImpactPro)
             dataMain.append('isActiveMenu', isActiveMenu)
             dataMain.append('menuImgPath', menuImgPath)
             dataMain.append('menuImgFile', menuImgFile)

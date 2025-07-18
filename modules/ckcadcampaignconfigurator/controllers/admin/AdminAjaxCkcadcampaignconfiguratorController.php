@@ -40,6 +40,12 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
             $francoImpact = Tools::getValue("francoImpact");
         }
 
+        if(Tools::getValue("francoImpactPro") == "" OR null == Tools::getValue("francoImpactPro")){
+            $francoImpactPro = 0;
+        } else {
+            $francoImpactPro = Tools::getValue("francoImpactPro");
+        }
+
         $isActiveMenu = Tools::getValue("isActiveMenu");
         $menuImgPath = Tools::getValue("menuImgPath");
 
@@ -114,7 +120,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
 
 
                 $updateCampaign = Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckccampaign_config_list` 
-                SET `title` = "'.$titleCampaign.'", `id_client_group` = \''.$clientGroup.'\', `active` = '.$isActiveCampaign.', `franco_impact` = NULLIF('.$francoImpact.', 0), `date_start` = "'.$startingDate.'", `date_end` = "'.$endingDate.'" WHERE id = '.$id);
+                SET `title` = "'.$titleCampaign.'", `id_client_group` = \''.$clientGroup.'\', `active` = '.$isActiveCampaign.', `franco_impact` = NULLIF('.$francoImpact.', 0), `franco_impact_pro` = NULLIF('.$francoImpactPro.', 0), `date_start` = "'.$startingDate.'", `date_end` = "'.$endingDate.'" WHERE id = '.$id);
             }
 
         }
@@ -335,6 +341,12 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
             $francoImpact = Tools::getValue("francoImpact");
         }
 
+        if(Tools::getValue("francoImpactPro") == "" OR null == Tools::getValue("francoImpactPro")){
+            $francoImpactPro = 0;
+        } else {
+            $francoImpactPro = Tools::getValue("francoImpactPro");
+        }
+
         $isActiveMenu = Tools::getValue("isActiveMenu");
         $menuImgPath = Tools::getValue("menuImgPath");
 
@@ -356,8 +368,8 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
 
         if(isset($isActiveCampaign) && isset($titleCampaign) && isset($clientGroup) && isset($startingDate) && isset($endingDate)){
 
-            $createCampaign = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_list` (`id`, `title`, `id_client_group`,`active`,`franco_impact`,`date_start`, `date_end`, `date_add`)
-                VALUES (NULL, "'.$titleCampaign.'", "'.$clientGroup.'",'.$isActiveCampaign.', NULLIF('.$francoImpact.', 0), "'.$startingDate.'","'.$endingDate.'", CURRENT_TIMESTAMP())');
+            $createCampaign = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_list` (`id`, `title`, `id_client_group`,`active`,`franco_impact`,`franco_impact_pro`,`date_start`, `date_end`, `date_add`)
+                VALUES (NULL, "'.$titleCampaign.'", "'.$clientGroup.'",'.$isActiveCampaign.', NULLIF('.$francoImpact.', 0), NULLIF('.$francoImpactPro.', 0), "'.$startingDate.'","'.$endingDate.'", CURRENT_TIMESTAMP())');
 
             $newIdQuery = Db::getInstance()->executeS('SELECT id FROM `' . _DB_PREFIX_ . 'ckccampaign_config_list`
                 WHERE `title` LIKE "'.$titleCampaign.'" AND `id_client_group` LIKE "'.$clientGroup.'" AND `date_start` = "'.$startingDate.'"');
