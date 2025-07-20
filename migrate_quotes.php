@@ -96,7 +96,7 @@ foreach ($arrayQuotes as $quote) {
 
     // remote
     $cartFields = $datas['cart'];
-    unset($cartFields['products'], $cartFields['cart_cart_rule']);
+    unset($cartFields['products'], $cartFields['cart_cart_rule'], $cartFields['id_cart']);
 
     // Insertion du panier dans la base distante
     $columns = array_keys($cartFields);
