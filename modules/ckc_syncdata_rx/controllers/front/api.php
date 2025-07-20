@@ -428,7 +428,7 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                         }
                     }
 
-                    $result = ['status' => 'opartdevis_created', 'opartdevis_id' => json_encode($datas['opartdevis'])];
+                    $result = ['status' => 'opartdevis_created', 'opartdevis_id' => json_encode($cartFields)];
                 }
                 break;
             case 'order_slip':
