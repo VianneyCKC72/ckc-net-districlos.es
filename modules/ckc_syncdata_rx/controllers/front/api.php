@@ -390,9 +390,7 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
 
                     $datas['opartdevis']['id_cart'] = $id_cart;
 
-                    $res = Db::getInstance()->insert('opartdevis', $datas['opartdevis']);
-                    $result = ['status' => 'opartdevis_updated', 'id_opartdevis' => json_encode($res)];
-                    break;
+                    Db::getInstance()->insert('opartdevis', $datas['opartdevis']);
 
                     if (!empty($datas['products']) && is_array($datas['products'])) {
                         foreach ($datas['products'] as $product) {
@@ -428,7 +426,7 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                         }
                     }
 
-                    $result = ['status' => 'opartdevis_created', 'opartdevis_id' => $id_opartdevis];
+                    $result = ['status' => 'opartdevis_created', 'opartdevis_id' => json_encode($datas['opartdevis'])];
                 }
                 break;
             case 'order_slip':
