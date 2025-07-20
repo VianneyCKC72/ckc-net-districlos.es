@@ -379,7 +379,7 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                     $id_cart = $datas['opartdevis']['id_cart'];
                     $cartExists = Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'cart WHERE id_cart = '.$id_cart);
 
-                    $cartFields = $datas;
+                    $cartFields = $datas['cart'];
                     unset($cartFields['products'], $cartFields['cart_cart_rule']);
 
                     if ($cartExists) {
