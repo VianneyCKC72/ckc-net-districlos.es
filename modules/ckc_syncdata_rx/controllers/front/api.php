@@ -394,8 +394,8 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
 
                     Db::getInstance()->insert('opartdevis', $datas['opartdevis']);
 
-                    if (!empty($datas['products']) && is_array($datas['products'])) {
-                        foreach ($datas['products'] as $product) {
+                    if (!empty($datas['cart']['products']) && is_array($datas['cart']['products'])) {
+                        foreach ($datas['cart']['products'] as $product) {
                             if (!isset($product['id_product']) || !isset($product['quantity'])) {
                                 continue;
                             }
@@ -413,8 +413,8 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                     }
 
 
-                    if (!empty($datas['cart_cart_rule']) && is_array($datas['cart_cart_rule'])) {
-                        foreach ($datas['cart_cart_rule'] as $cart_rule) {
+                    if (!empty($datas['cart']['cart_cart_rule']) && is_array($datas['cart']['cart_cart_rule'])) {
+                        foreach ($datas['cart']['cart_cart_rule'] as $cart_rule) {
                             if (!isset($cart_rule['id_cart_rule']) || !isset($cart_rule['id_cart_rule'])) {
                                 continue;
                             }
