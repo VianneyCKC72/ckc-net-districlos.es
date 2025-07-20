@@ -41,13 +41,14 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
 
                if ($exists) {
                    Db::getInstance()->update('customer', $customerFields, 'id_customer = '.$id_customer);
-                   Db::getInstance()->delete('customer_group', 'id_customer = '.$id_customer);
                } else {
                    Db::getInstance()->insert('customer', $customerFields);
                }
 
                // Groupes du client (si transmis)
                if (!empty($datas['customer_groups']) && is_array($datas['customer_groups'])) {
+                   Db::getInstance()->delete('customer_group', 'id_customer = '.$id_customer);
+
                    foreach ($datas['customer_groups'] as $id_group) {
                        Db::getInstance()->insert('customer_group', [
                            'id_customer' => $id_customer,
