@@ -32,33 +32,33 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
 
         switch ($entity) {
             case 'customer':
-               $id_customer = (int)$payload['entity_id'];
-               $customerFields = $datas['customer'];
-               $customerFields['id_customer'] = $id_customer;
-               $customerFields['id_shop'] = 1;
+                $id_customer = (int)$payload['entity_id'];
+                $customerFields = $datas['customer'];
+                $customerFields['id_customer'] = $id_customer;
+                $customerFields['id_shop'] = 1;
 
-               $exists = Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'customer WHERE id_customer = '.$id_customer);
+                $exists = Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'customer WHERE id_customer = '.$id_customer);
 
-               if ($exists) {
-                   Db::getInstance()->update('customer', $customerFields, 'id_customer = '.$id_customer);
-               } else {
-                   Db::getInstance()->insert('customer', $customerFields);
-               }
+                if ($exists) {
+                    Db::getInstance()->update('customer', $customerFields, 'id_customer = '.$id_customer);
+                } else {
+                    Db::getInstance()->insert('customer', $customerFields);
+                }
 
-               // Groupes du client (si transmis)
-               if (!empty($datas['customer_groups']) && is_array($datas['customer_groups'])) {
-                   Db::getInstance()->delete('customer_group', 'id_customer = '.$id_customer);
+                // Groupes du client (si transmis)
+                if (!empty($datas['customer_groups']) && is_array($datas['customer_groups'])) {
+                    Db::getInstance()->delete('customer_group', 'id_customer = '.$id_customer);
 
-                   foreach ($datas['customer_groups'] as $id_group) {
-                       Db::getInstance()->insert('customer_group', [
-                           'id_customer' => $id_customer,
-                           'id_group' => (int)$id_group
-                       ]);
-                   }
-               }
+                    foreach ($datas['customer_groups'] as $id_group) {
+                        Db::getInstance()->insert('customer_group', [
+                            'id_customer' => $id_customer,
+                            'id_group' => (int)$id_group
+                        ]);
+                    }
+                }
 
-               $result = ['status' => $exists ? 'updated' : 'created', 'customer_id' => $id_customer];
-               break;
+                $result = ['status' => $exists ? 'updated' : 'created', 'customer_id' => $id_customer];
+                break;
 
             case 'address':
                 $id_address = (int)$payload['entity_id'];
@@ -376,9 +376,8 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
 
                     $result = ['status' => 'opartdevis_updated', 'id_opartdevis' => $id_opartdevis];
                 } else {
-
-                    $id_cart = (int)$payload['entity_id'];
-                    $cartExists = Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'cart WHERE id_cart = '.$datas['opartdevis']['id_cart']);
+                    $id_cart = $datas['opartdevis']['id_cart'];
+                    $cartExists = Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'cart WHERE id_cart = '.$id_cart);
 
                     $cartFields = $datas;
                     unset($cartFields['products'], $cartFields['cart_cart_rule']);
@@ -391,8 +390,9 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
 
                     $datas['opartdevis']['id_cart'] = $id_cart;
 
-                    Db::getInstance()->insert('opartdevis', $datas['opartdevis']);
-
+                    $res = Db::getInstance()->insert('opartdevis', $datas['opartdevis']);
+                    $result = ['status' => 'opartdevis_updated', 'id_opartdevis' => json_encode($res)];
+                    break;
 
                     if (!empty($datas['products']) && is_array($datas['products'])) {
                         foreach ($datas['products'] as $product) {
