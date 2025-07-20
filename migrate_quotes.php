@@ -14,7 +14,54 @@ $remoteDb = new PDO(
     [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
 );
 
-$arrayQuotes = [];
+$arrayQuotes = [
+    array('id_opartdevis' => '83833'),
+    array('id_opartdevis' => '84929'),
+    array('id_opartdevis' => '84930'),
+    array('id_opartdevis' => '84931'),
+    array('id_opartdevis' => '84932'),
+    array('id_opartdevis' => '84933'),
+    array('id_opartdevis' => '84934'),
+    array('id_opartdevis' => '84935'),
+    array('id_opartdevis' => '84936'),
+    array('id_opartdevis' => '84937'),
+    array('id_opartdevis' => '84938'),
+    array('id_opartdevis' => '84939'),
+    array('id_opartdevis' => '84940'),
+    array('id_opartdevis' => '84941'),
+    array('id_opartdevis' => '84942'),
+    array('id_opartdevis' => '84943'),
+    array('id_opartdevis' => '84944'),
+    array('id_opartdevis' => '84945'),
+    array('id_opartdevis' => '84946'),
+    array('id_opartdevis' => '84947'),
+    array('id_opartdevis' => '84948'),
+    array('id_opartdevis' => '84950'),
+    array('id_opartdevis' => '84951'),
+    array('id_opartdevis' => '84952'),
+    array('id_opartdevis' => '84953'),
+    array('id_opartdevis' => '84954'),
+    array('id_opartdevis' => '84955'),
+    array('id_opartdevis' => '84957'),
+    array('id_opartdevis' => '84958'),
+    array('id_opartdevis' => '84959'),
+    array('id_opartdevis' => '84960'),
+    array('id_opartdevis' => '84961'),
+    array('id_opartdevis' => '84962'),
+    array('id_opartdevis' => '84963'),
+    array('id_opartdevis' => '84964'),
+    array('id_opartdevis' => '84965'),
+    array('id_opartdevis' => '84966'),
+    array('id_opartdevis' => '84967'),
+    array('id_opartdevis' => '84968'),
+    array('id_opartdevis' => '84969'),
+    array('id_opartdevis' => '84970'),
+    array('id_opartdevis' => '84973'),
+    array('id_opartdevis' => '84974'),
+    array('id_opartdevis' => '84975'),
+    array('id_opartdevis' => '84976'),
+    array('id_opartdevis' => '84977')
+];
 
 // Récupération des devis
 
@@ -23,7 +70,7 @@ foreach ($arrayQuotes as $quote) {
     $sql =
         'SELECT *
                     FROM '._DB_PREFIX_.'opartdevis
-                    WHERE id_opartdevis = '.(int)$quote;
+                    WHERE id_opartdevis = '.(int)$quote['id_opartdevis'];
 
     $opart_devis = Db::getInstance()->getRow($sql);
 
