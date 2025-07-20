@@ -273,7 +273,7 @@
                     $object = new Order($id);
                     if (Validate::isLoadedObject($object)) {
 
-                        $excluded_payments = ['Transfert bancaire', 'Devis'];
+                        $excluded_payments = ['Devis'];
                         if (in_array($object->payment, $excluded_payments)) {
                             $this->logSync('order', $id, $action, 'skipped', 'Payment method excluded: '.$object->payment);
                             return;
