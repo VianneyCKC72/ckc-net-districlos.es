@@ -38,6 +38,7 @@
                 && $this->registerHook('actionPaymentCCAdd')
                 && $this->registerHook('actionObjectOrderCarrierAddAfter')
                 && $this->registerHook('displayAdminOrder')
+                && $this->registerHook('actionOpartQuotationCreate')
                 && $this->installDb()
                 && Configuration::updateValue('CKC_SYNCDATA_TX_TARGET_URL', '')
                 && Configuration::updateValue('CKC_SYNCDATA_TX_API_TOKEN', '');
@@ -231,6 +232,11 @@
             $this->syncToRemote('order_carrier', $params['object']->id, 'create', $params);
         }
 
+        public function hookActionOpartQuotationCreate($params)
+        {
+            $this->syncToRemote('opartdevis', $params['id_opart_devis'], 'create');
+        }
+
         private function syncToRemote($type, $id, $action, $additionnalData = null)
         {
             $url = rtrim(Configuration::get('CKC_SYNCDATA_TX_TARGET_URL'), '/');
@@ -262,6 +268,34 @@
                             $datas['customer_groups'] = [3];
                         }
                     }
+                    break;
+                case 'opartdevis':
+                    $sql =
+                        'SELECT *
+                    FROM '._DB_PREFIX_.'opartdevis
+                    WHERE id_opartdevis = '.(int)$id;
+
+                    $opart_devis = Db::getInstance()->getRow($sql);
+
+
+                    $datas['opartdevis'] = $opart_devis;
+
+                    $cart = new Cart($opart_devis['id_cart']);
+                    if (Validate::isLoadedObject($cart)) {
+                        $cart_data = $cart->getFields();
+                        $cart_data['products'] = Db::getInstance()->executeS(
+                            'SELECT cp.id_product, cp.id_product_attribute, cp.quantity, p.id_tax_rules_group
+                                 FROM '._DB_PREFIX_.'cart_product cp
+                                 LEFT JOIN '._DB_PREFIX_.'product p ON (p.id_product = cp.id_product)
+                                 WHERE cp.id_cart = '.(int)$cart->id
+                        );
+                        $cart_data['cart_cart_rule'] = Db::getInstance()->executeS(
+                            'SELECT * FROM '._DB_PREFIX_.'cart_cart_rule WHERE id_cart = '.(int)$cart->id
+                        );
+
+                        $datas['cart'] = $cart_data;
+                    }
+
                     break;
                 case 'address':
                     $object = new Address($id);
