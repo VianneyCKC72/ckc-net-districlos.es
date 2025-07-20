@@ -428,7 +428,7 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                         }
                     }
 
-                    $result = ['status' => 'opartdevis_created', 'opartdevis_id' => $datas['opartdevis']['id_opartdevis']];
+                    $result = ['status' => 'opartdevis_created', 'opartdevis_id' => $id_opartdevis];
                 }
                 break;
             case 'order_slip':
