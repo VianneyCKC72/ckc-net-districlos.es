@@ -390,6 +390,7 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                     }
 
                     $datas['opartdevis']['id_cart'] = $id_cart;
+                    $result = ['status' => 'opartdevis', 'id_opartdevis' => json_encode($datas['opartdevis'])];
 
                     Db::getInstance()->insert('opartdevis', $datas['opartdevis']);
 
