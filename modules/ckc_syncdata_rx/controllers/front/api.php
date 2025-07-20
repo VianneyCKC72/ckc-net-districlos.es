@@ -386,6 +386,8 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                         unset($cartFields['id_cart']);
                         Db::getInstance()->insert('cart', $cartFields);
                         $id_cart = Db::getInstance()->Insert_ID();
+                    }else{
+                        Db::getInstance()->insert('cart', $cartFields);
                     }
 
                     $datas['opartdevis']['id_cart'] = $id_cart;
