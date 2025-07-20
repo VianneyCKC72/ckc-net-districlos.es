@@ -254,6 +254,9 @@
                             WHERE id_customer = '.(int)$object->id
                         );
 
+                        dump($groups);
+                        die;
+
                         $datas['customer_groups'] = array_map(function ($g) {
                             return (int)$g['id_group'];
                         }, $groups);
