@@ -1,10 +1,12 @@
 <?php
 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+
 
 require(__DIR__.'/config/config.inc.php');
 require_once(__DIR__.'/init.php');
+
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 // Connexion à cloture-discount.fr (site source)
 $remoteDb = new PDO(
