@@ -367,6 +367,70 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                     }
                 }
                 break;
+            case 'opartdevis':
+                $id_opartdevis = (int)$payload['entity_id'];
+                $existing = ((int)Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'opartdevis WHERE id_opartdevis = '.(int)$id_opartdevis)) > 0;
+
+                if ($existing) {
+                    Db::getInstance()->update('opartdevis', $datas['opartdevis'], 'id_opartdevis = ' . $id_opartdevis);
+
+                    $result = ['status' => 'opartdevis_updated', 'id_opartdevis' => $id_opartdevis];
+                } else {
+
+                    $id_cart = (int)$payload['entity_id'];
+                    $cartExists = Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.'cart WHERE id_cart = '.$datas['opartdevis']['id_cart']);
+
+                    $cartFields = $datas;
+                    unset($cartFields['products'], $cartFields['cart_cart_rule']);
+
+                    if ($cartExists) {
+                        unset($cartFields['id_cart']);
+                        Db::getInstance()->insert('cart', $cartFields);
+                        $id_cart = Db::getInstance()->Insert_ID();
+                    }
+
+                    $datas['opartdevis']['id_cart'] = $id_cart;
+
+                    Db::getInstance()->insert('opartdevis', $datas['opartdevis']);
+
+
+                    if (!empty($datas['products']) && is_array($datas['products'])) {
+                        foreach ($datas['products'] as $product) {
+                            if (!isset($product['id_product']) || !isset($product['quantity'])) {
+                                continue;
+                            }
+
+                            $row = [
+                                'id_cart'              => $id_cart,
+                                'id_product'           => (int)$product['id_product'],
+                                'id_product_attribute' => (int)($product['id_product_attribute'] ?? 0),
+                                'quantity'             => (int)$product['quantity'],
+                                'date_add'             => date('Y-m-d H:i:s'),
+                            ];
+
+                            Db::getInstance()->insert('cart_product', $row);
+                        }
+                    }
+
+
+                    if (!empty($datas['cart_cart_rule']) && is_array($datas['cart_cart_rule'])) {
+                        foreach ($datas['cart_cart_rule'] as $cart_rule) {
+                            if (!isset($cart_rule['id_cart_rule']) || !isset($cart_rule['id_cart_rule'])) {
+                                continue;
+                            }
+
+                            $row = [
+                                'id_cart'              => $id_cart,
+                                'id_cart_rule'           => (int)$cart_rule['id_cart_rule']
+                            ];
+
+                            Db::getInstance()->insert('cart_cart_rule', $row);
+                        }
+                    }
+
+                    $result = ['status' => 'opartdevis_created', 'opartdevis_id' => $datas['opartdevis']['id_opartdevis']];
+                }
+                break;
             case 'order_slip':
                 $id_order = (int)$datas['order']['id_order'];
                 $existing = new Order($id_order);
