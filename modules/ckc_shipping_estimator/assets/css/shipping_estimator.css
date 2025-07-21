@@ -19,6 +19,10 @@
     padding: 0;
 }
 
+#modalShowDelivery .font-weight-bold.text-secondary{
+    color: inherit !important;
+}
+
 .text-line-through{
     text-decoration:line-through;
 }
