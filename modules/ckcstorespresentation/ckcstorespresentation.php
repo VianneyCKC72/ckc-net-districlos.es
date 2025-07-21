@@ -338,13 +338,13 @@ class Ckcstorespresentation extends Module implements WidgetInterface
                     array(
                         'col' => 3,
                         'type' => 'text',
-                        'label' => $this->l('Horaires Heures Samedi'),
+                        'label' => $this->l('Horaires Samedi'),
                         'name' => 'CKCSTORESPRESENTATION_HORAIRES_SAMEDI',
                     ),
                     array(
                         'col' => 3,
                         'type' => 'text',
-                        'label' => $this->l('Horaires Heures Informations Supplémentaires'),
+                        'label' => $this->l('Informations Supplémentaires'),
                         'name' => 'CKCSTORESPRESENTATION_HORAIRES_INFO_SUPPL',
                     ),
                     array(
