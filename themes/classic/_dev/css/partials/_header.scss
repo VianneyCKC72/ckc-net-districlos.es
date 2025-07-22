@@ -234,6 +234,14 @@
     @media (max-width: 824px) {
       gap: 0;
     }
+    .displayNav2{
+      gap: 15px;
+      padding-left: 10px;
+      @media (max-width: 1509px) {
+        gap: 30px;
+        padding-left: 30px;
+      }
+    }
   }
   .displayTop {
     gap: 25px;
@@ -260,6 +268,9 @@
     align-items: flex-start;
     max-width: 143px;
     font-size: 14px;
+    @media (max-width: 1509px) {
+      display: none;
+    }
     @media (max-width: 768px) {
       display: none;
     }
@@ -291,7 +302,7 @@
     }
   }
   #search_widget {
-    min-width: 220px;
+    min-width: 200px;
     form{
       input {
         width: 200px;

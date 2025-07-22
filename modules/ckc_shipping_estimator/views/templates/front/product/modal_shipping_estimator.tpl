@@ -14,7 +14,9 @@
                         </defs>
                         <rect id="camion_blanc" width="64" height="40" fill="url(#pattern)"></rect>
                     </svg>
-                    <p>Livraison à domicile <span class="color-green">offerte dès 1499 € TTC !</span></p>
+                    <p>Livraison à domicile {hook h='displayPromoImpactFranco'} !
+                        {*<span class="color-green">offerte dès 1499 € TTC !</span>*}
+                    </p>
                 </div>
 
                 <div class="modal-shipping-content-product">

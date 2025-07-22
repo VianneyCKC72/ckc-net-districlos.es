@@ -94,7 +94,7 @@
       padding: 30px 20px;
       flex-direction: column;
       gap: 15px;
-      min-height: 412px;
+      min-height: 452px;
       justify-content: space-between;
 
       .block {
@@ -199,6 +199,10 @@
         font-weight: 400;
         .jours {
           padding-right: 5px;
+        }
+        .magasins-info-suppl{
+          color: #dd3124;
+          font-weight: bold;
         }
       }
 
