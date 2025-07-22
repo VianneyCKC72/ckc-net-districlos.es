@@ -94,6 +94,10 @@ class Ckc_Stores_Stock extends Module
         $id_product = (int)$params['product']['id_product'];
         $id_product_attribute = (int)Tools::getValue('id_product_attribute', 0);
 
+        if ($id_product_attribute == 0) {
+            $id_product_attribute = (int)$params['product']['id_product_attribute'];
+        }
+
         require_once _PS_MODULE_DIR_ . 'ckc_stores_stock/classes/StockManager.php';
         $stockManager = new StockManager();
         $stockData = $stockManager->getStockData($id_product, $id_product_attribute, null);
