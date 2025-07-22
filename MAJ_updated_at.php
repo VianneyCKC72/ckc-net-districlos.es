@@ -10,7 +10,6 @@ try {
     $conn = new PDO($dsn, $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $sql = 'UPDATE `ps_product_shop` SET `price` = :price, `wholesale_price` = :wholesale_price WHERE `ps_product_shop`.`id_product` = :id_product';
     $stmt = $conn->prepare("UPDATE ps_orders o
     JOIN (
         SELECT oh.id_order, oh.date_add
