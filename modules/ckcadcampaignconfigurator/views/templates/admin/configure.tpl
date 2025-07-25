@@ -75,6 +75,11 @@
 							</a>
 						</li>
 						<li>
+							<a href="{$current_url}&amp;copy_campaign&ID={$campaign.id}">
+								<i class="material-icons">content_copy</i> {l s='Duplicate' d='Admin.Actions'}
+							</a>
+						</li>
+						<li>
 							<a href="#"
 								onclick="return confirm('{l s='Do you really want to delete this campaign?' d='Modules.Facetedsearch.Admin'}');">
 								<i class="icon-trash"></i> {l s='Delete' d='Admin.Actions'}
