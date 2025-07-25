@@ -65,6 +65,10 @@
     font-size: 17px;
     line-height: 25px;
     color: $redLink;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
     @media only screen and (max-width: 1620px) {
       font-size: 15px;
       line-height: 19px;
@@ -76,6 +80,10 @@
       .main_menu_label {
         display: none;
       }
+    }
+    svg{
+      margin-right: 3px;
+      margin-bottom: 2px;
     }
   }
 
