@@ -12,17 +12,14 @@ try {
 
     $stmt = $conn->prepare("UPDATE ps_orders o
     JOIN (
-        SELECT oh.id_order, oh.date_add
+        SELECT oh.id_order, MIN(oh.date_add) AS validated_date
         FROM ps_order_history oh
-        INNER JOIN (
-        SELECT id_order, MIN(date_add) AS latest_date
-            FROM ps_order_history
-            GROUP BY id_order
-        ) latest ON latest.id_order = oh.id_order AND latest.latest_date = oh.date_add
         JOIN ps_order_state os ON os.id_order_state = oh.id_order_state
         WHERE os.paid = 1
-    ) last_paid ON last_paid.id_order = o.id_order
-    SET o.validated_at = last_paid.date_add;");
+        GROUP BY oh.id_order
+    ) AS first_paid ON first_paid.id_order = o.id_order
+    SET o.validated_at = first_paid.validated_date
+    WHERE o.validated_at = '0000-00-00 00:00:00';");
 
     $stmt->execute();
 } catch (Exception $e) {
