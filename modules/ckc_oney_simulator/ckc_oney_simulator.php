@@ -27,7 +27,7 @@ class ckc_oney_simulator extends Module
     {
         $controller = Tools::getValue('controller');
 
-        if ($controller === 'cart') {
+        if ($controller === 'cart' || $controller === 'order') {
             $this->context->controller->registerStylesheet(
                 'oneysimulator-css',
                 'modules/' . $this->name . '/views/css/oneysimulator.css',
