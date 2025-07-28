@@ -37,12 +37,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Mise à jour des options pour la version desktop
     function updateFinancingDisplay(totalAmount) {
-        if (totalAmount >= 300 && totalAmount <= 15000) {
-            document.getElementById('financing-discover').style.display = 'block'
-            document.getElementById('financing-choice').style.display = 'block'
-        }else{
-            document.getElementById('financing-discover').style.display = 'none'
-            document.getElementById('financing-choice').style.display = 'none'
+        if (document.getElementById('financing-discover')) {
+            if (totalAmount >= 300 && totalAmount <= 15000) {
+                document.getElementById('financing-discover').style.display = 'block'
+                document.getElementById('financing-choice').style.display = 'block'
+            }else{
+                document.getElementById('financing-discover').style.display = 'none'
+                document.getElementById('financing-choice').style.display = 'none'
+            }
         }
     }
 
