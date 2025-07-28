@@ -20,8 +20,6 @@ Titulaire du compte :  {bankwire_owner}
 
 Détails du compte : {bankwire_details}
 
-Adresse de la banque : {bankwire_address}
-
 Veuillez préciser votre numéro de commande dans la description du virement.
 
 Follow your order and download your invoice on our store, go to the [Historique et détails de mes commandes]({history_url}) section of your customer account.
