@@ -37,21 +37,22 @@ class Cart extends CartCore
         Country $default_country = null,
         $product_list = null,
         $id_zone = null,
-        bool $keepOrderPrices = false
+        bool $keepOrderPrices = false,
+        bool $soubCheck = true
     ) {
         if ($this->isVirtualCart()) {
             return 0;
         }
-        
+
         static $cache = [];
         static $module = null;
-        
+
         if ($module === null) {
             $module = Module::getInstanceByName('orderfees_shipping');
         }
-        
+
         $cache_key = crc32(json_encode(func_get_args()));
-        
+
         if (!isset($cache[$cache_key])) {
             $total = 0;
             $return = false;
@@ -78,12 +79,26 @@ class Cart extends CartCore
                     $id_zone,
                     $keepOrderPrices
                 );
+
+                if ($soubCheck) {
+                    Hook::exec('actionSoubShippingCost', [
+                        'object' => &$this,
+                        'id_carrier' => &$id_carrier,
+                        'use_tax' => &$use_tax,
+                        'default_country' => &$default_country,
+                        'product_list' => &$product_list,
+                        'id_zone' => &$id_zone,
+                        'keepOrderPrices' => &$keepOrderPrices,
+                        'shipping_cost' => &$shipping_cost
+                    ]);
+                }
+
                 if ($shipping_cost !== false) {
                     $cache[$cache_key] = $shipping_cost + (float) Tools::ps_round((float) $total, 2);
                 }
             }
         }
-        
+
         return $cache[$cache_key];
     }
 
@@ -111,18 +126,18 @@ class Cart extends CartCore
     {
         $total_weight = 0;
         $return = false;
-        
+
         Hook::exec('actionCartGetTotalWeight', array(
             'object' => &$this,
             'products' => &$products,
             'total_weight' => &$total_weight,
             'return' => &$return
         ));
-        
+
         if ($return) {
             return $total_weight;
         }
-        
+
         return parent::getTotalWeight($products) + $total_weight;
     }
 }
