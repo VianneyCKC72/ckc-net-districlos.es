@@ -107,23 +107,26 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateSimulationPayments() {
         let totalAmount = getTotalAmount();
         const desktopSelect = document.getElementById('paiement-select-desktop');
-        const selectedOption = desktopSelect.selectedOptions[0];
 
-        if (desktopSelect.value && selectedOption) {
-            let mode = desktopSelect.value.replace('oney', '');
-            let methodType = 'split';
+        if (desktopSelect) {
+            const selectedOption = desktopSelect.selectedOptions[0];
 
-            if (selectedOption.dataset.method === 'longtermcredit') {
-                methodType = 'longtermcredit';
+            if (desktopSelect.value && selectedOption) {
+                let mode = desktopSelect.value.replace('oney', '');
+                let methodType = 'split';
+
+                if (selectedOption.dataset.method === 'longtermcredit') {
+                    methodType = 'longtermcredit';
+                }
+
+                showSimulationPayment(
+                    mode,
+                    selectedOption.dataset.placeholder,
+                    selectedOption.dataset.free,
+                    selectedOption.dataset.method,
+                    methodType
+                );
             }
-
-            showSimulationPayment(
-                mode,
-                selectedOption.dataset.placeholder,
-                selectedOption.dataset.free,
-                selectedOption.dataset.method,
-                methodType
-            );
         }
 
         if (document.getElementById('checkout')) {
