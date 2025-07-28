@@ -141,6 +141,11 @@ class Ckcadcampaignconfigurator extends Module
 
             $this->_output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/create_edit_campaign.tpl');
 
+        } elseif (((bool)Tools::isSubmit('copy_campaign')) == true) {
+            $idCampaign = Tools::getValue('ID');
+            $newId = $this->copyCampaign($idCampaign);
+            Tools::redirect($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => 'ckcadcampaignconfigurator', 'edit_campaign' => true, 'ID' => $newId]));
+
         } elseif (((bool)Tools::isSubmit('edit_campaign')) == true OR ((bool)Tools::isSubmit('ReturnToCampaignPage')) == true) {
 
             $idCampaign = Tools::getValue('ID');
@@ -1464,6 +1469,120 @@ class Ckcadcampaignconfigurator extends Module
             );
         }
 
+    }
+
+    public function copyCampaign($idCampaign){
+        $campaignModel = new CampaignModel();
+
+        $originalCampaignMainInfos = $campaignModel->getCampaignInfo($idCampaign);
+
+        $originalCampaignCartInfos = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_cart ccl
+            WHERE ccl.id_campaign = '.$idCampaign);
+
+        $originalCampaignProductInfos = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_product ccp
+        WHERE ccp.id_campaign = '.$idCampaign);
+
+        $originalCampaignCategoryInfos = Db::getInstance()->executeS('SELECT ccc.id as idCategory, ccc.text as categoryText, ccc.background_color as categoryColor, ccc.active as categoryActive, ccc.show_all as categoryShowAll
+        FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_category ccc
+        WHERE ccc.id_campaign = '.$idCampaign);
+
+        $categorySelection = Db::getInstance()->executeS('SELECT DISTINCT cccs.id_campaign, cccs.id_category FROM ' . _DB_PREFIX_ . 'ckccampaign_config_category_show cccs
+                    LEFT JOIN  `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` ccc ON ccc.id = cccs.id_campaign 
+                    WHERE ccc.id_campaign = '.$idCampaign);
+
+        $productSelection =  Db::getInstance()->executeS('SELECT c.`id_product_content`, c.`id_product` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_product_show` c
+                    LEFT JOIN `' . _DB_PREFIX_ . 'ckccampaign_config_content_product` cp ON cp.id = c.id_product_content
+                    WHERE cp.id_campaign = '.$idCampaign);
+
+
+        $CampaignCategoryInfos = [];
+        foreach ($originalCampaignCategoryInfos as $categoryPromo){
+            $categories = [];
+            foreach ($categorySelection as $category) {
+                if($categoryPromo['idCategory'] == $category['id_campaign']) {
+                    $categories[] = $category['id_category'];
+                }
+            }
+            $categoryPromo['categories'] = $categories;
+            $CampaignCategoryInfos[] = $categoryPromo;
+        }
+
+
+        $CampaignProductInfos = [];
+        foreach ($originalCampaignProductInfos as $productPromo){
+            $products = [];
+            foreach ($productSelection as $product) {
+                if($productPromo['id'] == $product['id_product_content']) {
+                    $products[] = $product['id_product'];
+                }
+            }
+            $productPromo['products'] = $products;
+            $CampaignProductInfos[] = $productPromo;
+        }
+        $date = date('Y-m-d H:i:s');
+        $createCampaign = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_list` (`id`, `title`, `id_client_group`,`active`,`logo_path`, `franco_impact`,`franco_impact_pro`,`date_start`, `date_end`, `date_add`)
+                VALUES (NULL, "'.$originalCampaignMainInfos['title'].' copie '.$date.'", "'.$originalCampaignMainInfos['id_client_group'].'", 0, "'.$originalCampaignMainInfos['logo_path'].'", "'.$originalCampaignMainInfos['franco_impact'].'", "'.$originalCampaignMainInfos['franco_impact_pro'].'", "'.$originalCampaignMainInfos['date_start'].'","'.$originalCampaignMainInfos['date_end'].'", "'.$date.'")');
+
+        $newIdQuery = Db::getInstance()->executeS('SELECT id FROM `' . _DB_PREFIX_ . 'ckccampaign_config_list`
+                WHERE `title` LIKE "'.$originalCampaignMainInfos['title'].' copie '.$date.'" AND `id_client_group` LIKE "'.$originalCampaignMainInfos['id_client_group'].'" AND `date_start` = "'.$originalCampaignMainInfos['date_start'].'"');
+
+        $newId = $newIdQuery[0]["id"];
+
+        $createMenu = Db::getInstance()->execute(
+            'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_menu` (`id`, `id_campaign`, `img_path`, `link`, `active`, `date_add`)
+                                VALUES (NULL, '.$newId.', \''.$originalCampaignMainInfos['imgMenuPath'].'\',\''.$originalCampaignMainInfos['menuLink'].'\','.(int)$originalCampaignMainInfos['menuActive'].', CURRENT_TIMESTAMP())'
+        );
+
+        $createDevis =  Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_devis` (`id`, `id_campaign`, `text`, `background_color`, `date_add`)
+                                VALUES (NULL, '.$newId.', \''.$originalCampaignMainInfos['textDevis'].'\', \''.$originalCampaignMainInfos['colorDevis'].'\', CURRENT_TIMESTAMP())');
+
+        $createPromoPage = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_promopage` (`id`, `id_campaign`, `text`, `date_add`)
+                VALUES (NULL, '.$newId.', \''.$originalCampaignMainInfos['promoPageText'].'\', CURRENT_TIMESTAMP())');
+
+        foreach ($originalCampaignCartInfos as $cartPromo){
+            $createCartPromo = Db::getInstance()->execute(
+                'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_cart` 
+                                    (`id`, `id_campaign`, `is_fixed`, `discount_fixed`, `price_fixed`, `discount_range`, `discount_range_max`, `price_range_min`, `price_range_max`, `text`, `text_color`,`active`, `date_add`)
+                            VALUES (NULL, '.$newId.', '.$cartPromo['is_fixed'].', "'.$cartPromo['discount_fixed'].'", "'.$cartPromo['price_fixed'].'",
+                            "'.$cartPromo['discount_range'].'","'.$cartPromo['discount_range_max'].'","'.$cartPromo['price_range_min'].'", "'.$cartPromo['price_range_max'].'",\''.$cartPromo['text'].'\', 
+                            NULLIF(\''.$cartPromo['text_color'].'\', ""), '.$cartPromo['active'].' ,CURRENT_TIMESTAMP())'
+            );
+        }
+
+        foreach ($CampaignCategoryInfos as $categoryCampaign){
+            $createCategory = Db::getInstance()->execute(
+                'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` (`id`, `id_campaign`, `text`, `background_color`, `active`,`show_all`, `date_add`)
+                                VALUES (NULL, '.$newId.', \''.$categoryCampaign["categoryText"].'\', \''.$categoryCampaign["categoryColor"].'\', 
+                                '.(int)$categoryCampaign["categoryActive"].', '.(int)$categoryCampaign["categoryShowAll"].', CURRENT_TIMESTAMP())'
+            );
+            $queryCategory = Db::getInstance()->executeS('SELECT id FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` WHERE `id_campaign` = '.$newId.' AND `text` LIKE \'' .$categoryCampaign["categoryText"].'\'');
+
+            if(count($categoryCampaign['categories']) > 0){
+                foreach ($categoryCampaign['categories'] as $category) {
+                    $updateNew = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_category_show` (`id`, `id_campaign`, `id_category`)
+                        VALUES (NULL, '.$queryCategory[0]["id"].', '.$category.')');
+                }
+            }
+        }
+
+        foreach ($CampaignProductInfos as $productCampaign){
+            $createProductPromo = Db::getInstance()->execute(
+                'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_product` 
+                                    (`id`, `id_campaign`, `text`,`active`, `show_all`, `date_add`)
+                            VALUES (NULL, '.$newId.',\''.$productCampaign['text'].'\', '.$productCampaign['active'].','.$productCampaign['show_all'].',CURRENT_TIMESTAMP())'
+            );
+            $selectPromoId = Db::getInstance()->executeS('SELECT id FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_product` WHERE `id_campaign` = '.$newId.' AND `text` LIKE \'' .$productCampaign['text'].'\'');
+
+            if(count($productCampaign['products']) > 0){
+                foreach ($productCampaign['products'] as $product) {
+                    $insertProductSelection = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_product_show` 
+                        (`id`, `id_product_content`, `id_product`)
+                            VALUES (NULL, '.$selectPromoId[0]["id"].','.$product.')');
+                }
+            }
+        }
+
+        return $newId;
     }
 
     /**
