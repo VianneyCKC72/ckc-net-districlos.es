@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
             open.apply(this, arguments);
         };
     })(XMLHttpRequest.prototype.open);
-    
+
+
     // Fonction pour obtenir le montant total à partir du DOM
     function getTotalAmount() {
         const totalElement = document.querySelector('.cart-summary-line.cart-total .value');
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Actualiser les simulations de paiement avec le nouveau montant total
         updateSimulationPayments(totalAmount);
     };
-    
+
     function debounce(fn, delay) {
         let timer;
         return function(...args) {
@@ -97,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
             timer = setTimeout(() => fn.apply(this, args), delay);
         };
     }
-    
+
     const debouncedAttach = debounce(attachEventsAndUpdateOptions, 200);
 
     // Fonction qui met à jour les simulations de paiement
@@ -105,15 +106,15 @@ document.addEventListener('DOMContentLoaded', function () {
         let totalAmount = getTotalAmount();
         const desktopSelect = document.getElementById('paiement-select-desktop');
         const selectedOption = desktopSelect.selectedOptions[0];
-    
+
         if (desktopSelect.value && selectedOption) {
             let mode = desktopSelect.value.replace('oney', '');
             let methodType = 'split';
-    
+
             if (selectedOption.dataset.method === 'longtermcredit') {
                 methodType = 'longtermcredit';
             }
-    
+
             showSimulationPayment(
                 mode,
                 selectedOption.dataset.placeholder,
@@ -121,6 +122,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 selectedOption.dataset.method,
                 methodType
             );
+        }
+
+        if (document.getElementById('checkout')) {
+            showSimulationPayment("3x", "#paymentOption3x", true, "bnpl", "split");
+            showSimulationPayment("4x", "#paymentOption4x", true, "bnpl", "split");
+            showSimulationPayment("10x", "#paymentOption10x", true, "bnpl", "split");
+            showSimulationPayment("12x", "#paymentOption12x", true, "bnpl", "split");
+            showSimulationPayment("24x", "#paymentOption24x", false, "longtermcredit", "longtermcredit");
+            showSimulationPayment("36x", "#paymentOption36x", false, "longtermcredit", "longtermcredit");
+            showSimulationPayment("48x", "#paymentOption48x", false, "longtermcredit", "longtermcredit");
         }
     }
 
@@ -150,10 +161,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 //console.log(status, response);
             },
             successCallback: function outputSuccess() {
-                
+
             },
         };
-        
+
         // Charger le widget sans appeler la fonction de manière récursive
         loadOneyWidget(function () {
             oneyMerchantApp.loadCheckoutSection({
