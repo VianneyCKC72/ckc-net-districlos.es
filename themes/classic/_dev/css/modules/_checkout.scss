@@ -614,6 +614,10 @@ body#checkout {
     align-items: center;
     display: flex;
     height: 2.5rem;
+
+    img[src*="mh_oney"] {
+      height: 35px;
+    }
   }
 
   @media (max-width: 767px) {
