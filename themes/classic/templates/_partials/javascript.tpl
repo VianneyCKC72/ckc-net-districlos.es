@@ -40,6 +40,8 @@
   </script>
 {/if}
 
+<script type="text/javascript" src="https://assets.oney.io/build/loader.min.js"></script>
+
 {*<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
 <script type="module" src="/themes/classic/assets/js/lib/lite-vimeo.js"></script>*}
 
