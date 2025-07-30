@@ -292,7 +292,7 @@ class ckc_syncdata_rxapiModuleFrontController extends ModuleFrontController
                     }
 
                     $datas['order']['id_shop'] = 1;
-
+                    $datas['order']['synchro'] = 1;
                     Db::getInstance()->insert('orders', $datas['order']);
 
                     foreach ($datas['order_details'] as $detail) {
