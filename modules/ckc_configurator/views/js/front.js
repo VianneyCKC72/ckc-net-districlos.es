@@ -813,7 +813,7 @@ $(document).ready(function () {
                 let newName = (product.name).split(' : ')[0]
                 let description = (product.name).replace(newName, '').replace(' :', '').split(', ').join('<br>');
 
-                html = "<li class='clearfix product-line' style='display: flex;align-items: center;flex-direction: column;border-bottom: 1px solid #cacaca;margin-bottom: 15px;' data-product='" + JSON.stringify(product) + "'>";
+                html = "<li class='clearfix product-line' style='display: flex;align-items: center;flex-direction: column;' data-product='" + JSON.stringify(product) + "'>";
                 html += "<div style='width: 100%'>";
                 html += " <b>" + newName + "</b>";
                 html += '</div>';
