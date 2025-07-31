@@ -30,7 +30,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (desktopOptions) {
             desktopOptions.forEach(option => {
                 const minAmount = parseInt(option.getAttribute('data-min'), 10);
-                option.style.display = totalAmount >= minAmount ? 'block' : 'none';
+                const maxAmount = parseInt(option.getAttribute('data-max'), 10);
+                option.style.display = totalAmount >= minAmount && totalAmount <= maxAmount ? 'block' : 'none';
             });
         }
     }
