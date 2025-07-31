@@ -443,7 +443,9 @@ function executeEvent(name, replay = false) {
     else if(name === 'REM')
     {
         $(document).ajaxSuccess(function(event, xhr, settings) {
-            if (settings.url.indexOf('/panier?delete=1') >= 0) {
+            var data = xhr.responseJSON;
+
+            if (settings.url.includes('/panier') && settings.data && settings.data.includes('delete=')) {
                 pushEvent('retrait_panier', {
                     'currencyCode': 'EUR',
                     'remove': {
