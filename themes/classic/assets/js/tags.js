@@ -38,6 +38,79 @@
  * (c) 2022 CKC-NET
  */
 
+(function () {
+    const originalFetch = window.fetch;
+    window.fetch = function () {
+        const args = arguments;
+
+        return originalFetch.apply(this, arguments).then(response => {
+            const cloned = response.clone();
+            const reqUrl = response.url;
+
+            cloned.text().then(bodyText => {
+                let data;
+                try {
+                    data = JSON.parse(bodyText);
+                } catch (e) {
+                    data = null;
+                }
+
+                const settings = {
+                    url: reqUrl,
+                    method: args[1]?.method || 'GET',
+                    data: args[1]?.body || null
+                };
+
+                const customEvent = new CustomEvent('ajaxSuccess', {
+                    detail: {
+                        xhr: response,
+                        settings: settings,
+                        data: data
+                    }
+                });
+                document.dispatchEvent(customEvent);
+            });
+
+            return response;
+        });
+    };
+
+    const originalOpen = XMLHttpRequest.prototype.open;
+    const originalSend = XMLHttpRequest.prototype.send;
+
+    XMLHttpRequest.prototype.open = function (method, url) {
+        this._method = method;
+        this._url = url;
+        return originalOpen.apply(this, arguments);
+    };
+
+    XMLHttpRequest.prototype.send = function (body) {
+        this.addEventListener('load', () => {
+            let data = null;
+            try {
+                data = JSON.parse(this.responseText);
+            } catch (e) {}
+
+            const settings = {
+                url: this._url,
+                method: this._method,
+                data: body
+            };
+
+            const customEvent = new CustomEvent('ajaxSuccess', {
+                detail: {
+                    xhr: this,
+                    settings: settings,
+                    data: data
+                }
+            });
+            document.dispatchEvent(customEvent);
+        });
+
+        return originalSend.apply(this, arguments);
+    };
+})();
+
 // Constants
 const currentPage = prestashop.page.page_name;
 const loggedCustomer = prestashop.customer;
@@ -136,7 +209,9 @@ switch(currentPage) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    $( document ).on( "ajaxSuccess", function( event, xhr, settings ) {
+    document.addEventListener('ajaxSuccess', function(event) {
+        const { xhr, settings, data } = event.detail;
+
         var data = xhr.responseJSON;
 
         if (settings.url.includes('/panier') && settings.data && settings.data.includes('add=')) {
