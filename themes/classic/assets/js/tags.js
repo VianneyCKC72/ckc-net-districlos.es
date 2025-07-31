@@ -136,7 +136,7 @@ switch(currentPage) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    $(document).ajaxSuccess(function(event, xhr, settings) {
+    $( document ).on( "ajaxSuccess", function( event, xhr, settings ) {
         var data = xhr.responseJSON;
 
         if (settings.url.includes('/panier') && settings.data && settings.data.includes('add=')) {
