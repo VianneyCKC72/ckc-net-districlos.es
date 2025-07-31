@@ -174,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const requestUrl = response.url;
                 const requestBody = fetchArgs[1]?.body;
 
+                alert(requestUrl);
                 if (requestUrl.includes('/panier') && typeof requestBody === 'string' && requestBody.includes('add=')) {
                     response.clone().json().then(data => {
                         alert(requestUrl);
@@ -203,8 +204,8 @@ document.addEventListener('DOMContentLoaded', function () {
         this.addEventListener('load', function () {
             try {
                 const url = _this._url;
+                alert(url);
                 if (url.includes('/panier') && typeof body === 'string' && body.includes('add=')) {
-                    alert(url);
                     const contentType = _this.getResponseHeader('Content-Type');
                     if (contentType && contentType.includes('application/json')) {
                         const data = JSON.parse(_this.responseText);
