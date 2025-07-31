@@ -103,6 +103,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const debouncedAttach = debounce(attachEventsAndUpdateOptions, 200);
 
+
+    if (typeof prestashop !== 'undefined' && typeof prestashop.on === 'function') {
+        prestashop.on('updateCart', function () {
+            attachEventsAndUpdateOptions()
+        });
+    }
+
     // Fonction qui met à jour les simulations de paiement
     function updateSimulationPayments() {
         let totalAmount = getTotalAmount();
