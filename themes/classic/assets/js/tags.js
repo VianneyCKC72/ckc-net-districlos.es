@@ -51,34 +51,6 @@ if(Object.keys(loggedCustomer.addresses).length > 0) {
     loggedCustomerPhone = firstAddress.phone || firstAddress.phone_mobile;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    $(document).ajaxSuccess(function(event, xhr, settings) {
-        var data = xhr.responseJSON;
-        if (settings.url.includes('/panier') && settings.data && settings.data.includes('add=')) {
-            var productData = getProductData(data.id_product, data.id_product_attribute);
-
-            dataLayer.push({ ecommerce: null });
-            dataLayer.push({
-                event: 'add_to_cart',
-                ecommerce: {
-                    currency: 'EUR',
-                    value: productData.price,
-                    items: [
-                        {
-                            item_id: productData.id,
-                            item_sku: productData.sku,
-                            item_name: productData.name,
-                            item_category: productData.category,
-                            quantity: data.quantity,
-                            price: productData.price,
-                            discount: productData.discount || 0,
-                        }
-                    ]
-                }
-            });
-        }
-    });
-});
 
 // Checkout steps
 const checkoutSteps = {
@@ -162,6 +134,35 @@ switch(currentPage) {
         executeEvent('CFG');
         break;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    $(document).ajaxSuccess(function(event, xhr, settings) {
+        var data = xhr.responseJSON;
+        if (settings.url.includes('/panier') && settings.data && settings.data.includes('add=')) {
+            var productData = getProductData(data.id_product, data.id_product_attribute);
+
+            dataLayer.push({ ecommerce: null });
+            dataLayer.push({
+                event: 'add_to_cart',
+                ecommerce: {
+                    currency: 'EUR',
+                    value: productData.price,
+                    items: [
+                        {
+                            item_id: productData.id,
+                            item_sku: productData.sku,
+                            item_name: productData.name,
+                            item_category: productData.category,
+                            quantity: data.quantity,
+                            price: productData.price,
+                            discount: productData.discount || 0,
+                        }
+                    ]
+                }
+            });
+        }
+    });
+});
 
 document.addEventListener('DOMContentLoaded', function () {
     var contactForm = document.querySelector('.contact-form form');
@@ -346,11 +347,7 @@ function executeEvent(name, replay = false) {
     }
     else if(name === 'IMP5')
     {
-        document.addEventListener('ajaxSuccess', function(event) {
-            var xhr = event.detail[0];
-            var settings = event.detail[1];
-            var data = event.detail[2];
-
+        $(document).ajaxSuccess(function(event, xhr, settings) {
             if (settings.url.indexOf('/recherche') >= 0) {
                 var products = [];
 
@@ -409,10 +406,7 @@ function executeEvent(name, replay = false) {
 
         if (!replay) {
             // Set the event listener only on first load
-            document.addEventListener('ajaxSuccess', function(event) {
-                var xhr = event.detail[0];
-                var settings = event.detail[1];
-                var data = event.detail[2];
+            $(document).ajaxSuccess(function(event, xhr, settings) {
 
                 // In case of variant change...
                 if (settings.type === "POST" && settings.url.indexOf(location.pathname) >= 0) {
@@ -424,10 +418,7 @@ function executeEvent(name, replay = false) {
     }
     else if(name === 'ADD')
     {
-        document.addEventListener('ajaxSuccess', function(event) {
-            var xhr = event.detail.xhr;
-            var settings = event.detail.settings;
-            var data = xhr.responseJSON;
+        $(document).ajaxSuccess(function(event, xhr, settings) {
 
             if (settings.url.includes('/panier') && settings.data.includes('&add=')) {
                 pushEvent('ajout_panier', {
@@ -451,11 +442,7 @@ function executeEvent(name, replay = false) {
     }
     else if(name === 'REM')
     {
-        document.addEventListener('ajaxSuccess', function(event) {
-            var xhr = event.detail[0];
-            var settings = event.detail[1];
-            var data = event.detail[2];
-
+        $(document).ajaxSuccess(function(event, xhr, settings) {
             if (settings.url.indexOf('/panier?delete=1') >= 0) {
                 pushEvent('retrait_panier', {
                     'currencyCode': 'EUR',
