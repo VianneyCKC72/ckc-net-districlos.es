@@ -812,7 +812,6 @@ $(document).ready(function () {
 
                 let newName = (product.name).split(' : ')[0]
                 let description = (product.name).replace(newName, '').replace(' :', '').split(', ').join('<br>');
-                newName = newName.length > 25 ? newName.substr(0, 25) + '...' : newName
 
                 html = "<li class='clearfix product-line' style='display: flex;align-items: center;' data-product='" + JSON.stringify(product) + "'>";
                 html += "<div style='width: 100%'>";
