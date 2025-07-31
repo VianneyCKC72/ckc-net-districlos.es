@@ -27,6 +27,7 @@ class ckc_label extends Module
     {
         return parent::install() &&
             $this->registerHook('displayCustomProductLabel') &&
+            $this->registerHook('displayBackOfficeHeader') &&
             $this->createDatabaseTables();
     }
 
@@ -87,6 +88,10 @@ class ckc_label extends Module
             $this->deleteLabel(Tools::getValue('id_label'));
             $this->clearCache();
             $output .= $this->displayConfirmation($this->l('Étiquette supprimée.'));
+        } elseif (Tools::isSubmit('duplicateckc_labels') && !Tools::getValue('noimage')) {
+            $this->copyLabel(Tools::getValue('id_label'));
+            $this->clearCache();
+            $output .= $this->displayConfirmation($this->l('Étiquette dupliquée.'));
         } elseif (Tools::isSubmit('statusckc_labels')) {
             $this->activeLabel(Tools::getValue('id_label'));
             $this->clearCache();
@@ -126,7 +131,7 @@ class ckc_label extends Module
         $helper = new HelperList();
         $helper->shopLinkType = '';
         $helper->simple_header = false;
-        $helper->actions = ['edit', 'delete'];
+        $helper->actions = ['edit', 'delete', 'duplicate'];
         $helper->identifier = 'id_label';
         $helper->show_toolbar = true;
         $helper->toolbar_btn = [
@@ -152,7 +157,7 @@ class ckc_label extends Module
         $id_label = Tools::getValue('id_label');
         $selected_categories = [];
         if ($id_label) {
-        	$selected_categories = $this->getConfigFormValues()['category_ids[]'];
+            $selected_categories = $this->getConfigFormValues()['category_ids[]'];
         }
 
         $fieldsForm = [
@@ -372,6 +377,19 @@ class ckc_label extends Module
         Db::getInstance()->delete('ckc_labels', 'id_label = ' . (int) $id_label);
     }
 
+    private function copyLabel($id_label){
+
+        $labelInfo = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckc_labels WHERE id_label = ' . (int) $id_label);
+
+        $date = date('Y-m-d H:i:s');
+
+        $update = Db::getInstance()->execute('INSERT INTO ' . _DB_PREFIX_ . 'ckc_labels (`id_label`, `color`, `background_color`, `text`,
+         `start_date`, `end_date`, `apply_to`, `product_ids`, `category_ids`, `active`)
+        VALUES (NULL, \'' . $labelInfo[0]['color'] . '\', \'' . $labelInfo[0]['background_color'] . '\', \'' . $labelInfo[0]['text'] . ' copie '.$date.'\',
+        \'' . $labelInfo[0]['start_date'] . '\', \'' . $labelInfo[0]['end_date'] . '\', \'' . $labelInfo[0]['apply_to'] . '\', \'' . $labelInfo[0]['product_ids'] . '\', \'' . $labelInfo[0]['category_ids'] . '\', 0)');
+
+    }
+
     public function activeLabel($id_label)
     {
         $label = Db::getInstance()->getRow('SELECT * FROM ' . _DB_PREFIX_ . 'ckc_labels WHERE id_label = ' . (int) $id_label);
@@ -420,6 +438,16 @@ class ckc_label extends Module
         $this->context->smarty->assign('ckc_labels_product', $product);
 
         return $this->display(__FILE__, 'views/templates/hook/product_labels.tpl');
+    }
+
+    /**
+     * Add the CSS & JavaScript files you want to be loaded in the BO.
+     */
+    public function hookDisplayBackOfficeHeader()
+    {
+        if (Tools::getValue('configure') == $this->name) {
+            $this->context->controller->addJS($this->_path.'views/js/back.js');
+        }
     }
 
 }
