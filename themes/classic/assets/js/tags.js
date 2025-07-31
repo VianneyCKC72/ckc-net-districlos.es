@@ -51,6 +51,34 @@ if(Object.keys(loggedCustomer.addresses).length > 0) {
     loggedCustomerPhone = firstAddress.phone || firstAddress.phone_mobile;
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    $(document).ajaxSuccess(function(event, xhr, settings) {
+        var data = xhr.responseJSON;
+        if (settings.url.includes('/panier') && settings.data && settings.data.includes('add=')) {
+            var productData = getProductData(data.id_product, data.id_product_attribute);
+
+            dataLayer.push({ ecommerce: null });
+            dataLayer.push({
+                event: 'add_to_cart',
+                ecommerce: {
+                    currency: 'EUR',
+                    value: productData.price,
+                    items: [
+                        {
+                            item_id: productData.id,
+                            item_sku: productData.sku,
+                            item_name: productData.name,
+                            item_category: productData.category,
+                            quantity: data.quantity,
+                            price: productData.price,
+                            discount: productData.discount || 0,
+                        }
+                    ]
+                }
+            });
+        }
+    });
+});
 
 // Checkout steps
 const checkoutSteps = {
@@ -134,35 +162,6 @@ switch(currentPage) {
         executeEvent('CFG');
         break;
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    $(document).ajaxSuccess(function(event, xhr, settings) {
-        var data = xhr.responseJSON;
-        if (settings.url.includes('/panier') && settings.data && settings.data.includes('add=')) {
-            var productData = getProductData(data.id_product, data.id_product_attribute);
-
-            dataLayer.push({ ecommerce: null });
-            dataLayer.push({
-                event: 'add_to_cart',
-                ecommerce: {
-                    currency: 'EUR',
-                    value: productData.price,
-                    items: [
-                        {
-                            item_id: productData.id,
-                            item_sku: productData.sku,
-                            item_name: productData.name,
-                            item_category: productData.category,
-                            quantity: data.quantity,
-                            price: productData.price,
-                            discount: productData.discount || 0,
-                        }
-                    ]
-                }
-            });
-        }
-    });
-});
 
 document.addEventListener('DOMContentLoaded', function () {
     var contactForm = document.querySelector('.contact-form form');
