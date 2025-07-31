@@ -209,11 +209,8 @@ switch(currentPage) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.addEventListener('ajaxSuccess', function(event) {
-        const { xhr, settings, data } = event.detail;
-
+    $(document).ajaxSuccess(function(event, xhr, settings) {
         var data = xhr.responseJSON;
-
         if (settings.url.includes('/panier') && settings.data && settings.data.includes('add=')) {
             var productData = getProductData(data.id_product, data.id_product_attribute);
 
