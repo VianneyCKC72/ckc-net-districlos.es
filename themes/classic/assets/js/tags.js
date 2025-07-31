@@ -135,90 +135,34 @@ switch(currentPage) {
         break;
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
+    $(document).ajaxSuccess(function(event, xhr, settings) {
+        var data = xhr.responseJSON;
 
-    // Fonction générique pour déclencher le push vers dataLayer
-    function handleAddToCart(data) {
-        if (!data || !data.id_product) return;
+        if (settings.url.includes('/panier') && settings.data && settings.data.includes('add=')) {
+            var productData = getProductData(data.id_product, data.id_product_attribute);
 
-        const productData = getProductData(data.id_product, data.id_product_attribute);
-
-        dataLayer.push({ ecommerce: null }); // Clear previous data
-        dataLayer.push({
-            event: 'add_to_cart',
-            ecommerce: {
-                currency: 'EUR',
-                value: productData.price,
-                items: [
-                    {
-                        item_id: productData.id,
-                        item_sku: productData.sku,
-                        item_name: productData.name,
-                        item_category: productData.category,
-                        quantity: data.quantity,
-                        price: productData.price,
-                        discount: productData.discount || 0,
-                    }
-                ]
-            }
-        });
-    }
-
-    // Interception native de fetch
-    const originalFetch = window.fetch;
-    window.fetch = function () {
-        const fetchArgs = arguments;
-
-        return originalFetch.apply(this, arguments).then(response => {
-            try {
-                const requestUrl = response.url;
-                const requestBody = fetchArgs[1]?.body;
-
-                alert(requestUrl);
-                if (requestUrl.includes('/panier') && typeof requestBody === 'string' && requestBody.includes('add=')) {
-                    response.clone().json().then(data => {
-                        alert(requestUrl);
-                        handleAddToCart(data);
-                    }).catch(() => {});
+            dataLayer.push({ ecommerce: null });
+            dataLayer.push({
+                event: 'add_to_cart',
+                ecommerce: {
+                    currency: 'EUR',
+                    value: productData.price,
+                    items: [
+                        {
+                            item_id: productData.id,
+                            item_sku: productData.sku,
+                            item_name: productData.name,
+                            item_category: productData.category,
+                            quantity: data.quantity,
+                            price: productData.price,
+                            discount: productData.discount || 0,
+                        }
+                    ]
                 }
-            } catch (e) {
-                console.error('Erreur fetch interception:', e);
-            }
-
-            return response;
-        });
-    };
-
-    // Interception native d'XMLHttpRequest
-    const originalOpen = XMLHttpRequest.prototype.open;
-    const originalSend = XMLHttpRequest.prototype.send;
-
-    XMLHttpRequest.prototype.open = function (method, url) {
-        this._url = url;
-        return originalOpen.apply(this, arguments);
-    };
-
-    XMLHttpRequest.prototype.send = function (body) {
-        const _this = this;
-
-        this.addEventListener('load', function () {
-            try {
-                const url = _this._url;
-                alert(url);
-                if (url.includes('/panier') && typeof body === 'string' && body.includes('add=')) {
-                    const contentType = _this.getResponseHeader('Content-Type');
-                    if (contentType && contentType.includes('application/json')) {
-                        const data = JSON.parse(_this.responseText);
-                        handleAddToCart(data);
-                    }
-                }
-            } catch (e) {
-                console.error('Erreur XHR interception:', e);
-            }
-        });
-
-        return originalSend.apply(this, arguments);
-    };
+            });
+        }
+    });
 });
 
 document.addEventListener('DOMContentLoaded', function () {
