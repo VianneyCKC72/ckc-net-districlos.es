@@ -421,6 +421,8 @@ function executeEvent(name, replay = false) {
         $(document).ajaxSuccess(function(event, xhr, settings) {
 
             if (settings.url.includes('/panier') && settings.data.includes('&add=')) {
+                var data = xhr.responseJSON;
+
                 pushEvent('ajout_panier', {
                     currencyCode: 'EUR',
                     add: {
