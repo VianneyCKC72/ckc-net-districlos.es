@@ -11,7 +11,6 @@ class FrontController extends FrontControllerCore
 
     public function initContent()
     {
-
         // Initialisation des variables avec des valeurs par défaut
         $userId = 0;
         $kbis = [];
@@ -23,7 +22,7 @@ class FrontController extends FrontControllerCore
         $espace_pro = !empty($_GET['ep']);
         $display_espace_pro = Configuration::get('CKC_DISPLAY_EP');
         $siret = 'Non renseigné';
-
+        $abtest = Configuration::get('CKCABTESTACTIVATION_ACTIVE');
 
         if ($display_espace_pro == 1) {
             // Vérification si le client est défini pour extraire l'ID
@@ -129,6 +128,8 @@ class FrontController extends FrontControllerCore
                 'kbis' => $kbis,
                 'newClient' => $newClient,
                 'env_particulier' => $env_particulier,
+                'abtest' => $abtest,
+
             ]
         );
 

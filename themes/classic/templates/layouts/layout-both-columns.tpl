@@ -122,9 +122,9 @@
     {include file="_partials/password-policy-template.tpl"}
     {include file="_partials/javascript.tpl" javascript=$javascript.bottom}
 
-    <script type="text/javascript" src="/themes/classic/assets/js/lib/crypto-js.min.js"></script>
-    <script type="text/javascript" src="/themes/classic/assets/js/lib/jquery.inview.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+    <script async type="text/javascript" src="/themes/classic/assets/js/lib/crypto-js.min.js"></script>
+    <script async type="text/javascript" src="/themes/classic/assets/js/lib/jquery.inview.min.js"></script>
+    <script async src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
     <script async type="text/javascript" src="/themes/classic/assets/js/tags.min.js"></script>
     <script async type="module" src="/themes/classic/assets/js/lib/lite-vimeo.min.js"></script>
 {/block}
