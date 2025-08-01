@@ -30,7 +30,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (desktopOptions) {
             desktopOptions.forEach(option => {
                 const minAmount = parseInt(option.getAttribute('data-min'), 10);
-                option.style.display = totalAmount >= minAmount ? 'block' : 'none';
+                const maxAmount = parseInt(option.getAttribute('data-max'), 10);
+                option.style.display = totalAmount >= minAmount && totalAmount <= maxAmount ? 'block' : 'none';
             });
         }
     }
@@ -102,6 +103,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const debouncedAttach = debounce(attachEventsAndUpdateOptions, 200);
+
+
+    if (typeof prestashop !== 'undefined' && typeof prestashop.on === 'function') {
+        prestashop.on('updateCart', function () {
+            attachEventsAndUpdateOptions()
+        });
+    }
 
     // Fonction qui met à jour les simulations de paiement
     function updateSimulationPayments() {

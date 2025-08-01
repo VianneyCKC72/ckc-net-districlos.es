@@ -144,7 +144,7 @@
 
                 <div class="configurator-products-list">
                     <div class="font-weight-semibold">Produits</div>
-                    <div class="list">
+                    <div class="list" style="gap: 10px;display: flex;flex-direction: column;">
 
                     </div>
                 </div>

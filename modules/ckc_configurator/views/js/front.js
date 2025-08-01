@@ -812,11 +812,13 @@ $(document).ready(function () {
 
                 let newName = (product.name).split(' : ')[0]
                 let description = (product.name).replace(newName, '').replace(' :', '').split(', ').join('<br>');
-                newName = newName.length > 25 ? newName.substr(0, 25) + '...' : newName
 
-                html = "<li class='clearfix product-line' style='display: flex;align-items: center;' data-product='" + JSON.stringify(product) + "'>";
-                html += "<div style='float: left; width: 40%'>";
+                html = "<li class='clearfix product-line' style='display: flex;align-items: center;flex-direction: column;' data-product='" + JSON.stringify(product) + "'>";
+                html += "<div style='width: 100%'>";
                 html += " <b>" + newName + "</b>";
+                html += '</div>';
+                html += "<div style='width: 100%'>";
+                html += "<div style='float: left; width: 40%'>";
                 html += "<p style='line-height: 16px;'>" + description + "</p>";
                 html += "</div>";
 
@@ -840,6 +842,7 @@ $(document).ready(function () {
                 html += "</div>"; // Fermeture du div contenant les boutons et la quantité
 
                 html += "<div style='font-size: 16px;'>" + product.price + "€</div>";
+                html += '</div>';
                 html += "</li>";
                 $products.html($products.html() + html);
             });

@@ -347,11 +347,7 @@ function executeEvent(name, replay = false) {
     }
     else if(name === 'IMP5')
     {
-        document.addEventListener('ajaxSuccess', function(event) {
-            var xhr = event.detail[0];
-            var settings = event.detail[1];
-            var data = event.detail[2];
-
+        $(document).ajaxSuccess(function(event, xhr, settings) {
             if (settings.url.indexOf('/recherche') >= 0) {
                 var products = [];
 
@@ -410,10 +406,7 @@ function executeEvent(name, replay = false) {
 
         if (!replay) {
             // Set the event listener only on first load
-            document.addEventListener('ajaxSuccess', function(event) {
-                var xhr = event.detail[0];
-                var settings = event.detail[1];
-                var data = event.detail[2];
+            $(document).ajaxSuccess(function(event, xhr, settings) {
 
                 // In case of variant change...
                 if (settings.type === "POST" && settings.url.indexOf(location.pathname) >= 0) {
@@ -425,12 +418,11 @@ function executeEvent(name, replay = false) {
     }
     else if(name === 'ADD')
     {
-        document.addEventListener('ajaxSuccess', function(event) {
-            var xhr = event.detail.xhr;
-            var settings = event.detail.settings;
-            var data = xhr.responseJSON;
+        $(document).ajaxSuccess(function(event, xhr, settings) {
 
             if (settings.url.includes('/panier') && settings.data.includes('&add=')) {
+                var data = xhr.responseJSON;
+
                 pushEvent('ajout_panier', {
                     currencyCode: 'EUR',
                     add: {
@@ -452,12 +444,10 @@ function executeEvent(name, replay = false) {
     }
     else if(name === 'REM')
     {
-        document.addEventListener('ajaxSuccess', function(event) {
-            var xhr = event.detail[0];
-            var settings = event.detail[1];
-            var data = event.detail[2];
+        $(document).ajaxSuccess(function(event, xhr, settings) {
+            var data = xhr.responseJSON;
 
-            if (settings.url.indexOf('/panier?delete=1') >= 0) {
+            if (settings.url.includes('/panier') && settings.data && settings.data.includes('delete=')) {
                 pushEvent('retrait_panier', {
                     'currencyCode': 'EUR',
                     'remove': {
