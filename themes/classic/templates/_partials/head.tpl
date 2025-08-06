@@ -31,6 +31,9 @@
 
 {block name='head_seo'}
   <title>{block name='head_seo_title'}{$page.meta.title}{/block}</title>
+  {if isset($abtest) && $abtest}
+    <script src="https://cdn.ablyft.com/s/50855186.js"></script>
+  {/if}
   {block name='hook_after_title_tag'}
     {hook h='displayAfterTitleTag'}
   {/block}
