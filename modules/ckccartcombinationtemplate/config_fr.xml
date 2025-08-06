@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>ckccartcombinationtemplate</name>
+    <displayName><![CDATA[Template de combinaison de r&egrave;gles panier]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Templates de cumul pour les r&egrave;gles panier.]]></description>
+    <author><![CDATA[ckc-net]]></author>
+    <tab><![CDATA[]]></tab>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+</module>

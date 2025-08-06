@@ -1,0 +1,73 @@
+<?php
+/**
+ * Copyright ETS Software Technology Co., Ltd
+ *
+ * NOTICE OF LICENSE
+ *
+ * This file is not open source! Each license that you purchased is only available for 1 website only.
+ * If you want to use this file on more websites (or projects), you need to purchase additional licenses.
+ * You are not allowed to redistribute, resell, lease, license, sub-license or offer our resources to any third party.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future.
+ *
+ * @author ETS Software Technology Co., Ltd
+ * @copyright  ETS Software Technology Co., Ltd
+ * @license    Valid for 1 website (or project) for each purchase of license
+ */
+ 
+class CartRule extends CartRuleCore
+{
+    /*
+    * module: ets_promotion
+    * date: 2025-04-03 10:54:57
+    * version: 1.1.6
+    */
+    public static function haveCartRuleToday($idCustomer)
+    {
+        if(!parent::haveCartRuleToday($idCustomer))
+        {
+            return Module::getInstanceByName('ets_promotion')->haveCartRuleToday();
+        }
+        else
+            return true;
+    }
+    /*
+    * module: ets_promotion
+    * date: 2025-04-03 10:54:57
+    * version: 1.1.6
+    */
+    public static function getCustomerCartRules(
+        $id_lang,
+        $id_customer,
+        $active = false,
+        $includeGeneric = true,
+        $inStock = false,
+        CartCore $cart = null,
+        $free_shipping_only = false,
+        $highlight_only = false
+    ) {
+        $result = parent::getCustomerCartRules($id_lang,$id_customer,$active,$includeGeneric,$inStock,$cart,$free_shipping_only,$highlight_only);
+        Module::getInstanceByName('ets_promotion')->getCustomerCartRules($result,$id_customer,$highlight_only);
+        return $result;
+    }
+    /*
+    * module: ets_promotion
+    * date: 2025-04-03 10:54:57
+    * version: 1.1.6
+    */
+    public function delete()
+    {
+        $r = parent::delete();
+        if(!Configuration::getGlobalValue('PS_CART_RULE_FEATURE_ACTIVE'))
+        {
+            Configuration::updateGlobalValue(
+                'PS_CART_RULE_FEATURE_ACTIVE',
+                CartRule::isCurrentlyUsed('cart_rule', true) || Ets_pr_rule::isCurrentlyUsed('ets_pr_rule', true)
+            );
+        }
+        return $r;
+    }
+}
