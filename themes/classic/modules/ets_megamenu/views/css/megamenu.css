@@ -869,19 +869,19 @@ span.mm_alert.alert-warning:before {
     width: 18px;
 }
 .ybc-menu-toggle {
-    font-size: 17px;
+    font-size: 15px;
     font-weight: bold;
     line-height: 19px;
     width: 180px;
     cursor: pointer;
     color: #000;
     display: flex !important;
-    gap: 10px;
+    gap: 5px;
     justify-content: flex-start;
     align-items: center;
     @media only screen and (max-width: 1620px) {
-        font-size: 15px;
-        gap: 5px;
+        font-size: 14px;
+        gap: 4px;
         width: 160px;
     }
     @media only screen and (max-width: 1200px) {
