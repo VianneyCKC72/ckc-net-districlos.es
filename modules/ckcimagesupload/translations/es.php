@@ -1,0 +1,30 @@
+<?php
+
+global $_MODULE;
+$_MODULE = array();
+$_MODULE['<{ckcimagesupload}prestashop>ckcimagesupload_bd94efd0d16e2ae22a283e317df55524'] = 'Subida de imágenes Ckc-net';
+$_MODULE['<{ckcimagesupload}prestashop>ckcimagesupload_e492c8241c218974975adeb07c748983'] = 'Te permite subir imágenes a tu servidor sin usar un cliente FTP.';
+$_MODULE['<{ckcimagesupload}prestashop>ckcimagesupload_44d7b2036166452a10240ddf1d7e93b0'] = '¿Estás seguro de que quieres desinstalar?';
+$_MODULE['<{ckcimagesupload}prestashop>ckcimagesupload_77e0f752ead96e0cfbeced1300ad5b6f'] = 'No puedes subir más de %d archivos a la vez.';
+$_MODULE['<{ckcimagesupload}prestashop>ckcimagesupload_7a122ee6d7c667d4da5f5ca64e9d3df2'] = 'El archivo %d está en un formato no soportado.';
+$_MODULE['<{ckcimagesupload}prestashop>ckcimagesupload_23ba308dbd84eade24a8b63085540f47'] = 'El archivo %s excede el tamaño máximo permitido de 500 KB.';
+$_MODULE['<{ckcimagesupload}prestashop>ckcimagesupload_3c18102f3857df6e709c9441395d9c1d'] = 'No se pudo subir el archivo %s.';
+$_MODULE['<{ckcimagesupload}prestashop>ckcimagesupload_58d5915670251752ab1fa739206370fc'] = 'Ninguna imagen seleccionada';
+$_MODULE['<{ckcimagesupload}prestashop>ckcimagesupload_0d8dbbaf67256e54d077bd02e78917d9'] = 'Imágenes subidas con éxito.';
+$_MODULE['<{ckcimagesupload}prestashop>ckcimagesupload_33fcce798a7362b22730b4bcfc65c00a'] = 'Imagen eliminada con éxito.';
+$_MODULE['<{ckcimagesupload}prestashop>ckcimagesupload_c52f0cbf662624e74240981162f1acc2'] = 'Imágenes eliminadas con éxito.';
+$_MODULE['<{ckcimagesupload}prestashop>configure_959485bd1014cd6d96ed0482b52dd43e'] = 'Agregar imágenes';
+$_MODULE['<{ckcimagesupload}prestashop>configure_1fecb03bc5392b317485c838c1e84ef3'] = 'Elegir imágenes';
+$_MODULE['<{ckcimagesupload}prestashop>configure_dd6aae5c3fd7e5a83e08c7e67c1089de'] = 'Máximo 500 KB por imagen, máximo 8 imágenes a la vez, formatos permitidos: jpeg, jpg, png, webp';
+$_MODULE['<{ckcimagesupload}prestashop>configure_72d6d7a1885885bb55a565fd1070581a'] = 'Importar';
+$_MODULE['<{ckcimagesupload}prestashop>configure_22133dcfc3d4ea41205378a8c5a2cc87'] = 'Imágenes actuales';
+$_MODULE['<{ckcimagesupload}prestashop>configure_b7c161bb87bb0308fb25e6f68d0a5632'] = 'Miniatura';
+$_MODULE['<{ckcimagesupload}prestashop>configure_97e7c9a7d06eac006a28bf05467fcc8b'] = 'Enlace';
+$_MODULE['<{ckcimagesupload}prestashop>configure_06df33001c1d7187fdd81ea1f5b277aa'] = 'Acciones';
+$_MODULE['<{ckcimagesupload}prestashop>configure_f2a6c498fb90ee345d997f888fce3b18'] = 'Eliminar';
+$_MODULE['<{ckcimagesupload}prestashop>configure_054f080e1936e575650d59d728208f77'] = 'Eliminar las imágenes seleccionadas';
+$_MODULE['<{ckcimagesupload}prestashop>configure_0450d266974d92724ff4bacc3a51952e'] = 'Eliminar todo';
+$_MODULE['<{ckcimagesupload}prestashop>configure_923eebecc274e22e05da222395d12788'] = 'No hay imágenes en este momento.';
+$_MODULE['<{ckcimagesupload}prestashop>configure_8988b47683b9deeddb4518d270de363d'] = 'Enlace copiado :';
+$_MODULE['<{ckcimagesupload}prestashop>configure_d5ffed63e3affcb79573830f060dfd49'] = '¿Eliminar la imagen?';
+$_MODULE['<{ckcimagesupload}prestashop>configure_d2e0d571a7e71df7b94fcce3c813e0a5'] = '¿Eliminar las imágenes?';

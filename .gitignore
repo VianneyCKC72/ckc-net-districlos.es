@@ -430,3 +430,4 @@ $RECYCLE.BIN/
 var/
 
 modules/ckcadcampaignconfigurator/uploads/menus/
+error_log.txt.gz

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+  <name>ckc_product_extra_advice</name>
+  <displayName>Conseils supplémentaires sur le produit</displayName>
+  <version>1.0.1</version>
+  <author>CKC-Net</author>
+  <tab>front_office_features</tab>
+  <description>Adds expert advice and maintenance fields to products.</description>
+</module>

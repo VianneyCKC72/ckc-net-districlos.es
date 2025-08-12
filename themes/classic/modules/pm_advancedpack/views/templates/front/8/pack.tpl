@@ -413,4 +413,34 @@
         {/block}
 
     </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var button = document.querySelector('.lire-plus');
+
+            if (!button) return;
+
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                var tabPane = document.querySelector('#description');
+                var productTabs = document.querySelector('.product-tabs');
+
+                if (!tabPane || !productTabs) return;
+
+                tabPane.classList.add('active', 'show');
+
+                setTimeout(function () {
+                    var position = productTabs.getBoundingClientRect().top + window.scrollY - 100;
+
+                    window.scrollTo({
+                        top: position,
+                        behavior: 'smooth'
+                    });
+
+                }, 300);
+            });
+        });
+    </script>
+
+
 {/block}
