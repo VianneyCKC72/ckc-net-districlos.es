@@ -220,17 +220,33 @@
     display: none;
   }
 }
-.groupama_fdj {
-  margin-left: 10px;
-  width: 180px;
-  height: 47px;
+.logos_container {
+  max-width: 320px;
+  .logo {
+    max-width: 160px;
+  }
+  .logo_delimiter {
+    width: 1px;
+    height: 50px;
+    background-color: #ccc;
+    margin-left: 10px;
+    @media (max-width: 1350px) {
+      display: none;
+    }
+  }
+  .groupama_fdj {
+    margin-left: 10px;
+    width: 160px;
+    height: 47px;
 
-  @media (max-width: 1225px) {
-    width: 130px;
-    margin-top: auto;
-    margin-bottom: auto;
+    @media (max-width: 1225px) {
+      width: 130px;
+      margin-top: auto;
+      margin-bottom: auto;
+    }
   }
 }
+
 #header.sticky{
   .row-header {
     gap: 10px;
