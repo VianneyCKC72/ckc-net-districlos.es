@@ -222,8 +222,9 @@
 }
 .logos_container {
   max-width: 320px;
+  width: 320px;
   .logo {
-    max-width: 160px;
+    max-width: 160px !important;
   }
   .logo_delimiter {
     width: 1px;
