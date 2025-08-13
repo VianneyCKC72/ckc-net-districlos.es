@@ -31,7 +31,11 @@ try {
     }
 
     $stmtFetchRemote = $remoteDb->prepare("SELECT * FROM {$REMOTE_TABLE} WHERE id_opartdevis = :id_opartdevis");
-    $stmtUpdateRemote = $remoteDb->prepare("UPDATE {$REMOTE_TABLE} SET {$STATUS_FIELD} = :status WHERE id_opartdevis = :id_opartdevis");
+    $stmtUpdateRemote = $remoteDb->prepare("
+        UPDATE {$REMOTE_TABLE} 
+        SET {$STATUS_FIELD} = :status, id_order = :id_order 
+        WHERE id_opartdevis = :id_opartdevis
+    ");
 
     $updatedLocal   = 0;
     $updatedRemote  = 0;
@@ -42,40 +46,53 @@ try {
         $id = (int)$quote['id_opartdevis'];
 
         $localStatus = isset($quote[$STATUS_FIELD]) ? (int)$quote[$STATUS_FIELD] : 0;
+        $localOrder  = isset($quote['id_order']) ? (int)$quote['id_order'] : 0;
 
         $stmtFetchRemote->execute(['id_opartdevis' => $id]);
         $remoteQuote = $stmtFetchRemote->fetch(PDO::FETCH_ASSOC);
 
         if (!$remoteQuote) {
             $skippedMissing++;
-            echo "Devis #{$id} introuvable dans la base distante, ignoré.<br>";
+            echo "{$id},<br>";
             continue;
         }
 
         $remoteStatus = isset($remoteQuote[$STATUS_FIELD]) ? (int)$remoteQuote[$STATUS_FIELD] : 0;
+        $remoteOrder  = isset($remoteQuote['id_order']) ? (int)$remoteQuote['id_order'] : 0;
 
         $finalStatus = max($localStatus, $remoteStatus);
 
-        if ($localStatus !== $finalStatus) {
+        $finalOrder = $localOrder ?: $remoteOrder;
+
+        if ($localStatus !== $finalStatus || $localOrder !== $finalOrder) {
             Db::getInstance()->update(
                 'opartdevis',
-                [$STATUS_FIELD => (int)$finalStatus],
+                [
+                    $STATUS_FIELD => $finalStatus,
+                    'id_order'    => $finalOrder
+                ],
                 'id_opartdevis = '.(int)$id
             );
             $updatedLocal++;
-            echo "Local: devis #{$id} statut {$localStatus} -> {$finalStatus}<br>";
+            echo "Local: {$id} statut {$localStatus} -> {$finalStatus}, id_order {$localOrder} -> {$finalOrder}<br>";
         }
 
-        if ($remoteStatus !== $finalStatus) {
+        if ($remoteStatus !== $finalStatus || $remoteOrder !== $finalOrder) {
             $stmtUpdateRemote->execute([
                 'status'         => $finalStatus,
-                'id_opartdevis'  => $id,
+                'id_order'       => $finalOrder,
+                'id_opartdevis'  => $id
             ]);
             $updatedRemote++;
-            echo "Distant: devis #{$id} statut {$remoteStatus} -> {$finalStatus}<br>";
+            echo "Distant: {$id} statut {$remoteStatus} -> {$finalStatus}, id_order {$remoteOrder} -> {$finalOrder}<br>";
         }
 
-        if ($localStatus === $finalStatus && $remoteStatus === $finalStatus) {
+        if (
+            $localStatus === $finalStatus &&
+            $remoteStatus === $finalStatus &&
+            $localOrder === $finalOrder &&
+            $remoteOrder === $finalOrder
+        ) {
             $unchanged++;
         }
     }
