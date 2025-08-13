@@ -36,14 +36,14 @@ try {
 		if ($product_price > 0) {
 			$set_price = $set_price - $product_price;
 		}
-		if ($value[2] != "") {
-			$sql = 'UPDATE `ps_product_attribute` SET `price` = :price WHERE `ps_product_attribute`.`id_product_attribute` = :id_product_attribute';
+		if ($value[0] != "") {
+			$sql = 'UPDATE `ps_product_attribute` SET `price` = :price WHERE `ps_product_attribute`.`reference` = :reference';
 			$stmt = $conn->prepare($sql);
-			$stmt->execute(['price' => $set_price, 'id_product_attribute' => $value[2]]);
+			$stmt->execute(['price' => $set_price, 'reference' => $value[0]]);
 
-			$sql = 'UPDATE `ps_product_attribute_shop` SET `price` = :price WHERE `ps_product_attribute_shop`.`id_product_attribute` = :id_product_attribute';
+			$sql = 'UPDATE `ps_product_attribute_shop` SET `price` = :price JOIN ps_product_attribute.id_product_attribute = `ps_product_attribute_shop`.`id_product_attribute` WHERE ps_product_attribute_shop.reference = :reference';
 			$stmt = $conn->prepare($sql);
-			$stmt->execute(['price' => $set_price, 'id_product_attribute' => $value[2]]);
+			$stmt->execute(['price' => $set_price, 'reference' => $value[0]]);
 		}else{
 			$sql = 'UPDATE `ps_product` SET `price` = :price WHERE `ps_product`.`id_product` = :id_product';
 			$stmt = $conn->prepare($sql);
