@@ -41,9 +41,12 @@ try {
 			$stmt = $conn->prepare($sql);
 			$stmt->execute(['price' => $set_price, 'reference' => $value[0]]);
 
-			$sql = 'UPDATE `ps_product_attribute_shop` SET `price` = :price JOIN ps_product_attribute ON ps_product_attribute.id_product_attribute = `ps_product_attribute_shop`.`id_product_attribute` WHERE ps_product_attribute_shop.reference = :reference';
+			$sql = 'UPDATE ps_product_attribute_shop AS pas INNER JOIN ps_product_attribute AS pa ON pa.id_product_attribute = pas.id_product_attribute SET pas.price = :price WHERE pa.reference = :reference';
 			$stmt = $conn->prepare($sql);
-			$stmt->execute(['price' => $set_price, 'reference' => $value[0]]);
+			$stmt->execute([
+				'price' => $set_price,
+				'reference' => $value[0]
+			]);
 		}else{
 			$sql = 'UPDATE `ps_product` SET `price` = :price WHERE `ps_product`.`id_product` = :id_product';
 			$stmt = $conn->prepare($sql);
