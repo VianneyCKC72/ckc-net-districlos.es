@@ -26,7 +26,7 @@ try {
     $localQuotes = Db::getInstance()->executeS('SELECT * FROM '.$LOCAL_TABLE.' WHERE date_add > "2025-07-15"');
 
     if (!$localQuotes) {
-        echo "Aucun devis local trouvé.\n";
+        echo "Aucun devis local trouvé.<br>";
         exit;
     }
 
@@ -48,7 +48,7 @@ try {
 
         if (!$remoteQuote) {
             $skippedMissing++;
-            echo "Devis #{$id} introuvable dans la base distante, ignoré.\n";
+            echo "Devis #{$id} introuvable dans la base distante, ignoré.<br>";
             continue;
         }
 
@@ -63,7 +63,7 @@ try {
                 'id_opartdevis = '.(int)$id
             );
             $updatedLocal++;
-            echo "Local: devis #{$id} statut {$localStatus} -> {$finalStatus}\n";
+            echo "Local: devis #{$id} statut {$localStatus} -> {$finalStatus}<br>";
         }
 
         if ($remoteStatus !== $finalStatus) {
@@ -72,7 +72,7 @@ try {
                 'id_opartdevis'  => $id,
             ]);
             $updatedRemote++;
-            echo "Distant: devis #{$id} statut {$remoteStatus} -> {$finalStatus}\n";
+            echo "Distant: devis #{$id} statut {$remoteStatus} -> {$finalStatus}<br>";
         }
 
         if ($localStatus === $finalStatus && $remoteStatus === $finalStatus) {
@@ -80,13 +80,13 @@ try {
         }
     }
 
-    echo "\n--- Récapitulatif ---\n";
-    echo "Mises à jour locales : {$updatedLocal}\n";
-    echo "Mises à jour distantes : {$updatedRemote}\n";
-    echo "Dévis manquants côté distant : {$skippedMissing}\n";
-    echo "Déjà synchronisés : {$unchanged}\n";
+    echo "<br>--- Récapitulatif ---<br>";
+    echo "Mises à jour locales : {$updatedLocal}<br>";
+    echo "Mises à jour distantes : {$updatedRemote}<br>";
+    echo "Dévis manquants côté distant : {$skippedMissing}<br>";
+    echo "Déjà synchronisés : {$unchanged}<br>";
 
 } catch (Exception $e) {
-    echo "Erreur: ".$e->getMessage()."\n";
+    echo "Erreur: ".$e->getMessage()."<br>";
     exit(1);
 }
