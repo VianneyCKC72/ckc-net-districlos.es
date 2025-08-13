@@ -15,7 +15,11 @@ try {
 
 	// fgetcsv($file);
 
-	foreach ( $csv as $value ) {
+	foreach ( $csv as $key => $value ) {
+
+		if ($key == 0 || $key == 1) {
+			continue; // Skip header rows
+		}
 
 		$value = explode(';', $value[0]);
 
