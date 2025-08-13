@@ -15,7 +15,7 @@ $remoteDb = new PDO(
 );
 
 // 1. Récupérer les devis locaux récents
-$localQuotes = Db::getInstance()->executeS('SELECT * FROM '._DB_PREFIX_.'opartdevis WHERE date_add > "2025-04-09"');
+$localQuotes = Db::getInstance()->executeS('SELECT * FROM '._DB_PREFIX_.'opartdevis WHERE date_add > "2025-07-15"');
 
 foreach ($localQuotes as $quote) {
     $old_cart_id = (int)$quote['id_cart'];
