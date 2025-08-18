@@ -40,10 +40,9 @@ document
 document.querySelectorAll(".wrapper__swiper__featured-products").forEach((wrapper) => {
     new Swiper(wrapper.querySelector(".swiper__featured-products"), {
         loop: wrapper.closest("#cart") ? false : true, // Désactive loop dans le panier
-        spaceBetween: 20,
-        slidesPerView: 4,
+        spaceBetween: 24,
+        slidesPerView: 2,
         breakpoints: {
-            640: { slidesPerView: 2, spaceBetween: 24 },
             768: { slidesPerView: 3, spaceBetween: 24 },
             1024: { slidesPerView: 4, spaceBetween: 24 },
         },
