@@ -146,7 +146,7 @@
     --swiper-pagination-color: #{$paginationColorValue};
   }
 }
-.swiper-pagination-lock {
+.swiper-pagination-lock, .swiper-button-lock {
   display: none;
 }
 

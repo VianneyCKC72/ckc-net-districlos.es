@@ -43,7 +43,7 @@ document.querySelectorAll(".wrapper__swiper__featured-products").forEach((wrappe
         spaceBetween: 20,
         slidesPerView: 4,
         breakpoints: {
-            640: { slidesPerView: 2.4, spaceBetween: 24 },
+            640: { slidesPerView: 2, spaceBetween: 24 },
             768: { slidesPerView: 3, spaceBetween: 24 },
             1024: { slidesPerView: 4, spaceBetween: 24 },
         },
