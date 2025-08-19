@@ -27,7 +27,7 @@
   {block name='product_images'}
     <div class="wrapper__swiper__product-img__thumbnails">
       <div class="swiper swiper__product-img__thumbnails">
-        <div class="swiper-wrapper">
+        <div class="product-images swiper-wrapper">
           {foreach from=$product.images item=image}
             <div class="swiper-slide">
               <div class="thumbnail">
