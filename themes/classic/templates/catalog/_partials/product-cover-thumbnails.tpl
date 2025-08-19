@@ -27,7 +27,7 @@
   {block name='product_images'}
     <div class="wrapper__swiper__product-img__thumbnails">
       <div class="swiper swiper__product-img__thumbnails">
-        <div class="product-images swiper-wrapper">
+        <div class="swiper-wrapper">
           {foreach from=$product.images item=image}
             <div class="swiper-slide">
               <div class="thumbnail">
@@ -64,7 +64,7 @@
   {/block}
 
   {block name='product_cover'}
-    <div class="swiper swiper__product-img__cover">
+    <div class="product-images swiper swiper__product-img__cover">
 
       <img class="tag-web-price" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
 
