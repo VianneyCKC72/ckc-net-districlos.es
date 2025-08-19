@@ -25,7 +25,7 @@
 
 <div class="images-container wrapper__swiper__product-img mb-5 mb-lg-0" style="--product-img-width: auto">
   {block name='product_images'}
-    <div class="wrapper__swiper__product-img__thumbnails">
+    <div class="product-cover wrapper__swiper__product-img__thumbnails">
       <div class="swiper swiper__product-img__thumbnails">
         <div class="swiper-wrapper">
           {foreach from=$product.images item=image}
