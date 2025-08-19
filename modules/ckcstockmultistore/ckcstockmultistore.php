@@ -503,15 +503,27 @@ class Ckcstockmultistore extends Module
 
         $id_store = null;
 
+        $carrier = new Carrier((int)$order->id_carrier);
+
         foreach ($stores as $store) {
-            $zip_codes = explode(',', $store['zip_codes']);
+            $carrierStore = explode(',', $store['carrier']);
 
-            foreach ($zip_codes as $zip_code) {
-                $zip_code = trim($zip_code);
+            if (in_array($carrier->id_reference, $carrierStore)) {
+                $id_store = $store['id_store'];
+            }
 
-                if ($zip_code === $customer_zip_code || (strpos($zip_code, '*') !== false && preg_match('/^' . str_replace('*', '.*', $zip_code) . '$/', $customer_zip_code))) {
-                    $id_store = (int) $store['id_store'];
-                    break 2;
+            unset($filters);
+
+            if (!$id_store) {
+                $zip_codes = explode(',', $store['zip_codes']);
+
+                foreach ($zip_codes as $zip_code) {
+                    $zip_code = trim($zip_code);
+
+                    if ($zip_code === $customer_zip_code || (strpos($zip_code, '*') !== false && preg_match('/^' . str_replace('*', '.*', $zip_code) . '$/', $customer_zip_code))) {
+                        $id_store = (int) $store['id_store'];
+                        break 2;
+                    }
                 }
             }
         }
