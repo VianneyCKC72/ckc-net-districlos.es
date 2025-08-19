@@ -285,6 +285,12 @@
   }
 }
 
+.dynamic-product {
+  .swiper__product-img__cover {
+    display: none !important;
+  }
+}
+
 .product-tabs {
   .tab-content {
     padding-top: 0 !important;
