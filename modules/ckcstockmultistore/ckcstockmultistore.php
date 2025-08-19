@@ -283,6 +283,7 @@ class Ckcstockmultistore extends Module
                 'zip_codes' => $store['zip_codes'] ?? '',
                 'iban' => $store['iban'] ?? '',
                 'bic' => $store['bic'] ?? '',
+                'carrier' => $store['carrier'] ?? '',
             ),
         );
 
@@ -301,6 +302,14 @@ class Ckcstockmultistore extends Module
 
     protected function getStoreFormConfig()
     {
+        $carriers = Carrier::getCarriers(Configuration::get('PS_LANG_DEFAULT'), true);
+
+        $descCarrier = '';
+
+        foreach ($carriers as $carrier) {
+            $descCarrier .= $carrier['name'] .' - <b>'.$carrier['id_reference'].'</b><br/>';
+        }
+
         return array(
             'form' => array(
                 'legend' => array(
@@ -341,6 +350,14 @@ class Ckcstockmultistore extends Module
                         'size' => 50,
                         'required' => false,
                     ),
+                    array(
+                        'type' => 'text',
+                        'label' => $this->l('Transporteur'),
+                        'name' => 'carrier',
+                        'size' => 50,
+                        'required' => false,
+                        'desc' => $descCarrier,
+                    ),
                 ),
                 'submit' => array(
                     'title' => $this->l('Enregistrer'),
@@ -376,6 +393,7 @@ class Ckcstockmultistore extends Module
                     'zip_codes' => pSQL($zip_codes),
                     'iban' => pSQL(Tools::getValue('iban')),
                     'bic' => pSQL(Tools::getValue('bic')),
+                    'carrier' => pSQL(Tools::getValue('carrier')),
                 ), 'id_store = ' . (int) $id_store);
             } else {
                 Db::getInstance()->insert('ckcstockstores_stores', array(
@@ -383,6 +401,7 @@ class Ckcstockmultistore extends Module
                     'zip_codes' => pSQL($zip_codes),
                     'iban' => pSQL(Tools::getValue('iban')),
                     'bic' => pSQL(Tools::getValue('bic')),
+                    'carrier' => pSQL(Tools::getValue('carrier')),
                 ));
 
                 $this->installModuleTab('AdminCkcstockmultistoreTab', 'SELL', 'CKC Stock Multiboutique');

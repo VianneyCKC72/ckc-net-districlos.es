@@ -36,6 +36,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckcstockstores_stores` 
             `zip_codes` varchar(255) NOT NULL,
             `iban` varchar(255) DEFAULT NULL,
             `bic` varchar(255) DEFAULT NULL,
+            `carrier` varchar(255) DEFAULT NULL,
             PRIMARY KEY (`id_store`)
         ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
