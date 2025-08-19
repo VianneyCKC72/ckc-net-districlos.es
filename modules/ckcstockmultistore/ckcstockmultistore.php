@@ -499,7 +499,7 @@ class Ckcstockmultistore extends Module
 
         $customer_zip_code = pSQL($address->postcode);
 
-        $stores = Db::getInstance()->executeS('SELECT id_store, zip_codes FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
+        $stores = Db::getInstance()->executeS('SELECT id_store, zip_codes, carrier FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
 
         $id_store = null;
 
