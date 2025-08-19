@@ -499,7 +499,7 @@ class Ckcstockmultistore extends Module
 
         $customer_zip_code = pSQL($address->postcode);
 
-        $stores = Db::getInstance()->executeS('SELECT id_store, zip_codes, carrier FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
+        $stores = Db::getInstance()->executeS('SELECT id_store, zip_codes, carrier FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores WHERE carrier IS NOT NULL OR carrier != ""');
 
         $id_store = null;
 
@@ -511,10 +511,14 @@ class Ckcstockmultistore extends Module
             if (in_array($carrier->id_reference, $carrierStore)) {
                 $id_store = $store['id_store'];
             }
+        }
 
-            unset($filters);
+        if (!$id_store) {
+            $stores = Db::getInstance()->executeS('SELECT id_store, zip_codes, carrier FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores WHERE carrier IS NULL OR carrier = ""');
 
-            if (!$id_store) {
+            $id_store = null;
+
+            foreach ($stores as $store) {
                 $zip_codes = explode(',', $store['zip_codes']);
 
                 foreach ($zip_codes as $zip_code) {
@@ -526,6 +530,7 @@ class Ckcstockmultistore extends Module
                     }
                 }
             }
+
         }
 
         if (!$id_store) {
