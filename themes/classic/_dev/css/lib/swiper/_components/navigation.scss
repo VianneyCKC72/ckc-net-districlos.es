@@ -56,7 +56,7 @@ body {
 }
 
 .swiper-button-lock {
-  display: none;
+  display: none !important;
 }
 
 .swiper-button-inner-prev,
