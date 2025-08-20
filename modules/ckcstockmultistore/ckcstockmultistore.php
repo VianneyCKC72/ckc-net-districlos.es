@@ -514,8 +514,6 @@ class Ckcstockmultistore extends Module
         }
 
         if (!$id_store) {
-            $stores = Db::getInstance()->executeS('SELECT id_store, zip_codes, carrier FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores WHERE carrier IS NULL OR carrier = ""');
-
             $id_store = null;
 
             foreach ($stores as $store) {
