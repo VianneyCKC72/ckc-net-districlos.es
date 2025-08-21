@@ -9,6 +9,7 @@ class FrontController extends FrontControllerCore
 {
     protected $proCustomerCache = [];
 
+
     public function initContent()
     {
         // Initialisation des variables avec des valeurs par défaut
@@ -189,7 +190,6 @@ class FrontController extends FrontControllerCore
 
     public function initHeader()
     {
-
         $show_emptycart = false;
 
         $cookie = new Cookie('psAdmin', '', (int)Configuration::get('PS_COOKIE_LIFETIME_BO'));
@@ -201,8 +201,8 @@ class FrontController extends FrontControllerCore
         }
 
         $this->context->smarty->assign('show_emptycart', $show_emptycart);
-
-        //
+        $this->context->smarty->assign('IS_EMPLOYEE_BO', $show_emptycart);
+        Media::addJsDef(['IS_EMPLOYEE_BO' => (bool)$show_emptycart]);
 
         //call original method, to maintain default behaviour:
         return parent::initHeader();

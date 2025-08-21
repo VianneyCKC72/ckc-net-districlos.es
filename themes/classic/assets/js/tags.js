@@ -51,7 +51,6 @@ if(Object.keys(loggedCustomer.addresses).length > 0) {
     loggedCustomerPhone = firstAddress.phone || firstAddress.phone_mobile;
 }
 
-
 // Checkout steps
 const checkoutSteps = {
     'checkout-personal-information-step': 2,
@@ -556,7 +555,7 @@ function executeEvent(name, replay = false) {
             });
         });
     }
-    else if(name === 'PUR')
+    else if(name === 'PUR' && !IS_EMPLOYEE_BO)
     {
         // Check if purchase event has already been sent
         var order = document.querySelector('section#content').dataset.order;
@@ -606,6 +605,9 @@ function executeEvent(name, replay = false) {
             eventName: 'revenue',
             eventValue: amountTaxIncluded
         });
+
+
+
         pushEvent('purchase', {
             'currencyCode': 'EUR',
             'order_id': order.details.id,
