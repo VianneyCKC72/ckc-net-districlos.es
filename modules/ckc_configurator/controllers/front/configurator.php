@@ -405,7 +405,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             $grillage['poteaux'] = null;
         }else {
             if ($grillage['installation'] == 'scellement-sur-platine' && $grillage['type'] == self::PROS_ID) {
-                $product = new Product(1285, false, $this->language_id);
+                $grillage['poteaux'] = 1285;
             }else{
                 $product = new Product($grillage['poteaux'], false, $this->language_id);
 
