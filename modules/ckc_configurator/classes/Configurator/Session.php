@@ -398,7 +398,7 @@ class Session extends \ObjectModel implements Config
                 $this->height       = "1m03";
                 $this->color        = "vert-6005";
                 $this->clips        = 0;
-                $this->poteaux      = 1285;
+                $this->poteaux      = 1223;
             }
             else {
                 $this->length       = 5.00;
@@ -407,7 +407,7 @@ class Session extends \ObjectModel implements Config
                 $this->color        = "vert-6005";
                 $this->espacement   = 0;
                 $this->clips        = 0;
-                $this->poteaux      = 1285;
+                $this->poteaux      = 1223;
             }
         }
         elseif ($this->isSouple()) {
