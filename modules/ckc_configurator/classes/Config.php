@@ -8,6 +8,8 @@ interface Config
     const RIGIDES_ID              = 173;
     const PROS_ID                 = 177;
     const PROS_PLUS_ID            = 178;
+    const BRICO_PLUS_ID           = 370;
+
     const SOUPLES_ID              = 174;
     const ALUMINIUM_ID            = 308;
     const SOUDES_ID               = 179;

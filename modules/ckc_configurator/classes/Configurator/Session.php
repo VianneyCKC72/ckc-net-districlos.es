@@ -171,6 +171,9 @@ class Session extends \ObjectModel implements Config
             return true;
         if ($this->id_category == self::PROS_PLUS_ID)
             return true;
+        if ($this->id_category == self::BRICO_PLUS_ID)
+            return true;
+
 
         return false;
     }

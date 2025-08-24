@@ -141,6 +141,8 @@ class Preview implements Config
                 return 'pro';
             case self::PROS_PLUS_ID:
                 return 'pro-plus';
+            case self::BRICO_PLUS_ID:
+                return 'brico-plus';
             case self::SOUDES_ID:
                 return 'soude';
             case self::SIMPLES_ID:

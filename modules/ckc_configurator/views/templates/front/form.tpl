@@ -12,7 +12,7 @@
             <div class="row row-items initial-m-p">
                 {if isset($types)}
                     {foreach from=$types item=type}
-                        <div class="col-xs-6">
+                        <div class="col-xs-4">
                             <a href="#" data-id="{$type.id_category}" data-name="type"
                                class="{if isset($session->id_type) && $session->id_type == $type.id_category}selected {/if}configurator-action">
                                 <img src="//{$link->getCatImageLink($type.link_rewrite, $type.id_image)|escape:'html':'UTF-8'}"
