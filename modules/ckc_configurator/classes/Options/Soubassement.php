@@ -28,7 +28,7 @@ class Soubassement extends ProductFactory {
                         if(Helper::valueExists($product['id_product'], $heights, "value") == false) {
                             $heights[] = [
                                 "value" => $product['id_product'],
-                                "name" => $height,
+                                "name" => $product['name'],
                                 "id_product_attribute" => $combination['id_product_attribute']
                             ];
                         }
@@ -60,7 +60,7 @@ class Soubassement extends ProductFactory {
         // Add Types
         return ["heights" => $heights, "colors" => $colors, 'types' => $types];
     }
-    
+
     public static function getAttributesInformationsByProduct($id_product)
     {
         $result = \Db::getInstance()->executeS('
@@ -77,7 +77,7 @@ class Soubassement extends ProductFactory {
             '.\Shop::addSqlAssociation('product_attribute', 'pa').'
             '.\Shop::addSqlAssociation('attribute', 'pac').'
             WHERE pa.`id_product` = '.(int)$id_product);
-    
+
         return $result;
     }
 
