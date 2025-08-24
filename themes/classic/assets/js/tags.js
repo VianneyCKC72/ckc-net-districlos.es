@@ -134,33 +134,31 @@ switch(currentPage) {
         break;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    $(document).ajaxSuccess(function(event, xhr, settings) {
-        var data = xhr.responseJSON;
-        if (settings.url.includes('/panier') && settings.data && settings.data.includes('action=')) {
-            var productData = getProductData(data.id_product, data.id_product_attribute);
+$(document).ajaxSuccess(function(event, xhr, settings) {
+    var data = xhr.responseJSON;
+    if (settings.url.includes('/panier') && settings.data && settings.data.includes('action=')) {
+        var productData = getProductData(data.id_product, data.id_product_attribute);
 
-            dataLayer.push({ ecommerce: null });
-            dataLayer.push({
-                event: 'add_to_cart',
-                ecommerce: {
-                    currency: 'EUR',
-                    value: productData.price,
-                    items: [
-                        {
-                            item_id: productData.id,
-                            item_sku: productData.sku,
-                            item_name: productData.name,
-                            item_category: productData.category,
-                            quantity: data.quantity,
-                            price: productData.price,
-                            discount: productData.discount || 0,
-                        }
-                    ]
-                }
-            });
-        }
-    });
+        dataLayer.push({ ecommerce: null });
+        dataLayer.push({
+            event: 'add_to_cart',
+            ecommerce: {
+                currency: 'EUR',
+                value: productData.price,
+                items: [
+                    {
+                        item_id: productData.id,
+                        item_sku: productData.sku,
+                        item_name: productData.name,
+                        item_category: productData.category,
+                        quantity: data.quantity,
+                        price: productData.price,
+                        discount: productData.discount || 0,
+                    }
+                ]
+            }
+        });
+    }
 });
 
 document.addEventListener('DOMContentLoaded', function () {
