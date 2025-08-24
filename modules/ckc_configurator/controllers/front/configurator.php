@@ -170,6 +170,8 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     }
                 }
 
+
+
                 $price = $this->session->totalPrice();
                 $price = number_format($price, 2);
 
@@ -402,10 +404,14 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         if (!isset($grillage['poteaux'])) {
             $grillage['poteaux'] = null;
         }else {
-            $product = new Product($grillage['poteaux'], false, $this->language_id);
+            if ($grillage['installation'] == 'scellement-sur-platine' && $grillage['type'] == self::PROS_ID) {
+                $product = new Product(1285, false, $this->language_id);
+            }else{
+                $product = new Product($grillage['poteaux'], false, $this->language_id);
 
-            if (strpos($product->name, 'clip') !== false) {
-                $clips = 1;
+                if (strpos($product->name, 'clip') !== false) {
+                    $clips = 1;
+                }
             }
         }
 
