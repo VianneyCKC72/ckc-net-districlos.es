@@ -179,7 +179,7 @@ class Accessory extends ProductFactory
         if (self::$session->isRigide()) {
             $accessories = ["poteaux", "bouchons", "clips", "pince_clips"];
 
-            if (self::$session->poteaux == 1223) {
+            if (self::$session->poteaux == 1285) {
                 $accessories[] = "cales";
             }
         }

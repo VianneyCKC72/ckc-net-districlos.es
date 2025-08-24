@@ -398,7 +398,7 @@ class Session extends \ObjectModel implements Config
                 $this->height       = "1m03";
                 $this->color        = "vert-6005";
                 $this->clips        = 0;
-                $this->poteaux      = 1223;
+                $this->poteaux      = 1285;
             }
             else {
                 $this->length       = 5.00;
@@ -407,7 +407,7 @@ class Session extends \ObjectModel implements Config
                 $this->color        = "vert-6005";
                 $this->espacement   = 0;
                 $this->clips        = 0;
-                $this->poteaux      = 1223;
+                $this->poteaux      = 1285;
             }
         }
         elseif ($this->isSouple()) {
@@ -507,7 +507,7 @@ class Session extends \ObjectModel implements Config
                 \Db::getInstance()->delete('configurator_sessions', 'id_configurator_session = ' . $session->id);
                 \Db::getInstance()->delete('configurator_session_entries', 'id_configurator_session = ' . $session->id);
             }
-            
+
             \Db::getInstance()->delete('configurator_sessions', 'date_add < "' . date('Y-m-d') . '"');
             \Db::getInstance()->delete('configurator_session_entries', 'date_add < "' . date('Y-m-d') . '"');
         }
@@ -537,13 +537,13 @@ class Session extends \ObjectModel implements Config
 //        }
 //        echo "<hr>";
         self::destroy($user_key);
-        
+
         \Db::getInstance()->insert('configurator_sessions', [
             'user_key' => pSQL($user_key),
             'date_add' => date('Y-m-d H:i:s'),
             'date_upd' => date('Y-m-d H:i:s')
         ]);
-            
+
         return Session::find($user_key, $language_id);
     }
 
