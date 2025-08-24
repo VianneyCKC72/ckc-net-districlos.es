@@ -12,6 +12,7 @@ html {
   color: $black;
   background: $white;
   scroll-behavior: smooth;
+  visibility: visible !important;
   ::-moz-selection {
     background: rgba(2, 100, 115, 0.25);
   }

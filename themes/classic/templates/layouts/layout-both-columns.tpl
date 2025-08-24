@@ -26,7 +26,7 @@
 {include file='_partials/helpers.tpl'}
 
 <!doctype html>
-<html lang="{$language.locale}" style="visibility: visible !important;">
+<html lang="{$language.locale}">
 
 <head>
     {block name='head'}
