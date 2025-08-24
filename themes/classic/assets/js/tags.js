@@ -137,7 +137,7 @@ switch(currentPage) {
 document.addEventListener('DOMContentLoaded', function() {
     $(document).ajaxSuccess(function(event, xhr, settings) {
         var data = xhr.responseJSON;
-        if (settings.url.includes('/panier') && settings.data && settings.data.includes('add=')) {
+        if (settings.url.includes('/panier') && settings.data && settings.data.includes('action=')) {
             var productData = getProductData(data.id_product, data.id_product_attribute);
 
             dataLayer.push({ ecommerce: null });
@@ -429,7 +429,7 @@ function executeEvent(name, replay = false) {
             var settings = event.detail.settings;
             var data = xhr.responseJSON;
 
-            if (settings.url.includes('/panier') && settings.data.includes('&add=')) {
+            if (settings.url.includes('/panier') && settings.data.includes('&action=')) {
                 pushEvent('ajout_panier', {
                     currencyCode: 'EUR',
                     add: {
