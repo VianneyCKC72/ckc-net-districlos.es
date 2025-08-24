@@ -46,7 +46,7 @@ interface Config
             "bouchons"      => 191,
             "cales"         => 192,
             "chevilles"     => 193,
-            "platines"      => 194,
+            //"platines"      => 194,
             "soubassements" => 195,
             "clips"         => 347,
             "pince_clips"   => 348,

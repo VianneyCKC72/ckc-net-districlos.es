@@ -179,7 +179,7 @@ class Accessory extends ProductFactory
         if (self::$session->isRigide()) {
             $accessories = ["poteaux", "bouchons", "clips", "pince_clips"];
 
-            if (self::$session->poteaux == 1285) {
+            if (self::$session->poteaux == 1285 || self::$session->poteaux == 1223) {
                 $accessories[] = "cales";
             }
         }
@@ -211,6 +211,9 @@ class Accessory extends ProductFactory
 
         // Platines
         if (self::$session->installation == 'scellement-sur-platine') {
+            if (self::$session->isRigide()) {
+                unset($platines[1]);
+            }
             $accessories = array_merge($accessories, $platines);
         }
 
