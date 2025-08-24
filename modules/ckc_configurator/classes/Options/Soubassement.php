@@ -8,7 +8,7 @@ class Soubassement extends ProductFactory {
 
     // Get all heights existing for Soubassement
     // Getting colors of the first product selected by default
-    static public function get($language_id)
+    static public function get($language_id, $session)
     {
         $category = new \Category(self::SOUBASSEMENTS_ID);
         $products = $category->getProducts($language_id, 1, 1000000, null, null, false, true, false, 1, false);
@@ -18,6 +18,9 @@ class Soubassement extends ProductFactory {
 
         if(count($products) > 0) {
             foreach ($products as $key => $product) {
+                if ($session->id_type != 177 && $product['id_product'] == 1257) {
+                    continue;
+                }
                 $combinations = static::getAttributesInformationsByProduct($product['id_product']);
                 // Get Types
                 foreach ($combinations as $combination) {

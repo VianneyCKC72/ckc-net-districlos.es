@@ -285,7 +285,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             "is_souple"     => $this->session->isSouple(),
             "isAluminium"   => $this->session->isAluminium(),
             "espacement"    => $this->session->espacement,
-            "sousbassement" => Soubassement::get($this->language_id),
+            "sousbassement" => Soubassement::get($this->language_id, $this->session),
             "portillons"    => Portillon::get($this->language_id, $this->session->id_product_attribute, false, $this->session->isSouple(), $this->session->isAluminium()),
             "occultations"  => Occultation::get($this->language_id, $this->session->id_product_attribute, $this->session->isSouple()),
             "panneaux_deco" => PanneauDeco::get($this->language_id, $this->session->isAluminium(), $this->session)
