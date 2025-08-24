@@ -422,30 +422,57 @@ function executeEvent(name, replay = false) {
     }
     else if(name === 'ADD')
     {
-        document.addEventListener('ajaxSuccess', function(event) {
-            var xhr = event.detail.xhr;
-            var settings = event.detail.settings;
+        $(document).ajaxSuccess(function(event, xhr, settings) {
             var data = xhr.responseJSON;
+            if (settings.url.includes('/panier') && settings.data && settings.data.includes('action=')) {
+                var productData = getProductData(data.id_product, data.id_product_attribute);
 
-            if (settings.url.includes('/panier') && settings.data.includes('&action=')) {
-                pushEvent('ajout_panier', {
-                    currencyCode: 'EUR',
-                    add: {
-                        actionField: { list: getListName() },
-                        products: [{
-                            name: '',
-                            id: data.id_product,
-                            price: '',
-                            reference: '',
-                            category: '',
-                            variant: data.id_product_attribute,
-                            position: '',
-                            quantity: data.quantity
-                        }]
+                dataLayer.push({ ecommerce: null });
+                dataLayer.push({
+                    event: 'add_to_cart',
+                    ecommerce: {
+                        currency: 'EUR',
+                        value: productData.price,
+                        items: [
+                            {
+                                item_id: productData.id,
+                                item_sku: productData.sku,
+                                item_name: productData.name,
+                                item_category: productData.category,
+                                quantity: data.quantity,
+                                price: productData.price,
+                                discount: productData.discount || 0,
+                            }
+                        ]
                     }
                 });
             }
         });
+
+        // document.addEventListener('ajaxSuccess', function(event) {
+        //     var xhr = event.detail.xhr;
+        //     var settings = event.detail.settings;
+        //     var data = xhr.responseJSON;
+        //
+        //     if (settings.url.includes('/panier') && settings.data.includes('&action=')) {
+        //         pushEvent('ajout_panier', {
+        //             currencyCode: 'EUR',
+        //             add: {
+        //                 actionField: { list: getListName() },
+        //                 products: [{
+        //                     name: '',
+        //                     id: data.id_product,
+        //                     price: '',
+        //                     reference: '',
+        //                     category: '',
+        //                     variant: data.id_product_attribute,
+        //                     position: '',
+        //                     quantity: data.quantity
+        //                 }]
+        //             }
+        //         });
+        //     }
+        // });
     }
     else if(name === 'REM')
     {
