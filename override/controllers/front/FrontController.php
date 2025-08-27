@@ -25,6 +25,11 @@ class FrontController extends FrontControllerCore
         $siret = 'Non renseigné';
         $abtest = Configuration::get('CKCABTESTACTIVATION_ACTIVE');
 
+        $frontOfficePro = '';
+
+
+        if ($this->context->shop->id == 2) $frontOfficePro = '-pro';
+
         if ($display_espace_pro == 1) {
             // Vérification si le client est défini pour extraire l'ID
             if (!empty($this->context->customer)) {
@@ -130,7 +135,7 @@ class FrontController extends FrontControllerCore
                 'newClient' => $newClient,
                 'env_particulier' => $env_particulier,
                 'abtest' => $abtest,
-
+                'frontOfficePro' => $frontOfficePro
             ]
         );
 
