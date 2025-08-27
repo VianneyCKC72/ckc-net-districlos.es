@@ -36,7 +36,7 @@
 
 <body id="{$page.page_name}" class="{$page.body_classes|classnames} {if ($page.page_name == 'authentication' && $espace_pro == 1) || $env_pro == 1}
     espace_pro
-{/if} {if $page.page_name == 'registration' && $espace_pro == 1}registration-pro{/if}">
+{/if} {if $page.page_name == 'registration' && $espace_pro == 1}registration-pro{/if} {$frontOfficePro}">
 
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T3HJWLD"
@@ -54,7 +54,7 @@
 
     <header id="header">
         {block name='header'}
-            {include file='_partials/header.tpl'}
+            {include file="_partials/header{$frontOfficePro}.tpl"}
         {/block}
     </header>
 
