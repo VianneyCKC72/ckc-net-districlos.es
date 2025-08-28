@@ -248,8 +248,7 @@ $(document).ready(function () {
                 $('#checkbox_soubassement').removeClass('selected')
             } else {
                 $(".soubassement:not(.hide-row)").show();
-                $("#checkbox_soubassement").show();
-                $("#checkbox_soubassement").parent().show();
+                $(".soubassement:not(.hide-row)").parent().show();
             }
 
             if (name == 'portillon_id' || name == 'occultation_id') {
