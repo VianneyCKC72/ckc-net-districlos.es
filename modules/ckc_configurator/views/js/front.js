@@ -416,7 +416,7 @@ $(document).ready(function () {
         refreshPrice(true);
     });
 
-    $all.on('click', '#sousbassement_hauteur, input[name="sousbassement_couleur"], #checkbox_occultation, #checkbox_panneau_deco, #checkbox_portillon, #checkbox_soubassement', function (event) {
+    $all.on('click', 'input[name="sousbassement_couleur"], #checkbox_occultation, #checkbox_panneau_deco, #checkbox_portillon, #checkbox_soubassement', function (event) {
         event.preventDefault();
 
         // if id is not checkbox_soubassement
