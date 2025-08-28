@@ -17,7 +17,7 @@
             <!-- Logo Desktop (Visible seulement à partir de md) -->
             <div class="">
                 <a href="/">
-                    <img class="" width="180" src="themes/classic/assets/img/logo-pro.png" alt="{$shop.name} Pro" />
+                    <img class="" width="180" src="/themes/classic/assets/img/logo-pro.png" alt="{$shop.name} Pro" />
                 </a>
             </div>
 

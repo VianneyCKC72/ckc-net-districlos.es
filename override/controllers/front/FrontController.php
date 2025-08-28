@@ -9,9 +9,16 @@ class FrontController extends FrontControllerCore
 {
     protected $proCustomerCache = [];
 
+    // obselete je le fais dans le module
+    private function getProUrlForCurrentShop(): string
+    {
+        $idShop = (int)$this->context->shop->id;
+        return (string) Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, $idShop);
+    }
 
     public function initContent()
     {
+
         // Initialisation des variables avec des valeurs par défaut
         $userId = 0;
         $kbis = [];
