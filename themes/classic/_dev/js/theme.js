@@ -11672,8 +11672,6 @@ $(document).ready(function () {
             $alert.fadeOut(500);
         }, 5000);
     }
-
-    $("#everpspopup_block_center img").attr('loading', 'lazy')
 });
 
 

@@ -24,11 +24,27 @@
 *}
 
 {if !empty($configuration)}
-    <div class="panel">
-        {$configuration}
+    <div class="ckc-ep-config">
+
+        <div class="ckc-ep-hero">
+            <div class="ckc-ep-hero-icon">PRO</div>
+            <div class="ckc-ep-hero-text">
+                <h2>CKC Espace PRO</h2>
+                <p>Paramétrez l’expérience des clients professionnels : visibilité, formulaire, et URL de redirection.</p>
+            </div>
+        </div>
+
+        <div class="ckc-ep-card">
+            {$configuration nofilter}
+        </div>
+
+        <div class="ckc-ep-footnote">
+            <i class="icon-info-circle"></i>
+            Astuce : en multiboutique, utilisez le sélecteur de contexte en haut pour définir une URL différente par boutique.
+        </div>
+
     </div>
 {/if}
-
 <script>
     $(document).ready(function () {
         // Initialisation de DataTable

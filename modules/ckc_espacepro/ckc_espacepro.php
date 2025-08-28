@@ -47,6 +47,8 @@ class ckc_espacepro extends Module
 
         $this->displayName = 'CKC Espace PRO';
         $this->description = "Ce module améliore l'espace pro avec gestion des inscriptions et affichage des prix HT pour les clients professionnels, simplifiant la gestion utilisateur.";
+
+
     }
 
     /**
@@ -55,14 +57,27 @@ class ckc_espacepro extends Module
      *   */
     public function install()
     {
-        Configuration::updateValue('CKC_DISPLAY_EP', false);
-        Configuration::updateValue('CKC_FORM_MIN_EP', false);
+        if (!parent::install()) { return false; }
+
+        // tes installs SQL
         include(dirname(__FILE__) . '/sql/install.php');
 
-        $isHooksRegistered = $this->registerHook('displayCustomerAccountForm') &&
-            $this->registerHook('actionCustomerAccountAdd');
+        // (tu peux laisser ces deux configs globales si tu veux)
+        Configuration::updateValue('CKC_DISPLAY_EP', false);
+        Configuration::updateValue('CKC_FORM_MIN_EP', false);
 
-        return parent::install() && $isHooksRegistered;
+        // NEW: init de l'URL PRO par boutique
+        foreach (Shop::getShops(true, null, true) as $idShop) {
+            Configuration::updateValue('CKC_PRO_URL_BOUTIQUE', '', false, null, (int)$idShop);
+        }
+
+        // Enregistre les hooks nécessaires
+        $isHooksRegistered =
+            $this->registerHook('displayCustomerAccountForm') &&
+            $this->registerHook('actionCustomerAccountAdd') &&
+            $this->registerHook('displayHeader'); // NEW
+
+        return $isHooksRegistered;
     }
 
     /**
@@ -103,10 +118,26 @@ class ckc_espacepro extends Module
         $this->registerHook('actionCustomerLogoutAfter');
         $this->registerHook('actionFrontControllerSetMedia');
         $this->registerHook('actionAuthentification');
+        $this->registerHook('displayBackOfficeHeader');
 
         $this->clear_the_cache();
 
         return $res;
+    }
+
+    private function getProUrlForCurrentShop(): string
+    {
+        $idShop   = (int)$this->context->shop->id;
+        return (string) Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, $idShop);
+    }
+
+    public function hookDisplayHeader($params)
+    {
+        $this->context->smarty->assign([
+            'pro' => [
+                'URL_BOUTIQUE' => $this->getProUrlForCurrentShop(),
+            ],
+        ]);
     }
 
     public function hookActionCustomerLogoutAfter($customer)
@@ -177,12 +208,43 @@ class ckc_espacepro extends Module
      */
     public function postProcess()
     {
-        $form_values = $this->getConfigFormValues();
+        // 1) Sauvegarde multi-boutique de l'URL PRO
+        if (Tools::isSubmit('submitCkc_ep')) {
+            $url    = trim((string) Tools::getValue('CKC_PRO_URL_BOUTIQUE', ''));
 
+            switch (Shop::getContext()) {
+                case Shop::CONTEXT_SHOP:
+                    Configuration::updateValue(
+                        'CKC_PRO_URL_BOUTIQUE',
+                        $url,
+                        false,
+                        null,
+                        (int) Shop::getContextShopID()
+                    );
+                    break;
+
+                case Shop::CONTEXT_GROUP:
+                    foreach (Shop::getShops(true, (int) Shop::getContextShopGroupID(), true) as $idShop) {
+                        Configuration::updateValue('CKC_PRO_URL_BOUTIQUE', $url, false, null, (int)$idShop);
+                    }
+                    break;
+
+                case Shop::CONTEXT_ALL:
+                    foreach (Shop::getShops(true, null, true) as $idShop) {
+                        Configuration::updateValue('CKC_PRO_URL_BOUTIQUE', $url, false, null, (int)$idShop);
+                    }
+                    break;
+            }
+        }
+
+        // 2) Sauvegarde des autres champs (comportement actuel)
+        $form_values = $this->getConfigFormValues();
+        unset($form_values['CKC_PRO_URL_BOUTIQUE']); // évite d’écraser par erreur
         foreach (array_keys($form_values) as $key) {
             Configuration::updateValue($key, Tools::getValue($key));
         }
     }
+
 
     /**
      * Create the structure of your form.
@@ -222,14 +284,30 @@ class ckc_espacepro extends Module
                             'name'  => 'name',
                         ],
                     ],
+                    [
+                        'type'        => 'text',
+                        'label'       => "URL Espace Pro (redirection)",
+                        'name'        => 'CKC_PRO_URL_BOUTIQUE',
+                        'class'       => 'ckc-ep-url',
+                        'placeholder' => 'https://pro.cloture-discount.fr/',
+                        'desc'        => 'Spécifique à la boutique sélectionnée. Sur preprod : devpro.cloture-discount.fr',
+                    ],
                 ],
                 'submit' => [
                     'title' => 'Enregistrez',
+                    'class' => 'pull-right',
                 ],
             ],
         ];
     }
-
+    public function hookDisplayBackOfficeHeader()
+    {
+        if (Tools::getValue('controller') === 'AdminModules'
+            && Tools::getValue('configure') === $this->name) {
+            $this->context->controller->addCSS($this->_path.'views/css/bo_espacepro.css');
+            $this->context->controller->addJS($this->_path.'views/js/bo_espacepro.js');
+        }
+    }
 
     private function createHelperForm($submitAction, $fieldsValue, $form)
     {
@@ -270,6 +348,7 @@ class ckc_espacepro extends Module
         return [
             'CKC_DISPLAY_EP'  => Configuration::get('CKC_DISPLAY_EP', false),
             'CKC_FORM_MIN_EP' => Configuration::get('CKC_FORM_MIN_EP', false),
+            'CKC_PRO_URL_BOUTIQUE'  => Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, (int)$this->context->shop->id),
         ];
     }
 

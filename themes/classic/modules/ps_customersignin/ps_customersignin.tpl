@@ -24,8 +24,8 @@
  *}
 
 
-{if !$logged || ($logged && $env_pro)}
-    <a href="{$urls.pages.authentication}?back=my-account&amp;ep=1" class="ico btn-espace-pro">
+{if $env_pro == false}
+    <a href="{$pro.URL_BOUTIQUE|escape:'html':'UTF-8'}" class="ico btn-espace-pro" rel="nofollow">
         <img src="/themes/classic/assets/img/ico-espace-pro.svg" alt="Connexion à Espace pro" width="20" height="19">
         <span class="text">Espace pro</span>
     </a>
