@@ -250,6 +250,12 @@ $(document).ready(function () {
                 $(".soubassement:not(.hide-row)").show();
             }
 
+            if ($('input[name="pose"]').val() === 'scellement-sur-platine') {
+                $('#poteaux').hide()
+            }else{
+                $('#poteaux').show()
+            }
+
             if (name == 'portillon_id' || name == 'occultation_id') {
                 var change = true;
             } else {
