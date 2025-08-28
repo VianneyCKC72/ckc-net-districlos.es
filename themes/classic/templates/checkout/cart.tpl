@@ -67,6 +67,9 @@
                     <div class="container cart-summary-inside">
                         <div>
                             <p class="h3">Récapitulatif</p>
+
+                                {include file='checkout/_partials/cart-summary-top.tpl' cart=$cart}
+
                             {if file_exists($smarty.const._PS_MODULE_DIR_|cat:'ckc_shipping_estimator/views/templates/front/cart/shipping_estimator.tpl')}
                                 {include file="module:ckc_shipping_estimator/views/templates/front/cart/shipping_estimator.tpl"}
                             {/if}
