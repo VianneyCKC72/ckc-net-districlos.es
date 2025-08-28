@@ -706,7 +706,7 @@ $(document).ready(function () {
             })
         }
         if (isRigide()) {
-            if ($('input[name="pose"]').val() === 'scellement-sur-platine' && ) {
+            if ($('input[name="pose"]').val() === 'scellement-sur-platine') {
                 $('#poteaux').hide()
             }else{
                 $('#poteaux').show()
