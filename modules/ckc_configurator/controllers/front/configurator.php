@@ -145,6 +145,9 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     $category       = new Category(self::POTEAUX_RIGIDE_ID, $this->language_id);
                     $poteaux   = $category->getProducts($this->language_id, 1, 100, null, null, false, true);
                     foreach ($poteaux as $poteau) {
+                        if ($poteau['id_product'] == 1285) {
+                            continue;
+                        }
                         $this->data['poteaux'][] = [
                             "value"   => $poteau['id_product'],
                             "name" => strpos($poteau['name'], 'clip') ? 'Clips' : 'Encoches',
