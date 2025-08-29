@@ -194,7 +194,7 @@
                             {hook h='displayProductListReviews' product=$product}
                         {/block}
                     </div>
-                    {if empty($product.discount_qty_slider) } 
+                    {if $pro.pro.env == 0 } 
                         <a href="{$product.url}" class="btn btn-primary">Voir le produit</a>
                     {/if}
                 </div>
