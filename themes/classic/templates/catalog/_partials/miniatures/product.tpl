@@ -194,7 +194,9 @@
                             {hook h='displayProductListReviews' product=$product}
                         {/block}
                     </div>
-                    <a href="{$product.url}" class="btn btn-primary">Voir le produit</a>
+                    {if empty($product.discount_qty_slider) } 
+                        <a href="{$product.url}" class="btn btn-primary">Voir le produit</a>
+                    {/if}
                 </div>
 
                 {*                {include file='catalog/_partials/product-flags.tpl'}*}
