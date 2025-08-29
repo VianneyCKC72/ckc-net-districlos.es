@@ -10,7 +10,10 @@
     }
 </script>
 
+
 {block name='header_top'}
+
+
     <div class="header-top">
         <div class="row-header d-flex align-items-center">
 

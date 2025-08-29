@@ -1,46 +1,26 @@
-{**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/AFL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
- *}
-
+{** helpers etc. **}
 {include file='_partials/helpers.tpl'}
 
 <!doctype html>
 <html lang="{$language.locale}">
-
 <head>
     {block name='head'}
         {include file='_partials/head.tpl'}
     {/block}
 </head>
 
-<body id="{$page.page_name}" class="{$page.body_classes|classnames} {if ($page.page_name == 'authentication' && $espace_pro == 1) || $env_pro == 1}
-    espace_pro
-{/if} {if $page.page_name == 'registration' && $espace_pro == 1}registration-pro{/if} {$frontOfficePro}">
+{ckc_pro_bootstrap}
+
+{assign var="__pro" value=$pro.pro}
+
+<body id="{$page.page_name}"
+      class="{$page.body_classes|classnames}
+             {if ($page.page_name == 'authentication' && $__pro.env) || $__pro.env} espace_pro{/if}
+             {if $page.page_name == 'registration' && $__pro.env} registration-pro{/if}
+             {$__pro.suffix}">
 
 <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T3HJWLD"
-                  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T3HJWLD" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
 {block name='hook_after_body_opening_tag'}
@@ -54,7 +34,7 @@
 
     <header id="header">
         {block name='header'}
-            {include file="_partials/header{$frontOfficePro}.tpl"}
+            {include file="_partials/header{$__pro.suffix}.tpl"}
         {/block}
     </header>
 
@@ -115,13 +95,11 @@
             {include file="_partials/footer.tpl"}
         {/block}
     </footer>
-
 </main>
 
 {block name='javascript_bottom'}
     {include file="_partials/password-policy-template.tpl"}
     {include file="_partials/javascript.tpl" javascript=$javascript.bottom}
-
     <script async type="text/javascript" src="/themes/classic/assets/js/lib/crypto-js.min.js"></script>
     <script async type="text/javascript" src="/themes/classic/assets/js/lib/jquery.inview.min.js"></script>
     <script async src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
