@@ -253,6 +253,7 @@ app/config/config.php
 
 modules/*
 !modules/ckc*/
+!modules/creativeelements
 #override/*
 themes/*/
 !themes/classic/
