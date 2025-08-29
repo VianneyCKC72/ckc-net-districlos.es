@@ -154,8 +154,19 @@
                                 {if $product.show_price}
                                     <div class="product-price-and-shipping flex_cln">
                                         {*                                    {hook h='displayProductPriceBlock' product=$product type="before_price"}*}
+
                                         <span class="price">
+                                        {if !empty($frontOfficePro)} 
+                                            <span class="price">
+                                                {$product.specific_price_ht} € HT 
+                                            </span>
+                                            <small>dès {$product.from_quantity} unités*</small>
+                                            <div class="product-price-and-shipping">
+                                                <span class="regular-price">{$product.initial_price_ht} € HT </span>
+                                            </div>
+                                        {else}
                                         {$product.price} {if $env_pro == 1}HT{else}TTC{/if}
+                                        {/if}
                                     </span>
 
                                         {if $product.has_discount}

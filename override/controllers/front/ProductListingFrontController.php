@@ -39,6 +39,8 @@ use PrestaShop\PrestaShop\Core\Product\Search\SortOrder;
  */
 abstract class ProductListingFrontController extends ProductListingFrontControllerCore
 {
+
+ 
     /**
      * Generates an URL to a product listing controller
      * with only the essential query params and page remaining.
@@ -77,6 +79,7 @@ abstract class ProductListingFrontController extends ProductListingFrontControll
     // @phpstan-ignore-next-line
     private function prepareProductForTemplate(array $rawProduct)
     {
+
         // Enrich data of product
         $product = (new ProductAssembler($this->context))
             ->assembleProduct($rawProduct);
@@ -103,6 +106,7 @@ abstract class ProductListingFrontController extends ProductListingFrontControll
      */
     protected function prepareMultipleProductsForTemplate(array $products)
     {
+
         // Enrich data set of products
         $products = (new ProductAssembler($this->context))
             ->assembleProducts($products);

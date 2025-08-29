@@ -100,6 +100,7 @@ class Formatter
      */
     public function format($number, NumberSpecification $specification)
     {
+    
         $this->numberSpecification = $specification;
 
         try {
