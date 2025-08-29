@@ -155,8 +155,8 @@
                                     <div class="product-price-and-shipping flex_cln">
                                         {*                                    {hook h='displayProductPriceBlock' product=$product type="before_price"}*}
 
-                                        <span class="price">
-                                        {if !empty($frontOfficePro)} 
+                                      
+                                        {if $pro.pro && isset($product.discount_qty_slider) } 
                                             <span class="price">
                                                 {$product.specific_price_ht} € HT 
                                             </span>
@@ -164,14 +164,14 @@
                                             <div class="product-price-and-shipping">
                                                 <span class="regular-price">{$product.initial_price_ht} € HT </span>
                                             </div>
-                                        {else}
-                                        {$product.price} {if $env_pro == 1}HT{else}TTC{/if}
-                                        {/if}
+                                         {else} 
+                                            {$product.price} 
+                                         {/if} 
                                     </span>
 
                                         {if $product.has_discount}
                                             {hook h='displayProductPriceBlock' product=$product type="old_price"}
-                                            <span class="regular-price">{$product.regular_price}{if $env_pro == 1}HT{else}TTC{/if}</span>
+                                            <span class="regular-price">{$product.regular_price}</span>
                                         {/if}
 
                                         {*                                    {hook h='displayProductPriceBlock' product=$product type='unit_price'}*}

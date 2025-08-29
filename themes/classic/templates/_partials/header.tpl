@@ -19,7 +19,7 @@
 
             <!-- Logo Desktop (Visible seulement à partir de md) -->
             <div class="d-none d-xl-block">
-                {if (($page.page_name == 'authentication' || $page.page_name == 'registration') && $espace_pro == 1) || $env_pro == 1}
+                {if (($page.page_name == 'authentication' || $page.page_name == 'registration') && $pro.pro == 1}
                     <a href="/">
                         <img class="desktop_only" width="180" src="/img/DISTRICLOS_pro_logo.png" alt="{$shop.name} Pro" />
                     </a>

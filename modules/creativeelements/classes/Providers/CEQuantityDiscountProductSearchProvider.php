@@ -171,6 +171,7 @@ class CEQuantityDiscountProductSearchProvider implements ProductSearchProviderIn
 
         foreach ($result as &$product) 
         {
+            $product['discount_qty_slider'] = 1;
             $product['specific_price_ht'] = $this->getDiscountedPrice($product);
             $product['initial_price_ht'] =  \Tools::ps_round($product['price'], 2) ;
         }

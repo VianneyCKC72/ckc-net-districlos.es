@@ -77,7 +77,7 @@
 
             <div class="product-line-info prix-unitaire">
                 <span class="label">Prix unitaire </span>
-                <span class="value">{$product.price} {if $env_pro == 1}HT{else}TTC{/if}</span>
+                <span class="value">{$product.price}</span>
             </div>
             {if is_array($product.customizations) && $product.customizations|count}
                 <br>
