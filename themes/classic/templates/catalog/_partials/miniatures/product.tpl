@@ -156,7 +156,7 @@
                                         {*                                    {hook h='displayProductPriceBlock' product=$product type="before_price"}*}
 
                                       
-                                        {if $pro.pro && isset($product.discount_qty_slider) } 
+                                        {if $pro.pro.env == 1 && isset($product.discount_qty_slider) } 
                                             <span class="price">
                                                 {$product.specific_price_ht} € HT 
                                             </span>
