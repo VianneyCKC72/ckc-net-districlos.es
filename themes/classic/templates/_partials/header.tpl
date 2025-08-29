@@ -13,21 +13,8 @@
 
 {block name='header_top'}
 
-
     <div class="header-top">
         <div class="row-header d-flex align-items-center">
-
-            <!-- Logo Desktop (Visible seulement à partir de md) -->
-            <div class="d-none d-xl-block">
-                {if (($page.page_name == 'authentication' || $page.page_name == 'registration') && $pro.pro == 1}
-                    <a href="/">
-                        <img class="desktop_only" width="180" src="/img/DISTRICLOS_pro_logo.png" alt="{$shop.name} Pro" />
-                    </a>
-                {elseif $shop.logo_details}
-                    {renderLogo}
-                {/if}
-            </div>
-
 
             <!-- Bouton menu (Visible uniquement sur Desktop) -->
             <div class="menu-button d-none d-md-block">

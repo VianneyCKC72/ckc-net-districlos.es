@@ -9,15 +9,11 @@
     {/block}
 </head>
 
-{ckc_pro_bootstrap}
-
-{assign var="__pro" value=$pro.pro}
-
 <body id="{$page.page_name}"
       class="{$page.body_classes|classnames}
-             {if ($page.page_name == 'authentication' && $__pro.env) || $__pro.env} espace_pro{/if}
-             {if $page.page_name == 'registration' && $__pro.env} registration-pro{/if}
-             {$__pro.suffix}">
+             {if ($page.page_name == 'authentication' && $pro.env) || $pro.env} espace_pro{/if}
+             {if $page.page_name == 'registration' && $pro.env} registration-pro{/if}
+             {$pro.suffix}">
 
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T3HJWLD" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -34,7 +30,7 @@
 
     <header id="header">
         {block name='header'}
-            {include file="_partials/header{$__pro.suffix}.tpl"}
+            {include file="_partials/header{$pro.suffix}.tpl"}
         {/block}
     </header>
 

@@ -24,7 +24,7 @@
  *}
 
 
- {if $pro.pro == 1}
+ {if $pro.env == 1}
     {* a voir où on doit rediriger *}
     <a href="#" class="ico btn-espace-pro" rel="nofollow">
         <img src="/themes/classic/assets/img/ico-espace-pro.svg" alt="Connexion à Espace pro" width="20" height="19">

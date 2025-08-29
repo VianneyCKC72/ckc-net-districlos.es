@@ -40,22 +40,6 @@ class ckc_espacepro extends Module
 
         $this->displayName = 'CKC Espace PRO';
         $this->description = "Espace pro : inscription, champs dédiés, gestion des comptes professionnels.";
-
-        if ($this->context && $this->context->smarty) {
-            // idempotent, écrase simplement l’ancien enregistrement
-            $this->context->smarty->registerPlugin('function', 'ckc_pro_bootstrap', [$this, 'smartyProBootstrap']);
-        }
-
-    }
-
-    public function smartyProBootstrap($params, \Smarty_Internal_Template $template)
-    {
-        try {
-            $this->assignProVars();
-        } catch (\Throwable $e) {
-            error_log('[ckc_espacepro] smartyProBootstrap error: ' . $e->getMessage());
-        }
-        return ''; // rien à afficher, on fait juste l’assign
     }
 
     /** Installation */
@@ -80,12 +64,11 @@ class ckc_espacepro extends Module
         $ok =
             $this->registerHook('displayCustomerAccountForm') &&
             $this->registerHook('actionCustomerAccountAdd') &&
-            $this->registerHook('actionFrontControllerInit') &&
-            $this->registerHook('displayTop') &&
             $this->registerHook('displayHeader') &&
             $this->registerHook('actionCustomerLogoutAfter') &&
             $this->registerHook('actionFrontControllerSetMedia') &&
             $this->registerHook('displayBackOfficeHeader') &&
+            $this->registerHook('actionFrontControllerSetVariables') &&
             $this->registerHook('actionOrderGridQueryBuilderModifier') &&
             $this->registerHook('actionOrderGridDefinitionModifier') &&
             $this->registerHook('actionAuthentication');
@@ -95,13 +78,14 @@ class ckc_espacepro extends Module
             $this->addTabs();
         }
 
-        // SQL d’installation
-//        include __DIR__ . '/sql/install.php';
-
         $this->clear_the_cache();
         return $ok;
     }
 
+    public function hookActionFrontControllerSetVariables($params)
+    {
+        $this->injectGlobals();
+    }
 
     public function uninstall()
     {
@@ -180,7 +164,7 @@ class ckc_espacepro extends Module
         return false;
     }
 
-    private function assignProVars(): void
+    private function assignProVars(): array
     {
         $ctx = $this->context;
         $cust = $ctx->customer;
@@ -238,24 +222,24 @@ class ckc_espacepro extends Module
 
         // Mon nouveau payload a utilisé a la place des variables qu'on faisait dans FrontController.
         $pro = [
-            'pro' => [
-                'env'   => (int)$isProEnv,
-                'suffix'=> $frontSuffix,
-                'url_domain' => (string)Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, 2),
-                'user'  => [
-                    'id'             => $userId,
-                    'is_logged'      => (int)$isLogged,
-                    'is_pro'         => (int)$inPro,
-                    'is_proticulier' => (int)$inProticulier,
-                    'is_particulier' => (int)$isParticulier,
-                    'is_visitor'     => (int)$isVisitor,
-                    'status'         => $status,
-                    'info'           => $customerInfo,
-                ],
-            ]
+            'env'   => (int)$isProEnv,
+            'suffix'=> $frontSuffix,
+            'url_domain' => (string)Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, 2),
+            'user'  => [
+                'id'             => $userId,
+                'is_logged'      => (int)$isLogged,
+                'is_pro'         => (int)$inPro,
+                'is_proticulier' => (int)$inProticulier,
+                'is_particulier' => (int)$isParticulier,
+                'is_visitor'     => (int)$isVisitor,
+                'status'         => $status,
+                'info'           => $customerInfo,
+            ],
         ];
 
-        $ctx->smarty->assign(['pro' => $pro]);
+        $ctx->smarty->assign('pro' ,$pro);
+
+        return $pro;
     }
 
     public function redirectProTopro()
@@ -266,7 +250,8 @@ class ckc_espacepro extends Module
         $isLogged = $cust ? (bool) $cust->isLogged() : false;
         $groups   = $isLogged ? (array) $cust->getGroups() : [];
 
-        $inPro = $isLogged && in_array((int) Configuration::get('CKC_ID_GROUP_PRO'), $groups, true);
+        $inPro = $isLogged && in_array((int) Configuration::get('CKC_GROUP_PRO_ID'), $groups, true);
+
 
         if ($inPro && !$this->isProEnvironment()) {
             $idShop = (int) $ctx->shop->id;
@@ -279,21 +264,9 @@ class ckc_espacepro extends Module
         }
     }
 
-    public function hookActionFrontControllerInit($p)
-    {
-        $this->assignProVars();
-    }
-
-    public function hookDisplayTop($p)
-    {
-        $this->assignProVars();
-        return '';
-    }
-
     public function hookDisplayHeader($p)
     {
         $this->redirectProTopro(); // todo : voir si y'a pas un meilleur endroit ou le mettre
-        $this->assignProVars();
         return '';
     }
 
@@ -303,10 +276,11 @@ class ckc_espacepro extends Module
         $this->clear_the_cache();
     }
 
-    /** ⚠️ Hook correct : actionAuthentication */
     public function hookActionAuthentication($params)
     {
-        $env_pro = (int)$this->context->smarty->getTemplateVars()['env_pro'] ?? 0;
+        $pro = $this->context->smarty->getTemplateVars('pro');
+        $env_pro = (int)($pro['env'] ?? 0);
+
         if ($env_pro === 1) {
             Media::clearCache();
         }
@@ -319,6 +293,26 @@ class ckc_espacepro extends Module
             $this->context->controller->addCSS($this->_path . 'views/css/bo_espacepro.css');
             $this->context->controller->addJS($this->_path . 'views/js/bo_espacepro.js');
         }
+    }
+
+    private function injectGlobals(bool $bo = false): array
+    {
+        $pro = $this->assignProVars();
+
+        $vars = [
+            'pro'        => $pro,
+            'env_pro'    => (int)$pro['env'],
+            'pro_suffix' => (string)$pro['suffix'],
+            'is_pro'         => (int)$pro['user']['is_pro'],
+            'is_proticulier' => (int)$pro['user']['is_proticulier'],
+            'is_particulier' => (int)$pro['user']['is_particulier'],
+            'is_visitor'     => (int)$pro['user']['is_visitor'],
+        ];
+        $this->context->smarty->assign($vars);
+        foreach ($vars as $k => $v) {
+            $this->context->smarty->tpl_vars[$k] = new Smarty_Variable($v, true); // nocache
+        }
+        return $vars;
     }
 
     /** JS FO */
