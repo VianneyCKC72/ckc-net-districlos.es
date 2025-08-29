@@ -23,7 +23,6 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 
-{if !$env_pro}
     {if $tmhomeslider.slides}
         <div class="flexslider flexslider-desktop" data-interval="{$tmhomeslider.speed}" data-pause="{$tmhomeslider.pause}" style="min-height: 291px">
             <div class="loadingdiv"></div>
@@ -71,51 +70,4 @@
             </ul>
         </div>
     {/if}
-{else}
-    {if $tmhomeslider.slidesClientPro}
-        <div class="flexslider flexslider-desktop" data-interval="{$tmhomeslider.speed}" data-pause="{$tmhomeslider.pause}" style="min-height: 291px">
-            <div class="loadingdiv"></div>
-            {if $tmhomeslider.slidesClientPro[0]}
-                <div class="loadingdiv">
-                    <img src="{$tmhomeslider.slidesClientPro[0].image_url}" alt="{$tmhomeslider.slidesClientPro[0].legend}" />
-                </div>
-            {/if}
-            <ul class="slides">
-                {foreach from=$tmhomeslider.slidesClientPro item=slide}
-                    <li class="slide">
-                        <a href="{$slide.url}" title="{$slide.title}" aria-label="{$slide.title}">
-                            <img src="{$slide.image_url}" alt="{$slide.title}" title="{$slide.title}" />
-                        </a>
-                        {if $slide.description }
-                            <div class="caption-description">
-                                {$slide.description nofilter}
-                            </div>
-                        {/if}
-                    </li>
-                {/foreach}
-            </ul>
-        </div>
-        <div class="flexslider flexslider-mobile" data-interval="{$tmhomeslider.speed}" data-pause="{$tmhomeslider.pause}" style="min-height: 500px">
-            <div class="loadingdiv"></div>
-            {if $tmhomeslider.slidesClientPro[0]}
-                <div class="loadingdiv">
-                    <img src="{$tmhomeslider.slidesClientPro[0].image_mobile_url}" alt="{$tmhomeslider.slidesClientPro[0].legend}" title="{$tmhomeslider.slidesClientPro[0].title}" />
-                </div>
-            {/if}
-            <ul class="slides">
-                {foreach from=$tmhomeslider.slidesClientPro item=slide}
-                    <li class="slide">
-                        <a href="{$slide.url}" title="{$slide.title}" aria-label="{$slide.title}">
-                            <img class="lazyload" data-src="{$slide.image_mobile_url}" alt="{$slide.title}" title="{$slide.title}" />
-                        </a>
-                        {if $slide.description }
-                            <div class="caption-description">
-                                {$slide.description nofilter}
-                            </div>
-                        {/if}
-                    </li>
-                {/foreach}
-            </ul>
-        </div>
-    {/if}
-{/if}
+
