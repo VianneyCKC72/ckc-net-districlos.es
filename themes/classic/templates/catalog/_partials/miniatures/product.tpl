@@ -156,7 +156,7 @@
                                         {*                                    {hook h='displayProductPriceBlock' product=$product type="before_price"}*}
 
                                       
-                                        {if $pro.pro.env == 1 && isset($product.discount_qty_slider) } 
+                                        {if $pro.env == 1 && isset($product.discount_qty_slider) }
                                             <span class="price">
                                                 {$product.specific_price_ht} € HT 
                                             </span>
@@ -194,7 +194,7 @@
                             {hook h='displayProductListReviews' product=$product}
                         {/block}
                     </div>
-                    {if $pro.pro.env == 0 } 
+                    {if $pro.env == 0 }
                         <a href="{$product.url}" class="btn btn-primary">Voir le produit</a>
                     {/if}
                 </div>

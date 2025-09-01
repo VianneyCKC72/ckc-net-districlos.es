@@ -164,7 +164,7 @@ class ckc_espacepro extends Module
         return false;
     }
 
-    private function assignProVars(): array
+    public function assignProVars(): array
     {
         $ctx = $this->context;
         $cust = $ctx->customer;

@@ -1,4 +1,3 @@
-{** helpers etc. **}
 {include file='_partials/helpers.tpl'}
 
 <!doctype html>
@@ -15,9 +14,7 @@
              {if $page.page_name == 'registration' && $pro.env} registration-pro{/if}
              {$pro.suffix}">
 
-<!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T3HJWLD" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
 
 {block name='hook_after_body_opening_tag'}
     {hook h='displayAfterBodyOpeningTag'}
