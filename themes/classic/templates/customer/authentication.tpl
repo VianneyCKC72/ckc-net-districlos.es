@@ -25,7 +25,7 @@
  *}
 {extends file='page.tpl'}
 
-{if $espace_pro == 1}
+{if $pro.env == 1}
   <h1 class="text-center">
     {block name='page_title'}
       {*            <span class="text-center">Bienvenue dans votre espace professionnel !</span>*}
@@ -34,7 +34,7 @@
 {/if}
 
 {block name='page_content'}
-  {if $espace_pro == 1}
+  {if $pro.env == 1}
     <p class="text-center sous-texte-auth">Bienvenue dans votre Espace Professionnel dédié aux experts du bâtiment,
       aux jardiniers
       et aux paysagistes passionnés. Chez Districlos, nous comprenons l'importance d'un partenariat solide pour
@@ -42,16 +42,16 @@
       avantageux et de remises toute l'année sur nos clôtures, grillages et portails de qualité supérieure.</p>
   {/if}
   {block name='login_form_container'}
-    {if $espace_pro == 1}<div class="row">{/if}
-    <section class="login-form{if $espace_pro == 1} col-6{/if}">
-      {if $espace_pro == 1}
+    {if $pro.env == 1}<div class="row">{/if}
+    <section class="login-form{if $pro.env == 1} col-6{/if}">
+      {if $pro.env == 1}
         <p class="text-center titreForm"><strong>Je me connecte à mon espace</strong></p>
       {/if}
 
       {render file='customer/_partials/login-form.tpl' ui=$login_form  show_title=false}
     </section>
 
-    {if $espace_pro == 1}
+    {if $pro.env == 1}
       <div class="col-6 contenair-img-auth">
         <figure>
           <picture>
@@ -80,7 +80,7 @@
       {hook h='displayCustomerLoginFormAfter'}
     {/block}
 
-    {if $espace_pro == 1}
+    {if $pro.env == 1}
       <div class="steps-container">
         <div class="step">
           <div class="step-number">1</div>
