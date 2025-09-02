@@ -134,80 +134,108 @@
 
                         {$customer.lastname} {$customer.firstname} <br>
                         <strong>Email:</strong> {$customer.email}<br>
-                        {if $customer.tel}
+                        {if isset($customer.tel)}
                             <strong>Tel:</strong>
                             {$customer.tel}
                             <br>
                         {/if}
 
-                        {if $customer.company}
+                        {if isset($customer.company)}
                             <strong>Société: </strong>
                             {$customer.company}
                             <br>
                         {/if}
-                        {$customer.adresse}{if $customer.adresse2} {$customer.adresse2}{/if}
-                        , {$customer.cp} {$customer.ville}
-                        {if $customer.country_name}, {$customer.country_name} {/if}
-                        {if $customer.siret}
+
+                        {if isset($customer.adresse)}
+                            {$customer.adresse}
+                        {/if}
+                        {if isset($customer.adresse2) && $customer.adresse2}
+                            {$customer.adresse2}
+                        {/if}
+
+                        {if isset($customer.cp) || isset($customer.ville)}
+                            ,
+                            {if isset($customer.cp)}{$customer.cp}{/if}
+                            {if isset($customer.ville)}{$customer.ville}{/if}
+                        {/if}
+
+                        {if isset($customer.country_name) && $customer.country_name}
+                            , {$customer.country_name}
+                        {/if}
+
+                        {if isset($customer.siret) && $customer.siret}
                             <br>
                             <strong>N° Siret:</strong>
                             {$customer.siret}
                         {/if}
-                        <br><strong>TVA:</strong> {if $customer.tva == 0}Non{else}Oui{/if}
-                        {if $customer.vat_number}
+
+                        <br><strong>TVA:</strong>
+                        {if isset($customer.tva) && $customer.tva == 0}
+                            Non
+                        {else}
+                            Oui
+                        {/if}
+
+                        {if isset($customer.vat_number) && $customer.vat_number}
                             <br>
                             <strong>N° TVA:</strong>
                             {$customer.vat_number}
                         {/if}
-                        {if $customer.naf}
+
+                        {if isset($customer.naf) && $customer.naf}
                             <br>
                             <strong>Code NAF:</strong>
                             {$customer.naf}
                         {/if}
-                    </td>
+
                     <td>
-                        {if $customer.fileUpload}
-                            {if $customer.fileExtension == 'jpg' or $customer.fileExtension == 'jpeg' or $customer.fileExtension == 'png'}
+                        {if isset($customer.fileUpload) && $customer.fileUpload}
+                            {if isset($customer.fileExtension) && ($customer.fileExtension == 'jpg' || $customer.fileExtension == 'jpeg' || $customer.fileExtension == 'png')}
                                 <a href="/upload/{$customer.fileUpload}" target="_blank">
                                     <img src="/upload/{$customer.fileUpload}" alt="Image"
                                          style="width: 120px; height: auto;">
                                 </a>
-                            {elseif $customer.fileExtension == 'pdf'}
+                            {elseif isset($customer.fileExtension) && $customer.fileExtension == 'pdf'}
                                 <a download href="/upload/{$customer.fileUpload}">Ouvrir le PDF</a>
                             {else}
                                 Fichier: upload/{$customer.fileUpload}
                             {/if}
                         {/if}
                     </td>
+
                     <td>
-                        {if $customer.rib}
-                            {if $customer.ribFileExtension == 'jpg' or $customer.ribFileExtension == 'jpeg' or $customer.ribFileExtension == 'png'}
+                        {if isset($customer.rib) && $customer.rib}
+                            {if isset($customer.ribFileExtension) && ($customer.ribFileExtension == 'jpg' || $customer.ribFileExtension == 'jpeg' || $customer.ribFileExtension == 'png')}
                                 <a href="/upload/{$customer.rib}" target="_blank">
                                     <img src="/upload/{$customer.rib}" alt="Image"
                                          style="width: 120px; height: auto;">
                                 </a>
-                            {elseif $customer.ribFileExtension == 'pdf'}
+                            {elseif isset($customer.ribFileExtension) && $customer.ribFileExtension == 'pdf'}
                                 <a download href="/upload/{$customer.rib}">Ouvrir le PDF</a>
                             {else}
                                 Fichier dans: upload/{$customer.rib}
                             {/if}
                         {/if}
                     </td>
+
                     <td>
-                        Créé le {dateFormat date=$customer.date_add|date_format:'%Y-%m-%d' full=0}
-                        à {$customer.date_add|date_format:"%H:%M"}
-                        <br><br>
-                        {if $customer.refuse == 1}
+                        {if isset($customer.date_add) && $customer.date_add}
+                            Créé le {dateFormat date=$customer.date_add|date_format:'%Y-%m-%d' full=0}
+                            à {$customer.date_add|date_format:"%H:%M"}
+                            <br><br>
+                        {/if}
+
+                        {if isset($customer.refuse) && $customer.refuse == 1}
                             <span class="label label-refunded">Refusé</span>
                         {else}
-                            {if $customer.active == 1}
+                            {if isset($customer.active) && $customer.active == 1}
                                 <span class="label label-success">Actif</span>
                             {else}
                                 <span class="label label-warning">Inactif</span>
                             {/if}
                         {/if}
-
                     </td>
+
                     <td>
                         {if $customer.refuse == 0}
                             {if $customer.active}

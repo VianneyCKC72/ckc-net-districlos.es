@@ -75,7 +75,7 @@
                 {block name='form_field_item_radio'}
                     {foreach from=$field.availableValues item="label" key="value"}
 
-                        {if $field.name == 'id_gender' && $value > 2 && $espace_pro != 1}
+                        {if $field.name == 'id_gender' && $value > 2 && $pro.env != 1}
                             {* Ne rien faire pour masquer le bouton et le label si les conditions sont remplies *}
                         {else}
                             <label class="radio-inline {$field.name}">
@@ -84,11 +84,11 @@
                          {if $field.required}required{/if}{if $value eq $field.value} checked {/if}>
                   <span></span>
                 </span>
-                                {if $espace_pro == 1 && $label == 'Mademoiselle'}
+                                {if $pro.env == 1 && $label == 'Mademoiselle'}
                                     Mlle.
-                                {elseif $espace_pro == 1 && $label == 'Monsieur'}
+                                {elseif $pro.env == 1 && $label == 'Monsieur'}
                                     M.
-                                {elseif $espace_pro == 1 && $label == 'Madame'}
+                                {elseif $pro.env == 1 && $label == 'Madame'}
                                     Mme.
                                 {else}
                                     {$label}

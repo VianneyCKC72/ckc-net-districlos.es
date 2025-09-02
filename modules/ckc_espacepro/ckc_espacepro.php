@@ -84,8 +84,42 @@ class ckc_espacepro extends Module
 
     public function hookActionFrontControllerSetVariables($params)
     {
+        $this->redirectIfProOnParticulier();
         $this->injectGlobals();
     }
+
+    /* Fonction qui va regarder dans l'environnement particulier si un pro est connecté, on le renvoie sur sa
+    bonne boutique */
+    private function redirectIfProOnParticulier(): void
+    {
+        $ctx = $this->context;
+        $cust = $ctx->customer;
+        if (!$cust || !$cust->isLogged()) {
+            return;
+        }
+
+        $groups = (array) $cust->getGroups();
+        $gidPro = (int) $this->getProGroupId();
+        $gidProticulier = (int) $this->getProticulierGroupId();
+
+        $inProOrProticulier = in_array($gidPro, $groups, true) || in_array($gidProticulier, $groups, true);
+        if (!$inProOrProticulier) {
+            return;
+        }
+
+        $idShop = (int) $ctx->shop->id;
+
+        if ($idShop === 1) {
+            // récupérer l'URL de la boutique PRO
+            $proUrl = (string) Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, 2);
+
+            if (!empty($proUrl)) {
+                Tools::redirect($proUrl);
+                exit;
+            }
+        }
+    }
+
 
     public function uninstall()
     {
@@ -832,10 +866,12 @@ class ckc_espacepro extends Module
         }
         $gidPro = (int) $this->getProGroupId();
 
-        $sql = 'SELECT `tva`, `adresse`, `adresse2`, `cp`, `ville`, `tel`, `fileUpload`, `rib`, `naf`, `siret`
-                FROM `' . _DB_PREFIX_ . 'customer`
-                WHERE id_default_group = '.(int)$gidPro. ' AND id_customer = ' . (int)$id . '
-                LIMIT 1';
-        return (array)Db::getInstance()->getRow($sql);
+        $sql = 'SELECT c.`tva`, c.`adresse`, c.`adresse2`, c.`cp`, c.`ville`, c.`tel`, c.`fileUpload`, c.`rib`, c.`naf`, c.`siret`
+            FROM `'._DB_PREFIX_.'customer` c
+            WHERE c.`id_default_group` = '.(int)$gidPro.'
+              AND c.`id_customer` = '.(int)$id;
+
+        return (array) Db::getInstance()->getRow($sql);
     }
+
 }

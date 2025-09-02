@@ -12,45 +12,52 @@ class FrontController extends FrontControllerCore
         $isLogged = $this->context->customer ? (bool)$this->context->customer->isLogged() : false;
 
         if ($isLogged) {
-            $id_customer = (int)$this->context->customer->id;
+            $id_customer = (int) $this->context->customer->id;
             $default_address_id = null;
 
-            // Cache cookie
-            if (isset($this->context->cookie->default_address_id_cached)) {
-                $default_address_id = (int)$this->context->cookie->default_address_id_cached;
-            } else {
-                $row = Db::getInstance()->getRow(
-                    'SELECT `id_address_default`
-                     FROM `'._DB_PREFIX_.'customer`
-                     WHERE `id_customer` = '.(int)$id_customer.'
-                     LIMIT 1'
-                );
+            if ($id_customer > 0 && !empty($this->context->cookie->default_address_id_cached)) {
+                $default_address_id = (int) $this->context->cookie->default_address_id_cached;
+                if ($default_address_id <= 0) {
+                    $default_address_id = null;
+                    unset($this->context->cookie->default_address_id_cached);
+                }
+            }
 
-                if (!empty($row) && !empty($row['id_address_default'])) {
-                    $default_address_id = (int)$row['id_address_default'];
-                } else {
-                    $row = Db::getInstance()->getRow(
-                        'SELECT `id_address_delivery`
-                         FROM `'._DB_PREFIX_.'orders`
-                         WHERE `id_customer` = '.(int)$id_customer.'
-                         ORDER BY `id_order` DESC
-                         LIMIT 1'
-                    );
+            if ($id_customer > 0 && !$default_address_id) {
+                // 1) Colonne custom customer.id_address_default
+                $sql = 'SELECT `id_address_default`
+                FROM `' . _DB_PREFIX_ . 'customer`
+                WHERE `id_customer` = ' . (int) $id_customer;
 
-                    if (!empty($row) && !empty($row['id_address_delivery'])) {
-                        $default_address_id = (int)$row['id_address_delivery'];
-                    } else {
-                        // 3) toute première adresse du client
-                        $default_address_id = (int)Address::getFirstCustomerAddressId($id_customer);
+                $row = Db::getInstance()->getRow($sql);
+                if (!empty($row['id_address_default'])) {
+                    $default_address_id = (int) $row['id_address_default'];
+                }
+
+                // 2) Fallback : dernière adresse de livraison d'une commande
+                if (!$default_address_id) {
+                    $sql = 'SELECT `id_address_delivery`
+                    FROM `' . _DB_PREFIX_ . 'orders`
+                    WHERE `id_customer` = ' . (int) $id_customer . '
+                    ORDER BY `id_order` DESC';
+
+                    $row = Db::getInstance()->getRow($sql);
+                    if (!empty($row['id_address_delivery'])) {
+                        $default_address_id = (int) $row['id_address_delivery'];
                     }
                 }
 
-                if ($default_address_id) {
+                // 3) Fallback final : toute première adresse du client
+                if (!$default_address_id) {
+                    $default_address_id = (int) Address::getFirstCustomerAddressId($id_customer);
+                }
+
+                if ($default_address_id > 0) {
                     $this->context->cookie->default_address_id_cached = $default_address_id;
                 }
             }
 
-            if ($default_address_id) {
+            if ($default_address_id > 0) {
                 $this->context->smarty->assign(['default_address_id' => $default_address_id]);
                 Media::addJsDef(['default_address_id' => $default_address_id]);
             }
@@ -58,6 +65,8 @@ class FrontController extends FrontControllerCore
             // Nettoyage éventuel du cache si déconnecté
             unset($this->context->cookie->default_address_id_cached);
         }
+
+
 
         parent::initContent();
     }
