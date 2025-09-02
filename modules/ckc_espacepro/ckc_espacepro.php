@@ -71,7 +71,8 @@ class ckc_espacepro extends Module
             $this->registerHook('actionFrontControllerSetVariables') &&
             $this->registerHook('actionOrderGridQueryBuilderModifier') &&
             $this->registerHook('actionOrderGridDefinitionModifier') &&
-            $this->registerHook('actionAuthentication');
+            $this->registerHook('actionAuthentication')&& 
+            $this->registerHook('moduleRoutes');
 
         // Ajout onglets BO
         if ($ok) {
@@ -121,28 +122,29 @@ class ckc_espacepro extends Module
     }
 
 
-    public function uninstall()
-    {
-        // Supprime l’onglet
-        $id_tab = (int)Tab::getIdFromClassName('AdminEspacePro');
-        if ($id_tab) {
-            (new Tab($id_tab))->delete();
-        }
+    // public function uninstall()
+    // {
+    //     // Supprime l’onglet
+    //     $id_tab = (int)Tab::getIdFromClassName('AdminEspacePro');
+    //     if ($id_tab) {
+    //         (new Tab($id_tab))->delete();
+    //     }
 
-        include __DIR__ . '/sql/uninstall.php';
+    //     include __DIR__ . '/sql/uninstall.php';
 
-        // Nettoyage configs
-        Configuration::deleteByName('CKC_DISPLAY_EP');
-        Configuration::deleteByName('CKC_FORM_MIN_EP');
-        Configuration::deleteByName('CKC_RECAPTCHA_SECRET');
-        Configuration::deleteByName('CKC_RECAPTCHA_ENABLED');
-        Configuration::deleteByName('CKC_GROUP_PRO_ID');
-        Configuration::deleteByName('CKC_GROUP_PROTICULIER_ID');
+    //     // Nettoyage configs
+    //     Configuration::deleteByName('CKC_DISPLAY_EP');
+    //     Configuration::deleteByName('CKC_FORM_MIN_EP');
+    //     Configuration::deleteByName('CKC_RECAPTCHA_SECRET');
+    //     Configuration::deleteByName('CKC_RECAPTCHA_ENABLED');
+    //     Configuration::deleteByName('CKC_GROUP_PRO_ID');
+    //     Configuration::deleteByName('CKC_GROUP_PROTICULIER_ID');
 
-        $this->clear_the_cache();
+    //     $this->clear_the_cache();
 
-        return parent::uninstall();
-    }
+    //     return parent::uninstall()
+    //      && $this->registerHook('moduleRoutes') && $this->registerHook('header');
+    // }
 
     private function getProGroupId(): int
     {
@@ -329,6 +331,7 @@ class ckc_espacepro extends Module
         }
     }
 
+
     private function injectGlobals(bool $bo = false): array
     {
         $pro = $this->assignProVars();
@@ -357,6 +360,24 @@ class ckc_espacepro extends Module
             'modules/' . $this->name . '/views/js/authentification.js',
             ['position' => 'bottom', 'priority' => 1000]
         );
+
+
+
+         if (strpos($_SERVER['REQUEST_URI'], 'avantages-pro') !== false) {
+
+            $this->context->controller->registerJavascript(
+                'ckc-espacepro-layout',
+                'modules/' . $this->name . '/views/js/front/layout.js',
+                ['position' => 'bottom', 'priority' => 1000]
+            );
+
+             $this->context->controller->registerStylesheet(
+            'ckc-espace-pro-front',
+            'modules/' . $this->name . '/views/css/front/benefits.css',
+            ['position' => 'bottom', 'priority' => 1000]
+
+            );
+        }
     }
 
     public function hookDisplayCustomerAccountForm($params)
@@ -872,6 +893,23 @@ class ckc_espacepro extends Module
               AND c.`id_customer` = '.(int)$id;
 
         return (array) Db::getInstance()->getRow($sql);
+    }
+
+    public function hookModuleRoutes($params)
+    {
+        return [
+            'benefits_pro_route' => [ 
+                'rule' => 'avantages-pro', //url de la page
+                'controller' => 'benefitsespacepro', 
+                'keywords' => [],
+                'params' => [
+                    'module' => $this->name, 
+                    'fc' => 'module',
+                    'controller' => 'benefitsespacepro'
+                ]
+            ]
+        ];
+
     }
 
 }
