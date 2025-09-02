@@ -8,10 +8,6 @@ require_once __DIR__ . '/classes/HelperEspacePro.php';
 
 class ckc_espacepro extends Module
 {
-    /** @todo : avoir ce qu'on en fait */
-    public const ID_GROUP_PRO = 10;
-    public const ID_GROUP_PROTICULIER = 11;
-
     /** @var array */
     public $warning = [];
     public $error = [];
@@ -62,9 +58,11 @@ class ckc_espacepro extends Module
         }
 
         $ok =
+            $this->registerHook('actionFrontControllerInit') &&
             $this->registerHook('displayCustomerAccountForm') &&
             $this->registerHook('actionCustomerAccountAdd') &&
             $this->registerHook('displayHeader') &&
+            $this->registerHook('displayHome') &&
             $this->registerHook('actionCustomerLogoutAfter') &&
             $this->registerHook('actionFrontControllerSetMedia') &&
             $this->registerHook('displayBackOfficeHeader') &&
@@ -84,42 +82,36 @@ class ckc_espacepro extends Module
 
     public function hookActionFrontControllerSetVariables($params)
     {
-        $this->redirectIfProOnParticulier();
-        $this->injectGlobals();
+        return $this->injectGlobals();
     }
 
-    /* Fonction qui va regarder dans l'environnement particulier si un pro est connecté, on le renvoie sur sa
-    bonne boutique */
-    private function redirectIfProOnParticulier(): void
+    public function hookActionFrontControllerInit($params)
     {
-        $ctx = $this->context;
-        $cust = $ctx->customer;
-        if (!$cust || !$cust->isLogged()) {
-            return;
-        }
+        $this->enforceShopAccessRouting();
 
-        $groups = (array) $cust->getGroups();
-        $gidPro = (int) $this->getProGroupId();
-        $gidProticulier = (int) $this->getProticulierGroupId();
-
-        $inProOrProticulier = in_array($gidPro, $groups, true) || in_array($gidProticulier, $groups, true);
-        if (!$inProOrProticulier) {
-            return;
-        }
-
-        $idShop = (int) $ctx->shop->id;
-
-        if ($idShop === 1) {
-            // récupérer l'URL de la boutique PRO
-            $proUrl = (string) Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, 2);
-
-            if (!empty($proUrl)) {
-                Tools::redirect($proUrl);
-                exit;
-            }
-        }
+        return $this->injectGlobals();
     }
+    public function hookDisplayHome($params)
+    {
+        error_log('[ckc_espacepro] hookDisplayHome called shop='.$this->context->shop->id);
 
+        // Afficher uniquement sur la boutique PRO
+        if (!$this->isProEnvironment()) {
+            return '';
+        }
+        dump('2') ;
+        if ($this->context->customer && $this->context->customer->isLogged()) {
+            return '';
+        }
+        dump('3') ;
+        $this->context->smarty->assign([
+            'login_action' => $this->context->link->getPageLink('authentication', true),
+            'back'         => Tools::safeOutput($_SERVER['REQUEST_URI'] ?? '/'),
+        ]);
+
+        dump('4') ;
+        return $this->display(__FILE__, 'views/templates/hook/pro-home-login.tpl');
+    }
 
     public function uninstall()
     {
@@ -129,7 +121,7 @@ class ckc_espacepro extends Module
             (new Tab($id_tab))->delete();
         }
 
-        include __DIR__ . '/sql/uninstall.php';
+//        include __DIR__ . '/sql/uninstall.php';
 
         // Nettoyage configs
         Configuration::deleteByName('CKC_DISPLAY_EP');
@@ -258,7 +250,7 @@ class ckc_espacepro extends Module
         $pro = [
             'env'   => (int)$isProEnv,
             'suffix'=> $frontSuffix,
-            'url_domain' => (string)Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, 2),
+            'url_domain' => (string)Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, (int)$this->context->shop->id),
             'user'  => [
                 'id'             => $userId,
                 'is_logged'      => (int)$isLogged,
@@ -276,31 +268,9 @@ class ckc_espacepro extends Module
         return $pro;
     }
 
-    public function redirectProTopro()
-    {
-        $ctx = $this->context;
-        $cust = $ctx->customer;
-
-        $isLogged = $cust ? (bool) $cust->isLogged() : false;
-        $groups   = $isLogged ? (array) $cust->getGroups() : [];
-
-        $inPro = $isLogged && in_array((int) Configuration::get('CKC_GROUP_PRO_ID'), $groups, true);
-
-
-        if ($inPro && !$this->isProEnvironment()) {
-            $idShop = (int) $ctx->shop->id;
-            $proUrl = (string) Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, $idShop);
-
-            if (!empty($proUrl)) {
-                Tools::redirect($proUrl);
-                exit;
-            }
-        }
-    }
-
     public function hookDisplayHeader($p)
     {
-        $this->redirectProTopro(); // todo : voir si y'a pas un meilleur endroit ou le mettre
+        $this->injectGlobals();
         return '';
     }
 
@@ -342,6 +312,7 @@ class ckc_espacepro extends Module
             'is_particulier' => (int)$pro['user']['is_particulier'],
             'is_visitor'     => (int)$pro['user']['is_visitor'],
         ];
+
         $this->context->smarty->assign($vars);
         foreach ($vars as $k => $v) {
             $this->context->smarty->tpl_vars[$k] = new Smarty_Variable($v, true); // nocache
@@ -356,6 +327,12 @@ class ckc_espacepro extends Module
             'ckc-espacepro-auth',
             'modules/' . $this->name . '/views/js/authentification.js',
             ['position' => 'bottom', 'priority' => 1000]
+        );
+
+        $this->context->controller->registerJavascript(
+            'ckc-espacepro-home-login',
+            'modules/'.$this->name.'/views/js/pro-home-login.js',
+            ['position' => 'bottom', 'priority' => 1001]
         );
     }
 
@@ -872,6 +849,45 @@ class ckc_espacepro extends Module
               AND c.`id_customer` = '.(int)$id;
 
         return (array) Db::getInstance()->getRow($sql);
+    }
+
+    private function enforceShopAccessRouting(): void
+    {
+        $ctx  = $this->context;
+        $cust = $ctx->customer;
+
+        if (!$cust || !$cust->isLogged()) {
+            return; // pas connecté : on ne force rien
+        }
+
+        $groups         = (array) $cust->getGroups();
+        $gidPro         = (int) $this->getProGroupId();            // ex: 10
+        $gidProticulier = (int) $this->getProticulierGroupId();    // ex: 11
+
+        $isPro         = in_array($gidPro, $groups, true);
+        $isProticulier = in_array($gidProticulier, $groups, true);
+        $isAnyPro      = ($isPro || $isProticulier);
+
+        $shopId = (int) $ctx->shop->id;
+
+        $urlPro  = (string) Configuration::get('CKC_PRO_URL_BOUTIQUE',  null, null, 2); // shop PRO
+        $urlPart = (string) Configuration::get('CKC_PART_URL_BOUTIQUE', null, null, 1); // shop Particulier
+
+        $currentUrl = Tools::getShopDomainSsl(true) . $_SERVER['REQUEST_URI'];
+
+        if ($shopId === 1 && $isAnyPro && !empty($urlPro)) {
+            if (stripos($currentUrl, $urlPro) === false) {
+                Tools::redirect($urlPro);
+                exit;
+            }
+        }
+
+        if ($shopId === 2 && !$isAnyPro && !empty($urlPart)) {
+            if (stripos($currentUrl, $urlPart) === false) {
+                Tools::redirect($urlPart);
+                exit;
+            }
+        }
     }
 
 }

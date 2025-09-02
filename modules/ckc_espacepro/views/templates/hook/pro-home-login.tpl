@@ -1,0 +1,80 @@
+{* Bloc de connexion Espace Pro - à inclure où tu veux dans le thème *}
+{* Variables attendues : $login_action, $back, $urls.pages.password, $urls.pages.authentication *}
+
+<div class="pro-auth">
+    <div class="pro-auth__intro">
+        <p>
+            Bienvenue dans votre Espace Professionnel dédié aux experts du bâtiment, aux jardiniers et aux paysagistes passionnés.
+            Chez Districlos, nous comprenons l’importance d’un partenariat solide pour mener à bien vos projets. C’est pourquoi
+            nous avons créé cet espace exclusif, où vous bénéficiez de tarifs avantageux et de remises toute l’année sur nos clôtures,
+            grillages et portails de qualité supérieure.
+        </p>
+    </div>
+
+    <h2 class="pro-auth__title">Je me connecte à mon espace</h2>
+
+    <div class="pro-auth__grid">
+        {** ——— Colonne : Formulaire ——— **}
+        <section class="pro-auth__form">
+            <h3 class="sr-only">Connexion à votre espace pro</h3>
+
+            <form id="pro-home-login-form" method="post" action="{$login_action}" novalidate>
+                <input type="hidden" name="back" value="{$back}">
+
+                <div class="pro-field">
+                    <label for="pro-login-email">Votre e-mail</label>
+                    <input class="pro-input" type="email" name="email" id="pro-login-email" required autocomplete="username">
+                </div>
+
+                <div class="pro-field">
+                    <label for="pro-login-pass">Votre mot de passe</label>
+                    <div class="pro-input-wrap">
+                        <input class="pro-input" type="password" name="password" id="pro-login-pass" required autocomplete="current-password">
+                        <button type="button" class="pro-eye" aria-label="Afficher / masquer le mot de passe"></button>
+                    </div>
+                </div>
+
+                <div class="pro-auth__links">
+                    <a class="pro-link" href="{$urls.pages.password}">Mot de passe oublié&nbsp;?</a>
+                </div>
+
+                <div class="pro-auth__actions">
+                    <button class="pro-btn pro-btn--primary" type="submit" name="submitLogin">Se connecter</button>
+
+                    <div class="pro-auth__cta">
+                        <span class="pro-badge">100€ offert&nbsp;!</span>
+                        <a class="pro-btn pro-btn--ghost" href="{$urls.pages.authentication}">Créer un compte</a>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        {** ——— Colonne : Visuel + overlays ——— **}
+        <aside class="pro-auth__visual">
+            <figure class="pro-figure">
+                <picture>
+                    <source srcset="/img/cms/auth/img-espace-pro2.webp" type="image/webp">
+                    <img src="/img/cms/auth/img-espace-pro2.jpeg" alt="Districlos sur salon professionnel" loading="lazy">
+                </picture>
+
+                <figcaption class="pro-quote">
+                    <p>«&nbsp;Mon expérience avec Districlos a été géniale, et je suis convaincu que toute collaboration
+                        sera synonyme de succès et de satisfaction&nbsp;»</p>
+                    <small>Thomas — Paysagiste</small>
+                </figcaption>
+
+                <div class="pro-ribbon">
+                    <strong>100€ offerts dès 1&nbsp;000€ d’achat HT</strong>
+                    <span>pour toute première commande en tant que professionnel&nbsp;!</span>
+                </div>
+            </figure>
+        </aside>
+    </div>
+
+    {** ——— Étapes ——— **}
+    <div class="pro-steps">
+        <div class="pro-step"><span class="pro-step__num">1</span><span class="pro-step__txt">Je remplis le formulaire d’inscription</span></div>
+        <div class="pro-step"><span class="pro-step__num">2</span><span class="pro-step__txt">Mon compte est validé par les équipes Districlos</span></div>
+        <div class="pro-step"><span class="pro-step__num">3</span><span class="pro-step__txt">Je bénéficie de <strong>100€ offerts</strong> dès 1&nbsp;000€ d’achat</span></div>
+    </div>
+</div>

@@ -42,6 +42,12 @@
                 {include file='_partials/breadcrumb.tpl'}
             {/block}
 
+            {if $page.page_name == 'index' && !empty($pro) && $pro.env && !$pro.user.is_logged}
+                {include file='module:ckc_espacepro/views/templates/hook/pro-home-login.tpl'
+                login_action=$link->getPageLink('authentication', true)
+                back=$urls.current_url}
+            {/if}
+
             <div class="row">
                 {block name="left_column"}
                     <div id="left-column" class="col-xs-12 col-md-4 col-lg-3">

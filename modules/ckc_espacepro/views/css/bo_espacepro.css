@@ -27,4 +27,4 @@
 .ckc-ep-card .panel-footer .btn:disabled,.ckc-ep-card .panel-footer #module_form_submit_btn:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
 .ckc-ep-footnote{margin-top:14px;color:#456;font-size:13px}
 .ckc-ep-footnote i{color:#ffa400;margin-right:6px}
-.ckc-ep-cart a.slide-button {display:none; !important;}
+.ckc-ep-config a.slide-button {display:none; !important;}

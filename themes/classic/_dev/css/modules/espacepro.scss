@@ -1,4 +1,5 @@
-
+$eye-data: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23666' d='M12 4.5c5.5 0 9.7 4.3 10.7 7.3-1 3-5.2 7.3-10.7 7.3S2.3 14.8 1.3 11.8C2.3 8.8 6.5 4.5 12 4.5zm0 3a5 5 0 100 10 5 5 0 000-10z'/%3E%3Ccircle cx='12' cy='12' r='2.5' fill='%23666'/%3E%3C/svg%3E";
+$eyeoff-data: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23666' d='M2 3.3L3.3 2 22 20.7 20.7 22l-3.9-3.9A12.6 12.6 0 0112 19C6.5 19 2.3 14.7 1.3 11.7c.5-1.6 2.3-4.1 4.8-5.7L2 3.3zm9.7 6.1l2.9 2.9a5 5 0 01-2.9 2.9 5 5 0 010-5.8z'/%3E%3Cpath fill='%23666' d='M12 4.5c5.5 0 9.7 4.3 10.7 7.3-.6 1.8-2.5 4.2-5 5.8l-1.5-1.5c2.3-1.4 4-3.5 4.8-4.9-1-2-4.9-6.7-9-6.7-.9 0-1.8.1-2.6.4l1.4 1.4c.6-.1 1.2-.2 1.8-.2z'/%3E%3C/svg%3E";
 .espace_pro, .-pro {
   @import "components-pro/_variables";
   @import "components-pro/_layout";
@@ -7,7 +8,8 @@
   @import "components-pro/_auth";
   @import "components-pro/_reassurances";
   @import "components-pro/_buttons";
-  
+
+
 
   .contenair-img img {
     max-width: 240px;
@@ -348,4 +350,272 @@ body.registration-pro {
   #registration.registration-pro .already-account .inside h2{
     font-size: 25px;
   }
+}
+
+$pro-orange:   #ffa800;
+$pro-green:    #3a9a3a;
+$pro-blue-50:  #ecf3ff;   // fond des inputs
+$ink:          #1b1b1b;
+$ink-60:       rgba(0,0,0,.6);
+$ink-75:       rgba(0,0,0,.75);
+$white:        #fff;
+
+$radius-xl:    12px;
+$radius-pill:  999px;
+
+$shadow-soft:  0 10px 30px rgba(0,0,0,.08);
+
+/* =========================
+   Mixins
+   ========================= */
+@mixin container($max: 1200px) {
+  max-width: $max;
+  margin: 0 auto;
+  padding: 24px 12px 48px;
+}
+
+@mixin input-pill {
+  width: 100%;
+  height: 52px;
+  border: 0;
+  border-radius: $radius-pill;
+  background: $pro-blue-50;
+  padding: 0 18px;
+  font-size: 15px;
+  outline: none;
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(33,150,243,.25);
+  }
+}
+
+@mixin btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 54px;
+  padding: 0 26px;
+  border-radius: $radius-pill;
+  font-weight: 700;
+  border: 2px solid transparent;
+  text-align: center;
+  cursor: pointer;
+}
+
+@mixin sr-only {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px,1px,1px,1px);
+  white-space: nowrap;
+}
+
+$bp-lg: 991px;
+$bp-md: 768px;
+
+/* =========================
+   Bloc principal
+   ========================= */
+.pro-auth {
+  @include container();
+
+  &__intro {
+    max-width: 980px;
+    margin: 0 auto 24px;
+    text-align: center;
+    color: $ink;
+    line-height: 1.6;
+  }
+
+  &__title {
+    text-align: center;
+    font-weight: 700;
+    font-size: 18px;
+    margin: 10px 0 24px;
+  }
+
+  /* Grille principale */
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    align-items: start;
+
+    @media (max-width: $bp-lg) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* —— Formulaire —— */
+  &__form {
+    background: $white;
+    border-radius: $radius-xl;
+    padding: 8px 8px 0;
+    box-shadow: none; // propre, le thème gère l’ambiance
+  }
+
+  .sr-only { @include sr-only; }
+
+  .pro-field {
+    margin-bottom: 14px;
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+  }
+
+  .pro-input { @include input-pill; }
+
+  .pro-input-wrap {
+    position: relative;
+  }
+
+  .pro-eye {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px; height: 28px;
+    border: 0; background: transparent; cursor: pointer;
+
+    &:before {
+      content: "";
+      display: block;
+      width: 22px; height: 22px;
+      background: url(#{$eye-data}) no-repeat center/contain;
+      opacity: .55;
+    }
+    &.is-on:before {
+      background-image: url(#{$eyeoff-data});
+      opacity: .85;
+    }
+  }
+
+  &__links {
+    text-align: right;
+    margin: 6px 4px 16px;
+
+    .pro-link {
+      text-decoration: underline;
+      color: $pro-green;
+      font-size: 14px;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .pro-btn {
+    @include btn-base;
+
+    &--primary {
+      background: $pro-orange;
+      color: $white;
+
+      &:hover { filter: brightness(.95); }
+    }
+
+    &--ghost {
+      background: $white;
+      color: #333;
+      border-color: $pro-orange;
+
+      &:hover { background: rgba(255,168,0,.08); }
+    }
+  }
+
+  &__cta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pro-badge {
+    display: inline-block;
+    background: $pro-orange;
+    color: $white;
+    padding: 6px 12px;
+    border-radius: $radius-pill;
+    font-weight: 700;
+  }
+
+  &__visual {
+    .pro-figure {
+      position: relative;
+      margin: 0;
+      border-radius: $radius-xl;
+      overflow: hidden;
+      box-shadow: $shadow-soft;
+
+      img { width: 100%; height: auto; display: block; }
+    }
+
+    .pro-quote {
+      position: absolute;
+      left: 18px;
+      top: 18px;
+      max-width: 430px;
+      color:white;
+    }
+
+    .pro-ribbon {
+      position: absolute;
+      right: 18px; bottom: 18px;
+      background: $ink-75; color: $white;
+      border-radius: 10px;
+      padding: 12px 16px; max-width: 520px;
+
+      strong { display: block; font-size: 16px; }
+      span   { display: block; font-size: 14px; opacity: .95; }
+    }
+  }
+
+  .pro-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    align-items: start;
+    margin-top: 30px;
+
+    @media (max-width: $bp-md) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .pro-step {
+    text-align: center;
+    position: relative;
+    padding-top: 8px;
+
+    &__num {
+      background: $pro-orange; color: $white;
+      width: 42px; height: 42px;
+      border-radius: $radius-pill;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    &__txt {
+      display: block; line-height: 1.35;
+
+      strong { font-weight: 700; }
+    }
+  }
+}
+
+.pro-home-login { // si jamais tu utilises la classe "card" du thème
+  .card { border: none; }
+}
+
+.sous-texte-auth { // reprise de ta typographie d’intro
+  margin-bottom: 24px;
+  font-size: 16px;
+  color: $ink-60;
 }
