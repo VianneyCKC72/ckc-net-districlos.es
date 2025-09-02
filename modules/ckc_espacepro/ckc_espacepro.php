@@ -62,14 +62,14 @@ class ckc_espacepro extends Module
             $this->registerHook('displayCustomerAccountForm') &&
             $this->registerHook('actionCustomerAccountAdd') &&
             $this->registerHook('displayHeader') &&
-            $this->registerHook('displayHome') &&
             $this->registerHook('actionCustomerLogoutAfter') &&
             $this->registerHook('actionFrontControllerSetMedia') &&
             $this->registerHook('displayBackOfficeHeader') &&
             $this->registerHook('actionFrontControllerSetVariables') &&
             $this->registerHook('actionOrderGridQueryBuilderModifier') &&
             $this->registerHook('actionOrderGridDefinitionModifier') &&
-            $this->registerHook('actionAuthentication');
+            $this->registerHook('actionAuthentication')&&
+            $this->registerHook('moduleRoutes');
 
         // Ajout onglets BO
         if ($ok) {
@@ -93,25 +93,21 @@ class ckc_espacepro extends Module
     }
     public function hookDisplayHome($params)
     {
-        error_log('[ckc_espacepro] hookDisplayHome called shop='.$this->context->shop->id);
-
         // Afficher uniquement sur la boutique PRO
         if (!$this->isProEnvironment()) {
             return '';
         }
-        dump('2') ;
         if ($this->context->customer && $this->context->customer->isLogged()) {
             return '';
         }
-        dump('3') ;
         $this->context->smarty->assign([
             'login_action' => $this->context->link->getPageLink('authentication', true),
             'back'         => Tools::safeOutput($_SERVER['REQUEST_URI'] ?? '/'),
         ]);
 
-        dump('4') ;
         return $this->display(__FILE__, 'views/templates/hook/pro-home-login.tpl');
     }
+
 
     public function uninstall()
     {
@@ -299,6 +295,7 @@ class ckc_espacepro extends Module
         }
     }
 
+
     private function injectGlobals(bool $bo = false): array
     {
         $pro = $this->assignProVars();
@@ -334,6 +331,24 @@ class ckc_espacepro extends Module
             'modules/'.$this->name.'/views/js/pro-home-login.js',
             ['position' => 'bottom', 'priority' => 1001]
         );
+
+
+
+         if (strpos($_SERVER['REQUEST_URI'], 'avantages-pro') !== false) {
+
+            $this->context->controller->registerJavascript(
+                'ckc-espacepro-layout',
+                'modules/' . $this->name . '/views/js/front/layout.js',
+                ['position' => 'bottom', 'priority' => 1000]
+            );
+
+             $this->context->controller->registerStylesheet(
+            'ckc-espace-pro-front',
+            'modules/' . $this->name . '/views/css/front/benefits.css',
+            ['position' => 'bottom', 'priority' => 1000]
+
+            );
+        }
     }
 
     public function hookDisplayCustomerAccountForm($params)
@@ -888,6 +903,23 @@ class ckc_espacepro extends Module
                 exit;
             }
         }
+    }
+
+    public function hookModuleRoutes($params)
+    {
+        return [
+            'benefits_pro_route' => [
+                'rule' => 'avantages-pro', //url de la page
+                'controller' => 'benefitsespacepro',
+                'keywords' => [],
+                'params' => [
+                    'module' => $this->name,
+                    'fc' => 'module',
+                    'controller' => 'benefitsespacepro'
+                ]
+            ]
+        ];
+
     }
 
 }
