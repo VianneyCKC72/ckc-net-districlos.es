@@ -44,7 +44,7 @@
 
             {if $page.page_name == 'index' && !empty($pro) && $pro.env && !$pro.user.is_logged}
                 {include file='module:ckc_espacepro/views/templates/hook/pro-home-login.tpl'
-                login_action=$link->getPageLink('authentication', true)
+                login_action=$link->getModuleLink('ckc_espacepro','login')
                 back=$urls.current_url}
             {/if}
 

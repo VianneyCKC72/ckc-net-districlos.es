@@ -1,5 +1,18 @@
-{* Bloc de connexion Espace Pro - à inclure où tu veux dans le thème *}
-{* Variables attendues : $login_action, $back, $urls.pages.password, $urls.pages.authentication *}
+{if $pro_login_error}
+    {if $pro_login_error == 1}
+        {assign var=errMsg value="Veuillez saisir votre e-mail et votre mot de passe."}
+    {elseif $pro_login_error == 2}
+        {assign var=errMsg value="L’adresse e-mail n’est pas valide."}
+    {elseif $pro_login_error == 3}
+        {assign var=errMsg value="E-mail ou mot de passe incorrect."}
+    {elseif $pro_login_error == 4}
+        {assign var=errMsg value="Votre compte n’est pas encore activé."}
+    {else}
+        {assign var=errMsg value="Impossible de vous connecter. Veuillez réessayer."}
+    {/if}
+
+    <div class="alert alert-danger" role="alert">{$errMsg}</div>
+{/if}
 
 <div class="pro-auth">
     <div class="pro-auth__intro">
@@ -14,16 +27,23 @@
     <h2 class="pro-auth__title">Je me connecte à mon espace</h2>
 
     <div class="pro-auth__grid">
-        {** ——— Colonne : Formulaire ——— **}
         <section class="pro-auth__form">
             <h3 class="sr-only">Connexion à votre espace pro</h3>
+
+            {if isset($login_error) && $login_error}
+                <div class="alert alert-danger" role="alert">
+                    {$login_error}
+                </div>
+            {/if}
 
             <form id="pro-home-login-form" method="post" action="{$login_action}" novalidate>
                 <input type="hidden" name="back" value="{$back}">
 
                 <div class="pro-field">
                     <label for="pro-login-email">Votre e-mail</label>
-                    <input class="pro-input" type="email" name="email" id="pro-login-email" required autocomplete="username">
+                    <input class="pro-input" type="email" name="email" id="pro-login-email"
+                           value="{if isset($login_email)}{$login_email|escape:'html'}{/if}"
+                           required autocomplete="username">
                 </div>
 
                 <div class="pro-field">
@@ -49,7 +69,6 @@
             </form>
         </section>
 
-        {** ——— Colonne : Visuel + overlays ——— **}
         <aside class="pro-auth__visual">
             <figure class="pro-figure">
                 <picture>
@@ -71,7 +90,6 @@
         </aside>
     </div>
 
-    {** ——— Étapes ——— **}
     <div class="pro-steps">
         <div class="pro-step"><span class="pro-step__num">1</span><span class="pro-step__txt">Je remplis le formulaire d’inscription</span></div>
         <div class="pro-step"><span class="pro-step__num">2</span><span class="pro-step__txt">Mon compte est validé par les équipes Districlos</span></div>

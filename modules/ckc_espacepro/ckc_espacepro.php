@@ -82,6 +82,14 @@ class ckc_espacepro extends Module
 
     public function hookActionFrontControllerSetVariables($params)
     {
+        $loginError = (int)Tools::getValue('login_error', 0);
+        $loginEmail = (string)Tools::getValue('login_email', '');
+
+        $this->context->smarty->assign([
+            'login_error' => $loginError,
+            'login_email' => Tools::safeOutput($loginEmail),
+        ]);
+
         return $this->injectGlobals();
     }
 
@@ -308,6 +316,7 @@ class ckc_espacepro extends Module
             'is_proticulier' => (int)$pro['user']['is_proticulier'],
             'is_particulier' => (int)$pro['user']['is_particulier'],
             'is_visitor'     => (int)$pro['user']['is_visitor'],
+            'pro_login_error' => (string)Tools::getValue('pro_login_error', ''),
         ];
 
         $this->context->smarty->assign($vars);
