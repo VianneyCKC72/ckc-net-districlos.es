@@ -319,6 +319,7 @@ class ckc_espacepro extends Module
             'is_proticulier' => (int)$pro['user']['is_proticulier'],
             'is_particulier' => (int)$pro['user']['is_particulier'],
             'is_visitor'     => (int)$pro['user']['is_visitor'],
+            'pro_login_error' => (string)Tools::getValue('pro_login_error', ''),
         ];
 
         $this->context->smarty->assign($vars);
