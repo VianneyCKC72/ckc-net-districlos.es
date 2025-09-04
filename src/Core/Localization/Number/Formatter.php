@@ -145,6 +145,9 @@ class Formatter
      */
     protected function prepareNumber($number)
     {
+        if ($number === '' || $number === null) {
+            $number = 0;
+        }
         $decimalNumber = new DecimalNumber((string) $number);
         $precision = $this->numberSpecification->getMaxFractionDigits();
 

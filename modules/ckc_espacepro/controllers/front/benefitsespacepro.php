@@ -17,7 +17,7 @@ class ckc_espaceprobenefitsespaceproModuleFrontController extends ModuleFrontCon
 
       $this->context->smarty->assign(compact('benefits', 'services'));
 
-      $this->setTemplate('module:ckc_espacepro/views/templates/front/benefits.tpl');
+      $this->setTemplate('module:ckc_espacepro/views/templates/front/benefits/benefits.tpl');
 
 
    }

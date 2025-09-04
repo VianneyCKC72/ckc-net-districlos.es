@@ -358,6 +358,13 @@ class ckc_espacepro extends Module
 
             );
         }
+
+          $this->context->controller->registerStylesheet(
+            'ckc-espace-pro-guides-fiche',
+            'modules/' . $this->name . '/views/css/front/guides-fiches.css',
+            ['position' => 'bottom', 'priority' => 1000]
+
+            );
     }
 
     public function hookDisplayCustomerAccountForm($params)
@@ -926,7 +933,28 @@ class ckc_espacepro extends Module
                     'fc' => 'module',
                     'controller' => 'benefitsespacepro'
                 ]
-            ]
+            ],
+                'guides_pro_route' => [
+                'rule' => 'guides-pro', //url de la page
+                'controller' => 'guidesfiches',
+                'keywords' => [],
+                'params' => [
+                    'module' => $this->name,
+                    'fc' => 'module',
+                    'controller' => 'guidesfiches'
+                ]
+            ],
+                'fiches_pro_route' => [
+                'rule' => 'fiches-techniques-pro', //url de la page
+                'controller' => 'guidesfiches',
+                'keywords' => [],
+                'params' => [
+                    'module' => $this->name,
+                    'fc' => 'module',
+                    'controller' => 'guidesfiches'
+                ]
+            ],
+
         ];
 
     }

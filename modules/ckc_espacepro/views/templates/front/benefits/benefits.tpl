@@ -12,7 +12,7 @@
             </div>
                 {foreach from=$benefits item=card}
                     <div class="col-12 col-sm-6 col-lg-4 m-b-65">
-                        {include file="module:ckc_espacepro/views/templates/front/_partials/card.tpl" card=$card}
+                        {include file="module:ckc_espacepro/views/templates/front/benefits/_partials/card.tpl" card=$card}
                     </div>
                 {/foreach}
             </div>
