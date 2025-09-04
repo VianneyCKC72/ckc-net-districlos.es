@@ -32,7 +32,17 @@
   <div class="small_container">
 
     <div class="row">
-      {include file='customer/links_account.tpl'}
+
+      {if $pro.suffix == '-pro'}
+        <div class="col-md-3">
+          {include file="customer/pro-raccourcis.tpl"}
+          {include file='customer/links_account-pro.tpl'}
+        </div>
+        
+      {else}
+        {include file='customer/links_account.tpl'}
+      {/if}
+
       <div class="col-md-9">
         <div class="content_right">
 

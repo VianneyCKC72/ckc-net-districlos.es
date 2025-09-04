@@ -651,8 +651,7 @@ $bp-md: 768px;
   margin-bottom: 67px!important;
 }
 
-#account_pro {
-  a {
+  a.pro-items-links {
     height: 51px;
     display: flex;
     align-items: center;
@@ -668,4 +667,3 @@ $bp-md: 768px;
       filter: brightness(85%);
     }
   }
-}

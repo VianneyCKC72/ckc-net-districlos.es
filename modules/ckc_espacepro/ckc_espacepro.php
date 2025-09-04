@@ -96,6 +96,8 @@ class ckc_espacepro extends Module
 
     public function hookActionFrontControllerInit($params)
     {
+        die('test');
+
         $this->enforceShopAccessRouting();
 
         return $this->injectGlobals();
@@ -897,6 +899,7 @@ class ckc_espacepro extends Module
         }
 
         $groups         = (array) $cust->getGroups();
+
         $gidPro         = (int) $this->getProGroupId();            // ex: 10
         $gidProticulier = (int) $this->getProticulierGroupId();    // ex: 11
 

@@ -1,42 +1,42 @@
 {* // mes devis *}
-<a  href="{$link->getModuleLink('opartdevis', 'listquotation')|escape:'htmlall':'UTF-8'}">
-Mes demandes de devis
+<a  class="pro-items-links" href="{$link->getModuleLink('opartdevis', 'listquotation')|escape:'htmlall':'UTF-8'}">
+    Mes demandes de devis
 </a>
 
 {* // mon historique d'achat *}
 {if !$configuration.is_catalog}
-    <a  href="{$urls.pages.history}">
+    <a  class="pro-items-links"href="{$urls.pages.history}">
         Mon historique d'achat
     </a>
 {/if}
 {* // mes listes de projets *}
-<a  href="#">
+<a  class="pro-items-links" href="#">
     Mes listes de projets
 </a>
 
 {* // mes addresses *}
 {if $customer.addresses|count}
-    <a  href="{$urls.pages.addresses}">
+    <a  class="pro-items-links"href="{$urls.pages.addresses}">
         {l s='Addresses' d='Shop.Theme.Customeraccount'}
     </a>
 {else}
-    <a   href="{$urls.pages.address}">
+    <a  class="pro-items-links" href="{$urls.pages.address}">
         Mon adresse
     </a>
 {/if}
 {* // mes avantages *}
-<a  href="#">
+<a  class="pro-items-links" href="#">
     Mes avantages
 </a>
 {* // mes moyens de paiement *}
-<a  href="#">
+<a  class="pro-items-links" href="#">
     Mes moyens de paiement
 </a>
 {* // mes realisations *}
-<a  href="#">
+<a  class="pro-items-links" href="#">
     Mes réalisations
 </a>
 {* // mes notifications *}
-<a  href="#">
+<a  class="pro-items-links" href="#">
     Mes notifications
 </a>
