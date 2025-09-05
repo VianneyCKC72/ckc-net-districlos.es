@@ -25,9 +25,15 @@
     </a>
 {/if}
 {* // mes avantages *}
-<a  class="pro-items-links" href="#">
+<a  class="pro-items-links" href="{$urls.pages.discount}">
     Mes avantages
 </a>
+
+{if !$configuration.is_catalog}
+    <a class="pro-items-links" id="order-slips-link" href="{$urls.pages.order_slip}">
+        {l s='Credit slips' d='Shop.Theme.Customeraccount'}
+    </a>
+{/if}
 {* // mes moyens de paiement *}
 <a  class="pro-items-links" href="#">
     Mes moyens de paiement
@@ -35,6 +41,11 @@
 {* // mes realisations *}
 <a  class="pro-items-links" href="#">
     Mes réalisations
+</a>
+
+{* GRPD *}
+<a class="pro-items-links" id="returns-link" href="/module/psgdpr/gdpr">
+    Mes données personnelles
 </a>
 {* // mes notifications *}
 <a  class="pro-items-links" href="#">
