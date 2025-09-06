@@ -62,9 +62,13 @@
                     <button class="pro-btn pro-btn--primary" type="submit" name="submitLogin">Se connecter</button>
 
                     <div class="pro-auth__cta">
-                        <span class="pro-badge">100€ offert&nbsp;!</span>
-                        <a class="pro-btn pro-btn--ghost" href="{$urls.pages.authentication}">Créer un compte</a>
+                        <span class="pro-badge-text">100€ offert&nbsp;!</span>
+                        <a class="pro-btn pro-btn--ghost"
+                           href="inscription?ep=1">
+                            Créer un compte
+                        </a>
                     </div>
+
                 </div>
             </form>
         </section>

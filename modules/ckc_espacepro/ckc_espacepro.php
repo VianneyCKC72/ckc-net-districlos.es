@@ -58,7 +58,8 @@ class ckc_espacepro extends Module
         }
 
         $ok =
-            $this->registerHook('actionFrontControllerInit') &&
+            $this->registerHook('actionFrontControllerInitAfter') &&
+            $this->registerHook('actionFrontControllerInitBefore') &&
             $this->registerHook('displayCustomerAccountForm') &&
             $this->registerHook('actionCustomerAccountAdd') &&
             $this->registerHook('displayHeader') &&
@@ -80,6 +81,11 @@ class ckc_espacepro extends Module
         return $ok;
     }
 
+    public function hookActionFrontControllerInitBefore($params)
+    {
+        $this->enforceShopAccessRouting();
+    }
+
     public function hookActionFrontControllerSetVariables($params)
     {
         $loginError = (int)Tools::getValue('login_error', 0);
@@ -91,16 +97,12 @@ class ckc_espacepro extends Module
         ]);
 
 
-        return $this->injectGlobals();
+        $this->injectGlobals();
     }
 
-    public function hookActionFrontControllerInit($params)
+    public function hookActionFrontControllerInitAfter($params)
     {
-        die('test');
-
-        $this->enforceShopAccessRouting();
-
-        return $this->injectGlobals();
+        $this->injectGlobals();
     }
     public function hookDisplayHome($params)
     {
@@ -307,7 +309,7 @@ class ckc_espacepro extends Module
     }
 
 
-    private function injectGlobals(bool $bo = false): array
+    private function injectGlobals(bool $bo = false): void
     {
         $pro = $this->assignProVars();
 
@@ -323,10 +325,6 @@ class ckc_espacepro extends Module
         ];
 
         $this->context->smarty->assign($vars);
-        foreach ($vars as $k => $v) {
-            $this->context->smarty->tpl_vars[$k] = new Smarty_Variable($v, true); // nocache
-        }
-        return $vars;
     }
 
     /** JS FO */

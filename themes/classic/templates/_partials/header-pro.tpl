@@ -14,9 +14,10 @@
     <div class="header-top">
         <div class="row-header d-flex align-items-center">
 
+
             <!-- Logo Desktop (Visible seulement à partir de md) -->
             <div class="">
-                <a href="/">
+                <a href="{$pro.url_domain|escape:'html':'UTF-8'}">
                     <img class="" width="180" src="/themes/classic/assets/img/logo-pro.png" alt="{$shop.name} Pro" />
                 </a>
             </div>

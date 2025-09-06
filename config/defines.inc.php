@@ -25,9 +25,13 @@
  */
 
 $authorizedDebugIps = array('91.172.226.76'); // Ajoute d'autres IP ici si besoin
+$remote_addr = [];
 
+if(!empty($_SERVER['REMOTE_ADDR'])) {
+    $remote_addr = $_SERVER['REMOTE_ADDR'];
+}
 /* Debug only */
-if (in_array($_SERVER['REMOTE_ADDR'], $authorizedDebugIps)) {
+if (in_array($remote_addr, $authorizedDebugIps)) {
     if (!defined('_PS_MODE_DEV_')) {
         define('_PS_MODE_DEV_', true);
     }
@@ -41,7 +45,7 @@ if (in_array($_SERVER['REMOTE_ADDR'], $authorizedDebugIps)) {
 if (!defined('_PS_DISPLAY_COMPATIBILITY_WARNING_')) {
 define('_PS_DISPLAY_COMPATIBILITY_WARNING_', false);
 }
-if (_PS_MODE_DEV_ === true && !in_array($_SERVER['REMOTE_ADDR'], array('91.134.17.217', '178.33.249.38'))) {
+if (_PS_MODE_DEV_ === true && !in_array($remote_addr, array('91.134.17.217', '178.33.249.38'))) {
     $errorReportingLevel = E_ALL | E_STRICT;
     if (_PS_DISPLAY_COMPATIBILITY_WARNING_ === false) {
         $errorReportingLevel = $errorReportingLevel & ~E_DEPRECATED & ~E_USER_DEPRECATED;
