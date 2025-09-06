@@ -31,7 +31,7 @@
 
   <div class="small_container">
     <div class="row">
-      {include file='customer/links_account.tpl'}
+      {include file='customer/sidebar-account.tpl'}
       <div class="col-md-9">
         <div class="content_right">
           {block name='page_title'}

@@ -34,11 +34,7 @@
 
     <div class="row">
       
-      {if $pro.suffix == '-pro'}
-        {include file="themes/classic/templates/customer/my-account-pro.tpl"}
-      {else}
-        {include file='customer/links_account.tpl'}
-      {/if}
+      {include file='customer/sidebar-account.tpl'}
 
       <div class="col-md-9">
         <div class="content_right">
