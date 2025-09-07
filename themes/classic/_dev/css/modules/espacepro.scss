@@ -600,3 +600,17 @@ main#page section#content {
     font-size: 25px;
   }
 }
+body#checkout.espace_pro section.checkout-step .step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: $pro-color;
+  color: $white;
+  font-size: 12px;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
+}
