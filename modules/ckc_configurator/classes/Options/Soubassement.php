@@ -89,7 +89,7 @@ class Soubassement extends ProductFactory {
     {
         $colors = [];
 
-        $combinations = \Product::getAttributesInformationsByProduct($id_product);
+        $combinations = static::getAttributesInformationsByProduct($id_product);
         foreach ($combinations as $combination) {
             if (strtolower($combination['group']) == 'couleur') {
                 $color = str_replace('-', ' ', $combination['attribute']);
