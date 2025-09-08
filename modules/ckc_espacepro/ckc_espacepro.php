@@ -935,14 +935,18 @@ class ckc_espacepro extends Module
 
         $sql = 'SELECT sp.`id_cms_detail`
             FROM `'._DB_PREFIX_.'ckcstorespresentation` sp
-            inner join `'._DB_PREFIX_.'ckc_favorite_stores` fs  on  fs.`id_store`  = sp.`id_ckcstorespresentation`  
+            inner join `'._DB_PREFIX_.'ckc_favorite_stores` fs  on  fs.`id_favorite_store`  = sp.`id_ckcstorespresentation`  
             AND fs.`id_customer` = '.(int) $this->context->customer->id;
 
         $favoriteStoreId =  Db::getInstance()->getRow($sql);
 
-        if ($favoriteStoreId == '') {
+
+        if (!$favoriteStoreId) {
             $favoriteStoreId = 11;
         }
+
+        // dump('test2',$favoriteStoreId);die;
+
 
         $this->context->smarty->assign(compact('favoriteStoreId'));
         
