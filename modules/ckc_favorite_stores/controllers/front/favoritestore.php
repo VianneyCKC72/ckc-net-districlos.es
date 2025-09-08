@@ -3,6 +3,7 @@ class Ckc_Favorite_StoresFavoriteStoreModuleFrontController extends ModuleFrontC
 {
     public function initContent()
     {
+
         parent::initContent();
 
         $action = Tools::getValue('action');

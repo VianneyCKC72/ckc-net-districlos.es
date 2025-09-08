@@ -4,10 +4,11 @@
     </h2>
 </div>
 <div class="{if isset($sidebar)}sidebar-raccourcis col-6{else}col-md-3 col-xs-12 mb-5{/if}">
-    <a href="#" title="" class="card__account">
+     {hook h='displayFavoriteStore'}
+    {* <a href="{Context::getContext()->link->getCMSLink($magasin.id_cms_detail)}" title="" class="card__account">
         <img height="{if isset($sidebar)} 25 {else} 74 {/if}" width="auto" src="themes/classic/assets/img/camion@2x.png" alt="">
         <span class="title_card">Mon magasin</span>
-    </a>
+    </a> *}
 </div>
 <div class="{if isset($sidebar)}sidebar-raccourcis col-6{else}col-md-3 col-xs-12 mb-5{/if}">
     <a href="{$urls.pages.identity}" title="" class="card__account">

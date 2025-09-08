@@ -6,7 +6,6 @@ class ckc_espaceprobenefitsespaceproModuleFrontController extends ModuleFrontCon
 {
    public function initContent()
    {
-
       parent::initContent();
 
       
