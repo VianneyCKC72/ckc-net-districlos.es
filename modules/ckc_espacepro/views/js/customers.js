@@ -76,4 +76,40 @@ $(document).ready(function () {
 
         showMessageAndRedirect(message, backgroundColor, customerId, action);
     });
+
+    document.addEventListener('change', function (e) {
+        const el = e.target;
+        if (!el.classList.contains('js-change-group')) return;
+
+        const idCustomer = el.dataset.idCustomer;
+        const idGroup    = el.value;
+
+        fetch(ajax_change_group_url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+            body: new URLSearchParams({
+                ajax: 1,
+                action: 'changeCustomerGroup',
+                id_customer: idCustomer,
+                id_group: idGroup
+            })
+        })
+            .then(r => r.json())
+            .then(json => {
+                if (json && json.success) {
+                    el.setAttribute('data-prev', idGroup);
+                    // Optionnel : rafraîchir la ligne si tu veux MAJ badges, etc.
+                    // location.reload(); // si nécessaire
+                } else {
+                    alert((json && json.message) ? json.message : 'Erreur lors du changement de groupe');
+                    el.value = el.getAttribute('data-prev'); // revert
+                }
+            })
+            .catch(() => {
+                alert('Erreur réseau');
+                el.value = el.getAttribute('data-prev'); // revert
+            });
+    });
+
+
 });

@@ -23,8 +23,6 @@ class AdminEspaceProController extends ModuleAdminController
 {
     public $translator;
 
-    const ID_GROUP_PRO = 10; // Groupe pro
-
     const VIEWS_TPL = _PS_MODULE_DIR_ . 'ckc_espacepro/views/';
 
     public function __construct()
@@ -127,67 +125,61 @@ class AdminEspaceProController extends ModuleAdminController
         }
     }
 
-    /**
-     * @return array|false
-     */
     protected function getAllCustomersEp($includeDateCondition = false)
     {
-        // Début de la requête SQL sans condition de date
-        $sql = 'SELECT c.*, cl.name AS country_name, ad.vat_number as vat_number
-FROM ps_customer c
-INNER JOIN ps_customer_group cg ON cg.id_customer = c.id_customer
-LEFT JOIN ps_country_lang cl ON cl.id_country = c.pays
-LEFT JOIN ps_address ad ON ad.id_customer = c.id_customer
-WHERE id_group = 10';
+        $idLang      = (int)$this->context->language->id;
+        $gidPro      = (int)$this->getProGroupId();
+        $gidProti    = (int)$this->getProticulierGroupId();
 
-        // Si $includeDateCondition est vrai, ajouter la condition de date à la requête
+        $sql = 'SELECT c.*,
+                   gl.name AS default_group_name,
+                   cl.name AS country_name,
+                   ad.vat_number as vat_number
+            FROM `'._DB_PREFIX_.'customer` c
+            LEFT JOIN `'._DB_PREFIX_.'group_lang` gl
+                   ON gl.id_group = c.id_default_group AND gl.id_lang = '.$idLang.'
+            LEFT JOIN `'._DB_PREFIX_.'country_lang` cl
+                   ON cl.id_country = c.pays AND cl.id_lang = '.$idLang.'
+            LEFT JOIN `'._DB_PREFIX_.'address` ad
+                   ON ad.id_customer = c.id_customer
+            WHERE c.id_default_group IN ('.(int)$gidPro.', '.(int)$gidProti.')';
+
         if ($includeDateCondition) {
             $date30DaysAgo = date('Y-m-d', strtotime('-30 days'));
-            $sql           .= ' AND c.date_add >= \'' . $date30DaysAgo . '\'';
+            $sql .= ' AND c.date_add >= \''.$date30DaysAgo.'\'';
         }
 
-        // Continuation de la requête
-        $sql .= ' GROUP BY c.id_customer, c.email ORDER BY c.id_customer DESC';
+        $sql .= ' GROUP BY c.id_customer, c.email
+              ORDER BY c.id_customer DESC';
 
-        // Exécution de la requête
         $customers = Db::getInstance()->ExecuteS($sql);
+        if (empty($customers)) return false;
 
-        if (empty($customers)) {
-            return false;
-        }
-
-        $array = [];
-        foreach ($customers as $customer) {
-            // Supposant que 'rib' et 'fileUpload' sont des colonnes dans votre base de données
-            // Extrayez l'extension du fichier et ajoutez-la aux données du client
+        foreach ($customers as &$customer) {
             $customer['ribFileExtension'] = isset($customer['rib']) ? strtolower(pathinfo($customer['rib'], PATHINFO_EXTENSION)) : '';
             $customer['fileExtension']    = isset($customer['fileUpload']) ? strtolower(pathinfo($customer['fileUpload'], PATHINFO_EXTENSION)) : '';
-            $array[]                      = $customer;
         }
-        return $array;
+        return $customers;
     }
-
 
     protected function getInactiveCount($includeDateCondition = false)
     {
-        // Début de la requête SQL sans condition de date
-        $sqlInactiveCount = 'SELECT COUNT(*) as inactiveCount FROM `ps_customer` c
-        INNER JOIN ps_customer_group cg ON cg.id_customer = c.id_customer
-        WHERE id_group = ' . self::ID_GROUP_PRO . ' 
-        AND c.active = 0
-        AND c.refuse = 0';
+        $gidPro   = (int)$this->getProGroupId();
+        $gidProti = (int)$this->getProticulierGroupId();
 
-        // Si $includeDateCondition est vrai, ajouter la condition de date à la requête
+        $sql = 'SELECT COUNT(*) as inactiveCount
+            FROM `'._DB_PREFIX_.'customer` c
+            WHERE c.id_default_group IN ('.$gidPro.', '.$gidProti.')
+              AND c.active = 0
+              AND c.refuse = 0';
+
         if ($includeDateCondition) {
-            $date30DaysAgo    = date('Y-m-d', strtotime('-30 days'));
-            $sqlInactiveCount .= ' AND c.date_add >= \'' . $date30DaysAgo . '\'';
+            $date30DaysAgo = date('Y-m-d', strtotime('-30 days'));
+            $sql .= ' AND c.date_add >= \'' . pSQL($date30DaysAgo) . '\'';
         }
 
-        // Exécution de la requête
-        $inactiveCountResult = Db::getInstance()->getRow($sqlInactiveCount);
-        $inactiveCount       = $inactiveCountResult ? (int)$inactiveCountResult['inactiveCount'] : 0;
-
-        return $inactiveCount;
+        $row = Db::getInstance()->getRow($sql);
+        return $row ? (int)$row['inactiveCount'] : 0;
     }
 
     /**
@@ -195,23 +187,23 @@ WHERE id_group = 10';
      */
     protected function getRefuseCount($includeDateCondition = false)
     {
-        // Début de la requête SQL sans condition de date
-        $sqlRefuseCount = 'SELECT COUNT(*) as refuseCount FROM `ps_customer` c
-    INNER JOIN ps_customer_group cg ON cg.id_customer = c.id_customer
-    WHERE id_group = ' . self::ID_GROUP_PRO . ' AND c.refuse = 1';
+        $gidPro   = (int)$this->getProGroupId();            // lit CKC_GROUP_PRO_ID
+        $gidProti = (int)$this->getProticulierGroupId();    // lit CKC_GROUP_PROTICULIER_ID
 
-        // Si $includeDateCondition est vrai, ajouter la condition de date à la requête
+        $sql = 'SELECT COUNT(*) AS refuseCount
+            FROM `'._DB_PREFIX_.'customer` c
+            WHERE c.id_default_group IN ('.$gidPro.', '.$gidProti.')
+              AND c.refuse = 1';
+
         if ($includeDateCondition) {
-            $date30DaysAgo  = date('Y-m-d', strtotime('-30 days'));
-            $sqlRefuseCount .= ' AND c.date_add >= \'' . $date30DaysAgo . '\'';
+            $date30 = pSQL(date('Y-m-d', strtotime('-30 days')));
+            $sql   .= " AND c.date_add >= '{$date30}'";
         }
 
-        // Exécution de la requête
-        $refuseCountResult = Db::getInstance()->getRow($sqlRefuseCount);
-        $refuseCount       = $refuseCountResult ? (int)$refuseCountResult['refuseCount'] : 0;
-
-        return $refuseCount;
+        $row = Db::getInstance()->getRow($sql);
+        return $row ? (int)$row['refuseCount'] : 0;
     }
+
 
     public function setMedia($isNewTheme = false)
     {
@@ -244,7 +236,7 @@ WHERE id_group = 10';
 
         Db::getInstance()->execute("UPDATE `ps_customer` SET $statusColumn = $status WHERE `id_customer` = " . (int)$id_customer);
 
-        $customer = Db::getInstance()->getRow("SELECT * FROM `ps_customer` WHERE `id_customer` = " . (int)$id_customer);
+        $customer = Db::getInstance()->getRow("SELECT * FROM `._DB_PREFIX_.`_customer` WHERE `id_customer` = " . (int)$id_customer);
 
         if ($customer) {
             Mail::Send(
@@ -352,6 +344,17 @@ WHERE id_group = 10';
         $this->context->smarty->assign('editkbis', $this->renderFormKbis());
         $this->context->smarty->assign('editrib', $this->renderFormRib());
 
+        $groupsSwitchable = [
+            ['id_group' => (int)$this->getProticulierGroupId(), 'name' => $this->l('Proticulier')],
+            ['id_group' => (int)$this->getProGroupId(),         'name' => $this->l('Professionnel')],
+        ];
+        $this->context->smarty->assign([
+                                           'groupsSwitchable'      => $groupsSwitchable,
+                                           'id_group_pro'          => (int)$this->getProGroupId(),
+                                           'id_group_proticulier'  => (int)$this->getProticulierGroupId(),
+                                           'ajax_change_group_url' => self::$currentIndex.'&token='.$this->token,
+                                       ]);
+
         $output = $this->context->smarty->fetch(self::VIEWS_TPL . 'templates/customers.tpl');
 
         $this->context->smarty->assign(['content' => $output]);
@@ -360,7 +363,68 @@ WHERE id_group = 10';
 
         parent::display();
     }
+    public function ajaxProcessChangeCustomerGroup()
+    {
+        header('Content-Type: application/json');
 
+        if (!$this->access('edit')) {
+            die(json_encode(['success' => false, 'message' => $this->l('Permission refusée')]));
+        }
+
+        $idCustomer = (int)Tools::getValue('id_customer');
+        $idGroup    = (int)Tools::getValue('id_group');
+
+        if (!$idCustomer || !$idGroup) {
+            die(json_encode(['success' => false, 'message' => $this->l('Paramètres manquants')]));
+        }
+
+        $customer = new Customer($idCustomer);
+        if (!Validate::isLoadedObject($customer)) {
+            die(json_encode(['success' => false, 'message' => $this->l('Client introuvable')]));
+        }
+
+        $customer->id_default_group = $idGroup;
+        if (!$customer->update()) {
+            die(json_encode(['success' => false, 'message' => $this->l('Échec mise à jour client')]));
+        }
+
+        if (!Group::isCustomerInGroup($idCustomer, $idGroup)) {
+            Group::addCustomerToGroup($idCustomer, $idGroup);
+        }
+
+        $switchables = [(int)$this->getProticulierGroupId(), (int)$this->getProGroupId()];
+        foreach ($switchables as $g) {
+            if ($g != $idGroup && Group::isCustomerInGroup($idCustomer, $g)) {
+                Group::removeCustomerFromGroup($idCustomer, $g);
+            }
+        }
+
+        Hook::exec('actionCustomerAccountUpdate', ['customer' => $customer]);
+
+        die(json_encode(['success' => true]));
+    }
+
+    private function getProGroupId(): int
+    {
+        $v = (int)Configuration::get('CKC_GROUP_PRO_ID');
+        return $v > 0 ? $v : 10;
+    }
+
+    private function getProticulierGroupId(): int
+    {
+        $v = (int)Configuration::get('CKC_GROUP_PROTICULIER_ID');
+        return $v > 0 ? $v : 11;
+    }
+
+    public function initProcess()
+    {
+        parent::initProcess();
+
+        if (Tools::getIsset('ajax') && Tools::getValue('action') === 'changeCustomerGroup') {
+            $this->ajaxProcessChangeCustomerGroup();
+            exit; // important
+        }
+    }
     /**
      * Create the form that will be displayed in the configuration of your module.
      */

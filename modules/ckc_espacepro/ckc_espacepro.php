@@ -5,7 +5,7 @@
 @ini_set('max_execution_time', '300');
 @ini_set('max_input_time', '300');
 
-require_once __DIR__ . '/classes/HelperEspacePro.php';
+//require_once __DIR__ . '/classes/HelperEspacePro.php';
 
 class ckc_espacepro extends Module
 {
@@ -525,30 +525,30 @@ class ckc_espacepro extends Module
             }
             $customer->update();
 
-            // Associer le groupe Proticulier (et enlever Pro si besoin)
+            // Associer le groupe Proticulier
             $customer->addGroups([$gidProticulier]);
-            // Si tu veux t’assurer qu’il n’est pas déjà dans le groupe PRO :
-            $gidPro = (int)$this->getProGroupId();
-            if ($gidPro && $gidPro !== $gidProticulier) {
-                $customer->removeGroups([$gidPro]);
-            }
 
-            // Créer adresse pro (facultatif si tu veux garder l’adresse)
-            $address = new Address();
-            $address->alias       = 'Adresse Professionnelle';
-            $address->active      = $customer->active;
-            $address->firstname   = $customer->firstname;
-            $address->lastname    = $customer->lastname;
-            $address->company     = $customer_company;
-            $address->address1    = (int)Configuration::get('CKC_FORM_MIN_EP') === 0 ? $customer_address : '...';
-            $address->address2    = $customer_address2;
-            $address->phone       = $customer_tel;
-            $address->postcode    = $customer_cp;
-            $address->city        = (int)Configuration::get('CKC_FORM_MIN_EP') === 0 ? $customer_city : '...';
-            $address->vat_number  = $vat_number;
-            $address->id_customer = (int)$customer->id;
-            $address->id_country  = $customer_country ?: (int)Configuration::get('PS_COUNTRY_DEFAULT');
-            $address->save();
+            $hasAddressData = (bool)strlen(trim($customer_address));
+
+            if ($hasAddressData) {
+                $address = new Address();
+                $address->alias       = 'Adresse Professionnelle';
+                $address->active      = (bool)$customer->active;
+                $address->firstname   = $customer->firstname;
+                $address->lastname    = $customer->lastname;
+                $address->company     = $customer_company;
+                $address->address1    = trim($customer_address); // OBLIGATOIRE
+                $address->address2    = $customer_address2;
+                $address->phone       = $customer_tel;
+                $address->postcode    = $customer_cp;
+                $address->city        = trim($customer_city);    // OBLIGATOIRE
+                $address->vat_number  = $vat_number;
+                $address->id_customer = (int)$customer->id;
+                $address->id_country  = $customer_country ?: (int)Configuration::get('PS_COUNTRY_DEFAULT'); // OBLIGATOIRE
+                $address->save();
+            } else {
+
+            }
 
             // Colonnes custom en base
             Db::getInstance()->update('customer', $row, 'id_customer='.(int)$customer->id, true, Db::INSERT_IGNORE);
@@ -958,11 +958,7 @@ class ckc_espacepro extends Module
             $favoriteStoreId = 11;
         }
 
-        // dump('test2',$favoriteStoreId);die;
-
-
         $this->context->smarty->assign(compact('favoriteStoreId'));
-
 
         return $this->fetch('module:ckc_espacepro/views/templates/front/favorite_store.tpl');
     }
