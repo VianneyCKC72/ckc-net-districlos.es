@@ -248,6 +248,7 @@ $(document).ready(function () {
                 $('#checkbox_soubassement').removeClass('selected')
             } else {
                 $(".soubassement:not(.hide-row)").show();
+                $(".soubassement:not(.hide-row)").parent().show();
             }
 
             if (name == 'portillon_id' || name == 'occultation_id') {
@@ -440,6 +441,8 @@ $(document).ready(function () {
                 $item.next().hide();
             }
         }
+
+        $('.soubassement.hide-row').removeClass('selected')
         refreshPrice(true);
     });
 
@@ -705,6 +708,14 @@ $(document).ready(function () {
                 $(this).show();
             })
         }
+        if (isRigide()) {
+            if ($('input[name="pose"]').val() === 'scellement-sur-platine') {
+                $('#poteaux').hide()
+            }else{
+                $('#poteaux').show()
+            }
+        }
+
         viewEspacement();
     });
 
@@ -857,6 +868,13 @@ $(document).ready(function () {
 
 function isAluminium() {
     if ($('.configurator-first .configurator-action.selected').attr('data-id') === "308") {
+        return true;
+    }
+    return false;
+}
+
+function isRigide() {
+    if ($('.configurator-first .configurator-action.selected').attr('data-id') === "173") {
         return true;
     }
     return false;

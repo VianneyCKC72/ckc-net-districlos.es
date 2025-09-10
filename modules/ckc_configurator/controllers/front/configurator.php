@@ -145,6 +145,9 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     $category       = new Category(self::POTEAUX_RIGIDE_ID, $this->language_id);
                     $poteaux   = $category->getProducts($this->language_id, 1, 100, null, null, false, true);
                     foreach ($poteaux as $poteau) {
+                        if ($poteau['id_product'] == 1285) {
+                            continue;
+                        }
                         $this->data['poteaux'][] = [
                             "value"   => $poteau['id_product'],
                             "name" => strpos($poteau['name'], 'clip') ? 'Clips' : 'Encoches',
@@ -259,6 +262,9 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             $category       = new Category(self::POTEAUX_RIGIDE_ID, $this->language_id);
             $products   = $category->getProducts($this->language_id, 1, 100, null, null, false, true);
             foreach ($products as $product) {
+                if ($product['id_product'] == 1285) {
+                    continue;
+                }
                 $this->data['poteaux'][] = [
                     "value"   => $product['id_product'],
                     "name" => strpos($product['name'], 'clip') ? 'Clips' : 'Encoches',
@@ -354,6 +360,9 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                 $category       = new Category(self::POTEAUX_RIGIDE_ID, $this->language_id);
                 $products   = $category->getProducts($this->language_id, 1, 100, null, null, false, true);
                 foreach ($products as $product) {
+                    if ($product['id_product'] == 1285) {
+                        continue;
+                    }
                     $this->data['poteaux'][] = [
                         "value"   => $product['id_product'],
                         "name" => strpos($product['name'], 'clip') ? 'Clips' : 'Encoches',
@@ -404,7 +413,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         if (!isset($grillage['poteaux'])) {
             $grillage['poteaux'] = null;
         }else {
-            if ($grillage['installation'] == 'scellement-sur-platine' && $grillage['type'] == self::PROS_ID) {
+            if ($grillage['installation'] == 'scellement-sur-platine' && in_array($grillage['type'], [self::PROS_ID, self::PROS_PLUS_ID, self::BRICO_PLUS_ID])) {
                 $grillage['poteaux'] = 1285;
             }else{
                 $product = new Product($grillage['poteaux'], false, $this->language_id);

@@ -48,11 +48,14 @@ $eyeoff-data: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' view
     margin-bottom: 50px;
     font-size: 16px;
   }
- 
+
   #tmcmsbannerblock {
     background: $pro-color;
   }
 
+  #footer .footer-before, #tmcms6block {
+    background: $pro-color !important;
+  }
 
   .action-header-espace-pro .btn-espace-pro {
     background: $pro-color !important;
@@ -357,6 +360,20 @@ body.registration-pro {
   #registration.registration-pro .already-account .inside h2{
     font-size: 25px;
   }
+}
+body#checkout.espace_pro section.checkout-step .step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: $pro-color;
+  color: $white;
+  font-size: 12px;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
 }
 
 $pro-orange:   #ffa800;

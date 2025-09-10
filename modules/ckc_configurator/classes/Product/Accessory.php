@@ -177,7 +177,7 @@ class Accessory extends ProductFactory
         $espacement  = ["entretoise"];
 
         if (self::$session->isRigide()) {
-            $accessories = ["poteaux", "bouchons", "clips", "pince_clips"];
+            $accessories = ["poteaux", "bouchons", "clips", "pince_clips", "peinture"];
 
             if (self::$session->poteaux == 1285 || self::$session->poteaux == 1223) {
                 $accessories[] = "cales";
@@ -289,6 +289,7 @@ class Accessory extends ProductFactory
                     }
                 case 'pince_clips':
                 case 'agrafes':
+                case 'peinture':
                 default:
                     return 1;
             }

@@ -1,4 +1,5 @@
 <?php
+
 @ini_set('upload_max_size', '512M');
 @ini_set('post_max_size', '512M');
 @ini_set('max_execution_time', '300');
@@ -961,8 +962,8 @@ class ckc_espacepro extends Module
 
 
         $this->context->smarty->assign(compact('favoriteStoreId'));
-        
-        
+
+
         return $this->fetch('module:ckc_espacepro/views/templates/front/favorite_store.tpl');
     }
     public function hookModuleRoutes($params)

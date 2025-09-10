@@ -99,3 +99,8 @@ html, body {
 textarea {
   width: 100% !important;
 }
+@media only screen and (max-width: 768px) {
+  .desktop_only {
+    display: none !important;
+  }
+}

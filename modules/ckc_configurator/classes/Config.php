@@ -52,6 +52,7 @@ interface Config
             "soubassements" => 195,
             "clips"         => 347,
             "pince_clips"   => 348,
+            "peinture"       => 398,
         ],
         self::SOUPLES_ID      => [
             "poteaux"    => 197,
