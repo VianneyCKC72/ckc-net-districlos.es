@@ -1,4 +1,6 @@
 $(document).ready(function () {
+
+
     var espaceProElements = document.querySelectorAll('.espace_pro .ets_solo_social_wrapper');
     espaceProElements.forEach(function (element) {
         element.parentNode.removeChild(element);

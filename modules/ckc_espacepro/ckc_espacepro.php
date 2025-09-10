@@ -408,39 +408,36 @@ class ckc_espacepro extends Module
         return '';
     }
 
-    /** Ajout client : traite l’inscription pro si ep=1  todo a modifier avec l'idshop*/
+    /** Ajout client : si inscription depuis le shop PRO => mettre par défaut en "Proticulier" */
     public function hookActionCustomerAccountAdd($params)
     {
-        $gidPro = (int) $this->getProGroupId();
-
-        $helper = new HelperEspacePro();
-        $backLink = Tools::getValue('back');
-        $shop_url = $this->context->link->getBaseLink($this->context->shop->id, true);
-        $isPro = (int)Tools::getValue('ep', 0) === 1;
-        $customer = $params['newCustomer'] ?? null;
+        $helper    = new HelperEspacePro();
+        $backLink  = Tools::getValue('back');
+        $shopId    = (int) $this->context->shop->id;
+        $shop_url  = $this->context->link->getBaseLink($shopId, true);
+        $customer  = $params['newCustomer'] ?? null;
 
         if (!Validate::isLoadedObject($customer)) {
             return;
         }
 
+        // Détection "environnement PRO" par shop (id 2 chez toi + fallback via domaine configuré)
+        $isProShop = ($shopId === 2) || $this->isProEnvironment();
+
         // reCAPTCHA (opt-in via config)
         if ((int)Configuration::get('CKC_RECAPTCHA_ENABLED') === 1) {
-            $token = Tools::getValue('g-recaptcha-response');
+            $token  = Tools::getValue('g-recaptcha-response');
             $secret = (string)Configuration::get('CKC_RECAPTCHA_SECRET');
-
             if (empty($token) || empty($secret)) {
                 $helper->error[] = 'Vérification reCAPTCHA indisponible.';
                 $helper->addNotification('/');
                 return;
             }
-
-            // Vérif simple côté serveur
             $resp = @file_get_contents(
                 'https://www.google.com/recaptcha/api/siteverify?secret='
                 . rawurlencode($secret) . '&response=' . rawurlencode($token)
             );
             $data = json_decode($resp ?: '{}', true);
-
             if (empty($data['success'])) {
                 $helper->error[] = 'Échec de la vérification reCAPTCHA.';
                 $helper->addNotification('/');
@@ -448,23 +445,27 @@ class ckc_espacepro extends Module
             }
         }
 
-        // Mode local (désactive envois mails)
-        $host = (string)$_SERVER['SERVER_NAME'];
+        // Mode local (désactive les envois mails)
+        $host       = (string)$_SERVER['SERVER_NAME'];
         $mode_local = (str_contains($host, '.local') || str_contains($host, 'vianney'));
 
-        if ($isPro) {
-            // Champs
-            $siret = Tools::getValue('customer-siret', '');
-            $customer_country = (int)Tools::getValue('customer-pays', 0);
-            $customer_tva = Tools::getValue('customer-tva', '');
-            $customer_address = Tools::getValue('customer-adresse', '');
+        // --- NOUVELLE LOGIQUE ---
+        // Si on s’inscrit depuis le shop PRO => on crée un compte "Proticulier" (actif) par défaut
+        if ($isProShop) {
+            $gidProticulier = (int) $this->getProticulierGroupId();
+
+            // Champs optionnels (si tu gardes ton formulaire pro)
+            $siret             = Tools::getValue('customer-siret', '');
+            $customer_country  = (int)Tools::getValue('customer-pays', 0);
+            $customer_tva      = Tools::getValue('customer-tva', '');
+            $customer_address  = Tools::getValue('customer-adresse', '');
             $customer_address2 = Tools::getValue('customer-adresse2', '');
-            $customer_cp = Tools::getValue('customer-cp', '');
-            $customer_tel = str_replace(' ', '', Tools::getValue('customer-tel', ''));
-            $customer_city = Tools::getValue('customer-ville', '');
-            $customer_company = Tools::getValue('customer-company', '');
-            $vat_number = Tools::getValue('customer-vat_number', '');
-            $naf = Tools::getValue('naf', '');
+            $customer_cp       = Tools::getValue('customer-cp', '');
+            $customer_tel      = str_replace(' ', '', Tools::getValue('customer-tel', ''));
+            $customer_city     = Tools::getValue('customer-ville', '');
+            $customer_company  = Tools::getValue('customer-company', '');
+            $vat_number        = Tools::getValue('customer-vat_number', '');
+            $naf               = Tools::getValue('naf', '');
 
             // Uploads (si formulaire non minimal)
             $row = [];
@@ -472,18 +473,18 @@ class ckc_espacepro extends Module
                 $files = ['kbis', 'rib'];
                 foreach ($files as $fileKey) {
                     if (isset($_FILES[$fileKey]) && (int)$_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-                        $file = $_FILES[$fileKey];
-                        $allowed = ['application/pdf', 'image/jpeg', 'image/png'];
+                        $file     = $_FILES[$fileKey];
+                        $allowed  = ['application/pdf', 'image/jpeg', 'image/png'];
                         if (!in_array($file['type'], $allowed, true)) {
                             $helper->error[] = "Type de fichier non autorisé ($fileKey).";
                             continue;
                         }
-                        $siretUse = $siret !== '' ? $siret : 'nosiret';
-                        $lastname = iconv('UTF-8', 'ASCII//TRANSLIT', str_replace(' ', '', Tools::strtolower($customer->lastname)));
+                        $siretUse  = $siret !== '' ? $siret : 'nosiret';
+                        $lastname  = iconv('UTF-8', 'ASCII//TRANSLIT', str_replace(' ', '', Tools::strtolower($customer->lastname)));
                         $newFileName = $siretUse . ($fileKey === 'rib' ? '-rib-' : '-kbis-') . $lastname . '.' . Tools::strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
                         $uploader = new UploaderCore();
-                        $newFile = $uploader->upload($file, $newFileName);
+                        $newFile  = $uploader->upload($file, $newFileName);
                         if (!$newFile) {
                             $helper->error[] = "Erreur d’upload pour $fileKey.";
                             continue;
@@ -495,79 +496,89 @@ class ckc_espacepro extends Module
                             $row['rib'] = $newFileName;
                         }
                     } else {
-                        // Message lisible
                         $helper->error[] = $helper->getUploadErrorMessage($_FILES[$fileKey]['error'] ?? UPLOAD_ERR_NO_FILE);
                     }
                 }
             }
 
-            // Valeurs clients pro
+            // ➜ Client "Proticulier" ACTIF par défaut
             $row += [
-                'pays' => $this->escapeForSQL((string)$customer_country),
-                'tva' => $this->escapeForSQL((string)$customer_tva),
-                'adresse' => (int)Configuration::get('CKC_FORM_MIN_EP') === 0 ? $this->escapeForSQL($customer_address) : '...',
-                'adresse2' => $this->escapeForSQL($customer_address2),
-                'cp' => $this->escapeForSQL($customer_cp),
-                'tel' => $this->escapeForSQL($customer_tel),
-                'ville' => (int)Configuration::get('CKC_FORM_MIN_EP') === 0 ? $this->escapeForSQL($customer_city) : '...',
-                'active' => 0,
-                'id_default_group' =>$gidPro,
-                'naf' => $naf,
-                'siret' => $siret,
+                'pays'             => $this->escapeForSQL((string)$customer_country),
+                'tva'              => $this->escapeForSQL((string)$customer_tva),
+                'adresse'          => (int)Configuration::get('CKC_FORM_MIN_EP') === 0 ? $this->escapeForSQL($customer_address) : '...',
+                'adresse2'         => $this->escapeForSQL($customer_address2),
+                'cp'               => $this->escapeForSQL($customer_cp),
+                'tel'              => $this->escapeForSQL($customer_tel),
+                'ville'            => (int)Configuration::get('CKC_FORM_MIN_EP') === 0 ? $this->escapeForSQL($customer_city) : '...',
+                'active'           => 1,
+                'id_default_group' => $gidProticulier,
+                'naf'              => $naf,
+                'siret'            => $siret,
             ];
 
-            // Met le compte en inactif et groupe pro
-            $customer->active = false;
-            $customer->siret = $siret;
+            // Update objet Customer
+            $customer->active           = true;
+            $customer->id_default_group = $gidProticulier;
+            if ($siret !== '') {
+                $customer->siret = $siret;
+            }
             $customer->update();
-            $customer->addGroups([$gidPro]);
 
-            // Adresse pro
+            // Associer le groupe Proticulier (et enlever Pro si besoin)
+            $customer->addGroups([$gidProticulier]);
+            // Si tu veux t’assurer qu’il n’est pas déjà dans le groupe PRO :
+            $gidPro = (int)$this->getProGroupId();
+            if ($gidPro && $gidPro !== $gidProticulier) {
+                $customer->removeGroups([$gidPro]);
+            }
+
+            // Créer adresse pro (facultatif si tu veux garder l’adresse)
             $address = new Address();
-            $address->alias = 'Adresse Professionnelle';
-            $address->active = $customer->active;
-            $address->firstname = $customer->firstname;
-            $address->lastname = $customer->lastname;
-            $address->company = $customer_company;
-            $address->address1 = (int)Configuration::get('CKC_FORM_MIN_EP') === 0 ? $customer_address : '...';
-            $address->address2 = $customer_address2;
-            $address->phone = $customer_tel;
-            $address->postcode = $customer_cp;
-            $address->city = (int)Configuration::get('CKC_FORM_MIN_EP') === 0 ? $customer_city : '...';
-            $address->vat_number = $vat_number;
+            $address->alias       = 'Adresse Professionnelle';
+            $address->active      = $customer->active;
+            $address->firstname   = $customer->firstname;
+            $address->lastname    = $customer->lastname;
+            $address->company     = $customer_company;
+            $address->address1    = (int)Configuration::get('CKC_FORM_MIN_EP') === 0 ? $customer_address : '...';
+            $address->address2    = $customer_address2;
+            $address->phone       = $customer_tel;
+            $address->postcode    = $customer_cp;
+            $address->city        = (int)Configuration::get('CKC_FORM_MIN_EP') === 0 ? $customer_city : '...';
+            $address->vat_number  = $vat_number;
             $address->id_customer = (int)$customer->id;
-            $address->id_country = $customer_country;
+            $address->id_country  = $customer_country ?: (int)Configuration::get('PS_COUNTRY_DEFAULT');
             $address->save();
 
-            // Mise à jour table customer (colonnes custom)
-            Db::getInstance()->update('customer', $row, 'id_customer=' . (int)$customer->id, true, Db::INSERT_IGNORE);
+            // Colonnes custom en base
+            Db::getInstance()->update('customer', $row, 'id_customer='.(int)$customer->id, true, Db::INSERT_IGNORE);
 
             // Notifications
-            $helper->warning[] = "Votre compte professionnel est en cours de validation par notre équipe.";
+            $helper->success[] = "Votre compte a bien été créé en tant que Proticulier. Vous pouvez déjà commander au tarif particulier. Notre équipe pourra ensuite basculer votre compte en PRO si éligible.";
 
-            // Emails (désactivés en local)
+            // Mails (optionnel, on peut prévenir l’équipe qu’un proticulier vient d’être créé)
             if (!$mode_local) {
                 $data = [
                     '{firstname}' => $address->firstname,
-                    '{lastname}' => $address->lastname,
-                    '{company}' => $customer_company,
-                    '{phone}' => $customer_tel,
-                    '{naf}' => $naf,
-                    '{tva}' => $vat_number,
-                    '{adresse}' => $address->address1,
-                    '{siret}' => $siret,
-                    '{cp}' => $customer_cp,
-                    '{email}' => $customer->email,
+                    '{lastname}'  => $address->lastname,
+                    '{company}'   => $customer_company,
+                    '{phone}'     => $customer_tel,
+                    '{naf}'       => $naf,
+                    '{tva}'       => $vat_number,
+                    '{adresse}'   => $address->address1,
+                    '{siret}'     => $siret,
+                    '{cp}'        => $customer_cp,
+                    '{email}'     => $customer->email,
                     '{shop_name}' => Configuration::get('PS_SHOP_NAME'),
-                    '{shop_url}' => $shop_url,
+                    '{shop_url}'  => $shop_url,
                 ];
 
+                // À ajuster: modèles d’e-mails et destinataires
                 $staffRecipients = ['commercial@districlos.com', 'nelly.serrano@districlos.com'];
                 foreach ($staffRecipients as $email_to) {
                     Mail::Send(
                         (int)Configuration::get('PS_LANG_DEFAULT'),
-                        'new_customers',
-                        "Action requise : Validation compte professionnel",
+                        'new_customers', // ou un template dédié "new_proticulier"
+                        "Nouveau compte Proticulier créé",
                         $data,
                         $email_to,
                         Configuration::get('PS_SHOP_NAME'),
@@ -578,29 +589,30 @@ class ckc_espacepro extends Module
 
                 Mail::Send(
                     (int)Configuration::get('PS_LANG_DEFAULT'),
-                    'inscription_pro',
-                    "Votre compte pro est en cours de validation",
+                    'inscription_pro', // ou un template "inscription_proticulier"
+                    "Bienvenue ! Votre compte Proticulier est actif",
                     $data,
                     $customer->email,
-                    $customer->firstname . ' ' . $customer->lastname,
+                    $customer->firstname.' '.$customer->lastname,
                     "info@cloture-discount.fr",
                     Configuration::get('PS_SHOP_NAME')
                 );
             }
 
+            // Redirection
             $helper->addNotification(
                 (isset($backLink) && Tools::urlBelongsToShop($backLink)) ? $backLink : '/'
             );
-
             return;
         }
 
-        // Compte standard
+        // --- CAS STANDARD (shop Particulier) ---
         $this->success[] = "Votre compte a bien été créé et vous êtes maintenant connecté.";
         $helper->addNotification(
             (isset($backLink) && Tools::urlBelongsToShop($backLink)) ? $backLink : '/'
         );
     }
+
 
     /** BO : colonnes/joins du grid commandes */
     public function hookActionOrderGridQueryBuilderModifier(array $params)
