@@ -549,6 +549,7 @@
       .discount_type_flag {
         left: auto !important;
         right: 5px !important;
+        display:none !important;
       }
     }
   }
@@ -819,9 +820,9 @@
       }
 
     }
-    @media screen and (max-width: 370px) {
+    @media screen and (max-width: 460px) {
       .custom-quantity-selector .btn-quantity, .custom-quantity-selector input.quantity-input {
-        height: 40px;
+        height: 32px;
       }
     }
 
