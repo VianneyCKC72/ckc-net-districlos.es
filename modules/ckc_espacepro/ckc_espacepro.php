@@ -410,6 +410,8 @@ class ckc_espacepro extends Module
      */
     public function hookActionCustomerAccountAdd($params)
     {
+        return;
+        
         $backLink = Tools::getValue('back');
         $logFilePath = __DIR__ . '/logs.txt';
 
@@ -421,9 +423,9 @@ class ckc_espacepro extends Module
         }
         else {
             // Le token n'est pas présent ou est vide
-            logMessage("reCAPTCHA token is missing.");
-            echo 'reCAPTCHA token is missing.';
-            exit;
+//            logMessage("reCAPTCHA token is missing.");
+//            echo 'reCAPTCHA token is missing.';
+//            exit;
         }
 
         $response     = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=6LenlNocAAAAALI74qAIBnDd4Yj4GrQQpvrGE6aI&response=" . $recaptchaToken);
