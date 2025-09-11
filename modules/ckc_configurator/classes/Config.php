@@ -53,6 +53,7 @@ interface Config
             "clips"         => 347,
             "pince_clips"   => 348,
             "peinture"       => 398,
+            "caches_goujons" => 399,
         ],
         self::SOUPLES_ID      => [
             "poteaux"    => 197,
