@@ -214,51 +214,55 @@ class AdminEspaceProController extends ModuleAdminController
 
 
     /**
-     * @param $status       indique le statut à mettre à jour (1 pour actif ou refusé, 0 pour non-actif ou non-refusé).
-     * @param $isActivation est un booléen qui détermine si l'action concerne l'activation (true) ou le refus (false)
-     *                      du compte.
-     *
      * @return void
      */
     protected function updateCustomerStatusAndSendEmail($status, $isActivation, $id_customer = null)
     {
         if (!$id_customer) {
-            $id_customer = Tools::getValue('id_customer');
+            $id_customer = (int)Tools::getValue('id_customer');
         }
-
         if (!$id_customer) return;
 
-        $statusColumn  = $isActivation ? '`active`' : '`refuse`';
+        // Colonne ciblée
+        $statusColumn  = $isActivation ? 'active' : 'refuse';
         $emailTemplate = $isActivation ? 'compte_actif_pro' : 'compte_refuse_pro';
-        $emailSubject  = $isActivation ?
-            "Confirmation de Création de Votre Compte Professionnel Districlos" :
-            "Refus Activation Compte Pro DISTRICLOS : Informations Importantes";
+        $emailSubject  = $isActivation
+            ? "Confirmation de Création de Votre Compte Professionnel Districlos"
+            : "Refus Activation Compte Pro DISTRICLOS : Informations Importantes";
 
-        Db::getInstance()->execute("UPDATE `ps_customer` SET $statusColumn = $status WHERE `id_customer` = " . (int)$id_customer);
+        // UPDATE avec préfixe
+        Db::getInstance()->update(
+            'customer',
+            [$statusColumn => (int)$status],
+            'id_customer = '.(int)$id_customer
+        );
 
-        $customer = Db::getInstance()->getRow("SELECT * FROM `._DB_PREFIX_.`_customer` WHERE `id_customer` = " . (int)$id_customer);
+        // Lecture client (avec préfixe correct)
+        $customer = Db::getInstance()->getRow(
+            'SELECT * FROM `'._DB_PREFIX_.'customer` WHERE `id_customer` = '.(int)$id_customer
+        );
 
         if ($customer) {
+            // ⚠️ Assure-toi que le template existe en /mails/<lang>/$emailTemplate.html
             Mail::Send(
-                Configuration::get('PS_LANG_DEFAULT'),
+                (int)Configuration::get('PS_LANG_DEFAULT'),
                 $emailTemplate,
                 $emailSubject,
                 [
                     '{firstname}' => $customer['firstname'],
                     '{lastname}'  => $customer['lastname'],
                     '{shop_name}' => Configuration::get('PS_SHOP_NAME'),
-                    '{shop_url}'  => $this->context->link->getBaseLink($this->context->shop->id, true),
+                    '{shop_url}'  => $this->context->link->getBaseLink((int)$this->context->shop->id, true),
                 ],
                 $customer['email'],
-                Configuration::get('PS_SHOP_NAME'),
-                "info@cloture-discount.fr",
+                $customer['firstname'].' '.$customer['lastname'],
+                'info@cloture-discount.fr',
                 Configuration::get('PS_SHOP_NAME')
             );
         }
-        $HelperEspacePro = new HelperEspacePro();
-        $HelperEspacePro->redirect();
-    }
 
+        (new HelperEspacePro())->redirect();
+    }
 
     /**
      * Set values for the inputs.
@@ -304,43 +308,18 @@ class AdminEspaceProController extends ModuleAdminController
 
     public function display()
     {
-        $activation         = Tools::getValue('active');
-        $refuse             = Tools::getValue('refuse');
-        $accept             = Tools::getValue('accept');
         $nbCustomersLastDay = 0;
         $nbCustomers        = 0;
-        $id_customer        = Tools::getValue('id_customer');
-
-//        dump($activation);
-//        dump($refuse);
-//        exit;
-
-        if ($activation === '0' || $activation === '1') {
-            $this->updateCustomerStatusAndSendEmail($activation, true, $id_customer);
-        } elseif ($refuse === '0' || $refuse === '1') {
-            $this->updateCustomerStatusAndSendEmail($refuse, false, $id_customer);
-        }
-
-        if($accept === '1'){
-            $this->updateCustomerStatusAndSendEmail(1, true, $id_customer);
-        }
 
         $customers        = $this->getAllCustomersEp();
         $customersLastDay = $this->getAllCustomersEp(true);
-        if (!empty(count($customers))) {
-            $nbCustomers = count($customers);
-        }
-        if (!empty(count($customers))) {
-            $nbCustomersLastDay = count($customers);
-        }
+        $nbCustomers        = $customers ? count($customers) : 0;
+        $nbCustomersLastDay = $customersLastDay ? count($customersLastDay) : 0;
 
         $this->context->smarty->assign('customers', $customers);
         $this->context->smarty->assign('nbCustomers', $nbCustomers);
         $this->context->smarty->assign('nbCustomersLastDay', $nbCustomersLastDay);
-        $this->context->smarty->assign('InactiveCount', $this->getInactiveCount());
-        $this->context->smarty->assign('RefuseCount', $this->getRefuseCount());
-        $this->context->smarty->assign('InactiveCountLastDay', $this->getInactiveCount(true));
-        $this->context->smarty->assign('RefuseCountLastDay', $this->getRefuseCount(true));
+        $this->context->smarty->assign($this->getCountsByType());
         $this->context->smarty->assign('editkbis', $this->renderFormKbis());
         $this->context->smarty->assign('editrib', $this->renderFormRib());
 
@@ -355,54 +334,96 @@ class AdminEspaceProController extends ModuleAdminController
                                            'ajax_change_group_url' => self::$currentIndex.'&token='.$this->token,
                                        ]);
 
+        // >>> RENDU DU TEMPLATE <<<
         $output = $this->context->smarty->fetch(self::VIEWS_TPL . 'templates/customers.tpl');
-
         $this->context->smarty->assign(['content' => $output]);
-
         $this->display_footer = false;
 
         parent::display();
     }
+
+
+    protected function getCountsByType(): array
+    {
+        $gidPro   = (int)$this->getProGroupId();
+        $gidProti = (int)$this->getProticulierGroupId();
+
+        $row = Db::getInstance()->getRow('
+        SELECT
+          SUM(c.id_default_group='.(int)$gidPro.')   AS nb_pro,
+          SUM(c.id_default_group='.(int)$gidProti.') AS nb_proticulier
+        FROM `'._DB_PREFIX_.'customer` c
+        WHERE c.id_default_group IN ('.(int)$gidPro.', '.(int)$gidProti.')
+    ');
+        return [
+            'nbPro'         => (int)($row['nb_pro'] ?? 0),
+            'nbProticulier' => (int)($row['nb_proticulier'] ?? 0),
+        ];
+    }
+
+
     public function ajaxProcessChangeCustomerGroup()
     {
         header('Content-Type: application/json');
 
         if (!$this->access('edit')) {
-            die(json_encode(['success' => false, 'message' => $this->l('Permission refusée')]));
+            echo Tools::jsonEncode(['success' => false, 'message' => $this->l('Permission refusée')]);
+            exit;
         }
 
         $idCustomer = (int)Tools::getValue('id_customer');
         $idGroup    = (int)Tools::getValue('id_group');
 
         if (!$idCustomer || !$idGroup) {
-            die(json_encode(['success' => false, 'message' => $this->l('Paramètres manquants')]));
+            echo Tools::jsonEncode(['success' => false, 'message' => $this->l('Paramètres manquants')]);
+            exit;
         }
 
         $customer = new Customer($idCustomer);
         if (!Validate::isLoadedObject($customer)) {
-            die(json_encode(['success' => false, 'message' => $this->l('Client introuvable')]));
+            echo Tools::jsonEncode(['success' => false, 'message' => $this->l('Client introuvable')]);
+            exit;
         }
 
-        $customer->id_default_group = $idGroup;
-        if (!$customer->update()) {
-            die(json_encode(['success' => false, 'message' => $this->l('Échec mise à jour client')]));
+        $gidPro   = (int)$this->getProGroupId();
+        $gidProti = (int)$this->getProticulierGroupId();
+        if (!in_array($idGroup, [$gidPro, $gidProti], true)) {
+            echo Tools::jsonEncode(['success' => false, 'message' => $this->l('Groupe non autorisé')]);
+            exit;
         }
 
-        if (!Group::isCustomerInGroup($idCustomer, $idGroup)) {
-            Group::addCustomerToGroup($idCustomer, $idGroup);
+        $db = Db::getInstance();
+
+        $ok = $db->update(
+            'customer',
+            ['id_default_group' => (int)$idGroup],
+            'id_customer = '.(int)$idCustomer
+        );
+        if (!$ok) {
+            $err = method_exists($db, 'getMsgError') ? $db->getMsgError() : '';
+            echo Tools::jsonEncode(['success' => false, 'message' => ($err ?: $this->l('Échec mise à jour client'))]);
+            exit;
         }
 
-        $switchables = [(int)$this->getProticulierGroupId(), (int)$this->getProGroupId()];
-        foreach ($switchables as $g) {
-            if ($g != $idGroup && Group::isCustomerInGroup($idCustomer, $g)) {
-                Group::removeCustomerFromGroup($idCustomer, $g);
-            }
-        }
+        $db->insert(
+            'customer_group',
+            ['id_customer' => (int)$idCustomer, 'id_group' => (int)$idGroup],
+            false,
+            true,
+            Db::INSERT_IGNORE
+        );
+
+        $db->delete(
+            'customer_group',
+            'id_customer='.(int)$idCustomer.' AND id_group IN ('.(int)$gidPro.','.(int)$gidProti.') AND id_group!='.(int)$idGroup
+        );
 
         Hook::exec('actionCustomerAccountUpdate', ['customer' => $customer]);
 
-        die(json_encode(['success' => true]));
+        echo json_encode(['success' => true]);
+        exit;
     }
+
 
     private function getProGroupId(): int
     {

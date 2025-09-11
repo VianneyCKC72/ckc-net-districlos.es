@@ -11,9 +11,9 @@ class ckc_espacepro extends Module
 {
     /** @var array */
     public $warning = [];
-    public $error = [];
+    public $error   = [];
     public $success = [];
-    public $info = [];
+    public $info    = [];
 
     protected $tabs = [
         'Professionnels' => ['class' => 'AdminEspacePro', 'active' => 1],
@@ -27,10 +27,10 @@ class ckc_espacepro extends Module
 
     public function __construct()
     {
-        $this->name = 'ckc_espacepro';
-        $this->tab = 'administration';
-        $this->author = 'CKC';
-        $this->version = '1.0.1';
+        $this->name          = 'ckc_espacepro';
+        $this->tab           = 'administration';
+        $this->author        = 'CKC';
+        $this->version       = '1.0.1';
         $this->need_instance = 0;
 
         parent::__construct();
@@ -56,6 +56,8 @@ class ckc_espacepro extends Module
         // Init URL PRO par boutique
         foreach (Shop::getShops(true, null, true) as $idShop) {
             Configuration::updateValue('CKC_PRO_URL_BOUTIQUE', '', false, null, (int)$idShop);
+            Configuration::updateValue('CKC_PART_URL_BOUTIQUE', '', false, null, (int)$idShop);
+
         }
 
         $ok =
@@ -70,9 +72,9 @@ class ckc_espacepro extends Module
             $this->registerHook('actionFrontControllerSetVariables') &&
             $this->registerHook('actionOrderGridQueryBuilderModifier') &&
             $this->registerHook('actionOrderGridDefinitionModifier') &&
-            $this->registerHook('actionAuthentication')&&
+            $this->registerHook('actionAuthentication') &&
             $this->registerHook('moduleRoutes');
-            $this->registerHook('displayFavoriteStore');
+        $this->registerHook('displayFavoriteStore');
 
         // Ajout onglets BO
         if ($ok) {
@@ -94,9 +96,9 @@ class ckc_espacepro extends Module
         $loginEmail = (string)Tools::getValue('login_email', '');
 
         $this->context->smarty->assign([
-            'login_error' => $loginError,
-            'login_email' => Tools::safeOutput($loginEmail),
-        ]);
+                                           'login_error' => $loginError,
+                                           'login_email' => Tools::safeOutput($loginEmail),
+                                       ]);
 
 
         $this->injectGlobals();
@@ -106,6 +108,7 @@ class ckc_espacepro extends Module
     {
         $this->injectGlobals();
     }
+
     public function hookDisplayHome($params)
     {
         // Afficher uniquement sur la boutique PRO
@@ -116,9 +119,9 @@ class ckc_espacepro extends Module
             return '';
         }
         $this->context->smarty->assign([
-            'login_action' => $this->context->link->getPageLink('authentication', true),
-            'back'         => Tools::safeOutput($_SERVER['REQUEST_URI'] ?? '/'),
-        ]);
+                                           'login_action' => $this->context->link->getPageLink('authentication', true),
+                                           'back'         => Tools::safeOutput($_SERVER['REQUEST_URI'] ?? '/'),
+                                       ]);
 
         return $this->display(__FILE__, 'views/templates/hook/pro-home-login.tpl');
     }
@@ -141,6 +144,7 @@ class ckc_espacepro extends Module
         Configuration::deleteByName('CKC_RECAPTCHA_ENABLED');
         Configuration::deleteByName('CKC_GROUP_PRO_ID');
         Configuration::deleteByName('CKC_GROUP_PROTICULIER_ID');
+        Configuration::deleteByName('CKC_PART_URL_BOUTIQUE');
 
         $this->clear_the_cache();
 
@@ -149,13 +153,13 @@ class ckc_espacepro extends Module
 
     private function getProGroupId(): int
     {
-        $v = (int) Configuration::get('CKC_GROUP_PRO_ID');
+        $v = (int)Configuration::get('CKC_GROUP_PRO_ID');
         return $v > 0 ? $v : 10;
     }
 
     private function getProticulierGroupId(): int
     {
-        $v = (int) Configuration::get('CKC_GROUP_PROTICULIER_ID');
+        $v = (int)Configuration::get('CKC_GROUP_PROTICULIER_ID');
         return $v > 0 ? $v : 11;
     }
 
@@ -184,14 +188,14 @@ class ckc_espacepro extends Module
 
     private function isProEnvironment(): bool
     {
-        $idShop = (int) $this->context->shop->id;
+        $idShop = (int)$this->context->shop->id;
 
         // Si c’est le shop 2 → toujours environnement pro todo : peu etre le rendre dynnamique aussi
         if ($idShop === 2) {
             return true;
         }
 
-        $proUrl = (string) Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, $idShop);
+        $proUrl = (string)Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, $idShop);
 
         if ($proUrl !== '') {
             $currentUrl = Tools::getShopDomainSsl(true);
@@ -203,12 +207,12 @@ class ckc_espacepro extends Module
 
     public function assignProVars(): array
     {
-        $ctx = $this->context;
+        $ctx  = $this->context;
         $cust = $ctx->customer;
 
         $isLogged = $cust ? (bool)$cust->isLogged() : false;
-        $userId = (int)($cust->id ?? 0);
-        $groups = $isLogged ? (array)$cust->getGroups() : [];
+        $userId   = (int)($cust->id ?? 0);
+        $groups   = $isLogged ? (array)$cust->getGroups() : [];
 
         $isProEnv    = $this->isProEnvironment();
         $frontSuffix = $isProEnv ? '-pro' : '';
@@ -219,39 +223,42 @@ class ckc_espacepro extends Module
 
         $inPro         = $isLogged && in_array($gidPro, $groups, true);
         $inProticulier = $isLogged && in_array($gidProticulier, $groups, true);
-        $isVisitor = !$isLogged;
+        $isVisitor     = !$isLogged;
         $isParticulier = $isLogged && !$inPro && !$inProticulier;
 
         // Label status harmonisé
         $status = 'visitor';
         if ($isVisitor) {
             $status = 'visitor';
-        } elseif ($inPro) {
+        }
+        elseif ($inPro) {
             $status = 'pro';
-        } elseif ($inProticulier) {
+        }
+        elseif ($inProticulier) {
             $status = 'proticulier';
-        } else {
+        }
+        else {
             $status = 'particulier';
         }
 
         $customerInfo = [
-            'id' => $userId,
+            'id'    => $userId,
             'siret' => null,
-            'tva' => 0,
-            'kbis' => null,
+            'tva'   => 0,
+            'kbis'  => null,
         ];
 
         if ($inPro && $userId > 0) {
             $infos = $this->getInfosProCustomer($userId);
             if (!empty($infos)) {
                 $customerInfo['siret'] = $infos['siret'] ?? null;
-                $customerInfo['tva'] = !empty($infos['tva']) ? 1 : 0;
+                $customerInfo['tva']   = !empty($infos['tva']) ? 1 : 0;
 
                 if (!empty($infos['fileUpload'])) {
-                    $ext = Tools::strtolower(pathinfo($infos['fileUpload'], PATHINFO_EXTENSION));
+                    $ext                  = Tools::strtolower(pathinfo($infos['fileUpload'], PATHINFO_EXTENSION));
                     $customerInfo['kbis'] = [
                         'file' => $infos['fileUpload'],
-                        'ext' => $ext,
+                        'ext'  => $ext,
                     ];
                 }
             }
@@ -259,10 +266,10 @@ class ckc_espacepro extends Module
 
         // Mon nouveau payload a utilisé a la place des variables qu'on faisait dans FrontController.
         $pro = [
-            'env'   => (int)$isProEnv,
-            'suffix'=> $frontSuffix,
+            'env'        => (int)$isProEnv,
+            'suffix'     => $frontSuffix,
             'url_domain' => (string)Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, (int)$this->context->shop->id),
-            'user'  => [
+            'user'       => [
                 'id'             => $userId,
                 'is_logged'      => (int)$isLogged,
                 'is_pro'         => (int)$inPro,
@@ -274,7 +281,7 @@ class ckc_espacepro extends Module
             ],
         ];
 
-        $ctx->smarty->assign('pro' ,$pro);
+        $ctx->smarty->assign('pro', $pro);
 
         return $pro;
     }
@@ -293,7 +300,7 @@ class ckc_espacepro extends Module
 
     public function hookActionAuthentication($params)
     {
-        $pro = $this->context->smarty->getTemplateVars('pro');
+        $pro     = $this->context->smarty->getTemplateVars('pro');
         $env_pro = (int)($pro['env'] ?? 0);
 
         if ($env_pro === 1) {
@@ -316,13 +323,13 @@ class ckc_espacepro extends Module
         $pro = $this->assignProVars();
 
         $vars = [
-            'pro'        => $pro,
-            'env_pro'    => (int)$pro['env'],
-            'pro_suffix' => (string)$pro['suffix'],
-            'is_pro'         => (int)$pro['user']['is_pro'],
-            'is_proticulier' => (int)$pro['user']['is_proticulier'],
-            'is_particulier' => (int)$pro['user']['is_particulier'],
-            'is_visitor'     => (int)$pro['user']['is_visitor'],
+            'pro'             => $pro,
+            'env_pro'         => (int)$pro['env'],
+            'pro_suffix'      => (string)$pro['suffix'],
+            'is_pro'          => (int)$pro['user']['is_pro'],
+            'is_proticulier'  => (int)$pro['user']['is_proticulier'],
+            'is_particulier'  => (int)$pro['user']['is_particulier'],
+            'is_visitor'      => (int)$pro['user']['is_visitor'],
             'pro_login_error' => (string)Tools::getValue('pro_login_error', ''),
         ];
 
@@ -340,13 +347,12 @@ class ckc_espacepro extends Module
 
         $this->context->controller->registerJavascript(
             'ckc-espacepro-home-login',
-            'modules/'.$this->name.'/views/js/pro-home-login.js',
+            'modules/' . $this->name . '/views/js/pro-home-login.js',
             ['position' => 'bottom', 'priority' => 1001]
         );
 
 
-
-         if (strpos($_SERVER['REQUEST_URI'], 'avantages-pro') !== false) {
+        if (strpos($_SERVER['REQUEST_URI'], 'avantages-pro') !== false) {
 
             $this->context->controller->registerJavascript(
                 'ckc-espacepro-layout',
@@ -354,25 +360,25 @@ class ckc_espacepro extends Module
                 ['position' => 'bottom', 'priority' => 1000]
             );
 
-             $this->context->controller->registerStylesheet(
-            'ckc-espace-pro-front',
-            'modules/' . $this->name . '/views/css/front/benefits.css',
-            ['position' => 'bottom', 'priority' => 1000]
+            $this->context->controller->registerStylesheet(
+                'ckc-espace-pro-front',
+                'modules/' . $this->name . '/views/css/front/benefits.css',
+                ['position' => 'bottom', 'priority' => 1000]
 
             );
         }
-            $this->context->controller->registerJavascript(
-                'ckc-espacepro-search',
-                'modules/' . $this->name . '/views/js/front/search.js',
-                ['position' => 'bottom', 'priority' => 1000]
-            );
+        $this->context->controller->registerJavascript(
+            'ckc-espacepro-search',
+            'modules/' . $this->name . '/views/js/front/search.js',
+            ['position' => 'bottom', 'priority' => 1000]
+        );
 
-          $this->context->controller->registerStylesheet(
+        $this->context->controller->registerStylesheet(
             'ckc-espace-pro-guides-fiche',
             'modules/' . $this->name . '/views/css/front/guides-fiches.css',
             ['position' => 'bottom', 'priority' => 1000]
 
-            );
+        );
     }
 
     public function hookDisplayCustomerAccountForm($params)
@@ -380,11 +386,11 @@ class ckc_espacepro extends Module
         if ((int)Configuration::get('CAPTCHA_ENABLE_ACCOUNT') === 1) {
             $this->themes = [0 => 'light', 1 => 'dark'];
             $this->context->smarty->assign([
-                'captchaVersion' => Configuration::get('CAPTCHA_VERSION'),
-                'publicKey' => Configuration::get('CAPTCHA_PUBLIC_KEY'),
-                'captchaforcelang' => Configuration::get('CAPTCHA_FORCE_LANG'),
-                'captchatheme' => $this->themes[(int)Configuration::get('CAPTCHA_THEME')],
-            ]);
+                                               'captchaVersion'   => Configuration::get('CAPTCHA_VERSION'),
+                                               'publicKey'        => Configuration::get('CAPTCHA_PUBLIC_KEY'),
+                                               'captchaforcelang' => Configuration::get('CAPTCHA_FORCE_LANG'),
+                                               'captchatheme'     => $this->themes[(int)Configuration::get('CAPTCHA_THEME')],
+                                           ]);
         }
 
         if ((int)Tools::getValue('ep', 0) === 1) {
@@ -397,11 +403,11 @@ class ckc_espacepro extends Module
             $this->putFranceFirst($countries);
 
             $this->context->smarty->assign([
-                'customerGroups' => $groups,
-                'countries' => $countries,
-                'code_naf' => $this->getCodeNaf(),
-                'ckc_form_minimal' => (int)Configuration::get('CKC_FORM_MIN_EP'),
-            ]);
+                                               'customerGroups'   => $groups,
+                                               'countries'        => $countries,
+                                               'code_naf'         => $this->getCodeNaf(),
+                                               'ckc_form_minimal' => (int)Configuration::get('CKC_FORM_MIN_EP'),
+                                           ]);
 
             return $this->display(__FILE__, 'hookDisplayCustomerAccountForm.tpl');
         }
@@ -412,11 +418,11 @@ class ckc_espacepro extends Module
     /** Ajout client : si inscription depuis le shop PRO => mettre par défaut en "Proticulier" */
     public function hookActionCustomerAccountAdd($params)
     {
-        $helper    = new HelperEspacePro();
-        $backLink  = Tools::getValue('back');
-        $shopId    = (int) $this->context->shop->id;
-        $shop_url  = $this->context->link->getBaseLink($shopId, true);
-        $customer  = $params['newCustomer'] ?? null;
+        $helper   = new HelperEspacePro();
+        $backLink = Tools::getValue('back');
+        $shopId   = (int)$this->context->shop->id;
+        $shop_url = $this->context->link->getBaseLink($shopId, true);
+        $customer = $params['newCustomer'] ?? null;
 
         if (!Validate::isLoadedObject($customer)) {
             return;
@@ -424,6 +430,8 @@ class ckc_espacepro extends Module
 
         // Détection "environnement PRO" par shop (id 2 chez toi + fallback via domaine configuré)
         $isProShop = ($shopId === 2) || $this->isProEnvironment();
+
+        $gidProticulier = (int)$this->getProticulierGroupId();
 
         // reCAPTCHA (opt-in via config)
         if ((int)Configuration::get('CKC_RECAPTCHA_ENABLED') === 1) {
@@ -450,10 +458,9 @@ class ckc_espacepro extends Module
         $host       = (string)$_SERVER['SERVER_NAME'];
         $mode_local = (str_contains($host, '.local') || str_contains($host, 'vianney'));
 
-        // --- NOUVELLE LOGIQUE ---
         // Si on s’inscrit depuis le shop PRO => on crée un compte "Proticulier" (actif) par défaut
         if ($isProShop) {
-            $gidProticulier = (int) $this->getProticulierGroupId();
+            $gidProticulier = (int)$this->getProticulierGroupId();
 
             // Champs optionnels (si tu gardes ton formulaire pro)
             $siret             = Tools::getValue('customer-siret', '');
@@ -474,14 +481,14 @@ class ckc_espacepro extends Module
                 $files = ['kbis', 'rib'];
                 foreach ($files as $fileKey) {
                     if (isset($_FILES[$fileKey]) && (int)$_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-                        $file     = $_FILES[$fileKey];
-                        $allowed  = ['application/pdf', 'image/jpeg', 'image/png'];
+                        $file    = $_FILES[$fileKey];
+                        $allowed = ['application/pdf', 'image/jpeg', 'image/png'];
                         if (!in_array($file['type'], $allowed, true)) {
                             $helper->error[] = "Type de fichier non autorisé ($fileKey).";
                             continue;
                         }
-                        $siretUse  = $siret !== '' ? $siret : 'nosiret';
-                        $lastname  = iconv('UTF-8', 'ASCII//TRANSLIT', str_replace(' ', '', Tools::strtolower($customer->lastname)));
+                        $siretUse    = $siret !== '' ? $siret : 'nosiret';
+                        $lastname    = iconv('UTF-8', 'ASCII//TRANSLIT', str_replace(' ', '', Tools::strtolower($customer->lastname)));
                         $newFileName = $siretUse . ($fileKey === 'rib' ? '-rib-' : '-kbis-') . $lastname . '.' . Tools::strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
                         $uploader = new UploaderCore();
@@ -493,10 +500,12 @@ class ckc_espacepro extends Module
 
                         if ($fileKey === 'kbis') {
                             $row['fileUpload'] = $newFileName;
-                        } else {
+                        }
+                        else {
                             $row['rib'] = $newFileName;
                         }
-                    } else {
+                    }
+                    else {
                         $helper->error[] = $helper->getUploadErrorMessage($_FILES[$fileKey]['error'] ?? UPLOAD_ERR_NO_FILE);
                     }
                 }
@@ -531,7 +540,7 @@ class ckc_espacepro extends Module
             $hasAddressData = (bool)strlen(trim($customer_address));
 
             if ($hasAddressData) {
-                $address = new Address();
+                $address              = new Address();
                 $address->alias       = 'Adresse Professionnelle';
                 $address->active      = (bool)$customer->active;
                 $address->firstname   = $customer->firstname;
@@ -546,12 +555,13 @@ class ckc_espacepro extends Module
                 $address->id_customer = (int)$customer->id;
                 $address->id_country  = $customer_country ?: (int)Configuration::get('PS_COUNTRY_DEFAULT'); // OBLIGATOIRE
                 $address->save();
-            } else {
+            }
+            else {
 
             }
 
             // Colonnes custom en base
-            Db::getInstance()->update('customer', $row, 'id_customer='.(int)$customer->id, true, Db::INSERT_IGNORE);
+            Db::getInstance()->update('customer', $row, 'id_customer=' . (int)$customer->id, true, Db::INSERT_IGNORE);
 
             // Notifications
             $helper->success[] = "Votre compte a bien été créé en tant que Proticulier. Vous pouvez déjà commander au tarif particulier. Notre équipe pourra ensuite basculer votre compte en PRO si éligible.";
@@ -594,7 +604,7 @@ class ckc_espacepro extends Module
                     "Bienvenue ! Votre compte Proticulier est actif",
                     $data,
                     $customer->email,
-                    $customer->firstname.' '.$customer->lastname,
+                    $customer->firstname . ' ' . $customer->lastname,
                     "info@cloture-discount.fr",
                     Configuration::get('PS_SHOP_NAME')
                 );
@@ -618,12 +628,12 @@ class ckc_espacepro extends Module
     /** BO : colonnes/joins du grid commandes */
     public function hookActionOrderGridQueryBuilderModifier(array $params)
     {
-        $qb = $params['search_query_builder'];
+        $qb             = $params['search_query_builder'];
         $searchCriteria = $params['search_criteria'];
 
         // Exemple d’enrichissement : jointure groupe client
         $qb->addSelect('pl.`name` AS group_name')
-            ->innerJoin('cu', 'ps_group_lang', 'pl', 'pl.id_group = cu.id_default_group AND pl.id_lang = ' . (int)$this->context->language->id);
+           ->innerJoin('cu', 'ps_group_lang', 'pl', 'pl.id_group = cu.id_default_group AND pl.id_lang = ' . (int)$this->context->language->id);
 
         foreach ($searchCriteria->getFilters() as $filterName => $filterValue) {
             if ($filterName === 'groupe' && $filterValue) {
@@ -639,9 +649,9 @@ class ckc_espacepro extends Module
 
         $columns = $definition->getColumns();
         $columns->addAfter('id_order',
-            (new \PrestaShop\PrestaShop\Core\Grid\Column\Type\DataColumn('group_name'))
-                ->setName($this->l('Groupe client'))
-                ->setOptions(['field' => 'group_name'])
+                           (new \PrestaShop\PrestaShop\Core\Grid\Column\Type\DataColumn('group_name'))
+                               ->setName($this->l('Groupe client'))
+                               ->setOptions(['field' => 'group_name'])
         );
     }
 
@@ -676,12 +686,12 @@ class ckc_espacepro extends Module
             if (Tab::getIdFromClassName($t['class'])) {
                 continue; // évite doublons
             }
-            $tab = new Tab();
-            $tab->active = (int)$t['active'];
+            $tab             = new Tab();
+            $tab->active     = (int)$t['active'];
             $tab->class_name = $t['class'];
-            $tab->module = $this->name;
-            $tab->id_parent = $parent;
-            $tab->name = [];
+            $tab->module     = $this->name;
+            $tab->id_parent  = $parent;
+            $tab->name       = [];
 
             foreach (Language::getLanguages(true) as $lang) {
                 $tab->name[$lang['id_lang']] = $name;
@@ -724,21 +734,21 @@ class ckc_espacepro extends Module
 
     protected function createHelperForm($submitAction, $fieldsValue, $form)
     {
-        $helper = new HelperForm();
-        $helper->show_toolbar = false;
-        $helper->table = $this->table;
-        $helper->module = $this;
-        $helper->default_form_language = (int)$this->context->language->id;
+        $helper                           = new HelperForm();
+        $helper->show_toolbar             = false;
+        $helper->table                    = $this->table;
+        $helper->module                   = $this;
+        $helper->default_form_language    = (int)$this->context->language->id;
         $helper->allow_employee_form_lang = (int)Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG', 0);
-        $helper->identifier = $this->identifier;
-        $helper->submit_action = $submitAction;
-        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
-            . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
-        $helper->token = Tools::getAdminTokenLite('AdminModules');
-        $helper->tpl_vars = [
+        $helper->identifier               = $this->identifier;
+        $helper->submit_action            = $submitAction;
+        $helper->currentIndex             = $this->context->link->getAdminLink('AdminModules', false)
+                                            . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+        $helper->token                    = Tools::getAdminTokenLite('AdminModules');
+        $helper->tpl_vars                 = [
             'fields_value' => $fieldsValue,
-            'languages' => $this->context->controller->getLanguages(),
-            'id_language' => (int)$this->context->language->id,
+            'languages'    => $this->context->controller->getLanguages(),
+            'id_language'  => (int)$this->context->language->id,
         ];
 
         return $helper->generateForm([$form]);
@@ -750,76 +760,83 @@ class ckc_espacepro extends Module
             'form' => [
                 'legend' => [
                     'title' => 'Configuration Espace Pro',
-                    'icon' => 'icon-cogs',
+                    'icon'  => 'icon-cogs',
                 ],
                 'input' => [
                     [
-                        'type' => 'switch',
-                        'label' => "Afficher l'espace pro en FO",
-                        'name' => 'CKC_DISPLAY_EP',
-                        'is_bool' => true,
+                        'type'   => 'switch',
+                        'label'  => "Afficher l'espace pro en FO",
+                        'name'   => 'CKC_DISPLAY_EP',
+                        'is_bool'=> true,
                         'values' => [
-                            ['id' => 'on', 'value' => 1, 'label' => $this->l('Oui')],
+                            ['id' => 'on',  'value' => 1, 'label' => $this->l('Oui')],
                             ['id' => 'off', 'value' => 0, 'label' => $this->l('Non')],
                         ],
                     ],
                     [
-                        'type' => 'switch',
-                        'label' => "Formulaire simplifié",
-                        'name' => 'CKC_FORM_MIN_EP',
-                        'is_bool' => true,
+                        'type'   => 'switch',
+                        'label'  => "Formulaire simplifié",
+                        'name'   => 'CKC_FORM_MIN_EP',
+                        'is_bool'=> true,
                         'values' => [
-                            ['id' => 'on', 'value' => 1, 'label' => $this->l('Oui')],
+                            ['id' => 'on',  'value' => 1, 'label' => $this->l('Oui')],
                             ['id' => 'off', 'value' => 0, 'label' => $this->l('Non')],
                         ],
                     ],
                     [
-                        'type' => 'text',
-                        'label' => "URL Espace Pro (redirection)",
-                        'name' => 'CKC_PRO_URL_BOUTIQUE',
-                        'class' => 'ckc-ep-url',
+                        'type'        => 'text',
+                        'label'       => "URL Espace Pro (redirection)",
+                        'name'        => 'CKC_PRO_URL_BOUTIQUE',
+                        'class'       => 'ckc-ep-url',
                         'placeholder' => 'https://pro.exemple.fr/',
-                        'desc' => 'Spécifique à la boutique sélectionnée.',
+                        'desc'        => 'Spécifique à la boutique sélectionnée.',
                     ],
                     [
-                        'type' => 'switch',
-                        'label' => 'Activer reCAPTCHA',
-                        'name' => 'CKC_RECAPTCHA_ENABLED',
-                        'is_bool' => true,
+                        'type'        => 'text',
+                        'label'       => "URL Boutique Particulier (redirection)",
+                        'name'        => 'CKC_PART_URL_BOUTIQUE',
+                        'class'       => 'ckc-ep-url',
+                        'placeholder' => 'https://www.exemple.fr/',
+                        'desc'        => 'Spécifique à la boutique sélectionnée.',
+                    ],
+                    [
+                        'type'   => 'switch',
+                        'label'  => 'Activer reCAPTCHA',
+                        'name'   => 'CKC_RECAPTCHA_ENABLED',
+                        'is_bool'=> true,
                         'values' => [
-                            ['id' => 'on', 'value' => 1, 'label' => $this->l('Oui')],
+                            ['id' => 'on',  'value' => 1, 'label' => $this->l('Oui')],
                             ['id' => 'off', 'value' => 0, 'label' => $this->l('Non')],
                         ],
                     ],
                     [
-                        'type' => 'text',
+                        'type'  => 'text',
                         'label' => 'Clé secrète reCAPTCHA',
-                        'name' => 'CKC_RECAPTCHA_SECRET',
-                        'desc' => 'Clé serveur (ne pas la hardcoder dans le code).',
+                        'name'  => 'CKC_RECAPTCHA_SECRET',
+                        'desc'  => 'Clé serveur (ne pas la hardcoder dans le code).',
                     ],
                     [
-                        'type'  => 'select',
-                        'label' => 'Groupe Professionnel',
-                        'name'  => 'CKC_GROUP_PRO_ID',
+                        'type'    => 'select',
+                        'label'   => 'Groupe Professionnel',
+                        'name'    => 'CKC_GROUP_PRO_ID',
                         'options' => [
                             'query' => array_values(Group::getGroups($this->context->language->id)),
                             'id'    => 'id_group',
                             'name'  => 'name',
                         ],
-                        'desc'  => 'Sélectionnez le groupe client utilisé pour les comptes professionnels.',
+                        'desc'    => 'Sélectionnez le groupe client utilisé pour les comptes professionnels.',
                     ],
                     [
-                        'type'  => 'select',
-                        'label' => 'Groupe Proticulier',
-                        'name'  => 'CKC_GROUP_PROTICULIER_ID',
+                        'type'    => 'select',
+                        'label'   => 'Groupe Proticulier',
+                        'name'    => 'CKC_GROUP_PROTICULIER_ID',
                         'options' => [
                             'query' => array_values(Group::getGroups($this->context->language->id)),
                             'id'    => 'id_group',
                             'name'  => 'name',
                         ],
-                        'desc'  => 'Sélectionnez le groupe client pour les “proticulier” (pro avec tarifs particuliers).',
+                        'desc'    => 'Sélectionnez le groupe client pour les “proticulier” (pro avec tarifs particuliers).',
                     ],
-
                 ],
                 'submit' => [
                     'title' => 'Enregistrer',
@@ -829,16 +846,18 @@ class ckc_espacepro extends Module
         ];
     }
 
+
     public function getConfigFormValues()
     {
         return [
-            'CKC_DISPLAY_EP' => (int)Configuration::get('CKC_DISPLAY_EP', 0),
-            'CKC_FORM_MIN_EP' => (int)Configuration::get('CKC_FORM_MIN_EP', 0),
-            'CKC_PRO_URL_BOUTIQUE' => Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, (int)$this->context->shop->id),
-            'CKC_RECAPTCHA_ENABLED' => (int)Configuration::get('CKC_RECAPTCHA_ENABLED', 0),
-            'CKC_RECAPTCHA_SECRET' => (string)Configuration::get('CKC_RECAPTCHA_SECRET', ''),
-            'CKC_GROUP_PRO_ID'           => (int) Configuration::get('CKC_GROUP_PRO_ID', 10),
-            'CKC_GROUP_PROTICULIER_ID'   => (int) Configuration::get('CKC_GROUP_PROTICULIER_ID', 11),
+            'CKC_DISPLAY_EP'           => (int)Configuration::get('CKC_DISPLAY_EP', 0),
+            'CKC_FORM_MIN_EP'          => (int)Configuration::get('CKC_FORM_MIN_EP', 0),
+            'CKC_PRO_URL_BOUTIQUE'     => Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, (int)$this->context->shop->id),
+            'CKC_PART_URL_BOUTIQUE' => Configuration::get('CKC_PART_URL_BOUTIQUE', null, null, (int)$this->context->shop->id),
+            'CKC_RECAPTCHA_ENABLED'    => (int)Configuration::get('CKC_RECAPTCHA_ENABLED', 0),
+            'CKC_RECAPTCHA_SECRET'     => (string)Configuration::get('CKC_RECAPTCHA_SECRET', ''),
+            'CKC_GROUP_PRO_ID'         => (int)Configuration::get('CKC_GROUP_PRO_ID', 10),
+            'CKC_GROUP_PROTICULIER_ID' => (int)Configuration::get('CKC_GROUP_PROTICULIER_ID', 11),
         ];
     }
 
@@ -847,19 +866,22 @@ class ckc_espacepro extends Module
         if (Tools::isSubmit('submitCkc_ep')) {
             // URL PRO multi-boutique
             $url = trim((string)Tools::getValue('CKC_PRO_URL_BOUTIQUE', ''));
-
+            $urlPart = trim((string)Tools::getValue('CKC_PART_URL_BOUTIQUE', ''));
             switch (Shop::getContext()) {
                 case Shop::CONTEXT_SHOP:
                     Configuration::updateValue('CKC_PRO_URL_BOUTIQUE', $url, false, null, (int)Shop::getContextShopID());
+                    Configuration::updateValue('CKC_PART_URL_BOUTIQUE', $urlPart, false, null, (int)Shop::getContextShopID());
                     break;
                 case Shop::CONTEXT_GROUP:
                     foreach (Shop::getShops(true, (int)Shop::getContextShopGroupID(), true) as $idShop) {
                         Configuration::updateValue('CKC_PRO_URL_BOUTIQUE', $url, false, null, (int)$idShop);
+                        Configuration::updateValue('CKC_PART_URL_BOUTIQUE', $urlPart, false, null, (int)$idShop);
                     }
                     break;
                 case Shop::CONTEXT_ALL:
                     foreach (Shop::getShops(true, null, true) as $idShop) {
                         Configuration::updateValue('CKC_PRO_URL_BOUTIQUE', $url, false, null, (int)$idShop);
+                        Configuration::updateValue('CKC_PART_URL_BOUTIQUE', $urlPart, false, null, (int)$idShop);
                     }
                     break;
             }
@@ -892,14 +914,14 @@ class ckc_espacepro extends Module
         if ($id <= 0) {
             return [];
         }
-        $gidPro = (int) $this->getProGroupId();
+        $gidPro = (int)$this->getProGroupId();
 
         $sql = 'SELECT c.`tva`, c.`adresse`, c.`adresse2`, c.`cp`, c.`ville`, c.`tel`, c.`fileUpload`, c.`rib`, c.`naf`, c.`siret`
-            FROM `'._DB_PREFIX_.'customer` c
-            WHERE c.`id_default_group` = '.(int)$gidPro.'
-              AND c.`id_customer` = '.(int)$id;
+            FROM `' . _DB_PREFIX_ . 'customer` c
+            WHERE c.`id_default_group` = ' . (int)$gidPro . '
+              AND c.`id_customer` = ' . (int)$id;
 
-        return (array) Db::getInstance()->getRow($sql);
+        return (array)Db::getInstance()->getRow($sql);
     }
 
     private function enforceShopAccessRouting(): void
@@ -911,19 +933,19 @@ class ckc_espacepro extends Module
             return; // pas connecté : on ne force rien
         }
 
-        $groups         = (array) $cust->getGroups();
+        $groups = (array)$cust->getGroups();
 
-        $gidPro         = (int) $this->getProGroupId();            // ex: 10
-        $gidProticulier = (int) $this->getProticulierGroupId();    // ex: 11
+        $gidPro         = (int)$this->getProGroupId();            // ex: 10
+        $gidProticulier = (int)$this->getProticulierGroupId();    // ex: 11
 
         $isPro         = in_array($gidPro, $groups, true);
         $isProticulier = in_array($gidProticulier, $groups, true);
         $isAnyPro      = ($isPro || $isProticulier);
 
-        $shopId = (int) $ctx->shop->id;
+        $shopId = (int)$ctx->shop->id;
 
-        $urlPro  = (string) Configuration::get('CKC_PRO_URL_BOUTIQUE',  null, null, 2); // shop PRO
-        $urlPart = (string) Configuration::get('CKC_PART_URL_BOUTIQUE', null, null, 1); // shop Particulier
+        $urlPro  = (string)Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, 2);  // shop PRO
+        $urlPart = (string)Configuration::get('CKC_PART_URL_BOUTIQUE', null, null, 1); // shop Particulier
 
         $currentUrl = Tools::getShopDomainSsl(true) . $_SERVER['REQUEST_URI'];
 
@@ -947,11 +969,11 @@ class ckc_espacepro extends Module
     {
 
         $sql = 'SELECT sp.`id_cms_detail`
-            FROM `'._DB_PREFIX_.'ckcstorespresentation` sp
-            inner join `'._DB_PREFIX_.'ckc_favorite_stores` fs  on  fs.`id_favorite_store`  = sp.`id_ckcstorespresentation`  
-            AND fs.`id_customer` = '.(int) $this->context->customer->id;
+            FROM `' . _DB_PREFIX_ . 'ckcstorespresentation` sp
+            inner join `' . _DB_PREFIX_ . 'ckc_favorite_stores` fs  on  fs.`id_favorite_store`  = sp.`id_ckcstorespresentation`  
+            AND fs.`id_customer` = ' . (int)$this->context->customer->id;
 
-        $favoriteStoreId =  Db::getInstance()->getRow($sql);
+        $favoriteStoreId = Db::getInstance()->getRow($sql);
 
 
         if (!$favoriteStoreId) {
@@ -962,36 +984,37 @@ class ckc_espacepro extends Module
 
         return $this->fetch('module:ckc_espacepro/views/templates/front/favorite_store.tpl');
     }
+
     public function hookModuleRoutes($params)
     {
         return [
             'benefits_pro_route' => [
-                'rule' => 'avantages-pro', //url de la page
+                'rule'       => 'avantages-pro', //url de la page
                 'controller' => 'benefitsespacepro',
-                'keywords' => [],
-                'params' => [
-                    'module' => $this->name,
-                    'fc' => 'module',
+                'keywords'   => [],
+                'params'     => [
+                    'module'     => $this->name,
+                    'fc'         => 'module',
                     'controller' => 'benefitsespacepro'
                 ]
             ],
-                'guides_pro_route' => [
-                'rule' => 'guides-pro', //url de la page
+            'guides_pro_route'   => [
+                'rule'       => 'guides-pro', //url de la page
                 'controller' => 'guidesfiches',
-                'keywords' => [],
-                'params' => [
-                    'module' => $this->name,
-                    'fc' => 'module',
+                'keywords'   => [],
+                'params'     => [
+                    'module'     => $this->name,
+                    'fc'         => 'module',
                     'controller' => 'guidesfiches'
                 ]
             ],
-                'fiches_pro_route' => [
-                'rule' => 'fiches-techniques-pro', //url de la page
+            'fiches_pro_route'   => [
+                'rule'       => 'fiches-techniques-pro', //url de la page
                 'controller' => 'guidesfiches',
-                'keywords' => [],
-                'params' => [
-                    'module' => $this->name,
-                    'fc' => 'module',
+                'keywords'   => [],
+                'params'     => [
+                    'module'     => $this->name,
+                    'fc'         => 'module',
                     'controller' => 'guidesfiches'
                 ]
             ],
