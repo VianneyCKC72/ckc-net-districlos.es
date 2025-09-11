@@ -8536,7 +8536,7 @@ form
   }
   @media only screen and (max-width: 768px) {
     padding-bottom: 10px;
-    padding-top: 15px;
+    padding-top: 10px;
   }
 }
 
@@ -11236,5 +11236,21 @@ form
   .product-line-grid-right .price,
   .product-line-grid-right .qty {
     width: 100%;
+  }
+}
+@media (max-width: 768px){
+  #ckcpromobarre {
+    min-height: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 11px;
+  }
+  .ckcpromobarre-text{
+    white-space: wrap !important;
+    font-size: 11px;
+  }
+
+  .checkout.cart-detailed-actions.js-cart-detailed-actions .btn-secondary {
+    background: #ff144e !important;
   }
 }
