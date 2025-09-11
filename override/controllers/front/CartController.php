@@ -160,10 +160,10 @@ class CartController extends CartControllerCore
 
         if ($has_1305_or_1306 && !$has_1130) {
             if (in_array(1305, $product_ids)) {
-                $custom_product_message['1305'] = 'Attention : Les crémaillères ne sont pas incluses dans ce moteur. <a href="https://www.cloture-discount.fr/accessoires-portails-portillons/1130-cremaillere-portail-coulissant.html">Cliquer ici pour l\'ajouter au panier</a>';
+                $custom_product_message['1305'] = 'Attention : Les crémaillères ne sont pas incluses dans ce moteur. <a href="/accessoires-portails-portillons/1130-cremaillere-portail-coulissant.html">Cliquer ici pour l\'ajouter au panier</a>';
             }
             if (in_array(1306, $product_ids)) {
-                $custom_product_message['1306'] = 'Attention : Les crémaillères ne sont pas incluses dans ce moteur. <a href="https://www.cloture-discount.fr/accessoires-portails-portillons/1130-cremaillere-portail-coulissant.html">Cliquer ici pour l\'ajouter au panier</a>';
+                $custom_product_message['1306'] = 'Attention : Les crémaillères ne sont pas incluses dans ce moteur. <a href="/accessoires-portails-portillons/1130-cremaillere-portail-coulissant.html">Cliquer ici pour l\'ajouter au panier</a>';
             }
         }
 
