@@ -1,272 +1,117 @@
 <?php
 
+require_once _PS_MODULE_DIR_ . 'ckc_espacepro/classes/SectionGuidesFichesServices.php';
+
 class ProductsService
 {
-    // public const KEYWORDS_CLOTURES  = ['Cloture', 'Clôture', 'Clotures', 'Clôtures'];
-    // public const KEYWORDS_PORTAILS  = ['Portails', 'Portail', 'Portillons'];
-    // public const KEYWORDS_GRILLAGES = ['Grillages', 'Grillage'];
-
-    public const CLOTURES_PRO = 370;
-    public const PORTAILS_PRO = 371;
-    public const GRILLAGES_PRO = 372;
-
-
     protected $context;
     protected $idLang;
-    protected $IdShop;
+    protected $idShop;
     protected $db;
+    protected $sectionService;
 
     public function __construct()
     {
+        $this->sectionService = new SectionGuidesFichesServices();
         $this->context = \Context::getContext();
         $this->idLang = $this->context->language->id;
-        $this->IdShop = $this->context->shop->id;
+        $this->idShop = $this->context->shop->id;
         $this->db = \Db::getInstance();
     }
 
     /**
-     * on récupère l'url pour voir quel type de document on affiche (fiches techniques ou guides)
+     * Récupère toutes les sections avec leurs produits et documents
      */
-    public function resolveCategoryFromRequest(): string
+    public function getSections(): array
     {
-        $requestUri = $_SERVER['REQUEST_URI'];
-
-        if (str_contains($requestUri, 'fiches-techniques-pro')) {
-            return 'Fiche Technique Pro';
+        $sections = CkcSectionGuidesFiches::getSections();
+        if (empty($sections)) {
+            return [];
         }
 
-        if (str_contains($requestUri, 'guides-pro')) {
-            return 'Notice de montage';
-        }
-
-        return '';
-
-    }
-
-    public function getTitleBtn() 
-    {
-         $requestUri = $_SERVER['REQUEST_URI'];
-
-        if (str_contains($requestUri, 'fiches-techniques-pro')) {
-            return 'Télécharger la fiche technique';
-        }
-
-        if (str_contains($requestUri, 'guides-pro')) {
-            return 'Télécharger le guide';
-        }
-
-        return 'Télécharger';
-    }
-
-    public function getSections(array $titles, string $documentSlug): array
-    {
-        $results = [];
-
-        $titleToCategoryId = [
-            'Clôture'  => self::CLOTURES_PRO,
-            'Portail'  => self::PORTAILS_PRO,
-            'Grillage' => self::GRILLAGES_PRO,
-        ];
-
-        foreach ($titles as $title) {
-            if (!isset($titleToCategoryId[$title])) {
-                continue;
-            }
-
-            $categoryId = $titleToCategoryId[$title];
-
-            $results[] = [
-                'title' => $title,
-                'products' => $this->getProductsByCategories([$categoryId], $documentSlug),
-            ];
-        }
-
-        $results = array_filter($results, function ($result) {
-            return !empty($result['products']);
-        });
-
-        return $results;
-    }
-
-
-
-    // /**
-    //  * récupérer les sections des pages 
-    //  */
-    // public function getSections(array $sectionsData, string $documentSlug): array
-    // {
-    //     $result = [];
-
-    //     foreach ($sectionsData as $section) {
-    //         $result[] = [
-    //             'title' => $section['title'],
-    //             'products' => $this->getProductsByKeyWordsCategory($section['keywords'], $documentSlug),
-    //         ];
-    //     }
-
-    //     return $result;
-    // }
-
-    // /**
-    //  * Récupération des catégories par mots-clés
-    //  * $words => mots clés dans la catégories
-    //  * $documentSlug => 'Fiche technique' ou 'Notice de montage'
-    //  */
-    // private function getProductsByKeyWordsCategory(array $words, string $documentSlug): ?array {
-    //     $idLang = $this->idLang;
-
-    //     if (empty($words)) {
-    //         return null;
-    //     }
-
-    //     $likeClauses = [];
-
-    //     foreach ($words as $word) {
-    //         $word = pSQL(trim($word), true);
-    //         $likeClauses[] = "cl.name LIKE '{$word}%'";
-    //     }
-
-    //     $sql = new \DbQuery();
-    //     $sql->select('DISTINCT c.id_category')
-    //         ->from('category', 'c')
-    //         ->leftJoin('category_lang', 'cl', 'cl.id_category = c.id_category')
-    //         ->where('cl.id_lang = ' . (int) $idLang)
-    //         ->where('c.active = 1')
-    //         ->where(implode(' OR ', $likeClauses));
-
-    //         $results = $this->db->executeS($sql);
-
-    //         if (!$results) {
-    //             return null;
-    //         }
-
-    //     $categoryIds = array_column($results, 'id_category');
-
-        
-    //     return $this->getProductsByCategories($categoryIds, $documentSlug);
-
-    // }
-
-
-
-    /**
-     * Récupération des produits de la catégorie
-     */
-    private function getProductsByCategories(array $categoryIds, string $documentSlug): ?array
-    {
+        $categoryIds = array_column($sections, 'id_category');
         $categoryIds = array_filter($categoryIds, 'Validate::isUnsignedId');
 
-
         if (empty($categoryIds)) {
-            return null;
-        }
-
-        $sql = new \DbQuery();
-        $sql->select('DISTINCT cp.id_product')
-            ->from('category_product', 'cp')
-            ->where('cp.id_category IN (' . implode(',', array_map('intval', $categoryIds)) . ')');
-
-        $results = $this->db->executeS($sql);
-
-        if (!$results) {
-            return null;
-        }
-
-        $productIds = array_column($results, 'id_product');
-
-
-        return $this->getSimpleProducts($productIds, $documentSlug);
-    }
-
-
-    private function getSimpleProducts(array $productIds, string $documentSlug): array
-    {
-
-
-        $productIds = array_filter($productIds, 'Validate::isUnsignedId');
-
-        if (empty($productIds)) {
             return [];
         }
 
         $sql = new \DbQuery();
-        $sql->select('DISTINCT p.id_product, pl.name, pl.link_rewrite, p.active')
-            ->from('product', 'p')
+        $sql->select('
+            cp.id_category,
+            p.id_product,
+            pl.name AS product_name,
+            pl.link_rewrite,
+            p.active,
+            i.id_image,
+            a.id_attachment,
+            al.name AS attachment_name
+        ')
+            ->from('category_product', 'cp')
+            ->innerJoin('product', 'p', 'p.id_product = cp.id_product')
             ->leftJoin('product_lang', 'pl', 'pl.id_product = p.id_product AND pl.id_lang = ' . (int)$this->idLang)
-            ->where('p.id_product IN (' . implode(',', $productIds) . ')');
+            ->leftJoin('image', 'i', 'i.id_product = p.id_product AND i.cover = 1')
+            ->leftJoin('product_attachment', 'pa', 'pa.id_product = p.id_product')
+            ->leftJoin('attachment', 'a', 'a.id_attachment = pa.id_attachment')
+            ->leftJoin('attachment_lang', 'al', 'al.id_attachment = a.id_attachment AND al.id_lang = ' . (int)$this->idLang)
+            ->where('cp.id_category IN (' . implode(',', $categoryIds) . ')');
 
-        $rawProducts = $this->db->executeS($sql);
+        $rows = $this->db->executeS($sql);
 
-        $products = [];
+        $link = new \Link();
+        $productsByCategory = [];
 
-        foreach ($rawProducts as $row) {
-            if (!$row['active']) {
+        foreach ($rows as $row) {
+            if (!(int)$row['active']) {
                 continue;
             }
 
-            // Image
-            $image = \Product::getCover((int)$row['id_product']);
-            $imageUrl = $image
-                ? $this->context->link->getImageLink($row['link_rewrite'], $image['id_image'], 'home_default')
-                : null;
+            $idCategory = (int)$row['id_category'];
+            $idProduct = (int)$row['id_product'];
 
-            $products[] = [
-                'id' => (int)$row['id_product'],
-                'name' => $row['name'],
-                'image' => $imageUrl,
-                'link_rewrite' => $row['link_rewrite'],
-            ];
-        }
+            if (!isset($productsByCategory[$idCategory][$idProduct])) {
+                $imageUrl = $row['id_image']
+                    ? $this->context->link->getImageLink($row['link_rewrite'], $row['id_image'], 'home_default')
+                    : null;
 
-        return $this->attachDocumentsToProducts($products, $documentSlug);
-    }
+                $productsByCategory[$idCategory][$idProduct] = [
+                    'id' => $idProduct,
+                    'name' => $row['product_name'],
+                    'image' => $imageUrl,
+                    'link_rewrite' => $row['link_rewrite'],
+                    'documents' => [],
+                ];
+            }
 
+            // Filtrer uniquement les documents PDF
+            if (!empty($row['id_attachment']) && isset($row['attachment_name'])) {
+                $ext = strtolower(pathinfo($row['attachment_name'], PATHINFO_EXTENSION));
+                if ($ext === 'pdf') {
+                    $downloadUrl = $link->getPageLink('attachment', true, null, [
+                        'id_attachment' => (int)$row['id_attachment'],
+                        'filename' => urlencode(\Tools::str2url($row['attachment_name']))
+                    ]);
 
-    private function attachDocumentsToProducts(array $products, string $documentSlug): array
-    {
-        if (empty($products)) {
-            return [];
-        }
-
-        $productIds = array_column($products, 'id');
-
-        $sql = new \DbQuery();
-        $sql->select('pa.id_product, a.id_attachment, al.name')
-            ->from('product_attachment', 'pa')
-            ->leftJoin('attachment', 'a', 'a.id_attachment = pa.id_attachment')
-            ->leftJoin('attachment_lang', 'al', 'al.id_attachment = a.id_attachment AND al.id_lang = ' . (int)$this->idLang)
-            ->where('pa.id_product IN (' . implode(',', array_map('intval', $productIds)) . ')')
-            ->where('al.name LIKE "' . pSQL($documentSlug) . '%"');
-
-        $documents = $this->db->executeS($sql);
-
-        $documentMap = [];
-
-        foreach ($documents as $doc) {
-            $link = new \Link();
-            $downloadUrl = $link->getPageLink('attachment', true, null, [
-                'id_attachment' => (int)$doc['id_attachment'],
-                'filename' => urlencode(\Tools::str2url($doc['name']))
-            ]);
-
-            $documentMap[$doc['id_product']] = [
-                'id_attachment' => $doc['id_attachment'],
-                'name' => $doc['name'],
-                'download_url' => $downloadUrl,
-            ];
-        }
-
-        foreach ($products as $key => $product) {
-            if (isset($documentMap[$product['id']])) {
-                $products[$key]['document'] = $documentMap[$product['id']];
-            } else {
-                unset($products[$key]);
+                    $productsByCategory[$idCategory][$idProduct]['documents'][] = [
+                        'id_attachment' => (int)$row['id_attachment'],
+                        'name' => $row['attachment_name'],
+                        'download_url' => $downloadUrl,
+                    ];
+                }
             }
         }
 
-        return array_values($products);
+        // Associer les produits à chaque section, seulement s’ils ont des PDF
+        foreach ($sections as &$section) {
+            $idCategory = (int)$section['id_category'];
+            $section['products'] = isset($productsByCategory[$idCategory])
+                ? array_values(array_filter($productsByCategory[$idCategory], function ($p) {
+                    return !empty($p['documents']); // garde uniquement les produits avec des PDFs
+                }))
+                : [];
+        }
+
+        return $sections;
     }
 
 }
-
-

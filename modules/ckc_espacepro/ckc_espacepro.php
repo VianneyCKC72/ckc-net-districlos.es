@@ -15,8 +15,19 @@ class ckc_espacepro extends Module
     public $success = [];
     public $info    = [];
 
+
     protected $tabs = [
-        'Professionnels' => ['class' => 'AdminEspacePro', 'active' => 1],
+        'Professionnels' => [
+            'class' => 'AdminEspacePro',
+            'active' => 1,
+            'parent' => 'AdminParentCustomer', 
+        ],
+        'Fiches et Guides' => [
+            'class' => 'AdminGuidesFiches',
+            'active' => 1,
+            'parent' => 'IMPROVE',
+            'icon'   => 'book'
+        ],
     ];
 
     /** @var string */
@@ -59,6 +70,8 @@ class ckc_espacepro extends Module
             Configuration::updateValue('CKC_PART_URL_BOUTIQUE', '', false, null, (int)$idShop);
 
         }
+
+        include __DIR__ . '/sql/install.php';
 
         $ok =
             $this->registerHook('actionFrontControllerInitAfter') &&
@@ -678,13 +691,19 @@ class ckc_espacepro extends Module
         return str_replace("'", '', (string)$input);
     }
 
+
     protected function addTabs()
     {
-        $parent = version_compare(_PS_VERSION_, '1.7.0', '<') ? 0 : (int)Tab::getIdFromClassName('AdminParentCustomer');
+        $defaultParentClass = property_exists($this, 'parentTabClass') ? $this->parentTabClass : 'AdminParentCustomer';
 
-        foreach ($this->tabs as $name => $t) {
-            if (Tab::getIdFromClassName($t['class'])) {
-                continue; // évite doublons
+        $defaultParentId = 0;
+        if (version_compare(_PS_VERSION_, '1.7.0', '>=') && $defaultParentClass) {
+            $defaultParentId = (int)Tab::getIdFromClassName($defaultParentClass) ?: 0;
+        }
+
+        foreach ($this->tabs as $name => $tabInfo) {
+            if (Tab::getIdFromClassName($tabInfo['class'])) {
+                continue;
             }
             $tab             = new Tab();
             $tab->active     = (int)$t['active'];
@@ -693,17 +712,26 @@ class ckc_espacepro extends Module
             $tab->id_parent  = $parent;
             $tab->name       = [];
 
+            if (isset($tabInfo['parent'])) {
+                $parentId = (int)Tab::getIdFromClassName($tabInfo['parent']) ?: $defaultParentId;
+            } else {
+                $parentId = $defaultParentId;
+            }
+            $tab->id_parent = $parentId;
+
+            $tab->name = [];
             foreach (Language::getLanguages(true) as $lang) {
                 $tab->name[$lang['id_lang']] = $name;
             }
 
-            if (isset($t['icon'])) {
-                $tab->icon = $t['icon'];
+            if (isset($tabInfo['icon'])) {
+                $tab->icon = $tabInfo['icon'];
             }
 
             $tab->add();
         }
     }
+
 
     protected function deleteTabs()
     {
@@ -998,8 +1026,8 @@ class ckc_espacepro extends Module
                     'controller' => 'benefitsespacepro'
                 ]
             ],
-            'guides_pro_route'   => [
-                'rule'       => 'guides-pro', //url de la page
+                'products_documents' => [
+                'rule' => 'guides-et-fiches-techniques-produits', //url de la page
                 'controller' => 'guidesfiches',
                 'keywords'   => [],
                 'params'     => [
@@ -1008,16 +1036,26 @@ class ckc_espacepro extends Module
                     'controller' => 'guidesfiches'
                 ]
             ],
-            'fiches_pro_route'   => [
-                'rule'       => 'fiches-techniques-pro', //url de la page
-                'controller' => 'guidesfiches',
-                'keywords'   => [],
-                'params'     => [
-                    'module'     => $this->name,
-                    'fc'         => 'module',
-                    'controller' => 'guidesfiches'
-                ]
-            ],
+            //     'guides_pro_route' => [
+            //     'rule' => 'guides-pro', //url de la page
+            //     'controller' => 'guidesfiches',
+            //     'keywords' => [],
+            //     'params' => [
+            //         'module' => $this->name,
+            //         'fc' => 'module',
+            //         'controller' => 'guidesfiches'
+            //     ]
+            // ],
+            //     'fiches_pro_route' => [
+            //     'rule' => 'fiches-techniques-pro', //url de la page
+            //     'controller' => 'guidesfiches',
+            //     'keywords' => [],
+            //     'params' => [
+            //         'module' => $this->name,
+            //         'fc' => 'module',
+            //         'controller' => 'guidesfiches'
+            //     ]
+            // ],
 
         ];
 
