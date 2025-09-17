@@ -37,12 +37,14 @@ try {
 		$product_price_query = 'SELECT * FROM `ps_product` WHERE `id_product` = :id_product';
 		$stmt = $conn->prepare($product_price_query);
 		$stmt->execute(['id_product' => $value[1]]);
-		$product_price = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		$product_price = $product_price[0]['price'];
-		$product_wholesale_price = $product_price[0]['wholesale_price'];
+		$product_price_bdd = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$product_price = $product_price_bdd[0]['price'];
+		$product_wholesale_price = $product_price_bdd[0]['wholesale_price'];
+
 		if ($product_price > 0) {
 			$set_price = $set_price - $product_price;
 		}
+
 		if ($value[0] != "") {
 
 			$sql = 'UPDATE ps_product_attribute
