@@ -76,7 +76,7 @@ try {
 				$product_attributes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 				foreach ($product_attributes as $product_attribute) {
-					$sql = 'UPDATE `ps_product` SET `price` = :price, `wholesale_price` :wholesale_price WHERE `ps_product`.`id_product` = :id_product';
+					$sql = 'UPDATE `ps_product` SET `price` = :price, `wholesale_price` = :wholesale_price WHERE `ps_product`.`id_product` = :id_product';
 					$stmt = $conn->prepare($sql);
 					$stmt->execute(['price' => $product_price, 'id_product' => $product_attribute['id_product'], 'wholesale_price' => $product_wholesale_price]);
 
