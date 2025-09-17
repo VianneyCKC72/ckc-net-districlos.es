@@ -12,4 +12,4 @@ Vous pouvez le consulter dans la section Paramètres Avancés > Logs de votre ba
 
 [{shop_name}]({shop_url})
 
-Powered by [PrestaShop](https://www.prestashop-project.org/)
+
