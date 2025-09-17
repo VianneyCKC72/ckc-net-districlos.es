@@ -11,7 +11,7 @@ try {
 	$conn = new PDO($dsn, $username, $password);
 	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-	$csv = readCSV('/var/www/districlos/admin562niy1zl/prices/EDI_TARIF_DV_WEBPRO.csv');
+	$csv = readCSV('/var/www/districlos/admin024h9xfokhvsbvfmnzn/prices/EDI_TARIF_DV_WEBPRO.csv');
 
 	// Skip header row if it exists
 	// fgetcsv($file);
