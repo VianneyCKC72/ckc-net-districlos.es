@@ -95,6 +95,23 @@ $(document).ready(function () {
         checkStock(false, input, direction, differential);
     });
 
+    $('body').on('keyup', '.js-product-quantity', function (event) {
+        let input = $(this);
+        let qtyBefore = parseInt(input.attr('data-valueqty')) || 1;
+        let qty = parseInt(input.val()) || 1;
+
+        // Bloque la requête AJAX si la valeur n'a pas changé
+        if (qty === qtyBefore) {
+            return false;
+        }
+
+        let differential = Math.abs(qty - qtyBefore);
+        let direction = qty > qtyBefore ? 'up' : 'down';
+        input.attr('data-valueqty', qty);
+
+        checkStock(false, input, direction, differential);
+    });
+
 
     function getFormData(cart = false, object = null, direction = null, differential = null) {
         if (!cart) {
