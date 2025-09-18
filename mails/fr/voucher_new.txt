@@ -12,4 +12,4 @@ Pour en bénéficier, copier/coller ce code lors de l'achat.
 
 [{shop_name}]({shop_url})
 
-Powered by [PrestaShop](https://www.prestashop-project.org/)
+

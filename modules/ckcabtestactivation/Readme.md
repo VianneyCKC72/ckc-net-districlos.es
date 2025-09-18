@@ -1,1 +1,0 @@
-# Ckc Activation AB Test

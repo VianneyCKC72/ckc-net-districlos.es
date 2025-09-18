@@ -17,4 +17,4 @@ Vous pouvez accéder à votre compte client sur notre boutique : [{shop_name}]({
 
 [{shop_name}]({shop_url})
 
-Powered by [PrestaShop](https://www.prestashop-project.org/)
+

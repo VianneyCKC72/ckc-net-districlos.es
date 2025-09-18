@@ -10,4 +10,4 @@ Veuillez ne pas répondre directement à ce message, nous ne recevrons pas votre
 
 [{shop_name}]({shop_url})
 
-Powered by [PrestaShop](https://www.prestashop-project.org/)
+

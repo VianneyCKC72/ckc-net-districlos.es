@@ -12,4 +12,4 @@ Pour accéder à cet avoir et le télécharger, rendez-vous dans la section [Avo
 
 [{shop_name}]({shop_url})
 
-Powered by [PrestaShop](https://www.prestashop-project.org/)
+
