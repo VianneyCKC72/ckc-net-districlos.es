@@ -253,6 +253,7 @@ app/config/config.php
 
 modules/*
 !modules/ckc*/
+!modules/productfaq/
 #override/*
 themes/*/
 !themes/classic/

@@ -262,6 +262,16 @@
                                            aria-controls="extra-{$extraKey}">{$extra.title}</a>
                                     </li>
                                 {/foreach}
+
+                                {* Onglet FAQ *}
+                                {assign var="faq_module" value=Module::getInstanceByName('productfaq')}
+                                {assign var="faq_has_content" value=$faq_module && $faq_module->getFaqsByProduct($product.id, true)}
+                                {if $faq_has_content}
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#product-faq" role="tab"
+                                           aria-controls="product-faq">FAQ</a>
+                                    </li>
+                                {/if}
                             </ul>
 
                             <div class="tab-content" id="tab-content">
@@ -372,6 +382,13 @@
                                 {$extra.content nofilter}
                             </div>
                             {/foreach}
+
+                            {* Onglet FAQ *}
+                            {if $faq_has_content}
+                                <div class="tab-pane fade in" id="product-faq" role="tabpanel">
+                                    {include file="module:productfaq/views/templates/hook/product_faq.tpl"}
+                                </div>
+                            {/if}
                         </div>
                     {/block}
                 </div>
