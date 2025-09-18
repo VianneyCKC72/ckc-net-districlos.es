@@ -39,7 +39,6 @@
   {/block}
   <meta name="description" content="{block name='head_seo_description'}{$page.meta.description}{/block}">
   <meta name="keywords" content="{block name='head_seo_keywords'}{$page.meta.keywords}{/block}">
-  <meta name="robots" content="noindex, nofollow">
   <link rel="preconnect" href="https://f.vimeocdn.com">
   <link rel="preconnect" href="https://arclight.vimeo.com">
   <link rel="preconnect" href="https://i.vimeocdn.com">

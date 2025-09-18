@@ -45,6 +45,8 @@ class Ckc_configurator extends Module
         $this->description = $this->l('Configurateur de produits permettant, via un formulaire évolutif, d\'ajouter au panier les produits en relation avec son résultat.');
         $this->confirmUninstall = $this->l('Êtes-vous sûr de vouloir désinstaller le module ?');
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+
+        $this->_path = __PS_BASE_URI__ . 'modules/' . $this->name . '/';
     }
 
     public function install()
@@ -87,6 +89,7 @@ class Ckc_configurator extends Module
 
         $output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
 
+//        dump($output);
         return $output.$this->renderForm();
     }
 
@@ -173,12 +176,10 @@ class Ckc_configurator extends Module
 
     public function hookDisplayHeader()
     {
-        if($this->isLive()) {
-            $this->context->controller->addCSS($this->_path.'/views/css/front.css');
-            $this->context->controller->addCSS($this->_path.'/views/css/animate.min.css');
-            $this->context->controller->addJS($this->_path.'/views/js/wow.min.js');
-            $this->context->controller->addJS($this->_path.'/views/js/front.js');
-        }
+        $this->context->controller->addCSS($this->_path.'/views/css/front.css');
+        $this->context->controller->addCSS($this->_path.'/views/css/animate.min.css');
+        $this->context->controller->addJS($this->_path.'/views/js/wow.min.js');
+        $this->context->controller->addJS($this->_path.'/views/js/front.js');
     }
 
     /**
