@@ -91,6 +91,8 @@ class CartController extends CartControllerCore
                     $price = $product->regular_price;
                     $total_ttc  = $product->total_wt;
                 }
+                dump($price);
+                die;
                 $price = number_format($price, 2, ',', ' ').' €';
             }else{
                 $total_ttc = $product->total_wt;
