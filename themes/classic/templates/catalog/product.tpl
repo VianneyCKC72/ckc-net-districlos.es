@@ -55,9 +55,10 @@
                 <div class="col-lg-7">
                     {block name='page_header_container'}
                         {block name='page_header'}
-                            <h1 class="h2 mb-5">{block name='page_title'}{$product.name}{/block}</h1>
+                            <h1 class="h2">{block name='page_title'}{$product.name}{/block}</h1>
                         {/block}
                     {/block}
+                    {hook h='displayPromoProductDescription'}
                     {block name='page_content_container'}
                         {block name='page_content'}
                             {* {include file='catalog/_partials/product-flags.tpl'} *}

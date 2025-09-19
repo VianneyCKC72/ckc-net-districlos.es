@@ -91,6 +91,9 @@ class CartController extends CartControllerCore
                     $price = $product->regular_price;
                     $total_ttc  = $product->total_wt;
                 }
+                if (is_string($price)) {
+                    $price = (float) str_replace(['€', ',', ' '], ['', '.', ''], $price);
+                }
                 $price = number_format($price, 2, ',', ' ').' €';
             }else{
                 $total_ttc = $product->total_wt;

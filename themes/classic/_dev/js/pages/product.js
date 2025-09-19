@@ -95,6 +95,10 @@ $(document).ready(function () {
         checkStock(false, input, direction, differential);
     });
 
+    $('body').on('keyup', '.js-product-quantity', function (event) {
+        $('.js-product-quantity').trigger('change');
+    });
+
 
     function getFormData(cart = false, object = null, direction = null, differential = null) {
         if (!cart) {
