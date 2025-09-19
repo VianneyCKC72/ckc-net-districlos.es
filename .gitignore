@@ -254,6 +254,7 @@ app/config/config.php
 modules/*
 !modules/ckc*/
 !modules/productfaq/
+!modules/statsforecast/
 #override/*
 themes/*/
 !themes/classic/
