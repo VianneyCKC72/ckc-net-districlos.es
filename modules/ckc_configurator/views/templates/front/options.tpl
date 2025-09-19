@@ -29,7 +29,7 @@
                             </div>
                         </a>
                         <div class="soubassement hide-row">
-                            <div class="font-weight-semibold subtitle mb-2">Hauteur</div>
+                            <div class="font-weight-semibold subtitle mb-2">Type de soubassement</div>
 
                             <select name="sousbassement_hauteur" id="sousbassement_hauteur" class="form-control">
                                 {foreach from=$sousbassement.heights item=height}
