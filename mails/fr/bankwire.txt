@@ -22,7 +22,7 @@ Détails du compte : {bankwire_details}
 
 Veuillez préciser votre numéro de commande dans la description du virement.
 
-Follow your order and download your invoice on our store, go to the [Historique et détails de mes commandes]({history_url}) section of your customer account.
+Suivez votre commande et téléchargez votre facture sur notre boutique, rendez-vous dans la section [Historique et détails de mes commandes]({history_url}) de votre compte client.
 
 Si vous avez un compte invité, vous pouvez suivre votre commande via la section [Suivi de commande]({guest_tracking_url}) sur notre boutique.
 
