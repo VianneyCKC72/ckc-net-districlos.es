@@ -1,79 +1,96 @@
 $(document).ready(function () {
-    // Initialisation de DataTable
     $('#customers').DataTable({
-        "bLengthChange": false, // Cache le menu de changement de nombre d'éléments affichés
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
-        },
+        bLengthChange: false,
+        language: { url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json' },
         responsive: true,
         pageLength: 10,
-        "order": [[0, "desc"]], // Trie la première colonne (ID) en ordre décroissant
+        order: [[0, 'desc']]
     });
 
-    // Fonction pour afficher un message et rediriger
-    function showMessageAndRedirect(message, backgroundColor, customerId, action) {
-        var $infoMessage = $('<div></div>', {
-            text: message,
+    function toast(msg, ok = true) {
+        var $m = $('<div/>', {
+            text: msg,
             css: {
                 position: 'fixed',
                 bottom: '20px',
                 left: '50%',
                 transform: 'translateX(-50%)',
-                backgroundColor: backgroundColor,
-                color: 'white',
-                padding: '10px',
-                borderRadius: '5px',
-                zIndex: 1000
+                backgroundColor: ok ? 'rgba(40,167,69,0.95)' : 'rgba(220,53,69,0.95)',
+                color: '#fff',
+                padding: '10px 14px',
+                borderRadius: '6px',
+                zIndex: 9999,
+                boxShadow: '0 6px 20px rgba(0,0,0,0.2)'
             }
         }).appendTo('body');
-
-        // Préparation de l'URL de redirection basée sur l'action
-        var currentUrl = window.location.href.split('?')[0];
-        var newUrl = currentUrl + "?controller=AdminEspacePro&configure=ckc_espacepro&token=" + token;
-        newUrl += "&id_customer=" + customerId;
-
-        // Ajout du paramètre spécifique à l'action
-        if (action === 'activate') {
-            newUrl += "&active=1";
-        } else if (action === 'deactivate') {
-            newUrl += "&active=0";
-        } else if (action === 'accept') {
-            newUrl += "&refuse=0"; // Pour accepter, on met refuse à 0
-        } else if (action === 'refuse') {
-            newUrl += "&refuse=1";
-        }
-
-        console.log(newUrl); // Utilisez console.log au lieu d'alert pour un débogage moins intrusif
-
-        setTimeout(function () {
-            window.location.href = newUrl;
-            $infoMessage.remove();
-        }, 1000);
+        setTimeout(function(){ $m.fadeOut(200, function(){ $(this).remove(); }); }, 1200);
     }
 
-    // Fonction pour obtenir la valeur d'un paramètre GET par nom
-    function getParameterByName(name, url = window.location.href) {
-        name = name.replace(/[\[\]]/g, '\\$&');
-        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-            results = regex.exec(url);
-        if (!results) return null;
-        if (!results[2]) return '';
-        return decodeURIComponent(results[2].replace(/\+/g, ' '));
-    }
+    document.addEventListener('change', function (e) {
+        const el = e.target;
+        if (!el.classList.contains('js-change-group')) return;
 
-    $('.btn-activer, .btn-desactiver, .btn-accepte, .btn-refuse').on('click', function () {
-        var customerId = $(this).data('id');
-        var action = $(this).hasClass('btn-activer') ? 'activate' :
-            $(this).hasClass('btn-desactiver') ? 'deactivate' :
-                $(this).hasClass('btn-accepte') ? 'accept' :
-                    'refuse'; // Simplifié pour une meilleure lisibilité
-        var message = action === 'activate' ? "Activation du client en cours..." :
-            action === 'deactivate' ? "Désactivation du client en cours..." :
-                action === 'refuse' ? "Traitement du refus du client..." :
-                    "Déblocage du contact client en cours...";
-        var backgroundColor = action === 'activate' || action === 'accept' ? "rgba(0, 123, 255, 0.9)" :
-            "rgba(220, 53, 69, 0.9)";
+        const idCustomer = el.dataset.idCustomer;
+        const idGroup    = el.value;
+        const selCell    = el.closest('td');
+        const tr         = el.closest('tr');
+        const badge      = tr ? tr.querySelector('.status-badge') : null;
+        const prev       = el.getAttribute('data-prev') || '';
+        const proId      = String(window.PRO_GROUP_ID || document.body.getAttribute('data-pro-id') || '');
+        const protiId    = String(window.PROTI_GROUP_ID || document.body.getAttribute('data-proti-id') || '');
 
-        showMessageAndRedirect(message, backgroundColor, customerId, action);
+        el.disabled = true;
+
+        fetch(ajax_change_group_url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'},
+            body: new URLSearchParams({
+                ajax: 1,
+                action: 'changeCustomerGroup',
+                id_customer: idCustomer,
+                id_group: idGroup
+            })
+        })
+            .then(r => r.json())
+            .then(json => {
+                if (json && json.success) {
+                    el.setAttribute('data-prev', idGroup);
+                    toast('Type de compte mis à jour ✔️', true);
+
+                    if (tr) {
+                        tr.classList.remove('row-pro', 'row-proticulier');
+                        if (String(idGroup) === proId) tr.classList.add('row-pro');
+                        else tr.classList.add('row-proticulier');
+                    }
+
+                    if (badge) {
+                        if (String(idGroup) === proId) {
+                            badge.textContent = 'Professionnel';
+                            badge.classList.remove('badge-proti');
+                            badge.classList.add('badge-pro');
+                        } else {
+                            badge.textContent = 'Proticulier';
+                            badge.classList.remove('badge-pro');
+                            badge.classList.add('badge-proti');
+                        }
+                    }
+
+                    if (selCell) {
+                        const small = selCell.querySelector('.small-muted');
+                        if (small) {
+                            const label = el.options[el.selectedIndex] ? el.options[el.selectedIndex].text : '';
+                            small.textContent = 'Groupe par défaut : ' + (label || '—');
+                        }
+                    }
+                } else {
+                    toast((json && json.message) ? json.message : 'Échec mise à jour', false);
+                    el.value = prev;
+                }
+            })
+            .catch(() => {
+                toast('Erreur réseau', false);
+                el.value = prev;
+            })
+            .finally(() => { el.disabled = false; });
     });
 });

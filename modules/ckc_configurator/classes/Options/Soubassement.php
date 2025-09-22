@@ -94,10 +94,13 @@ class Soubassement extends ProductFactory {
             if (strtolower($combination['group']) == 'couleur') {
                 $color = str_replace('-', ' ', $combination['attribute']);
                 if(Helper::valueExists($combination['attribute'], $colors, "value") == false) {
+                    $colorCode = explode(' ', $combination['attribute'])[1] ?? '';
+                    $root_path        = '/modules/ckc_configurator/';
+
                     $colors[] = [
                         "value" => $combination['attribute'],
                         "name" => $color,
-                        "image_url" => self::getImageUrl(\Product::getCombinationImageById($combination['id_product_attribute'], $language_id)),
+                        "image_url" => $id_product != 1257 ? self::getImageUrl(\Product::getCombinationImageById($combination['id_product_attribute'], $language_id)) : $root_path. 'views/images/couleurs/' . $colorCode . '.png',
                         "id_product_attribute" => $combination['id_product_attribute'],
                     ];
                 }

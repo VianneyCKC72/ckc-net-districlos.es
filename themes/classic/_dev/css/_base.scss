@@ -3247,6 +3247,13 @@ tbody.collapse.in {
   border-radius: 0;
 }
 
+@media only screen and (max-width: 768px) {
+  .breadcrumb a,
+  .breadcrumb span {
+    font-size: 9px;
+  }
+}
+
 .breadcrumb-item {
   float: left;
 }
@@ -3257,6 +3264,11 @@ tbody.collapse.in {
   padding-left: 0.5rem;
   color: #f6f6f6;
   content: "/";
+
+  @media only screen and (max-width: 768px) {
+    padding-right: 0.3rem;
+    padding-left: 0.3rem;
+  }
 }
 
 .breadcrumb-item + .breadcrumb-item:hover::before {
@@ -8520,10 +8532,11 @@ form
   @media only screen and (max-width: 1068px) {
     padding-left: 10px;
     padding-right: 10px;
+    padding-top: 20px;
   }
   @media only screen and (max-width: 768px) {
     padding-bottom: 10px;
-    padding-top: 15px;
+    padding-top: 10px;
   }
 }
 
