@@ -50,7 +50,6 @@
                 <th>{l s='Total price' d='Shop.Theme.Checkout'}</th>
                 <th class="hidden-md-down">{l s='Payment' d='Shop.Theme.Checkout'}</th>
                 <th class="hidden-md-down">{l s='Status' d='Shop.Theme.Checkout'}</th>
-                <th>{l s='Invoice' d='Shop.Theme.Checkout'}</th>
                 <th>&nbsp;</th>
               </tr>
               </thead>
@@ -68,13 +67,6 @@
                         >
                           {$order.history.current.ostate_name}
                         </span>
-                  </td>
-                  <td class="text-sm-center hidden-md-down">
-                    {if $order.details.invoice_url}
-                      <a href="{$order.details.invoice_url}"><i class="material-icons">&#xE415;</i></a>
-                    {else}
-                      -
-                    {/if}
                   </td>
                   <td class="text-sm-center order-actions">
                     <a class="view-order-details-link" href="{$order.details.details_url}" data-link-action="view-order-details">
