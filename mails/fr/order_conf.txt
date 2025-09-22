@@ -35,7 +35,7 @@ Adresse de facturation
 
 {invoice_block_txt}
 
-Follow your order and download your invoice on our store, go to the [Historique et détails de mes commandes]({history_url}) section of your customer account.
+Follow your order and download your invoice on our store, go to the [Historique et détails de mes commandes]({history_url}) section of your cutomer account.
 
 Si vous avez un compte invité, vous pouvez suivre votre commande via la section [Suivi de commande]({guest_tracking_url}) sur notre boutique.
 
