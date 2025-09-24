@@ -137,6 +137,10 @@ class Ckcstockmultistore extends Module
             $this->registerHook('actionOrderStatusUpdate') &&
             $this->registerHook('displayAdminProductsMainStepLeftColumnBottom') &&
             $this->registerHook('displayBackOfficeHeader');
+            $this->registerHook('actionEmployeeFormBuilderModifier');
+            $this->registerHook('actionBeforeCreateEmployeeFormHandler');
+            $this->registerHook('actionAfterCreateEmployeeFormHandler');
+            $this->registerHook('actionAfterUpdateEmployeeFormHandler');
     }
 
     public function uninstall()
@@ -645,5 +649,88 @@ class Ckcstockmultistore extends Module
                     'sortable' => true,
                 ])
             );
+    }
+
+    public function hookActionEmployeeFormBuilderModifier(array $params)
+    {
+        /** @var \Symfony\Component\Form\FormBuilderInterface $formBuilder */
+        $formBuilder = $params['form_builder'];
+        $data = $params['data']; // tableau de valeurs actuelles du form
+        $employeeId = (int) ($data['id_employee'] ?? 0);
+
+        $stores = \Db::getInstance()->executeS('
+        SELECT id_store, name
+        FROM '._DB_PREFIX_.'ckcstockstores_stores
+        ORDER BY name ASC
+    ');
+
+        $choices = [];
+        foreach ($stores as $s) {
+            $choices[$s['name']] = (int) $s['id_store'];
+        }
+
+        $selected = [];
+        if ($employeeId) {
+            $rows = \Db::getInstance()->executeS('
+            SELECT id_store
+            FROM '._DB_PREFIX_.'ckcstockstores_employee_store
+            WHERE id_employee='.(int)$employeeId
+            );
+            $selected = array_map('intval', array_column($rows, 'id_store'));
+        }
+
+        $params['data']['ckc_stores'] = $selected;
+
+        $formBuilder->add('ckc_stores', ChoiceType::class, [
+            'label' => $this->l('Magasins autorisés'),
+            'choices' => $choices,
+            'multiple' => true,
+            'expanded' => false,
+            'required' => false,
+            'mapped' => false,
+            'placeholder' => false,
+            'attr' => [
+                'data-toggle' => 'select2',
+            ],
+            'help' => $this->l('Sélectionnez les stores auxquels cet employé a accès.'),
+        ]);
+    }
+
+    private function saveEmployeeStores(int $employeeId, array $storeIds): void
+    {
+        $db = \Db::getInstance();
+        $db->delete(_DB_PREFIX_.'ckcstockstores_employee_store', 'id_employee='.(int)$employeeId);
+
+        $values = [];
+        foreach (array_unique(array_map('intval', $storeIds)) as $idStore) {
+            $values[] = '('.(int)$employeeId.','.(int)$idStore.')';
+        }
+        if ($values) {
+            $sql = 'INSERT INTO '._DB_PREFIX_.'ckcstockstores_employee_store (id_employee, id_store) VALUES '.implode(',', $values);
+            $db->execute($sql);
+        }
+    }
+
+    public function hookActionAfterCreateEmployeeFormHandler(array $params)
+    {
+        $employeeId = (int) $params['id'];
+        $formData = $params['form_data'];
+        $this->saveEmployeeStores($employeeId, $formData['ckc_stores'] ?? []);
+    }
+
+    public function hookActionAfterUpdateEmployeeFormHandler(array $params)
+    {
+        $employeeId = (int) $params['id'];
+        $formData = $params['form_data'];
+        $this->saveEmployeeStores($employeeId, $formData['ckc_stores'] ?? []);
+    }
+
+    public function employeeStoreIds(int $employeeId): array
+    {
+        $rows = \Db::getInstance()->executeS('
+            SELECT id_store
+            FROM '._DB_PREFIX_.'ckcstockstores_employee_store
+            WHERE id_employee='.(int)$employeeId);
+        return array_map('intval', array_column($rows, 'id_store'));
     }
 }
