@@ -26,6 +26,7 @@
 
 
 use PrestaShop\PrestaShop\Core\Grid\Column\Type\DataColumn;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 if (!defined('_PS_VERSION_')) {
     exit;
