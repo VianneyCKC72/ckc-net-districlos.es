@@ -656,8 +656,7 @@ class Ckcstockmultistore extends Module
     {
         /** @var \Symfony\Component\Form\FormBuilderInterface $formBuilder */
         $formBuilder = $params['form_builder'];
-        $data = $params['data']; // tableau de valeurs actuelles du form
-        $employeeId = (int) ($data['id_employee'] ?? 0);
+        $employeeId = (int) $params['id'];
 
         $stores = \Db::getInstance()->executeS('
         SELECT id_store, name
@@ -679,8 +678,7 @@ class Ckcstockmultistore extends Module
             );
             $selected = array_map('intval', array_column($rows, 'id_store'));
         }
-        dump($employeeId, $params);
-        die;
+
         $params['data']['ckc_stores'] = $selected;
 
         $formBuilder->add('ckc_stores', ChoiceType::class, [
