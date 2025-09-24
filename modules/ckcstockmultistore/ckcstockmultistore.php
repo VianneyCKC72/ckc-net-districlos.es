@@ -679,7 +679,7 @@ class Ckcstockmultistore extends Module
             );
             $selected = array_map('intval', array_column($rows, 'id_store'));
         }
-        dump($selected);
+        dump($employeeId, $params);
         die;
         $params['data']['ckc_stores'] = $selected;
 
