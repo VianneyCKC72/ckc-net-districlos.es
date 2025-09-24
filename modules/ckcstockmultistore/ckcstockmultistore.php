@@ -1,31 +1,33 @@
 <?php
 /**
-* 2007-2025 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author    PrestaShop SA <contact@prestashop.com>
-*  @copyright 2007-2025 PrestaShop SA
-*  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+ * 2007-2025 PrestaShop
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ *  @author    PrestaShop SA <contact@prestashop.com>
+ *  @copyright 2007-2025 PrestaShop SA
+ *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ *  International Registered Trademark & Property of PrestaShop SA
+ */
 
 
-use PrestaShop\PrestaShop\Core\Grid\Column\Type\DataColumn;
+use PrestaShop\PrestaShop\Core\Grid\Column\Type\Common\DataColumn;
+use PrestaShop\PrestaShop\Core\Exception\NotFoundException;
+use PrestaShop\PrestaShop\Core\Grid\Filter\Filter;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 if (!defined('_PS_VERSION_')) {
@@ -137,10 +139,10 @@ class Ckcstockmultistore extends Module
             $this->installModuleTab('AdminCkcstockmultistoreTab', 'SELL', 'CKC Stock Multiboutique') &&
             $this->registerHook('actionOrderStatusUpdate') &&
             $this->registerHook('displayAdminProductsMainStepLeftColumnBottom') &&
-            $this->registerHook('displayBackOfficeHeader');
-            $this->registerHook('actionEmployeeFormBuilderModifier');
-            $this->registerHook('actionBeforeCreateEmployeeFormHandler');
-            $this->registerHook('actionAfterCreateEmployeeFormHandler');
+            $this->registerHook('displayBackOfficeHeader') &&
+            $this->registerHook('actionEmployeeFormBuilderModifier') &&
+            $this->registerHook('actionBeforeCreateEmployeeFormHandler') &&
+            $this->registerHook('actionAfterCreateEmployeeFormHandler') &&
             $this->registerHook('actionAfterUpdateEmployeeFormHandler');
     }
 
@@ -149,7 +151,7 @@ class Ckcstockmultistore extends Module
         Configuration::deleteByName('CKCSTOCKMULTISTORE_LIVE_MODE');
 
         return parent::uninstall()
-        && $this->uninstallModuleTab('AdminCkcstockmultistoreTab');
+            && $this->uninstallModuleTab('AdminCkcstockmultistoreTab');
     }
 
     /**
@@ -422,8 +424,8 @@ class Ckcstockmultistore extends Module
     }
 
     /**
-    * Add the CSS & JavaScript files you want to be loaded in the BO.
-    */
+     * Add the CSS & JavaScript files you want to be loaded in the BO.
+     */
     public function hookDisplayBackOfficeHeader()
     {
 
@@ -446,6 +448,9 @@ class Ckcstockmultistore extends Module
             $this->context->controller->addJS($this->_path.'views/js/vue.min.js');
             $this->context->controller->addJS($this->_path.'views/js/menu.js');
             $this->context->controller->addCSS($this->_path.'views/css/back.css');
+        }
+        if (Tools::getValue('controller') === 'AdminOrders') {
+            $this->context->controller->addCSS($this->_path.'views/css/admin-orders.css');
         }
     }
 
@@ -542,7 +547,7 @@ class Ckcstockmultistore extends Module
         }
 
         Db::getInstance()->execute(
-        'UPDATE ' . _DB_PREFIX_ . 'orders 
+            'UPDATE ' . _DB_PREFIX_ . 'orders 
             SET id_store = ' . (int) $id_store . ' 
             WHERE id_order = ' . (int) $id_order
         );
@@ -612,44 +617,123 @@ class Ckcstockmultistore extends Module
 
     public function hookActionOrderGridQueryBuilderModifier(array $params)
     {
-        $searchQueryBuilder = $params['search_query_builder'];
-        $searchCriteria = $params['search_criteria'];
+        /** @var QueryBuilder $qb */
+        $qb = $params['search_query_builder'];
+        /** @var QueryBuilder $qbCount */
+        $qbCount = $params['count_query_builder'];
+        /** @var OrderFilters $filters */
+        $filters = $params['search_criteria'];
 
-        $searchQueryBuilder->addSelect('st.name AS store_name')
-            ->leftJoin(
-                'o',
-                _DB_PREFIX_ . 'ckcstockstores_stores',
-                'st',
-                'o.id_store = st.id_store'
-            );
+        $employeeId = (int) $this->context->employee->id;
+        $allowedStoreIds = $this->employeeStoreIds($employeeId);
 
-        foreach ($searchCriteria->getFilters() as $filterName => $filterValue) {
-            if ('store_name' === $filterName && !empty($filterValue)) {
-                $searchQueryBuilder->andWhere('st.name LIKE :store_name');
-                $searchQueryBuilder->setParameter('store_name', '%' . pSQL($filterValue) . '%');
+        // Jointure pour récupérer le nom (utile pour la colonne et tris)
+        $aliasStore = 'ss';
+        $qb->leftJoin('o', _DB_PREFIX_.'ckcstockstores_stores', $aliasStore, "$aliasStore.id_store = o.id_store");
+        $qbCount->leftJoin('o', _DB_PREFIX_.'ckcstockstores_stores', $aliasStore, "$aliasStore.id_store = o.id_store");
+
+        // Sélectionner le nom pour la DataColumn/tri
+        $qb->addSelect("$aliasStore.name AS store_name");
+
+        // Sécurité : restreindre aux boutiques autorisées de l’employé connecté
+        if (!empty($allowedStoreIds)) {
+            $qb->andWhere('o.id_store IN (:allowedStores)')
+                ->setParameter('allowedStores', $allowedStoreIds, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+
+            $qbCount->andWhere('o.id_store IN (:allowedStores)')
+                ->setParameter('allowedStores', $allowedStoreIds, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+        } else {
+            // Aucune boutique autorisée => aucune commande
+            $qb->andWhere('1=0');
+            $qbCount->andWhere('1=0');
+            return;
+        }
+
+        // Filtre saisi dans l’UI
+        $allFilters = $filters->getFilters();
+        if (!empty($allFilters['ckc_stores'])) {
+            $selected = array_map('intval', (array) $allFilters['ckc_stores']);
+            // Ne garder que celles autorisées
+            $selected = array_values(array_intersect($selected, $allowedStoreIds));
+
+            if (!empty($selected)) {
+                $qb->andWhere('o.id_store IN (:selectedStores)')
+                    ->setParameter('selectedStores', $selected, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+
+                $qbCount->andWhere('o.id_store IN (:selectedStores)')
+                    ->setParameter('selectedStores', $selected, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+            }
+        }
+    }
+
+    public function hookActionOrderGridDefinitionModifier(array $params)
+    {
+        $definition = $params['definition'];
+
+        // ===== COLONNE "Boutique" =====
+        $columns = $definition->getColumns();
+        $storeColExists = false;
+        foreach ($columns as $col) {
+            if (method_exists($col, 'getId') && $col->getId() === 'store_name') {
+                $storeColExists = true;
+                break;
             }
         }
 
-        //PrestashopLogger::addLog('searchQueryBuilder: ' . $searchQueryBuilder->getSQL());
-    }
-
-
-    public function hookActionOrderGridDefinitionModifier($params)
-    {
-        /** @var GridDefinitionInterface $definition */
-        $definition = $params['definition'];
-
-        /** @var ColumnCollection */
-        $columns = $definition->getColumns();
-
-        $columns
-            ->addAfter('date_add', (new DataColumn('store_name'))
-                ->setName($this->l('Boutique'))
-                ->setOptions([
-                    'field' => 'store_name',
-                    'sortable' => true,
-                ])
+        if (!$storeColExists) {
+            $columns->addAfter('date_add',
+                (new DataColumn('store_name'))
+                    ->setName($this->l('Boutique'))
+                    ->setOptions([
+                        'field' => 'store_name',
+                        'sortable' => true,
+                    ])
             );
+        }
+
+        // ===== FILTRE "Boutiques" (multiple) =====
+        $employeeId = (int) $this->context->employee->id;
+        $allowedStoreIds = $this->employeeStoreIds($employeeId);
+
+        $where = !empty($allowedStoreIds)
+            ? ' WHERE id_store IN ('.implode(',', array_map('intval', $allowedStoreIds)).')'
+            : ' WHERE 1=0';
+
+        $rows = \Db::getInstance()->executeS('
+        SELECT id_store, name
+        FROM '._DB_PREFIX_.'ckcstockstores_stores
+        '.$where.'
+        ORDER BY name ASC
+    ');
+
+        $choices = [];
+        foreach ($rows as $r) {
+            $choices[$r['name']] = (int) $r['id_store'];
+        }
+
+        $filters = $definition->getFilters();
+        $storeFilterExists = false;
+        foreach ($filters as $filter) {
+            // Sur certaines versions, l'ID du filtre est porté par getName()
+            if (method_exists($filter, 'getName') && $filter->getName() === 'ckc_stores') {
+                $storeFilterExists = true;
+                break;
+            }
+        }
+
+        if (!$storeFilterExists) {
+            $filters->add(
+                (new Filter('ckc_stores', ChoiceType::class))
+                    ->setTypeOptions([
+                        'choices' => $choices,
+                        'multiple' => true,
+                        'expanded' => false, // passe à true pour des cases à cocher
+                        'required' => false,
+                        'choice_translation_domain' => false,
+                    ])
+                    ->setAssociatedColumn('store_name')
+            );
+        }
     }
 
     public function hookActionEmployeeFormBuilderModifier(array $params)
@@ -697,30 +781,49 @@ class Ckcstockmultistore extends Module
     private function saveEmployeeStores(int $employeeId, array $storeIds): void
     {
         $db = \Db::getInstance();
-        $db->delete(_DB_PREFIX_.'ckcstockstores_employee_store', 'id_employee='.(int)$employeeId);
+        $db->delete('ckcstockstores_employee_store', 'id_employee='.(int)$employeeId);
 
         $values = [];
         foreach (array_unique(array_map('intval', $storeIds)) as $idStore) {
             $values[] = '('.(int)$employeeId.','.(int)$idStore.')';
         }
+
         if ($values) {
             $sql = 'INSERT INTO '._DB_PREFIX_.'ckcstockstores_employee_store (id_employee, id_store) VALUES '.implode(',', $values);
             $db->execute($sql);
         }
     }
 
+    private function extractSubmittedStoreIds(array $params): array
+    {
+        if (isset($params['form_data']['ckc_stores'])) {
+            $ids = (array) $params['form_data']['ckc_stores'];
+            return array_values(array_unique(array_map('intval', $ids)));
+        }
+
+        $container = \PrestaShop\PrestaShop\Adapter\SymfonyContainer::getInstance();
+        $request = $container->get('request_stack')->getCurrentRequest();
+
+        $root = 'employee';
+
+        $payload = $request->request->all();
+        $ids = $payload[$root]['ckc_stores'] ?? [];
+
+        return array_values(array_unique(array_map('intval', (array) $ids)));
+    }
+
     public function hookActionAfterCreateEmployeeFormHandler(array $params)
     {
         $employeeId = (int) $params['id'];
-        $formData = $params['form_data'];
-        $this->saveEmployeeStores($employeeId, $formData['ckc_stores'] ?? []);
+        $storeIds = $this->extractSubmittedStoreIds($params);
+        $this->saveEmployeeStores($employeeId, $storeIds);
     }
 
     public function hookActionAfterUpdateEmployeeFormHandler(array $params)
     {
         $employeeId = (int) $params['id'];
-        $formData = $params['form_data'];
-        $this->saveEmployeeStores($employeeId, $formData['ckc_stores'] ?? []);
+        $storeIds = $this->extractSubmittedStoreIds($params);
+        $this->saveEmployeeStores($employeeId, $storeIds);
     }
 
     public function employeeStoreIds(int $employeeId): array
