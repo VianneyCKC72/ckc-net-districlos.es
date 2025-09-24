@@ -679,7 +679,8 @@ class Ckcstockmultistore extends Module
             );
             $selected = array_map('intval', array_column($rows, 'id_store'));
         }
-
+        dump($selected);
+        die;
         $params['data']['ckc_stores'] = $selected;
 
         $formBuilder->add('ckc_stores', ChoiceType::class, [
