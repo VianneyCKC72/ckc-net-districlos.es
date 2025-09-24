@@ -686,13 +686,10 @@ class Ckcstockmultistore extends Module
             'label' => $this->l('Magasins autorisés'),
             'choices' => $choices,
             'multiple' => true,
-            'expanded' => false,
+            'expanded' => true,
             'required' => false,
             'mapped' => false,
             'placeholder' => false,
-            'attr' => [
-                'data-toggle' => 'select2',
-            ],
             'help' => $this->l('Sélectionnez les stores auxquels cet employé a accès.'),
         ]);
     }
