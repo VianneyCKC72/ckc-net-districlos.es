@@ -29,6 +29,9 @@ class ProductFaq extends Module
 
     public function install()
     {
+        // D'abord, supprimer la table existante si elle existe
+        $this->dropTables();
+        
         return parent::install()
             && $this->registerHook('displayAdminProductsExtra')
             && $this->registerHook('actionProductUpdate')
@@ -50,7 +53,16 @@ class ProductFaq extends Module
 
     private function createTables()
     {
-        $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'product_faq` (
+        // Vérifier si la table existe et la supprimer
+        $sql = "SHOW TABLES LIKE '" . _DB_PREFIX_ . "product_faq'";
+        $result = Db::getInstance()->executeS($sql);
+        
+        if ($result) {
+            echo "Table existante détectée, suppression...\n";
+            $this->dropTables();
+        }
+        
+        $sql = 'CREATE TABLE `' . _DB_PREFIX_ . 'product_faq` (
             `id` int(11) NOT NULL AUTO_INCREMENT,
             `id_product` int(11) NOT NULL,
             `active` tinyint(1) NOT NULL DEFAULT 1,
@@ -60,7 +72,14 @@ class ProductFaq extends Module
             KEY `id_product` (`id_product`)
         ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
-        return Db::getInstance()->execute($sql);
+        $result = Db::getInstance()->execute($sql);
+        if ($result) {
+            echo "Table créée avec succès\n";
+        } else {
+            echo "Erreur lors de la création de la table: " . Db::getInstance()->getMsgError() . "\n";
+        }
+        
+        return $result;
     }
 
     private function dropTables()
