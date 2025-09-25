@@ -1,3 +1,10 @@
+AuthType Basic
+AuthName "Restricted Content"
+AuthUserFile /var/www/yan.cloture-discount.fr/.htpasswd
+<RequireAny>
+  Require ip 46.105.72.151
+  Require valid-user
+</RequireAny>
 <IfModule proxy_fcgi_module>
     <FilesMatch ".+\.ph(ar|p|tml)$">
             <If "-f %{REQUEST_FILENAME}">
@@ -319,23 +326,23 @@
     RewriteRule ^content/645-votre-cloture-districlos-livree-a-la-meziere-dans-votre-jardin$ / [L,R=301]
     RewriteRule ^content/646-votre-cloture-districlos-livree-a-toulon-dans-votre-jardin$ / [L,R=301]
     # Redirection cloture rigide de couleur vert
-    Redirect 301 /3-cloture-rigide/s-1/couleur-vert_6005 https://www.cloture-discount.fr/s/1/cloture-rigide-verte
+    Redirect 301 /3-cloture-rigide/s-1/couleur-vert_6005 https://yan.cloture-discount.fr/s/1/cloture-rigide-verte
 
     # Redirection cloture rigide de couleur gris (7035)
-    Redirect 301 /3-cloture-rigide/s-1/couleur-gris_7035 https://www.cloture-discount.fr/s/2/cloture-rigide-gris
+    Redirect 301 /3-cloture-rigide/s-1/couleur-gris_7035 https://yan.cloture-discount.fr/s/2/cloture-rigide-gris
 
     # Redirection cloture rigide de couleur gris (7016)
-    Redirect 301 /3-cloture-rigide/s-1/couleur-gris_7016 https://www.cloture-discount.fr/s/2/cloture-rigide-gris
+    Redirect 301 /3-cloture-rigide/s-1/couleur-gris_7016 https://yan.cloture-discount.fr/s/2/cloture-rigide-gris
 
     # Redirection cloture rigide de couleur blanc
-    Redirect 301 /3-cloture-rigide/s-1/couleur-blanc_9010 https://www.cloture-discount.fr/s/4/cloture-rigide-blanche
+    Redirect 301 /3-cloture-rigide/s-1/couleur-blanc_9010 https://yan.cloture-discount.fr/s/4/cloture-rigide-blanche
 
     # Redirection de couleur noir
-    Redirect 301 /3-cloture-rigide/s-1/couleur-noir_9005 https://www.cloture-discount.fr/s/3/cloture-rigide-noir
+    Redirect 301 /3-cloture-rigide/s-1/couleur-noir_9005 https://yan.cloture-discount.fr/s/3/cloture-rigide-noir
 
-    Redirect 301 /24-portillons https://www.cloture-discount.fr/130-portillons
-    Redirect 301 /cloture-barreaudee-decorative-/1217-cloture-barreaudee-zou.html https://www.cloture-discount.fr/cloture-barreaudee-decorative-/1386-pack-cloture-barreaudee-zou-kit-de-fixation.html
-    Redirect 301 /cloture-barreaudee-decorative-/1219-cloture-barreaudee-ara.html https://www.cloture-discount.fr/cloture-barreaudee-decorative-/1385-11797276-pack-panneau-ara-kit-de-fixation.html
+    Redirect 301 /24-portillons https://yan.cloture-discount.fr/130-portillons
+    Redirect 301 /cloture-barreaudee-decorative-/1217-cloture-barreaudee-zou.html https://yan.cloture-discount.fr/cloture-barreaudee-decorative-/1386-pack-cloture-barreaudee-zou-kit-de-fixation.html
+    Redirect 301 /cloture-barreaudee-decorative-/1219-cloture-barreaudee-ara.html https://yan.cloture-discount.fr/cloture-barreaudee-decorative-/1385-11797276-pack-panneau-ara-kit-de-fixation.html
 
     # Redirections 301 anciennes URL vers nouvelles
     Redirect 301 /content/497-achat-cloture /distriblog/conseils/achat-cloture/
@@ -362,131 +369,131 @@
     Redirect 301 /content/578-portail-fer-bois /distriblog/conseils/portail-fer-bois/
     Redirect 301 /content/564-renforcer-cloture-grillage /distriblog/conseils/renforcer-cloture-grillage/
 
-    #Domain: www.cloture-discount.fr
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    #Domain: yan.cloture-discount.fr
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule . - [E=REWRITEBASE:/]
     RewriteRule ^api(?:/(.*))?$ %{ENV:REWRITEBASE}webservice/dispatcher.php?url=$1 [QSA,L]
     RewriteRule ^upload/.+$ %{ENV:REWRITEBASE}index.php [QSA,L]
 
     # Images
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^(([\d])(?:\-[\w-]*)?)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/p/$2/$1$3 [L]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^(([\d])([\d])(?:\-[\w-]*)?)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/p/$2/$3/$1$4 [L]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^(([\d])([\d])([\d])(?:\-[\w-]*)?)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/p/$2/$3/$4/$1$5 [L]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^(([\d])([\d])([\d])([\d])(?:\-[\w-]*)?)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/p/$2/$3/$4/$5/$1$6 [L]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^(([\d])([\d])([\d])([\d])([\d])(?:\-[\w-]*)?)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/p/$2/$3/$4/$5/$6/$1$7 [L]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^(([\d])([\d])([\d])([\d])([\d])([\d])(?:\-[\w-]*)?)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/p/$2/$3/$4/$5/$6/$7/$1$8 [L]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^(([\d])([\d])([\d])([\d])([\d])([\d])([\d])(?:\-[\w-]*)?)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/p/$2/$3/$4/$5/$6/$7/$8/$1$9 [L]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^c/([\d]+)(\-[\.*\w-]*)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/c/$1$2$3 [L]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^c/([a-zA-Z_-]+)(-[\d]+)?/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/c/$1$2$3 [L]
     # AlphaImageLoader for IE and fancybox
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^images_ie/?([^/]+)\.(jpe?g|png|gif)$ %{ENV:REWRITEBASE}js/jquery/plugins/fancybox/images/$1.$2 [L]
 
     # Dispatcher
     RewriteCond %{REQUEST_FILENAME} -s [OR]
     RewriteCond %{REQUEST_FILENAME} -l [OR]
     RewriteCond %{REQUEST_FILENAME} -d
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^.*$ - [NC,L]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^.*$ %{ENV:REWRITEBASE}index.php [NC,L]
 
-    #Domain: www.cloture-discount.fr
+    #Domain: yan.cloture-discount.fr
     RewriteRule . - [E=REWRITEBASE:/]
     RewriteRule ^api(?:/(.*))?$ %{ENV:REWRITEBASE}webservice/dispatcher.php?url=$1 [QSA,L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^rhone$ /rhone/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^rhone/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^seine-et-marne$ /seine-et-marne/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^seine-et-marne/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^gironde$ /gironde/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^gironde/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^manomano$ /manomano/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^manomano/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^cdiscount$ /cdiscount/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^cdiscount/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^amazon$ /amazon/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^amazon/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^holding$ /holding/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^holding/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^eure$ /eure/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^eure/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^auvergne$ /auvergne/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^auvergne/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^nord$ /nord/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^nord/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^bourgogne$ /bourgogne/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^bourgogne/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^drome$ /drome/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^drome/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^savoie$ /savoie/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^savoie/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^est$ /est/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^est/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^le-var$ /le-var/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^le-var/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^maine-et-loire$ /maine-et-loire/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^maine-et-loire/(.*) /$1 [L]
 
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^languedoc$ /languedoc/ [L,R]
-    RewriteCond %{HTTP_HOST} ^www.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^yan.cloture-discount.fr$
     RewriteRule ^languedoc/(.*) /$1 [L]
 
     AddType application/vnd.ms-fontobject .eot
@@ -556,45 +563,45 @@
     # ~~end~~ Do not remove this comment, Prestashop will keep automatically the code outside this comment when .htaccess will be generated again
 
     # REDIRECTIONS
-    RedirectPermanent /blog http://www.cloture-discount.fr/distriblog
-    RedirectPermanent /magasins http://www.cloture-discount.fr/content/11-nos-magasins-de-cloture
-    #REDIRECT 302 /configurateur https://www.cloture-discount.fr/134-configurez-votre-kit
+    RedirectPermanent /blog http://yan.cloture-discount.fr/distriblog
+    RedirectPermanent /magasins http://yan.cloture-discount.fr/content/11-nos-magasins-de-cloture
+    #REDIRECT 302 /configurateur https://yan.cloture-discount.fr/134-configurez-votre-kit
 
     # CORRECTION BAD REDIRECTIONS 19/01/22
-    RedirectPermanent /content/388-grillage-souple-ou-grillage-rigide https://www.cloture-discount.fr/content/374-grillage-souple-ou-grillage-rigide
+    RedirectPermanent /content/388-grillage-souple-ou-grillage-rigide https://yan.cloture-discount.fr/content/374-grillage-souple-ou-grillage-rigide
 
     # Redictions guides -> Articles de blog
-    RedirectPermanent /content/529-poser-cellules-portail-automatique https://www.cloture-discount.fr/distriblog/conseils/cellule-portail/
-    RedirectPermanent /content/384-brise-vue-cloture-grillage https://www.cloture-discount.fr/distriblog/conseils/brise-vue-grillage-souple/
-    RedirectPermanent /content/456-cloture-terrain-en-pente https://www.cloture-discount.fr/distriblog/conseils/pose-grillage-rigide-terrain-pente/
-    RedirectPermanent /content/464-cloture-contre-sangliers https://www.cloture-discount.fr/distriblog/conseils/cloture-sanglier/
-    RedirectPermanent /content/393-reglementation-brise-vue https://www.cloture-discount.fr/distriblog/conseils/pose-brise-vue-reglementation/
-    RedirectPermanent /content/557-portail-deux-battants-asymetriques https://www.cloture-discount.fr/distriblog/conseils/portail-asymetrique/
-    RedirectPermanent /distriblog/conseils/comment-installer-son-portillon-de-jardin-facilement https://www.cloture-discount.fr/distriblog/conseils/comment-poser-portillon/
-    RedirectPermanent /content/457-portail-securite https://www.cloture-discount.fr/distriblog/conseils/comment-poser-portillon/
-    RedirectPermanent /content/15-grillage-rigide https://www.cloture-discount.fr/distriblog/conseils/pose-cloture-grillage-rigide/
-    RedirectPermanent /content/554-grillage-souple-pose-sans-ciment https://www.cloture-discount.fr/distriblog/conseils/pose-grillage-sans-ciment/
-    RedirectPermanent /content/506-cloture-barreaudage https://www.cloture-discount.fr/distriblog/conseils/barreaudage-vertical/
-    RedirectPermanent /content/394-choisir-portillon-de-jardin https://www.cloture-discount.fr/distriblog/conseils/choisir-portillon-de-jardin/
-    RedirectPermanent /distriblog/conseils/portillon https://www.cloture-discount.fr/distriblog/conseils/choisir-portillon-de-jardin/
-    RedirectPermanent /content/382-comment-installer-portillon-avec-grillage https://www.cloture-discount.fr/distriblog/conseils/comment-poser-portillon/
-    RedirectPermanent /distriblog/conseils/comment-poser-son-panneau-rigide-sur-un-terrain-en-pente https://www.cloture-discount.fr/distriblog/conseils/pose-grillage-rigide-terrain-pente/
-    RedirectPermanent /content/566-lames-occultation-pose-facile https://www.cloture-discount.fr/distriblog/conseils/pose-lame-occultation/
-    RedirectPermanent /content/599-decouper-brise-vue-toile https://www.cloture-discount.fr/distriblog/conseils/couper-brise-vue/
-    RedirectPermanent /content/465-cloture-vent https://www.cloture-discount.fr/distriblog/conseils/cloture-resistante-vent/
-    RedirectPermanent /content/542-raviver-couleur-portillon-alu https://www.cloture-discount.fr/distriblog/conseils/raviver-portail-alu/
-    RedirectPermanent /content/524-hauteur-grillage-choisir https://www.cloture-discount.fr/distriblog/conseils/hauteur-grillage/
-    RedirectPermanent /content/541-couleur-cloture-jardin https://www.cloture-discount.fr/distriblog/conseils/cloture-couleur/
-    RedirectPermanent /216-cloture-aluminium-en-kit https://www.cloture-discount.fr/354-cloture-aluminium-fix-en-kit
-    RedirectPermanent /236-cloture-aluminium-detail https://www.cloture-discount.fr/355-cloture-aluminium-fix-au-detail
+    RedirectPermanent /content/529-poser-cellules-portail-automatique https://yan.cloture-discount.fr/distriblog/conseils/cellule-portail/
+    RedirectPermanent /content/384-brise-vue-cloture-grillage https://yan.cloture-discount.fr/distriblog/conseils/brise-vue-grillage-souple/
+    RedirectPermanent /content/456-cloture-terrain-en-pente https://yan.cloture-discount.fr/distriblog/conseils/pose-grillage-rigide-terrain-pente/
+    RedirectPermanent /content/464-cloture-contre-sangliers https://yan.cloture-discount.fr/distriblog/conseils/cloture-sanglier/
+    RedirectPermanent /content/393-reglementation-brise-vue https://yan.cloture-discount.fr/distriblog/conseils/pose-brise-vue-reglementation/
+    RedirectPermanent /content/557-portail-deux-battants-asymetriques https://yan.cloture-discount.fr/distriblog/conseils/portail-asymetrique/
+    RedirectPermanent /distriblog/conseils/comment-installer-son-portillon-de-jardin-facilement https://yan.cloture-discount.fr/distriblog/conseils/comment-poser-portillon/
+    RedirectPermanent /content/457-portail-securite https://yan.cloture-discount.fr/distriblog/conseils/comment-poser-portillon/
+    RedirectPermanent /content/15-grillage-rigide https://yan.cloture-discount.fr/distriblog/conseils/pose-cloture-grillage-rigide/
+    RedirectPermanent /content/554-grillage-souple-pose-sans-ciment https://yan.cloture-discount.fr/distriblog/conseils/pose-grillage-sans-ciment/
+    RedirectPermanent /content/506-cloture-barreaudage https://yan.cloture-discount.fr/distriblog/conseils/barreaudage-vertical/
+    RedirectPermanent /content/394-choisir-portillon-de-jardin https://yan.cloture-discount.fr/distriblog/conseils/choisir-portillon-de-jardin/
+    RedirectPermanent /distriblog/conseils/portillon https://yan.cloture-discount.fr/distriblog/conseils/choisir-portillon-de-jardin/
+    RedirectPermanent /content/382-comment-installer-portillon-avec-grillage https://yan.cloture-discount.fr/distriblog/conseils/comment-poser-portillon/
+    RedirectPermanent /distriblog/conseils/comment-poser-son-panneau-rigide-sur-un-terrain-en-pente https://yan.cloture-discount.fr/distriblog/conseils/pose-grillage-rigide-terrain-pente/
+    RedirectPermanent /content/566-lames-occultation-pose-facile https://yan.cloture-discount.fr/distriblog/conseils/pose-lame-occultation/
+    RedirectPermanent /content/599-decouper-brise-vue-toile https://yan.cloture-discount.fr/distriblog/conseils/couper-brise-vue/
+    RedirectPermanent /content/465-cloture-vent https://yan.cloture-discount.fr/distriblog/conseils/cloture-resistante-vent/
+    RedirectPermanent /content/542-raviver-couleur-portillon-alu https://yan.cloture-discount.fr/distriblog/conseils/raviver-portail-alu/
+    RedirectPermanent /content/524-hauteur-grillage-choisir https://yan.cloture-discount.fr/distriblog/conseils/hauteur-grillage/
+    RedirectPermanent /content/541-couleur-cloture-jardin https://yan.cloture-discount.fr/distriblog/conseils/cloture-couleur/
+    RedirectPermanent /216-cloture-aluminium-en-kit https://yan.cloture-discount.fr/354-cloture-aluminium-fix-en-kit
+    RedirectPermanent /236-cloture-aluminium-detail https://yan.cloture-discount.fr/355-cloture-aluminium-fix-au-detail
 
     #Redirections catégories
-    RedirectPermanent /220-gamme-aluminium https://www.cloture-discount.fr/169-gamme-aluminium
+    RedirectPermanent /220-gamme-aluminium https://yan.cloture-discount.fr/169-gamme-aluminium
 
     #Redirections nouveaux produits
-    RedirectPermanent /grillage-rigide-au-detail/489-poteau-grillage-rigide.html https://www.cloture-discount.fr/grillage-rigide-au-detail/1223-poteau-grillage-rigide.html
-    RedirectPermanent /accessoires/415-bouchon-pour-poteau-pro.html https://www.cloture-discount.fr/accessoires/1224-bouchon-poteau-grillage-rigide.html
-    RedirectPermanent /accessoires/150-platine-poteau-grillage-rigide.html https://www.cloture-discount.fr/accessoires/1228-platine-grillage-rigide.html
+    RedirectPermanent /grillage-rigide-au-detail/489-poteau-grillage-rigide.html https://yan.cloture-discount.fr/grillage-rigide-au-detail/1223-poteau-grillage-rigide.html
+    RedirectPermanent /accessoires/415-bouchon-pour-poteau-pro.html https://yan.cloture-discount.fr/accessoires/1224-bouchon-poteau-grillage-rigide.html
+    RedirectPermanent /accessoires/150-platine-poteau-grillage-rigide.html https://yan.cloture-discount.fr/accessoires/1228-platine-grillage-rigide.html
 
     #Redirections Thomas 10/05/2023
     RedirectPermanent /213-grillages-souples /2-grillage-souple
@@ -606,42 +613,42 @@
         </FilesMatch>
     </IfModule>
 
-    #Domain: pro.cloture-discount.fr
-    RewriteCond %{HTTP_HOST} ^pro.cloture-discount.fr$
+    #Domain: pro.yan.cloture-discount.fr
+    RewriteCond %{HTTP_HOST} ^pro.yan.cloture-discount.fr$
     RewriteRule . - [E=REWRITEBASE:/]
     RewriteRule ^api(?:/(.*))?$ %{ENV:REWRITEBASE}webservice/dispatcher.php?url=$1 [QSA,L]
     RewriteRule ^upload/.+$ %{ENV:REWRITEBASE}index.php [QSA,L]
 
     # Images
-    RewriteCond %{HTTP_HOST} ^pro.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^pro.yan.cloture-discount.fr$
     RewriteRule ^(([\d])(?:\-[\w-]*)?)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/p/$2/$1$3 [L]
-    RewriteCond %{HTTP_HOST} ^pro.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^pro.yan.cloture-discount.fr$
     RewriteRule ^(([\d])([\d])(?:\-[\w-]*)?)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/p/$2/$3/$1$4 [L]
-    RewriteCond %{HTTP_HOST} ^pro.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^pro.yan.cloture-discount.fr$
     RewriteRule ^(([\d])([\d])([\d])(?:\-[\w-]*)?)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/p/$2/$3/$4/$1$5 [L]
-    RewriteCond %{HTTP_HOST} ^pro.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^pro.yan.cloture-discount.fr$
     RewriteRule ^(([\d])([\d])([\d])([\d])(?:\-[\w-]*)?)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/p/$2/$3/$4/$5/$1$6 [L]
-    RewriteCond %{HTTP_HOST} ^pro.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^pro.yan.cloture-discount.fr$
     RewriteRule ^(([\d])([\d])([\d])([\d])([\d])(?:\-[\w-]*)?)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/p/$2/$3/$4/$5/$6/$1$7 [L]
-    RewriteCond %{HTTP_HOST} ^pro.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^pro.yan.cloture-discount.fr$
     RewriteRule ^(([\d])([\d])([\d])([\d])([\d])([\d])(?:\-[\w-]*)?)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/p/$2/$3/$4/$5/$6/$7/$1$8 [L]
-    RewriteCond %{HTTP_HOST} ^pro.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^pro.yan.cloture-discount.fr$
     RewriteRule ^(([\d])([\d])([\d])([\d])([\d])([\d])([\d])(?:\-[\w-]*)?)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/p/$2/$3/$4/$5/$6/$7/$8/$1$9 [L]
-    RewriteCond %{HTTP_HOST} ^pro.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^pro.yan.cloture-discount.fr$
     RewriteRule ^c/([\d]+)(\-[\.*\w-]*)/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/c/$1$2$3 [L]
-    RewriteCond %{HTTP_HOST} ^pro.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^pro.yan.cloture-discount.fr$
     RewriteRule ^c/([a-zA-Z_-]+)(-[\d]+)?/.+(\.(?:jpe?g|webp|png|avif))$ %{ENV:REWRITEBASE}img/c/$1$2$3 [L]
     # AlphaImageLoader for IE and fancybox
-    RewriteCond %{HTTP_HOST} ^pro.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^pro.yan.cloture-discount.fr$
     RewriteRule ^images_ie/?([^/]+)\.(jpe?g|png|gif)$ %{ENV:REWRITEBASE}js/jquery/plugins/fancybox/images/$1.$2 [L]
 
     # Dispatcher
     RewriteCond %{REQUEST_FILENAME} -s [OR]
     RewriteCond %{REQUEST_FILENAME} -l [OR]
     RewriteCond %{REQUEST_FILENAME} -d
-    RewriteCond %{HTTP_HOST} ^pro.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^pro.yan.cloture-discount.fr$
     RewriteRule ^.*$ - [NC,L]
-    RewriteCond %{HTTP_HOST} ^pro.cloture-discount.fr$
+    RewriteCond %{HTTP_HOST} ^pro.yan.cloture-discount.fr$
     RewriteRule ^.*$ %{ENV:REWRITEBASE}index.php [NC,L]
 </IfModule>
 
