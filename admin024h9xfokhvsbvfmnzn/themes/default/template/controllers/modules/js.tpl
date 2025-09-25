@@ -88,6 +88,9 @@
 		}, 100);
 
 
+		}).on('keydown', function(e){
+			if (e.keyCode == 13)
+				return false;
 		});
 
 		$('input[name="filtername"]').result(function(event, data, formatted) {
