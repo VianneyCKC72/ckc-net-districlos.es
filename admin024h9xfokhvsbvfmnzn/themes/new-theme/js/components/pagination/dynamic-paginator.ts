@@ -192,7 +192,7 @@ export default class DynamicPaginator {
       .find(this.selectorsMap.jumpToPageInput)
       .keypress((e) => {
         if (e.which === 13) {
-          //e.preventDefault();
+          e.preventDefault();
           const input = <HTMLInputElement>e.currentTarget;
           const page = this.getValidPageNumber(Number(input.value));
           this.paginate(page);
