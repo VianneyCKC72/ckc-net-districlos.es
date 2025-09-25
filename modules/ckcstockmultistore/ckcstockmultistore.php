@@ -143,7 +143,10 @@ class Ckcstockmultistore extends Module
             $this->registerHook('actionEmployeeFormBuilderModifier') &&
             $this->registerHook('actionBeforeCreateEmployeeFormHandler') &&
             $this->registerHook('actionAfterCreateEmployeeFormHandler') &&
-            $this->registerHook('actionAfterUpdateEmployeeFormHandler');
+            $this->registerHook('actionAfterUpdateEmployeeFormHandler') &&
+            $this->registerHook('displayAdminCustomers') &&
+            $this->registerHook('actionCustomerGridDefinitionModifier') &&
+            $this->registerHook('actionCustomerGridQueryBuilderModifier');
     }
 
     public function uninstall()
@@ -449,9 +452,8 @@ class Ckcstockmultistore extends Module
             $this->context->controller->addJS($this->_path.'views/js/menu.js');
             $this->context->controller->addCSS($this->_path.'views/css/back.css');
         }
-        if (Tools::getValue('controller') === 'AdminOrders') {
-            $this->context->controller->addCSS($this->_path.'views/css/admin-orders.css');
-        }
+        $this->context->controller->addCSS($this->_path.'views/css/admin-orders.css');
+
     }
 
     /**
@@ -664,6 +666,19 @@ class Ckcstockmultistore extends Module
                     ->setParameter('selectedStores', $selected, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
             }
         }
+
+        if (!empty($allFilters['group'])) {
+
+            $selectedGroups = array_map('intval', (array) $allFilters['group']);
+
+            if (!empty($selectedGroups)) {
+                $qb->andWhere('cu.id_default_group IN (:selectedGroups)')
+                    ->setParameter('selectedGroups', $selectedGroups, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+
+                $qbCount->andWhere('cu.id_default_group IN (:selectedGroups)')
+                    ->setParameter('selectedGroups', $selectedGroups, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+            }
+        }
     }
 
     public function hookActionOrderGridDefinitionModifier(array $params)
@@ -727,11 +742,25 @@ class Ckcstockmultistore extends Module
                     ->setTypeOptions([
                         'choices' => $choices,
                         'multiple' => true,
-                        'expanded' => false, // passe à true pour des cases à cocher
+                        'expanded' => false,
                         'required' => false,
                         'choice_translation_domain' => false,
                     ])
                     ->setAssociatedColumn('store_name')
+            );
+
+            $choicesGroup = ['Défaut' => 3, 'Professionnels' => 10];
+
+            $filters->add(
+                (new Filter('group', ChoiceType::class))
+                    ->setTypeOptions([
+                        'choices' => $choicesGroup,
+                        'multiple' => true,
+                        'expanded' => false,
+                        'required' => false,
+                        'choice_translation_domain' => false,
+                    ])
+                    ->setAssociatedColumn('group')
             );
         }
     }
@@ -833,5 +862,177 @@ class Ckcstockmultistore extends Module
             FROM '._DB_PREFIX_.'ckcstockstores_employee_store
             WHERE id_employee='.(int)$employeeId);
         return array_map('intval', array_column($rows, 'id_store'));
+    }
+
+    public function hookDisplayAdminCustomers(array $params)
+    {
+        // ID client courant (vue BO client)
+
+        $idCustomer = null;
+        if (isset($params['id_customer']) && $params['id_customer']) {
+            $idCustomer = (int) $params['id_customer'];
+        }
+
+        if (!$idCustomer) {
+            return '';
+        }
+
+        // Dernière commande du client (+ boutique)
+        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow('
+            SELECT o.id_order, o.id_store, ss.name AS store_name, o.date_add
+            FROM '._DB_PREFIX_.'orders o
+            LEFT JOIN '._DB_PREFIX_.'ckcstockstores_stores ss
+                   ON ss.id_store = o.id_store
+            WHERE o.id_customer = '.(int)$idCustomer.'
+            ORDER BY o.date_add DESC
+        ');
+
+        if (!$row) {
+            // Aucun historique
+            $this->context->smarty->assign([
+                'has_store'   => false,
+                'store_name'  => null,
+                'id_store'    => null,
+                'id_order'    => null,
+                'date_add'    => null,
+                'denied'      => false,
+            ]);
+            return $this->display(__FILE__, 'views/templates/admin/customer_last_store.tpl');
+        }
+
+        // Sécurité : l’employé doit être autorisé à voir cette boutique
+        $employeeId = (int) $this->context->employee->id;
+        $allowed = [];
+        if (method_exists($this, 'employeeStoreIds')) {
+            $allowed = $this->employeeStoreIds($employeeId);
+        }
+        $isAllowed = empty($allowed) || in_array((int)$row['id_store'], $allowed, true);
+
+        $this->context->smarty->assign([
+            'has_store'   => !empty($row['id_store']),
+            'store_name'  => $row['store_name'] ?: '',
+            'id_store'    => (int) $row['id_store'],
+            'id_order'    => (int) $row['id_order'],
+            'date_add'    => $row['date_add'],
+            'denied'      => !$isAllowed,
+        ]);
+
+        return $this->display(__FILE__, 'views/templates/admin/customer_last_store.tpl');
+    }
+
+    public function hookActionCustomerGridDefinitionModifier(array $params)
+    {
+        $definition = $params['definition'];
+
+        $columns = $definition->getColumns();
+        $exists = false;
+        foreach ($columns as $col) {
+            if (method_exists($col, 'getId') && $col->getId() === 'ckc_store_name') { $exists = true; break; }
+        }
+        if (!$exists) {
+            $columns->addAfter(
+                'email',
+                (new DataColumn('ckc_store_name'))
+                    ->setName($this->l('Boutique'))
+                    ->setOptions(['field' => 'ckc_store_name'])
+            );
+        }
+
+        $employeeId = (int) $this->context->employee->id;
+        $allowed = $this->employeeStoreIds($employeeId);
+
+        $choices = [];
+        if (!empty($allowed)) {
+            $rows = \Db::getInstance()->executeS('
+                SELECT id_store, name
+                FROM '._DB_PREFIX_.'ckcstockstores_stores
+                WHERE id_store IN ('.implode(',', array_map('intval', $allowed)).')
+                ORDER BY name ASC
+            ');
+            foreach ($rows as $r) {
+                $choices[$r['name']] = (int) $r['id_store'];
+            }
+        }
+
+        $filters = $definition->getFilters();
+        $has = false;
+        foreach ($filters as $f) {
+            if (method_exists($f, 'getName') && $f->getName() === 'ckc_stores') { $has = true; break; }
+        }
+        if (!$has) {
+            $filters->add(
+                (new Filter('ckc_stores', ChoiceType::class))
+                    ->setTypeOptions([
+                        'choices' => $choices,
+                        'multiple' => true,
+                        'expanded' => false,
+                        'required' => false,
+                        'choice_translation_domain' => false,
+                    ])
+                    ->setAssociatedColumn('ckc_store_name')
+            );
+        }
+    }
+
+    public function hookActionCustomerGridQueryBuilderModifier(array $params)
+    {
+        $qb = $params['search_query_builder'];
+        $qbCount = $params['count_query_builder'];
+        $filters = $params['search_criteria'];
+
+        $allowed = $this->employeeStoreIds((int)$this->context->employee->id);
+
+        if (empty($allowed)) {
+            // Aucun droit boutique => pas de clients visibles
+            $qb->andWhere('1=0');
+            $qbCount->andWhere('1=0');
+            return;
+        }
+
+        $aliasStore = 'ss';
+        $aliasOrd   = 'o_last';
+
+        // 1) Récupérer la DERNIÈRE commande du client (MySQL: sous-requête corrélée)
+        // o_last.id_order = (SELECT id_order ... ORDER BY date_add DESC LIMIT 1)
+        $sub = '(
+            SELECT o2.id_order
+            FROM '._DB_PREFIX_.'orders o2
+            WHERE o2.id_customer = c.id_customer
+            ORDER BY o2.date_add DESC
+            LIMIT 1
+        )';
+
+        // Jointure sur la dernière commande
+        $qb->leftJoin('c', _DB_PREFIX_.'orders', $aliasOrd, $aliasOrd.'.id_order = '.$sub);
+        $qbCount->leftJoin('c', _DB_PREFIX_.'orders', $aliasOrd, $aliasOrd.'.id_order = '.$sub);
+
+        // Jointure sur ta table boutiques
+        $qb->leftJoin($aliasOrd, _DB_PREFIX_.'ckcstockstores_stores', $aliasStore, $aliasStore.'.id_store = '.$aliasOrd.'.id_store');
+        $qbCount->leftJoin($aliasOrd, _DB_PREFIX_.'ckcstockstores_stores', $aliasStore, $aliasStore.'.id_store = '.$aliasOrd.'.id_store');
+
+        // 2) Exposer le nom de boutique pour la colonne
+        $qb->addSelect($aliasStore.'.name AS ckc_store_name');
+
+        // 3) Restriction sécurité: ne voir que des clients ayant au moins une dernière commande dans les boutiques autorisées
+        // (si tu veux afficher aussi les clients sans jamais commander, commente cette partie)
+        $qb->andWhere('('.$aliasOrd.'.id_store IS NULL OR '.$aliasOrd.'.id_store IN (:allowedStores))');
+        $qb->setParameter('allowedStores', $allowed, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+
+        $qbCount->andWhere('('.$aliasOrd.'.id_store IS NULL OR '.$aliasOrd.'.id_store IN (:allowedStores))');
+        $qbCount->setParameter('allowedStores', $allowed, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+
+        // 4) Appliquer le filtre multiple saisi
+        $f = $filters->getFilters();
+
+        if (!empty($f['ckc_stores'])) {
+            $selected = array_values(array_intersect(array_map('intval', (array)$f['ckc_stores']), $allowed));
+            if (!empty($selected)) {
+                $qb->andWhere($aliasOrd.'.id_store IN (:selectedStores)');
+                $qb->setParameter('selectedStores', $selected, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+
+                $qbCount->andWhere($aliasOrd.'.id_store IN (:selectedStores)');
+                $qbCount->setParameter('selectedStores', $selected, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+            }
+        }
     }
 }
