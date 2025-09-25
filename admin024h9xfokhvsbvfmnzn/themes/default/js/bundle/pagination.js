@@ -56,7 +56,7 @@ $(document).ready(() => {
       const val = parseInt($(e.target).val(), 10);
 
       if (e.which === 13) { // ENTER
-        e.preventDefault();
+        //e.preventDefault();
         if (val > 0) {
           const limit = $(e.target).attr('pslimit');
           const url = $(this).attr('psurl').replace(/999999/, (val - 1) * limit);
