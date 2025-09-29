@@ -25,6 +25,7 @@ let config = {
             "./js/pages/identity.js",
             "./js/pages/checkout.js",
             "./js/pages/address.js",
+            "./js/modules/global.js",
             "./css/theme.scss"
         ],
         error: ["./css/error.scss"],
