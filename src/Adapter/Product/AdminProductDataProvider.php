@@ -383,6 +383,9 @@ class AdminProductDataProvider extends AbstractAdminQueryBuilder implements Prod
             );
 
             if ($formatCldr) {
+                if (!$product['price_final'] || $product['price_final'] == "") {
+                    $product['price_final'] = 0;
+                }
                 $product['price'] = $localeCldr->formatPrice($product['price'], $currency->iso_code);
                 $product['price_final'] = $localeCldr->formatPrice($product['price_final'], $currency->iso_code);
             }
