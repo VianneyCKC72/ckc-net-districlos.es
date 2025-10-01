@@ -263,6 +263,7 @@
                                            aria-controls="extra-{$extraKey}">{$extra.title}</a>
                                     </li>
                                 {/foreach}
+
                             </ul>
 
                             <div class="tab-content" id="tab-content">
@@ -401,4 +402,48 @@
         {/block}
 
     </section>
+
+    <script>
+    function initializeProductImgWidth() {
+        var $element = $(".wrapper__swiper__product-img");
+        if ($element.length) {
+            function updateWidth() {
+                var width = $element.width();
+                $element.css("--product-img-width", width + "px");
+            }
+
+            var resizeObserver = new ResizeObserver(updateWidth);
+            resizeObserver.observe($element[0]);
+            updateWidth();
+        }
+    }
+
+    function waitForJQuery() {
+        if (typeof $ !== 'undefined') {
+            // Initialisation au chargement de la page
+            $(document).ready(function() {
+                initializeProductImgWidth();
+            });
+
+            // Écouter l'événement updatedProduct
+            if (typeof prestashop !== 'undefined') {
+                prestashop.on('updatedProduct', function(event) {
+                    setTimeout(function() {
+                        var $element = $(".wrapper__swiper__product-img");
+                        if ($element.length) {
+                            var width = $element.width();
+                            if (width > 0) {
+                                $element.css("--product-img-width", width + "px");
+                            }
+                        }
+                    }, 200);
+                });
+            }
+        } else {
+            setTimeout(waitForJQuery, 100);
+        }
+    }
+    
+    waitForJQuery();
+    </script>
 {/block}
