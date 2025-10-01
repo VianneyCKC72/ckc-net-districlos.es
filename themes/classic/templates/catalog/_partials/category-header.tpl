@@ -22,6 +22,12 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
+
+{if !$customer.id_default_group || $customer.id_default_group != 10}
+    <div id="promo_frenchdays"></div>
+{/if}
+
+
 <div id="js-product-list-header">
     {if $listing.pagination.items_shown_from == 1}
         <div class="block-category card-block">

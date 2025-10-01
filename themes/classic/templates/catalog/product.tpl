@@ -50,6 +50,10 @@
     <section id="main">
         <meta content="{$product.url}">
 
+        {if !$customer.id_default_group || $customer.id_default_group != 10}
+            <div id="promo_frenchdays"></div>
+        {/if}
+
         <div class="product-container js-product-container">
             <div class="row">
                 <div class="col-lg-7">
