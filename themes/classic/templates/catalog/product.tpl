@@ -60,8 +60,7 @@
               </h1>
 
             {/block}
-
-            {include file='catalog/_partials/product-prices/has-discount.tpl'}
+            {include file='catalog/_partials/product-prices/has-discount-pro.tpl' }
 
           {/block}
           {block name='page_content_container'}
