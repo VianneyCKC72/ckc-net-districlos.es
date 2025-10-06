@@ -724,6 +724,15 @@ $bp-md: 768px;
   justify-content: flex-start;
   flex-wrap: wrap;
   gap: 60px;
+
+  @media (max-width: 991px) {
+    margin-bottom: 30px;
+  }
+
+  @media (max-width: 550px) {
+    gap: 10px;
+  }
+
   a {
     width: calc(100% / 3);
     max-width: 154px;
@@ -737,5 +746,10 @@ $bp-md: 768px;
     display: flex;
     align-items: center;
     justify-content: center;
+
+    @media (max-width: 550px) {
+      width: calc(100% / 2);
+      max-width: 50%;
+    }
   }
 }
