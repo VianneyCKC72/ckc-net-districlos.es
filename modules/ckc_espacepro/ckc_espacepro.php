@@ -86,7 +86,8 @@ class ckc_espacepro extends Module
             $this->registerHook('actionOrderGridQueryBuilderModifier') &&
             $this->registerHook('actionOrderGridDefinitionModifier') &&
             $this->registerHook('actionAuthentication') &&
-            $this->registerHook('moduleRoutes');
+            $this->registerHook('moduleRoutes') &&
+            $this->registerHook('displayPromotion');
         $this->registerHook('displayFavoriteStore');
 
         // Ajout onglets BO
@@ -391,6 +392,13 @@ class ckc_espacepro extends Module
             'modules/' . $this->name . '/views/css/front/guides-fiches.css',
             ['position' => 'bottom', 'priority' => 1000]
 
+        );
+
+        // CSS pour la bannière de promotion
+        $this->context->controller->registerStylesheet(
+            'ckc-espace-pro-promotion',
+            'modules/' . $this->name . '/views/css/front/promotion.css',
+            ['position' => 'head', 'priority' => 1000]
         );
     }
 
@@ -1011,6 +1019,53 @@ class ckc_espacepro extends Module
         $this->context->smarty->assign(compact('favoriteStoreId'));
 
         return $this->fetch('module:ckc_espacepro/views/templates/front/favorite_store.tpl');
+    }
+
+    /**
+     * Hook pour afficher une promotion spéciale aux utilisateurs professionnels
+     */
+    public function hookDisplayPromotion($params)
+    {
+        // Vérifier si l'utilisateur est connecté
+        if (!$this->context->customer || !$this->context->customer->isLogged()) {
+            return '';
+        }
+
+        $customer = $this->context->customer;
+        $groups = (array)$customer->getGroups();
+        
+        $gidPro = $this->getProGroupId();
+        $gidProticulier = $this->getProticulierGroupId();
+        
+        // Vérifier si l'utilisateur est professionnel ou proticulier
+        $isPro = in_array($gidPro, $groups, true);
+        $isProticulier = in_array($gidProticulier, $groups, true);
+        
+        if (!$isPro && !$isProticulier) {
+            return '';
+        }
+
+        // Déterminer le type de promotion selon le statut
+        $promoType = $isPro ? 'pro' : 'proticulier';
+        $promoTitle = $isPro ? 'Offre Spéciale Professionnels' : 'Avantage Proticulier';
+        $promoMessage = $isPro 
+            ? 'Bénéficiez de -15% sur votre prochaine commande avec le code PROPRO15'
+            : 'Profitez de -10% sur une sélection de produits avec le code PROT10';
+        $promoCode = $isPro ? 'PROPRO15' : 'PROT10';
+        $promoDiscount = $isPro ? '15%' : '10%';
+
+        // Assigner les variables au template
+        $this->context->smarty->assign([
+            'promo_type' => $promoType,
+            'promo_title' => $promoTitle,
+            'promo_message' => $promoMessage,
+            'promo_code' => $promoCode,
+            'promo_discount' => $promoDiscount,
+            'customer_firstname' => $customer->firstname,
+            'is_pro_environment' => $this->isProEnvironment()
+        ]);
+
+        return $this->display(__FILE__, 'views/templates/hook/promotion.tpl');
     }
 
     public function hookModuleRoutes($params)
