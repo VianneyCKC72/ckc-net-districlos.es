@@ -577,7 +577,7 @@ function executeEvent(name, replay = false) {
             });
         });
     }
-    else if(name === 'PUR' && !IS_EMPLOYEE_BO)
+    else if(name === 'PUR')
     {
         // Check if purchase event has already been sent
         var order = document.querySelector('section#content').dataset.order;
