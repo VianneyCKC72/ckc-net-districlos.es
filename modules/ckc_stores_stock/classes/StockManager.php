@@ -42,6 +42,13 @@ class StockManager extends Module
         $stores = $this->getStoresData($id_product, $id_product_attribute);
         $total_quantity = array_sum(array_column($stores, 'stock'));
 
+        // Récupérer le statut "fin de vie" de la déclinaison
+        $fin_de_vie = false;
+        if ($id_product_attribute > 0) {
+            $fin_de_vie = Db::getInstance()->getValue('SELECT end_of_life FROM ' . _DB_PREFIX_ . 'product_attribute_end_of_life WHERE id_product_attribute = ' . (int)$id_product_attribute);
+            $fin_de_vie = (bool)$fin_de_vie;
+        }
+
         return [
             'quantity' => $quantity_by_store,
             'total_quantity' => $total_quantity,
@@ -50,6 +57,7 @@ class StockManager extends Module
             'seuil' => $seuilOk,
             'isKit' => $isKit,
             'stores' => $stores,
+            'fin_de_vie' => $fin_de_vie,
         ];
     }
 
