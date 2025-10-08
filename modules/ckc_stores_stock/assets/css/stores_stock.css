@@ -80,3 +80,25 @@
 #selectShop:hover {
 	opacity: 0.8;
 }
+
+/* Styles pour produit en fin de vie */
+.fin-de-vie .style_findevie {
+	font-weight: bold !important;
+}
+
+.fin-de-vie .stock-display {
+	color: #ff144e !important;
+}
+
+.fin-de-vie .remove_findevie {
+	display: none !important;
+}
+
+.fin-de-vie .blockDeliveryDisplayStock img {
+	content: url('/modules/ckc_stores_stock/assets/img/deliveryFinDeVie.png');
+}
+
+/* Styles normaux (sans fin de vie) */
+.blockDeliveryDisplayStock img {
+	content: url('/modules/ckc_stores_stock/assets/img/delivery.png');
+}
