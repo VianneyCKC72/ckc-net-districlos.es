@@ -64,23 +64,76 @@ function fetchStockData(isPack = false, packList = {}) {
 function updateStockDisplay(resp) {
     const $container = $('.blockDeliveryDisplayStock').parent();
     const isStockAvailable = resp.total_quantity > 0 && resp.seuil;
-    const stockText = getStockText(resp.fin_de_vie, resp.total_quantity, isStockAvailable);
+    const stockText = getStockText(resp.fin_de_vie, resp.total_quantity, isStockAvailable, resp.victime_succes);
     
     // Gestion classe fin-de-vie (le CSS gère tout le style)
     $container.toggleClass('fin-de-vie', resp.fin_de_vie);
+    $container.toggleClass('victime-succes', resp.victime_succes);
     
     // Mise à jour des textes
-    if (resp.fin_de_vie) {
+    if (resp.victime_succes) {
+        $(".style_findevie").text("Victime de son succès");
+        $(".style_findevie_thin").text("Ce produit n'est plus disponible");
+        $(".stock-display").text(stockText);
+        // Cacher le bouton
+        $(".remove_findevie").attr('style', 'display: none !important');
+        // Griser le bouton ajouter au panier
+        disableAddToCartButton();
+    } else if (resp.fin_de_vie) {
         $(".style_findevie").text("Fin de série !");
         $(".style_findevie_thin").text("Commandez vite, stock bas !");
+        $(".stock-display").text(stockText);
+        // Cacher le bouton
+        $(".remove_findevie").attr('style', 'display: none !important');
+        // Réactiver le bouton ajouter au panier
+        enableAddToCartButton();
     } else {
         $(".style_findevie").text("Stock en magasin");
         $(".style_findevie_thin").text("");
+        $(".stock-display").text(stockText);
+        // Afficher le bouton
+        $(".remove_findevie").css('display', 'block');
+        // Réactiver le bouton ajouter au panier
+        enableAddToCartButton();
     }
     
-    $(".stock-display").text(stockText);
     $(".productQuantity").text(isStockAvailable ? `${resp.total_quantity} en stock national` : "Arrivage en cours");
     $("#reference_to_display").text(resp.reference_to_display);
+
+    // Limiter la quantité sélectionnable au stock disponibles
+    if (resp.victime_succes) {
+        // Si victime de succès, bloquer complètement l'input de quantité
+        $('input[name="qty"], #quantity_wanted').attr('max', 0).val(0).prop('disabled', true);
+        
+        // Bloquer TOUS les boutons +/- avec tous les sélecteurs possibles
+        $('.bootstrap-touchspin-up, .bootstrap-touchspin-down, .btn-touchspin, button.js-touchspin, .input-group-btn-vertical button, .product-quantity button, .qty button').each(function() {
+            $(this).prop('disabled', true).addClass('disabled').css({'pointer-events': 'none', 'opacity': '0.5'});
+        });
+        
+        // Empêcher les clics sur les boutons +/-
+        $('.product-quantity, .qty, .input-group').on('click', 'button', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+    } else {
+        // Sinon, limiter au stock disponible
+        $('input[name="qty"], #quantity_wanted').attr('max', resp.total_quantity).prop('disabled', false);
+        
+        // Réactiver les boutons +/-
+        $('.bootstrap-touchspin-up, .bootstrap-touchspin-down, .btn-touchspin, button.js-touchspin, .input-group-btn-vertical button, .product-quantity button, .qty button').each(function() {
+            $(this).prop('disabled', false).removeClass('disabled').css({'pointer-events': 'auto', 'opacity': '1'});
+        });
+        
+        // Retirer l'empêchement des clics
+        $('.product-quantity, .qty, .input-group').off('click', 'button');
+        
+        // Si la quantité actuelle dépasse le stock, la réduire
+        var currentQty = parseInt($('input[name="qty"], #quantity_wanted').val());
+        if (currentQty > resp.total_quantity) {
+            $('input[name="qty"], #quantity_wanted').val(resp.total_quantity);
+        }
+    }
 
     // Gestion magasin sélectionné
     updateStoreDisplay(resp);
@@ -90,11 +143,24 @@ function updateStockDisplay(resp) {
 }
 
 // Fonction helper pour générer le texte de stock
-function getStockText(isFinDeVie, quantity, isAvailable) {
+function getStockText(isFinDeVie, quantity, isAvailable, victimeSucces) {
+    if (victimeSucces) {
+        return "Produit épuisé";
+    }
     if (isFinDeVie) {
         return `${quantity} produits en stock`;
     }
     return isAvailable ? `${quantity} en stock national` : "Arrivage en cours";
+}
+
+// Fonction pour désactiver le bouton ajouter au panier
+function disableAddToCartButton() {
+    $('.add-to-cart, .product-add-to-cart button[type="submit"]').prop('disabled', true).addClass('disabled');
+}
+
+// Fonction pour réactiver le bouton ajouter au panier
+function enableAddToCartButton() {
+    $('.add-to-cart, .product-add-to-cart button[type="submit"]').prop('disabled', false).removeClass('disabled');
 }
 
 // Fonction pour gérer l'affichage du magasin sélectionné

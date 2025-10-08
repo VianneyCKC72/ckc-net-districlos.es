@@ -4,8 +4,8 @@
             <img src="/modules/ckc_stores_stock/assets/img/delivery.png" loading="lazy" alt="Icone livraison">
             <div class="small ml-4">
                 {if $fin_de_vie}
-                    <span class="style_findevie" style="font-weight: bold;">Fin de série !</span><br>
-                    <span class="font-weight-bold text-secondary stock-display" style="color: red !important;">Plus que {$total_quantity} produits en stock</span><br>
+                    <span class="style_findevie">Fin de série !</span><br>
+                    <span class="font-weight-bold text-secondary stock-display">{$total_quantity} produits en stock</span><br>
                     <span class="thin style_findevie_thin">Commandez vite, stock bas !</span>
                 {else}
                     <span class="style_findevie">Stock en magasin</span><br>
@@ -23,5 +23,20 @@
                 </svg>
             </button>
     </div>
+    
+    <script>
+    $(document).ready(function() {
+        {if $victime_succes}
+        // Si victime de succès, bloquer complètement
+        $('input[name="qty"], #quantity_wanted').attr('max', 0).val(0).prop('disabled', true);
+        $('.bootstrap-touchspin-up, .bootstrap-touchspin-down, .btn-touchspin, button.js-touchspin').prop('disabled', true).addClass('disabled').css('pointer-events', 'none');
+        $('.input-group-btn-vertical button').prop('disabled', true).addClass('disabled').css('pointer-events', 'none');
+        $('.add-to-cart, .product-add-to-cart button[type="submit"]').prop('disabled', true).addClass('disabled');
+        {else}
+        // Sinon, limiter la quantité sélectionnable au stock disponible
+        $('input[name="qty"], #quantity_wanted').attr('max', {$total_quantity});
+        {/if}
+    });
+    </script>
         
 {/if}

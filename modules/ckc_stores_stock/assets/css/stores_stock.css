@@ -102,3 +102,17 @@
 .blockDeliveryDisplayStock img {
 	content: url('/modules/ckc_stores_stock/assets/img/delivery.png');
 }
+
+/* Styles pour produit victime de son succès */
+.victime-succes .style_findevie {
+	font-weight: bold !important;
+	color: #ff144e !important;
+}
+
+.victime-succes .stock-display {
+	color: #ff144e !important;
+}
+
+.victime-succes .remove_findevie {
+	display: none !important;
+}

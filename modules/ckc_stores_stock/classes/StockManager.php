@@ -42,11 +42,22 @@ class StockManager extends Module
         $stores = $this->getStoresData($id_product, $id_product_attribute);
         $total_quantity = array_sum(array_column($stores, 'stock'));
 
-        // Récupérer le statut "fin de vie" de la déclinaison
+        // Récupérer le statut "fin de vie" et le seuil de stock de la déclinaison
         $fin_de_vie = false;
+        $stock_threshold = null;
+        $victime_succes = false;
+        
         if ($id_product_attribute > 0) {
-            $fin_de_vie = Db::getInstance()->getValue('SELECT end_of_life FROM ' . _DB_PREFIX_ . 'product_attribute_end_of_life WHERE id_product_attribute = ' . (int)$id_product_attribute);
-            $fin_de_vie = (bool)$fin_de_vie;
+            $eol_data = Db::getInstance()->getRow('SELECT end_of_life, stock_threshold FROM ' . _DB_PREFIX_ . 'product_attribute_end_of_life WHERE id_product_attribute = ' . (int)$id_product_attribute);
+            if ($eol_data) {
+                $fin_de_vie = (bool)$eol_data['end_of_life'];
+                $stock_threshold = $eol_data['stock_threshold'] ? (int)$eol_data['stock_threshold'] : null;
+                
+                // Vérifier si on est en "victime de son succès" (stock <= seuil)
+                if ($stock_threshold !== null && $total_quantity <= $stock_threshold) {
+                    $victime_succes = true;
+                }
+            }
         }
 
         return [
@@ -58,6 +69,8 @@ class StockManager extends Module
             'isKit' => $isKit,
             'stores' => $stores,
             'fin_de_vie' => $fin_de_vie,
+            'stock_threshold' => $stock_threshold,
+            'victime_succes' => $victime_succes,
         ];
     }
 
