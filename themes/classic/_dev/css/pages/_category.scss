@@ -768,4 +768,112 @@
 .products.row.grid-mode .product-miniature .product-title {
   min-height: 66px;
 }
-
+#left-column .search-pro{
+  .card-block{
+    background: $primary-color;
+  }
+  .PM_ASResetSearch{
+    background-color: $pro-color;
+    max-width: 300px;
+    text-align: center;
+    margin: 15px auto;
+    display: block;
+  }
+  .PM_ASForm{
+    background: $primary-color;
+    border-radius: 0;
+    padding: 0 27px;
+    .PM_ASCriterionsGroupList{
+      background: $primary-color;
+      .PM_ASCriterionsGroup:not(:last-child){
+        border-bottom: 1px solid #fff;
+        padding-bottom: 22px;
+      }
+    }
+    .PM_ASCriterionsGroupTitle span{
+      color: $white;
+      font-weight: normal;
+    }
+    .PM_ASCriterionGroupLinkColor{
+      li{
+        margin-bottom: 10px;
+        input.PM_ASCriterionCheckbox{
+          width: 30px;
+          height: 30px;
+          bottom: 3px;
+        }
+        .PM_ASLabelCheckbox{
+          padding-left: 45px;
+          color: $white;
+          .PM_ASCriterionColorSquare{
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            left: 0;
+            border-radius: 7px;
+            z-index: 9;
+          }
+        }
+        .PM_ASCriterionCheckbox:checked+.PM_ASLabelCheckbox{
+          font-weight: 500;
+          .PM_ASCriterionColorSquare{
+            border: 2px solid #FFA400 !important;
+          }
+        }
+      }
+    }
+    .input-group>.form-control{
+      height: 36px;
+      border-radius: 10px;
+      background-color: $white;
+    }
+    select.PM_ASCriterionGroupSelect.form-control{
+      background-color: $white;
+      border-radius: 10px;
+    }
+    .PM_ASCriterionStepEnable{
+      > .row{
+        > .col-xs-6{
+          color: $primary-color;
+          line-height: 1px;
+          padding-right: 0;
+          span.input-group-addon{
+            color: $black;
+            position: absolute;
+            right: 19%;
+            top: 50%;
+            @media (max-width: 1024px) and (min-width: 768px){
+              right: 25%;
+            }
+          }
+        }
+        > .col-xs-6:first-child > .input-group::after{
+          content: '-';
+          color: $white;
+          position: absolute;
+          right: -2%;
+          align-self: center;
+        }
+      }
+    }
+    .PM_ASCriterionStepEnable:has(.PM_ASCriterionGroupLinkColor){
+      margin-top: 15px;
+    }
+  }
+  .PM_ASCritRangeValue,
+  .PM_ASCriterionNoChoice{
+    color: $white;
+  }
+}
+.elementor-element.elementor-element-b927613:has(.search-pro){
+  max-width: 354px;
+  .elementor-column-wrap.elementor-element-populated{
+    padding: 10px 0;
+    .elementor-widget-wrap{
+      gap: 0;
+    }
+  }
+}
+#left-colum:has(.search-pro)+#content-wrapper{
+  width: 75%;
+}
