@@ -10,4 +10,4 @@ Le fichier {filename} a bien été importé dans votre boutique.
 
 [{shop_name}]({shop_url})
 
-Powered by [PrestaShop](https://www.prestashop-project.org/)
+

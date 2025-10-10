@@ -325,8 +325,12 @@ class Ckc_yourgpt extends Module
     }
 
     public function hookDisplayBeforeBodyClosingTag() {
-        // Vérifier si le script a déjà été inclus
-
+        if (isset($this->context->controller->php_self)) {
+            $excludedControllers = ['cart', 'order', 'checkout'];
+            if (in_array($this->context->controller->php_self, $excludedControllers)) {
+                return;
+            }
+        }
         $current_hour = date("H", time());
 
         if ($current_hour >= Configuration::get('CKC_YOURGPT_HOUR_START') && $current_hour < Configuration::get('CKC_YOURGPT_HOUR_END')) {

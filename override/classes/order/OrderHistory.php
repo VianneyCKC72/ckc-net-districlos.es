@@ -34,6 +34,45 @@ class OrderHistory extends OrderHistoryCore
                 '{followup}' => str_replace('@', $order->getWsShippingNumber(), $carrierUrl),
                 '{shipping_number}' => $order->getWsShippingNumber(),
             ];
+            
+            if ($result['template'] === 'cmd_prete') {
+                $isRetrait = strpos($carrier->name, 'Retrait') !== false || strpos($carrier->name, 'Click & Collect') !== false;
+                
+                if ($isRetrait) {
+                    $store = Db::getInstance()->getRow('SELECT `id_store` FROM `' . _DB_PREFIX_ . 'orders` WHERE `id_order` = ' . (int) $this->id_order);
+                    
+                    if ($store && $store['id_store']) {
+                        $storeInfo = Db::getInstance()->getRow('
+                            SELECT 
+                                s.name, 
+                                p.adresse, 
+                                p.ville, 
+                                p.code_postal, 
+                                p.telephone, 
+                                p.email,
+                                p.horaires_jours,
+                                p.horaires_heures
+                            FROM `' . _DB_PREFIX_ . 'ckcstockstores_stores` s
+                            LEFT JOIN `' . _DB_PREFIX_ . 'ckcstorespresentation` p ON s.id_store = p.id_multiboutique
+                            WHERE s.id_store = ' . (int) $store['id_store']
+                        );
+                        
+                        if ($storeInfo) {
+                            $data['{shop_name}'] = $storeInfo['name'];
+                            
+                            $data['{store_name}'] = $storeInfo['name'];
+                            $data['{store_address}'] = $storeInfo['adresse'];
+                            $data['{store_city}'] = $storeInfo['ville'];
+                            $data['{store_zip}'] = $storeInfo['code_postal'];
+                            $data['{store_phone}'] = $storeInfo['telephone'];
+                            $data['{store_email}'] = $storeInfo['email'];
+                            $data['{store_hours_days}'] = $storeInfo['horaires_jours'];
+                            $data['{store_hours_times}'] = $storeInfo['horaires_heures'];
+                        }
+                    }
+                }
+            }
+
             if ($result['module_name']) {
                 $module = Module::getInstanceByName($result['module_name']);
                 if (Validate::isLoadedObject($module) && isset($module->extra_mail_vars) && is_array($module->extra_mail_vars)) {

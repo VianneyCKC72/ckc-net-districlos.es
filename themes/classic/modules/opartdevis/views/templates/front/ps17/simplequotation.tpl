@@ -18,6 +18,6 @@
     {hook h='displayPromoDevisText'}
     <h1>Demandez votre devis en 30 secondes</h1>
     <div id="iframe_devis" class="dis_flex p_btwn s_center">
-        <iframe width="100%" height="600px" src="https://form.typeform.com/to/MZNpWY65?typeform-embed-id=4768577811830069&typeform-emb[…]ion=next&embed-opacity=100&typeform-embed-handles-redirect=1"></iframe>
+        <div data-tf-live="01JCG29ZK4099ETJK1C6R2SKAF"></div><script src="//embed.typeform.com/next/embed.js"></script>
     </div>
 {/block}

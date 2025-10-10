@@ -577,14 +577,14 @@ function executeEvent(name, replay = false) {
             });
         });
     }
-    else if(name === 'PUR' && !IS_EMPLOYEE_BO)
+    else if(name === 'PUR')
     {
         // Check if purchase event has already been sent
         var order = document.querySelector('section#content').dataset.order;
         order = JSON.parse(order);
 
         var expirationDate = localStorage.getItem('purchase_event_expiration');
-        if (expirationDate && parseInt(expirationDate) > Date.now() && localStorage.getItem('purchase_event_expiration_id') === order.details.reference) {
+        if (localStorage.getItem('purchase_event_expiration_id') === order.details.reference) {
             return;
         }else{
             localStorage.removeItem('purchase_event_expiration');
@@ -651,8 +651,8 @@ function executeEvent(name, replay = false) {
             'contents': orderProductsFb
         });
 
-        expirationDate = Date.now() + 3600000;
-        localStorage.setItem('purchase_event_expiration', expirationDate);
+        //expirationDate = Date.now() + 3600000;
+        //localStorage.setItem('purchase_event_expiration', expirationDate);
         localStorage.setItem('purchase_event_expiration_id', order.details.reference);
     }
     else if(name === 'CFG')

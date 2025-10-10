@@ -64,7 +64,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
     public function initContent()
     {
         parent::initContent();
-
+        
         if ($this->module->isLive()) {
             $this->context->smarty->assign('meta_title', 'Configurez votre clôture et sécurisez votre extérieur avec Districlos');
 //            $this->session = Session::init($this->userKey(), $this->language_id);
@@ -73,6 +73,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             return $this->getDisplay('configurator.tpl');
         }
         else {
+            
             return Tools::redirect('/');
         }
     }

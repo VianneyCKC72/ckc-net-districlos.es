@@ -11633,6 +11633,85 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 $(document).ready(function () {
+
+    $(function () {
+        var CAT = '/3-cloture-rigide';
+        var SEO_OK = /^\/s\/(1|2|3|4|37|38)\//i.test(location.pathname) || !!$('input[name="id_seo"]').length;
+
+        // === RESET "Tous" sur pages SEO -> retour catégorie (instantané)
+        if (SEO_OK) {
+            function isAll(v){ return v===''||v==null||(Array.isArray(v)&&v.length===0); }
+            function isTarget(el){
+                var label = $.trim($(el).closest('.PM_ASCriterionsGroup').find('.PM_ASCriterionsGroupName').text()).toLowerCase();
+                return /couleur|hauteur/.test(label);
+            }
+            function goCat(){ location.assign(CAT); }
+
+            document.addEventListener('change', function(ev){
+                var el=ev.target;
+                if (!$(el).is('.PM_ASCriterionGroupSelect')) return;
+                if (!isTarget(el)) return;
+                if (!isAll($(el).val())) return;
+                ev.preventDefault(); ev.stopPropagation(); try{ev.stopImmediatePropagation()}catch(e){}
+                goCat();
+            }, true);
+
+            document.addEventListener('submit', function(ev){
+                var f=ev.target; if (!$(f).is('#PM_ASForm_1')) return;
+                var block=false;
+                $('.PM_ASCriterionGroupSelect').each(function(){ if (isTarget(this)&&isAll($(this).val())) { block=true; return false; } });
+                if (block){ ev.preventDefault(); ev.stopPropagation(); try{ev.stopImmediatePropagation()}catch(e){} goCat(); }
+            }, true);
+        }
+
+        // === REDIRECT INSTANT sur la catégorie au moment du choix (sans attendre l’AJAX d’ASP)
+        if (location.pathname.indexOf(CAT) === 0) {
+            var redirecting=false;
+
+            function txt($el){
+                return $.trim(($el.text()||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''));
+            }
+            function resolveLanding($sel){
+                var group = txt($sel.closest('.PM_ASCriterionsGroup').find('.PM_ASCriterionsGroupName'));
+                var label = txt($sel.find('option:selected'));
+                if (/couleur/.test(group)) {
+                    if (label.indexOf('vert')>-1)  return '/s/1/grillage-rigide-vert';
+                    if (label.indexOf('gris')>-1)  return '/s/2/grillage-rigide-gris';
+                    if (label.indexOf('noir')>-1)  return '/s/3/grillage-rigide-noir';
+                    if (label.indexOf('blanc')>-1) return '/s/4/grillage-rigide-blanc';
+                }
+                if (/hauteur/.test(group)) {
+                    if (/\b1m(?:00)?\b/.test(label) || /(^|[^0-9])1m0?0([^0-9]|$)/.test(label)) return '/s/37/grillage-rigide-1m';
+                    if (/1m[\s\-_.]*20/.test(label)) return '/s/38/grillage-rigide-1m20';
+                }
+                return null;
+            }
+
+            document.addEventListener('change', function(ev){
+                var el = ev.target;
+                if (!$(el).is('.PM_ASCriterionGroupSelect')) return;
+                var $sel = $(el);
+                var v = $sel.val();
+                if (v===''||v==null||(Array.isArray(v)&&v.length===0)) return; // "Tous" => pas ici
+                var target = resolveLanding($sel);
+                if (!target) return;
+                ev.preventDefault(); ev.stopPropagation(); try{ev.stopImmediatePropagation()}catch(e){}
+                redirecting = true;
+                location.replace(target);
+            }, true);
+
+            $.ajaxSetup({ beforeSend: function(){ if (redirecting) return false; } });
+        }
+    });
+
+
+
+
+
+
+
+
+
     const $notif = $('.newsletter-message');
 
     if ($notif.length) {

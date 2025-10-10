@@ -223,6 +223,8 @@ fabric.properties
 !/admin024h9xfokhvsbvfmnzn/export/.htaccess
 !/admin024h9xfokhvsbvfmnzn/export/index.php
 
+/admin024h9xfokhvsbvfmnzn/prices/products.csv
+
 # Downloaded RTL files
 /admin024h9xfokhvsbvfmnzn/themes/default/css/bundle/default_rtl.css
 /admin024h9xfokhvsbvfmnzn/themes/default/css/bundle/shared_rtl.css

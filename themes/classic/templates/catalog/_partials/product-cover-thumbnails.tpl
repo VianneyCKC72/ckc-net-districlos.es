@@ -23,7 +23,7 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 
-<div class="images-container wrapper__swiper__product-img mb-5 mb-lg-0" style="--product-img-width: auto">
+<div class="images-container wrapper__swiper__product-img mb-5 mb-lg-0">
   {block name='product_images'}
     <div class="product-cover wrapper__swiper__product-img__thumbnails">
       <div class="swiper swiper__product-img__thumbnails">

@@ -480,7 +480,9 @@
 }
 
 #product {
-
+  .cn_content.cn_content_type_inline {
+    display:none !important;
+  }
   // Boutons + et - dans Touchspin
   .btn-touchspin {
     padding: 2px;

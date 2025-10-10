@@ -91,6 +91,9 @@ class CartController extends CartControllerCore
                     $price = $product->regular_price;
                     $total_ttc  = $product->total_wt;
                 }
+                if (is_string($price)) {
+                    $price = (float) str_replace(['€', ',', ' '], ['', '.', ''], $price);
+                }
                 $price = number_format($price, 2, ',', ' ').' €';
             }else{
                 $total_ttc = $product->total_wt;
@@ -116,6 +119,60 @@ class CartController extends CartControllerCore
             ]);
             $this->setTemplate('checkout/cart-empty');
         }
+
+        $products = array();
+        $custom_product_message = [];
+        foreach ($this->context->cart->getProducts() as $product) {
+            $products[] = $product;
+        }
+
+        // tableau des IDs des produits du panier
+        $product_ids = array_column($products, 'id_product');
+
+        if (in_array(1215, $product_ids) && in_array(1214, $product_ids)) {
+            $custom_product_message['1215'] = 'Attention : Les platines choisies ne sont pas compatibles avec le portillon Jardi.';
+        } elseif (in_array(1213, $product_ids) && in_array(332, $product_ids)) {
+            $custom_product_message['1213'] = 'Attention : Les platines choisies ne sont pas compatibles avec le portillon Garden.';
+        } elseif (in_array(1302, $product_ids) && in_array(416, $product_ids)) {
+            $encoches_declination_found = false;
+            foreach ($products as $product) {
+                if ($product['id_product'] == 416 && strpos($product['attributes'], 'encoches') !== false) {
+                    $encoches_declination_found = true;
+                    break;
+                }
+            }
+            if ($encoches_declination_found) {
+                $custom_product_message['1302'] = 'Attention : Les poteaux à clip ne sont pas compatibles avec les soubassements à encoche';
+            }
+        } elseif ((in_array(1223, $product_ids) || in_array(1285, $product_ids)) && in_array(416, $product_ids)) {
+            $clips_declination_found = false;
+            foreach ($products as $product) {
+                if ($product['id_product'] == 416 && strpos($product['attributes'], 'clips') !== false) {
+                    $clips_declination_found = true;
+                    break;
+                }
+            }
+            if ($clips_declination_found) {
+                $custom_product_message['1223'] = 'Attention : Les poteaux à encoche ne sont pas compatibles avec le soubassements à clips';
+                $custom_product_message['1285'] = 'Attention : Les poteaux à encoche ne sont pas compatibles avec le soubassements à clips';
+            }
+        }
+
+        $has_1305_or_1306 = in_array(1305, $product_ids) || in_array(1306, $product_ids);
+        $has_1130 = in_array(1130, $product_ids);
+
+        if ($has_1305_or_1306 && !$has_1130) {
+            if (in_array(1305, $product_ids)) {
+                $custom_product_message['1305'] = 'Attention : Les crémaillères ne sont pas incluses dans ce moteur. <a href="/accessoires-portails-portillons/1130-cremaillere-portail-coulissant.html">Cliquer ici pour l\'ajouter au panier</a>';
+            }
+            if (in_array(1306, $product_ids)) {
+                $custom_product_message['1306'] = 'Attention : Les crémaillères ne sont pas incluses dans ce moteur. <a href="/accessoires-portails-portillons/1130-cremaillere-portail-coulissant.html">Cliquer ici pour l\'ajouter au panier</a>';
+            }
+        }
+
+
+        $this->context->smarty->assign('custom_product_message', $custom_product_message);
+
         parent::initContent();
     }
     public function getDeliveryOptionsByPostalCode($postalCode)

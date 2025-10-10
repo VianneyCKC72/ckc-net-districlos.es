@@ -10,4 +10,4 @@ Veuillez vous rendre sur {order_link} pour finaliser le paiement.
 
 [{shop_name}]({shop_url})
 
-Powered by [PrestaShop](https://www.prestashop-project.org/)
+

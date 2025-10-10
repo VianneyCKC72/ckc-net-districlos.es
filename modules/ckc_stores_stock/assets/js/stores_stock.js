@@ -48,7 +48,7 @@ function fetchStockData(isPack = false, packList = {}) {
     if (dataProduct) {
         let id_product_attribute = dataProduct.id_product_attribute || null;
         
-        $.post('/module/ckc_stores_stock/getStock', {
+        $.post('/modules/ckc_stores_stock/ajax.php', {
             ajax: 1,
             id_product,
             id_product_attribute,
@@ -62,30 +62,76 @@ function fetchStockData(isPack = false, packList = {}) {
 }
 
 function updateStockDisplay(resp) {
-    $(".productQuantity").text(resp.total_quantity > 0 && resp.seuil ? `${resp.total_quantity} en stock national` : "Arrivage en cours");
+    const $container = $('.blockDeliveryDisplayStock').parent();
+    const isStockAvailable = resp.total_quantity > 0 && resp.seuil;
+    const stockText = getStockText(resp.fin_de_vie, resp.total_quantity, isStockAvailable);
+    
+    // Gestion classe fin-de-vie (le CSS gère tout le style)
+    $container.toggleClass('fin-de-vie', resp.fin_de_vie);
+    
+    // Mise à jour des textes
+    if (resp.fin_de_vie) {
+        $(".style_findevie").text("Fin de série !");
+        $(".style_findevie_thin").text("Commandez vite, stock bas !");
+    } else {
+        $(".style_findevie").text("Stock en magasin");
+        $(".style_findevie_thin").text("");
+    }
+    
+    $(".stock-display").text(stockText);
+    $(".productQuantity").text(isStockAvailable ? `${resp.total_quantity} en stock national` : "Arrivage en cours");
     $("#reference_to_display").text(resp.reference_to_display);
 
+    // Gestion magasin sélectionné
+    updateStoreDisplay(resp);
+    
+    // Mise à jour des stocks par magasin
+    updateStoresModal(resp.stores, resp.fin_de_vie);
+}
+
+// Fonction helper pour générer le texte de stock
+function getStockText(isFinDeVie, quantity, isAvailable) {
+    if (isFinDeVie) {
+        return `${quantity} produits en stock`;
+    }
+    return isAvailable ? `${quantity} en stock national` : "Arrivage en cours";
+}
+
+// Fonction pour gérer l'affichage du magasin sélectionné
+function updateStoreDisplay(resp) {
     if (resp.id_store) {
         $(".store-selected").show();
         $(".store-selected .nameStore").html(`${resp.store_name}<br>`);
         $(".store-selected .productQuantity").html(resp.quantity > 0 ? `${resp.quantity} produit(s) en stock` : "Arrivage en cours");
-        $("#modalProductStock-" + resp.id_store).html(`<svg fill="#79c046" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width: 20px;margin-right: 1rem;"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg> ${resp.quantity > 0 ? resp.quantity + " en stock" : "Arrivage en cours"}`);
+        $("#modalProductStock-" + resp.id_store).html(getStockSvg(resp.quantity));
     } else {
         $(".store-selected").hide();
     }
+}
 
-    resp.stores.forEach(store => {
-        let stockText = store.stock > 0 && store.seuil ? `${store.stock} en stock` : "Arrivage en cours";
-        $("#modalProductStock-" + store.id).html(`<svg fill="#79c046" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width: 20px;margin-right: 1rem;"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg> ${stockText}`);
+// Fonction pour gérer la modal des magasins
+function updateStoresModal(stores, isFinDeVie) {
+    stores.forEach(store => {
+        const stockText = store.stock > 0 && store.seuil ? `${store.stock} en stock` : "Arrivage en cours";
+        $("#modalProductStock-" + store.id).html(getStockSvg(stockText));
+        
         if (store.selected) {
-            $('.shopId-' + store.id).hide();
-            $('.shopId-' + store.id).next().show();
-            let quantityText = store.stock ? `${store.stock} en stock` : "Arrivage en cours";
+            $('.shopId-' + store.id).hide().next().show();
+            const quantityText = store.stock ? `${store.stock} en stock` : "Arrivage en cours";
             $('.stock-display').html(quantityText + ' à <br>' + store.name);
-            $('#selectShop').text('Changer de magasin');
-
+            
+            if (!isFinDeVie) {
+                $('#selectShop').text('Changer de magasin');
+            }
         }
     });
+}
+
+// Fonction helper pour générer le SVG de stock
+function getStockSvg(text) {
+    return `<svg fill="#79c046" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width: 20px;margin-right: 1rem;">
+        <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
+    </svg> ${text}`;
 }
 
 $(document).ready(function () {

@@ -213,6 +213,7 @@ class Accessory extends ProductFactory
         if (self::$session->installation == 'scellement-sur-platine') {
             if (self::$session->isRigide()) {
                 unset($platines[1]);
+                $platines[] = 'caches_goujons';
             }
             $accessories = array_merge($accessories, $platines);
         }
@@ -271,6 +272,7 @@ class Accessory extends ProductFactory
 
                     return $panneau_times + 1;
                 case 'chevilles':
+                case 'caches_goujons':
                     return $panneau_times + 1;
                 case 'bouchons-demi-poteaux':
                     if (self::$session->isAluminium()) {

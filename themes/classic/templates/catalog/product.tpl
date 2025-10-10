@@ -18,9 +18,9 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://devdocs.prestashop.com/ for more information.
  *
- * @author PrestaShop SA and Contributors <contact@prestashop.com>
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
  * @copyright Since 2007 PrestaShop SA and Contributors
- * @license https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 {extends file=$layout}
 
@@ -142,6 +142,101 @@
               <input type="hidden" name="id_product" value="{$product.id}" id="product_page_product_id">
               <input type="hidden" name="id_customization" value="{$product.id_customization}"
                 id="product_customization_id" class="js-product-customization-id">
+    <section id="main">
+        <meta content="{$product.url}">
+
+        <div class="product-container js-product-container">
+            <div class="row">
+                <div class="col-lg-7">
+                    {block name='page_header_container'}
+                        {block name='page_header'}
+                            <h1 class="h2">{block name='page_title'}{$product.name}{/block}</h1>
+                        {/block}
+                    {/block}
+                    {hook h='displayPromoProductDescription'}
+                    {block name='page_content_container'}
+                        {block name='page_content'}
+                            {* {include file='catalog/_partials/product-flags.tpl'} *}
+                            {hook h='displayCustomProductLabel' product=$product}
+                            {block name='product_cover_thumbnails'}
+                                {include file='catalog/_partials/product-cover-thumbnails.tpl'}
+                            {/block}
+                        {/block}
+                    {/block}
+                </div>
+                <div class="col-lg-5">
+                    <div class="product-information">
+                        <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mb-3">
+                            <div>
+                                <p class="small mb-0 font-weight-bold mb-1">
+                                    Produit garanti moins cher du web
+                                </p>
+                                <p class="thin mb-0">
+                                    Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.
+                                </p>
+                            </div>
+                            <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
+                        </div>
+                        <div class="d-flex align-items-center mb-3 gap-16 flex-wrap">
+                            {if $product.quantity > 0}
+                                <div class="small text-secondary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                         fill="none"
+                                         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                         stroke-linejoin="round"
+                                         class="lucide lucide-check mr-2">
+                                        <path d="M20 6 9 17l-5-5"/>
+                                    </svg>
+                                    En stock
+                                </div>
+                            {/if}
+
+                            {if $product.reference_to_display}
+                                <div class="small">REF <span
+                                            class="font-weight-bold" id="product_reference">{$product.reference_to_display}</span></div>
+                            {/if}
+                            <a href="javascript:av_widget_click()" id="AV_button">
+                                <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
+                            </a>
+                        </div>
+
+                        {block name='product_description_short'}
+                            <div id="product-description-short-{$product.id}" class="product-description mb-4">
+                                {$product.description_short nofilter}
+{*                                <a href="#block-description-long"*}
+{*                                   class="lire-plus small font-weight-bold text-black d-flex align-items-center">*}
+{*                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"*}
+{*                                         fill="none"*}
+{*                                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round"*}
+{*                                         stroke-linejoin="round"*}
+{*                                         class="lucide lucide-plus mr-2">*}
+{*                                        <path d="M5 12h14"/>*}
+{*                                        <path d="M12 5v14"/>*}
+{*                                    </svg>*}
+{*                                    Lire davantage</a>*}
+                            </div>
+                        {/block}
+
+
+                        {if $product.is_customizable && count($product.customizations.fields)}
+
+                            {block name='product_customization'}
+
+                                {include file="catalog/_partials/product-customization.tpl" customizations=$product.customizations}
+
+                            {/block}
+
+                        {/if}
+
+                        <div class="product-actions js-product-actions">
+
+                            {block name='product_buy'}
+                               <form action="{$urls.pages.cart}" method="post" id="add-to-cart-or-refresh">
+                                    <input type="hidden" name="token" value="{$static_token}">
+                                    <input type="hidden" name="id_product" value="{$product.id}"
+                                           id="product_page_product_id">
+                                    <input type="hidden" name="id_customization" value="{$product.id_customization}"
+                                           id="product_customization_id" class="js-product-customization-id">
 
               {block name='product_variants'}
               {include file='catalog/_partials/product-variants.tpl'}
@@ -255,7 +350,59 @@
           </ul>
           {* fin tabs btns *}
           <div class="tab-content" id="tab-content">
+                    {block name='product_tabs'}
+                        <div class="tabs product-tabs" id="block-description-long">
+                            <ul class="nav nav-tabs" role="tablist">
 
+                                {if $product.description}
+                                    <li class="nav-item">
+                                        <a class="nav-link
+
+                      {if $product.description} active js-product-nav-active
+
+                      {/if}" data-toggle="tab" href="#description" role="tab" aria-controls="description"
+
+                                                {if $product.description} aria-selected="true"
+                                                {/if}>
+
+                                            {l s='Description' d='Shop.Theme.Catalog'}</a>
+                                    </li>
+                                {/if}
+                                <li class="nav-item">
+                                    <a class="nav-link
+
+                    {if !$product.description} active js-product-nav-active
+
+                    {/if}" data-toggle="tab" href="#product-details" role="tab" aria-controls="product-details"
+
+                                            {if !$product.description} aria-selected="true"
+                                            {/if}>
+
+                                        {l s='Product Details' d='Shop.Theme.Catalog'}</a>
+                                </li>
+
+                                {if $product.attachments}
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#attachments" role="tab"
+                                           aria-controls="attachments">
+
+                                            {l s='Attachments' d='Shop.Theme.Catalog'}</a>
+                                    </li>
+                                {/if}
+
+                                {foreach from=$product.extraContent item=extra key=extraKey}
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#extra-{$extraKey}" role="tab"
+                                           aria-controls="extra-{$extraKey}">{$extra.title}</a>
+                                    </li>
+                                {/foreach}
+
+                            </ul>
+
+                            <div class="tab-content" id="tab-content">
+                                <div class="tab-pane fade in  {if $product.description} active js-product-tab-active
+
+                    {/if}" id="description" role="tabpanel">
 
             <div class="tab-pane fade in {if $product.description} active js-product-tab-active{/if}" id="description"
               role="tabpanel">
@@ -384,3 +531,48 @@
 
 
   {/block}
+
+    <script>
+    function initializeProductImgWidth() {
+        var $element = $(".wrapper__swiper__product-img");
+        if ($element.length) {
+            function updateWidth() {
+                var width = $element.width();
+                $element.css("--product-img-width", width + "px");
+            }
+
+            var resizeObserver = new ResizeObserver(updateWidth);
+            resizeObserver.observe($element[0]);
+            updateWidth();
+        }
+    }
+
+    function waitForJQuery() {
+        if (typeof $ !== 'undefined') {
+            // Initialisation au chargement de la page
+            $(document).ready(function() {
+                initializeProductImgWidth();
+            });
+
+            // Écouter l'événement updatedProduct
+            if (typeof prestashop !== 'undefined') {
+                prestashop.on('updatedProduct', function(event) {
+                    setTimeout(function() {
+                        var $element = $(".wrapper__swiper__product-img");
+                        if ($element.length) {
+                            var width = $element.width();
+                            if (width > 0) {
+                                $element.css("--product-img-width", width + "px");
+                            }
+                        }
+                    }, 200);
+                });
+            }
+        } else {
+            setTimeout(waitForJQuery, 100);
+        }
+    }
+
+    waitForJQuery();
+    </script>
+{/block}

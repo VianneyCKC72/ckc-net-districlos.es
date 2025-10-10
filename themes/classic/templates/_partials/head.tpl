@@ -39,7 +39,6 @@
   {/block}
   <meta name="description" content="{block name='head_seo_description'}{$page.meta.description}{/block}">
   <meta name="keywords" content="{block name='head_seo_keywords'}{$page.meta.keywords}{/block}">
-  <meta name="robots" content="noindex, nofollow">
   <link rel="preconnect" href="https://f.vimeocdn.com">
   <link rel="preconnect" href="https://arclight.vimeo.com">
   <link rel="preconnect" href="https://i.vimeocdn.com">
@@ -111,6 +110,17 @@
 {block name='javascript_head'}
   {include file="_partials/javascript.tpl" javascript=$javascript.head vars=$js_custom_vars}
   <script defer charset="utf-8" src="https://widgets.rr.skeepers.io/product/084cf537-ed41-0a34-15e7-e45715e81af8/99f3523c-7bf8-4a88-8162-4b28805677e7.js"></script>
+
+{if isset($show_emptycart) && $show_emptycart}
+  <script>
+    window.isAdminConnected = true;
+  </script>
+{else}
+  <script>
+    window.isAdminConnected = false;
+  </script>
+{/if}
+
 
 {literal}
   <!-- Google Tag Manager -->

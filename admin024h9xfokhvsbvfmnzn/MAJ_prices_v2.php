@@ -11,7 +11,7 @@ try {
 	$conn = new PDO($dsn, $username, $password);
 	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-	$csv = readCSV('/var/www/districlos/admin562niy1zl/prices/EDI_TARIF_DV_WEB.csv');
+	$csv = readCSV('/var/www/districlos/admin024h9xfokhvsbvfmnzn/prices/EDI_TARIF_DV_WEB.csv');
 
 	// fgetcsv($file);
 
@@ -29,40 +29,45 @@ try {
 
 		$final_price_ttc = (float) str_replace(',', '.', $value[3]) * 1.2;
 		$final_price_ht = (float) str_replace(',', '.', $value[3]);
+		$final_price_wholesale = (float) str_replace(',', '.', $value[4]);
+
 		//$reduction = 0;
 		$set_price = $final_price_ht;
 
 		$product_price_query = 'SELECT * FROM `ps_product` WHERE `id_product` = :id_product';
 		$stmt = $conn->prepare($product_price_query);
 		$stmt->execute(['id_product' => $value[1]]);
-		$product_price = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		$product_price = $product_price[0]['price'];
+		$product_price_bdd = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$product_price = $product_price_bdd[0]['price'];
+		$product_wholesale_price = $product_price_bdd[0]['wholesale_price'];
+
 		if ($product_price > 0) {
 			$set_price = $set_price - $product_price;
 		}
+
 		if ($value[0] != "") {
 
 			$sql = 'UPDATE ps_product_attribute
-                    SET price = :price
+                    SET price = :price, wholesale_price = :wholesale_price
                     WHERE reference = CONVERT(:reference USING utf8mb4) COLLATE utf8mb4_general_ci';
 			$stmt = $conn->prepare($sql);
-			$stmt->execute(['price' => $set_price, 'reference' => $value[0]]);
+			$stmt->execute(['price' => $set_price, 'reference' => $value[0], 'wholesale_price' => $final_price_wholesale]);
 
 			$sql = 'UPDATE ps_product_attribute_shop AS pas
                     INNER JOIN ps_product_attribute AS pa
                       ON pa.id_product_attribute = pas.id_product_attribute
-                    SET pas.price = :price
+                    SET pas.price = :price, pas.wholesale_price = :wholesale_price
                     WHERE pa.reference = CONVERT(:reference USING utf8mb4) COLLATE utf8mb4_general_ci';
 			$stmt = $conn->prepare($sql);
-			$stmt->execute(['price' => $set_price, 'reference' => $value[0]]);
+			$stmt->execute(['price' => $set_price, 'reference' => $value[0], 'wholesale_price' => $final_price_wholesale]);
 		}else{
-			$sql = 'UPDATE `ps_product` SET `price` = :price WHERE `ps_product`.`id_product` = :id_product';
+			$sql = 'UPDATE `ps_product` SET `price` = :price, `wholesale_price` = :wholesale_price WHERE `ps_product`.`id_product` = :id_product';
 			$stmt = $conn->prepare($sql);
-			$stmt->execute(['price' => $final_price_ht, 'id_product' => $value[1]]);
+			$stmt->execute(['price' => $final_price_ht, 'id_product' => $value[1], 'wholesale_price' => $final_price_wholesale]);
 
-			$sql = 'UPDATE `ps_product_shop` SET `price` = :price WHERE `ps_product_shop`.`id_product` = :id_product';
+			$sql = 'UPDATE `ps_product_shop` SET `price` = :price, `wholesale_price` = :wholesale_price WHERE `ps_product_shop`.`id_product` = :id_product';
 			$stmt = $conn->prepare($sql);
-			$stmt->execute(['price' => $final_price_ht, 'id_product' => $value[1]]);
+			$stmt->execute(['price' => $final_price_ht, 'id_product' => $value[1], 'wholesale_price' => $final_price_wholesale]);
 		}
 
 		if ($value[1] == 485) {
@@ -73,30 +78,30 @@ try {
 				$product_attributes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 				foreach ($product_attributes as $product_attribute) {
-					$sql = 'UPDATE `ps_product` SET `price` = :price WHERE `ps_product`.`id_product` = :id_product';
+					$sql = 'UPDATE `ps_product` SET `price` = :price, `wholesale_price` = :wholesale_price WHERE `ps_product`.`id_product` = :id_product';
 					$stmt = $conn->prepare($sql);
-					$stmt->execute(['price' => $product_price, 'id_product' => $product_attribute['id_product']]);
+					$stmt->execute(['price' => $product_price, 'id_product' => $product_attribute['id_product'], 'wholesale_price' => $product_wholesale_price]);
 
-					$sql = 'UPDATE `ps_product_shop` SET `price` = :price WHERE `ps_product_shop`.`id_product` = :id_product';
+					$sql = 'UPDATE `ps_product_shop` SET `price` = :price, `wholesale_price` = :wholesale_price WHERE `ps_product_shop`.`id_product` = :id_product';
 					$stmt = $conn->prepare($sql);
-					$stmt->execute(['price' => $product_price, 'id_product' => $product_attribute['id_product']]);
+					$stmt->execute(['price' => $product_price, 'id_product' => $product_attribute['id_product'], 'wholesale_price' => $product_wholesale_price]);
 
-					$sql = 'UPDATE `ps_product_attribute_shop` SET `price` = :price WHERE `ps_product_attribute_shop`.`id_product_attribute` = :id_product_attribute';
+					$sql = 'UPDATE `ps_product_attribute_shop` SET `price` = :price, `wholesale_price` = :wholesale_price WHERE `ps_product_attribute_shop`.`id_product_attribute` = :id_product_attribute';
 					$stmt = $conn->prepare($sql);
-					$stmt->execute(['price' => $set_price, 'id_product_attribute' => $product_attribute['id_product_attribute']]);
+					$stmt->execute(['price' => $set_price, 'id_product_attribute' => $product_attribute['id_product_attribute'], 'wholesale_price' => $final_price_wholesale]);
 
-					$sql = 'UPDATE `ps_product_attribute` SET `price` = :price WHERE `ps_product_attribute`.`id_product_attribute` = :id_product_attribute';
+					$sql = 'UPDATE `ps_product_attribute` SET `price` = :price, `wholesale_price` = :wholesale_price WHERE `ps_product_attribute`.`id_product_attribute` = :id_product_attribute';
 					$stmt = $conn->prepare($sql);
-					$stmt->execute(['price' => $set_price, 'id_product_attribute' => $product_attribute['id_product_attribute']]);
+					$stmt->execute(['price' => $set_price, 'id_product_attribute' => $product_attribute['id_product_attribute'], 'wholesale_price' => $final_price_wholesale]);
 				}
 			} else {
-				$sql = 'UPDATE `ps_product` SET `price` = :price WHERE `ps_product`.`id_product` = 1028 OR `ps_product`.`id_product` = 1027';
+				$sql = 'UPDATE `ps_product` SET `price` = :price, `wholesale_price` = :wholesale_price WHERE `ps_product`.`id_product` = 1028 OR `ps_product`.`id_product` = 1027';
 				$stmt = $conn->prepare($sql);
-				$stmt->execute(['price' => $final_price_ht]);
+				$stmt->execute(['price' => $final_price_ht, 'wholesale_price' => $final_price_wholesale]);
 
-				$sql = 'UPDATE `ps_product_shop` SET `price` = :price WHERE `ps_product_shop`.`id_product` = 1028 OR `ps_product_shop`.`id_product` = 1027';
+				$sql = 'UPDATE `ps_product_shop` SET `price` = :price, `wholesale_price` = :wholesale_price WHERE `ps_product_shop`.`id_product` = 1028 OR `ps_product_shop`.`id_product` = 1027';
 				$stmt = $conn->prepare($sql);
-				$stmt->execute(['price' => $final_price_ht]);
+				$stmt->execute(['price' => $final_price_ht, 'wholesale_price' => $final_price_wholesale]);
 			}
 		}
 	}
