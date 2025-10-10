@@ -23,6 +23,9 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  */
+//@ini_set('display_errors', '1');
+//@ini_set('display_startup_errors', '1');
+//error_reporting(E_ALL);
 
 $authorizedDebugIps = array('91.172.226.76'); // Ajoute d'autres IP ici si besoin
 $remote_addr = [];
