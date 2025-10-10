@@ -1,6 +1,6 @@
 <div class="js-product-details tab-pane fade{if !$product.description} in active{/if}" id="product-details"
   data-product="{$product.embedded_attributes|json_encode}" role="tabpanel">
-  
+
   {block name='product_reference'}
     {if isset($product_manufacturer->id)}
       <div class="product-manufacturer">
@@ -53,7 +53,9 @@
   {block name='product_features'}
     {if $product.grouped_features}
       <section class="product-features mt-4">
-        <p class="h6">{l s='Data sheet' d='Shop.Theme.Catalog'}</p>
+        {if !$pro.env}
+          <p class="h6">{l s='Data sheet' d='Shop.Theme.Catalog'}</p>
+        {/if}
         <dl class="data-sheet">
           {foreach from=$product.grouped_features item=feature}
             <dt class="name">{$feature.name}</dt>

@@ -10,10 +10,18 @@ class FrontController extends FrontControllerCore
     public function initContent()
     {
         $isLogged = $this->context->customer ? (bool)$this->context->customer->isLogged() : false;
-
+        $newClient                            = 0;
+        $isConfirmationPage = strpos($_SERVER['REQUEST_URI'], 'confirmation') !== false;
         if ($isLogged) {
             $id_customer = (int) $this->context->customer->id;
             $default_address_id = null;
+
+            $orders    = Order::getCustomerOrders($id_customer);
+            $newClient = count($orders) == 0 ? 1 : 0;
+        
+            if (count($orders) == 1 && $isConfirmationPage) {
+                $newClient = 1;
+            }
 
             if ($id_customer > 0 && !empty($this->context->cookie->default_address_id_cached)) {
                 $default_address_id = (int) $this->context->cookie->default_address_id_cached;
@@ -61,11 +69,13 @@ class FrontController extends FrontControllerCore
                 $this->context->smarty->assign(['default_address_id' => $default_address_id]);
                 Media::addJsDef(['default_address_id' => $default_address_id]);
             }
+            
         } else {
             // Nettoyage éventuel du cache si déconnecté
             unset($this->context->cookie->default_address_id_cached);
         }
 
+        $this->context->smarty->assign(['newClient' => $newClient]);
 
 
         parent::initContent();
