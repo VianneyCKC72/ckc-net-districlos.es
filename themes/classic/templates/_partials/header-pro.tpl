@@ -3,7 +3,7 @@
         prestashop.customer = prestashop.customer;
         if (prestashop.customer && prestashop.customer.is_logged) {
             {if $customer.id}
-            prestashop.customer.id = {$customer.id};
+                prestashop.customer.id = {$customer.id};
             {/if}
             prestashop.customer.newClient = {$newClient};
         }
@@ -16,7 +16,7 @@
 
 
             <!-- Logo Desktop (Visible seulement à partir de md) -->
-            <div class="">
+            <div class="flex-grow-0 flex-shrink-0 d-none d-md-block">
                 <a href="{$pro.url_domain|escape:'html':'UTF-8'}">
                     <img class="" width="180" src="/themes/classic/assets/img/logo-pro.png" alt="{$shop.name} Pro" />
                 </a>
@@ -24,16 +24,19 @@
 
 
             <!-- Bouton menu (Visible uniquement sur Desktop) -->
-            <div class="menu-button d-none d-md-block">
+            <div class="menu-button d-none d-md-block flex-grow-0 flex-shrink-0">
                 {include file='_partials/btn-menu.tpl'}
             </div>
 
             <!-- Logo Mobile (Visible seulement sur xs et sm) -->
-            <div class="d-block d-xl-none">
+            <div class="d-block d-xl-none flex-grow-0 flex-shrink-0">
                 <a href="{$urls.base_url}" class="d-flex">
-                    <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="42" height="42" loading="lazy">
-                    <div style="width: 1px; height: 50px; background-color: #ccc;margin-left: 10px;" class="desktop_only"></div>
-                    <img  class="desktop_only" src="/img/Logo_Groupama_FDJ.svg" alt="Groupama-FDJ" style="margin-left: 10px;width: 180px;height: 47px;" />
+                    <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="42" height="42"
+                        loading="lazy">
+                    <div style="width: 1px; height: 50px; background-color: #ccc;margin-left: 10px;" class="desktop_only">
+                    </div>
+                    <img class="desktop_only" src="/img/Logo_Groupama_FDJ.svg" alt="Groupama-FDJ"
+                        style="margin-left: 10px;width: 180px;height: 47px;" />
                 </a>
             </div>
 
@@ -45,13 +48,14 @@
 
                     <div class="displayTop">
                         {hook h='displayTop'}
-                        <a href="#" class="btn btn-primary">
+                        <a href="#" class="btn btn-primary d-none d-md-block">
                             <div class="fs-6 font-weight-bold">
                                 Mes avantages
                             </div>
                         </a>
                         <div class="block-question block-question-header">
-                            <img loading="lazy" src="/img/menu-mobile-phone.svg" width="22" height="20" class="ico-question" alt="des question?">
+                            <img loading="lazy" src="/img/menu-mobile-phone.svg" width="22" height="20" class="ico-question"
+                                alt="des question?">
                             <div>
                                 Des questions ?
                                 <a href="tel:0422531034"><strong>04 22 53 10 34</strong></a>

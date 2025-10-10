@@ -39,7 +39,7 @@ class ckc_espacepro extends Module
             Configuration::updateValue('CKC_PART_URL_BOUTIQUE', '', false, null, (int)$idShop);
         }
 
-        include __DIR__ . '/sql/install.php';
+//        include __DIR__ . '/sql/install.php';
 
         $ok =
             $this->registerHook('displayCustomerAccountForm') &&
