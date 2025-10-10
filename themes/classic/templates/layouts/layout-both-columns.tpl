@@ -9,12 +9,7 @@
     {/block}
 </head>
 
-TEST :
 
-pro.env : {$pro|var_dump}
-
-
-fin test
 
 <body id="{$page.page_name}" class="{$page.body_classes|classnames}
              {if ($page.page_name == 'authentication' && $pro.env) || $pro.env} espace_pro{/if}
@@ -52,8 +47,8 @@ fin test
 
                 {if $page.page_name == 'index' && !empty($pro) && $pro.env && !$pro.user.is_logged}
                     {include file='module:ckc_espacepro/views/templates/hook/pro-home-login.tpl'
-                                                    login_action=$link->getModuleLink('ckc_espacepro','login')
-                                                    back=$urls.current_url}
+                                                        login_action=$link->getModuleLink('ckc_espacepro','login')
+                                                        back=$urls.current_url}
                 {/if}
 
                 <div class="row">
