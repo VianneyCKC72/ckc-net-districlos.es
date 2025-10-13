@@ -56,9 +56,6 @@
                       </div>
                       <div class="col-sm-4 col-xs-12">
                         <span class="carrier-delay">{$carrier.delay}</span>
-                        {if $carrier.id == $custompickup_main_carrier_id}
-                          {hook h='displayCarrierExtraContent' carrier=$carrier.id}
-                        {/if}
                       </div>
                       <div class="col-sm-3 col-xs-12">
                         <span class="carrier-price">
@@ -69,6 +66,9 @@
                             {/if}
                         </span>
                       </div>
+                      {if $carrier.id == $custompickup_main_carrier_id}
+                        {hook h='displayCarrierExtraContent' carrier=$carrier.id}
+                      {/if}
                     </div>
                   </label>
                 </div>
