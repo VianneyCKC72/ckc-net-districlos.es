@@ -1,0 +1,140 @@
+/**
+* 2007-2025 PrestaShop
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Academic Free License (AFL 3.0)
+* that is bundled with this package in the file LICENSE.txt.
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/afl-3.0.php
+* If you did not receive a copy of the license and are unable to
+* obtain it through the world-wide-web, please send an email
+* to license@prestashop.com so we can send you a copy immediately.
+*
+* DISCLAIMER
+*
+* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+* versions in the future. If you wish to customize PrestaShop for your
+* needs please refer to http://www.prestashop.com for more information.
+*
+*  @author    PrestaShop SA <contact@prestashop.com>
+*  @copyright 2007-2025 PrestaShop SA
+*  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+*  International Registered Trademark & Property of PrestaShop SA
+*
+* Don't forget to prefix your containers with your own identifier
+* to avoid any conflicts with others containers.
+*/
+#customfilterselector{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: #F6F2EB;
+    padding: 15px 27px;
+    border-radius: 10px;
+    flex-wrap: wrap;
+    align-content: center;
+    margin-bottom: 50px;
+}
+.customfilterselector-question{
+    width: 100%;
+    font-size: 15px;
+    font-weight: bold;
+    color: #000;
+    margin-bottom: 26px;
+}
+.customfilterselector-options-container{
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    max-width: 722px;
+    margin: 0 auto 41px;
+    flex-wrap: wrap;
+}
+#customfilterselector:not(.customfilterselector-hauteur) .customfilterselector-options-container{
+    flex-wrap: nowrap;
+    gap: 25px;
+}
+.customfilterselector-option-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+.customfilterselector-option-text{
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: bold;
+    color: black;
+    white-space: nowrap;
+}
+.customfilterselector-validate-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 29px;
+    align-items: center;
+}
+.customfilterselector-skip-option{
+    text-decoration: underline;
+    cursor: pointer;
+}
+.customfilterselector-option-container img{
+    border: 5px solid #F6F2EB;
+    border-radius: 20px;
+    transition: border 0.3s ease-out;
+}
+.customfilterselector-option-container img:hover,
+.customfilterselector-option-container.customfilterselector-selected img{
+    border: 5px solid #FFA400;
+    transition: all 0.3s ease-out;
+}
+.customfilterselector-validate-option{
+    padding: 11px 34px;
+    border-radius: 29px;
+    background-color: #FFA400;
+    color: #fff;
+    transition: background-color 0.3s ease-out;
+}
+.customfilterselector-validate-option[disabled=disabled]{
+    background-color: #ffcf79;
+}
+.customfilterselector-validate-option:not([disabled=disabled]):hover{
+    background-color: #026473;
+    transition: background-color 0.3s ease-out;
+}
+#customfilterselector.customfilterselector-hauteur{
+    display: none;
+}
+#customfilterselector.customfilterselector-hauteur .customfilterselector-options-container{
+    max-width: 100%;
+    flex-wrap: wrap;
+    margin: 0 auto;
+}
+#customfilterselector.customfilterselector-hauteur .customfilterselector-option-container{
+    padding: 21px;
+    border: 1px solid #707070;
+    border-radius: 15px;
+    background-color: #fff;
+    margin-right: 12px;
+    margin-bottom: 35px;
+    width: 77px;
+}
+#customfilterselector.customfilterselector-hauteur .customfilterselector-option-container .customfilterselector-option-text{
+    margin-top: 0;
+    white-space: nowrap;
+}
+
+#customfilterselector.customfilterselector-hauteur .customfilterselector-option-container:hover,
+#customfilterselector.customfilterselector-hauteur .customfilterselector-option-container.customfilterselector-option-selected{
+    padding: 17px;
+    border: 5px solid #FFA400;
+    transition: border 0.2s ease-out;
+}
+@media (max-width:991px){
+    #customfilterselector:not(.customfilterselector-hauteur) .customfilterselector-options-container{
+        flex-wrap: wrap;
+    }
+}
