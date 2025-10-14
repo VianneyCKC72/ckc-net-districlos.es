@@ -107,6 +107,7 @@ class Ckc_Stores_Stock extends Module
             'isKit' => $stockData['isKit'],
             'stores' => $stockData['stores'],
             'seuil' => $stockData['seuil'],
+            'fin_de_vie' => $stockData['fin_de_vie'],
         ]);
 
         return $this->fetch('module:ckc_stores_stock/views/templates/hook/displayStock.tpl');

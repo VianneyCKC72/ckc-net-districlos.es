@@ -66,6 +66,9 @@
                             {/if}
                         </span>
                       </div>
+                      {if $carrier.id == $custompickup_main_carrier_id}
+                        {hook h='displayCarrierExtraContent' carrier=$carrier.id}
+                      {/if}
                     </div>
                   </label>
                 </div>
