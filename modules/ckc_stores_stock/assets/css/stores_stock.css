@@ -81,38 +81,23 @@
 	opacity: 0.8;
 }
 
-/* Styles pour produit en fin de vie */
-.fin-de-vie .style_findevie {
+/* Styles de base pour états spéciaux (fin de vie et victime de succès) */
+.stock-special .style_findevie {
 	font-weight: bold !important;
 }
 
-.fin-de-vie .stock-display {
-	color: #ff144e !important;
-}
-
-.fin-de-vie .remove_findevie {
+.stock-special .remove_findevie {
 	display: none !important;
 }
 
-.fin-de-vie .blockDeliveryDisplayStock img {
-	content: url('/modules/ckc_stores_stock/assets/img/deliveryFinDeVie.png');
-}
-
-/* Styles normaux (sans fin de vie) */
-.blockDeliveryDisplayStock img {
-	content: url('/modules/ckc_stores_stock/assets/img/delivery.png');
-}
-
-/* Styles pour produit victime de son succès */
-.victime-succes .style_findevie {
-	font-weight: bold !important;
+/* Styles spécifiques fin de vie */
+.stock-special.fin-de-vie .style_findevie,
+.stock-special.fin-de-vie .stock-display {
 	color: #ff144e !important;
 }
 
-.victime-succes .stock-display {
+/* Styles spécifiques victime de succès */
+.stock-special.victime-succes .style_findevie,
+.stock-special.victime-succes .stock-display {
 	color: #ff144e !important;
-}
-
-.victime-succes .remove_findevie {
-	display: none !important;
 }

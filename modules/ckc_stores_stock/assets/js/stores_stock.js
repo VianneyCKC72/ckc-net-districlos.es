@@ -61,80 +61,103 @@ function fetchStockData(isPack = false, packList = {}) {
     }
 }
 
+// Configuration centralisée des états de stock
+const STOCK_STATES = {
+    victime_succes: {
+        title: "Victime de son succès",
+        subtitle: "Ce produit n'est plus disponible",
+        stock: "Produit épuisé",
+        color: "#ff144e",
+        image: 'deliveryFinDeVie.png',
+        showStoreButton: false,
+        disableCart: true,
+        blockQuantity: true
+    },
+    fin_de_vie: {
+        title: "Fin de série !",
+        subtitle: "Commandez vite, stock bas !",
+        stock: (qty, seuil, platformStock) => `${platformStock || 0} produits en stock`,
+        color: "#ff144e",
+        image: 'deliveryFinDeVie.png',
+        showStoreButton: false,
+        disableCart: false,
+        blockQuantity: false
+    },
+    normal: {
+        title: "Stock en magasin",
+        subtitle: "",
+        stock: (qty, seuil) => qty > 0 && seuil ? `${qty} en stock national` : "Arrivage en cours",
+        color: null,
+        image: 'delivery.png',
+        showStoreButton: true,
+        disableCart: false,
+        blockQuantity: false
+    }
+};
+
 function updateStockDisplay(resp) {
     const $container = $('.blockDeliveryDisplayStock').parent();
-    const isStockAvailable = resp.total_quantity > 0 && resp.seuil;
-    const stockText = getStockText(resp.fin_de_vie, resp.total_quantity, isStockAvailable, resp.victime_succes);
     
-    // Gestion classe fin-de-vie (le CSS gère tout le style)
-    $container.toggleClass('fin-de-vie', resp.fin_de_vie);
-    $container.toggleClass('victime-succes', resp.victime_succes);
+    // Déterminer l'état
+    const stateName = resp.victime_succes ? 'victime_succes' : (resp.fin_de_vie ? 'fin_de_vie' : 'normal');
+    const state = STOCK_STATES[stateName];
     
-    // Mise à jour des textes
-    if (resp.victime_succes) {
-        $(".style_findevie").text("Victime de son succès");
-        $(".style_findevie_thin").text("Ce produit n'est plus disponible");
-        $(".stock-display").text(stockText);
-        // Cacher le bouton
-        $(".remove_findevie").attr('style', 'display: none !important');
-        // Griser le bouton ajouter au panier
-        disableAddToCartButton();
-    } else if (resp.fin_de_vie) {
-        $(".style_findevie").text("Fin de série !");
-        $(".style_findevie_thin").text("Commandez vite, stock bas !");
-        $(".stock-display").text(stockText);
-        // Cacher le bouton
-        $(".remove_findevie").attr('style', 'display: none !important');
-        // Réactiver le bouton ajouter au panier
-        enableAddToCartButton();
+    // Appliquer les classes CSS
+    $container.removeClass('stock-special fin-de-vie victime-succes');
+    if (stateName !== 'normal') {
+        $container.addClass('stock-special ' + stateName.replace('_', '-'));
+    }
+    
+    // Mettre à jour les textes
+    $(".style_findevie").text(state.title);
+    $(".style_findevie_thin").text(state.subtitle);
+    
+    const stockText = typeof state.stock === 'function' 
+        ? state.stock(resp.total_quantity, resp.seuil, resp.platform_stock) 
+        : state.stock;
+    $(".stock-display").text(stockText);
+    
+    // Appliquer la couleur
+    if (state.color) {
+        $(".stock-display").removeClass('text-secondary').attr('style', 'color: ' + state.color + ' !important;');
     } else {
-        $(".style_findevie").text("Stock en magasin");
-        $(".style_findevie_thin").text("");
-        $(".stock-display").text(stockText);
-        // Afficher le bouton
+        $(".stock-display").addClass('text-secondary').removeAttr('style');
+    }
+    
+    // Mettre à jour l'image
+    $(".blockDeliveryDisplayStock img").attr('src', '/modules/ckc_stores_stock/assets/img/' + state.image);
+    
+    // Gérer le bouton "Voir magasin"
+    if (state.showStoreButton) {
         $(".remove_findevie").css('display', 'block');
-        // Réactiver le bouton ajouter au panier
+    } else {
+        $(".remove_findevie").attr('style', 'display: none !important');
+    }
+    
+    // Gérer le bouton "Ajouter au panier"
+    if (state.disableCart) {
+        disableAddToCartButton();
+    } else {
         enableAddToCartButton();
     }
     
-    $(".productQuantity").text(isStockAvailable ? `${resp.total_quantity} en stock national` : "Arrivage en cours");
-    $("#reference_to_display").text(resp.reference_to_display);
-
-    // Limiter la quantité sélectionnable au stock disponibles
-    if (resp.victime_succes) {
-        // Si victime de succès, bloquer complètement l'input de quantité
-        $('input[name="qty"], #quantity_wanted').attr('max', 0).val(0).prop('disabled', true);
-        
-        // Bloquer TOUS les boutons +/- avec tous les sélecteurs possibles
-        $('.bootstrap-touchspin-up, .bootstrap-touchspin-down, .btn-touchspin, button.js-touchspin, .input-group-btn-vertical button, .product-quantity button, .qty button').each(function() {
-            $(this).prop('disabled', true).addClass('disabled').css({'pointer-events': 'none', 'opacity': '0.5'});
-        });
-        
-        // Empêcher les clics sur les boutons +/-
+    // Gérer les contrôles de quantité
+    const $input = $('input[name="qty"], #quantity_wanted');
+    const $buttons = $('.bootstrap-touchspin-up, .bootstrap-touchspin-down, .btn-touchspin, button.js-touchspin, .input-group-btn-vertical button, .product-quantity button, .qty button');
+    
+    if (state.blockQuantity) {
+        $input.attr('max', 0).val(0).prop('disabled', true);
+        $buttons.prop('disabled', true).addClass('disabled').css({'pointer-events': 'none', 'opacity': '0.5'});
         $('.product-quantity, .qty, .input-group').on('click', 'button', function(e) {
             e.preventDefault();
             e.stopPropagation();
             return false;
         });
-    } else {
-        // Sinon, limiter au stock disponible
-        $('input[name="qty"], #quantity_wanted').attr('max', resp.total_quantity).prop('disabled', false);
-        
-        // Réactiver les boutons +/-
-        $('.bootstrap-touchspin-up, .bootstrap-touchspin-down, .btn-touchspin, button.js-touchspin, .input-group-btn-vertical button, .product-quantity button, .qty button').each(function() {
-            $(this).prop('disabled', false).removeClass('disabled').css({'pointer-events': 'auto', 'opacity': '1'});
-        });
-        
-        // Retirer l'empêchement des clics
-        $('.product-quantity, .qty, .input-group').off('click', 'button');
-        
-        // Si la quantité actuelle dépasse le stock, la réduire
-        var currentQty = parseInt($('input[name="qty"], #quantity_wanted').val());
-        if (currentQty > resp.total_quantity) {
-            $('input[name="qty"], #quantity_wanted').val(resp.total_quantity);
-        }
     }
-
+    
+    // Mise à jour de la référence
+    $("#reference_to_display").text(resp.reference_to_display);
+    
     // Gestion magasin sélectionné
     updateStoreDisplay(resp);
     
@@ -142,23 +165,11 @@ function updateStockDisplay(resp) {
     updateStoresModal(resp.stores, resp.fin_de_vie);
 }
 
-// Fonction helper pour générer le texte de stock
-function getStockText(isFinDeVie, quantity, isAvailable, victimeSucces) {
-    if (victimeSucces) {
-        return "Produit épuisé";
-    }
-    if (isFinDeVie) {
-        return `${quantity} produits en stock`;
-    }
-    return isAvailable ? `${quantity} en stock national` : "Arrivage en cours";
-}
-
-// Fonction pour désactiver le bouton ajouter au panier
+// Fonctions utilitaires pour le panier
 function disableAddToCartButton() {
     $('.add-to-cart, .product-add-to-cart button[type="submit"]').prop('disabled', true).addClass('disabled');
 }
 
-// Fonction pour réactiver le bouton ajouter au panier
 function enableAddToCartButton() {
     $('.add-to-cart, .product-add-to-cart button[type="submit"]').prop('disabled', false).removeClass('disabled');
 }
@@ -201,6 +212,27 @@ function getStockSvg(text) {
 }
 
 $(document).ready(function () {
+    // Initialiser les contrôles au chargement
+    const $container = $('.blockDeliveryDisplayStock').parent();
+    const stockState = $container.data('stock-state');
+    const maxStock = parseInt($container.data('total-quantity'));
+    
+    if (stockState && STOCK_STATES[stockState]) {
+        const state = STOCK_STATES[stockState];
+        
+        // Appliquer les contrôles initiaux
+        if (state.disableCart) {
+            disableAddToCartButton();
+        }
+        
+        if (state.blockQuantity) {
+            const $input = $('input[name="qty"], #quantity_wanted');
+            const $buttons = $('.bootstrap-touchspin-up, .bootstrap-touchspin-down, .btn-touchspin, button.js-touchspin, .input-group-btn-vertical button, .product-quantity button, .qty button');
+            $input.attr('max', 0).val(0).prop('disabled', true);
+            $buttons.prop('disabled', true).addClass('disabled').css({'pointer-events': 'none', 'opacity': '0.5'});
+        }
+    }
+    
     fetchStockData();
 
     prestashop.on('updatedProduct', function () {

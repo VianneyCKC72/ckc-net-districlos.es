@@ -104,6 +104,7 @@ class Ckc_Stores_Stock extends Module
 
         $this->context->smarty->assign([
             'total_quantity' => $stockData['total_quantity'],
+            'platform_stock' => $stockData['platform_stock'],
             'isKit' => $stockData['isKit'],
             'stores' => $stockData['stores'],
             'seuil' => $stockData['seuil'],
