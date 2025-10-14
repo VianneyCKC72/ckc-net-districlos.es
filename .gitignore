@@ -255,6 +255,7 @@ app/config/config.php
 
 modules/*
 !modules/ckc*/
+!modules/pm_advancedpack/
 modules/ckcstorespresentation/uploads/*
 #override/*
 themes/*/
