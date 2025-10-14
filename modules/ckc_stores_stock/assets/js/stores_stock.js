@@ -41,24 +41,34 @@ function NosMagasins() {
     }
 }
 
+// Variable pour stocker le timeout du debounce
+let fetchStockTimeout;
+
 function fetchStockData(isPack = false, packList = {}) {
-    let id_store = $(".setStore.selected-1").data("shop-id") || null;
-    let id_product = $("#product_page_product_id").val();
-    let dataProduct = $("#product-details").data('product');
-    if (dataProduct) {
-        let id_product_attribute = dataProduct.id_product_attribute || null;
+    // Annuler l'appel précédent s'il existe
+    clearTimeout(fetchStockTimeout);
+    
+    // Attendre 100ms avant d'exécuter pour éviter les appels multiples
+    fetchStockTimeout = setTimeout(function() {
+        let id_store = $(".setStore.selected-1").data("shop-id") || null;
+        let id_product = $("#product_page_product_id").val();
+        let dataProduct = $("#product-details").data('product');
         
-        $.post('/modules/ckc_stores_stock/ajax.php', {
-            ajax: 1,
-            id_product,
-            id_product_attribute,
-            id_store,
-            isPack,
-            packList
-        }, function (response) {
-            updateStockDisplay(response);
-        }, "json");
-    }
+        if (dataProduct) {
+            let id_product_attribute = dataProduct.id_product_attribute || null;
+            
+            $.post('/modules/ckc_stores_stock/ajax.php', {
+                ajax: 1,
+                id_product,
+                id_product_attribute,
+                id_store,
+                isPack,
+                packList
+            }, function (response) {
+                updateStockDisplay(response);
+            }, "json");
+        }
+    }, 100);
 }
 
 // Configuration centralisée des états de stock
@@ -81,7 +91,8 @@ const STOCK_STATES = {
         image: 'deliveryFinDeVie.png',
         showStoreButton: false,
         disableCart: false,
-        blockQuantity: false
+        blockQuantity: false,
+        limitToPlatformStock: true
     },
     normal: {
         title: "Stock en magasin",
@@ -146,6 +157,7 @@ function updateStockDisplay(resp) {
     const $buttons = $('.bootstrap-touchspin-up, .bootstrap-touchspin-down, .btn-touchspin, button.js-touchspin, .input-group-btn-vertical button, .product-quantity button, .qty button');
     
     if (state.blockQuantity) {
+        // Bloquer complètement pour victime de succès
         $input.attr('max', 0).val(0).prop('disabled', true);
         $buttons.prop('disabled', true).addClass('disabled').css({'pointer-events': 'none', 'opacity': '0.5'});
         $('.product-quantity, .qty, .input-group').on('click', 'button', function(e) {
@@ -153,6 +165,45 @@ function updateStockDisplay(resp) {
             e.stopPropagation();
             return false;
         });
+    } else if (state.limitToPlatformStock && resp.platform_stock) {
+        // Limiter au stock de la plateforme pour les produits fin de vie
+        $input.attr('max', resp.platform_stock).prop('disabled', false);
+        $buttons.prop('disabled', false).removeClass('disabled').css({'pointer-events': 'auto', 'opacity': '1'});
+        
+        // Corriger si la quantité actuelle dépasse le stock plateforme
+        const currentQty = parseInt($input.val());
+        if (currentQty > resp.platform_stock) {
+            $input.val(resp.platform_stock);
+            // Déclencher l'événement pour que PrestaShop recalcule le prix (une seule fois)
+            $input.trigger('change');
+            $input.trigger('touchspin.on.startspin');
+            // Afficher le message de limitation
+            showQuantityLimitMessage(resp.platform_stock);
+        }
+        
+        // Ajouter un écouteur pour bloquer les saisies au-dessus du max avec debounce
+        let inputTimeout;
+        $input.off('input.platformLimit').on('input.platformLimit', function() {
+            const $this = $(this);
+            const val = parseInt($this.val());
+            
+            if (val > resp.platform_stock) {
+                $this.val(resp.platform_stock);
+                
+                // Afficher le message de limitation
+                showQuantityLimitMessage(resp.platform_stock);
+                
+                // Déclencher 'change' avec debounce pour éviter les rafraîchissements excessifs
+                clearTimeout(inputTimeout);
+                inputTimeout = setTimeout(function() {
+                    $this.trigger('change');
+                }, 500); // Attendre 500ms après la dernière saisie
+            }
+        });
+    } else {
+        // Pas de limitation pour les produits normaux
+        $input.removeAttr('max').prop('disabled', false);
+        $buttons.prop('disabled', false).removeClass('disabled').css({'pointer-events': 'auto', 'opacity': '1'});
     }
     
     // Mise à jour de la référence
@@ -172,6 +223,36 @@ function disableAddToCartButton() {
 
 function enableAddToCartButton() {
     $('.add-to-cart, .product-add-to-cart button[type="submit"]').prop('disabled', false).removeClass('disabled');
+}
+
+// Afficher un message de limitation de quantité
+function showQuantityLimitMessage(maxQty) {
+    // Supprimer les anciens messages
+    $('.quantity-limit-message').remove();
+    
+    // Créer le message
+    const $message = $('<div class="quantity-limit-message" style="' +
+        'color: #dc3545; ' +
+        'font-size: 13px; ' +
+        'margin-top: 5px; ' +
+        'font-weight: 500;' +
+    '">Quantité limitée à ' + maxQty + ' unités</div>');
+    
+    // Trouver le conteneur de quantité et ajouter le message en dessous
+    const $qtyContainer = $('.product-quantity, .qty').first();
+    if ($qtyContainer.length) {
+        $qtyContainer.after($message);
+    } else {
+        // Fallback : ajouter après l'input
+        $('input[name="qty"], #quantity_wanted').closest('.form-group, .input-group').after($message);
+    }
+    
+    // Supprimer après 3 secondes avec animation
+    setTimeout(function() {
+        $message.fadeOut(300, function() {
+            $(this).remove();
+        });
+    }, 3000);
 }
 
 // Fonction pour gérer l'affichage du magasin sélectionné
@@ -216,9 +297,12 @@ $(document).ready(function () {
     const $container = $('.blockDeliveryDisplayStock').parent();
     const stockState = $container.data('stock-state');
     const maxStock = parseInt($container.data('total-quantity'));
+    const platformStock = parseInt($container.data('platform-stock'));
     
     if (stockState && STOCK_STATES[stockState]) {
         const state = STOCK_STATES[stockState];
+        const $input = $('input[name="qty"], #quantity_wanted');
+        const $buttons = $('.bootstrap-touchspin-up, .bootstrap-touchspin-down, .btn-touchspin, button.js-touchspin, .input-group-btn-vertical button, .product-quantity button, .qty button');
         
         // Appliquer les contrôles initiaux
         if (state.disableCart) {
@@ -226,10 +310,38 @@ $(document).ready(function () {
         }
         
         if (state.blockQuantity) {
-            const $input = $('input[name="qty"], #quantity_wanted');
-            const $buttons = $('.bootstrap-touchspin-up, .bootstrap-touchspin-down, .btn-touchspin, button.js-touchspin, .input-group-btn-vertical button, .product-quantity button, .qty button');
+            // Bloquer complètement pour victime de succès
             $input.attr('max', 0).val(0).prop('disabled', true);
             $buttons.prop('disabled', true).addClass('disabled').css({'pointer-events': 'none', 'opacity': '0.5'});
+        } else if (state.limitToPlatformStock && platformStock) {
+            // Limiter au stock de la plateforme pour les produits fin de vie
+            $input.attr('max', platformStock);
+            
+            // Corriger si la quantité actuelle dépasse
+            const currentQty = parseInt($input.val());
+            if (currentQty > platformStock) {
+                $input.val(platformStock);
+                $input.trigger('change');
+                showQuantityLimitMessage(platformStock);
+            }
+            
+            // Ajouter un écouteur pour bloquer les saisies au-dessus du max avec debounce
+            let initInputTimeout;
+            $input.off('input.platformLimit').on('input.platformLimit', function() {
+                const $this = $(this);
+                const val = parseInt($this.val());
+                
+                if (val > platformStock) {
+                    $this.val(platformStock);
+                    showQuantityLimitMessage(platformStock);
+                    
+                    // Déclencher 'change' avec debounce pour éviter les rafraîchissements excessifs
+                    clearTimeout(initInputTimeout);
+                    initInputTimeout = setTimeout(function() {
+                        $this.trigger('change');
+                    }, 500); // Attendre 500ms après la dernière saisie
+                }
+            });
         }
     }
     
@@ -239,9 +351,21 @@ $(document).ready(function () {
         fetchStockData();
     });
 
+    // Utiliser un flag pour éviter les appels multiples lors d'ajaxComplete
+    let isAjaxProcessing = false;
+    
     $(document).on('ajaxComplete', function (event, xhr, settings) {
         if (settings.url.includes('product') || settings.url.includes('favoritestore')) {
-            fetchStockData();
+            // Éviter les appels multiples simultanés
+            if (!isAjaxProcessing) {
+                isAjaxProcessing = true;
+                fetchStockData();
+                
+                // Réinitialiser le flag après 200ms
+                setTimeout(function() {
+                    isAjaxProcessing = false;
+                }, 200);
+            }
         }
     });
 });
@@ -252,8 +376,8 @@ if ($('.delivery-option input').length > 0) {
         let selectedDelivery = $('input[name*="delivery_option"]:checked').attr('id');
 
         $.post(
-            '/module/ckc_stores_stock/getStockCheckout',
-            {ajax: "1", selectedDelivery: selectedDelivery},
+            '/modules/ckc_stores_stock/ajax_checkout.php',
+            {selectedDelivery: selectedDelivery},
             null,
             "json"
         ).then(function (resp) {
@@ -280,9 +404,29 @@ if ($('.delivery-option input').length > 0) {
                     var image = '<img src="/modules/ckc_stores_stock/assets/img/moins.webp" class="unveil-loaded">'
                 }
 
-                $('#stock-summary-content .products').append('<p class="productQuantity" style="color:#000000;">' + image + resp.data.stocks[i].product_name + '<br></p>')
+                    $('#stock-summary-content .products').append('<p class="productQuantity" style="color:#000000;">' + image + resp.data.stocks[i].product_name + '<br></p>')
             }
             $('#stock-summary-content .nameStore').html(resp.data.stock.store_name);
+            
+            // Gérer la section des produits fin de série
+            $('.fin-serie-section').remove(); // Supprimer l'ancienne section si elle existe
+            
+            if (resp.data.stock.hasFinSerieProducts && resp.data.finSerieStocks && resp.data.finSerieStocks.length > 0) {
+                let finSerieHtml = '<div class="fin-serie-section mt-3">' +
+                    '<p class="productLimit" style="color:#79c046;">Un ou des produits sont en stock sur plateforme</p>' +
+                    '<div class="products fin-serie-products">';
+                
+                resp.data.finSerieStocks.forEach(function(productStock) {
+                    finSerieHtml += '<p class="productQuantity" style="color:#000000;">' +
+                        '<img src="/modules/ckc_stores_stock/assets/img/selectionner.webp" class="unveil-loaded">' +
+                        productStock.product_name + '<br></p>';
+                });
+                
+                finSerieHtml += '</div></div>';
+                
+                // Ajouter après le texte explicatif
+                $('#stock-summary-content .text').after(finSerieHtml);
+            }
 
         });
     })

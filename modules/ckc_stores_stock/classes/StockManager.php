@@ -181,9 +181,11 @@ class StockManager extends Module
                 else {
                     $stockData = $this->getStockData($product['id_product'], $product['id_product_attribute'], $storesDelivery);
     
-                    if ($stockData['quantity'] < $product['quantity']) {
+                    // Ne pas compter les produits fin de série dans le stock_ok
+                    if (!$isFinSerie && $stockData['quantity'] < $product['quantity']) {
                         $stock_ok = false;
                     }
+                    
                     $productArray = [
                         'product_name' => $product['name'],
                         'stock_ok'     => $stockData['quantity'] < $product['quantity'] ? false : true,
