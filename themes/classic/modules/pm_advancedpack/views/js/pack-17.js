@@ -212,9 +212,8 @@ var ap5Plugin = {
                         prestashop.emit('updateCart', {
                             reason: {
                                 idProduct: idPack,
-                                idProductAttribute: (typeof(jsonData.ap5Data.explodedProductsData) == 'object' ? jsonData.ap5Data.explodedProductsData : jsonData.ap5Data.idProductAttribute),
+                                idProductAttribute: (typeof(jsonData.ap5Data.explodedProductsData) == 'object' ? jsonData.ap5Data.cartPackProducts.ap5ExplodedCart : jsonData.ap5Data.idProductAttribute),
                                 linkAction: 'add-to-cart',
-                                displayCart: (typeof(jsonData.ap5Data.cartPackProducts.ap5ExplodedCart) == 'object' ? jsonData.ap5Data.cartPackProducts.ap5ExplodedCart : null),
                                 cart: jsonData.cart
                             },
                             resp: jsonData
