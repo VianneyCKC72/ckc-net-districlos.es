@@ -3736,7 +3736,7 @@ class AdvancedPack extends Product
 
         try {
 
-            $result = @eval("return ($formula);");
+            $result = @eval("return ceil($formula);");
             if ($result === false) {
                 throw new RuntimeException('Error evaluating formula');
             }
