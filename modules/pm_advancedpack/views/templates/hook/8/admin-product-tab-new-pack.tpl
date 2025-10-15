@@ -134,6 +134,13 @@
 				</div>
 
 				<div class="form-group">
+					<div class="alert alert-info">
+						Voici les shortcodes disponibles pour les formules de quantité produit :
+						<ul>
+							<li>[QUANTITY] : Quantité originale du produit (back)</li>
+							<li>[ML] : Nombre de mètres linéaire (front)</li>
+						</ul>
+					</div>
 					<table id="ap5-pack-content-table" class="table configuration">
 						<thead>
 							<tr class="nodrag nodrop">
