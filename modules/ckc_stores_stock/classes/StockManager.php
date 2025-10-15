@@ -57,11 +57,16 @@ class StockManager extends Module
                 // Si fin de vie, récupérer le stock de la plateforme (store 18 = DX)
                 if ($fin_de_vie) {
                     $platform_stock = Db::getInstance()->getValue('SELECT quantity FROM ' . _DB_PREFIX_ . 'ckcstockstores_stocks WHERE id_product = ' . (int)$id_product . ' AND id_product_attribute = ' . (int)$id_product_attribute . ' AND id_store = 18');
-                }
-                
-                // Vérifier si on est en "victime de son succès" (stock <= seuil)
-                if ($stock_threshold !== null && $total_quantity <= $stock_threshold) {
-                    $victime_succes = true;
+                    
+                    // Pour les produits fin de vie, vérifier avec le stock plateforme
+                    if ($stock_threshold !== null && $platform_stock <= $stock_threshold) {
+                        $victime_succes = true;
+                    }
+                } else {
+                    // Pour les produits normaux, vérifier avec le stock total
+                    if ($stock_threshold !== null && $total_quantity <= $stock_threshold) {
+                        $victime_succes = true;
+                    }
                 }
             }
         }

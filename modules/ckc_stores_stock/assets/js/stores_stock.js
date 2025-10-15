@@ -381,37 +381,63 @@ if ($('.delivery-option input').length > 0) {
             null,
             "json"
         ).then(function (resp) {
-            if (resp.data.stock.isClickAndCollect) {
-                $('#stock-summary-content .card-header').html('Click And Collect');
-                if (resp.data.stock.stock_ok) {
-                    $('#stock-summary-content .productLimit').html('Super ! Tous vos produits sont en stock');
-                    $('#stock-summary-content .text').html('<p>Vous pouvez venir récupérer les produits en stock dans votre magasin 2h après votre commande.</p>')
-                } else {
-                    $('#stock-summary-content .productLimit').html('Un ou des produits sont en cours de réapprovisionnement');
-                    $('#stock-summary-content .text').html('<p>Vous pouvez venir récupérer les produits en stock dans votre magasin.</p> <p>Pour les produits en cours de réapprovisionnement, nous vous appellerons aussitôt ces derniers disponibles.</p>')
-                }
-            } else {
-                $('#stock-summary-content .card-header').html('Livraison');
-                $('#stock-summary-content .productLimit').html('Notre magasin vous livre à domicile ou sur votre chantier !');
-                $('#stock-summary-content .text').html('<p>La livraison se fait sur rendez-vous uniquement. Nous allons vous contacter suite à votre commande pour déterminer cette date.</p><p>Le délais moyen pour vos produits est entre 10 à 15 jours ouvrés (sous réserve de stock disponible).</p>')
-            }
-            $('#stock-summary-content .products').empty()
-
-            for (let i = 0; i < resp.data.stocks.length; i++) {
-                if (resp.data.stocks[i].stock_ok) {
-                    var image = '<img src="/modules/ckc_stores_stock/assets/img/selectionner.webp" class="unveil-loaded">'
-                } else {
-                    var image = '<img src="/modules/ckc_stores_stock/assets/img/moins.webp" class="unveil-loaded">'
-                }
-
-                    $('#stock-summary-content .products').append('<p class="productQuantity" style="color:#000000;">' + image + resp.data.stocks[i].product_name + '<br></p>')
-            }
+            // Mettre à jour le nom du magasin (toujours visible)
             $('#stock-summary-content .nameStore').html(resp.data.stock.store_name);
             
-            // Gérer la section des produits fin de série
-            $('.fin-serie-section').remove(); // Supprimer l'ancienne section si elle existe
+            // Vérifier s'il y a des produits normaux (pas fin de série)
+            const hasNormalProducts = resp.data.stocks && resp.data.stocks.length > 0;
+            const hasFinSerieProducts = resp.data.stock.hasFinSerieProducts && resp.data.finSerieStocks && resp.data.finSerieStocks.length > 0;
             
-            if (resp.data.stock.hasFinSerieProducts && resp.data.finSerieStocks && resp.data.finSerieStocks.length > 0) {
+            // Supprimer l'ancienne section fin de série
+            $('#stock-summary-content .fin-serie-section').remove();
+            
+            if (hasNormalProducts) {
+                // S'assurer que les éléments existent
+                if ($('#stock-summary-content .productLimit').length === 0) {
+                    $('#stock-summary-content .nameStore').after('<p class="productLimit" style="color:#79c046;"></p>');
+                }
+                if ($('#stock-summary-content .products').length === 0) {
+                    $('#stock-summary-content .productLimit').after('<div class="products"></div>');
+                }
+                if ($('#stock-summary-content .text').length === 0) {
+                    $('#stock-summary-content .products').after('<div class="text"></div>');
+                }
+                
+                // Afficher la section normale pour les produits normaux
+                if (resp.data.stock.isClickAndCollect) {
+                    $('#stock-summary-content .card-header').html('Click & Collect');
+                    if (resp.data.stock.stock_ok) {
+                        $('#stock-summary-content .productLimit').html('Super ! Tous vos produits sont en stock');
+                        $('#stock-summary-content .text').html('<p>Vous pouvez venir récupérer les produits en stock dans votre magasin 2h après votre commande.</p>')
+                    } else {
+                        $('#stock-summary-content .productLimit').html('Un ou des produits sont en cours de réapprovisionnement');
+                        $('#stock-summary-content .text').html('<p>Vous pouvez venir récupérer les produits en stock dans votre magasin.</p> <p>Pour les produits en cours de réapprovisionnement, nous vous appellerons aussitôt ces derniers disponibles.</p>')
+                    }
+                } else {
+                    $('#stock-summary-content .card-header').html('Livraison');
+                    $('#stock-summary-content .productLimit').html('Notre magasin vous livre à domicile ou sur votre chantier !');
+                    $('#stock-summary-content .text').html('<p>La livraison se fait sur rendez-vous uniquement. Nous allons vous contacter suite à votre commande pour déterminer cette date.</p><p>Le délais moyen pour vos produits est entre 10 à 15 jours ouvrés (sous réserve de stock disponible).</p>')
+                }
+                
+                $('#stock-summary-content .products').empty();
+                
+                for (let i = 0; i < resp.data.stocks.length; i++) {
+                    if (resp.data.stocks[i].stock_ok) {
+                        var image = '<img src="/modules/ckc_stores_stock/assets/img/selectionner.webp" class="unveil-loaded">'
+                    } else {
+                        var image = '<img src="/modules/ckc_stores_stock/assets/img/moins.webp" class="unveil-loaded">'
+                    }
+                    $('#stock-summary-content .products').append('<p class="productQuantity" style="color:#000000;">' + image + resp.data.stocks[i].product_name + '<br></p>')
+                }
+            } else {
+                // Aucun produit normal, supprimer/vider les sections
+                $('#stock-summary-content .productLimit').remove();
+                $('#stock-summary-content .products').remove();
+                $('#stock-summary-content .text').remove();
+            }
+            
+            // Gérer la section des produits fin de série
+            if (hasFinSerieProducts) {
                 let finSerieHtml = '<div class="fin-serie-section mt-3">' +
                     '<p class="productLimit" style="color:#79c046;">Un ou des produits sont en stock sur plateforme</p>' +
                     '<div class="products fin-serie-products">';
@@ -419,13 +445,19 @@ if ($('.delivery-option input').length > 0) {
                 resp.data.finSerieStocks.forEach(function(productStock) {
                     finSerieHtml += '<p class="productQuantity" style="color:#000000;">' +
                         '<img src="/modules/ckc_stores_stock/assets/img/selectionner.webp" class="unveil-loaded">' +
-                        productStock.product_name + '<br></p>';
+                        productStock.product_name + '</p>';
                 });
                 
-                finSerieHtml += '</div></div>';
+                finSerieHtml += '</div><div class="text"><p>Ce produit est disponible sur notre plateforme logistique, pour une meilleure disponibilité.</p></div></div>';
                 
-                // Ajouter après le texte explicatif
-                $('#stock-summary-content .text').after(finSerieHtml);
+                // Insérer la section fin de série
+                if (hasNormalProducts && $('#stock-summary-content .text').length > 0) {
+                    // Après le texte explicatif s'il existe
+                    $('#stock-summary-content .text').after(finSerieHtml);
+                } else {
+                    // Directement après le nom du magasin
+                    $('#stock-summary-content .nameStore').after(finSerieHtml);
+                }
             }
 
         });
