@@ -1,7 +1,13 @@
 {extends file='catalog/product.tpl'}
 
 {block name='content'}
-
+    {if isset($packMlChoose) && $packMlChoose == 1}
+        <style>
+            .qty {
+                display: none;
+            }
+        </style>
+    {/if}
     <section id="main">
         <meta content="{$product.url}">
 
