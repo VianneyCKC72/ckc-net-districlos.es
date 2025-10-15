@@ -93,25 +93,25 @@
 
 							<div id="ap5_price_rules_4_configuration" class="ap5-admin-hide hide clearfix">
 								<div class="row">
-									<label class="control-label col-lg-6" for="ap5_ml_choose">
+									<label class="control-label col-lg-6" for="ap5_allow_remove_product">
 										<span class="label-tooltip" data-toggle="{$tooltipToggle}" title="{l s='Check this box if you want your customers to be able to remove a product from the pack. This option can only be enabled if you have more than one product into your pack and if inherit discounts option is enabled on each product.' mod='pm_advancedpack'}">
 											{l s='Allow product removal from the pack' mod='pm_advancedpack'}
 										</span>
 									</label>
 									<div class="col-lg-1">
 										<div class="input-group">
-											<input type="checkbox"{if $packAllowRemoveProduct} checked="checked"{/if} value="1" id="ap5_ml_choose" name="ap5_ml_choose" />
+											<input type="checkbox"{if $packAllowRemoveProduct} checked="checked"{/if} value="1" id="ap5_allow_remove_product" name="ap5_allow_remove_product" />
 										</div>
 									</div>
 								</div>
 							</div>
 
-							<div class="clearfix">
+							<div id="ap5_price_rules_4_configuration" class="ap5-admin-hide hide clearfix">
 								<div class="row">
 									<label class="control-label col-lg-6" for="ap5_ml_choose">
-													<span class="label-tooltip" data-toggle="{$tooltipToggle}" title="Cochez cette case si vous voulez que la quantité en front soit sélectionnable en ML">
-														Sélection de la quantité en ML
-													</span>
+														<span class="label-tooltip" data-toggle="{$tooltipToggle}" title="Cochez cette case si vous voulez que la quantité en front soit sélectionnable en ML">
+															Sélection de la quantité en ML
+														</span>
 									</label>
 									<div class="col-lg-1">
 										<div class="input-group">
