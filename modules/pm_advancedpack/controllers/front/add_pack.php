@@ -64,6 +64,7 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
             $this->pack_ml = true;
             $this->ml = (int)Tools::getValue('ml');
         }
+
         if (Tools::getIsset('productPackQuantityList')) {
             $tmp_productPackQuantityList = (array)Tools::getValue('productPackQuantityList');
             if (is_array($tmp_productPackQuantityList) && count($tmp_productPackQuantityList)) {
@@ -74,6 +75,7 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
                     }
                     $this->productPackQuantityList[(int)$packChoiceRow['idProductPack']] = (int)$packChoiceRow['quantity'];
                 }
+
                 foreach ($packProducts as $packProduct) {
                     if ($this->pack_ml) {
                         $formula = $packProduct['formula'];
@@ -94,6 +96,24 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
             }
         }
 
+        if ($this->pack_ml) {
+            $packProducts = AdvancedPack::getPackContent($this->idPack, null, false, [], $this->productPackQuantityList);
+            foreach ($packProducts as $packProduct) {
+                $formula = $packProduct['formula'];
+                if ($formula) {
+                    $quantity = (int)$packProduct['quantity'];
+                    $ml = $this->ml;
+                    $formula = str_replace('[ML]', $ml, $formula);
+                    $formula = str_replace('[QUANTITY]', $quantity, $formula);
+                    $newQuantity = AdvancedPack::evaluateMathExpression($formula);
+                    $this->productPackQuantityList[(int)$packProduct['id_product_pack']] = (int)$newQuantity;
+                    $this->packHasEditedQuantity = true;
+                }else{
+                    $this->productPackQuantityList[(int)$packChoiceRow['idProductPack']] = (int)$packChoiceRow['quantity'];
+                }
+            }
+        }
+
         if (Tools::getIsset('productPackCustomizationList')) {
             $tmp_productPackCustomizationList = (array)Tools::getValue('productPackCustomizationList');
             if (is_array($tmp_productPackCustomizationList) && count($tmp_productPackCustomizationList)) {
@@ -110,6 +130,7 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
                 $guest = new Guest(Context::getContext()->cookie->id_guest);
                 $this->context->cart->mobile_theme = $guest->mobile_theme;
             }
+            $this->context->cart->id_currency = 1;
             $this->context->cart->add();
             if ($this->context->cart->id) {
                 $this->context->cookie->id_cart = (int)$this->context->cart->id;

@@ -214,6 +214,7 @@ var ap5Plugin = {
                                 idProduct: idPack,
                                 idProductAttribute: (typeof(jsonData.ap5Data.explodedProductsData) == 'object' ? jsonData.ap5Data.explodedProductsData : jsonData.ap5Data.idProductAttribute),
                                 linkAction: 'add-to-cart',
+                                displayCart: (typeof(jsonData.ap5Data.cartPackProducts.ap5ExplodedCart) == 'object' ? jsonData.ap5Data.cartPackProducts.ap5ExplodedCart.block_cart : null),
                                 cart: jsonData.cart
                             },
                             resp: jsonData
