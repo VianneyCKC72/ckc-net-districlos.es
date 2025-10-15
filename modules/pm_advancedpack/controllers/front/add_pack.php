@@ -60,9 +60,9 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
         if (Tools::getIsset('productPackExclude')) {
             $this->productPackExclude = array_unique(array_map('intval', (array)Tools::getValue('productPackExclude')));
         }
-        if (Tools::getIsset('ml') && (int)Tools::getValue('ml') > 0) {
+        if (Tools::getIsset('quantity_ml') && (int)Tools::getValue('quantity_ml') > 0) {
             $this->pack_ml = true;
-            $this->ml = (int)Tools::getValue('ml');
+            $this->ml = (int)Tools::getValue('quantity_ml');
         }
 
         if (Tools::getIsset('productPackQuantityList')) {

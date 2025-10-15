@@ -13,7 +13,7 @@ $packProduct['reduction_type']		-> product reduction type (amount or percentage)
 <ul class="ap5_pack_product_list ap5_pack_product_list_block_cart">
 {foreach from=$packProducts item='packProduct'}
 	<li>
-		{$packProduct['quantity']}x {$packProduct['product_name']|escape:'htmlall':'UTF-8'}
+		<strong>{$packProduct['quantity']}</strong>x {$packProduct['product_name']|escape:'htmlall':'UTF-8'}
 		{if isset($packProduct['attributes_small']) && !empty($packProduct['attributes_small'])}<br /><em>{$packProduct['attributes_small']|escape:'htmlall':'UTF-8'}</em>{/if}
 	</li>
 {/foreach}

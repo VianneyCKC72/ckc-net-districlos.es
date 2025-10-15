@@ -46,8 +46,8 @@
               <div class="col-md-6">
                 {if $product.default_image}
                   <img src="{$product.default_image.medium.url}"
-                    data-full-size-image-url="{$product.default_image.large.url}" title="{$product.default_image.legend}"
-                    alt="{$product.default_image.legend}" loading="lazy" class="product-image">
+                       data-full-size-image-url="{$product.default_image.large.url}" title="{$product.default_image.legend}"
+                       alt="{$product.default_image.legend}" loading="lazy" class="product-image">
                 {else}
                   <img src="{$urls.no_picture_image.bySize.medium_default.url}" loading="lazy" class="product-image" />
                 {/if}

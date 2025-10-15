@@ -175,7 +175,7 @@ var ap5Plugin = {
                     id_accesories_attributes: idAccesoriesAttributes,
                     custom_qty: customQties,
                     ajax: true,
-                    ml: ml
+                    quantity_ml: ml
                 },
                 dataType: 'json',
                 cache: false,
