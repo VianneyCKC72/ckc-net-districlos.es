@@ -73,7 +73,7 @@
                   <span
                     class="product-quantity small">{l s='Quantity:' d='Shop.Theme.Checkout'}&nbsp;<strong>{$product.cart_quantity}</strong></span>
                 {else}
-                  {$pack_content}
+                  {$pack_content nofilter}
                 {/if}
               </div>
             </div>
