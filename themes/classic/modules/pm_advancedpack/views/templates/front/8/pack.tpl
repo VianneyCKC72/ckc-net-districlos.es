@@ -4,7 +4,7 @@
     {if isset($packMlChoose) && $packMlChoose == 1}
         <style>
             .qty {
-                display: none;
+                display: none !important;
             }
         </style>
     {/if}
