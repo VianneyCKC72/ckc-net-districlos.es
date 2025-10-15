@@ -117,6 +117,7 @@ var ap5Plugin = {
             var idAccesories = [];
             var idAccesoriesAttributes = [];
             var customQties = [];
+            var ml = 0;
             if ($('#group_accessories .accessory_item').length) {
                 $('#group_accessories .accessory_item' + ':checked').each(function (i)
                 {
@@ -158,6 +159,8 @@ var ap5Plugin = {
                 customQties = '';
             }
 
+            ml = $('#quantity_ml').length ? $('#quantity_ml').val() : 0;
+
             $.ajax({
                 type: 'POST',
                 url: $(callerElement).attr('action'),
@@ -171,7 +174,8 @@ var ap5Plugin = {
                     id_accessories: idAccesories,
                     id_accesories_attributes: idAccesoriesAttributes,
                     custom_qty: customQties,
-                    ajax: true
+                    ajax: true,
+                    ml: ml
                 },
                 dataType: 'json',
                 cache: false,

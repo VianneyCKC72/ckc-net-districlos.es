@@ -30,6 +30,9 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
     public $display_footer = false;
     public $display_column_left = false;
     public $display_column_right = false;
+    protected $pack_ml = null;
+    protected $ml = 0;
+
     public function init()
     {
         parent::init();
@@ -57,6 +60,10 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
         if (Tools::getIsset('productPackExclude')) {
             $this->productPackExclude = array_unique(array_map('intval', (array)Tools::getValue('productPackExclude')));
         }
+        if (Tools::getIsset('ml') && (int)Tools::getValue('ml') > 0) {
+            $this->pack_ml = true;
+            $this->ml = (int)Tools::getValue('ml');
+        }
         if (Tools::getIsset('productPackQuantityList')) {
             $tmp_productPackQuantityList = (array)Tools::getValue('productPackQuantityList');
             if (is_array($tmp_productPackQuantityList) && count($tmp_productPackQuantityList)) {
@@ -68,6 +75,17 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
                     $this->productPackQuantityList[(int)$packChoiceRow['idProductPack']] = (int)$packChoiceRow['quantity'];
                 }
                 foreach ($packProducts as $packProduct) {
+                    if ($this->pack_ml) {
+                        $formula = $packProduct['formula'];
+                        if ($formula) {
+                            $quantity = (int)$packProduct['quantity'];
+                            $ml = $this->ml;
+                            $formula = str_replace('[ML]', $ml, $formula);
+                            $formula = str_replace('[QUANTITY]', $quantity, $formula);
+                            $newQuantity = AdvancedPack::evaluateMathExpression($formula);
+                            $this->productPackQuantityList[(int)$packProduct['id_product_pack']] = (int)$newQuantity;
+                        }
+                    }
                     if (isset($this->productPackQuantityList[(int)$packProduct['id_product_pack']]) && $this->productPackQuantityList[(int)$packProduct['id_product_pack']] != (int)$packProduct['quantity']) {
                         $this->packHasEditedQuantity = true;
                         break;
@@ -75,7 +93,7 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
                 }
             }
         }
-        
+
         if (Tools::getIsset('productPackCustomizationList')) {
             $tmp_productPackCustomizationList = (array)Tools::getValue('productPackCustomizationList');
             if (is_array($tmp_productPackCustomizationList) && count($tmp_productPackCustomizationList)) {

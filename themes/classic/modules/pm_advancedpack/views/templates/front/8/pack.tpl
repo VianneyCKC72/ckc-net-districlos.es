@@ -165,7 +165,7 @@
                                                 <div class="select_wrap">
                                                     <div class="clearfix dis_flex">
                                                     <span class="input-group-btn-vertical dis_flex">
-                                                        <input type="text" name="qty_bis" id="quantity_wanted_ml" value="1" class="form-control" style="display: block;">
+                                                        <input type="text" name="quantity_ml" id="quantity_wanted_ml" value="1" class="form-control" style="display: block;">
                                                     </span>
                                                     </div>
                                                 </div>
