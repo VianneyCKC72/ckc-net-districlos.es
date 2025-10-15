@@ -54,23 +54,27 @@
               </div>
               <div class="col-md-6">
                 <h6 class="h6 product-name">{$product.name}</h6>
-                {assign var="price_parts" value=","|explode:$product.price}
-                {assign var="price_integer" value=$price_parts[0]}
-                {assign var="price_decimal" value=$price_parts[1]}
-                <div class="product-price {if $product.has_discount}has-discount{/if}">
-                  <span class="price-integer">{$price_integer}</span><span
-                    class="price-decimal">,{$price_decimal}</span></span>
-                </div>
-                {hook h='displayProductPriceBlock' product=$product type="unit_price"}
-                <div class="small">
-                  {foreach from=$product.attributes item="property_value" key="property"}
-                    <span
-                      class="{$property|lower}">{l s='%label%:' sprintf=['%label%' => $property] d='Shop.Theme.Global'}<strong>
-                        {$property_value}</strong></span><br>
-                  {/foreach}
-                </div>
-                <span
-                  class="product-quantity small">{l s='Quantity:' d='Shop.Theme.Checkout'}&nbsp;<strong>{$product.cart_quantity}</strong></span>
+                {if !$is_pack}
+                  {assign var="price_parts" value=","|explode:$product.price}
+                  {assign var="price_integer" value=$price_parts[0]}
+                  {assign var="price_decimal" value=$price_parts[1]}
+                  <div class="product-price {if $product.has_discount}has-discount{/if}">
+                    <span class="price-integer">{$price_integer}</span><span
+                      class="price-decimal">,{$price_decimal}</span></span>
+                  </div>
+                  {hook h='displayProductPriceBlock' product=$product type="unit_price"}
+                  <div class="small">
+                    {foreach from=$product.attributes item="property_value" key="property"}
+                      <span
+                        class="{$property|lower}">{l s='%label%:' sprintf=['%label%' => $property] d='Shop.Theme.Global'}<strong>
+                          {$property_value}</strong></span><br>
+                    {/foreach}
+                  </div>
+                  <span
+                    class="product-quantity small">{l s='Quantity:' d='Shop.Theme.Checkout'}&nbsp;<strong>{$product.cart_quantity}</strong></span>
+                {else}
+                  {$pack_content}
+                {/if}
               </div>
             </div>
           </div>
