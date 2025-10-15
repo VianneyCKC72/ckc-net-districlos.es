@@ -429,6 +429,7 @@ var ap5Plugin = {
         var productPackChoice = [];
         var productPackQuantityList = [];
         let attributeChanged = null;
+        var ml = 0;
 
         $('.ap5-attributes').each(function (index, element) {
             id_product_pack = $(this).attr('data-id-product-pack');
@@ -446,6 +447,7 @@ var ap5Plugin = {
             productPackQuantity = { idProductPack: id_product_pack, quantity: $(this).val() };
             productPackQuantityList.push(productPackQuantity);
         });
+        ml = $('#quantity_ml').length ? $('#quantity_ml').val() : 0;
 
         var pmAjaxSpinnerInstance = ap5Plugin.addLayerLoading($('#ap5-product-list'));
         $.ajax({
@@ -456,7 +458,8 @@ var ap5Plugin = {
                 productPackExclude: ap5Plugin.productPackExclude,
                 productPackQuantityList: productPackQuantityList,
                 fromQuickView: (typeof(ap5Plugin.fromQuickView) != 'undefined' && ap5Plugin.fromQuickView ? 1 : 0),
-                token: prestashop.static_token
+                token: prestashop.static_token,
+                quantity_ml: ml
             },
             dataType: 'json',
             cache: false,
@@ -645,7 +648,9 @@ $(document).on('ap5-CombinationUpdate', function(e){
     ap5Plugin.log('[ap5_Event] Combination update');
     ap5Plugin.updatePackTable();
 });
-
+$(document).on('change', '#quantity_ml', function(e){
+    ap5Plugin.updatePackTable();
+});
 // Quantity increment
 $(document).on('click', '.product_quantity_up', function(e){
     e.preventDefault();

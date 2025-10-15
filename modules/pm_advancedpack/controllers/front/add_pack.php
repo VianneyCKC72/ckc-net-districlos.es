@@ -109,7 +109,7 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
                     $this->productPackQuantityList[(int)$packProduct['id_product_pack']] = (int)$newQuantity;
                     $this->packHasEditedQuantity = true;
                 }else{
-                    $this->productPackQuantityList[(int)$packChoiceRow['idProductPack']] = (int)$packChoiceRow['quantity'];
+                    $this->productPackQuantityList[(int)$packProduct['id_product_pack']] = (int)$packProduct['quantity'];
                 }
             }
         }
