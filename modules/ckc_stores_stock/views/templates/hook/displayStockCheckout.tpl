@@ -17,10 +17,10 @@
                     <p class="productLimit" style="color:#79c046;">
                         {if $stock.isClickAndCollect}
                             {if $stock.stock_ok}
-                                Super ! Tous vos produits sont en stock
+                                Super ! Un ou plusieurs produits sont en stock ( hors plateforme )
                             {else}
                                 Un ou des produits sont en cours de
-                                réapprovisionnement
+                                réapprovisionnement ( hors platforme )
                             {/if}
                         {else}
                             Notre magasin vous livre à domicile ou sur
