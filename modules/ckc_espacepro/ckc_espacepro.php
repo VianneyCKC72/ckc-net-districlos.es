@@ -3,6 +3,24 @@
 class ckc_espacepro extends Module
 {
     protected $redirect_after = '/';
+    public $error   = [];
+    public $success = [];
+    public $info    = [];
+
+    protected $tabs = [
+        'Professionnels' => [
+            'class' => 'AdminEspacePro',
+            'active' => 1,
+            'parent' => 'AdminParentCustomer',
+        ],
+        'Fiches et Guides' => [
+            'class' => 'AdminGuidesFiches',
+            'active' => 1,
+            'parent' => 'IMPROVE',
+            'icon'   => 'book'
+        ],
+    ];
+
 
     public function __construct()
     {
@@ -55,9 +73,69 @@ class ckc_espacepro extends Module
             $this->registerHook('displayFavoriteStore') &&
             $this->registerHook('displayHome');
 
+        if($ok) {
+            $this->addTabs();
+        }
+
         $this->clear_the_cache();
+
+
         return $ok;
     }
+
+    protected function addTabs()
+    {
+        $defaultParentClass = property_exists($this, 'parentTabClass') ? $this->parentTabClass : 'AdminParentCustomer';
+        $parent = version_compare(_PS_VERSION_, '1.7.0', '<') ? 0 : (int)Tab::getIdFromClassName('AdminParentCustomer');
+
+        $defaultParentId = 0;
+        if (version_compare(_PS_VERSION_, '1.7.0', '>=') && $defaultParentClass) {
+            $defaultParentId = (int)Tab::getIdFromClassName($defaultParentClass) ?: 0;
+        }
+
+        foreach ($this->tabs as $name => $tabInfo) {
+            if (Tab::getIdFromClassName($tabInfo['class'])) {
+                continue;
+            }
+            $t = $tabInfo;
+            $tab             = new Tab();
+            $tab->active     = (int)$t['active'];
+            $tab->class_name = $t['class'];
+            $tab->module     = $this->name;
+            $tab->id_parent  = $parent;
+            $tab->name       = [];
+
+            if (isset($tabInfo['parent'])) {
+                $parentId = (int)Tab::getIdFromClassName($tabInfo['parent']) ?: $defaultParentId;
+            } else {
+                $parentId = $defaultParentId;
+            }
+            $tab->id_parent = $parentId;
+
+            $tab->name = [];
+            foreach (Language::getLanguages(true) as $lang) {
+                $tab->name[$lang['id_lang']] = $name;
+            }
+
+            if (isset($tabInfo['icon'])) {
+                $tab->icon = $tabInfo['icon'];
+            }
+
+            $tab->add();
+        }
+    }
+
+
+    protected function deleteTabs()
+    {
+        foreach ($this->tabs as $t) {
+            $id_tab = (int)Tab::getIdFromClassName($t['class']);
+            if ($id_tab) {
+                (new Tab($id_tab))->delete();
+            }
+        }
+    }
+
 
     private function buildSsoUrlForShop(int $targetShopId, int $idCustomer, string $back = 'my-account'): string
     {
@@ -262,6 +340,60 @@ class ckc_espacepro extends Module
             'modules/' . $this->name . '/views/css/front/guides-fiches.css',
             ['position' => 'bottom', 'priority' => 1000]
         );
+
+        // CSS pour la bannière de promotion
+        $this->context->controller->registerStylesheet(
+            'ckc-espace-pro-promotion',
+            'modules/' . $this->name . '/views/css/front/promotion.css',
+            ['position' => 'head', 'priority' => 1000]
+        );
+    }
+
+    /**
+     * Hook pour afficher une promotion spéciale aux utilisateurs professionnels
+     */
+    public function hookDisplayPromotion($params)
+    {
+        // Vérifier si l'utilisateur est connecté
+        if (!$this->context->customer || !$this->context->customer->isLogged()) {
+            return '';
+        }
+
+        $customer = $this->context->customer;
+        $groups = (array)$customer->getGroups();
+
+        $gidPro = $this->getProGroupId();
+        $gidProticulier = $this->getProticulierGroupId();
+
+        // Vérifier si l'utilisateur est professionnel ou proticulier
+        $isPro = in_array($gidPro, $groups, true);
+        $isProticulier = in_array($gidProticulier, $groups, true);
+
+        if (!$isPro && !$isProticulier) {
+            return '';
+        }
+
+        // Déterminer le type de promotion selon le statut
+        $promoType = $isPro ? 'pro' : 'proticulier';
+        $promoTitle = $isPro ? 'Offre Spéciale Professionnels' : 'Avantage Proticulier';
+        $promoMessage = $isPro
+            ? 'Bénéficiez de -15% sur votre prochaine commande avec le code PROPRO15'
+            : 'Profitez de -10% sur une sélection de produits avec le code PROT10';
+        $promoCode = $isPro ? 'PROPRO15' : 'PROT10';
+        $promoDiscount = $isPro ? '15%' : '10%';
+
+        // Assigner les variables au template
+        $this->context->smarty->assign([
+            'promo_type' => $promoType,
+            'promo_title' => $promoTitle,
+            'promo_message' => $promoMessage,
+            'promo_code' => $promoCode,
+            'promo_discount' => $promoDiscount,
+            'customer_firstname' => $customer->firstname,
+            'is_pro_environment' => $this->isProEnvironment()
+        ]);
+
+        return $this->display(__FILE__, 'views/templates/hook/promotion.tpl');
     }
 
     /** Variables Smarty globales */

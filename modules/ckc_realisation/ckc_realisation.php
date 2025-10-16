@@ -50,6 +50,10 @@ class Ckc_Realisation extends Module
         }
     }
 
+    public function storageDir(int $idShop): string
+    {
+        return _PS_MODULE_DIR_ . $this->name . '/uploads/' . (int)$idShop . '/';
+    }
 
     // Charge la CSS uniquement sur la page “Configurer” de ce module
     public function hookDisplayBackOfficeHeader($params)
@@ -146,17 +150,6 @@ class Ckc_Realisation extends Module
     /* =========================
      * Hooks FO (Lien "Mes réalisations")
      * ========================= */
-    public function hookDisplayCustomerAccount()
-    {
-        $link = $this->context->link->getModuleLink($this->name, 'myrealisation');
-        return '<a class="col-lg-4 col-md-6 col-sm-6 col-xs-12" href="' . htmlspecialchars($link) . '">' . $this->l('Mes réalisations') . '</a>';
-    }
-
-    public function hookDisplayCustomerAccountNavigation()
-    {
-        $link = $this->context->link->getModuleLink($this->name, 'myrealisation');
-        return '<li><a href="' . htmlspecialchars($link) . '">' . $this->l('Mes réalisations') . '</a></li>';
-    }
 
     private function ajaxSearchProducts(int $idShop, int $idLang, string $q): array
     {
@@ -406,24 +399,21 @@ class Ckc_Realisation extends Module
         $id_product = (int)Tools::getValue('id_product', 0);
         $keywords = trim((string)Tools::getValue('keywords', ''));
         $allowedStatus = array('pending', 'approved', 'rejected');
-        $allowedTypes = array('pro', 'proticulier');
+        $allowedTypes  = array('pro', 'proticulier');
 
-        if ($customer_type === 'particulier') {
+        $customer_type = trim(Tools::strtolower($customer_type));
+        if ($customer_type === 'particulier' || $customer_type === 'particuliers') {
             $customer_type = 'proticulier';
         }
-        if ($customer_type === 'professionnel'
-            || $customer_type === 'professionnelle') {
+        if ($customer_type === 'professionnel' || $customer_type === 'professionnelle' || $customer_type === 'professionnels') {
             $customer_type = 'pro';
         }
+
         if (!in_array($status, $allowedStatus, true)) {
             $errors[] = $this->l('Statut invalide');
         }
-
         if ($customer_type !== '' && !in_array($customer_type, $allowedTypes, true)) {
             $errors[] = $this->l('Type client invalide');
-        }
-        if ($id_product < 0) {
-            $id_product = 0;
         }
 
 
@@ -605,23 +595,26 @@ class Ckc_Realisation extends Module
     private function getProticulierGroupId(): int
     {
         $v = (int)Configuration::get('CKC_GROUP_PROTICULIER_ID');
-        return $v > 0 ? $v : 11;
+        return $v > 0 ? $v : 15;
     }
 
-    private function detectCustomerType(int $idCustomer): ?string
+    public function detectCustomerType(int $idCustomer): ?string
     {
         if ($idCustomer <= 0) {
             return null;
         }
-        $p = _DB_PREFIX_;
+        $p   = _DB_PREFIX_;
         $pro = (int)$this->getProGroupId();
-        $part = (int)$this->getProticulierGroupId();
-        $rows = Db::getInstance()->executeS("SELECT id_group FROM {$p}customer_group WHERE id_customer=" . (int)$idCustomer);
+        $part= (int)$this->getProticulierGroupId();
+
+        $rows   = Db::getInstance()->executeS("SELECT id_group FROM {$p}customer_group WHERE id_customer=".(int)$idCustomer);
         $groups = array_map('intval', array_column($rows ?: [], 'id_group'));
-        if (in_array($pro, $groups, true)) return 'pro';
+
+        if (in_array($pro, $groups, true))  return 'pro';
         if (in_array($part, $groups, true)) return 'proticulier';
         return null;
     }
+
 
     protected function fetchStoresForShop(int $idShop): array
     {
@@ -640,8 +633,13 @@ class Ckc_Realisation extends Module
         return Db::getInstance()->executeS($sql) ?: [];
     }
 
-    protected function storageDir(int $idShop): string
-    {
-        return _PS_MODULE_DIR_ . $this->name . '/uploads/' . $idShop . '/';
+    public function hookDisplayCustomerAccount() {
+        $url = $this->context->link->getModuleLink($this->name, 'myrealisation');
+        return '<a class="col-lg-4 col-md-6 col-sm-6 col-xs-12" href="'.htmlspecialchars($url).'">'.$this->l('Mes réalisations').'</a>';
     }
+    public function hookDisplayCustomerAccountNavigation() {
+        $url = $this->context->link->getModuleLink($this->name, 'myrealisation');
+        return '<li><a href="'.htmlspecialchars($url).'">'.$this->l('Mes réalisations').'</a></li>';
+    }
+
 }

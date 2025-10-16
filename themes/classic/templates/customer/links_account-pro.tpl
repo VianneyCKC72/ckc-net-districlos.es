@@ -10,9 +10,9 @@
     </a>
 {/if}
 {* // mes listes de projets *}
-<a  class="pro-items-links" href="#">
-    Mes listes de projets
-</a>
+{*<a  class="pro-items-links" href="#">*}
+{*    Mes listes de projets*}
+{*</a>*}
 
 {* // mes addresses *}
 {if $customer.addresses|count}
@@ -35,13 +35,14 @@
     </a>
 {/if}
 {* // mes moyens de paiement *}
-<a  class="pro-items-links" href="#">
-    Mes moyens de paiement
-</a>
+{*<a  class="pro-items-links" href="#">*}
+{*    Mes moyens de paiement*}
+{*</a>*}
 {* // mes realisations *}
-<a  class="pro-items-links" href="#">
-    Mes réalisations
-</a>
+    <a class="pro-items-links"
+       href="{$link->getModuleLink('ckc_realisation','myrealisation')|escape:'html'}">
+        {l s='Mes réalisations' mod='ckc_realisation'}
+    </a>
 
 {* GRPD *}
 <a class="pro-items-links" id="returns-link" href="/module/psgdpr/gdpr">

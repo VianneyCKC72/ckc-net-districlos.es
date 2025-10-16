@@ -1,15 +1,3 @@
-<script>
-    if (typeof prestashop !== 'undefined') {
-        prestashop.customer = prestashop.customer;
-        if (prestashop.customer && prestashop.customer.is_logged) {
-            {if $customer.id}
-                prestashop.customer.id = {$customer.id};
-            {/if}
-            prestashop.customer.newClient = {$newClient};
-        }
-    }
-</script>
-
 {block name='header_top'}
     <div class="header-top">
         <div class="row-header d-flex align-items-center">
@@ -17,7 +5,7 @@
 
             <!-- Logo Desktop (Visible seulement à partir de md) -->
             <div class="flex-grow-0 flex-shrink-0 d-none d-md-block">
-                <a href="{$pro.url_domain|escape:'html':'UTF-8'}">
+                <a href="https://pro.cloture-discount.fr">
                     <img class="" width="180" src="/themes/classic/assets/img/logo-pro.png" alt="{$shop.name} Pro" />
                 </a>
             </div>
