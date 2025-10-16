@@ -20,7 +20,7 @@
                                 Super ! Un ou plusieurs produits sont en stock ( hors plateforme )
                             {else}
                                 Un ou des produits sont en cours de
-                                réapprovisionnement ( hors platforme )
+                                réapprovisionnement ( hors plateforme )
                             {/if}
                         {else}
                             Notre magasin vous livre à domicile ou sur

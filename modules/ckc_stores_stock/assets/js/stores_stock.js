@@ -407,10 +407,10 @@ if ($('.delivery-option input').length > 0) {
                 if (resp.data.stock.isClickAndCollect) {
                     $('#stock-summary-content .card-header').html('Click & Collect');
                     if (resp.data.stock.stock_ok) {
-                        $('#stock-summary-content .productLimit').html('Super ! Tous vos produits sont en stock');
+                        $('#stock-summary-content .productLimit').html('Super ! Un ou plusieurs produits sont en stock ( hors plateforme )');
                         $('#stock-summary-content .text').html('<p>Vous pouvez venir récupérer les produits en stock dans votre magasin 2h après votre commande.</p>')
                     } else {
-                        $('#stock-summary-content .productLimit').html('Un ou des produits sont en cours de réapprovisionnement');
+                        $('#stock-summary-content .productLimit').html('Un ou des produits sont en cours de réapprovisionnement ( hors plateforme )');
                         $('#stock-summary-content .text').html('<p>Vous pouvez venir récupérer les produits en stock dans votre magasin.</p> <p>Pour les produits en cours de réapprovisionnement, nous vous appellerons aussitôt ces derniers disponibles.</p>')
                     }
                 } else {
