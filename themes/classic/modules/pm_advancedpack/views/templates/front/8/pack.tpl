@@ -163,11 +163,9 @@
                                     {/block}
 
                                     {if isset($packMlChoose) && $packMlChoose}
-                                        <span class="bold">Dimensions</span>
-
-                                        <div class="product-variants ap5-attributes">
+                                        <div class="ap5-attributes">
                                             <div class="clearfix hiddenlabel">
-                                                <p class=group-name>Choisissez le nombre de ML</p>
+                                                <p class="font-weight-bold group-name">Choisissez le nombre de ML</p>
                                                 <div class="select_wrap">
                                                     <div class="clearfix dis_flex">
                                                     <span class="input-group-btn-vertical dis_flex">
