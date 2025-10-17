@@ -39,6 +39,7 @@ use CkcConfigurator\Product\Grillage;
 use CkcConfigurator\Product\Accessory;
 
 require __DIR__ . '/../../vendor/autoload.php';
+include_once _PS_MODULE_DIR_.'dealt/src/DealtHookHelper.php';
 
 class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontController implements Config
 {
@@ -115,8 +116,24 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     if ($this->processSubmit()) {
                         Session::destroy($this->userKey());
                         $this->success = true;
+                        $cart = Context::getContext()->cart;
+                        $dealt_service_product_id = '';
+                        $dealt_product_id = '';
+                        $dealt_id_product_attribute = '';
+                        $cartProducts = $cart->getProducts();
+                        foreach ($cartProducts as $product) {
+                            if((int)$product['id_category_default'] == 369){
+                                $dealt_service_product_id = $product['id_product'];
+                                $dealt_product_id = $cartProducts[0]['id_product'];
+                                $dealt_id_product_attribute = $cartProducts[0]['id_product_attribute'];
+                                break;
+                            }
+                        }
                         return $this->ajaxRender(json_encode([
-                            "success" => $this->success
+                            "success" => $this->success,
+                            'dealt_service_product_id' => $dealt_service_product_id,
+                            "dealt_product_id" => $dealt_product_id,
+                            'dealt_id_product_attribute' => $dealt_id_product_attribute,
                         ]));
                     }
                 }
@@ -174,18 +191,52 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     }
                 }
 
+                if (!empty(Tools::getValue('service')['id'])) {
+                    $selected_service_id = Tools::getValue('service')['id'];
+                    $selectedServiceInfos = Db::getInstance()->executeS('SELECT DISTINCT pl.name, p.price as price_ht FROM `' . _DB_PREFIX_ . 'product_lang` pl
+                    LEFT JOIN `' . _DB_PREFIX_ . 'product` p ON p.id_product = pl.id_product
+                            WHERE pl.`id_product` = ' . $selected_service_id);
 
+                    $serviceSelectedProduct['id'] = $selected_service_id;
+                    $serviceSelectedProduct['name'] = $selectedServiceInfos[0]['name'];
+                    $serviceSelectedProduct['quantity'] = "1";
+                    $serviceSelectedProduct['price'] = number_format(($selectedServiceInfos[0]['price_ht'] * 1.10), 2, '.', '');
+
+                    $products[] = $serviceSelectedProduct;
+                    $this->addServiceEntry($selected_service_id);
+                } else {
+                    $serviceSelectedProduct = null;
+                }
 
                 $price = $this->session->totalPrice();
                 $price = number_format($price, 2);
 
                 // complet !
                 //                dump($this->data['colors']);
+                if(!empty($products[0]["id"]) && !empty($this->session->length)){
+                    $serviceTitles = [];
+                    $services = \Dealt\DealtHookHelper::buildProductAdditionalInfoData($this->context, (int)$products[0]["id"], (int)$this->session->length);
+                    if(count($services)){
+                        foreach ($services as $key => $service) {
+                            if(!empty($service['dealt_service_product_id'])){
+                                $serviceId = $service['dealt_service_product_id'];
+                                $serviceTitleSQL = Db::getInstance()->executeS('SELECT pl.name FROM `' . _DB_PREFIX_ . 'product_lang` pl
+                            WHERE pl.`id_product` = ' . $serviceId);
+                                $serviceTitle = $serviceTitleSQL[0]['name'];
+                                $serviceTitles[$key] = $serviceTitle;
+                            }
+                        }
+                    }
+                } else {
+                    $services = null;
+                    $serviceTitles = null;
+                }
 
                 // Réponse AJAX
                 $this->ajaxRender(json_encode([
                     "second"                                    => $this->getHtml('form.tpl'),
                     "third"                                     => $this->getHtml('options.tpl'),
+                    "fourth"                                    => $this->getHtml('services.tpl'),
                     "heights"                                   => $this->data['heights'] ?? [],
                     "colors"                                    => $this->data['colors'] ?? [],
                     "poteaux"                                   => $this->data['poteaux'] ?? [],
@@ -206,6 +257,8 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     "is_rigide"                                 => $this->session->isRigide(),
                     "is_souple"                                 => $this->session->isSouple(),
                     "isAluminium"                               => $this->session->isAluminium(),
+                    "services"                                  => $services,
+                    'serviceTitles'                             => $serviceTitles,
                 ]));
             }
 
@@ -279,6 +332,29 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             }
         }
 
+        $products = $this->session->getProducts($this->language_id, $this->session);
+
+        if(!empty($products[0]["id"]) && !empty($this->session->length)){
+
+            $services = \Dealt\DealtHookHelper::buildProductAdditionalInfoData($this->context, (int)$products[0]["id"], (int)$this->session->length);
+            $serviceTitles = [];
+            if(count($services)){
+                foreach ($services as $key => $service) {
+                    if(!empty($service['dealt_service_product_id'])){
+                        $serviceId = $service['dealt_service_product_id'];
+                        $serviceTitleSQL = Db::getInstance()->executeS('SELECT pl.name FROM `' . _DB_PREFIX_ . 'product_lang` pl
+                            WHERE pl.`id_product` = ' . $serviceId);
+                        $serviceTitle = $serviceTitleSQL[0]['name'];
+                        $serviceTitles[$key] = $serviceTitle;
+                    }
+                }
+            }
+        } else {
+            $services = null;
+            $serviceTitles = null;
+        }
+
+
         $this->context->smarty->assign([
             "session"       => $this->session,
             "category"      => $category,
@@ -295,7 +371,9 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             "sousbassement" => Soubassement::get($this->language_id, $this->session),
             "portillons"    => Portillon::get($this->language_id, $this->session->id_product_attribute, false, $this->session->isSouple(), $this->session->isAluminium()),
             "occultations"  => Occultation::get($this->language_id, $this->session->id_product_attribute, $this->session->isSouple()),
-            "panneaux_deco" => PanneauDeco::get($this->language_id, $this->session->isAluminium(), $this->session)
+            "panneaux_deco" => PanneauDeco::get($this->language_id, $this->session->isAluminium(), $this->session),
+            "services"      => $services,
+            'serviceTitles'  => $serviceTitles,
         ]);
 
         return true;
@@ -478,7 +556,49 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             }
         }
 
+        $productsAll = $this->session->getProducts($this->language_id, $this->session);
+
+        if(!empty($productsAll[0]["id"]) && !empty($this->session->length)){
+            $this->session->deleteEntryByType('service');
+            $service = \Dealt\DealtHookHelper::buildProductAdditionalInfoData($this->context, (int)$productsAll[0]["id"], (int)($this->session->length));
+
+            if(!empty($service)){
+                if(!empty($service['dealt_service_product_id'])){
+                    $serviceId = $service['dealt_service_product_id'];
+                    $serviceTitleSQL = Db::getInstance()->executeS('SELECT pl.name FROM `' . _DB_PREFIX_ . 'product_lang` pl
+                            WHERE pl.`id_product` = ' . $serviceId);
+                    $serviceTitle = $serviceTitleSQL[0]['name'];
+                } else {
+                    $serviceTitle = null;
+                }
+            } else {
+            }
+        } else {
+            $service = null;
+            $serviceTitle = null;
+            $this->session->deleteEntryByType('service');
+        }
+
+        $this->context->smarty->assign([
+            "services"      => $service,
+            'serviceTitle'  => $serviceTitle,
+        ]);
+
         return true;
+    }
+
+    public function addServiceEntry($service_id){
+        $ifExist = Db::getInstance()->executeS("SELECT * FROM `"._DB_PREFIX_."configurator_session_entries` 
+        WHERE `id_configurator_session` = '".$this->session->id."' AND `id_product` = '".$service_id."'");
+        if(!$ifExist){
+            $this->session->insertEntry([
+                'id_configurator_session' => $this->session->id,
+                'id_product'              => $service_id,
+                'id_product_attribute'    => 0,
+                'quantity'                => 1,
+                'type'                    => 'service'
+            ]);
+        }
     }
 
     // Update quantity
