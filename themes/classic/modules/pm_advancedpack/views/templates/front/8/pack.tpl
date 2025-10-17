@@ -169,7 +169,7 @@
                                                 <div class="select_wrap">
                                                     <div class="clearfix dis_flex">
                                                     <span class="input-group-btn-vertical dis_flex">
-                                                        <input type="text" name="quantity_ml" id="quantity_ml" value="1" class="form-control" style="display: block;">
+                                                        <input type="number" name="quantity_ml" id="quantity_ml" value="1" class="form-control" min="1" step="1" style="display: block;">
                                                     </span>
                                                     </div>
                                                 </div>
