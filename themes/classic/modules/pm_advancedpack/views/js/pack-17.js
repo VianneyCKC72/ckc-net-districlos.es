@@ -649,6 +649,8 @@ $(document).on('ap5-CombinationUpdate', function(e){
     ap5Plugin.updatePackTable();
 });
 $(document).on('change', '#quantity_ml', function(e){
+    e.preventDefault();
+    $(this).val(Math.round(parseFloat($(this).val())));
     ap5Plugin.updatePackTable();
 });
 // Quantity increment
