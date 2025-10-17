@@ -392,6 +392,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                     'id_product_pack' => (is_numeric($idProductPack) && $idProductPack ? (int)$idProductPack : null),
                     'id_product' => $productFormValues['ap5_originalIdProduct-' . $idProductPack],
                     'quantity' => $productFormValues['ap5_quantity-' . $idProductPack],
+                    'formula' => $productFormValues['ap5_formula-' . $idProductPack],
                     'reduction_amount' => ($productFormValues['ap5_reductionType-' . $idProductPack] == 'percentage' ? $productFormValues['ap5_reductionAmount-' . $idProductPack] / 100 : $productFormValues['ap5_reductionAmount-' . $idProductPack]),
                     'reduction_type' => $productFormValues['ap5_reductionType-' . $idProductPack],
                     'exclusive' => (isset($productFormValues['ap5_exclusive-' . $idProductPack]) && $productFormValues['ap5_exclusive-' . $idProductPack] ? (int)$productFormValues['ap5_exclusive-' . $idProductPack] : 0),
@@ -2383,6 +2384,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                         'id_pack' => $idPack,
                         'id_product' => Tools::getValue('ap5_originalIdProduct-' . $idProductPack),
                         'quantity' => Tools::getValue('ap5_quantity-' . $idProductPack),
+                        'formula' => Tools::getValue('ap5_formula-' . $idProductPack),
                         'reduction_amount' => (Tools::getValue('ap5_reductionType-' . $idProductPack) == 'percentage' ? Tools::getValue('ap5_reductionAmount-' . $idProductPack) / 100 : Tools::getValue('ap5_reductionAmount-' . $idProductPack)),
                         'reduction_type' => Tools::getValue('ap5_reductionType-' . $idProductPack),
                         'exclusive' => (Tools::getIsset('ap5_exclusive-' . $idProductPack) && Tools::getValue('ap5_exclusive-' . $idProductPack) ? (int)Tools::getValue('ap5_exclusive-' . $idProductPack) : 0),
@@ -2647,7 +2649,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 $product = new Product((int)$currentIdProduct, false, $this->context->language->id, $this->context->shop->id);
             }
             $idPackList = AdvancedPack::getIdsPacks(true);
-                
+
             if (Validate::isLoadedObject($product)) {
                 if (AdvancedPack::isValidPack($product->id) && !AdvancedPack::isFromShop($product->id, Context::getContext()->shop->id) && count($this->context->controller->confirmations)) {
                     $this->context->controller->errors[] = $this->l('You must select the right shop in order to continue (where the pack has been created).');
@@ -2679,7 +2681,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 $this->context->controller->addRowActionSkipList('delete', $featureId);
             }
         }
-        
+
         if ($currentIdProduct) {
             $product = new Product((int)$currentIdProduct, false, $this->context->language->id, $this->context->shop->id);
             $config = $this->_getModuleConfiguration();
@@ -2976,7 +2978,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
 
         if (isset($config['enablePackCrossSellingBlock']) && $config['enablePackCrossSellingBlock']) {
             $currentProductObj = $this->getCurrentProduct();
-            
+
             if (Validate::isLoadedObject($currentProductObj) && self::_isFilledArray(AdvancedPack::getIdPacksByIdProduct($currentProductObj->id))) {
                 $packList = [];
                 $assembler = new ProductAssembler($this->context);
@@ -3082,7 +3084,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     public function hookDisplayAdminProductsMainStepLeftColumnBottom($params)
     {
         $product = new Product((int) $params['id_product']);
-        
+
         if (!Validate::isLoadedObject($product) || Tools::getValue('is_real_new_pack') || AdvancedPack::isValidPack((int)$params['id_product'])) {
             return;
         }
