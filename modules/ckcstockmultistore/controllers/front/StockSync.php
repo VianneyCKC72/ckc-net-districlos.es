@@ -62,9 +62,13 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
                 
                 // Vérifier si le produit existe dans PrestaShop
                 $stmt = $db->prepare("
-                    SELECT id_product, id_product_attribute FROM `".$database1."`.`" . _DB_PREFIX_ . "product_attribute` 
-                    WHERE reference = :reference LIMIT 1
+                    SELECT pa.id_product, pa.id_product_attribute 
+                    FROM `".$database1."`.`" . _DB_PREFIX_ . "product_attribute` pa
+                    INNER JOIN `".$database1."`.`" . _DB_PREFIX_ . "product` p ON p.id_product = pa.id_product
+                    WHERE pa.reference = :reference AND p.active = 1
+                    LIMIT 1
                 ");
+                
                 $stmt->bindValue(':reference', $reference, PDO::PARAM_STR);
                 $stmt->execute();
                 $product = $stmt->fetch();
