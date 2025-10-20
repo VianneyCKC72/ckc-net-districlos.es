@@ -117,6 +117,7 @@ var ap5Plugin = {
             var idAccesories = [];
             var idAccesoriesAttributes = [];
             var customQties = [];
+            var ml = 0;
             if ($('#group_accessories .accessory_item').length) {
                 $('#group_accessories .accessory_item' + ':checked').each(function (i)
                 {
@@ -158,6 +159,8 @@ var ap5Plugin = {
                 customQties = '';
             }
 
+            ml = $('#quantity_ml').length ? $('#quantity_ml').val() : 0;
+
             $.ajax({
                 type: 'POST',
                 url: $(callerElement).attr('action'),
@@ -171,7 +174,8 @@ var ap5Plugin = {
                     id_accessories: idAccesories,
                     id_accesories_attributes: idAccesoriesAttributes,
                     custom_qty: customQties,
-                    ajax: true
+                    ajax: true,
+                    quantity_ml: ml
                 },
                 dataType: 'json',
                 cache: false,
@@ -208,7 +212,7 @@ var ap5Plugin = {
                         prestashop.emit('updateCart', {
                             reason: {
                                 idProduct: idPack,
-                                idProductAttribute: (typeof(jsonData.ap5Data.explodedProductsData) == 'object' ? jsonData.ap5Data.explodedProductsData : jsonData.ap5Data.idProductAttribute),
+                                idProductAttribute: (typeof(jsonData.ap5Data.explodedProductsData) == 'object' ? jsonData.ap5Data.cartPackProducts.ap5ExplodedCart : jsonData.ap5Data.idProductAttribute),
                                 linkAction: 'add-to-cart',
                                 cart: jsonData.cart
                             },
@@ -425,6 +429,7 @@ var ap5Plugin = {
         var productPackChoice = [];
         var productPackQuantityList = [];
         let attributeChanged = null;
+        var ml = 0;
 
         $('.ap5-attributes').each(function (index, element) {
             id_product_pack = $(this).attr('data-id-product-pack');
@@ -442,6 +447,7 @@ var ap5Plugin = {
             productPackQuantity = { idProductPack: id_product_pack, quantity: $(this).val() };
             productPackQuantityList.push(productPackQuantity);
         });
+        ml = $('#quantity_ml').length ? $('#quantity_ml').val() : 0;
 
         var pmAjaxSpinnerInstance = ap5Plugin.addLayerLoading($('#ap5-product-list'));
         $.ajax({
@@ -452,7 +458,8 @@ var ap5Plugin = {
                 productPackExclude: ap5Plugin.productPackExclude,
                 productPackQuantityList: productPackQuantityList,
                 fromQuickView: (typeof(ap5Plugin.fromQuickView) != 'undefined' && ap5Plugin.fromQuickView ? 1 : 0),
-                token: prestashop.static_token
+                token: prestashop.static_token,
+                quantity_ml: ml
             },
             dataType: 'json',
             cache: false,
@@ -641,7 +648,15 @@ $(document).on('ap5-CombinationUpdate', function(e){
     ap5Plugin.log('[ap5_Event] Combination update');
     ap5Plugin.updatePackTable();
 });
+$(document).on('change', '#quantity_ml', function(e){
+    e.preventDefault();
 
+    if (isNaN($(this).val()) || $(this).val() <= 0) {
+        $(this).val(1);
+    }
+    $(this).val(Math.round(parseFloat($(this).val())));
+    ap5Plugin.updatePackTable();
+});
 // Quantity increment
 $(document).on('click', '.product_quantity_up', function(e){
     e.preventDefault();

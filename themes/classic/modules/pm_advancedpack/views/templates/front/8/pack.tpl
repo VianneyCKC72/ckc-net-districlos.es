@@ -1,7 +1,13 @@
 {extends file='catalog/product.tpl'}
 
 {block name='content'}
-
+    {if isset($packMlChoose) && $packMlChoose == 1}
+        <style>
+            .qty {
+                display: none !important;
+            }
+        </style>
+    {/if}
     <section id="main">
         <meta content="{$product.url}">
 
@@ -157,15 +163,13 @@
                                     {/block}
 
                                     {if isset($packMlChoose) && $packMlChoose}
-                                        <span class="bold">Dimensions</span>
-
-                                        <div class="product-variants ap5-attributes">
+                                        <div class="ap5-attributes">
                                             <div class="clearfix hiddenlabel">
-                                                <p class=group-name>Choisissez le nombre de ML</p>
+                                                <p class="font-weight-bold group-name">Choisissez le nombre de ML</p>
                                                 <div class="select_wrap">
                                                     <div class="clearfix dis_flex">
                                                     <span class="input-group-btn-vertical dis_flex">
-                                                        <input type="text" name="qty_bis" id="quantity_wanted_ml" value="1" class="form-control" style="display: block;">
+                                                        <input type="number" name="quantity_ml" id="quantity_ml" value="1" class="form-control" min="1" step="1" style="display: block;">
                                                     </span>
                                                     </div>
                                                 </div>
@@ -255,6 +259,15 @@
                                     </li>
                                 {/if}
 
+                                {* Onglet FAQ *}
+                                {assign var="faq_module" value=Module::getInstanceByName('productfaq')}
+                                {assign var="faq_has_content" value=$faq_module && $faq_module->getFaqsByProduct($product.id, true)}
+                                {if $faq_has_content}
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#product-faq" role="tab"
+                                           aria-controls="product-faq">FAQ</a>
+                                    </li>
+                                {/if}
 
                                 {foreach from=$product.extraContent item=extra key=extraKey}
                                     <li class="nav-item">
@@ -381,6 +394,13 @@
 
                                     </section>
                                 </div>
+
+                                {* Contenu de l'onglet FAQ *}
+                                {if $faq_has_content}
+                                    <div class="tab-pane fade in" id="product-faq" role="tabpanel">
+                                        {include file="module:productfaq/views/templates/hook/product_faq.tpl"}
+                                    </div>
+                                {/if}
 
                                 {foreach from=$product.extraContent item=extra key=extraKey}
                                 <div class="tab-pane fade in {$extra.attr.class}" id="extra-{$extraKey}" role="tabpanel"
