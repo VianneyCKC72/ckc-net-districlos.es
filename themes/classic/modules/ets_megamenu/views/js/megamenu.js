@@ -3,17 +3,52 @@ $(function (){$(document).on('mouseup',function (e){const $activeItem=$('.mm_ext
     .on('mouseleave',()=> $menu.removeClass('bg_submenu'));}clickTextShowMenu();$('.toggle_menu').on('click',autoChangeStatus);$(document).on('mouseenter','.mm_menus_li iframe',function (){$(this).closest('.mm_menus_li').addClass('menu_hover');}).on('mouseleave','.mm_menus_li iframe',function (){$(this).closest('.mm_menus_li').removeClass('menu_hover');});$(document).on('click','.arrow-sub-menu-mobile-hide',function (){$(this).toggleClass('arrow-sub-menu-mobile-show');$(this).parent().next().toggleClass('ets_mm_block_content_show');});});
 
 $(document).ready(function () {
+    var isMobile = $(window).width() <= 768;
+    
     $('.item_first_layer.mm_has_sub > a').on('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        $(this).siblings('.arrow')[0].click();
+        this.nextElementSibling.click();
         return false;
     });
-    
-    $('.mm_tab_toggle_title > a.mm-link-menu-sub').on('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        $(this).siblings('.arrow')[0].click();
-        return false;
+
+    $('.mm_tab_li_content').each(function() {
+        var $link = $(this).find('> .mm_tab_name > .mm_tab_toggle_title > a.mm-link-menu-sub');
+        if (!$link.length) return;
+        
+        var $submenu = $(this).next('.mm_columns_contents_ul');
+        
+        if ($submenu.length) {
+            $link[0].onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.nextElementSibling.click();
+                return false;
+            };
+        } else {
+            var href = $link[0].href;
+            this.onclick = function(e) {
+                if (e.target.tagName !== 'A') {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    location.href = href;
+                    return false;
+                }
+            };
+        }
     });
+
+    if (isMobile) {
+        $('.ets_mm_block .h4 > a').each(function() {
+            var arrow = this.nextElementSibling;
+            if (arrow && arrow.classList.contains('arrow')) {
+                this.onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    arrow.click();
+                    return false;
+                };
+            }
+        });
+    }
 });
