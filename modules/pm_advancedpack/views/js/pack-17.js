@@ -31,19 +31,14 @@ var ap5Plugin = {
 			}, []);
 		}
 
-		$('.select_ul').on('click', 'li.liOption', function() {
+		$('.ap5-attribute-select').on('change', function() {
 			var selectedValue = $(this).data('value');
 
-			var radioName = $(this).closest('.select_wrap').data('id');
+			var radioName = $(this).data('name');
 
-			var radioSelector = 'input[name="group_' + radioName + '"][value="' + selectedValue + '"]';
+			var radioSelector = 'input[name="' + radioName + '"][value="' + selectedValue + '"]';
 
 			$(radioSelector).prop('checked', true);
-
-			$(this).siblings().attr('data-active', '0');
-			$(this).attr('data-active', '1');
-			var selectedText = $(this).find('p').text();
-			$(this).closest('.select_wrap').find('.default_option p').text(selectedText);
 
 			if ($('#auto_choose').length && $('#auto_choose').val() == 1) {
 				var elementChanged = $(radioSelector);
