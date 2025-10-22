@@ -26,7 +26,6 @@ var ap5Plugin = {
             $('.ap5-attribute-select').on('change', function () {
                 // Si on est en train de synchroniser, on laisse passer l'événement
                 // pour AP5 mais on ne refait pas notre logique.
-                alert(AP5_SYNCING)
                 if (AP5_SYNCING) return;
 
                 const $sel = $(this);
