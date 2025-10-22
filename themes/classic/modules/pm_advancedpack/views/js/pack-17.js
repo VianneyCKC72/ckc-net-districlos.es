@@ -13,55 +13,64 @@ var ap5Plugin = {
     initChangesLi: function() {
         $(document).on('change', '.ap5-attribute-select', function () {
             const $sel = $(this);
+
+            // Empêcher la récursion quand on synchronise les autres selects
             if ($sel.data('syncing') === true) {
                 $sel.data('syncing', false);
                 return;
             }
 
             const selectedVal = $sel.val();
-            const selName = $sel.attr('name');
+            const selName = $sel.attr('name'); // ex: "group_1267_2"
 
+            // Radio correspondant à CE select (même name + même value)
             const $changedRadio = $('input.ap5-attribute-radio[name="' + selName + '"][value="' + selectedVal + '"]');
             if ($changedRadio.length === 0) {
-                return;
+                return; // pas de radio associé -> on sort proprement
             }
 
+            // Coche le radio du select modifié
             $changedRadio.prop('checked', true);
 
             const autoChoose = $('#auto_choose').length && $('#auto_choose').val() === '1';
-
             if (autoChoose) {
-                const attr = $changedRadio.data('product-attribute'); // ex: 2, 4, 9...
-                const pos  = $changedRadio.data('position');          // ex: 1, 2, 3...
+                // Normaliser en string pour des sélecteurs robustes
+                const attr = String($changedRadio.data('product-attribute'));
+                const pos  = String($changedRadio.data('position'));
 
-                if (typeof attr !== 'undefined' && typeof pos !== 'undefined') {
-                    // Pour chaque autre select, s'il partage le même data-product-attribute,
-                    // on choisit la value correspondant à la même position.
+                if (attr && pos) {
+                    // Parcourir TOUS les autres selects pour aligner ceux qui partagent le même attribut
                     $('.ap5-attribute-select').each(function () {
                         const $other = $(this);
-                        if ($other[0] === $sel[0]) return; // sauter le select courant
+                        if ($other[0] === $sel[0]) return; // ignore le courant
 
                         const otherName = $other.attr('name');
-                        // On récupère le data-product-attribute de CE select via un de ses radios
-                        const $anyRadioOfOther = $('input.ap5-attribute-radio[name="' + otherName + '"]').first();
-                        if ($anyRadioOfOther.length === 0) return;
+                        // Récupère un radio de ce groupe pour connaître son data-product-attribute
+                        const $anyOtherRadio = $('input.ap5-attribute-radio[name="' + otherName + '"]').first();
+                        if ($anyOtherRadio.length === 0) return;
 
-                        const otherAttr = $anyRadioOfOther.data('product-attribute');
-                        if (otherAttr !== attr) return; // pas le même attribut -> on ignore
+                        const otherAttr = String($anyOtherRadio.data('product-attribute'));
+                        if (otherAttr !== attr) return; // pas le même attribut -> on saute
 
-                        // Trouver, pour ce select, le radio à la même position
+                        // Cherche, pour CE groupe, le radio à la MÊME POSITION
                         const $targetRadio = $('input.ap5-attribute-radio[name="' + otherName + '"][data-product-attribute="' + attr + '"][data-position="' + pos + '"]');
-                        if ($targetRadio.length === 0) return;
+                        if ($targetRadio.length === 0) {
+                            // Pas de valeur à cette position pour ce produit -> on ignore
+                            return;
+                        }
 
                         const targetVal = $targetRadio.val();
 
-                        // Met à jour le select SANS relancer une cascade infinie
-                        $other.data('syncing', true).val(targetVal).trigger('change'); // ce change est "consommé" par le flag
-                        // Aligne aussi le radio pour rester cohérent
+                        // Met à jour le select visuellement + évite récursion
+                        $other.data('syncing', true).val(targetVal).trigger('change');
+
+                        // Aligne aussi le radio correspondant
                         $targetRadio.prop('checked', true);
                     });
                 }
             }
+
+            // Déclencher la mise à jour globale (prix/combinaison, etc.)
             $changedRadio.trigger('click');
         });
     },
