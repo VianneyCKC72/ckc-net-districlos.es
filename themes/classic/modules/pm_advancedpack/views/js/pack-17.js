@@ -23,9 +23,10 @@ var ap5Plugin = {
             }
 
             // Handler unique pour tous les selects d'attribut
-            $(document).on('change', '.ap5-attribute-select', function () {
+            $('.ap5-attribute-select').on('change', function () {
                 // Si on est en train de synchroniser, on laisse passer l'événement
                 // pour AP5 mais on ne refait pas notre logique.
+                alert(AP5_SYNCING)
                 if (AP5_SYNCING) return;
 
                 const $sel = $(this);
