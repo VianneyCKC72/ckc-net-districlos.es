@@ -18,7 +18,7 @@
     </div>
 {/if}
 
-{if $page.page_name != 'checkout' AND $page.page_name != 'identity' AND $page.page_name != 'authentication' AND $page.page_name != 'registration'}
+{if $page.page_name != 'checkout' AND $page.page_name != 'identity' AND $page.page_name != 'authentication' AND $page.page_name != 'registration' AND Context::getContext()->shop->id != 2}
     <div class="banner__newsletter">
         <div class="col-text">
             {if $msg}
