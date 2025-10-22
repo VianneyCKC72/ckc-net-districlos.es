@@ -23,6 +23,7 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 {if $product.show_price}
+{if Context::getContext()->shop->id != 2 OR (Context::getContext()->shop->id == 2 && Context::getContext()->customer->id)}
   <div class="product-prices js-product-prices mb-4">
     {block name='product_price'}
       {if !$pro.env}
@@ -162,4 +163,5 @@
     </div>
 
   </div>
+{/if}
 {/if}
