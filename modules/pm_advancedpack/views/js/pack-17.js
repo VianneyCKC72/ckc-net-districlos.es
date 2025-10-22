@@ -501,6 +501,9 @@ var ap5Plugin = {
 				$('#idCombination').val(jsonData.packAttributesList);
 				$('#ap5-add-to-cart').show();
 			}
+			if (typeof (jsonData.packProductContainer) !== 'undefined') {
+				$('#ap5-pack-product-container').html(jsonData.packProductContainer);
+			}
 		}
 		setTimeout(function () {
 			ap5Plugin.initNewContent(jsonData);

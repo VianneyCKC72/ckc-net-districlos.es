@@ -3554,6 +3554,16 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             return $this->display(__FILE__, 'views/templates/hook/' . $this->getPrestaShopTemplateVersion() . '/pack-product-list-extra-right.tpl');
         }
     }
+
+    public function displayPackProductContainer($idPack, $packAttributesList, $packQuantityList = [], $packExcludeList = [], $packErrorsList = [], $packFatalErrorsList = [])
+    {
+        $packContent = AdvancedPack::getPackContent($idPack, null, true, $packAttributesList, $packQuantityList);
+        $this->context->smarty->assign([
+            'productsPackUnique' => AdvancedPack::getPackContentGroupByProduct($packContent),
+        ]);
+
+        return $this->display(__FILE__, 'views/templates/front/' . $this->getPrestaShopTemplateVersion() . '/pack-product-container.tpl');
+    }
     public function displayPackPriceContainer($idPack, $packAttributesList, $packQuantityList = [], $packExcludeList = [], $packErrorsList = [], $packFatalErrorsList = [])
     {
         $productPack = new Product((int)$idPack, true, $this->context->language->id);
