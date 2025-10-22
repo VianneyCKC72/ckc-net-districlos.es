@@ -11,62 +11,60 @@ var ap5Plugin = {
     topLimit: 0,
 
     initChangesLi: function() {
-        // Priorité = même valeur (ex: Couleur=25), fallback = même position
         (function () {
-            let AP5_SYNCING = false; // évite toute récursion pendant la synchro
+            // Flag pour éviter les récursions pendant la synchro
+            let AP5_SYNCING = false;
 
-            // Change sur n'importe quel <select> d'attribut
+            // Extrait l'ID d'attribut à partir du name "group_<productId>_<attributeId>"
+            function getAttributeIdFromName(name) {
+                if (!name) return null;
+                const parts = String(name).split('_');
+                return parts.length ? parts[parts.length - 1] : null;
+            }
+
+            // Handler unique pour tous les selects d'attribut
             $(document).on('change', '.ap5-attribute-select', function () {
-                if (AP5_SYNCING) return;             // ignore les changements provoqués par le script
+                // Si on est en train de synchroniser, on laisse passer l'événement
+                // pour AP5 mais on ne refait pas notre logique.
+                if (AP5_SYNCING) return;
 
-                const $sel    = $(this);
-                const val     = $sel.val();           // valeur choisie (prioritaire)
-                const name    = $sel.attr('name');    // ex: "group_1223_2"
-                const $radio  = $('input.ap5-attribute-radio[name="' + name + '"][value="' + val + '"]');
+                const $sel = $(this);
+                const autoChoose = $('#auto_choose').length && $('#auto_choose').val() === '1';
+                if (!autoChoose) return; // on laisse AP5 gérer le changement seul
 
-                if (!$radio.length) return;
+                const name   = $sel.attr('name');                // ex: "group_1223_2"
+                const attrId = getAttributeIdFromName(name);     // ex: "2"
+                if (!attrId) return;
 
+                // Position (index) de l'option sélectionnée dans CE select
+                const pos = this.selectedIndex;                  // 0,1,2,...
+
+                // Début de synchro: on s'auto-ignore pour éviter les boucles
                 AP5_SYNCING = true;
 
-                // Coche et CLiQUE le radio source pour que PrestaShop recalcule tout de suite
-                $radio.prop('checked', true).trigger('click');
+                // Pour chaque autre select: si même attribut, on le cale sur la même position
+                $('.ap5-attribute-select').each(function () {
+                    const $other    = $(this);
+                    if (this === $sel[0]) return; // ignorer le select source
 
-                const autoChoose = $('#auto_choose').length && $('#auto_choose').val() === '1';
-                if (autoChoose) {
-                    const attr = String($radio.data('product-attribute'));     // ex: "2" (Couleur) / "4" (Hauteur)
-                    const pos  = String($radio.data('position') || '');         // ex: "1","2","3","4"
+                    const otherName = $other.attr('name');
+                    const otherAttr = getAttributeIdFromName(otherName);
+                    if (otherAttr !== attrId) return; // on ne synchronise que le même attribut
 
-                    // Pour tous les autres selects : même attribut -> on aligne
-                    $('.ap5-attribute-select').each(function () {
-                        const $other = $(this);
-                        if ($other[0] === $sel[0]) return; // sauter le select d'origine
-
-                        const otherName = $other.attr('name');
-                        const $any      = $('input.ap5-attribute-radio[name="' + otherName + '"]').first();
-                        if (!$any.length) return;
-
-                        const otherAttr = String($any.data('product-attribute'));
-                        if (otherAttr !== attr) return; // on ne touche qu'au même attribut (Couleur avec Couleur, Hauteur avec Hauteur)
-
-                        // 1) PRIORITÉ: même VALEUR si dispo
-                        let $target = $('input.ap5-attribute-radio[name="' + otherName + '"][value="' + val + '"]');
-
-                        // 2) FALLBACK: même POSITION si la valeur n'existe pas pour cet autre produit
-                        if (!$target.length && pos) {
-                            $target = $('input.ap5-attribute-radio[name="' + otherName + '"][data-product-attribute="' + attr + '"][data-position="' + pos + '"]');
+                    const opts = this.options;
+                    // Si la position existe dans ce select, on l'applique
+                    if (pos >= 0 && pos < opts.length) {
+                        if (this.selectedIndex !== pos) {
+                            this.selectedIndex = pos;
+                            // On déclenche change pour que le module AP5 réagisse (prix/combinaisons),
+                            // notre handler ne fera rien car AP5_SYNCING=true.
+                            $other.trigger('change');
                         }
-                        if (!$target.length) return; // rien d'équivalent -> ne rien faire
+                    }
+                    // Si la position n'existe pas (longueurs différentes), on ne touche pas.
+                });
 
-                        const targetVal = $target.val();
-
-                        // (A) Coche + CLIQUE le radio pour que la combinaison/price de CE sous-produit soit mise à jour
-                        $target.prop('checked', true).trigger('click');
-
-                        // (B) Aligne l’UI du <select> (y compris les selects stylés) sur la value choisie
-                        $other.val(targetVal).trigger('change'); // sera ignoré fonctionnellement grâce à AP5_SYNCING
-                    });
-                }
-
+                // Fin de synchro: on réactive notre handler
                 AP5_SYNCING = false;
             });
         })();
