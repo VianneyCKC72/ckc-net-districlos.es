@@ -11,66 +11,61 @@ var ap5Plugin = {
     topLimit: 0,
 
     initChangesLi: function() {
+        // Priorité = même valeur (ex: Couleur=25), fallback = même position
         $(document).on('change', '.ap5-attribute-select', function () {
             const $sel = $(this);
 
-            // Empêcher la récursion quand on synchronise les autres selects
+            // éviter les boucles quand on met à jour d'autres selects par code
             if ($sel.data('syncing') === true) {
                 $sel.data('syncing', false);
                 return;
             }
 
-            const selectedVal = $sel.val();
-            const selName = $sel.attr('name'); // ex: "group_1267_2"
+            const selectedVal = $sel.val();            // valeur choisie (ex: 25)
+            const selName     = $sel.attr('name');     // ex: "group_1223_2"
 
-            // Radio correspondant à CE select (même name + même value)
+            // radio correspondant à CE select (même name + même value)
             const $changedRadio = $('input.ap5-attribute-radio[name="' + selName + '"][value="' + selectedVal + '"]');
-            if ($changedRadio.length === 0) {
-                return; // pas de radio associé -> on sort proprement
-            }
+            if ($changedRadio.length === 0) return;
 
-            // Coche le radio du select modifié
             $changedRadio.prop('checked', true);
 
             const autoChoose = $('#auto_choose').length && $('#auto_choose').val() === '1';
             if (autoChoose) {
-                // Normaliser en string pour des sélecteurs robustes
-                const attr = String($changedRadio.data('product-attribute'));
-                const pos  = String($changedRadio.data('position'));
+                const attr = String($changedRadio.data('product-attribute')); // ex: "2" (Couleur)
+                const pos  = String($changedRadio.data('position') || '');    // ex: "1","2"…
 
-                if (attr && pos) {
-                    // Parcourir TOUS les autres selects pour aligner ceux qui partagent le même attribut
-                    $('.ap5-attribute-select').each(function () {
-                        const $other = $(this);
-                        if ($other[0] === $sel[0]) return; // ignore le courant
+                // Parcourir les autres selects et synchroniser CE MÊME attribut
+                $('.ap5-attribute-select').each(function () {
+                    const $other = $(this);
+                    if ($other[0] === $sel[0]) return;
 
-                        const otherName = $other.attr('name');
-                        // Récupère un radio de ce groupe pour connaître son data-product-attribute
-                        const $anyOtherRadio = $('input.ap5-attribute-radio[name="' + otherName + '"]').first();
-                        if ($anyOtherRadio.length === 0) return;
+                    const otherName = $other.attr('name');
+                    const $anyOtherRadio = $('input.ap5-attribute-radio[name="' + otherName + '"]').first();
+                    if ($anyOtherRadio.length === 0) return;
 
-                        const otherAttr = String($anyOtherRadio.data('product-attribute'));
-                        if (otherAttr !== attr) return; // pas le même attribut -> on saute
+                    const otherAttr = String($anyOtherRadio.data('product-attribute'));
+                    if (otherAttr !== attr) return; // autre attribut => on ignore
 
-                        // Cherche, pour CE groupe, le radio à la MÊME POSITION
-                        const $targetRadio = $('input.ap5-attribute-radio[name="' + otherName + '"][data-product-attribute="' + attr + '"][data-position="' + pos + '"]');
-                        if ($targetRadio.length === 0) {
-                            // Pas de valeur à cette position pour ce produit -> on ignore
-                            return;
-                        }
+                    // 1) PRIORITÉ: essayer d'appliquer la MÊME VALEUR (selectedVal) si dispo
+                    let $targetRadio = $('input.ap5-attribute-radio[name="' + otherName + '"][value="' + selectedVal + '"]');
 
-                        const targetVal = $targetRadio.val();
+                    // 2) FALLBACK: si la valeur n'existe pas pour ce produit, tenter la MÊME POSITION
+                    if ($targetRadio.length === 0 && pos) {
+                        $targetRadio = $('input.ap5-attribute-radio[name="' + otherName + '"][data-product-attribute="' + attr + '"][data-position="' + pos + '"]');
+                    }
+                    if ($targetRadio.length === 0) return; // rien d’équivalent -> on ne touche pas
 
-                        // Met à jour le select visuellement + évite récursion
-                        $other.data('syncing', true).val(targetVal).trigger('change');
+                    const targetVal = $targetRadio.val();
 
-                        // Aligne aussi le radio correspondant
-                        $targetRadio.prop('checked', true);
-                    });
-                }
+                    // mettre à jour le select visuellement (plugins inclus) sans boucler
+                    $other.data('syncing', true).val(targetVal).trigger('change');
+                    // aligner le radio correspondant
+                    $targetRadio.prop('checked', true);
+                });
             }
 
-            // Déclencher la mise à jour globale (prix/combinaison, etc.)
+            // déclencher la mise à jour globale (prix/combinaison…) une seule fois, sur la source
             $changedRadio.trigger('click');
         });
     },
