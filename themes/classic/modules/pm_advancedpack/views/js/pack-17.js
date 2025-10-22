@@ -11,51 +11,58 @@ var ap5Plugin = {
     topLimit: 0,
 
     initChangesLi: function() {
-        function getRadioCountByName(mainRadioName) {
-            var radioCounts = {};
-
-            $('input[type=radio]').each(function() {
-                var name = $(this).attr('name');
-                if (radioCounts[name]) {
-                    radioCounts[name]++;
-                } else {
-                    radioCounts[name] = 1;
-                }
-            });
-
-            return Object.keys(radioCounts).reduce(function(acc, key) {
-                if (radioCounts[key] === radioCounts[mainRadioName]) {
-                    acc.push(key);
-                }
-                return acc;
-            }, []);
-        }
-
-        $('.ap5-attribute-select').on('change', function() {
-            var selectedValue = $(this).val();
-
-            var radioName = $(this).attr('id').replace('group_', '');
-
-            var radioSelector = 'input[data-product-attribute="' + radioName + '"][value="' + selectedValue + '"]';
-
-            $(radioSelector).prop('checked', true);
-
-            if ($('#auto_choose').length && $('#auto_choose').val() == 1) {
-                var elementChanged = $(radioSelector);
-                var dataProductAttribute = elementChanged.data('product-attribute');
-                var elementChangedPosition = elementChanged.data('position');
-
-                var radioToUpdate = getRadioCountByName(elementChanged.attr('name'));
-                radioToUpdate.forEach(function(radioName) {
-                    var radioSelector = 'input[name="' + radioName + '"][data-position=' + elementChangedPosition + '][data-product-attribute='+ dataProductAttribute +']';
-                    $(radioSelector).each(function(index, radio) {
-                        $(radio).prop('checked', true);
-                    })
-                })
-                $(radioSelector).trigger('click')
-            }else{
-                $(radioSelector).trigger('click')
+        $(document).on('change', '.ap5-attribute-select', function () {
+            const $sel = $(this);
+            if ($sel.data('syncing') === true) {
+                $sel.data('syncing', false);
+                return;
             }
+
+            const selectedVal = $sel.val();
+            const selName = $sel.attr('name');
+
+            const $changedRadio = $('input.ap5-attribute-radio[name="' + selName + '"][value="' + selectedVal + '"]');
+            if ($changedRadio.length === 0) {
+                return;
+            }
+
+            $changedRadio.prop('checked', true);
+
+            const autoChoose = $('#auto_choose').length && $('#auto_choose').val() === '1';
+
+            if (autoChoose) {
+                const attr = $changedRadio.data('product-attribute'); // ex: 2, 4, 9...
+                const pos  = $changedRadio.data('position');          // ex: 1, 2, 3...
+
+                if (typeof attr !== 'undefined' && typeof pos !== 'undefined') {
+                    // Pour chaque autre select, s'il partage le même data-product-attribute,
+                    // on choisit la value correspondant à la même position.
+                    $('.ap5-attribute-select').each(function () {
+                        const $other = $(this);
+                        if ($other[0] === $sel[0]) return; // sauter le select courant
+
+                        const otherName = $other.attr('name');
+                        // On récupère le data-product-attribute de CE select via un de ses radios
+                        const $anyRadioOfOther = $('input.ap5-attribute-radio[name="' + otherName + '"]').first();
+                        if ($anyRadioOfOther.length === 0) return;
+
+                        const otherAttr = $anyRadioOfOther.data('product-attribute');
+                        if (otherAttr !== attr) return; // pas le même attribut -> on ignore
+
+                        // Trouver, pour ce select, le radio à la même position
+                        const $targetRadio = $('input.ap5-attribute-radio[name="' + otherName + '"][data-product-attribute="' + attr + '"][data-position="' + pos + '"]');
+                        if ($targetRadio.length === 0) return;
+
+                        const targetVal = $targetRadio.val();
+
+                        // Met à jour le select SANS relancer une cascade infinie
+                        $other.data('syncing', true).val(targetVal).trigger('change'); // ce change est "consommé" par le flag
+                        // Aligne aussi le radio pour rester cohérent
+                        $targetRadio.prop('checked', true);
+                    });
+                }
+            }
+            $changedRadio.trigger('click');
         });
     },
 
