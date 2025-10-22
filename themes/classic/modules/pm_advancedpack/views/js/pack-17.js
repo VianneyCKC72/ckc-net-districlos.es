@@ -34,9 +34,9 @@ var ap5Plugin = {
         $('.ap5-attribute-select').on('change', function() {
             var selectedValue = $(this).data('value');
 
-            var radioName = $(this).data('name');
+            var radioName = $(this).data('id');
 
-            var radioSelector = 'input[name="' + radioName + '"][value="' + selectedValue + '"]';
+            var radioSelector = 'input[data-product-attribute="' + radioName + '"][value="' + selectedValue + '"]';
 
             $(radioSelector).prop('checked', true);
 
