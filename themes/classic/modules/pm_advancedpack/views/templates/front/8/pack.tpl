@@ -165,7 +165,7 @@
                                     {if isset($packMlChoose) && $packMlChoose}
                                         <div class="ap5-attributes">
                                             <div class="clearfix hiddenlabel">
-                                                <p class="font-weight-bold group-name">Choisissez le nombre de ML</p>
+                                                <p class="font-weight-bold group-name">Choisissez la longueur en mètres linéaires</p>
                                                 <div class="select_wrap">
                                                     <div class="clearfix dis_flex">
                                                     <span class="input-group-btn-vertical dis_flex">

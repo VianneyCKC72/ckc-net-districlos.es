@@ -34,7 +34,7 @@ var ap5Plugin = {
         $('.ap5-attribute-select').on('change', function() {
             var selectedValue = $(this).val();
 
-            var radioName = $(this).data('id');
+            var radioName = $(this).attr('id').replace('group_', '');
 
             var radioSelector = 'input[data-product-attribute="' + radioName + '"][value="' + selectedValue + '"]';
 
@@ -43,8 +43,9 @@ var ap5Plugin = {
             if ($('#auto_choose').length && $('#auto_choose').val() == 1) {
                 var elementChanged = $(radioSelector);
                 var dataProductAttribute = elementChanged.data('product-attribute');
-                var elementChangedPosition = $(radioSelector).data('position');
-                var radioToUpdate = getRadioCountByName($(radioSelector).attr('name'));
+                var elementChangedPosition = elementChanged.data('position');
+
+                var radioToUpdate = getRadioCountByName(elementChanged.attr('name'));
                 radioToUpdate.forEach(function(radioName) {
                     var radioSelector = 'input[name="' + radioName + '"][data-position=' + elementChangedPosition + '][data-product-attribute='+ dataProductAttribute +']';
                     $(radioSelector).each(function(index, radio) {
