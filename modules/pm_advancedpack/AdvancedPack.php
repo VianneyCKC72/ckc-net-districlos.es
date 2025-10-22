@@ -662,8 +662,8 @@ class AdvancedPack extends Product
                         continue;
                     }
                     $packClassicPrice += $packProduct['priceInfos']['productClassicPrice'] * (int)$packProduct['quantity'];
-                    $packClassicPriceWt += $packProduct['priceInfos']['productClassicPriceWt'] * (int)$packProduct['quantity'];
-                    $packPriceWt += $packProduct['priceInfos']['productPackPriceWt'] * (int)$packProduct['quantity'];
+                    $packClassicPriceWt += round($packProduct['priceInfos']['productClassicPriceWt'], 2) * (int)$packProduct['quantity'];
+                    $packPriceWt += round($packProduct['priceInfos']['productPackPriceWt'], 2) * (int)$packProduct['quantity'];
                     $packPrice += $packProduct['priceInfos']['productPackPrice'] * (int)$packProduct['quantity'];
                     $totalPackEcoTax += $packProduct['priceInfos']['productEcoTax'] * (int)$packProduct['quantity'];
                     $totalPackEcoTaxWt += $packProduct['priceInfos']['productEcoTaxWt'] * (int)$packProduct['quantity'];
