@@ -12,62 +12,64 @@ var ap5Plugin = {
 
     initChangesLi: function() {
         // Priorité = même valeur (ex: Couleur=25), fallback = même position
-        $(document).on('change', '.ap5-attribute-select', function () {
-            const $sel = $(this);
+        (function () {
+            let AP5_SYNCING = false; // évite toute récursion pendant la synchro
 
-            // éviter les boucles quand on met à jour d'autres selects par code
-            if ($sel.data('syncing') === true) {
-                $sel.data('syncing', false);
-                return;
-            }
+            // Change sur n'importe quel <select> d'attribut
+            $(document).on('change', '.ap5-attribute-select', function () {
+                if (AP5_SYNCING) return;             // ignore les changements provoqués par le script
 
-            const selectedVal = $sel.val();            // valeur choisie (ex: 25)
-            const selName     = $sel.attr('name');     // ex: "group_1223_2"
+                const $sel    = $(this);
+                const val     = $sel.val();           // valeur choisie (prioritaire)
+                const name    = $sel.attr('name');    // ex: "group_1223_2"
+                const $radio  = $('input.ap5-attribute-radio[name="' + name + '"][value="' + val + '"]');
 
-            // radio correspondant à CE select (même name + même value)
-            const $changedRadio = $('input.ap5-attribute-radio[name="' + selName + '"][value="' + selectedVal + '"]');
-            if ($changedRadio.length === 0) return;
+                if (!$radio.length) return;
 
-            $changedRadio.prop('checked', true);
+                AP5_SYNCING = true;
 
-            const autoChoose = $('#auto_choose').length && $('#auto_choose').val() === '1';
-            if (autoChoose) {
-                const attr = String($changedRadio.data('product-attribute')); // ex: "2" (Couleur)
-                const pos  = String($changedRadio.data('position') || '');    // ex: "1","2"…
+                // Coche et CLiQUE le radio source pour que PrestaShop recalcule tout de suite
+                $radio.prop('checked', true).trigger('click');
 
-                // Parcourir les autres selects et synchroniser CE MÊME attribut
-                $('.ap5-attribute-select').each(function () {
-                    const $other = $(this);
-                    if ($other[0] === $sel[0]) return;
+                const autoChoose = $('#auto_choose').length && $('#auto_choose').val() === '1';
+                if (autoChoose) {
+                    const attr = String($radio.data('product-attribute'));     // ex: "2" (Couleur) / "4" (Hauteur)
+                    const pos  = String($radio.data('position') || '');         // ex: "1","2","3","4"
 
-                    const otherName = $other.attr('name');
-                    const $anyOtherRadio = $('input.ap5-attribute-radio[name="' + otherName + '"]').first();
-                    if ($anyOtherRadio.length === 0) return;
+                    // Pour tous les autres selects : même attribut -> on aligne
+                    $('.ap5-attribute-select').each(function () {
+                        const $other = $(this);
+                        if ($other[0] === $sel[0]) return; // sauter le select d'origine
 
-                    const otherAttr = String($anyOtherRadio.data('product-attribute'));
-                    if (otherAttr !== attr) return; // autre attribut => on ignore
+                        const otherName = $other.attr('name');
+                        const $any      = $('input.ap5-attribute-radio[name="' + otherName + '"]').first();
+                        if (!$any.length) return;
 
-                    // 1) PRIORITÉ: essayer d'appliquer la MÊME VALEUR (selectedVal) si dispo
-                    let $targetRadio = $('input.ap5-attribute-radio[name="' + otherName + '"][value="' + selectedVal + '"]');
+                        const otherAttr = String($any.data('product-attribute'));
+                        if (otherAttr !== attr) return; // on ne touche qu'au même attribut (Couleur avec Couleur, Hauteur avec Hauteur)
 
-                    // 2) FALLBACK: si la valeur n'existe pas pour ce produit, tenter la MÊME POSITION
-                    if ($targetRadio.length === 0 && pos) {
-                        $targetRadio = $('input.ap5-attribute-radio[name="' + otherName + '"][data-product-attribute="' + attr + '"][data-position="' + pos + '"]');
-                    }
-                    if ($targetRadio.length === 0) return; // rien d’équivalent -> on ne touche pas
+                        // 1) PRIORITÉ: même VALEUR si dispo
+                        let $target = $('input.ap5-attribute-radio[name="' + otherName + '"][value="' + val + '"]');
 
-                    const targetVal = $targetRadio.val();
+                        // 2) FALLBACK: même POSITION si la valeur n'existe pas pour cet autre produit
+                        if (!$target.length && pos) {
+                            $target = $('input.ap5-attribute-radio[name="' + otherName + '"][data-product-attribute="' + attr + '"][data-position="' + pos + '"]');
+                        }
+                        if (!$target.length) return; // rien d'équivalent -> ne rien faire
 
-                    // mettre à jour le select visuellement (plugins inclus) sans boucler
-                    $other.data('syncing', true).val(targetVal).trigger('change');
-                    // aligner le radio correspondant
-                    $targetRadio.prop('checked', true);
-                });
-            }
+                        const targetVal = $target.val();
 
-            // déclencher la mise à jour globale (prix/combinaison…) une seule fois, sur la source
-            $changedRadio.trigger('click');
-        });
+                        // (A) Coche + CLIQUE le radio pour que la combinaison/price de CE sous-produit soit mise à jour
+                        $target.prop('checked', true).trigger('click');
+
+                        // (B) Aligne l’UI du <select> (y compris les selects stylés) sur la value choisie
+                        $other.val(targetVal).trigger('change'); // sera ignoré fonctionnellement grâce à AP5_SYNCING
+                    });
+                }
+
+                AP5_SYNCING = false;
+            });
+        })();
     },
 
     log: function(txt) {
