@@ -14,6 +14,8 @@ class Ckc_Stores_StockGetStockCheckoutModuleFrontController extends ModuleFrontC
         $delivery = str_replace('delivery_option_', '', Tools::getValue('selectedDelivery'));
         $stockManager = new StockManager();
 
-        die(json_encode(['success' => true, 'data' => $stockManager->getDelivery($delivery)]));
+        $id_store = Tools::getValue('id_store');
+
+        die(json_encode(['success' => true, 'data' => $stockManager->getDelivery($delivery, $id_store)]));
     }
 }
