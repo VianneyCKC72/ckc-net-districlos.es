@@ -32,7 +32,7 @@ var ap5Plugin = {
         }
 
         $('.ap5-attribute-select').on('change', function() {
-            var selectedValue = $(this).data('value');
+            var selectedValue = $(this).val();
 
             var radioName = $(this).data('id');
 
