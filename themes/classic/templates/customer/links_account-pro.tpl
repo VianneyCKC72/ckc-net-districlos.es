@@ -52,3 +52,6 @@
 <a  class="pro-items-links" href="#">
     Mes notifications
 </a>
+<a  class="pro-items-links" href="/?mylogout=">
+   Déconnexion
+</a>
