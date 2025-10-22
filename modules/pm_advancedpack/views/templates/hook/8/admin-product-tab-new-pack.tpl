@@ -106,6 +106,21 @@
 								</div>
 							</div>
 
+							<div class="clearfix">
+								<div class="row">
+									<label class="control-label col-lg-6" for="ap5_auto_choose">
+												<span class="label-tooltip" data-toggle="{$tooltipToggle}" title="Cochez cette case si vous voulez une correspondance des déclinaisons en front (valable uniquement pour les produits avec le même nombre de déclinaison)">
+													Choix des déclinaisons piloté
+												</span>
+									</label>
+									<div class="col-lg-1">
+										<div class="input-group">
+											<input type="checkbox"{if $packAutoChoose} checked="checked"{/if} value="1" id="ap5_auto_choose" name="ap5_auto_choose" />
+										</div>
+									</div>
+								</div>
+							</div>
+
 							<div id="ap5_price_rules_4_configuration" class="clearfix">
 								<div class="row">
 									<label class="control-label col-lg-6" for="ap5_ml_choose">
