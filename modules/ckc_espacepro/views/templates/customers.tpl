@@ -74,92 +74,84 @@
             </tr>
             </thead>
             <tbody>
+            {* debug marker v3 *}
             {foreach $customers as $customer}
                 <tr class="{if $customer.id_default_group == $id_group_pro}row-pro{else}row-proticulier{/if}">
-                    <td>{$customer.id_customer}</td>
+                    <td>{$customer.id_customer|intval}</td>
 
                     <td>
                         <div>
-                            {if $customer.id_gender == 1}M.{elseif $customer.id_gender == 2}Mme.{elseif $customer.id_gender == 5}Société{/if}
-                            <strong>{$customer.lastname} {$customer.firstname}</strong>
-                            <div class="small-muted">{$customer.email}</div>
+                            {if isset($customer.id_gender) && $customer.id_gender == 1}M.
+                            {elseif isset($customer.id_gender) && $customer.id_gender == 2}Mme.
+                            {elseif isset($customer.id_gender) && $customer.id_gender == 5}Société{/if}
+                            <strong>{$customer.lastname|default:''|escape:'html'} {$customer.firstname|default:''|escape:'html'}</strong>
+                            <div class="small-muted">{$customer.email|default:''|escape:'html'}</div>
                         </div>
 
                         {if isset($customer.tel) && $customer.tel}
-                            <div class="small-muted"><strong>Tel :</strong> {$customer.tel}</div>
+                            <div class="small-muted"><strong>Tel :</strong> {$customer.tel|escape:'html'}</div>
                         {/if}
 
                         {if isset($customer.company) && $customer.company}
-                            <div class="small-muted"><strong>Société :</strong> {$customer.company}</div>
+                            <div class="small-muted"><strong>Société :</strong> {$customer.company|escape:'html'}</div>
                         {/if}
 
-                        {assign var=addrLine value=""}
-                        {if isset($customer.adresse) && $customer.adresse}{$addrLine = $customer.adresse}{/if}
-                        {if isset($customer.adresse2) && $customer.adresse2}{if $addrLine}{$addrLine = "$addrLine, "}{/if}{$addrLine = "$addrLine$customer.adresse2"}{/if}
-                        {if isset($customer.cp) || isset($customer.ville)}
-                            {if $addrLine}{$addrLine = "$addrLine, "}{/if}{$addrLine = "$addrLine"}{if isset($customer.cp)}{$addrLine = "$addrLine$customer.cp "}{/if}{if isset($customer.ville)}{$addrLine = "$addrLine$customer.ville"}{/if}
-                        {/if}
-                        {if isset($customer.country_name) && $customer.country_name}
-                            {if $addrLine}{$addrLine = "$addrLine, "}{/if}{$addrLine = "$addrLine$customer.country_name"}
-                        {/if}
-                        {if $addrLine}
-                            <div class="small-muted">{$addrLine}</div>
+                        {* Adresse en une ligne, sans assign, sans implode *}
+                        {if $customer.adresse || $customer.adresse2 || $customer.cp || $customer.ville || $customer.country_name}
+                            <div class="small-muted">
+                                {if $customer.adresse}{$customer.adresse|escape:'html'}{/if}
+                                {if $customer.adresse2}{if $customer.adresse}, {/if}{$customer.adresse2|escape:'html'}{/if}
+                                {if $customer.cp || $customer.ville}
+                                    {if $customer.adresse || $customer.adresse2}, {/if}
+                                    {if $customer.cp}{$customer.cp|escape:'html'}{/if}{if $customer.cp && $customer.ville} {/if}{if $customer.ville}{$customer.ville|escape:'html'}{/if}
+                                {/if}
+                                {if $customer.country_name}
+                                    {if $customer.adresse || $customer.adresse2 || $customer.cp || $customer.ville}, {/if}
+                                    {$customer.country_name|escape:'html'}
+                                {/if}
+                            </div>
                         {/if}
 
                         {if isset($customer.siret) && $customer.siret}
-                            <div class="small-muted"><strong>SIRET :</strong> {$customer.siret}</div>
+                            <div class="small-muted"><strong>SIRET :</strong> {$customer.siret|escape:'html'}</div>
                         {/if}
 
-{*                        <div class="small-muted">*}
-{*                            <strong>Assujetti TVA :</strong>*}
-{*                            {if isset($customer.tva) && $customer.tva == 0}Non{else}Oui{/if}*}
-{*                            {if isset($customer.vat_number) && $customer.vat_number}*}
-{*                                —*}
-{*                                <strong>N° TVA :</strong>*}
-{*                                {$customer.vat_number}*}
-{*                            {/if}*}
-{*                        </div>*}
-
                         {if isset($customer.naf) && $customer.naf}
-                            <div class="small-muted"><strong>Code NAF :</strong> {$customer.naf}</div>
+                            <div class="small-muted"><strong>Code NAF :</strong> {$customer.naf|escape:'html'}</div>
                         {/if}
                     </td>
 
                     <td>
                         <div class="account-type">
-    <span class="status-badge {if $customer.id_default_group == $id_group_pro}badge-pro{else}badge-proti{/if}">
-      {if $customer.id_default_group == $id_group_pro}Professionnel{else}Proticulier{/if}
-    </span>
+        <span class="status-badge {if $customer.id_default_group == $id_group_pro}badge-pro{else}badge-proti{/if}">
+          {if $customer.id_default_group == $id_group_pro}Professionnel{else}Proticulier{/if}
+        </span>
                             <select
                                     class="form-control type-select js-change-group"
-                                    data-id-customer="{$customer.id_customer}"
-                                    data-prev="{$customer.id_default_group|default:0}">
+                                    data-id-customer="{$customer.id_customer|intval}"
+                                    data-prev="{$customer.id_default_group|default:0|intval}">
                                 {foreach $groupsSwitchable as $g}
-                                    <option value="{$g.id_group}"
-                                            {if $g.id_group == $customer.id_default_group}selected{/if}>
-                                        {$g.name}
+                                    <option value="{$g.id_group|intval}" {if $g.id_group == $customer.id_default_group}selected{/if}>
+                                        {$g.name|escape:'html'}
                                     </option>
                                 {/foreach}
                             </select>
                         </div>
-                        <div class="small-muted">Groupe par défaut : {$customer.default_group_name|default:'—'}</div>
+                        <div class="small-muted">Groupe par défaut : {$customer.default_group_name|default:'—'|escape:'html'}</div>
                     </td>
-
 
                     <td>
                         {if isset($customer.fileUpload) && $customer.fileUpload}
                             {if isset($customer.fileExtension) && ($customer.fileExtension == 'jpg' || $customer.fileExtension == 'jpeg' || $customer.fileExtension == 'png')}
-                                <a href="/upload/{$customer.fileUpload}" target="_blank" class="file-chip"
-                                   title="Voir le KBIS">
-                                    <img src="/upload/{$customer.fileUpload}" alt="KBIS">
+                                <a href="/upload/{$customer.fileUpload|escape:'url'}" target="_blank" class="file-chip" title="Voir le KBIS">
+                                    <img src="/upload/{$customer.fileUpload|escape:'url'}" alt="KBIS">
                                 </a>
                             {elseif isset($customer.fileExtension) && $customer.fileExtension == 'pdf'}
-                                <a href="/upload/{$customer.fileUpload}" target="_blank" class="file-chip"
-                                   title="Ouvrir le PDF">
+                                <a href="/upload/{$customer.fileUpload|escape:'url'}" target="_blank" class="file-chip" title="Ouvrir le PDF">
                                     <span class="icon"></span> <span>KBIS.pdf</span>
                                 </a>
                             {else}
-                                <span class="small-muted">Fichier : /upload/{$customer.fileUpload}</span>
+                                <span class="small-muted">Fichier : /upload/{$customer.fileUpload|escape:'html'}</span>
                             {/if}
                         {else}
                             <span class="small-muted">—</span>
@@ -169,16 +161,15 @@
                     <td>
                         {if isset($customer.rib) && $customer.rib}
                             {if isset($customer.ribFileExtension) && ($customer.ribFileExtension == 'jpg' || $customer.ribFileExtension == 'jpeg' || $customer.ribFileExtension == 'png')}
-                                <a href="/upload/{$customer.rib}" target="_blank" class="file-chip" title="Voir le RIB">
-                                    <img src="/upload/{$customer.rib}" alt="RIB">
+                                <a href="/upload/{$customer.rib|escape:'url'}" target="_blank" class="file-chip" title="Voir le RIB">
+                                    <img src="/upload/{$customer.rib|escape:'url'}" alt="RIB">
                                 </a>
                             {elseif isset($customer.ribFileExtension) && $customer.ribFileExtension == 'pdf'}
-                                <a href="/upload/{$customer.rib}" target="_blank" class="file-chip"
-                                   title="Ouvrir le PDF">
+                                <a href="/upload/{$customer.rib|escape:'url'}" target="_blank" class="file-chip" title="Ouvrir le PDF">
                                     <span class="icon"></span> <span>RIB.pdf</span>
                                 </a>
                             {else}
-                                <span class="small-muted">Fichier : /upload/{$customer.rib}</span>
+                                <span class="small-muted">Fichier : /upload/{$customer.rib|escape:'html'}</span>
                             {/if}
                         {else}
                             <span class="small-muted">—</span>
@@ -187,6 +178,7 @@
                 </tr>
             {/foreach}
             </tbody>
+
         </table>
     </div>
 {else}

@@ -1,5 +1,7 @@
 <?php
-
+if (!class_exists('HelperEspacePro', false) && file_exists(__DIR__.'/classes/HelperEspacePro.php')) {
+    require_once __DIR__.'/classes/HelperEspacePro.php';
+}
 class ckc_espacepro extends Module
 {
     protected $redirect_after = '/';
@@ -158,6 +160,11 @@ class ckc_espacepro extends Module
 
     public function hookActionAuthentication($params)
     {
+        $ctrl = $this->context->controller ? strtolower($this->context->controller->php_self) : '';
+        if ($ctrl !== 'authentication') {
+            return;
+        }
+
         // Laisse les ini_set globaux désactivés au début du fichier (supprimés).
         $c = $params['customer'] ?? null;
         if (!$c || !(int)$c->id) return;
@@ -210,13 +217,12 @@ class ckc_espacepro extends Module
     private function buildAuthUrlForShop(int $targetShopId, string $back, string $email, int $reasonCode): string
     {
         $qs = http_build_query([
-            'back'        => $back,
-            'login_email' => $email,
-            'login_error' => $reasonCode,
-        ], '', '&', PHP_QUERY_RFC3986);
+                                   'back'        => $back,
+                                   'login_email' => $email,
+                                   'pro_reason'  => $reasonCode,
+                               ], '', '&', PHP_QUERY_RFC3986);
 
         $base = $this->context->link->getBaseLink($targetShopId, true);
-
         return rtrim($base, '/') . '/connexion?' . $qs;
     }
 
@@ -399,13 +405,13 @@ class ckc_espacepro extends Module
     /** Variables Smarty globales */
     public function hookActionFrontControllerSetVariables($params)
     {
-        $loginError = (int)Tools::getValue('login_error', 0);
         $loginEmail = (string)Tools::getValue('login_email', '');
 
+        // ne plus alimenter login_error
         $this->context->smarty->assign([
-            'login_error' => $loginError,
             'login_email' => Tools::safeOutput($loginEmail),
-        ]);
+                                           'pro_reason' => (int)Tools::getValue('pro_reason', 0),
+                                       ]);
 
         $this->injectGlobals();
     }
@@ -475,6 +481,8 @@ class ckc_espacepro extends Module
     /** Création client : sur shop PRO => groupe “Proticulier” direct */
     public function hookActionCustomerAccountAdd($params)
     {
+
+
         $helper = new HelperEspacePro();
         $backLink = Tools::getValue('back');
         $shopId = (int)$this->context->shop->id;

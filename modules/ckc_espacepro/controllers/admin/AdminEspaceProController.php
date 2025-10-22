@@ -15,8 +15,6 @@
 @ini_set('max_input_time', '300');
 @ini_set('memory_limit', '512M');
 
-require __DIR__ . '/../../classes/HelperEspacePro.php';
-
 defined('_PS_VERSION_') or exit;
 
 class AdminEspaceProController extends ModuleAdminController
@@ -305,40 +303,137 @@ class AdminEspaceProController extends ModuleAdminController
         }
         parent::postProcess();
     }
-
     public function display()
     {
-        $nbCustomersLastDay = 0;
-        $nbCustomers        = 0;
+        $tplPath = self::VIEWS_TPL . 'templates/customers.tpl';
 
+        // === LOGS DANS LE MODULE ===
+        $logDir  = _PS_MODULE_DIR_ . 'ckc_espacepro/var/log';
+        if (!is_dir($logDir)) {
+            @mkdir($logDir, 0775, true);
+        }
+        $logFile = $logDir . '/ckc_ep_tpl_debug.log';
+        $compileDir = _PS_ROOT_DIR_ . '/var/cache/dev/smarty/compile';
+
+        // --- Données ---
         $customers        = $this->getAllCustomersEp();
         $customersLastDay = $this->getAllCustomersEp(true);
-        $nbCustomers        = $customers ? count($customers) : 0;
-        $nbCustomersLastDay = $customersLastDay ? count($customersLastDay) : 0;
 
-        $this->context->smarty->assign('customers', $customers);
-        $this->context->smarty->assign('nbCustomers', $nbCustomers);
-        $this->context->smarty->assign('nbCustomersLastDay', $nbCustomersLastDay);
-        $this->context->smarty->assign($this->getCountsByType());
-        $this->context->smarty->assign('editkbis', $this->renderFormKbis());
-        $this->context->smarty->assign('editrib', $this->renderFormRib());
+        // Sanitize dur : aucune valeur array/object dans $customers
+        $sanitized = [];
+        if (is_array($customers)) {
+            foreach ($customers as $row) {
+                if (!is_array($row)) { continue; }
+                foreach ($row as $k => $v) {
+                    if (is_array($v) || is_object($v)) { $row[$k] = ''; }
+                    elseif ($v === null)               { $row[$k] = ''; }
+                    elseif (is_bool($v))               { $row[$k] = (int)$v; }
+                }
+                $sanitized[] = $row;
+            }
+        }
+
+        $nbCustomers        = (int)count($sanitized);
+        $nbCustomersLastDay = (int)(is_array($customersLastDay) ? count($customersLastDay) : 0);
+
+        $ajaxUrl = (string)$this->context->link->getAdminLink('AdminEspacePro', true, [], [
+            'ajax'   => 1,
+            'action' => 'changeCustomerGroup',
+        ]);
 
         $groupsSwitchable = [
             ['id_group' => (int)$this->getProticulierGroupId(), 'name' => $this->l('Proticulier')],
             ['id_group' => (int)$this->getProGroupId(),         'name' => $this->l('Professionnel')],
         ];
-        $this->context->smarty->assign([
-                                           'groupsSwitchable'      => $groupsSwitchable,
-                                           'id_group_pro'          => (int)$this->getProGroupId(),
-                                           'id_group_proticulier'  => (int)$this->getProticulierGroupId(),
-                                           'ajax_change_group_url' => self::$currentIndex.'&token='.$this->token,
-                                       ]);
 
-        // >>> RENDU DU TEMPLATE <<<
-        $output = $this->context->smarty->fetch(self::VIEWS_TPL . 'templates/customers.tpl');
-        $this->context->smarty->assign(['content' => $output]);
+        $counts        = (array)$this->getCountsByType();
+        $nbPro         = (int)($counts['nbPro'] ?? 0);
+        $nbProticulier = (int)($counts['nbProticulier'] ?? 0);
+
+        $editKbis = (string)$this->createHelperForm('submitKbisCkc_ep', $this->getConfigFormValues(), $this->getEditUserKbisForm());
+        $editRib  = (string)$this->createHelperForm('submitRibCkc_ep',  $this->getConfigFormValues(), $this->getEditUserRibForm());
+
+        $assign = [
+            'customers'              => $sanitized,
+            'customersLastDay'       => is_array($customersLastDay) ? $customersLastDay : [],
+            'nbCustomers'            => $nbCustomers,
+            'nbCustomersLastDay'     => $nbCustomersLastDay,
+            'nbPro'                  => $nbPro,
+            'nbProticulier'          => $nbProticulier,
+            'editkbis'               => $editKbis,
+            'editrib'                => $editRib,
+            'groupsSwitchable'       => $groupsSwitchable,
+            'id_group_pro'           => (int)$this->getProGroupId(),
+            'id_group_proticulier'   => (int)$this->getProticulierGroupId(),
+            'ajax_change_group_url'  => $ajaxUrl,
+        ];
+
+        // --- Log des types envoyés au tpl ---
+        $typeLines = [];
+        foreach ($assign as $k => $v) {
+            $typeLines[] = $k . '=' . (is_array($v) ? 'array(' . count($v) . ')' : gettype($v));
+        }
+        @file_put_contents($logFile, '[' . date('c') . "] assign types => " . implode(', ', $typeLines) . "\n", FILE_APPEND);
+
+        // --- Assign + rendu ---
+        $this->context->smarty->clearAssign(array_keys($assign));
+        $this->context->smarty->assign($assign);
+
+        try {
+            $output = $this->context->smarty->fetch($tplPath);
+            $this->context->smarty->assign(['content' => (string)$output]);
+        } catch (\Throwable $e) {
+            // On tente de retrouver le fichier compilé de customers.tpl et de dumper ~20 lignes autour de la ligne fautive.
+            $compiledHit = '';
+            $lineGuess   = 154; // valeur remontée par le stack trace
+            $snippet     = '';
+
+            if (is_dir($compileDir)) {
+                $rii = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($compileDir));
+                foreach ($rii as $file) {
+                    if (!$file->isFile()) continue;
+                    $fp = $file->getPathname();
+                    // cible le compiled de customers.tpl
+                    if (strpos($fp, 'file.customers.tpl.php') !== false) {
+                        $compiledHit = $fp;
+                        break;
+                    }
+                }
+            }
+
+            // Dump du code autour de la ligne suspecte
+            if ($compiledHit && is_readable($compiledHit)) {
+                $lines = @file($compiledHit, FILE_IGNORE_NEW_LINES);
+                if ($lines !== false) {
+                    $start = max(0, $lineGuess - 10);
+                    $end   = min(count($lines) - 1, $lineGuess + 10);
+                    $chunk = array_slice($lines, $start, $end - $start + 1, true);
+                    foreach ($chunk as $ln => $code) {
+                        $snippet .= sprintf("%06d: %s\n", $ln + 1, $code);
+                    }
+                }
+            }
+
+            @file_put_contents(
+                $logFile,
+                '[' . date('c') . "] FETCH ERROR: " . $e->getMessage() . "\ncompiled: " . $compiledHit .
+                "\n---- code around line " . $lineGuess . " ----\n" . $snippet .
+                "\n-----------------------------------\n",
+                FILE_APPEND
+            );
+
+            // Message BO clair
+            die(
+                '<pre style="white-space:pre-wrap;max-width:100%;font:12px/1.4 monospace">' .
+                "Template fetch FAILED: " . htmlspecialchars($e->getMessage()) . "\n\n" .
+                "Compiled file: " . htmlspecialchars($compiledHit ?: '[not found]') . "\n" .
+                "Log file: " . htmlspecialchars($logFile) . "\n" .
+                "→ Ouvre ce log dans le module pour voir le code exact autour de la ligne suspecte.\n" .
+                "</pre>"
+            );
+        }
+
         $this->display_footer = false;
-
         parent::display();
     }
 
