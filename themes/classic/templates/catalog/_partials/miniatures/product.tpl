@@ -152,6 +152,7 @@
                         <div class="product-info-custom-block-miniature-price-stars">
                             {block name='product_price_and_shipping'}
                                 {if $product.show_price}
+                                    {if Context::getContext()->shop->id != 2 OR (Context::getContext()->shop->id == 2 && Context::getContext()->customer->id)}
                                     <div class="product-price-and-shipping flex_cln">
                                         {*                                    {hook h='displayProductPriceBlock' product=$product type="before_price"}*}
 
@@ -178,6 +179,7 @@
 
                                         {*                                    {hook h='displayProductPriceBlock' product=$product type='weight'}*}
                                     </div>
+                                    {/if}
                                 {/if}
                             {/block}
 

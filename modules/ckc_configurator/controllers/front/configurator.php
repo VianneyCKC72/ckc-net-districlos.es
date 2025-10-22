@@ -236,7 +236,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                 $this->ajaxRender(json_encode([
                     "second"                                    => $this->getHtml('form.tpl'),
                     "third"                                     => $this->getHtml('options.tpl'),
-                    "fourth"                                    => $this->getHtml('services.tpl'),
+                    "fourth"                                    => Context::getcontext()->shop->id == 1 ? $this->getHtml('services.tpl') : '',
                     "heights"                                   => $this->data['heights'] ?? [],
                     "colors"                                    => $this->data['colors'] ?? [],
                     "poteaux"                                   => $this->data['poteaux'] ?? [],

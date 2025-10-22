@@ -348,36 +348,40 @@ $(document).ready(function () {
         $("#addToCartAlias").click();
     });
     $("#addToCartAlias").on('click', function (event) {
-        $(".options-form-service").submit();
+        if($(".fourth .configurator-fourth").length){
+            $(".options-form-service").submit();
+        } else {
+            $(".options-form").submit();
+        }
         event.preventDefault();
     });
 
-    /*    $third.on('submit', '.options-form', function (event) {
-            event.preventDefault();
+    $third.on('submit', '.options-form', function (event) {
+        event.preventDefault();
 
-            $loader.show();
+        $loader.show();
 
-            var grillage = {};
-            $.each($('.core-form').serializeArray(), function () {
-                grillage[this.name] = this.value;
-            });
+        var grillage = {};
+        $.each($('.core-form').serializeArray(), function () {
+            grillage[this.name] = this.value;
+        });
 
-            var options = {};
-            $.each($(this).serializeArray(), function () {
-                options[this.name] = this.value;
-            });
+        var options = {};
+        $.each($(this).serializeArray(), function () {
+            options[this.name] = this.value;
+        });
 
-            $.ajax({
-                url: window.location.href, method: "post", data: {
-                    ajax: true, addToCart: true, grillage: grillage, options: options,
-                }, dataType: 'json', success: function (response) {
-                    if (response.success) {
-                        window.location = '/panier?action=show';
-                    }
-                    $loader.hide();
+        $.ajax({
+            url: window.location.href, method: "post", data: {
+                ajax: true, addToCart: true, grillage: grillage, options: options,
+            }, dataType: 'json', success: function (response) {
+                if (response.success) {
+                    window.location = '/panier?action=show';
                 }
-            });
-        });*/
+                $loader.hide();
+            }
+        });
+    });
 
     $fourth.on('submit', '.options-form-service', function (event) {
         event.preventDefault();
