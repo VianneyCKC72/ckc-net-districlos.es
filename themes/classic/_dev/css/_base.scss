@@ -8630,6 +8630,9 @@ form
   -webkit-transition: 0.25s ease-out;
   transition: 0.25s ease-out;
 }
+.grecaptcha-badge {
+  visibility: hidden !important;
+}
 
 @media print {
   *,
