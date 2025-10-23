@@ -1,9 +1,14 @@
 {* Lien Espace PRO dans la barre d’icônes *}
 {if isset($pro.env) && $pro.env == 1}
     {* Tu es déjà sur le site PRO : bouton "Documents" *}
-    <a href="/content/395-guides-cloture" class="ico btn-espace-pro" rel="nofollow">
+    <a href="/guides-et-fiches-techniques-produits" class="ico btn-espace-pro" rel="nofollow">
         <img src="/themes/classic/assets/img/ico-espace-pro.svg" alt="Espace pro" width="20" height="19">
         <span class="text">Documents</span>
+    </a>
+{elseif !$logged}
+    <a href="{$pro.url_domain}" class="ico btn-espace-pro" rel="nofollow">
+        <img src="/themes/classic/assets/img/ico-espace-pro.svg" alt="Espace pro" width="20" height="19">
+        <span class="text">Espace Pro</span>
     </a>
 {/if}
 
