@@ -126,6 +126,28 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
   .margin-bottom-80 {
     margin-bottom: 80px;
   }
+  .product-miniature .product-price-and-shipping {
+    font-size: 25px;
+    @media (max-width: 768px) {
+      font-size: 18px;
+    }
+    font-weight: 700;
+    color:$black;
+  }
+  @media (max-width: 1341px) and (min-width: 768px) {
+    .product-miniature.js-product-miniature .product-info-custom-block-miniature .product-info-custom-block-miniature-price-stars {
+      .product-price-and-shipping {
+        font-size: 22px;
+      }
+    }
+  }
+  @media (max-width: 1100px) and (min-width: 768px) {
+    .product-miniature.js-product-miniature .product-info-custom-block-miniature .product-info-custom-block-miniature-price-stars {
+      .product-price-and-shipping {
+        font-size: 20px;
+      }
+    }
+  }
 }
 
 .registration-pro .custom-customer-pays {
