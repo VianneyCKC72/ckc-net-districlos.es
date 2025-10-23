@@ -541,31 +541,14 @@ class ckc_espacepro extends Module
                 $files = ['kbis', 'rib'];
                 foreach ($files as $fileKey) {
                     if (isset($_FILES[$fileKey]) && (int)$_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-                        $file = $_FILES[$fileKey];
-                        $allowed = ['application/pdf', 'image/jpeg', 'image/png'];
-                        if (!in_array($file['type'], $allowed, true)) {
-                            $helper->error[] = "Type de fichier non autorisé ($fileKey).";
-                            continue;
+                        $newFileName = $this->uploadProFile($_FILES[$fileKey], $fileKey);
+                        if ($newFileName) {
+                            if ($fileKey === 'kbis') {
+                                $row['fileUpload'] = pSQL($newFileName);
+                            } else {
+                                $row['rib'] = pSQL($newFileName);
+                            }
                         }
-                        $siretUse = $siret !== '' ? $siret : 'nosiret';
-                        $lastname = iconv('UTF-8', 'ASCII//TRANSLIT', str_replace(' ', '', Tools::strtolower($customer->lastname)));
-                        $newFileName = $siretUse . ($fileKey === 'rib' ? '-rib-' : '-kbis-') . $lastname . '.' . Tools::strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-
-                        $uploader = new UploaderCore();
-                        $newFile = $uploader->upload($file, $newFileName);
-                        if (!$newFile) {
-                            $helper->error[] = "Erreur d’upload pour $fileKey.";
-                            continue;
-                        }
-
-                        if ($fileKey === 'kbis') {
-                            $row['fileUpload'] = $newFileName;
-                        } else {
-                            $row['rib'] = $newFileName;
-                        }
-                    } else {
-                        // on gere plus le kbis donc à voir si on le remet plus tard
-//                        $helper->error[] = $helper->getUploadErrorMessage($_FILES[$fileKey]['error'] ?? UPLOAD_ERR_NO_FILE);
                     }
                 }
             }
@@ -666,6 +649,34 @@ class ckc_espacepro extends Module
             (isset($backLink) && Tools::urlBelongsToShop($backLink)) ? $backLink : '/'
         );
     }
+
+    protected function uploadProFile(array $file, string $prefix = '')
+    {
+        if (empty($file['tmp_name']) || $file['error'] !== UPLOAD_ERR_OK) {
+            return null;
+        }
+
+        $allowed = ['application/pdf', 'image/jpeg', 'image/png'];
+        if (!in_array($file['type'], $allowed, true)) {
+            return null;
+        }
+
+        $ext = Tools::strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $filename = uniqid($prefix . '-') . '.' . $ext;
+        $target = _PS_UPLOAD_DIR_ . 'pro_docs/';
+
+        if (!is_dir($target)) {
+            mkdir($target, 0755, true);
+        }
+
+        $path = $target . $filename;
+        if (move_uploaded_file($file['tmp_name'], $path)) {
+            return $filename;
+        }
+
+        return null;
+    }
+
 
     /** BO commandes : jointure groupe client */
     public function hookActionOrderGridQueryBuilderModifier(array $params)
