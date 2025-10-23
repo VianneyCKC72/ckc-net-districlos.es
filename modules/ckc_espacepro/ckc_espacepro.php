@@ -681,7 +681,7 @@ class ckc_espacepro extends Module
     }
 
     /** Bloc “magasin favori” */
-    public function hookDisplayFavoriteStore()
+    public function hookDisplayFavoriteStore($params)
     {
         $sql = 'SELECT sp.`id_cms_detail`
             FROM `' . _DB_PREFIX_ . 'ckcstorespresentation` sp
@@ -693,6 +693,7 @@ class ckc_espacepro extends Module
         if (!$favoriteStoreId) $favoriteStoreId = 11;
 
         $this->context->smarty->assign(compact('favoriteStoreId'));
+        $this->context->smarty->assign('sidebar', $params['sidebar']);
         return $this->fetch('module:ckc_espacepro/views/templates/front/favorite_store.tpl');
     }
 
