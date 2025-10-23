@@ -789,3 +789,38 @@ $bp-md: 768px;
     }
   }
 }
+#authentication.-pro .row.full-width,
+.-pro #block-reassurance-custom .row {
+  background: #026473;
+  left: 50%;
+  margin-left: -50vw;
+  position: relative;
+  width: 100vw;
+  .inside {
+    margin: 20px auto;
+    .cont-inside {
+      display: flex;
+      justify-content: space-around;
+      margin: 0 auto;
+      max-width: 100%;
+      padding-bottom: 0;
+      padding-top: 30px;
+      width:1200px;
+      .item {
+        background: #F2EEE9;
+        display: flex;
+        flex-direction: column;
+        min-height: 290px;
+        padding: 15px;
+        text-align: center;
+        width: 220px;
+        align-items: center;
+        gap: 15px;
+        border-radius: 5px;
+      }
+    }
+
+  }
+
+
+}
