@@ -1,5 +1,9 @@
 $eye-data: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23666' d='M12 4.5c5.5 0 9.7 4.3 10.7 7.3-1 3-5.2 7.3-10.7 7.3S2.3 14.8 1.3 11.8C2.3 8.8 6.5 4.5 12 4.5zm0 3a5 5 0 100 10 5 5 0 000-10z'/%3E%3Ccircle cx='12' cy='12' r='2.5' fill='%23666'/%3E%3C/svg%3E";
 $eyeoff-data: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23666' d='M2 3.3L3.3 2 22 20.7 20.7 22l-3.9-3.9A12.6 12.6 0 0112 19C6.5 19 2.3 14.7 1.3 11.7c.5-1.6 2.3-4.1 4.8-5.7L2 3.3zm9.7 6.1l2.9 2.9a5 5 0 01-2.9 2.9 5 5 0 010-5.8z'/%3E%3Cpath fill='%23666' d='M12 4.5c5.5 0 9.7 4.3 10.7 7.3-.6 1.8-2.5 4.2-5 5.8l-1.5-1.5c2.3-1.4 4-3.5 4.8-4.9-1-2-4.9-6.7-9-6.7-.9 0-1.8.1-2.6.4l1.4 1.4c.6-.1 1.2-.2 1.8-.2z'/%3E%3C/svg%3E";
+$radius-xl: 12px;
+$radius-pill: 999px;
+$shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
+
 .espace_pro,
 .-pro {
   @import "components-pro/_variables";
@@ -138,23 +142,66 @@ body.registration-pro {
   .btn-configurateur {
     background-color: $pro-color;
   }
-}
 
-.custom-file-upload {
-  background-color: $sand-color;
-  border: 1px solid transparent;
-  color: $black;
-  cursor: pointer;
-  display: inline-block;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 21px;
-  padding: 6px 12px;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  .block-register-espace-pro {
+    .form-group {
+      margin-bottom: 14px;
 
-  &:hover {
-    background-color: $sand-color;
+      &.lastfield {
+        margin-bottom: 0;
+      }
+    }
+
+    .form-label {
+      display: block;
+      margin: 0 0 6px;
+      font-weight: 600;
+      font-size: 14px;
+      color: $ink;
+    }
+
+    // Inputs
+    .form-control {
+      width: 100%;
+    }
+
+    // Padding et arrondis alignés à ton thème
+    .pad20 {
+      padding: 12px 14px;
+      border-radius: 8px;
+    }
+
+    // Zone upload (Kbis / RIB)
+    .file-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+
+      .custom-file-upload {
+          background-color: $sand-color;
+          border: 1px solid transparent;
+          color: $black;
+          cursor: pointer;
+          display: inline-block;
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 21px;
+          padding: 6px 12px;
+          transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+          border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+          &:hover {
+            background-color: $sand-color;
+          }
+        }
+
+      .file-chosen,
+      .js-file-name {
+        font-size: 13px;
+        color: $ink-60;
+      }
+    }
   }
 }
 
@@ -385,18 +432,7 @@ body#checkout.espace_pro section.checkout-step .step-number {
   z-index: 1;
 }
 
-$pro-orange: #ffa800;
-$pro-green: #3a9a3a;
-$pro-blue-50: #ecf3ff; // fond des inputs
-$ink: #1b1b1b;
-$ink-60: rgba(0, 0, 0, 0.6);
-$ink-75: rgba(0, 0, 0, 0.75);
-$white: #fff;
 
-$radius-xl: 12px;
-$radius-pill: 999px;
-
-$shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
 
 /* =========================
    Mixins
@@ -412,7 +448,7 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
   height: 52px;
   border: 0;
   border-radius: $radius-pill;
-  background: $pro-blue-50;
+  background: $gray;
   padding: 0 18px;
   font-size: 15px;
   outline: none;
@@ -541,7 +577,7 @@ $bp-md: 768px;
 
     .pro-link {
       text-decoration: underline;
-      color: $pro-green;
+      color: $secondary-color;
       font-size: 14px;
     }
   }
@@ -557,7 +593,7 @@ $bp-md: 768px;
     @include btn-base;
 
     &--primary {
-      background: $pro-orange;
+      background: $pro-color;
       color: $white;
 
       &:hover {
@@ -568,7 +604,7 @@ $bp-md: 768px;
     &--ghost {
       background: $white;
       color: #333;
-      border-color: $pro-orange;
+      border-color: $pro-color;
 
       &:hover {
         background: rgba(255, 168, 0, 0.08);
@@ -584,7 +620,7 @@ $bp-md: 768px;
 
   .pro-badge {
     display: inline-block;
-    background: $pro-orange;
+    background: $pro-color;
     color: $white;
     padding: 6px 12px;
     border-radius: $radius-pill;
@@ -654,7 +690,7 @@ $bp-md: 768px;
     padding-top: 8px;
 
     &__num {
-      background: $pro-orange;
+      background: $pro-color;
       color: $white;
       width: 42px;
       height: 42px;

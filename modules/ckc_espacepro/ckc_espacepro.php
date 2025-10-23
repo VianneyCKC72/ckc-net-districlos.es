@@ -23,7 +23,6 @@ class ckc_espacepro extends Module
         ],
     ];
 
-
     public function __construct()
     {
         $this->name = 'ckc_espacepro';
@@ -127,7 +126,6 @@ class ckc_espacepro extends Module
         }
     }
 
-
     protected function deleteTabs()
     {
         foreach ($this->tabs as $t) {
@@ -137,7 +135,6 @@ class ckc_espacepro extends Module
             }
         }
     }
-
 
     private function buildSsoUrlForShop(int $targetShopId, int $idCustomer, string $back = 'my-account'): string
     {
@@ -226,8 +223,6 @@ class ckc_espacepro extends Module
         return rtrim($base, '/') . '/connexion?' . $qs;
     }
 
-
-
     /** Debug ON si ?ckc_debug=1 ou si config CKC_EP_DEBUG=1 */
     private function isDebug(): bool
     {
@@ -311,6 +306,8 @@ class ckc_espacepro extends Module
     /** Enfile les JS/CSS côté front */
     public function hookActionFrontControllerSetMedia()
     {
+
+
         $this->context->controller->registerJavascript(
             'ckc-espacepro-auth',
             'modules/' . $this->name . '/views/js/authentification.js',
@@ -448,6 +445,8 @@ class ckc_espacepro extends Module
     /** Formulaire d’inscription (version EP si ?ep=1) */
     public function hookDisplayCustomerAccountForm($params)
     {
+
+
         if ((int)Configuration::get('CAPTCHA_ENABLE_ACCOUNT') === 1) {
             $themes = [0 => 'light', 1 => 'dark'];
             $this->context->smarty->assign([
@@ -458,7 +457,12 @@ class ckc_espacepro extends Module
             ]);
         }
 
-        if ((int)Tools::getValue('ep', 0) === 1) {
+        $isProShop = ((int)$this->context->shop->id === 2) || $this->isProEnvironment();
+
+
+
+        if ($isProShop) {
+
             $groups = Group::getGroups($this->context->language->id);
             unset($groups[0], $groups[1], $groups[2]);
 
@@ -481,8 +485,6 @@ class ckc_espacepro extends Module
     /** Création client : sur shop PRO => groupe “Proticulier” direct */
     public function hookActionCustomerAccountAdd($params)
     {
-
-
         $helper = new HelperEspacePro();
         $backLink = Tools::getValue('back');
         $shopId = (int)$this->context->shop->id;
@@ -515,7 +517,8 @@ class ckc_espacepro extends Module
         }
 
         $host = (string)$_SERVER['SERVER_NAME'];
-        $mode_local = (str_contains($host, '.local') || str_contains($host, 'vianney'));
+        $mode_local = (str_contains($host, '.local'));
+
 
         if ($isProShop) {
             $siret = Tools::getValue('customer-siret', '');
@@ -531,6 +534,9 @@ class ckc_espacepro extends Module
             $naf = Tools::getValue('naf', '');
 
             $row = [];
+
+
+
             if ((int)Configuration::get('CKC_FORM_MIN_EP') === 0) {
                 $files = ['kbis', 'rib'];
                 foreach ($files as $fileKey) {
@@ -558,7 +564,8 @@ class ckc_espacepro extends Module
                             $row['rib'] = $newFileName;
                         }
                     } else {
-                        $helper->error[] = $helper->getUploadErrorMessage($_FILES[$fileKey]['error'] ?? UPLOAD_ERR_NO_FILE);
+                        // on gere plus le kbis donc à voir si on le remet plus tard
+//                        $helper->error[] = $helper->getUploadErrorMessage($_FILES[$fileKey]['error'] ?? UPLOAD_ERR_NO_FILE);
                     }
                 }
             }
