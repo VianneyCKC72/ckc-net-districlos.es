@@ -2,15 +2,15 @@
     <div class="customfilterselector-question">Quel type de clôture recherchez-vous ?</div>
     <div class="customfilterselector-options-container">
         <div class="customfilterselector-option-container">
-            <img src="https://liana.cloture-discount.fr/img/custom_filtres_465.png" alt="option Clôture rigide">
+            <img src="/modules/ckccustomfilterselector/views/img/custom_filtres_465.png" alt="option Clôture rigide">
             <div class="customfilterselector-option-text">Clôture rigide</div>
         </div>
         <div class="customfilterselector-option-container">
-            <img src="https://liana.cloture-discount.fr/img/custom_filtres_465.png" alt="option Clôture souple">
+            <img src="/modules/ckccustomfilterselector/views/img/custom_filtres_465.png" alt="option Clôture souple">
             <div class="customfilterselector-option-text">Clôture souple</div>
         </div>
         <div class="customfilterselector-option-container">
-            <img src="https://liana.cloture-discount.fr/img/custom_filtres_lapin.png" alt="option Clôture pour animaux">
+            <img src="/modules/ckccustomfilterselector/views/img/custom_filtres_lapin.png" alt="option Clôture pour animaux">
             <div class="customfilterselector-option-text">Clôture pour animaux</div>
         </div>
     </div>
