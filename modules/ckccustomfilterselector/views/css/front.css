@@ -102,7 +102,7 @@
     background-color: #ffcf79;
 }
 .customfilterselector-validate-option:not([disabled=disabled]):hover{
-    background-color: #026473;
+    filter: brightness(65%);
     transition: background-color 0.3s ease-out;
 }
 #customfilterselector.customfilterselector-hauteur{

@@ -148,8 +148,21 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
       }
     }
   }
-}
+  #inscription.btn.btn-secondary:hover,
+  .pro-btn.pro-btn--primary[name=submitLogin]:hover,
+  .product-quantity .add .btn-secondary.add-to-cart:hover,
+  #payment-confirmation button.btn[type=submit]:hover{
+    filter: brightness(65%);
+  }
 
+  .product-quantity .add .btn-secondary.add-to-cart:hover{
+    background-color: $pro-color;
+  }
+}
+body#checkout.-pro #payment-confirmation .ps-shown-by-js button.btn[type=submit],
+body#checkout.-pro #payment-confirmation .ps-shown-by-js button.btn.disabled[type=submit]{
+  background-color: $pro-color;
+}
 .registration-pro .custom-customer-pays {
   padding-right: 15px;
 }
