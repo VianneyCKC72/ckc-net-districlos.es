@@ -442,10 +442,9 @@ class ckc_espacepro extends Module
         }
     }
 
-    /** Formulaire d’inscription (version EP si ?ep=1) */
+    /** Formulaire d’inscription */
     public function hookDisplayCustomerAccountForm($params)
     {
-
 
         if ((int)Configuration::get('CAPTCHA_ENABLE_ACCOUNT') === 1) {
             $themes = [0 => 'light', 1 => 'dark'];
@@ -475,6 +474,10 @@ class ckc_espacepro extends Module
                 'code_naf' => $this->getCodeNaf(),
                 'ckc_form_minimal' => (int)Configuration::get('CKC_FORM_MIN_EP'),
             ]);
+//
+//            dump($params['fields_value']);
+//            dump($this->context->customer);
+//            exit;
 
             return $this->display(__FILE__, 'hookDisplayCustomerAccountForm.tpl');
         }
