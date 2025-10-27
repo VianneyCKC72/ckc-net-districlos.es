@@ -522,6 +522,7 @@ $(document).ready(function () {
         $('#ever_fancy_mark').remove()
         $('.banner-quick-view').remove()
         $('.breadcrumb').remove()
+        $('.banner__newsletter').remove()
         $('body#product').css('overflow-x','hidden')
 
         $(document).on('ajaxComplete', function (event, xhr, settings) {
