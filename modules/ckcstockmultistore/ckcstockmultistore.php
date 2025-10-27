@@ -149,8 +149,8 @@ class Ckcstockmultistore extends Module
             $this->registerHook('actionCustomerGridQueryBuilderModifier') &&
             $this->registerHook('actionCustomerThreadGridDefinitionModifier') &&
             $this->registerHook('actionCustomerThreadGridQueryBuilderModifier') &&
-            $this->registerHook('actionAdminCustomerThreadsListingFieldsModifier') &&
-            $this->registerHook('actionAdminCustomerThreadsListingResultsModifier');
+            $this->registerHook('actionAdminCustomerThreadListingFieldsModifier') &&
+            $this->registerHook('actionAdminCustomerThreadListingResultsModifier');
     }
 
     public function uninstall()
@@ -1175,7 +1175,7 @@ class Ckcstockmultistore extends Module
         }
     }
 
-    public function hookActionAdminCustomerThreadsListingFieldsModifier(array $params)
+    public function hookActionAdminCustomerThreadListingFieldsModifier(array $params)
     {
         // Ajoute la colonne visible dans le listing legacy
         $params['fields']['ckc_store_name'] = [
@@ -1221,7 +1221,7 @@ class Ckcstockmultistore extends Module
     /**
      * Gère la recherche/filtre sur notre colonne et, si besoin, ordre.
      */
-    public function hookActionAdminCustomerThreadsListingResultsModifier(array $params)
+    public function hookActionAdminCustomerThreadListingResultsModifier(array $params)
     {
         // Si l’admin tape un terme dans la recherche globale ou colonne,
         // Presta convertit ça en WHERE LIKE sur les champs connus.
