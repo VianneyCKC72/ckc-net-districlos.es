@@ -146,7 +146,9 @@ class Ckcstockmultistore extends Module
             $this->registerHook('actionAfterUpdateEmployeeFormHandler') &&
             $this->registerHook('displayAdminCustomers') &&
             $this->registerHook('actionCustomerGridDefinitionModifier') &&
-            $this->registerHook('actionCustomerGridQueryBuilderModifier');
+            $this->registerHook('actionCustomerGridQueryBuilderModifier') &&
+            $this->registerHook('actionCustomerThreadsGridDefinitionModifier') &&
+            $this->registerHook('actionCustomerThreadsGridQueryBuilderModifier');
     }
 
     public function uninstall()
@@ -1024,6 +1026,141 @@ class Ckcstockmultistore extends Module
         // 4) Appliquer le filtre multiple saisi
         $f = $filters->getFilters();
 
+        if (!empty($f['ckc_stores'])) {
+            $selected = array_values(array_intersect(array_map('intval', (array)$f['ckc_stores']), $allowed));
+            if (!empty($selected)) {
+                $qb->andWhere($aliasOrd.'.id_store IN (:selectedStores)');
+                $qb->setParameter('selectedStores', $selected, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+
+                $qbCount->andWhere($aliasOrd.'.id_store IN (:selectedStores)');
+                $qbCount->setParameter('selectedStores', $selected, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+            }
+        }
+    }
+
+    public function hookActionCustomerThreadsGridDefinitionModifier(array $params)
+    {
+        $definition = $params['definition'];
+
+        // 1) Colonne "Boutique" si absente
+        $columns = $definition->getColumns();
+        $exists = false;
+        foreach ($columns as $col) {
+            if (method_exists($col, 'getId') && $col->getId() === 'ckc_store_name') {
+                $exists = true; break;
+            }
+        }
+        if (!$exists) {
+            // Place après l'email si présent, sinon en fin
+            $after = $columns->get('email') ? 'email' : null;
+
+            $col = (new DataColumn('ckc_store_name'))
+                ->setName($this->l('Boutique'))
+                ->setOptions(['field' => 'ckc_store_name']);
+
+            if ($after) {
+                $columns->addAfter($after, $col);
+            } else {
+                $columns->add($col);
+            }
+        }
+
+        // 2) Prépare les choix de filtre selon les droits boutique de l’employé
+        $employeeId = (int) $this->context->employee->id;
+        $allowed = $this->employeeStoreIds($employeeId);
+
+        $choices = [];
+        if (!empty($allowed)) {
+            $rows = \Db::getInstance()->executeS('
+                SELECT id_store, name
+                FROM '._DB_PREFIX_.'ckcstockstores_stores
+                WHERE id_store IN ('.implode(',', array_map('intval', $allowed)).')
+                ORDER BY name ASC
+            ');
+            foreach ($rows as $r) {
+                // FormType Choice attend "label" => value
+                $choices[$r['name']] = (int) $r['id_store'];
+            }
+        }
+
+        // 3) Filtre multi-sélection si absent
+        $filters = $definition->getFilters();
+        $has = false;
+        foreach ($filters as $f) {
+            if (method_exists($f, 'getName') && $f->getName() === 'ckc_stores') { $has = true; break; }
+        }
+        if (!$has) {
+            $filters->add(
+                (new Filter('ckc_stores', ChoiceType::class))
+                    ->setTypeOptions([
+                        'choices' => $choices,
+                        'multiple' => true,
+                        'expanded' => false,
+                        'required' => false,
+                        'choice_translation_domain' => false,
+                    ])
+                    ->setAssociatedColumn('ckc_store_name')
+            );
+        }
+    }
+
+    /**
+     * Jointures + sécurité + filtre pour exposer "ckc_store_name"
+     * sur la base de la DERNIÈRE commande du client lié au thread.
+     */
+    public function hookActionCustomerThreadsGridQueryBuilderModifier(array $params)
+    {
+        $qb      = $params['search_query_builder'];
+        $qbCount = $params['count_query_builder'];
+        $filters = $params['search_criteria'];
+
+        // Droits boutique
+        $allowed = $this->employeeStoreIds((int)$this->context->employee->id);
+
+        if (empty($allowed)) {
+            // Aucun droit => pas de threads visibles
+            $qb->andWhere('1 = 0');
+            $qbCount->andWhere('1 = 0');
+            return;
+        }
+
+        // Aliases
+        // Par défaut, le grid "customer_threads" aliasse la table principale en "ct".
+        $aliasThread = 'ct';
+        $aliasOrd    = 'o_last';
+        $aliasStore  = 'ss';
+
+        // Sous-requête : dernière commande du client du thread
+        // Attention : customer_thread contient id_customer (et parfois id_order).
+        // On se base sur id_customer pour rester robuste.
+        $sub = '(
+            SELECT o2.id_order
+            FROM '._DB_PREFIX_.'orders o2
+            WHERE o2.id_customer = '.$aliasThread.'.id_customer
+            ORDER BY o2.date_add DESC
+            LIMIT 1
+        )';
+
+        // LEFT JOIN orders ON dernière commande
+        $qb->leftJoin($aliasThread, _DB_PREFIX_.'orders', $aliasOrd, $aliasOrd.'.id_order = '.$sub);
+        $qbCount->leftJoin($aliasThread, _DB_PREFIX_.'orders', $aliasOrd, $aliasOrd.'.id_order = '.$sub);
+
+        // LEFT JOIN vers la table des boutiques (ckcstockstores_stores)
+        $qb->leftJoin($aliasOrd, _DB_PREFIX_.'ckcstockstores_stores', $aliasStore, $aliasStore.'.id_store = '.$aliasOrd.'.id_store');
+        $qbCount->leftJoin($aliasOrd, _DB_PREFIX_.'ckcstockstores_stores', $aliasStore, $aliasStore.'.id_store = '.$aliasOrd.'.id_store');
+
+        // Exposer le SELECT pour la colonne
+        $qb->addSelect($aliasStore.'.name AS ckc_store_name');
+
+        // Sécurité : limiter aux boutiques autorisées (ou threads dont le client n'a jamais commandé)
+        $qb->andWhere('('.$aliasOrd.'.id_store IS NULL OR '.$aliasOrd.'.id_store IN (:allowedStores))');
+        $qb->setParameter('allowedStores', $allowed, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+
+        $qbCount->andWhere('('.$aliasOrd.'.id_store IS NULL OR '.$aliasOrd.'.id_store IN (:allowedStores))');
+        $qbCount->setParameter('allowedStores', $allowed, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
+
+        // Appliquer le filtre multi-boutiques s'il est saisi
+        $f = $filters->getFilters();
         if (!empty($f['ckc_stores'])) {
             $selected = array_values(array_intersect(array_map('intval', (array)$f['ckc_stores']), $allowed));
             if (!empty($selected)) {
