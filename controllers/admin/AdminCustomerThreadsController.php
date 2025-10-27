@@ -132,6 +132,20 @@ class AdminCustomerThreadsControllerCore extends AdminController
             ],
         ];
 
+        $this->fields_list['ckc_store_id'] = [
+            'title'          => $this->trans('Boutique', [], 'Admin.Global'),
+            'type'           => 'select',
+            'list'           => $this->getCkcStoresChoicesForFilter(), // [id => name]
+            // on laisse le filtre "apparaître", mais on neutralisera le WHERE auto plus bas
+            'filter_key'     => 'ckc_store_id',
+            'havingFilter'   => false,
+            'tmpTableFilter' => true,
+            'filter_type'    => 'int',
+            'orderby'        => false,
+            'align'          => 'text-left',
+            'callback'       => 'renderCkcStoreName', // utilise ckc_store_name du SELECT
+        ];
+
         $this->bulk_actions = [
             'delete' => [
                 'text' => $this->trans('Delete selected', [], 'Admin.Actions'),
@@ -273,6 +287,77 @@ class AdminCustomerThreadsControllerCore extends AdminController
         $this->_group = 'GROUP BY cm.id_customer_thread';
         $this->_orderBy = 'id_customer_thread';
         $this->_orderWay = 'DESC';
+
+        // CKC >>> expose la boutique de la DERNIÈRE commande du client + sécurité + filtre robuste
+
+// Sous-requête: dernière commande pour a.id_customer
+        $__ckc_sub_last_order = '(
+    SELECT o2.id_order
+    FROM ' . _DB_PREFIX_ . 'orders o2
+    WHERE o2.id_customer = a.id_customer
+    ORDER BY o2.date_add DESC
+    LIMIT 1
+)';
+
+// SELECT: id_store (pour filtre visuel) + nom (affichage)
+        $this->_select .= ',
+    o_last.id_store AS ckc_store_id,
+    ss.name         AS ckc_store_name
+';
+
+// JOINS: orders (dernière) + table boutique
+        $this->_join .= '
+    LEFT JOIN ' . _DB_PREFIX_ . 'orders o_last
+        ON o_last.id_order = ' . $__ckc_sub_last_order . '
+    LEFT JOIN ' . _DB_PREFIX_ . 'ckcstockstores_stores ss
+        ON ss.id_store = o_last.id_store
+';
+
+// SÉCURITÉ: limiter aux boutiques autorisées via SOUS-REQUÊTE (indépendant des alias)
+        $__ckc_allowed = $this->getCkcAllowedStoreIdsForEmployee((int)$this->context->employee->id);
+        if ($__ckc_allowed !== null && !empty($__ckc_allowed)) {
+            $ids = implode(',', array_map('intval', $__ckc_allowed));
+            $__ckc_last_store_sub = '(
+        SELECT o3.id_store
+        FROM ' . _DB_PREFIX_ . 'orders o3
+        WHERE o3.id_customer = a.id_customer
+        ORDER BY o3.date_add DESC
+        LIMIT 1
+    )';
+            // Autoriser: pas de commande OU dernière commande dans la whitelist
+            $this->_where .= ' AND (' . $__ckc_last_store_sub . ' IS NULL OR ' . $__ckc_last_store_sub . ' IN (' . $ids . ')) ';
+        } elseif ($__ckc_allowed === null) {
+            // Politique: null => aucun droit => rien afficher
+            $this->_where .= ' AND 1=0 ';
+        }
+
+// LIRE le filtre utilisateur (clé de HelperList)
+        $__ckc_param = $this->table . 'Filter_ckc_store_id'; // "customer_threadFilter_ckc_store_id"
+        $__ckc_selected = (int)Tools::getValue($__ckc_param, 0);
+
+// NEUTRALISER toute occurrence auto de "ckc_store_id" dans WHERE/HAVING générés par le core
+        foreach (['_filter', '_where', '_having'] as $__p) {
+            if (!empty($this->{$__p})) {
+                $this->{$__p} = preg_replace(
+                    '/\sAND\s+`?ckc_store_id`?\s*(=|IN)\s*(\([^)]+\)|\'?\d+\'?)/i',
+                    '',
+                    $this->{$__p}
+                );
+            }
+        }
+
+// APPLIQUER NOTRE filtre robuste si un ID est choisi
+        if ($__ckc_selected > 0) {
+            $__ckc_last_store_sub_filter = '(
+        SELECT o4.id_store
+        FROM ' . _DB_PREFIX_ . 'orders o4
+        WHERE o4.id_customer = a.id_customer
+        ORDER BY o4.date_add DESC
+        LIMIT 1
+    )';
+            $this->_where .= ' AND ' . $__ckc_last_store_sub_filter . ' = ' . (int)$__ckc_selected . ' ';
+        }
+// CKC <<<
 
         $contacts = CustomerThread::getContacts();
 
@@ -1223,4 +1308,61 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
         return 'utf-8';
     }
+
+    // CKC >>> helpers Boutique
+
+    public function renderCkcStoreName($value, $row)
+    {
+        return !empty($row['ckc_store_name']) ? $row['ckc_store_name'] : '-';
+    }
+
+    /**
+     * null => aucun droit (bloque tout)
+     * []   => tous droits (aucune restriction)
+     * [x,y]=> liste d'IDs autorisés
+     */
+    protected function getCkcAllowedStoreIdsForEmployee(int $employeeId): ?array
+    {
+        $rows = Db::getInstance()->executeS('
+        SELECT id_store
+        FROM ' . _DB_PREFIX_ . 'ckcstockstores_employee_store
+        WHERE id_employee=' . (int)$employeeId
+        );
+
+        if ($rows === false) {
+            return []; // tolérant: pas de restriction si table absente
+        }
+
+        $ids = array_map('intval', array_column($rows, 'id_store'));
+
+        // si tu veux "aucun droit par défaut", remplace la ligne suivante par: return ($ids ? $ids : null);
+        return $ids; // [] => tous droits ; [..] => restreint
+    }
+
+    protected function getCkcStoresChoicesForFilter(): array
+    {
+        $allowed = $this->getCkcAllowedStoreIdsForEmployee((int)$this->context->employee->id);
+
+        $where = '';
+        if ($allowed !== null && !empty($allowed)) {
+            $where = ' WHERE id_store IN (' . implode(',', array_map('intval', $allowed)) . ') ';
+        }
+        // $allowed === null => aucun droit: on peut retourner un select vide (le WHERE 1=0 s’applique)
+        // $allowed === []    => tous droits: pas de WHERE, on liste tout
+
+        $rows = Db::getInstance()->executeS('
+        SELECT id_store, name
+        FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores
+        ' . $where . '
+        ORDER BY name ASC
+    ');
+
+        $choices = [];
+        foreach ($rows ?: [] as $r) {
+            $choices[(int)$r['id_store']] = $r['name']; // [value => label]
+        }
+
+        return $choices;
+    }
+    // CKC <<<
 }
