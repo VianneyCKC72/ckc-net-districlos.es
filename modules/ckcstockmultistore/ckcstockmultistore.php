@@ -148,7 +148,9 @@ class Ckcstockmultistore extends Module
             $this->registerHook('actionCustomerGridDefinitionModifier') &&
             $this->registerHook('actionCustomerGridQueryBuilderModifier') &&
             $this->registerHook('actionCustomerThreadGridDefinitionModifier') &&
-            $this->registerHook('actionCustomerThreadGridQueryBuilderModifier');
+            $this->registerHook('actionCustomerThreadGridQueryBuilderModifier') &&
+            $this->registerHook('actionAdminCustomerThreadsListingFieldsModifier') &&
+            $this->registerHook('actionAdminCustomerThreadsListingResultsModifier');
     }
 
     public function uninstall()
