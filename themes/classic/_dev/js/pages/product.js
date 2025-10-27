@@ -510,6 +510,7 @@ $(document).ready(function () {
     const modalParam = urlParams.get('modal');
     if (modalParam === '1') {
         $('#tmcmsbannerblock').remove()
+        $('#ckcpromobarre').remove()
         $('#header').remove()
         $('.promo_banner').remove()
         $('.buttonProduct').remove()
@@ -519,6 +520,8 @@ $(document).ready(function () {
         $('.prix_juste_product').remove()
         $('#yourgpt_root').remove()
         $('#ever_fancy_mark').remove()
+        $('.banner-quick-view').remove()
+        $('.breadcrumb').remove()
         $('body#product').css('overflow-x','hidden')
 
         $(document).on('ajaxComplete', function (event, xhr, settings) {
