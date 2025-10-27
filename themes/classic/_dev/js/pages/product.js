@@ -523,6 +523,8 @@ $(document).ready(function () {
         $('.banner-quick-view').remove()
         $('.breadcrumb').remove()
         $('.banner__newsletter').remove()
+        $('.featured-products').remove()
+        $('#multiAccessoriesTab').remove()
         $('body#product').css('overflow-x','hidden')
 
         $(document).on('ajaxComplete', function (event, xhr, settings) {
