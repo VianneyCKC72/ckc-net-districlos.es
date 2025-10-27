@@ -31,7 +31,7 @@ class StockManager extends Module
         $seuilOk = true;
         $seuil = 0;
         foreach ($seuilCategories as $seuilCategory) {
-            if (isset($seuilCategory['category_id']) && $seuilCategory['category_id'] == $product->id_category_default) {
+            if (isset($seuilCategory['id_category']) && $seuilCategory['id_category'] == $product->id_category_default) {
                 if ($quantity < $seuilCategory['seuil']) {
                     $seuilOk = false;
                 }
