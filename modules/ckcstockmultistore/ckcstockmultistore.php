@@ -147,8 +147,8 @@ class Ckcstockmultistore extends Module
             $this->registerHook('displayAdminCustomers') &&
             $this->registerHook('actionCustomerGridDefinitionModifier') &&
             $this->registerHook('actionCustomerGridQueryBuilderModifier') &&
-            $this->registerHook('actionCustomerThreadsGridDefinitionModifier') &&
-            $this->registerHook('actionCustomerThreadsGridQueryBuilderModifier');
+            $this->registerHook('actionCustomerThreadGridDefinitionModifier') &&
+            $this->registerHook('actionCustomerThreadGridQueryBuilderModifier');
     }
 
     public function uninstall()
@@ -1038,7 +1038,7 @@ class Ckcstockmultistore extends Module
         }
     }
 
-    public function hookActionCustomerThreadsGridDefinitionModifier(array $params)
+    public function hookActionCustomerThreadGridDefinitionModifier(array $params)
     {
         $definition = $params['definition'];
 
@@ -1108,7 +1108,7 @@ class Ckcstockmultistore extends Module
      * Jointures + sécurité + filtre pour exposer "ckc_store_name"
      * sur la base de la DERNIÈRE commande du client lié au thread.
      */
-    public function hookActionCustomerThreadsGridQueryBuilderModifier(array $params)
+    public function hookActionCustomerThreadGridQueryBuilderModifier(array $params)
     {
         $qb      = $params['search_query_builder'];
         $qbCount = $params['count_query_builder'];
