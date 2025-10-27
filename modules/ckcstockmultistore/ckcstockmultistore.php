@@ -1172,4 +1172,72 @@ class Ckcstockmultistore extends Module
             }
         }
     }
+
+    public function hookActionAdminCustomerThreadsListingFieldsModifier(array $params)
+    {
+        // Ajoute la colonne visible dans le listing legacy
+        $params['fields']['ckc_store_name'] = [
+            'title' => $this->l('Boutique'),
+            'align' => 'text-left',
+            'orderby' => false,
+            'search' => true, // on gère le filtre dans ResultsModifier
+            'remove_onclick' => true,
+        ];
+
+        // Prépare les morceaux SQL
+        $sqlSelect   =& $params['sql_select'];
+        $sqlTable    =& $params['sql_table'];
+        $sqlWhere    =& $params['sql_where'];
+
+        $employeeId = (int) $this->context->employee->id;
+        $allowed = $this->employeeStoreIds($employeeId); // [] = tout autorisé
+
+        // Sous-requête: dernière commande pour ct.id_customer
+        $sub = '(
+        SELECT o2.id_order
+        FROM '._DB_PREFIX_.'orders o2
+        WHERE o2.id_customer = a.id_customer
+        ORDER BY o2.date_add DESC
+        LIMIT 1
+    )';
+
+        // Aliases
+        $aliasOrd = 'o_last';
+        $aliasSto = 'ss';
+
+        $sqlSelect[] = " $aliasSto.name AS ckc_store_name ";
+        $sqlTable[]  = ' LEFT JOIN '._DB_PREFIX_.'orders '.$aliasOrd.' ON '.$aliasOrd.'.id_order = '.$sub;
+        $sqlTable[]  = ' LEFT JOIN '._DB_PREFIX_.'ckcstockstores_stores '.$aliasSto.' ON '.$aliasSto.'.id_store = '.$aliasOrd.'.id_store ';
+
+        if (!empty($allowed)) {
+            // Sécurité: limiter aux boutiques autorisées, ou threads sans commande
+            $ids = implode(',', array_map('intval', $allowed));
+            $sqlWhere[] = " (".$aliasOrd.".id_store IS NULL OR ".$aliasOrd.".id_store IN (".$ids.")) ";
+        }
+    }
+
+    /**
+     * Gère la recherche/filtre sur notre colonne et, si besoin, ordre.
+     */
+    public function hookActionAdminCustomerThreadsListingResultsModifier(array $params)
+    {
+        // Si l’admin tape un terme dans la recherche globale ou colonne,
+        // Presta convertit ça en WHERE LIKE sur les champs connus.
+        // On ajoute un WHERE pour ckc_store_name si demandé.
+        $sqlWhere =& $params['sql_where'];
+
+        // Récupère le filtre saisi pour notre colonne (si présent)
+        $filters = Tools::getAllValues();
+        $filterValue = null;
+
+        // Selon le thème BO, la clé peut varier, on couvre les cas communs :
+        foreach (['ckc_store_name', 'filter_ckc_store_name'] as $k) {
+            if (!empty($filters[$k])) { $filterValue = trim($filters[$k]); break; }
+        }
+
+        if ($filterValue !== null && $filterValue !== '') {
+            $escaped = pSQL($filterValue);
+            $sqlWhere[] = " ss.name LIKE '%$escaped%' ";
+        }
+    }
 }
