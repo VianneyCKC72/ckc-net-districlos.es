@@ -506,4 +506,32 @@ $(document).ready(function () {
         });
     }
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const modalParam = urlParams.get('modal');
+    if (modalParam === '1') {
+        $('#tmcmsbannerblock').remove()
+        $('#header').remove()
+        $('.promo_banner').remove()
+        $('.buttonProduct').remove()
+        $('.prix_juste').remove()
+        $('#footer').remove()
+        $('.desc_container').remove()
+        $('.prix_juste_product').remove()
+        $('#yourgpt_root').remove()
+        $('#ever_fancy_mark').remove()
+        $('body#product').css('overflow-x','hidden')
+
+        $(document).on('ajaxComplete', function (event, xhr, settings) {
+            if (settings.url.includes('panier')) {
+                window.parent.document.querySelector('.layer_accessories_overlay').style.display = 'none'
+                window.parent.document.getElementById('layer_accessory_customization').style.display = 'none'
+                var randomid = urlParams.get('randomid')
+                window.parent.document
+                    .querySelector('.accessory_price[data-randomid="' + randomid + '"]')
+                    ?.insertAdjacentHTML('afterbegin', '<span style="color: #79c046;font-weight: normal;font-size: 15px;"><i class="material-icons"></i> Accessoire ajouté au panier</span>');
+            }
+        });
+    }
+
+
 });
