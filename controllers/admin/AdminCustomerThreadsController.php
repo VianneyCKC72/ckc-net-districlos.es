@@ -136,10 +136,11 @@ class AdminCustomerThreadsControllerCore extends AdminController
             'title'          => $this->trans('Boutique', [], 'Admin.Global'),
             'type'           => 'select',
             'list'           => $this->getCkcStoresChoicesForFilter(),
-            'filter_key'     => 'ckc_store_id',
+            'filter_key'      => 'ckc_store_id',
             'havingFilter'   => false,
+            'multiple'       => true,
             'tmpTableFilter' => true,
-            'filter_type'    => 'int',
+            'filter_type'     => 'int',
             'orderby'        => false,
             'align'          => 'text-left',
             'callback'       => 'renderCkcStoreName',
@@ -347,56 +348,6 @@ class AdminCustomerThreadsControllerCore extends AdminController
             )';
             $this->_where .= ' AND ' . $__ckc_last_store_sub_filter . ' = ' . (int)$__ckc_selected . ' ';
         }
-
-        $choices = $this->getCkcStoresChoicesForFilter();
-
-// on lit ckc_stores[] (soumis par notre formulaire custom)
-        $selectedMulti = array_filter(array_map('intval', (array)Tools::getValue('ckc_stores', [])));
-
-// fallback: si vide, on relit depuis le cookie pour pré-sélection
-        $cookieKeyMulti = 'ckc_stores';
-        if (!$selectedMulti && !empty($this->context->cookie->$cookieKeyMulti)) {
-            $fromCookie = @json_decode($this->context->cookie->$cookieKeyMulti, true);
-            if (is_array($fromCookie)) {
-                $selectedMulti = array_filter(array_map('intval', $fromCookie));
-            }
-        }
-
-// NEUTRALISER toute occurrence auto de "ckc_store_id"
-        foreach (['_filter', '_where', '_having'] as $__p) {
-            if (!empty($this->{$__p})) {
-                $this->{$__p} = preg_replace(
-                    '/\sAND\s+`?ckc_store_id`?\s*(=|IN)\s*(\([^)]+\)|\'?\d+\'?)/i',
-                    '',
-                    $this->{$__p}
-                );
-            }
-        }
-
-// APPLIQUER NOTRE filtre robuste (multi)
-        if (!empty($selectedMulti)) {
-            // intersection avec les boutiques autorisées (si restreintes)
-            if ($__ckc_allowed !== null && !empty($__ckc_allowed)) {
-                $selectedMulti = array_values(array_intersect($selectedMulti, array_map('intval', $__ckc_allowed)));
-            }
-            if (!empty($selectedMulti)) {
-                $idsSel = implode(',', array_map('intval', $selectedMulti));
-                $__ckc_last_store_sub_filter = '(
-            SELECT o4.id_store
-            FROM ' . _DB_PREFIX_ . 'orders o4
-            WHERE o4.id_customer = a.id_customer
-            ORDER BY o4.date_add DESC
-            LIMIT 1
-        )';
-                $this->_where .= ' AND ' . $__ckc_last_store_sub_filter . ' IN (' . $idsSel . ') ';
-                // persiste la sélection pour l’UX
-                $this->context->cookie->$cookieKeyMulti = json_encode(array_values($selectedMulti));
-            }
-        }
-
-// Injecte le sélecteur MULTI au-dessus de la liste et masque le filtre natif de la colonne
-        $this->content = $this->renderCkcMultiStoreFilter($choices, $selectedMulti) . $this->content;
-
         // CKC <<<
 
         $contacts = CustomerThread::getContacts();
@@ -419,55 +370,6 @@ class AdminCustomerThreadsControllerCore extends AdminController
         ];
 
         return parent::renderList();
-    }
-
-    protected function renderCkcMultiStoreFilter(array $choices, array $selected): string
-    {
-        $action = $this->context->link->getAdminLink('AdminCustomerThreads');
-        $token  = Tools::getAdminTokenLite('AdminCustomerThreads');
-
-        // options
-        $opts = '';
-        foreach ($choices as $id => $label) {
-            $sel = in_array((int)$id, $selected, true) ? ' selected' : '';
-            $id  = (int)$id;
-            $labelEsc = htmlspecialchars($label, ENT_QUOTES, 'UTF-8');
-            $opts .= "<option value=\"{$id}\"{$sel}>{$labelEsc}</option>";
-        }
-
-        // petit style pour masquer le filtre natif (colonnes)
-        $css = '<style>
-        /* masque le filtre natif de la colonne Boutique (input/select généré par HelperList) */
-        table.table thead tr.filter .filter.ckc_store_id, 
-        table.table thead tr.filter [name="customer_threadFilter_ckc_store_id"] { display:none!important; }
-        .ckc-ms-wrapper { margin: 10px 0 5px; display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; }
-        .ckc-ms-wrapper label { font-weight:600; margin-right:.5rem; }
-        .ckc-ms-wrapper select { min-width:260px; height:auto; }
-        .ckc-ms-wrapper .btn { padding:6px 10px; }
-        </style>';
-
-        // formulaire GET (préserve pagination et autres filtres standards via GET)
-        $html = <<<HTML
-        {$css}
-        <div class="panel ckc-ms-wrapper">
-          <form method="get" action="{$action}" id="ckc-multi-filter" style="margin:0;">
-            <input type="hidden" name="controller" value="AdminCustomerThreads">
-            <input type="hidden" name="token" value="{$token}">
-            <label>{$this->trans('Boutiques', [], 'Admin.Global')}</label>
-            <select name="ckc_stores[]" id="ckc_stores" multiple size="4">
-              {$opts}
-            </select>
-            <button type="submit" class="btn btn-default">
-              <i class="icon-filter"></i> {$this->trans('Filter', [], 'Admin.Actions')}
-            </button>
-            <a href="{$action}&token={$token}" class="btn btn-default">
-              <i class="icon-eraser"></i> {$this->trans('Reset', [], 'Admin.Actions')}
-            </a>
-          </form>
-        </div>
-        HTML;
-
-        return $html;
     }
 
     public function initToolbar()
