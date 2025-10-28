@@ -25,7 +25,9 @@ class Ckc_Realisation extends Module
     public function install()
     {
         return parent::install()
-//               && $this->installSql()
+            && $this->installSql()
+            && $this->registerHook('displayHeader')
+            && $this->registerHook('moduleRoutes')
             && $this->registerHook('displayCustomerAccount')
             && $this->registerHook('displayBackOfficeHeader')
             && $this->registerHook('actionAdminControllerSetMedia') // <—
@@ -42,7 +44,7 @@ class Ckc_Realisation extends Module
 
     public function hookActionAdminControllerSetMedia($params)
     {
-//        dump("test"); 
+//        dump("test");
         if (Tools::getValue('controller') === 'AdminModules'
             && Tools::getValue('configure') === $this->name) {
             $this->context->controller->addCSS($this->_path . 'views/css/admin.css');
@@ -642,4 +644,28 @@ class Ckc_Realisation extends Module
         return '<li><a href="'.htmlspecialchars($url).'">'.$this->l('Mes réalisations').'</a></li>';
     }
 
+    public function hookDisplayHeader(){
+
+        if(isset($this->context->controller->module)){
+            if($this->context->controller->module->name == 'ckc_realisation'){
+                $this->context->controller->addJS($this->_path . '/views/js/front.js');
+                $this->context->controller->addCSS($this->_path . '/views/css/front.css');
+            }
+        }
+    }
+
+    public function hookModuleRoutes() {
+        return array(
+            'module-ckc_realisation-allgalleries' => array(
+                'controller' => 'allgalleries', //front controller name
+                'rule' => 'vosRealisations', // à modifier si "vos-realisations" n'est plus utilisé par le module Responsive Gallery
+                'keywords' => array(
+                ),
+                'params' => array(
+                    'fc' => 'module',
+                    'module' => 'ckc_realisation', //module name
+                )
+            ),
+        );
+    }
 }
