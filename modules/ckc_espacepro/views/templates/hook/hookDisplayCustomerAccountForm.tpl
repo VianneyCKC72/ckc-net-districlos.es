@@ -55,7 +55,8 @@
             <label class="form-label" for="file-upload">Kbis*</label>
             <div class="file-wrap">
                 <label for="file-upload" class="custom-file-upload">Choisir un fichier</label>
-                <input style="opacity:0;height:0;width:0;" id="file-upload" class="file-input js-file-input" type="file" name="kbis" accept=".pdf,.jpg,.png">
+                <input style="opacity:0;height:0;width:0;" id="file-upload" class="file-input js-file-input" type="file"
+                       name="kbis" accept=".pdf,.jpg,.png">
                 <span class="file-chosen js-file-name">Aucun fichier choisi</span>
             </div>
         </div>
@@ -67,7 +68,8 @@
             <label class="form-label" for="rib-upload">Relevé d'identité bancaire* (RIB)</label>
             <div class="file-wrap">
                 <label for="rib-upload" class="custom-file-upload">Choisir un fichier</label>
-                <input style="opacity:0;height:0;width:0;" id="rib-upload" class="file-input js-file-input" type="file" name="rib" accept=".pdf,.jpg,.png">
+                <input style="opacity:0;height:0;width:0;" id="rib-upload" class="file-input js-file-input" type="file"
+                       name="rib" accept=".pdf,.jpg,.png">
                 <span class="file-chosen js-file-name">Aucun fichier choisi</span>
             </div>
         </div>
@@ -87,61 +89,56 @@
             </select>
         </div>
     </div>
-
-    <!-- Société -->
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label class="form-label" for="customer-company">Société*</label>
-            <input class="form-control pad20" type="text" name="customer-company" id="customer-company"
-                   value="{$customer->company|default:''|escape:'htmlall':'UTF-8'}" required>
+    {if $showAddressFields}
+        <!-- Société -->
+        <div class="form-group row">
+            <div class="col-md-12">
+                <label class="form-label" for="customer-company">Société*</label>
+                <input class="form-control pad20" type="text" name="customer-company" id="customer-company"
+                       value="{$customer->company|default:''|escape:'htmlall':'UTF-8'}" required>
+            </div>
         </div>
-    </div>
-
-    <!-- Ville -->
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label class="form-label" for="customer-ville">Ville*</label>
-            <input class="form-control pad20" type="text" name="customer-ville" id="customer-ville"
-                   value="{$customer->city|default:''|escape:'htmlall':'UTF-8'}" required>
+        <!-- Ville -->
+        <div class="form-group row">
+            <div class="col-md-12">
+                <label class="form-label" for="customer-ville">Ville*</label>
+                <input class="form-control pad20" type="text" name="customer-ville" id="customer-ville"
+                       value="{$customer->city|default:''|escape:'htmlall':'UTF-8'}" required>
+            </div>
         </div>
-    </div>
-
-    <!-- Adresse -->
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label class="form-label" for="customer-adresse">Adresse*</label>
-            <input class="form-control pad20" type="text" name="customer-adresse" id="customer-adresse"
-                   value="{$customer->address1|default:''|escape:'htmlall':'UTF-8'}" required>
+        <!-- Adresse -->
+        <div class="form-group row">
+            <div class="col-md-12">
+                <label class="form-label" for="customer-adresse">Adresse*</label>
+                <input class="form-control pad20" type="text" name="customer-adresse" id="customer-adresse"
+                       value="{$customer->address1|default:''|escape:'htmlall':'UTF-8'}" required>
+            </div>
         </div>
-    </div>
-
-    <!-- Complément d'adresse -->
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label class="form-label" for="customer-adresse2">Complément d'adresse</label>
-            <input class="form-control pad20" type="text" name="customer-adresse2" id="customer-adresse2"
-                   value="{$customer->address2|default:''|escape:'htmlall':'UTF-8'}">
+        <!-- Complément d'adresse -->
+        <div class="form-group row">
+            <div class="col-md-12">
+                <label class="form-label" for="customer-adresse2">Complément d'adresse</label>
+                <input class="form-control pad20" type="text" name="customer-adresse2" id="customer-adresse2"
+                       value="{$customer->address2|default:''|escape:'htmlall':'UTF-8'}">
+            </div>
         </div>
-    </div>
-
-    <!-- Code Postal -->
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label class="form-label" for="customer-cp">Code Postal*</label>
-            <input class="form-control pad20" type="text" name="customer-cp" id="customer-cp"
-                   value="{$customer->postcode|default:''|escape:'htmlall':'UTF-8'}" required>
+        <!-- Code Postal -->
+        <div class="form-group row">
+            <div class="col-md-12">
+                <label class="form-label" for="customer-cp">Code Postal*</label>
+                <input class="form-control pad20" type="text" name="customer-cp" id="customer-cp"
+                       value="{$customer->postcode|default:''|escape:'htmlall':'UTF-8'}" required>
+            </div>
         </div>
-    </div>
-
-    <!-- Téléphone -->
-    <div class="form-group row lastfield">
-        <div class="col-md-12">
-            <label class="form-label" for="customer-tel">Téléphone*</label>
-            <input class="form-control pad20" type="text" name="customer-tel" id="customer-tel"
-                   value="{$customer->phone|default:''|escape:'htmlall':'UTF-8'}" required>
+        <!-- Téléphone -->
+        <div class="form-group row lastfield">
+            <div class="col-md-12">
+                <label class="form-label" for="customer-tel">Téléphone*</label>
+                <input class="form-control pad20" type="text" name="customer-tel" id="customer-tel"
+                       value="{$customer->phone|default:''|escape:'htmlall':'UTF-8'}" required>
+            </div>
         </div>
-    </div>
-
+    {/if}
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -149,9 +146,12 @@
 
 <!-- Nom du fichier choisi -->
 <script>
-    (function(){
-        function baseName(path){ return (path || '').split(/[\\/]/).pop(); }
-        $(document).on('change', '.js-file-input', function(){
+    (function () {
+        function baseName(path) {
+            return (path || '').split(/[\\/]/).pop();
+        }
+
+        $(document).on('change', '.js-file-input', function () {
             var $wrap = $(this).closest('.file-wrap');
             $wrap.find('.js-file-name').text(baseName(this.value) || 'Aucun fichier choisi');
         });

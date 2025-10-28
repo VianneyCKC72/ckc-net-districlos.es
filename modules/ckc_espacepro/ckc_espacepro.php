@@ -468,10 +468,16 @@ class ckc_espacepro extends Module
             $countries = Country::getCountries($this->context->language->id, true);
             $this->putFranceFirst($countries);
 
+            $customer = $this->context->customer;
+            $isIdentityPage = (strpos($_SERVER['REQUEST_URI'], 'identity') !== false);
+
+//            dump($isIdentityPage);
             $this->context->smarty->assign([
                 'customerGroups' => $groups,
                 'countries' => $countries,
                 'code_naf' => $this->getCodeNaf(),
+                'customer' => $customer,
+                'showAddressFields' => !$isIdentityPage,
                 'ckc_form_minimal' => (int)Configuration::get('CKC_FORM_MIN_EP'),
             ]);
 //
