@@ -128,7 +128,7 @@ class statsforecast extends Module
         /*************** requête devis par SC convertis *************/
         $sql = $this->buildQuery('SELECT P.*, ps_orders.validated_at
         FROM `ps_opartdevis` as P
-        JOIN ps_orders ON P.id_order = ps_orders.id_order', 'WHERE (P.`name` LIKE "%Amelie%" OR P.`name` LIKE "%Vincent%" OR P.`name` LIKE "%Nelly%" OR P.`name` LIKE "%Robin%" OR P.`name` LIKE "%Leo%")
+        JOIN ps_orders ON P.id_order = ps_orders.id_order', 'WHERE (P.`name` LIKE "%Amelie%" OR P.`name` LIKE "%Vincent%" OR P.`name` LIKE "%Nelly%" OR P.`name` LIKE "%Robin%" OR P.`name` LIKE "%Leo%" OR P.`name` LIKE "%Thibaut%")
         AND (ps_orders.`validated_at` IS NOT NULL)
         AND (ps_orders.`validated_at` BETWEEN "'.$from.'" AND "'.$to.'")', 'P');
         $result = $db->executeS($sql);
@@ -137,21 +137,21 @@ class statsforecast extends Module
         /*************** requête CO genere par devis convertis par SC *************/
         $sql = $this->buildQuery('SELECT SUM(O.total_paid) as total 
         FROM `ps_orders` as O, `ps_opartdevis` as P', 'WHERE O.id_order = P.id_order 
-        AND (P.name LIKE "%Amelie%" OR P.name LIKE "%Vincent%" OR P.name LIKE "%Nelly%" OR P.name LIKE "%Robin%" OR P.name LIKE "%Leo%")
+        AND (P.name LIKE "%Amelie%" OR P.name LIKE "%Vincent%" OR P.name LIKE "%Nelly%" OR P.name LIKE "%Robin%" OR P.name LIKE "%Leo%" OR P.name LIKE "%Thibaut%")
         AND (O.`validated_at` IS NOT NULL)
         AND (O.`validated_at` BETWEEN "'.$from.'" AND "'.$to.'")', 'P');
         $result = $db->executeS($sql);
         $cadevisSCconv = $result[0]['total'] ? round($result[0]['total']) : 0;
 
         /*************** requête devis par SC *************/
-        $sql = $this->buildQuery('SELECT * FROM `ps_opartdevis`', 'WHERE (`name` LIKE "%Amelie%" OR `name` LIKE "%Vincent%" OR `name` LIKE "%Nelly%" OR `name` LIKE "%Robin%" OR `name` LIKE "%Leo%") AND (`ps_opartdevis`.`date_add` BETWEEN "'.$from.'" AND "'.$to.'") ORDER BY `ps_opartdevis`.`date_add` DESC', 'ps_opartdevis');
+        $sql = $this->buildQuery('SELECT * FROM `ps_opartdevis`', 'WHERE (`name` LIKE "%Amelie%" OR `name` LIKE "%Vincent%" OR `name` LIKE "%Nelly%" OR `name` LIKE "%Robin%" OR `name` LIKE "%Leo%" OR `name` LIKE "%Thibaut%") AND (`ps_opartdevis`.`date_add` BETWEEN "'.$from.'" AND "'.$to.'") ORDER BY `ps_opartdevis`.`date_add` DESC', 'ps_opartdevis');
         $result = $db->executeS($sql);
         $nombrededevisSC = $result ? count($result) : 0;
 
         /************** Calcul de la semaine ******************/
         $currentWeekNumber = date('W');
-        $nombreConvTotalSC = array_sum([$cadevisSCconvnelly, $cadevisSCconvvincent, $cadevisSCconvamelie, $cadevisSCconvrobin, $cadevisSCconvleo]);
-        $nombrededevisSCconv = array_sum([$nombrededevisSCconvnelly, $nombrededevisSCconvvincent, $nombrededevisSCconvamelie, $nombrededevisSCconvrobin, $nombrededevisSCconvleo]);
+        $nombreConvTotalSC = array_sum([$cadevisSCconvnelly, $cadevisSCconvvincent, $cadevisSCconvamelie, $cadevisSCconvrobin, $cadevisSCconvleo, $cadevisSCconvthibaut]);
+        $nombrededevisSCconv = array_sum([$nombrededevisSCconvnelly, $nombrededevisSCconvvincent, $nombrededevisSCconvamelie, $nombrededevisSCconvrobin, $nombrededevisSCconvleo, $nombrededevisSCconvthibaut]);
         $generatedCA = ($nombredecmd > 0) ? round($catransaction / $nombredecmd) : 0;
         $nbDevisConvSC = ($nombrededevisSC > 0) ? round($nombrededevisSCconv / $nombrededevisSC * 100) : 0;
         $CADevMoySC = ($nombrededevisSCconv > 0) ? round($nombreConvTotalSC / $nombrededevisSCconv) : 0;
