@@ -26,7 +26,6 @@
 
 {block name='head' append}
     <meta property="og:type" content="product">
-
     {if $product.cover}
         <meta property="og:image" content="{$product.cover.large.url}">
     {/if}
@@ -50,11 +49,6 @@
 {block name='content'}
     <section id="main">
         <meta content="{$product.url}">
-
-        {* Compte à rebours sur page catégorie - au-dessus du titre *}
-        {if !$customer.id_default_group || $customer.id_default_group != 10}
-            <div id="promo_frenchdays" style="margin: 10px 0 10px 0;"></div>
-        {/if}
 
         <div class="product-container js-product-container">
             <div class="row">

@@ -43,7 +43,7 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
             '283-83' => 15, '227-27' => 6, '271-71' => 2, '257-57' => 5, '34-34' => 8,
             '262-62' => 10, '273-73' => 13, '249-49' => 9, '235-35' => 3, '263-63' => 1,
             '226-26' => 4, '277-77' => 14, '233-33' => 7, '269-69' => 12, '231-31' => 11,
-            '28B-831' => 16
+            '28B-831' => 16, '245-45' => 17, 'DX-DX' => 18
         ];
 
         $productsStocks = [];
@@ -62,9 +62,13 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
                 
                 // Vérifier si le produit existe dans PrestaShop
                 $stmt = $db->prepare("
-                    SELECT id_product, id_product_attribute FROM `".$database1."`.`" . _DB_PREFIX_ . "product_attribute` 
-                    WHERE reference = :reference LIMIT 1
+                    SELECT pa.id_product, pa.id_product_attribute 
+                    FROM `".$database1."`.`" . _DB_PREFIX_ . "product_attribute` pa
+                    INNER JOIN `".$database1."`.`" . _DB_PREFIX_ . "product` p ON p.id_product = pa.id_product
+                    WHERE pa.reference = :reference AND p.active = 1
+                    LIMIT 1
                 ");
+                
                 $stmt->bindValue(':reference', $reference, PDO::PARAM_STR);
                 $stmt->execute();
                 $product = $stmt->fetch();

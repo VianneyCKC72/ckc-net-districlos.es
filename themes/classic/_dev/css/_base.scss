@@ -8630,6 +8630,9 @@ form
   -webkit-transition: 0.25s ease-out;
   transition: 0.25s ease-out;
 }
+.grecaptcha-badge {
+  visibility: hidden !important;
+}
 
 @media print {
   *,
@@ -11238,3 +11241,22 @@ form
     width: 100%;
   }
 }
+<<<<<<< HEAD
+=======
+@media (max-width: 768px){
+  #ckcpromobarre {
+    min-height: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 11px;
+  }
+  .ckcpromobarre-text{
+    white-space: wrap !important;
+    font-size: 11px;
+  }
+
+  .checkout.cart-detailed-actions.js-cart-detailed-actions .btn-secondary {
+    background: #ff144e !important;
+  }
+}
+>>>>>>> main

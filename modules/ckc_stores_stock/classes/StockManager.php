@@ -42,22 +42,47 @@ class StockManager extends Module
         $stores = $this->getStoresData($id_product, $id_product_attribute);
         $total_quantity = array_sum(array_column($stores, 'stock'));
 
-        // Récupérer le statut "fin de vie" de la déclinaison
+        // Récupérer le statut "fin de vie" et le seuil de stock de la déclinaison
         $fin_de_vie = false;
+        $stock_threshold = null;
+        $victime_succes = false;
+        $platform_stock = 0;
+        
         if ($id_product_attribute > 0) {
-            $fin_de_vie = Db::getInstance()->getValue('SELECT end_of_life FROM ' . _DB_PREFIX_ . 'product_attribute_end_of_life WHERE id_product_attribute = ' . (int)$id_product_attribute);
-            $fin_de_vie = (bool)$fin_de_vie;
+            $eol_data = Db::getInstance()->getRow('SELECT end_of_life, stock_threshold FROM ' . _DB_PREFIX_ . 'product_attribute_end_of_life WHERE id_product_attribute = ' . (int)$id_product_attribute);
+            if ($eol_data) {
+                $fin_de_vie = (bool)$eol_data['end_of_life'];
+                $stock_threshold = $eol_data['stock_threshold'] ? (int)$eol_data['stock_threshold'] : null;
+                
+                // Si fin de vie, récupérer le stock de la plateforme (store 18 = DX)
+                if ($fin_de_vie) {
+                    $platform_stock = Db::getInstance()->getValue('SELECT quantity FROM ' . _DB_PREFIX_ . 'ckcstockstores_stocks WHERE id_product = ' . (int)$id_product . ' AND id_product_attribute = ' . (int)$id_product_attribute . ' AND id_store = 18');
+                    
+                    // Pour les produits fin de vie, vérifier avec le stock plateforme
+                    if ($stock_threshold !== null && $platform_stock <= $stock_threshold) {
+                        $victime_succes = true;
+                    }
+                } else {
+                    // Pour les produits normaux, vérifier avec le stock total
+                    if ($stock_threshold !== null && $total_quantity <= $stock_threshold) {
+                        $victime_succes = true;
+                    }
+                }
+            }
         }
 
         return [
             'quantity' => $quantity_by_store,
             'total_quantity' => $total_quantity,
+            'platform_stock' => $platform_stock,
             'id_store' => $id_store,
             'store_name' => (new Shop($id_store))->name,
             'seuil' => $seuilOk,
             'isKit' => $isKit,
             'stores' => $stores,
             'fin_de_vie' => $fin_de_vie,
+            'stock_threshold' => $stock_threshold,
+            'victime_succes' => $victime_succes,
         ];
     }
 
@@ -116,6 +141,8 @@ class StockManager extends Module
         $carrier           = new Carrier($carrier_id);
         $carrierZones      = $carrier->getZones();
         $stocks  = [];
+        $finSerieStocks = []; // Liste des produits fin de série
+        $hasFinSerieProducts = false; // Variable pour détecter les produits fin de série
     
         $isClickAndCollect = strpos($carrier->name, 'Retrait') !== false || strpos($carrier->name, 'Click & Collect') !== false ? true : false;
     
@@ -141,26 +168,43 @@ class StockManager extends Module
         if ($storesDelivery) {
             $products = $this->context->cart->getProducts();
             foreach ($products as $product) {
+                // Vérifier si le produit est en fin de série
+                $id_product_attribute = isset($product['id_product_attribute']) ? (int)$product['id_product_attribute'] : 0;
+                $isFinSerie = $this->isProductFinSerie($id_product_attribute);
+                
+                if ($isFinSerie) {
+                    $hasFinSerieProducts = true;
+                }
+                
                 if (in_array($product['id_product'], $this->exIdsStock)) {
                     $productArray = [
                         'product_name' => $product['name'],
-                        'stock_ok'     => true
+                        'stock_ok'     => true,
+                        'is_fin_serie' => $isFinSerie
                     ];
                 }
                 else {
                     $stockData = $this->getStockData($product['id_product'], $product['id_product_attribute'], $storesDelivery);
     
-                    if ($stockData['quantity'] < $product['quantity']) {
+                    // Ne pas compter les produits fin de série dans le stock_ok
+                    if (!$isFinSerie && $stockData['quantity'] < $product['quantity']) {
                         $stock_ok = false;
                     }
+                    
                     $productArray = [
                         'product_name' => $product['name'],
-                        'stock_ok'     => $stockData['quantity'] < $product['quantity'] ? false : true
+                        'stock_ok'     => $stockData['quantity'] < $product['quantity'] ? false : true,
+                        'is_fin_serie' => $isFinSerie
                     ];
     
                 }
     
-                array_push($stocks, $productArray);
+                // Séparer les produits fin de série des produits normaux
+                if ($isFinSerie) {
+                    array_push($finSerieStocks, $productArray);
+                } else {
+                    array_push($stocks, $productArray);
+                }
             }
         }
     
@@ -170,13 +214,28 @@ class StockManager extends Module
                 'store_id'          => $storesDelivery,
                 'stock_ok'          => $stock_ok,
                 'isClickAndCollect' => $isClickAndCollect,
-                'carrier'           => $carrier->name
+                'carrier'           => $carrier->name,
+                'hasFinSerieProducts' => $hasFinSerieProducts
             ];
         }
     
         return [
             'stock'  => $stock,
             'stocks' => $stocks,
+            'finSerieStocks' => $finSerieStocks,
         ];
+    }
+    
+    private function isProductFinSerie($id_product_attribute)
+    {
+        if (empty($id_product_attribute) || $id_product_attribute == 0) {
+            return false;
+        }
+        
+        // Vérifier dans la table du module dtc_productendoflife
+        $sql = 'SELECT end_of_life FROM `' . _DB_PREFIX_ . 'product_attribute_end_of_life` 
+                WHERE `id_product_attribute` = ' . (int)$id_product_attribute;
+        
+        return (bool)Db::getInstance()->getValue($sql);
     }
 }
