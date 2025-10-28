@@ -65,9 +65,17 @@ class TaxManagerFactory extends TaxManagerFactoryCore
 
     protected static function getServiceProductId(): int
     {
-        // Idéalement: référence configurable en BO
-        $ref = '6846df4980a710f6d4b755c7';
-        return (int)Product::getIdByReference($ref);
+        $serviceId = Db::getInstance()->executeS('SELECT cp.id_product FROM '._DB_PREFIX_.'cart_product cp
+        LEFT JOIN '._DB_PREFIX_.'product p ON p.id_product = cp.id_product
+        WHERE p.id_category_default = 369 AND cp.id_cart = '.Context::getContext()->cart->id);
+        /*        // Idéalement: référence configurable en BO
+                $ref = '6846df4980a710f6d4b755c7';
+                return (int)Product::getIdByReference($ref);*/
+        if(!empty($serviceId[0]['id_product'])){
+            return $serviceId[0]['id_product'];
+        } else {
+            return 0;
+        }
     }
 
     protected static function isProductInCart(Cart $cart, int $idProduct): bool
@@ -80,11 +88,14 @@ class TaxManagerFactory extends TaxManagerFactoryCore
 
     protected static function getMainProductId(Cart $cart, int $serviceId): int
     {
-        foreach ($cart->getProducts() as $p) {
-            $pid = (int)$p['id_product'];
-            if ($pid && $pid !== $serviceId) return $pid; // premier non-service
-        }
-        return 0;
+        /*        foreach ($cart->getProducts() as $p) {
+                    $pid = (int)$p['id_product'];
+                    if ($pid && $pid !== $serviceId) return $pid; // premier non-service
+                }
+                return 0;*/
+        $id_main_product = Db::getInstance()->executeS('SELECT id_main_product FROM '._DB_PREFIX_.'dealt_tva_attestation 
+        WHERE id_cart = '.$cart->id);
+        return $id_main_product[0]['id_main_product'];
     }
 
     protected static function getSelectedCarrierId(Cart $cart): int
