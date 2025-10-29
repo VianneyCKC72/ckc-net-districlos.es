@@ -118,7 +118,9 @@ class ckc_espacepro extends Module
                 $tab->name[$lang['id_lang']] = $name;
             }
 
-            if (isset($tabInfo['icon'])) {
+            if($tab->class_name == 'AdminGuidesFiches'){
+                $tab->icon = 'icon-AdminGuidesFiches';
+            } else if (isset($tabInfo['icon'])) {
                 $tab->icon = $tabInfo['icon'];
             }
 
