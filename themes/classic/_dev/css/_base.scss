@@ -4962,13 +4962,13 @@ a:hover {
 .variant-links .color,
 label .color {
   display: inline-block;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.3rem;
+  height: 1.3rem;
   margin: 0;
   border-radius: 100%;
   cursor: pointer;
   background-size: contain;
-  border: 1px solid $gray;
+  border: 2px solid $gray;
 }
 
 .custom-checkbox input[type="checkbox"] + span.color.active,
@@ -6329,7 +6329,6 @@ ul {
   position: relative;
   width: 100%;
   text-align: center;
-  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -6354,10 +6353,8 @@ ul {
   height: auto;
   padding: 1rem 0;
   text-align: center;
-  background: rgb(255 255 255);
   -webkit-transition: 0.3s;
   transition: 0.3s;
-  backdrop-filter: blur(10px);
 }
 
 .product-miniature .highlighted-informations .quick-view {
@@ -7537,8 +7534,6 @@ li:not([data-depth="0"]):not([data-depth="1"])::before {
 .dp_input_container select {
   width: 100% !important;
   background: $sand-light-color !important;
-  font-size: 1.1em;
-  font-family: Verdana, Arial, sans-serif;
 }
 
 .dp_input_container .ui-spinner {
@@ -7557,6 +7552,7 @@ li:not([data-depth="0"]):not([data-depth="1"])::before {
 .product-variants .product-variants-item select, .dp_input_container select {
   width: 100%;
   height: auto;
+  font-weight: 700;
   padding: 16px 30px;
   background: $sand-light-color
   url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-chevron-down'><path d='m6 9 6 6 6-6'/></svg>")
@@ -8630,9 +8626,6 @@ form
   height: 100%;
   -webkit-transition: 0.25s ease-out;
   transition: 0.25s ease-out;
-}
-.grecaptcha-badge {
-  visibility: hidden !important;
 }
 
 @media print {
