@@ -7534,6 +7534,8 @@ li:not([data-depth="0"]):not([data-depth="1"])::before {
 .dp_input_container select {
   width: 100% !important;
   background: $sand-light-color !important;
+  font-size: 1.1em;
+  font-family: Verdana, Arial, sans-serif;
 }
 
 .dp_input_container .ui-spinner {
@@ -7552,7 +7554,6 @@ li:not([data-depth="0"]):not([data-depth="1"])::before {
 .product-variants .product-variants-item select, .dp_input_container select {
   width: 100%;
   height: auto;
-  font-weight: 700;
   padding: 16px 30px;
   background: $sand-light-color
   url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-chevron-down'><path d='m6 9 6 6 6-6'/></svg>")
