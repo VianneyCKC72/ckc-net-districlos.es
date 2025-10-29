@@ -856,6 +856,10 @@ $bp-md: 768px;
     }
 
   }
-
-
+}
+#authentication.-pro #login-form .cont-all-btn-login button#submit-login.btn-primary-pro{
+  color: $white;
+}
+#authentication.-pro #login-form .cont-all-btn-login button#submit-login.btn-primary-pro:hover{
+  border-color: $pro-color;
 }
