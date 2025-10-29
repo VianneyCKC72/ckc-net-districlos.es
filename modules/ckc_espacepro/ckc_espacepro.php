@@ -442,6 +442,7 @@ class ckc_espacepro extends Module
             $this->context->controller->addCSS($this->_path . 'views/css/bo_espacepro.css');
             $this->context->controller->addJS($this->_path . 'views/js/bo_espacepro.js');
         }
+        $this->context->controller->addCSS($this->_path . 'views/css/menuTabIcon.css');
     }
 
     /** Formulaire d’inscription */
