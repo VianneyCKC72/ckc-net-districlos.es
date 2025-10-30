@@ -36,7 +36,7 @@
 
                     <div class="displayTop">
                         {hook h='displayTop'}
-                        <a href="#" class="btn btn-primary d-none d-md-block">
+                        <a href="/avantages-pro" class="btn btn-primary d-none d-md-block">
                             <div class="fs-6 font-weight-bold">
                                 Mes avantages
                             </div>
