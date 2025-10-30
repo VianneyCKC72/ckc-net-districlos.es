@@ -47,8 +47,11 @@
 
                 {if $page.page_name == 'index' && !empty($pro) && $pro.env && !$pro.user.is_logged}
                     {include file='module:ckc_espacepro/views/templates/hook/pro-home-login.tpl'
-                                                        login_action=$link->getModuleLink('ckc_espacepro','login')
-                                                        back=$urls.current_url}
+                    login_action=$link->getModuleLink('ckc_espacepro','login')
+                    back=$urls.current_url}
+                    {hook h='CETemplate' id=37}
+                {elseif $page.page_name == 'index' && !empty($pro) && $pro.env && $pro.user.is_logged}
+                    {hook h='CETemplate' id=36}
                 {/if}
 
                 <div class="row">
