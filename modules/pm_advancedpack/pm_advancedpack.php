@@ -1241,30 +1241,6 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 return null;
             }
             if ($config['displayMode'] == self::DISPLAY_ADVANCED) {
-                $context = Context::getContext();
-                $assembler = new ProductAssembler($context);
-                $imageRetriever = new PrestaShop\PrestaShop\Adapter\Image\ImageRetriever($context->link);
-                $presenterFactory = new ProductPresenterFactory($context);
-                $presentationSettings = $presenterFactory->getPresentationSettings();
-                $presenter = new PrestaShop\PrestaShop\Core\Product\ProductPresenter(
-                    $imageRetriever,
-                    $context->link,
-                    new PrestaShop\PrestaShop\Adapter\Product\PriceFormatter(),
-                    new PrestaShop\PrestaShop\Adapter\Product\ProductColorsRetriever(),
-                    $context->getTranslator()
-                );
-
-                $productPresentation = $presenter->present(
-                    $presentationSettings,
-                    $assembler->assembleProduct(['id_product' => (int)$product->id]),
-                    $context->language
-                );
-
-                $product->price = Tools::ps_round(
-                        ($productPresentation['price_amount']),
-                        Context::getContext()->currency->precision
-                    ). ' €';
-
                 return 'module:' . $this->name . '/views/templates/front/' . $this->getPrestaShopTemplateVersion() . '/pack.tpl';
             }
         }

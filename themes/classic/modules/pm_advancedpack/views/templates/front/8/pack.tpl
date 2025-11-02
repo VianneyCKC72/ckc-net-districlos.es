@@ -1,6 +1,8 @@
 {extends file='catalog/product.tpl'}
 
 {block name='content'}
+    {assign var="initial_pack" value="1"}
+
     {if isset($packMlChoose) && $packMlChoose == 1}
         <style>
             .qty {
@@ -8,6 +10,23 @@
             }
         </style>
     {/if}
+    <style>
+        .price-loader {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ccc;
+            border-top-color: #333;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
     <section id="main">
         <meta content="{$product.url}">
 
