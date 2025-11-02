@@ -20,9 +20,12 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
         $database1 = 'districlos_refonte';
         $database2 = 'districlostools';
 
-        $pdo = new PDO('mysql:host=87.98.141.171;charset=utf8mb4', $username, $password, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        ]);
+        $pdo = new PDO(
+            "mysql:host=87.98.141.171;dbname={$database1};charset=utf8mb4",
+            $username,
+            $password,
+            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+        );
 
         $pdo->exec("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
         $pdo->beginTransaction();
