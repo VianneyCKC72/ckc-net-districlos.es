@@ -5,8 +5,9 @@
     <div class="product-price price {if $product.has_discount}has-discount{/if} mr-2" itemprop="price">
         {if isset($initial_pack)}
             <span class="price-loader" style="display: inline-block;"></span>
+        {else}
+            <span class="price-integer">{$price_integer}</span><span class="price-decimal">,{$price_decimal}</span>
         {/if}
-        <span class="price-integer">{$price_integer}</span><span class="price-decimal">,{$price_decimal}</span>
     </div>
     {hook h='displayProductPriceBlock' product=$product type="weight" hook_origin='product_sheet'}
 
