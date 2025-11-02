@@ -1260,7 +1260,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                     $context->language
                 );
 
-                $product->unit_price_full = Tools::ps_round(
+                $product->price = Tools::ps_round(
                         ($productPresentation['price_amount']),
                         Context::getContext()->currency->precision
                     ). ' €';
