@@ -29,6 +29,8 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
 
         $pdo->exec("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
         $pdo->beginTransaction();
+        $targetShopId = 1;
+        $targetShopGroupId = 1;
 
         try {
             $pdo->exec("DROP TEMPORARY TABLE IF EXISTS tmp_store_map");
@@ -115,23 +117,33 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
                 CREATE TEMPORARY TABLE tmp_totals (
                     id_product INT NOT NULL,
                     id_product_attribute INT NOT NULL,
+                    id_shop INT NOT NULL,
+                    id_shop_group INT NOT NULL,
                     qty INT NOT NULL,
-                    PRIMARY KEY (id_product, id_product_attribute)
+                    PRIMARY KEY (id_product, id_product_attribute, id_shop, id_shop_group)
                 ) ENGINE=MEMORY
             ");
 
             $pdo->exec("
-                INSERT INTO tmp_totals (id_product, id_product_attribute, qty)
-                SELECT id_product, id_product_attribute, SUM(qty) AS qty
+                INSERT INTO tmp_totals (id_product, id_product_attribute, id_shop, id_shop_group, qty)
+                SELECT
+                    id_product,
+                    id_product_attribute,
+                    {$targetShopId} AS id_shop,
+                    {$targetShopGroupId} AS id_shop_group,
+                    SUM(qty) AS qty
                 FROM tmp_mapped_stock
                 GROUP BY id_product, id_product_attribute
             ");
 
             $pdo->exec("
-                INSERT INTO `{$database1}`.`"._DB_PREFIX_."stock_available` (id_product, id_product_attribute, quantity)
-                SELECT id_product, id_product_attribute, qty
+                INSERT INTO `{$database1}`.`"._DB_PREFIX_."stock_available`
+                    (id_product, id_product_attribute, id_shop, id_shop_group, quantity, physical_quantity)
+                SELECT id_product, id_product_attribute, id_shop, id_shop_group, qty, qty
                 FROM tmp_totals
-                ON DUPLICATE KEY UPDATE quantity = VALUES(quantity), physical_quantity = VALUES(quantity)
+                ON DUPLICATE KEY UPDATE
+                    quantity = VALUES(quantity),
+                    physical_quantity = VALUES(physical_quantity)
             ");
 
             $pdo->exec("
