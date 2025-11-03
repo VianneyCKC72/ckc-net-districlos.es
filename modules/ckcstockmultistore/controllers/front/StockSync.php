@@ -5,7 +5,7 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
     public function initContent()
     {
         parent::initContent();
-        try {
+        try { 
             $this->syncStockSetBased();
             die(json_encode(['status' => 'success', 'message' => 'Synchronisation des stocks terminée.']));
         } catch (Throwable $e) {
@@ -19,6 +19,16 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
         $password = 'TXM1qjk9teu_cfb9wxv';
         $database1 = 'districlos_refonte';
         $database2 = 'districlostools';
+
+        // Charger le mapping de références pour les produits fin de vie
+        $mappingFile = _PS_MODULE_DIR_ . 'dtc_productendoflife/reference_mapping.json';
+        $referenceMapping = [];
+        if (file_exists($mappingFile)) {
+            $mappingData = json_decode(file_get_contents($mappingFile), true);
+            $referenceMapping = $mappingData['mappings'] ?? [];
+        }
+        // Créer un mapping inversé pour identifier les références BRUT
+        $brutReferences = array_unique(array_values($referenceMapping));
 
         $pdo = new PDO(
             "mysql:host=87.98.141.171;dbname={$database1};charset=utf8mb4",
@@ -95,6 +105,39 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
                     ON p.id_product = pa.id_product AND p.active = 1
             ");
 
+            // Gérer les références BRUT qui n'existent pas dans PrestaShop (entrées virtuelles)
+            if (!empty($brutReferences)) {
+                $pdo->exec("DROP TEMPORARY TABLE IF EXISTS tmp_brut_refs");
+                $pdo->exec("
+                    CREATE TEMPORARY TABLE tmp_brut_refs (
+                        reference VARCHAR(64) PRIMARY KEY
+                    ) ENGINE=MEMORY
+                ");
+                
+                // Insérer toutes les références BRUT du mapping
+                $brutValues = array_map(function($ref) use ($pdo) {
+                    return '(' . $pdo->quote($ref) . ')';
+                }, $brutReferences);
+                $pdo->exec("
+                    INSERT INTO tmp_brut_refs (reference) VALUES " . implode(',', $brutValues)
+                );
+                
+                // Créer des entrées virtuelles pour les références BRUT qui ont du stock mais n'existent pas dans PrestaShop
+                $pdo->exec("
+                    INSERT INTO `{$database1}`.`"._DB_PREFIX_."ckcstockstores_stocks` (id_store, id_product, id_product_attribute, quantity)
+                    SELECT 
+                        ss.id_store,
+                        -1 AS id_product,
+                        ABS(CRC32(ss.reference)) AS id_product_attribute,
+                        ss.qty
+                    FROM tmp_source_stock ss
+                    INNER JOIN tmp_brut_refs br ON br.reference = ss.reference
+                    LEFT JOIN `{$database1}`.`"._DB_PREFIX_."product_attribute` pa ON pa.reference = ss.reference
+                    WHERE pa.reference IS NULL
+                    ON DUPLICATE KEY UPDATE quantity = VALUES(quantity)
+                ");
+            }
+
             $pdo->exec("
                 INSERT INTO `{$database1}`.`"._DB_PREFIX_."ckcstockstores_stocks` (id_store, id_product, id_product_attribute, quantity)
                 SELECT id_store, id_product, id_product_attribute, qty
@@ -110,7 +153,24 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
                  AND t.id_product_attribute = s.id_product_attribute
                 SET s.quantity = 0
                 WHERE t.id_store IS NULL
+                  AND s.id_product != -1
             ");
+
+            // Nettoyer les entrées virtuelles qui ne sont plus dans rep_stock
+            if (!empty($brutReferences)) {
+                $pdo->exec("
+                    UPDATE `{$database1}`.`"._DB_PREFIX_."ckcstockstores_stocks` s
+                    LEFT JOIN tmp_source_stock ss 
+                      ON ss.id_store = s.id_store 
+                     AND ABS(CRC32(ss.reference)) = s.id_product_attribute
+                    LEFT JOIN tmp_brut_refs br 
+                      ON ABS(CRC32(br.reference)) = s.id_product_attribute
+                    SET s.quantity = 0
+                    WHERE s.id_product = -1
+                      AND ss.reference IS NULL
+                      AND br.reference IS NOT NULL
+                ");
+            }
 
             $pdo->exec("DROP TEMPORARY TABLE IF EXISTS tmp_totals");
             $pdo->exec("
