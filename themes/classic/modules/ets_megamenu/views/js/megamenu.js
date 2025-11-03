@@ -5,13 +5,51 @@ $(function (){$(document).on('mouseup',function (e){const $activeItem=$('.mm_ext
 $(document).ready(function () {
     var isMobile = $(window).width() <= 768;
     
+    // Gestion du clic sur le lien de premier niveau avec flèches
     $('.item_first_layer.mm_has_sub > a').on('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        this.nextElementSibling.click();
+        var arrow = this.nextElementSibling;
+        if (arrow && arrow.classList.contains('arrow')) {
+            arrow.click();
+        }
         return false;
     });
 
+    // En mobile : rendre tout le li cliquable
+    if (isMobile) {
+        $('.mobile_noclic.mm_menus_li').each(function() {
+            var li = this;
+            var $arrow = $(li).find('.item_first_layer .arrow').first();
+            
+            if (!$arrow.length) return;
+            
+            // Styles pour indiquer la zone cliquable
+            $(li).find('.item_first_layer').first().css({
+                'cursor': 'pointer',
+                'width': '100%',
+                'display': 'flex',
+                'justify-content': 'space-between'
+            });
+            
+            // Capturer les clics sur tout le li
+            li.addEventListener('click', function(e) {
+                var $target = $(e.target);
+                
+                // Ignorer les clics sur la flèche ou dans les sous-menus
+                if ($target.closest('.arrow, .mm_columns_ul').length) return;
+                
+                // Déclencher la flèche pour les clics valides
+                if ($target.closest('.item_first_layer').length || e.target === li) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    $arrow[0].click();
+                }
+            }, true);
+        });
+    }
+
+    // Gestion des onglets de contenu
     $('.mm_tab_li_content').each(function() {
         var $link = $(this).find('> .mm_tab_name > .mm_tab_toggle_title > a.mm-link-menu-sub');
         if (!$link.length) return;
@@ -38,6 +76,7 @@ $(document).ready(function () {
         }
     });
 
+    // Gestion des blocs h4 en mobile
     if (isMobile) {
         $('.ets_mm_block .h4 > a').each(function() {
             var arrow = this.nextElementSibling;
