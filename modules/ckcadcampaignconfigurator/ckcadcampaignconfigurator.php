@@ -1919,7 +1919,7 @@ class Ckcadcampaignconfigurator extends Module
 
             $checkDate = $this->checkPromoDate($campaign['id']);
 
-            if(in_array($customerGroupId, explode(',',$campaign['id_client_group'])) && $checkDate && $campaign['active'] && isset($campaign['logo_path'])){
+            if(in_array($customerGroupId, explode(',',$campaign['id_client_group'])) && $checkDate && $campaign['active'] && isset($campaign['logo_path']) && $campaign['logo_path'] != ""){
 
                 Media::addJsDef(
                     array(
