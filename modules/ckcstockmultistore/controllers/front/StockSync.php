@@ -113,7 +113,7 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
                         reference VARCHAR(64) PRIMARY KEY
                     ) ENGINE=MEMORY
                 ");
-
+                
                 // Insérer toutes les références BRUT du mapping
                 $brutValues = array_map(function($ref) use ($pdo) {
                     return '(' . $pdo->quote($ref) . ')';
@@ -121,20 +121,27 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
                 $pdo->exec("
                     INSERT INTO tmp_brut_refs (reference) VALUES " . implode(',', $brutValues)
                 );
-
-                // Créer des entrées virtuelles pour les références BRUT qui ont du stock mais n'existent pas dans PrestaShop
+                
+                // SUPPRIMER les anciennes entrées virtuelles pour les références BRUT (évite les doublons)
+                $pdo->exec("
+                    DELETE s FROM `{$database1}`.`"._DB_PREFIX_."ckcstockstores_stocks` s
+                    INNER JOIN tmp_brut_refs br 
+                      ON (CRC32(br.reference) & 2147483647) = s.id_product_attribute
+                    WHERE s.id_product = -1
+                ");
+                
+                // CRÉER les nouvelles entrées virtuelles (plus de doublons car supprimées avant)
                 $pdo->exec("
                     INSERT INTO `{$database1}`.`"._DB_PREFIX_."ckcstockstores_stocks` (id_store, id_product, id_product_attribute, quantity)
                     SELECT 
                         ss.id_store,
                         -1 AS id_product,
-                        ABS(CRC32(ss.reference)) AS id_product_attribute,
+                        (CRC32(ss.reference) & 2147483647) AS id_product_attribute,
                         ss.qty
                     FROM tmp_source_stock ss
                     INNER JOIN tmp_brut_refs br ON br.reference = ss.reference
                     LEFT JOIN `{$database1}`.`"._DB_PREFIX_."product_attribute` pa ON pa.reference = ss.reference
                     WHERE pa.reference IS NULL
-                    ON DUPLICATE KEY UPDATE quantity = VALUES(quantity)
                 ");
             }
 
@@ -156,19 +163,14 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
                   AND s.id_product != -1
             ");
 
-            // Nettoyer les entrées virtuelles qui ne sont plus dans rep_stock
+            // Nettoyer les entrées virtuelles qui ne sont PLUS dans le mapping
             if (!empty($brutReferences)) {
                 $pdo->exec("
-                    UPDATE `{$database1}`.`"._DB_PREFIX_."ckcstockstores_stocks` s
-                    LEFT JOIN tmp_source_stock ss 
-                      ON ss.id_store = s.id_store 
-                     AND ABS(CRC32(ss.reference)) = s.id_product_attribute
-                    LEFT JOIN tmp_brut_refs br 
-                      ON ABS(CRC32(br.reference)) = s.id_product_attribute
-                    SET s.quantity = 0
-                    WHERE s.id_product = -1
-                      AND ss.reference IS NULL
-                      AND br.reference IS NOT NULL
+                    DELETE FROM `{$database1}`.`"._DB_PREFIX_."ckcstockstores_stocks`
+                    WHERE id_product = -1
+                      AND id_product_attribute NOT IN (
+                        SELECT (CRC32(reference) & 2147483647) FROM tmp_brut_refs
+                      )
                 ");
             }
 
