@@ -5,6 +5,21 @@ $(function (){$(document).on('mouseup',function (e){const $activeItem=$('.mm_ext
 $(document).ready(function () {
     var isMobile = $(window).width() <= 768;
     
+    // Ajouter du CSS pour les images dans le second volet (uniquement mobile)
+    if (!$('#megamenu-custom-styles').length) {
+        $('<style id="megamenu-custom-styles">')
+            .text('@media (min-width: 769px) { .mm_tab_li_content .mm_tab_toggle_title img { display: none !important; } }')
+            .appendTo('head');
+    }
+    
+    // Ajouter une classe aux liens qui commencent par "Voir"
+    $('.mm_tab_li_content .mm_tab_name a, .ets_mm_block_content a').each(function() {
+        var text = $(this).text().trim();
+        if (text.startsWith('Voir')) {
+            $(this).addClass('link-voir');
+        }
+    });
+    
     // Gestion du clic sur le lien de premier niveau avec flèches
     $('.item_first_layer.mm_has_sub > a').on('click', function (e) {
         e.preventDefault();
@@ -49,21 +64,57 @@ $(document).ready(function () {
         });
     }
 
-    // Gestion des onglets de contenu
+    // Gestion des onglets de contenu (3ème niveau)
     $('.mm_tab_li_content').each(function() {
         var $link = $(this).find('> .mm_tab_name > .mm_tab_toggle_title > a.mm-link-menu-sub');
         if (!$link.length) return;
         
         var $submenu = $(this).next('.mm_columns_contents_ul');
+        var tabContent = this;
         
         if ($submenu.length) {
-            $link[0].onclick = function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                this.nextElementSibling.click();
-                return false;
-            };
+            // Si un sous-menu existe, rendre tout le div cliquable en mobile
+            if (isMobile) {
+                var $arrow = $(this).find('.arrow').first();
+                
+                // Style pour indiquer la zone cliquable et répartir l'espace
+                $(this).css({
+                    'cursor': 'pointer',
+                    'width': '100%',
+                    'display': 'flex',
+                    'justify-content': 'space-between',
+                    'align-items': 'center'
+                });
+                
+                // Capturer tous les clics sur le div
+                this.addEventListener('click', function(e) {
+                    var $target = $(e.target);
+                    
+                    // Ignorer les clics sur la flèche
+                    if ($target.hasClass('arrow') || $target.closest('.arrow').length) return;
+                    
+                    // Ignorer les clics dans les sous-menus
+                    if ($target.closest('.mm_columns_contents_ul').length) return;
+                    
+                    // Pour tout le reste, ouvrir/fermer le sous-menu
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if ($arrow.length) {
+                        $arrow[0].click();
+                    }
+                }, true);
+            } else {
+                // Desktop : comportement original
+                $link[0].onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.nextElementSibling.click();
+                    return false;
+                };
+            }
         } else {
+            // Pas de sous-menu, rediriger vers le lien
             var href = $link[0].href;
             this.onclick = function(e) {
                 if (e.target.tagName !== 'A') {
@@ -76,18 +127,41 @@ $(document).ready(function () {
         }
     });
 
-    // Gestion des blocs h4 en mobile
+    // Gestion des blocs h4 en mobile (3ème niveau - accessoires, etc.)
     if (isMobile) {
-        $('.ets_mm_block .h4 > a').each(function() {
-            var arrow = this.nextElementSibling;
-            if (arrow && arrow.classList.contains('arrow')) {
-                this.onclick = function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    arrow.click();
-                    return false;
-                };
-            }
+        $('.ets_mm_block .h4').each(function() {
+            var h4 = this;
+            var $arrow = $(h4).find('> .arrow');
+            
+            if (!$arrow.length) return;
+            
+            // Style pour indiquer la zone cliquable
+            $(this).css({
+                'cursor': 'pointer',
+                'display': 'flex',
+                'justify-content': 'space-between',
+                'align-items': 'center',
+                'width': '100%'
+            });
+            
+            // Capturer tous les clics sur le h4
+            h4.addEventListener('click', function(e) {
+                var $target = $(e.target);
+                
+                // Ignorer les clics sur la flèche elle-même
+                if ($target.hasClass('arrow') || $target.closest('.arrow').length) return;
+                
+                // Ignorer les clics dans le contenu déplié
+                if ($target.closest('.ets_mm_block_content').length) return;
+                
+                // Pour tout le reste, ouvrir/fermer le sous-menu
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if ($arrow[0]) {
+                    $arrow[0].click();
+                }
+            }, true);
         });
     }
 });
