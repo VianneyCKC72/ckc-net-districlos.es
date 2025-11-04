@@ -279,11 +279,16 @@
             </a></li>
         <li class="menu-mobile-custom-container-links mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
             <div class="menu-mobile-custom-useful-links">
-                {if (!$env_particulier)}
+                {if $pro.env != 1}
                     <a class="menu-mobile-useful-link" href="{$urls.pages.authentication}?back=my-account&amp;ep=1">
                         <img src="/img/menu-mobile-espace-pro.svg" alt="espace pro" width="19px" height="18px">
                         <p>ESPACE<br>
                             PRO</p>
+                    </a>
+                {else}
+                    <a class="menu-mobile-useful-link" href="{$urls.base_url}guides-et-fiches-techniques-produits">
+                        <img src="/img/menu-mobile-espace-pro.svg" alt="documents" width="19px" height="18px">
+                        <p>DOCUMENTS</p>
                     </a>
                 {/if}
                 <a class="menu-mobile-useful-link" href="/module/opartdevis/simplequotation">
