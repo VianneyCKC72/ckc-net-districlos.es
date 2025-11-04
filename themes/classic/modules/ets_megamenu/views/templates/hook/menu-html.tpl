@@ -280,7 +280,7 @@
         <li class="menu-mobile-custom-container-links mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
             <div class="menu-mobile-custom-useful-links">
                 {if $pro.env != 1}
-                    <a class="menu-mobile-useful-link" href="{$urls.pages.authentication}?back=my-account&amp;ep=1">
+                    <a class="menu-mobile-useful-link" href="{$pro.url_domain}">
                         <img src="/img/menu-mobile-espace-pro.svg" alt="espace pro" width="19px" height="18px">
                         <p>ESPACE<br>
                             PRO</p>
