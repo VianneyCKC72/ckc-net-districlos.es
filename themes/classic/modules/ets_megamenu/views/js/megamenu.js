@@ -5,22 +5,15 @@ $(function (){$(document).on('mouseup',function (e){const $activeItem=$('.mm_ext
 $(document).ready(function () {
     var isMobile = $(window).width() <= 768;
     
-    // Ajouter du CSS pour les images dans le second volet (uniquement mobile)
+    // Styles CSS dynamiques (images desktop + liens "Voir")
     if (!$('#megamenu-custom-styles').length) {
         $('<style id="megamenu-custom-styles">')
-            .text('@media (min-width: 769px) { .mm_tab_li_content .mm_tab_toggle_title img { display: none !important; } }')
+            .text('@media (min-width: 769px) { .mm_tab_li_content .mm_tab_toggle_title img { display: none !important; } } ' +
+                  'a[href*="Voir"]:not([data-image]) { text-decoration: underline !important; }')
             .appendTo('head');
     }
     
-    // Ajouter une classe aux liens qui commencent par "Voir"
-    $('.mm_tab_li_content .mm_tab_name a, .ets_mm_block_content a').each(function() {
-        var text = $(this).text().trim();
-        if (text.startsWith('Voir')) {
-            $(this).addClass('link-voir');
-        }
-    });
-    
-    // Gestion du clic sur le lien de premier niveau avec flèches
+    // Gestion du clic sur le lien de premier niveau
     $('.item_first_layer.mm_has_sub > a').on('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -31,31 +24,18 @@ $(document).ready(function () {
         return false;
     });
 
-    // En mobile : rendre tout le li cliquable
-    if (isMobile) {
-        $('.mobile_noclic.mm_menus_li').each(function() {
-            var li = this;
-            var $arrow = $(li).find('.item_first_layer .arrow').first();
-            
+    // Fonction utilitaire pour rendre un élément cliquable en mobile
+    function makeClickable(selector, arrowSelector, ignoreSelectors) {
+        $(selector).each(function() {
+            var elem = this;
+            var $arrow = $(elem).find(arrowSelector).first();
             if (!$arrow.length) return;
             
-            // Styles pour indiquer la zone cliquable
-            $(li).find('.item_first_layer').first().css({
-                'cursor': 'pointer',
-                'width': '100%',
-                'display': 'flex',
-                'justify-content': 'space-between'
-            });
+            $(elem).css({ 'cursor': 'pointer', 'width': '100%', 'display': 'flex', 'justify-content': 'space-between', 'align-items': 'center' });
             
-            // Capturer les clics sur tout le li
-            li.addEventListener('click', function(e) {
-                var $target = $(e.target);
-                
-                // Ignorer les clics sur la flèche ou dans les sous-menus
-                if ($target.closest('.arrow, .mm_columns_ul').length) return;
-                
-                // Déclencher la flèche pour les clics valides
-                if ($target.closest('.item_first_layer').length || e.target === li) {
+            elem.addEventListener('click', function(e) {
+                if ($(e.target).closest(ignoreSelectors).length) return;
+                if ($(e.target).closest(selector).length || e.target === elem) {
                     e.preventDefault();
                     e.stopPropagation();
                     $arrow[0].click();
@@ -63,58 +43,29 @@ $(document).ready(function () {
             }, true);
         });
     }
+    
+    // En mobile : rendre tous les niveaux cliquables
+    if (isMobile) {
+        makeClickable('.mobile_noclic.mm_menus_li', '.item_first_layer .arrow', '.arrow, .mm_columns_ul');
+        makeClickable('.mm_tab_li_content', '.arrow', '.arrow, .mm_columns_contents_ul');
+        makeClickable('.ets_mm_block .h4', '.arrow', '.arrow, .ets_mm_block_content');
+    }
 
-    // Gestion des onglets de contenu (3ème niveau)
+    // Gestion des onglets desktop et liens sans sous-menu
     $('.mm_tab_li_content').each(function() {
         var $link = $(this).find('> .mm_tab_name > .mm_tab_toggle_title > a.mm-link-menu-sub');
         if (!$link.length) return;
         
         var $submenu = $(this).next('.mm_columns_contents_ul');
-        var tabContent = this;
         
-        if ($submenu.length) {
-            // Si un sous-menu existe, rendre tout le div cliquable en mobile
-            if (isMobile) {
-                var $arrow = $(this).find('.arrow').first();
-                
-                // Style pour indiquer la zone cliquable et répartir l'espace
-                $(this).css({
-                    'cursor': 'pointer',
-                    'width': '100%',
-                    'display': 'flex',
-                    'justify-content': 'space-between',
-                    'align-items': 'center'
-                });
-                
-                // Capturer tous les clics sur le div
-                this.addEventListener('click', function(e) {
-                    var $target = $(e.target);
-                    
-                    // Ignorer les clics sur la flèche
-                    if ($target.hasClass('arrow') || $target.closest('.arrow').length) return;
-                    
-                    // Ignorer les clics dans les sous-menus
-                    if ($target.closest('.mm_columns_contents_ul').length) return;
-                    
-                    // Pour tout le reste, ouvrir/fermer le sous-menu
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    if ($arrow.length) {
-                        $arrow[0].click();
-                    }
-                }, true);
-            } else {
-                // Desktop : comportement original
-                $link[0].onclick = function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.nextElementSibling.click();
-                    return false;
-                };
-            }
-        } else {
-            // Pas de sous-menu, rediriger vers le lien
+        if ($submenu.length && !isMobile) {
+            $link[0].onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.nextElementSibling.click();
+                return false;
+            };
+        } else if (!$submenu.length) {
             var href = $link[0].href;
             this.onclick = function(e) {
                 if (e.target.tagName !== 'A') {
@@ -126,42 +77,36 @@ $(document).ready(function () {
             };
         }
     });
-
-    // Gestion des blocs h4 en mobile (3ème niveau - accessoires, etc.)
-    if (isMobile) {
-        $('.ets_mm_block .h4').each(function() {
-            var h4 = this;
-            var $arrow = $(h4).find('> .arrow');
+    
+    // Changement d'image au survol (desktop uniquement)
+    if (!isMobile) {
+        $('.mm_columns_contents_ul').each(function() {
+            var $submenu = $(this);
+            var $imageContainer = $submenu.find('.mm_subcat_img.promoted').first();
             
-            if (!$arrow.length) return;
-            
-            // Style pour indiquer la zone cliquable
-            $(this).css({
-                'cursor': 'pointer',
-                'display': 'flex',
-                'justify-content': 'space-between',
-                'align-items': 'center',
-                'width': '100%'
-            });
-            
-            // Capturer tous les clics sur le h4
-            h4.addEventListener('click', function(e) {
-                var $target = $(e.target);
+            if ($imageContainer.length) {
+                var defaultImage = $imageContainer.css('background-image');
+                $imageContainer.data('default-image', defaultImage);
                 
-                // Ignorer les clics sur la flèche elle-même
-                if ($target.hasClass('arrow') || $target.closest('.arrow').length) return;
+                $submenu.find('.ets_mm_block .h4 > a, .ets_mm_block_content a').each(function() {
+                    var $link = $(this);
+                    var imageUrl = $link.attr('data-image');
+                    
+                    if (imageUrl) {
+                        new Image().src = imageUrl; // Préchargement
+                        
+                        $link.on('mouseenter', function() {
+                            $imageContainer.css('background-image', 'url("' + imageUrl + '")');
+                        }).on('mouseleave', function() {
+                            $imageContainer.css('background-image', defaultImage);
+                        });
+                    }
+                });
                 
-                // Ignorer les clics dans le contenu déplié
-                if ($target.closest('.ets_mm_block_content').length) return;
-                
-                // Pour tout le reste, ouvrir/fermer le sous-menu
-                e.preventDefault();
-                e.stopPropagation();
-                
-                if ($arrow[0]) {
-                    $arrow[0].click();
-                }
-            }, true);
+                $submenu.on('mouseleave', function() {
+                    $imageContainer.css('background-image', defaultImage);
+                });
+            }
         });
     }
 });

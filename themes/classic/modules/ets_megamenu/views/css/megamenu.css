@@ -3112,8 +3112,10 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
     }
 
 
+    /* Image de fond désactivée - remplacée par le système d'image dynamique au survol */
     .ets_mm_megamenu.layout_layout1:not(.ybc_vertical_menu) .mm_menus_ul.mm_menus_ul_big {
-        background: #fff url("/img/cms/menu/fond-menu.jpg") no-repeat top right !important;
+        background: #fff !important;
+        /* background: #fff url("/img/cms/menu/fond-menu.jpg") no-repeat top right !important; */
     }
 }
 @media (min-width: 1200px) {
@@ -3155,9 +3157,34 @@ li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name a {
     color:white;
 }
 
-/* Souligner uniquement les liens qui commencent par "Voir" */
-.link-voir {
-    text-decoration: underline !important;
+/* Image dynamique au survol - optimisée */
+.mm_subcat_img.promoted {
+    background: center/cover no-repeat;
+    transition: background-image 0.3s ease-in-out;
+}
+
+@media (max-width: 990px) {
+    .mm_subcat_img.promoted {
+        width: 100%;
+        min-height: 250px;
+    }
+}
+
+@media (min-width: 991px) {
+    .mm_subcat_img.promoted {
+        position: fixed;
+        top: 20px;
+        right: 50px;
+        width: 350px;
+        height: 350px;
+        z-index: 999;
+        pointer-events: none;
+        will-change: background-image;
+    }
+    
+    .mm_menus_ul:not(.active) .mm_subcat_img.promoted {
+        display: none;
+    }
 }
 
 li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name:hover,
