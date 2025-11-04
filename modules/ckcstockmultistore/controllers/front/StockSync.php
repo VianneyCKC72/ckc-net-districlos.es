@@ -5,7 +5,7 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
     public function initContent()
     {
         parent::initContent();
-        try { 
+        try {
             $this->syncStockSetBased();
             die(json_encode(['status' => 'success', 'message' => 'Synchronisation des stocks terminée.']));
         } catch (Throwable $e) {
@@ -113,7 +113,7 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
                         reference VARCHAR(64) PRIMARY KEY
                     ) ENGINE=MEMORY
                 ");
-                
+
                 // Insérer toutes les références BRUT du mapping
                 $brutValues = array_map(function($ref) use ($pdo) {
                     return '(' . $pdo->quote($ref) . ')';
@@ -121,7 +121,7 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
                 $pdo->exec("
                     INSERT INTO tmp_brut_refs (reference) VALUES " . implode(',', $brutValues)
                 );
-                
+
                 // Créer des entrées virtuelles pour les références BRUT qui ont du stock mais n'existent pas dans PrestaShop
                 $pdo->exec("
                     INSERT INTO `{$database1}`.`"._DB_PREFIX_."ckcstockstores_stocks` (id_store, id_product, id_product_attribute, quantity)
@@ -213,6 +213,23 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
                  AND t.id_product_attribute = sa.id_product_attribute
                 SET sa.quantity = 0, sa.physical_quantity = 0
                 WHERE t.id_product IS NULL
+            ");
+
+            // pack
+            $pdo->exec("
+                UPDATE `{$database1}`.`"._DB_PREFIX_."product` p
+                SET p.out_of_stock = 1
+                WHERE p.id_product IN (
+                    SELECT ap.id_pack FROM `{$database1}`.`"._DB_PREFIX_."pm_advancedpack` ap
+                )
+            ");
+
+            $pdo->exec("
+                UPDATE `{$database1}`.`"._DB_PREFIX_."stock_available` p
+                SET p.out_of_stock = 1
+                WHERE p.id_product IN (
+                    SELECT ap.id_pack FROM `{$database1}`.`"._DB_PREFIX_."pm_advancedpack` ap
+                )
             ");
 
             $pdo->commit();
