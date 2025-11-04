@@ -170,7 +170,7 @@
                                          {/if} 
                                     </span>
 
-                                        {if $product.has_discount}
+                                        {if ($product.has_discount && !$pro.env) OR ($product.has_discount && $pro.env == 1 && !isset($product.discount_qty_slider))}
                                             {hook h='displayProductPriceBlock' product=$product type="old_price"}
                                             <span class="regular-price">{$product.regular_price}</span>
                                         {/if}
