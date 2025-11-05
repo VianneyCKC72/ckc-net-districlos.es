@@ -215,6 +215,7 @@ class pm_advancedpackupdate_packModuleFrontController extends ModuleFrontControl
                 $this->jsonOutput['packAvailableQuantity'] = AdvancedPack::getPackAvailableQuantity($this->idPack, $this->packAttributesList, $this->productPackQuantityList, $this->productPackExclude);
                 $this->jsonOutput['packContentTable'] = $this->module->displayPackContentTable($this->idPack, $this->packAttributesList, $packCompleteAttributesList, $this->productPackQuantityList, $this->productPackExclude, $packErrorsList, $packFatalErrorsList, $packForceHideInfoList);
                 $this->jsonOutput['packPriceContainer'] = $this->module->displayPackPriceContainer($this->idPack, $this->packAttributesList, $this->productPackQuantityList, $this->productPackExclude, $packErrorsList, $packFatalErrorsList);
+                $this->jsonOutput['packProductContainer'] = $this->module->displayPackProductContainer($this->idPack, $this->packAttributesList, $this->productPackQuantityList, $this->productPackExclude, $packErrorsList, $packFatalErrorsList);
                 $this->jsonOutput['packUrlAnchor'] = AdvancedPack::getPackAnchorByAttributes($this->idPack, $this->packAttributesList);
                 $this->jsonOutput['HOOK_EXTRA_RIGHT'] = Hook::exec('displayRightColumnProduct');
                 $this->jsonOutput['packErrorsList'] = $packErrorsList;

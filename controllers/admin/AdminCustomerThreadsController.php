@@ -132,6 +132,20 @@ class AdminCustomerThreadsControllerCore extends AdminController
             ],
         ];
 
+        $this->fields_list['ckc_store_id'] = [
+            'title'          => $this->trans('Boutique', [], 'Admin.Global'),
+            'type'           => 'select',
+            'list'           => $this->getCkcStoresChoicesForFilter(),
+            'filter_key'      => 'ckc_store_id',
+            'havingFilter'   => false,
+            'multiple'       => true,
+            'tmpTableFilter' => true,
+            'filter_type'     => 'int',
+            'orderby'        => false,
+            'align'          => 'text-left',
+            'callback'       => 'renderCkcStoreName',
+        ];
+
         $this->bulk_actions = [
             'delete' => [
                 'text' => $this->trans('Delete selected', [], 'Admin.Actions'),
@@ -273,6 +287,68 @@ class AdminCustomerThreadsControllerCore extends AdminController
         $this->_group = 'GROUP BY cm.id_customer_thread';
         $this->_orderBy = 'id_customer_thread';
         $this->_orderWay = 'DESC';
+
+        // CKC >>> expose la boutique de la DERNIÈRE commande du client + sécurité + filtre
+
+        $__ckc_sub_last_order = '(
+            SELECT o2.id_order
+            FROM ' . _DB_PREFIX_ . 'orders o2
+            WHERE o2.id_customer = a.id_customer
+            ORDER BY o2.date_add DESC
+            LIMIT 1
+        )';
+
+        $this->_select .= ',
+            o_last.id_store AS ckc_store_id,
+            ss.name         AS ckc_store_name
+        ';
+
+        $this->_join .= '
+            LEFT JOIN ' . _DB_PREFIX_ . 'orders o_last
+                ON o_last.id_order = ' . $__ckc_sub_last_order . '
+            LEFT JOIN ' . _DB_PREFIX_ . 'ckcstockstores_stores ss
+                ON ss.id_store = o_last.id_store
+        ';
+
+        $__ckc_allowed = $this->getCkcAllowedStoreIdsForEmployee((int)$this->context->employee->id);
+        if ($__ckc_allowed !== null && !empty($__ckc_allowed)) {
+            $ids = implode(',', array_map('intval', $__ckc_allowed));
+            $__ckc_last_store_sub = '(
+                SELECT o3.id_store
+                FROM ' . _DB_PREFIX_ . 'orders o3
+                WHERE o3.id_customer = a.id_customer
+                ORDER BY o3.date_add DESC
+                LIMIT 1
+            )';
+            $this->_where .= ' AND (' . $__ckc_last_store_sub . ' IS NULL OR ' . $__ckc_last_store_sub . ' IN (' . $ids . ')) ';
+        } elseif ($__ckc_allowed === null) {
+            $this->_where .= ' AND 1=0 ';
+        }
+
+        $__ckc_param = $this->table . 'Filter_ckc_store_id'; // "customer_threadFilter_ckc_store_id"
+        $__ckc_selected = (int)Tools::getValue($__ckc_param, 0);
+
+        foreach (['_filter', '_where', '_having'] as $__p) {
+            if (!empty($this->{$__p})) {
+                $this->{$__p} = preg_replace(
+                    '/\sAND\s+`?ckc_store_id`?\s*(=|IN)\s*(\([^)]+\)|\'?\d+\'?)/i',
+                    '',
+                    $this->{$__p}
+                );
+            }
+        }
+
+        if ($__ckc_selected > 0) {
+            $__ckc_last_store_sub_filter = '(
+                SELECT o4.id_store
+                FROM ' . _DB_PREFIX_ . 'orders o4
+                WHERE o4.id_customer = a.id_customer
+                ORDER BY o4.date_add DESC
+                LIMIT 1
+            )';
+            $this->_where .= ' AND ' . $__ckc_last_store_sub_filter . ' = ' . (int)$__ckc_selected . ' ';
+        }
+        // CKC <<<
 
         $contacts = CustomerThread::getContacts();
 
@@ -1222,5 +1298,52 @@ class AdminCustomerThreadsControllerCore extends AdminController
         }
 
         return 'utf-8';
+    }
+
+    // CKC >>> helpers Boutique
+
+    public function renderCkcStoreName($value, $row)
+    {
+        return !empty($row['ckc_store_name']) ? $row['ckc_store_name'] : '-';
+    }
+    protected function getCkcAllowedStoreIdsForEmployee(int $employeeId): ?array
+    {
+        $rows = Db::getInstance()->executeS('
+        SELECT id_store
+        FROM ' . _DB_PREFIX_ . 'ckcstockstores_employee_store
+        WHERE id_employee=' . (int)$employeeId
+        );
+
+        if ($rows === false) {
+            return [];
+        }
+
+        $ids = array_map('intval', array_column($rows, 'id_store'));
+
+        return $ids;
+    }
+
+    protected function getCkcStoresChoicesForFilter(): array
+    {
+        $allowed = $this->getCkcAllowedStoreIdsForEmployee((int)$this->context->employee->id);
+
+        $where = '';
+        if ($allowed !== null && !empty($allowed)) {
+            $where = ' WHERE id_store IN (' . implode(',', array_map('intval', $allowed)) . ') ';
+        }
+
+        $rows = Db::getInstance()->executeS('
+        SELECT id_store, name
+        FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores
+        ' . $where . '
+        ORDER BY name ASC
+    ');
+
+        $choices = [];
+        foreach ($rows ?: [] as $r) {
+            $choices[(int)$r['id_store']] = $r['name'];
+        }
+
+        return $choices;
     }
 }

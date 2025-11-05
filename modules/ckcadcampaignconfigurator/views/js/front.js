@@ -26,6 +26,6 @@
 * to avoid any conflicts with others containers.
 */
 if(typeof campaignLogo !== 'undefined'){
-    $(".d-none.d-md-block .logo.img-fluid").attr('src', campaignLogo)
+    $(".d-none .logo.img-fluid").attr('src', campaignLogo)
     /*$(".d-block.d-md-none .logo.img-fluid").attr('src', campaignLogo)*/
 }

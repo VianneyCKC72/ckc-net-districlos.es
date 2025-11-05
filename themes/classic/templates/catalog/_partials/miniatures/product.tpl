@@ -22,7 +22,7 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
-{block name='product_miniature_item'}
+ {block name='product_miniature_item'}
 
     <div
             class="js-product product {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')} list_view col-12 {else}{if !empty($productClasses)} {$productClasses} {/if} {/if}">
@@ -77,17 +77,17 @@
                             {* Image en hover *}
                             <picture class="product-image second-image">
                                 {if $hoverImage}
-                                    {if !empty($hoverImage.bySize.medium_default.sources.avif)}
-                                        <source srcset="{$hoverImage.bySize.medium_default.sources.avif}" type="image/avif">
+                                    {if !empty($hoverImage.bySize.home_default.sources.avif)}
+                                        <source srcset="{$hoverImage.bySize.home_default.sources.avif}" type="image/avif">
                                     {/if}
-                                    {if !empty($hoverImage.bySize.medium_default.sources.webp)}
-                                        <source srcset="{$hoverImage.bySize.medium_default.sources.webp}" type="image/webp">
+                                    {if !empty($hoverImage.bySize.home_default.sources.webp)}
+                                        <source srcset="{$hoverImage.bySize.home_default.sources.webp}" type="image/webp">
                                     {/if}
-                                    <img src="{$hoverImage.bySize.medium_default.url}"
-                                         alt="{$hoverImage.legend|default:$product.name|truncate:30:'...'}"
-                                         loading="lazy" data-full-size-image-url="{$hoverImage.large.url}"
-                                         width="{$hoverImage.bySize.medium_default.width}"
-                                         height="{$hoverImage.bySize.medium_default.height}"/>
+                                    <img src="{$hoverImage.bySize.home_default.url}"
+                                        alt="{$hoverImage.legend|default:$product.name|truncate:30:'...'}"
+                                        loading="lazy" data-full-size-image-url="{$hoverImage.large.url}"
+                                        width="{$hoverImage.bySize.home_default.width}"
+                                        height="{$hoverImage.bySize.home_default.height}"/>
                                 {else}
                                     {* fallback si pas d’image hover trouvée *}
                                     {if $product.cover}

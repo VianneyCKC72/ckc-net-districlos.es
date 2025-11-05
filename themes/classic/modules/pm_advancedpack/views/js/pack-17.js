@@ -11,56 +11,63 @@ var ap5Plugin = {
     topLimit: 0,
 
     initChangesLi: function() {
-        function getRadioCountByName(mainRadioName) {
-            var radioCounts = {};
+        (function () {
+            // Flag pour éviter les récursions pendant la synchro
+            let AP5_SYNCING = false;
 
-            $('input[type=radio]').each(function() {
-                var name = $(this).attr('name');
-                if (radioCounts[name]) {
-                    radioCounts[name]++;
-                } else {
-                    radioCounts[name] = 1;
-                }
-            });
-
-            return Object.keys(radioCounts).reduce(function(acc, key) {
-                if (radioCounts[key] === radioCounts[mainRadioName]) {
-                    acc.push(key);
-                }
-                return acc;
-            }, []);
-        }
-
-        $('.select_ul').on('click', 'li.liOption', function() {
-            var selectedValue = $(this).data('value');
-
-            var radioName = $(this).closest('.select_wrap').data('id');
-
-            var radioSelector = 'input[name="group_' + radioName + '"][value="' + selectedValue + '"]';
-
-            $(radioSelector).prop('checked', true);
-
-            $(this).siblings().attr('data-active', '0');
-            $(this).attr('data-active', '1');
-            var selectedText = $(this).find('p').text();
-            $(this).closest('.select_wrap').find('.default_option p').text(selectedText);
-
-            if ($('#auto_choose').length && $('#auto_choose').val() == 1) {
-                var elementChanged = $(radioSelector);
-                var dataProductAttribute = elementChanged.data('product-attribute');
-                var elementChangedPosition = $(radioSelector).data('position');
-                var radioToUpdate = getRadioCountByName($(radioSelector).attr('name'));
-                radioToUpdate.forEach(function(radioName) {
-                    var radioSelector = 'input[name="' + radioName + '"][data-position=' + elementChangedPosition + '][data-product-attribute='+ dataProductAttribute +']';
-                    $(radioSelector).each(function(index, radio) {
-                        $(radio).prop('checked', true);
-                    })
-                })
-                $(radioSelector).trigger('click')
-            }else{
-                $(radioSelector).trigger('click')
+            // Extrait l'ID d'attribut à partir du name "group_<productId>_<attributeId>"
+            function getAttributeIdFromName(name) {
+                if (!name) return null;
+                const parts = String(name).split('_');
+                return parts.length ? parts[parts.length - 1] : null;
             }
-        });
+
+            // Handler unique pour tous les selects d'attribut
+            $('.ap5-attribute-select').on('change', function () {
+                // Si on est en train de synchroniser, on laisse passer l'événement
+                // pour AP5 mais on ne refait pas notre logique.
+                if (AP5_SYNCING) return;
+
+                const $sel = $(this);
+                const autoChoose = $('#auto_choose').length && $('#auto_choose').val() === '1';
+                if (!autoChoose) return; // on laisse AP5 gérer le changement seul
+
+                const name   = $sel.attr('name');                // ex: "group_1223_2"
+                const attrId = getAttributeIdFromName(name);     // ex: "2"
+                if (!attrId) return;
+
+                // Position (index) de l'option sélectionnée dans CE select
+                const pos = this.selectedIndex;                  // 0,1,2,...
+
+                // Début de synchro: on s'auto-ignore pour éviter les boucles
+                AP5_SYNCING = true;
+
+                // Pour chaque autre select: si même attribut, on le cale sur la même position
+                $('.ap5-attribute-select').each(function () {
+                    const $other    = $(this);
+                    if (this === $sel[0]) return; // ignorer le select source
+
+                    const otherName = $other.attr('name');
+                    const otherAttr = getAttributeIdFromName(otherName);
+                    if (otherAttr !== attrId) return; // on ne synchronise que le même attribut
+
+                    const opts = this.options;
+                    // Si la position existe dans ce select, on l'applique
+                    if (pos >= 0 && pos < opts.length) {
+                        if (this.selectedIndex !== pos) {
+                            this.selectedIndex = pos;
+                            // On déclenche change pour que le module AP5 réagisse (prix/combinaisons),
+                            // notre handler ne fera rien car AP5_SYNCING=true.
+                            $other.trigger('change');
+                        }
+                    }
+                    // Si la position n'existe pas (longueurs différentes), on ne touche pas.
+                });
+
+                // Fin de synchro: on réactive notre handler
+                AP5_SYNCING = false;
+            });
+        })();
     },
 
     log: function(txt) {
@@ -555,6 +562,9 @@ var ap5Plugin = {
             } else {
                 $('#idCombination').val(jsonData.packAttributesList);
                 $('#ap5-add-to-cart').show();
+            }
+            if (typeof (jsonData.packProductContainer) !== 'undefined') {
+                $('#ap5-pack-product-container').html(jsonData.packProductContainer);
             }
         }
         setTimeout(function () {

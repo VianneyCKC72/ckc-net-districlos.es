@@ -124,6 +124,7 @@ class Ckc_Stores_Stock extends Module
     {
         require_once _PS_MODULE_DIR_ . 'ckc_stores_stock/classes/StockManager.php';
         $stockManager = new StockManager();
+
         $stockData = $stockManager->getDelivery($this->context->cart->id_carrier);
 
         $this->context->smarty->assign($stockData);

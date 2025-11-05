@@ -14,37 +14,19 @@
                                 {$group['default'] = $id_attribute}
                             {/if}
                             {assign var="groupName" value="group_`$productPack.id_product`_$id_attribute_group"}
-                            {assign var=ap5_isCurrentSelectedIdAttribute value=((isset($productsPackErrors[$productPack.id_product_pack]) && isset($packCompleteAttributesList[$productPack.id_product_pack]) && in_array($id_attribute, $packCompleteAttributesList[$productPack.id_product_pack])) || $group.default == $id_attribute)}
-                            {if ($group.group_type == 'color')}
-                                <input class="product-pack-variant-radio input-color ap5-attribute-radio" type="radio" data-product="{$productPack.id_product}" data-product-attribute="{$id_attribute_group}" name="{$groupName}" value="{$id_attribute|intval}" {if $ap5_isCurrentSelectedIdAttribute} checked="checked"{/if} data-position="{$indexCounter}">
-                            {/if}
                         {/foreach}
 
                         {if !empty($group.attributes) && in_array($group.group_type, ['select', 'color', 'radio'])}
                             <div class="clearfix product-variants-item ap5-attribute-fieldset">
                                 <span class="control-label">{$group.name}</span>
                                 <div class="attribute_list ap5-attribute-list">
-                                    {if ($group.group_type == 'select')}
+                                    {if ($group.group_type == 'select') || ($group.group_type == 'color')}
                                         <select name="{$groupName}" id="group_{$id_attribute_group|intval}" class="ap5-attribute-select no-print form-control form-control-select"{if in_array($productPack.id_product_pack, $packExcludeList)} disabled="disabled"{/if}>
                                             {foreach from=$group.attributes key=id_attribute item=group_attribute}
                                                 {assign var=ap5_isCurrentSelectedIdAttribute value=((isset($productsPackErrors[$productPack.id_product_pack]) && isset($packCompleteAttributesList[$productPack.id_product_pack]) && in_array($id_attribute, $packCompleteAttributesList[$productPack.id_product_pack])) || $group.default == $id_attribute)}
                                                 <option value="{$id_attribute|intval}" {if $ap5_isCurrentSelectedIdAttribute} selected="selected"{/if} title="{$group_attribute.name}">{$group_attribute.name}</option>
                                             {/foreach}
                                         </select>
-                                    {elseif ($group.group_type == 'color')}
-                                        <select name="{$groupName}" id="group_{$id_attribute_group|intval}" class="styled-color-select ap5-attribute-select no-print form-control form-control-select"{if in_array($productPack.id_product_pack, $packExcludeList)} disabled="disabled"{/if}>
-                                            {foreach from=$group.attributes key=id_attribute item=group_attribute}
-                                                {assign var=ap5_isCurrentSelectedIdAttribute value=((isset($productsPackErrors[$productPack.id_product_pack]) && isset($packCompleteAttributesList[$productPack.id_product_pack]) && in_array($id_attribute, $packCompleteAttributesList[$productPack.id_product_pack])) || $group.default == $id_attribute)}
-                                                <option
-                                                        value="{$id_attribute|intval}"
-                                                        {if $ap5_isCurrentSelectedIdAttribute} selected="selected"{/if}
-                                                        title="{$group_attribute.name}"
-                                                        data-color="{$group_attribute.html_color_code|escape:'htmlall':'UTF-8'}">
-                                                    {$group_attribute.name}
-                                                </option>
-                                            {/foreach}
-                                        </select>
-
                                     {elseif ($group.group_type == 'radio')}
                                         <ul>
                                             {foreach from=$group.attributes key=id_attribute item=group_attribute}
