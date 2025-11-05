@@ -145,11 +145,21 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
                 ");
             }
 
+            // DELETE les anciennes entrées avant d'insérer (évite les doublons sans clé unique)
+            $pdo->exec("
+                DELETE s FROM `{$database1}`.`"._DB_PREFIX_."ckcstockstores_stocks` s
+                INNER JOIN tmp_mapped_stock t
+                  ON t.id_store = s.id_store
+                 AND t.id_product = s.id_product
+                 AND t.id_product_attribute = s.id_product_attribute
+                WHERE s.id_product != -1
+            ");
+            
+            // INSERT les nouvelles valeurs (sans doublons possibles)
             $pdo->exec("
                 INSERT INTO `{$database1}`.`"._DB_PREFIX_."ckcstockstores_stocks` (id_store, id_product, id_product_attribute, quantity)
                 SELECT id_store, id_product, id_product_attribute, qty
                 FROM tmp_mapped_stock
-                ON DUPLICATE KEY UPDATE quantity = VALUES(quantity)
             ");
 
             $pdo->exec("
@@ -244,3 +254,4 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
         }
     }
 }
+
