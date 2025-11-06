@@ -101,9 +101,9 @@
           {/if}
         {/foreach}
       </div>
-        {hook h='displayAfterProductThumbs' product=$product}
     </div>
   {/block}
 
+    {hook h='displayAfterProductThumbs' product=$product}
 
 </div>
