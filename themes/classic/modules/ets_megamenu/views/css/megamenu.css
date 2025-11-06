@@ -3161,7 +3161,7 @@ li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name a {
 .mm_subcat_img.promoted {
     background: center/cover no-repeat;
     transition: background-image 0.3s ease-in-out;
-    opacity: 1;
+    display: none;
 }
 
 @media (max-width: 990px) {
@@ -3181,16 +3181,23 @@ li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name a {
         z-index: 999;
         pointer-events: none;
         will-change: background-image;
+        display: none;
     }
 
-    .mm_menus_ul:not(.active) .mm_subcat_img.promoted {
+    /* Quand le volet est actif : affichage avec animation */
+    .mm_columns_contents_ul.active .mm_subcat_img.promoted {
+        display: block;
+        animation: fadeInImage 0.3s ease-in-out 0.5s both;
+    }
+}
+
+/* Animation d'apparition */
+@keyframes fadeInImage {
+    from {
         opacity: 0;
-        visibility: hidden;
     }
-
-    .mm_menus_ul.active .mm_subcat_img.promoted {
+    to {
         opacity: 1;
-        visibility: visible;
     }
 }
 
