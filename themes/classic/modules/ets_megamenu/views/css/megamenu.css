@@ -3161,6 +3161,7 @@ li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name a {
 .mm_subcat_img.promoted {
     background: center/cover no-repeat;
     transition: background-image 0.3s ease-in-out;
+    opacity: 1;
 }
 
 @media (max-width: 990px) {
@@ -3181,9 +3182,15 @@ li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name a {
         pointer-events: none;
         will-change: background-image;
     }
-    
+
     .mm_menus_ul:not(.active) .mm_subcat_img.promoted {
-        display: none;
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .mm_menus_ul.active .mm_subcat_img.promoted {
+        opacity: 1;
+        visibility: visible;
     }
 }
 
