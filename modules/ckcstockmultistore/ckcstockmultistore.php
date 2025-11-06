@@ -286,10 +286,19 @@ class Ckcstockmultistore extends Module
         $store_id = (int) Tools::getValue('id_store');
         $store = $this->getStore($store_id);
 
+        // Récupérer les codes ISO sélectionnés ou FR par défaut
+        $selectedCountries = [];
+        if (isset($store['country_codes']) && !empty($store['country_codes'])) {
+            $selectedCountries = explode(',', $store['country_codes']);
+        } else {
+            $selectedCountries = ['FR'];
+        }
+
         $helper->tpl_vars = array(
             'fields_value' => array(
                 'id_store' => $store['id_store'] ?? '',
                 'name' => $store['name'] ?? '',
+                'country_codes[]' => $selectedCountries,
                 'zip_codes' => $store['zip_codes'] ?? '',
                 'iban' => $store['iban'] ?? '',
                 'bic' => $store['bic'] ?? '',
@@ -320,6 +329,9 @@ class Ckcstockmultistore extends Module
             $descCarrier .= $carrier['name'] .' - <b>'.$carrier['id_reference'].'</b><br/>';
         }
 
+        // Récupérer tous les pays actifs avec leurs codes ISO
+        $countries = Country::getCountries($this->context->language->id, true);
+
         return array(
             'form' => array(
                 'legend' => array(
@@ -337,6 +349,17 @@ class Ckcstockmultistore extends Module
                         'name' => 'name',
                         'size' => 50,
                         'required' => true,
+                    ),
+                    array(
+                        'type' => 'select',
+                        'label' => $this->l('Pays attribués'),
+                        'name' => 'country_codes[]',
+                        'multiple' => true,
+                        'options' => array(
+                            'query' => $countries,
+                            'id' => 'iso_code',
+                            'name' => 'name',
+                        ),
                     ),
                     array(
                         'type' => 'text',
@@ -396,11 +419,22 @@ class Ckcstockmultistore extends Module
             $id_store = (int) Tools::getValue('id_store');
             $name = Tools::getValue('name');
             $zip_codes = Tools::getValue('zip_codes');
+            $country_codes = Tools::getValue('country_codes');
+
+            // Si aucun pays n'est sélectionné, mettre FR par défaut
+            if (empty($country_codes) || !is_array($country_codes)) {
+                $country_codes = ['FR'];
+            }
+
+            // Nettoyer et valider les codes ISO (mettre en majuscule)
+            $country_codes = array_map('strtoupper', array_map('trim', $country_codes));
+            $countryCodesStr = implode(',', $country_codes);
 
             if ($id_store) {
                 Db::getInstance()->update('ckcstockstores_stores', array(
                     'name' => pSQL($name),
                     'zip_codes' => pSQL($zip_codes),
+                    'country_codes' => pSQL($countryCodesStr),
                     'iban' => pSQL(Tools::getValue('iban')),
                     'bic' => pSQL(Tools::getValue('bic')),
                     'carrier' => pSQL(Tools::getValue('carrier')),
@@ -408,6 +442,7 @@ class Ckcstockmultistore extends Module
             } else {
                 Db::getInstance()->insert('ckcstockstores_stores', array(
                     'name' => pSQL($name),
+                    'country_codes' => pSQL($countryCodesStr),
                     'zip_codes' => pSQL($zip_codes),
                     'iban' => pSQL(Tools::getValue('iban')),
                     'bic' => pSQL(Tools::getValue('bic')),
@@ -510,24 +545,40 @@ class Ckcstockmultistore extends Module
         }
 
         $customer_zip_code = pSQL($address->postcode);
+        $customer_country_iso = strtoupper(Country::getIsoById((int) $address->id_country));
 
-        $stores = Db::getInstance()->executeS('SELECT id_store, zip_codes, carrier FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores WHERE carrier IS NOT NULL OR carrier != ""');
+        $stores = Db::getInstance()->executeS('SELECT id_store, country_codes, zip_codes, carrier FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores WHERE carrier IS NOT NULL OR carrier != ""');
 
         $id_store = null;
+        $attribution_method = '';
 
         $carrier = new Carrier((int)$order->id_carrier);
 
+        // Vérification par PAYS
         foreach ($stores as $store) {
-            $carrierStore = explode(',', $store['carrier']);
-
-            if (in_array($carrier->id_reference, $carrierStore)) {
-                $id_store = $store['id_store'];
+            if (!empty($store['country_codes'])) {
+                $storeCountryCodes = array_map('strtoupper', array_map('trim', explode(',', $store['country_codes'])));
+                
+                if (in_array($customer_country_iso, $storeCountryCodes)) {
+                    $id_store = $store['id_store'];
+                    $attribution_method = 'PAYS ('.$customer_country_iso.')';
+                    break;
+                }
             }
         }
 
         if (!$id_store) {
-            $id_store = null;
+            foreach ($stores as $store) {
+                $carrierStore = explode(',', $store['carrier']);
 
+                if (in_array($carrier->id_reference, $carrierStore)) {
+                    $id_store = $store['id_store'];
+                    $attribution_method = 'TRANSPORTEUR (ref: '.$carrier->id_reference.')';
+                }
+            }
+        }
+
+        if (!$id_store) {
             foreach ($stores as $store) {
                 $zip_codes = explode(',', $store['zip_codes']);
 
@@ -536,17 +587,20 @@ class Ckcstockmultistore extends Module
 
                     if ($zip_code === $customer_zip_code || (strpos($zip_code, '*') !== false && preg_match('/^' . str_replace('*', '.*', $zip_code) . '$/', $customer_zip_code))) {
                         $id_store = (int) $store['id_store'];
+                        $attribution_method = 'CODE POSTAL ('.$zip_code.')';
                         break 2;
                     }
                 }
             }
-
         }
 
         if (!$id_store) {
-            PrestaShopLogger::addLog('No store found for zip code ' . $customer_zip_code, 3, null, 'Ckcstockmultistore', $id_order, true);
+            PrestaShopLogger::addLog('Aucun magasin trouvé - Pays: '.$customer_country_iso.', CP: '.$customer_zip_code, 3, null, 'Ckcstockmultistore', $id_order, true);
             return;
         }
+        
+        // Log unique avec toutes les infos importantes
+        PrestaShopLogger::addLog('Store #'.$id_store.' assigné par '.$attribution_method.' - Commande #'.$id_order.' ('.$customer_country_iso.' - '.$customer_zip_code.')', 1, null, 'Ckcstockmultistore', $id_order, true);
 
         Db::getInstance()->execute(
             'UPDATE ' . _DB_PREFIX_ . 'orders 
