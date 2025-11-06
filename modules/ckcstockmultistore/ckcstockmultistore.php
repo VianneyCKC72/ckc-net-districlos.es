@@ -554,19 +554,22 @@ class Ckcstockmultistore extends Module
 
         $carrier = new Carrier((int)$order->id_carrier);
 
-        // Vérification par PAYS
-        foreach ($stores as $store) {
-            if (!empty($store['country_codes'])) {
-                $storeCountryCodes = array_map('strtoupper', array_map('trim', explode(',', $store['country_codes'])));
-                
-                if (in_array($customer_country_iso, $storeCountryCodes)) {
-                    $id_store = $store['id_store'];
-                    $attribution_method = 'PAYS ('.$customer_country_iso.')';
-                    break;
+        // Vérification par PAYS (uniquement pour pays étrangers)
+        if ($customer_country_iso !== 'FR') {
+            foreach ($stores as $store) {
+                if (!empty($store['country_codes'])) {
+                    $storeCountryCodes = array_map('strtoupper', array_map('trim', explode(',', $store['country_codes'])));
+                    
+                    if (in_array($customer_country_iso, $storeCountryCodes)) {
+                        $id_store = $store['id_store'];
+                        $attribution_method = 'PAYS ('.$customer_country_iso.')';
+                        break; // Arrêter dès qu'on trouve
+                    }
                 }
             }
         }
 
+        // Vérification par TRANSPORTEUR (LOGIQUE ORIGINALE)
         if (!$id_store) {
             foreach ($stores as $store) {
                 $carrierStore = explode(',', $store['carrier']);
@@ -578,7 +581,10 @@ class Ckcstockmultistore extends Module
             }
         }
 
+        // Vérification par CODE POSTAL (LOGIQUE ORIGINALE)
         if (!$id_store) {
+            $id_store = null;
+
             foreach ($stores as $store) {
                 $zip_codes = explode(',', $store['zip_codes']);
 
@@ -592,6 +598,7 @@ class Ckcstockmultistore extends Module
                     }
                 }
             }
+
         }
 
         if (!$id_store) {
