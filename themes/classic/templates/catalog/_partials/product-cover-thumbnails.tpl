@@ -104,5 +104,6 @@
     </div>
   {/block}
 
-  {hook h='displayAfterProductThumbs' product=$product}
+    {hook h='displayAfterProductThumbs' product=$product}
+
 </div>
