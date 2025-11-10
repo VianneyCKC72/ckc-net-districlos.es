@@ -37,22 +37,26 @@ class StockManager extends Module
         
         if ($currentReference && isset($referenceMapping[$currentReference])) {
             $mappedReference = $referenceMapping[$currentReference];
-            // Chercher si le produit BRUT existe dans PrestaShop
-            $mappedProduct = Db::getInstance()->getRow('SELECT id_product, id_product_attribute FROM ' . _DB_PREFIX_ . 'product_attribute WHERE reference = "' . pSQL($mappedReference) . '" LIMIT 1');
+            // Chercher si le produit BRUT existe dans PrestaShop (SANS LIMIT car bug SQL sur cette table)
+            $mappedProduct = Db::getInstance()->getRow('SELECT id_product, id_product_attribute FROM ' . _DB_PREFIX_ . 'product_attribute WHERE reference = \'' . pSQL($mappedReference) . '\'');
             if ($mappedProduct) {
                 // Le produit BRUT existe dans PrestaShop
                 $stock_id_product = (int)$mappedProduct['id_product'];
                 $stock_id_product_attribute = (int)$mappedProduct['id_product_attribute'];
             } else {
-                // Le produit BRUT n'existe pas, utiliser le hash virtuel
+                // Le produit BRUT n'existe pas, utiliser le hash virtuel (avec modulo binaire pour rester dans les limites INT)
                 $stock_id_product = -1;
-                $stock_id_product_attribute = abs(crc32($mappedReference));
+                $stock_id_product_attribute = crc32($mappedReference) & 2147483647;
             }
         }
         
         $product = new Product($id_product);
         $quantity_by_store = Db::getInstance()->getValue('SELECT quantity FROM ' . _DB_PREFIX_ . 'ckcstockstores_stocks WHERE id_product = ' . (int)$stock_id_product . ' AND id_product_attribute = ' . (int)$stock_id_product_attribute . ' AND id_store = ' . (int)$id_store);
         $quantity = Db::getInstance()->getValue('SELECT SUM(quantity) FROM ' . _DB_PREFIX_ . 'ckcstockstores_stocks WHERE id_product = ' . (int)$stock_id_product . ' AND id_product_attribute = ' . (int)$stock_id_product_attribute);
+        
+        // Gérer les valeurs null/false
+        $quantity_by_store = ($quantity_by_store !== false && $quantity_by_store !== null) ? (int)$quantity_by_store : 0;
+        $quantity = ($quantity !== false && $quantity !== null) ? (int)$quantity : 0;
 
         $seuilCategories = json_decode(file_get_contents(_PS_MODULE_DIR_ . 'ckc_stores_stock/assets/js/seuilCategories.json'), true);
         $packIdList = AdvancedPack::getIdsPacks(true);
@@ -87,6 +91,8 @@ class StockManager extends Module
                 // Si fin de vie, récupérer le stock de la plateforme (store 18 = DX)
                 if ($fin_de_vie) {
                     $platform_stock = Db::getInstance()->getValue('SELECT quantity FROM ' . _DB_PREFIX_ . 'ckcstockstores_stocks WHERE id_product = ' . (int)$stock_id_product . ' AND id_product_attribute = ' . (int)$stock_id_product_attribute . ' AND id_store = 18');
+                    // Gérer les valeurs null/false
+                    $platform_stock = ($platform_stock !== false && $platform_stock !== null) ? (int)$platform_stock : 0;
 
                     // Pour les produits fin de vie, vérifier avec le stock plateforme
                     if ($stock_threshold !== null && $platform_stock <= $stock_threshold) {
@@ -123,6 +129,8 @@ class StockManager extends Module
 
         foreach ($shops as $shop) {
             $quantity_by_store = Db::getInstance()->getValue('SELECT quantity FROM ' . _DB_PREFIX_ . 'ckcstockstores_stocks WHERE id_product = ' . (int)$id_product . ' AND id_product_attribute = ' . (int)$id_product_attribute . ' AND id_store = ' . (int)$shop['id_store']);
+            // Gérer les valeurs null/false
+            $quantity_by_store = ($quantity_by_store !== false && $quantity_by_store !== null) ? (int)$quantity_by_store : 0;
 
             $id_store = null;
             if (!$this->context->customer->isLogged()) {

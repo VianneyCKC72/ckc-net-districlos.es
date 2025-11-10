@@ -82,15 +82,15 @@ class statsforecast extends Module
         $to = $employee->stats_date_to.' 23:59:59';
 
         /*************** requête devis *************/
-        $sql = $this->buildQuery('SELECT * FROM `ps_opartdevis`', 'WHERE `ps_opartdevis`.`date_add` BETWEEN "'.$from.'" AND "'.$to.'"', 'ps_opartdevis');
+        $sql = $this->buildQuery('SELECT COUNT(*) AS total FROM `ps_opartdevis`', 'WHERE `ps_opartdevis`.`date_add` BETWEEN "'.$from.'" AND "'.$to.'"', 'ps_opartdevis');
         $nombrededevis = $this->countResults($db, $sql);
 
         /*************** requête panier *************/
-        $sql = $this->buildQuery('SELECT * FROM `ps_cart`', 'WHERE `ps_cart`.`date_add` BETWEEN "'.$from.'" AND "'.$to.'"','ps_cart');
+        $sql = $this->buildQuery('SELECT COUNT(*) AS total FROM `ps_cart`', 'WHERE `ps_cart`.`date_add` BETWEEN "'.$from.'" AND "'.$to.'"','ps_cart');
         $nombredepanier = $this->countResults($db, $sql);
 
         /*************** requête panier *************/
-        $sql = $this->buildQuery('SELECT * FROM `ps_orders`', 'WHERE (`ps_orders`.`validated_at` IS NOT NULL) AND (`ps_orders`.`validated_at` BETWEEN "'.$from.'" AND "'.$to.'")', 'ps_orders');
+        $sql = $this->buildQuery('SELECT COUNT(*) AS total FROM `ps_orders`', 'WHERE (`ps_orders`.`validated_at` IS NOT NULL) AND (`ps_orders`.`validated_at` BETWEEN "'.$from.'" AND "'.$to.'")', 'ps_orders');
         $nombredecmd = $this->countResults($db, $sql);
 
         /*************** requête SAV *************/
@@ -107,46 +107,49 @@ class statsforecast extends Module
         /*************** Liste des noms des SC à rechercher *************/
         $scNames = ["Amelie", "Vincent", "Nelly", "Robin", "Leo", "Thibaut"];
 
-        /*************** Boucle pour les requêtes devis par SC *************/
-        foreach ($scNames as $scName) {
-            $sql = $this->buildQuery('SELECT * FROM `ps_opartdevis`', 'WHERE (`name` LIKE "%'.$scName.'%") AND (`ps_opartdevis`.`date_add` BETWEEN "'.$from.'" AND "'.$to.'") ORDER BY `ps_opartdevis`.`date_add` DESC', 'ps_opartdevis');
-            ${"nombrededevisSC" . strtolower($scName)} = $this->countResults($db, $sql);
-            $sql = $this->buildQuery('SELECT * FROM `ps_orders` as O, `ps_opartdevis` as P', 'WHERE O.id_order = P.id_order AND (P.name LIKE "%'.$scName.'%") AND (O.`validated_at` IS NOT NULL) AND (O.`validated_at` BETWEEN "'.$from.'" AND "'.$to.'") ORDER BY P.`date_add` DESC', 'P');
-            ${"nombrededevisSCconv" . strtolower($scName)} = $this->countResults($db, $sql);
-        }
-
-        /*************** requête CO générée par devis convertis par SC *************/
-        foreach ($scNames as $scName) {
-            $sql = $this->buildQuery('SELECT SUM(O.total_paid) as total 
-            FROM `ps_orders` as O, `ps_opartdevis` as P', 'WHERE O.id_order = P.id_order 
-            AND (P.name LIKE "%'.$scName.'%")
-            AND (O.`validated_at` IS NOT NULL)
-            AND (O.`validated_at` BETWEEN "'.$from.'" AND "'.$to.'")', 'P');
-            ${"cadevisSCconv" . strtolower($scName)} = $this->executeScalar($db, $sql);
-        }
-
-        /*************** requête devis par SC convertis *************/
-        $sql = $this->buildQuery('SELECT P.*, ps_orders.validated_at
-        FROM `ps_opartdevis` as P
-        JOIN ps_orders ON P.id_order = ps_orders.id_order', 'WHERE (P.`name` LIKE "%Amelie%" OR P.`name` LIKE "%Vincent%" OR P.`name` LIKE "%Nelly%" OR P.`name` LIKE "%Robin%" OR P.`name` LIKE "%Leo%" OR P.`name` LIKE "%Thibaut%")
-        AND (ps_orders.`validated_at` IS NOT NULL)
-        AND (ps_orders.`validated_at` BETWEEN "'.$from.'" AND "'.$to.'")', 'P');
-        $result = $db->executeS($sql);
-        $nombrededevisSCconv = $result ? count($result) : 0;
-
-        /*************** requête CO genere par devis convertis par SC *************/
-        $sql = $this->buildQuery('SELECT SUM(O.total_paid) as total 
-        FROM `ps_orders` as O, `ps_opartdevis` as P', 'WHERE O.id_order = P.id_order 
-        AND (P.name LIKE "%Amelie%" OR P.name LIKE "%Vincent%" OR P.name LIKE "%Nelly%" OR P.name LIKE "%Robin%" OR P.name LIKE "%Leo%" OR P.name LIKE "%Thibaut%")
-        AND (O.`validated_at` IS NOT NULL)
-        AND (O.`validated_at` BETWEEN "'.$from.'" AND "'.$to.'")', 'P');
-        $result = $db->executeS($sql);
-        $cadevisSCconv = $result[0]['total'] ? round($result[0]['total']) : 0;
-
         /*************** requête devis par SC *************/
-        $sql = $this->buildQuery('SELECT * FROM `ps_opartdevis`', 'WHERE (`name` LIKE "%Amelie%" OR `name` LIKE "%Vincent%" OR `name` LIKE "%Nelly%" OR `name` LIKE "%Robin%" OR `name` LIKE "%Leo%" OR `name` LIKE "%Thibaut%") AND (`ps_opartdevis`.`date_add` BETWEEN "'.$from.'" AND "'.$to.'") ORDER BY `ps_opartdevis`.`date_add` DESC', 'ps_opartdevis');
-        $result = $db->executeS($sql);
-        $nombrededevisSC = $result ? count($result) : 0;
+        $selectScQuotes = array();
+        foreach ($scNames as $scName) {
+            $lowerName = Tools::strtolower($scName);
+            $escapedName = pSQL($scName);
+            $selectScQuotes[] = 'SUM(CASE WHEN P.name LIKE "%'.$escapedName.'%" THEN 1 ELSE 0 END) AS quotes_'.$lowerName;
+        }
+        $sql = $this->buildQuery('SELECT '.implode(",\n            ", $selectScQuotes).' FROM `ps_opartdevis` AS P', 'WHERE (P.`date_add` BETWEEN "'.$from.'" AND "'.$to.'")', 'P');
+        $scQuoteData = $db->executeS($sql);
+        $scQuoteData = $scQuoteData ? $scQuoteData[0] : array();
+        foreach ($scNames as $scName) {
+            $key = Tools::strtolower($scName);
+            ${"nombrededevisSC" . $key} = isset($scQuoteData['quotes_'.$key]) ? (int) $scQuoteData['quotes_'.$key] : 0;
+        }
+
+        /*************** requête devis convertis par SC *************/
+        $selectScConversions = array();
+        foreach ($scNames as $scName) {
+            $lowerName = Tools::strtolower($scName);
+            $escapedName = pSQL($scName);
+            $selectScConversions[] = 'SUM(CASE WHEN P.name LIKE "%'.$escapedName.'%" THEN 1 ELSE 0 END) AS conv_count_'.$lowerName;
+            $selectScConversions[] = 'SUM(CASE WHEN P.name LIKE "%'.$escapedName.'%" THEN O.total_paid ELSE 0 END) AS conv_total_'.$lowerName;
+        }
+        $sql = $this->buildQuery('SELECT '.implode(",\n            ", $selectScConversions).'
+            FROM `ps_orders` AS O
+            INNER JOIN `ps_opartdevis` AS P ON O.id_order = P.id_order', 'WHERE (O.`validated_at` IS NOT NULL) AND (O.`validated_at` BETWEEN "'.$from.'" AND "'.$to.'")', 'P');
+        $scConversionData = $db->executeS($sql);
+        $scConversionData = $scConversionData ? $scConversionData[0] : array();
+        foreach ($scNames as $scName) {
+            $key = Tools::strtolower($scName);
+            ${"nombrededevisSCconv" . $key} = isset($scConversionData['conv_count_'.$key]) ? (int) $scConversionData['conv_count_'.$key] : 0;
+            ${"cadevisSCconv" . $key} = isset($scConversionData['conv_total_'.$key]) ? (int) round($scConversionData['conv_total_'.$key]) : 0;
+        }
+
+        $nombrededevisSC = 0;
+        $nombrededevisSCconv = 0;
+        $cadevisSCconv = 0;
+        foreach ($scNames as $scName) {
+            $key = Tools::strtolower($scName);
+            $nombrededevisSC += ${"nombrededevisSC" . $key};
+            $nombrededevisSCconv += ${"nombrededevisSCconv" . $key};
+            $cadevisSCconv += ${"cadevisSCconv" . $key};
+        }
 
         /************** Calcul de la semaine ******************/
         $currentWeekNumber = date('W');
@@ -174,13 +177,13 @@ class statsforecast extends Module
         // KPI Thibaut
         list($kpiPercentQuoteOrderedThibaut, $kpiMoyCAThibaut) = $this->calculateKPI($nombrededevisSCthibaut, $nombrededevisSCconvthibaut, $cadevisSCconvthibaut);
 
-        // Calcul des taux de marque par commercial
-        $tauxMarqueNelly = $this->calculateTauxMarqueCommercial($db, 'Nelly', $from, $to);
-        $tauxMarqueVincent = $this->calculateTauxMarqueCommercial($db, 'Vincent', $from, $to);
-        $tauxMarqueAmelie = $this->calculateTauxMarqueCommercial($db, 'Amelie', $from, $to);
-        $tauxMarqueRobin = $this->calculateTauxMarqueCommercial($db, 'Robin', $from, $to);
-        $tauxMarqueLeo = $this->calculateTauxMarqueCommercial($db, 'Leo', $from, $to);
-        $tauxMarqueThibaut = $this->calculateTauxMarqueCommercial($db, 'Thibaut', $from, $to);
+        $tauxMarqueParSC = $this->calculateTauxMarqueCommercials($db, $scNames, $from, $to);
+        $tauxMarqueNelly = isset($tauxMarqueParSC['nelly']) ? $tauxMarqueParSC['nelly'] : 0;
+        $tauxMarqueVincent = isset($tauxMarqueParSC['vincent']) ? $tauxMarqueParSC['vincent'] : 0;
+        $tauxMarqueAmelie = isset($tauxMarqueParSC['amelie']) ? $tauxMarqueParSC['amelie'] : 0;
+        $tauxMarqueRobin = isset($tauxMarqueParSC['robin']) ? $tauxMarqueParSC['robin'] : 0;
+        $tauxMarqueLeo = isset($tauxMarqueParSC['leo']) ? $tauxMarqueParSC['leo'] : 0;
+        $tauxMarqueThibaut = isset($tauxMarqueParSC['thibaut']) ? $tauxMarqueParSC['thibaut'] : 0;
 
 
         $this->html .= '<link rel="stylesheet" type="text/css" href="/modules/statsforecast/views/css/statsforecast.css">';
@@ -683,57 +686,93 @@ class statsforecast extends Module
             $totalStats['objectives']['month'] += round($shopsObjectives[$shop]['month']);
             $totalStats['objectives']['year'] += round($shopsObjectives[$shop]['year']);
         }
+        $todayStart = date('Y-m-d').' 00:00:00';
+        $todayEnd = date('Y-m-d').' 23:59:59';
+        $weekStartDateTime = $week_start.' 00:00:00';
+        $weekEndDateTime = $week_end.' 00:00:00';
+        $monthStartDateTime = $first_day_this_month.' 00:00:00';
+        $monthEndDateTime = $last_day_this_month.' 00:00:00';
+        $yearStartDateTime = date('Y').'-01-01 00:00:00';
+        $yearEndDateTime = date('Y').'-12-31 00:00:00';
+        $rangeStart = min(strtotime($yearStartDateTime), strtotime($weekStartDateTime), strtotime($monthStartDateTime), strtotime($todayStart));
+        $rangeEnd = max(strtotime($yearEndDateTime), strtotime($weekEndDateTime), strtotime($monthEndDateTime), strtotime($todayEnd));
+        $rangeStartDateTime = date('Y-m-d H:i:s', $rangeStart);
+        $rangeEndDateTime = date('Y-m-d H:i:s', $rangeEnd);
+
+        $aggregatedQuery = $this->buildQuery(
+            'SELECT o.`id_shop`, s.`name`,
+                ROUND(SUM(CASE WHEN o.`validated_at` BETWEEN "'.$todayStart.'" AND "'.$todayEnd.'" THEN o.`total_paid` ELSE 0 END), 0) AS CAJOUR,
+                ROUND(SUM(CASE WHEN o.`validated_at` BETWEEN "'.$weekStartDateTime.'" AND "'.$weekEndDateTime.'" THEN o.`total_paid` ELSE 0 END), 0) AS CASEMAINE,
+                ROUND(SUM(CASE WHEN o.`validated_at` BETWEEN "'.$monthStartDateTime.'" AND "'.$monthEndDateTime.'" THEN o.`total_paid` ELSE 0 END), 0) AS CAMOIS,
+                ROUND(SUM(CASE WHEN o.`validated_at` BETWEEN "'.$yearStartDateTime.'" AND "'.$yearEndDateTime.'" THEN o.`total_paid` ELSE 0 END), 0) AS CAANNEE
+            FROM `ps_orders` as o
+            LEFT JOIN `ps_shop` as s ON o.id_shop = s.id_shop',
+            'WHERE (o.`validated_at` IS NOT NULL) AND (o.`validated_at` BETWEEN "'.$rangeStartDateTime.'" AND "'.$rangeEndDateTime.'")
+            GROUP BY o.`id_shop`, s.`name`',
+            'o'
+        );
+        $aggregatedResults = $db->executeS($aggregatedQuery);
+        $aggregatedStats = array();
+        if (is_array($aggregatedResults)) {
+            foreach ($aggregatedResults as $row) {
+                $shopIdKey = (string) $row['id_shop'];
+                $aggregatedStats[$shopIdKey] = array(
+                    'name' => $row['name'],
+                    'day' => isset($row['CAJOUR']) ? (float) $row['CAJOUR'] : 0,
+                    'week' => isset($row['CASEMAINE']) ? (float) $row['CASEMAINE'] : 0,
+                    'month' => isset($row['CAMOIS']) ? (float) $row['CAMOIS'] : 0,
+                    'year' => isset($row['CAANNEE']) ? (float) $row['CAANNEE'] : 0,
+                );
+            }
+        }
+
         $dataToXlsx = [
             ['Date', date('d/m/Y'), 'Heure', date('H:i:s'), '', '', '', '', '', '', '', '', ''],
             ['Magasin', 'Jour CO Y - 1', 'Jour CO', 'Jour Objectif', 'Semaine CO Y - 1', 'Semaine CO', 'Semaine Objectif', 'Mois Y - 1', 'Mois CO', 'Mois Objectif', 'Année Y - 1', 'Année CO', 'Année Objectif']
         ];
         foreach ($shop_list as $shop) {
-            $sqld = $this->buildQuery('SELECT o.`id_shop`, s.`name`, ROUND(SUM(o.`total_paid`),0) AS CAJOUR FROM `ps_orders` as o LEFT JOIN `ps_shop` as s ON o.id_shop = s.id_shop', 'WHERE o.id_shop LIKE "'.$shop.'" AND (o.`validated_at` IS NOT NULL) AND (o.`validated_at` BETWEEN "'.date('Y-m-d').' 00:00:00'.'" AND "'.date('Y-m-d').' 23:59:59'.'")', 'o');
-            $resultd = $db->executeS($sqld);
-            $resultdtotal += $resultd[0]["CAJOUR"];
+            $shopAggregated = isset($aggregatedStats[$shop]) ? $aggregatedStats[$shop] : array('name' => null, 'day' => 0, 'week' => 0, 'month' => 0, 'year' => 0);
+            $shopName = $shopAggregated['name'] ? $shopAggregated['name'] : 'N/A';
+            $dayCA = (float) $shopAggregated['day'];
+            $weekCA = (float) $shopAggregated['week'];
+            $monthCA = (float) $shopAggregated['month'];
+            $yearCA = (float) $shopAggregated['year'];
 
-            $sqlw = $this->buildQuery('SELECT o.`id_shop`, s.`name`, ROUND(SUM(o.`total_paid`),0) AS CASEMAINE FROM `ps_orders` as o LEFT JOIN `ps_shop` as s ON o.id_shop = s.id_shop', 'WHERE o.id_shop LIKE "'.$shop.'" AND (o.`validated_at` IS NOT NULL) AND (o.`validated_at` BETWEEN "'.$week_start.'" AND "'.$week_end.'")', 'o');
-            $resultw = $db->executeS($sqlw);
-            $resultwtotal += isset($resultw[0]["CASEMAINE"]) ? $resultw[0]["CASEMAINE"] : 0;
+            $resultdtotal += $dayCA;
+            $resultwtotal += $weekCA;
+            $resultmtotal += $monthCA;
+            $resultytotal += $yearCA;
 
-            $sqlm = $this->buildQuery('SELECT o.`id_shop`, s.`name`, ROUND(SUM(o.`total_paid`),0) AS CAMOIS FROM `ps_orders` as o LEFT JOIN `ps_shop` as s ON o.id_shop = s.id_shop', 'WHERE o.id_shop LIKE "'.$shop.'" AND (o.`validated_at` IS NOT NULL) AND (o.`validated_at` BETWEEN "'.$first_day_this_month.'" AND "'.$last_day_this_month.'")', 'o');
-            $resultm = $db->executeS($sqlm);
-            $resultmtotal += $resultm[0]["CAMOIS"];
-
-            $sqly = $this->buildQuery('SELECT o.`id_shop`, s.`name`, ROUND(SUM(o.`total_paid`),0) AS CAANNEE FROM `ps_orders` as o LEFT JOIN `ps_shop` as s ON o.id_shop = s.id_shop', 'WHERE o.id_shop LIKE "'.$shop.'" AND (o.`validated_at` IS NOT NULL) AND (o.`validated_at` BETWEEN "'.date('Y').'-01-01" AND "'.date('Y').'-12-31")', 'o');
-            $resulty = $db->executeS($sqly);
-            $resultytotal += $resulty[0]["CAANNEE"];
-
-            array_push($dataToXlsx, [
-                $resulty[0]["name"] ? $resulty[0]["name"] : 'N/A',
+            $dataToXlsx[] = [
+                $shopName,
                 $shopsLastYear[$shop]['day'],
-                $resultd[0]["CAJOUR"] ? $resultd[0]["CAJOUR"] : 0,
+                $dayCA,
                 $shopsObjectives[$shop]['day'],
                 $shopsLastYear[$shop]['week'],
-                isset($resultw[0]["CASEMAINE"]) ? $resultw[0]["CASEMAINE"] : 0,
+                $weekCA,
                 $shopsObjectives[$shop]['week'],
                 $shopsLastYear[$shop]['month'],
-                $resultm[0]["CAMOIS"] ? $resultm[0]["CAMOIS"] : 0,
+                $monthCA,
                 $shopsObjectives[$shop]['month'],
                 $shopsLastYear[$shop]['year'],
-                $resulty[0]["CAANNEE"] ? $resulty[0]["CAANNEE"] : 0,
+                $yearCA,
                 $shopsObjectives[$shop]['year']
-            ]);
+            ];
 
             $this->html .= '<tbody>';
             $this->html .= '<tr>';
-            $this->html .= '<td align="right" class="boutique"  valign="center">'.$resulty[0]["name"].'</td>';
+            $this->html .= '<td align="right" class="boutique"  valign="center">'.$shopName.'</td>';
             // Y - 1
             $this->html .= '<td align="center" valign="center">'.number_format($shopsLastYear[$shop]['day'], 0, ',', ' ').' €</td>';
             // CO
-            $this->html .= '<td align="center" valign="center">'.number_format($resultd[0]["CAJOUR"], 0, ',', ' ').' €</td>';
+            $this->html .= '<td align="center" valign="center">'.number_format($dayCA, 0, ',', ' ').' €</td>';
             // Objectif
             $this->html .= '<td align="center" valign="center">'.number_format($shopsObjectives[$shop]['day'], 0, ',', ' ').' €</td>';
 
             // Y - 1
             $this->html .= '<td align="center" valign="center">'.number_format($shopsLastYear[$shop]['week'], 0, ',', ' ').' €</td>';
             // CO
-            $this->html .= '<td align="center" valign="center">'.number_format(isset($resultw[0]["CASEMAINE"]) ? $resultw[0]["CASEMAINE"] : 0, 0, ',', ' ').' €</td>';
+            $this->html .= '<td align="center" valign="center">'.number_format($weekCA, 0, ',', ' ').' €</td>';
             // Objectif
             $this->html .= '<td align="center" valign="center">'.number_format($shopsObjectives[$shop]['week'], 0, ',', ' ').' €</td>';
 
@@ -741,14 +780,14 @@ class statsforecast extends Module
             // Y - 1
             $this->html .= '<td align="center" valign="center">'.number_format($shopsLastYear[$shop]['month'], 0, ',', ' ').' €</td>';
             // CO
-            $this->html .= '<td align="center" valign="center">'.number_format($resultm[0]["CAMOIS"], 0, ',', ' ').' €</td>';
+            $this->html .= '<td align="center" valign="center">'.number_format($monthCA, 0, ',', ' ').' €</td>';
             // Objectif
             $this->html .= '<td align="center" valign="center">'.number_format($shopsObjectives[$shop]['month'], 0, ',', ' ').' €</td>';
 
             // Y - 1
             $this->html .= '<td align="center" valign="center">'.number_format($shopsLastYear[$shop]['year'], 0, ',', ' ').' €</td>';
             // CO
-            $this->html .= '<td align="center" valign="center">'.number_format($resulty[0]["CAANNEE"], 0, ',', ' ').' €</td>';
+            $this->html .= '<td align="center" valign="center">'.number_format($yearCA, 0, ',', ' ').' €</td>';
             // Objectif
             $this->html .= '<td align="center" valign="center">'.number_format($shopsObjectives[$shop]['year'], 0, ',', ' ').' €</td>';
 
@@ -1038,7 +1077,15 @@ class statsforecast extends Module
 
     private function countResults($db, $sql) {
         $result = $db->executeS($sql);
-        return $result ? count($result) : 0;
+        if (!$result) {
+            return 0;
+        }
+
+        if (isset($result[0]['total'])) {
+            return (int) $result[0]['total'];
+        }
+
+        return count($result);
     }
 
     /*************** Fonction générique pour exécuter une requête SQL et obtenir une valeur numérique *************/
@@ -1054,42 +1101,64 @@ class statsforecast extends Module
         return [$kpiPercentQuoteOrdered, $kpiMoyCA];
     }
 
-    // Fonction pour calculer le taux de marque par commercial
-    function calculateTauxMarqueCommercial($db, $scName, $from, $to) {
+    // Fonction pour calculer les taux de marque pour plusieurs commerciaux
+    protected function calculateTauxMarqueCommercials($db, $scNames, $from, $to)
+    {
+        if (empty($scNames)) {
+            return array();
+        }
+
+        $selects = array();
+        foreach ($scNames as $scName) {
+            $lowerName = Tools::strtolower($scName);
+            $escapedName = pSQL($scName);
+            $selects[] = 'SUM(CASE WHEN ca.name LIKE "%'.$escapedName.'%" THEN ca.ca_ht ELSE 0 END) AS ca_'.$lowerName;
+            $selects[] = 'SUM(CASE WHEN ca.name LIKE "%'.$escapedName.'%" THEN co.cout_ht ELSE 0 END) AS cout_'.$lowerName;
+        }
+
         $sql = 'SELECT
-          ca.commercial,
-          ROUND(SUM(ca.ca_ht), 2)  AS ca_ht,
-          ROUND(SUM(co.cout_ht), 2) AS cout_ht,
-          ROUND((SUM(ca.ca_ht) - SUM(co.cout_ht)) / NULLIF(SUM(ca.ca_ht),0) * 100, 2) AS taux_marque_pct
+            '.implode(",\n            ", $selects).'
         FROM (
-          SELECT
-            o.id_order,
-            COALESCE(d.name,"(inconnu)") AS commercial,
-            (o.total_products - o.total_discounts_tax_excl) AS ca_ht
-          FROM ps_orders o
-          LEFT JOIN ps_opartdevis d ON d.id_order = o.id_order
-          WHERE o.validated_at IS NOT NULL
-            AND o.validated_at BETWEEN "'.$from.'" AND "'.$to.'"
-            AND COALESCE(d.name,"") LIKE "%'.$scName.'%"
+            SELECT
+                o.id_order,
+                (o.total_products - o.total_discounts_tax_excl) AS ca_ht,
+                COALESCE(d.name, "") AS name
+            FROM ps_orders o
+            LEFT JOIN ps_opartdevis d ON d.id_order = o.id_order
+            WHERE o.validated_at IS NOT NULL
+              AND o.validated_at BETWEEN "'.$from.'" AND "'.$to.'"
         ) ca
         JOIN (
-          SELECT
-            o.id_order,
-            SUM(COALESCE(NULLIF(pa.wholesale_price,0), NULLIF(p.wholesale_price,0), 0)
-                * od.product_quantity) AS cout_ht
-          FROM ps_orders o
-          JOIN ps_order_detail od           ON od.id_order = o.id_order
-          LEFT JOIN ps_product_attribute pa ON pa.id_product_attribute = od.product_attribute_id
-          JOIN ps_product p                 ON p.id_product = od.product_id
-          WHERE o.validated_at IS NOT NULL
-            AND o.validated_at BETWEEN "'.$from.'" AND "'.$to.'"
-          GROUP BY o.id_order
-        ) co ON co.id_order = ca.id_order
-        GROUP BY ca.commercial
-        ORDER BY taux_marque_pct DESC';
-        
+            SELECT
+                o.id_order,
+                SUM(COALESCE(NULLIF(pa.wholesale_price,0), NULLIF(p.wholesale_price,0), 0)
+                    * od.product_quantity) AS cout_ht
+            FROM ps_orders o
+            JOIN ps_order_detail od           ON od.id_order = o.id_order
+            LEFT JOIN ps_product_attribute pa ON pa.id_product_attribute = od.product_attribute_id
+            JOIN ps_product p                 ON p.id_product = od.product_id
+            WHERE o.validated_at IS NOT NULL
+              AND o.validated_at BETWEEN "'.$from.'" AND "'.$to.'"
+            GROUP BY o.id_order
+        ) co ON co.id_order = ca.id_order';
+
         $result = $db->executeS($sql);
-        return $result ? round($result[0]['taux_marque_pct'], 2) : 0;
+        if (!$result) {
+            return array();
+        }
+
+        $result = $result[0];
+        $rates = array();
+        foreach ($scNames as $scName) {
+            $key = Tools::strtolower($scName);
+            $caKey = 'ca_'.$key;
+            $coutKey = 'cout_'.$key;
+            $ca = isset($result[$caKey]) ? (float) $result[$caKey] : 0.0;
+            $cout = isset($result[$coutKey]) ? (float) $result[$coutKey] : 0.0;
+            $rates[$key] = $ca > 0 ? round((($ca - $cout) / $ca) * 100, 2) : 0;
+        }
+
+        return $rates;
     }
 
     function buildQuery($request, $requestWhere, $linkedTable) {
