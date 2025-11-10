@@ -45,7 +45,7 @@
                         value="{$carrier_id}" {if $delivery_option == $carrier_id} checked{/if}>
                       <span></span>
                     </span>
-                    <div class="row">
+                    <div class="row w-100">
                       <div class="col-sm-5 col-xs-12">
                         <div class="carrier">
                           {if $carrier.logo}

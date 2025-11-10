@@ -37,7 +37,7 @@
                               {/if}
                             </span>
                             <span class="value">
-                                {if $subtotal.type == "shipping" && $subtotal.value == "gratuit"}
+                                {if $subtotal.type == "shipping" && $env_pro != 1}
                                     à définir
                                 {else}
                                     {if 'discount' == $subtotal.type}-&nbsp;{/if}
