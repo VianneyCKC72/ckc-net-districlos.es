@@ -1521,20 +1521,25 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     {
         if (Tools::getValue('new_pack') == 1 && isset($params['product'])) {
             $params['product']->addToCategories([$this->context->shop->id_category]);
-            if (version_compare(_PS_VERSION_, '8.1.0', '>=')) {
-                if (Tools::getValue('source_id_product')) {
-                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_products_edit', ['productId' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
-                } else {
-                    $url = $this->getContainer()->get('router')->generate('admin_products_edit', ['productId' => $params['product']->id]);
-                    $url = str_replace('products-v2/'.$params['product']->id.'/edit', 'products/'.$params['product']->id, $url);
-                    Tools::redirectAdmin($url . '&is_real_new_pack=1');
-                }
+//            if (version_compare(_PS_VERSION_, '8.1.0', '>=')) {
+//                if (Tools::getValue('source_id_product')) {
+//                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_products_edit', ['productId' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
+//                } else {
+//                    $url = $this->getContainer()->get('router')->generate('admin_products_edit', ['productId' => $params['product']->id]);
+//                    $url = str_replace('products-v2/'.$params['product']->id.'/edit', 'products/'.$params['product']->id, $url);
+//                    Tools::redirectAdmin($url . '&is_real_new_pack=1');
+//                }
+//            } else {
+//                if (Tools::getValue('source_id_product')) {
+//                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
+//                } else {
+//                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1');
+//                }
+//            }
+            if (Tools::getValue('source_id_product')) {
+                Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
             } else {
-                if (Tools::getValue('source_id_product')) {
-                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
-                } else {
-                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1');
-                }
+                Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1');
             }
         }
     }
