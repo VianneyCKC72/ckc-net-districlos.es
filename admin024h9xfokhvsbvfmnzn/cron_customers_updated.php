@@ -18,8 +18,8 @@ try {
     LEFT JOIN ps_orders o ON o.id_customer = c.id_customer
     LEFT JOIN ps_address a ON a.id_customer = c.id_customer
     LEFT OUTER JOIN (SELECT a.id_address as id_last_updated_address, a.id_customer, a.date_upd as address_update_date, a.date_add as address_creation_date, CONCAT(IF(a.address1 IS NULL, "", a.address1)," ",IF(a.address2 IS NULL, "", a.address2)," ",IF(a.postcode IS NULL, "", a.postcode)," ",IF(a.city IS NULL, "", a.city)) as last_updated_address, a.phone, a.phone_mobile 
-    FROM ps_address a ORDER BY a.date_upd DESC LIMIT 1) AS adresse ON adresse.id_customer = c.id_customer
-    WHERE c.date_upd LIKE "%'.$today.'%" OR a.date_upd LIKE "%'.$today.'%"';
+    FROM ps_address a ORDER BY a.date_upd DESC) AS adresse ON adresse.id_customer = c.id_customer
+    WHERE c.date_upd LIKE "%'.$today.'%" OR a.date_upd LIKE "%'.$today.'%" GROUP BY c.id_customer';
 
     $stmt = $conn->prepare($sql);
 
