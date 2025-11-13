@@ -1,7 +1,32 @@
 {extends file='catalog/product.tpl'}
 
 {block name='content'}
+    {assign var="initial_pack" value="1"}
 
+    {if isset($packMlChoose) && $packMlChoose == 1}
+        <style>
+            .qty {
+                display: none !important;
+            }
+        </style>
+    {/if}
+    <style>
+        .price-loader {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ccc;
+            border-top-color: #333;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
     <section id="main">
         <meta content="{$product.url}">
 
@@ -157,15 +182,13 @@
                                     {/block}
 
                                     {if isset($packMlChoose) && $packMlChoose}
-                                        <span class="bold">Dimensions</span>
-
-                                        <div class="product-variants ap5-attributes">
+                                        <div class="ap5-attributes">
                                             <div class="clearfix hiddenlabel">
-                                                <p class=group-name>Choisissez le nombre de ML</p>
+                                                <p class="font-weight-bold group-name">Choisissez la longueur en mètres linéaires</p>
                                                 <div class="select_wrap">
                                                     <div class="clearfix dis_flex">
                                                     <span class="input-group-btn-vertical dis_flex">
-                                                        <input type="text" name="qty_bis" id="quantity_wanted_ml" value="1" class="form-control" style="display: block;">
+                                                        <input type="number" id="quantity_ml" value="1" class="form-control" min="1" step="1" style="display: block;">
                                                     </span>
                                                     </div>
                                                 </div>
@@ -255,6 +278,15 @@
                                     </li>
                                 {/if}
 
+                                {* Onglet FAQ *}
+                                {assign var="faq_module" value=Module::getInstanceByName('productfaq')}
+                                {assign var="faq_has_content" value=$faq_module && $faq_module->getFaqsByProduct($product.id, true)}
+                                {if $faq_has_content}
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#product-faq" role="tab"
+                                           aria-controls="product-faq">FAQ</a>
+                                    </li>
+                                {/if}
 
                                 {foreach from=$product.extraContent item=extra key=extraKey}
                                     <li class="nav-item">
@@ -266,29 +298,31 @@
 
                             <div class="tab-content" id="tab-content">
                                 <div class="tab-pane active js-product-tab-active" id="kit_content" role="tabpanel">
-                                    {foreach from=$productsPackUnique item=productPack name=productPack_list}
-                                        <div class="row mb-5">
-                                            <div class="col-md-2 position-relative d-flex">
-                                                {assign var=productPackImageIds value="`$productPack.id_product`-`$productPack.image.id_image`"}
-                                                <div style="padding: 20px;box-shadow: 0 10px 20px #0000000d;width: 100%;" class="d-flex">
-                                                    <img src="{$pmlink->getImageLink($productPack.presentation.link_rewrite, $productPackImageIds, $imageFormatProductSlideshow)}" alt="{$productPack.image.legend}" style="width: auto;max-height: 190px;max-width: 100%;margin: auto;">
+                                    <div id="ap5-pack-product-container">
+                                        {foreach from=$productsPackUnique item=productPack name=productPack_list}
+                                            <div class="row mb-5">
+                                                <div class="col-md-2 position-relative d-flex">
+                                                    {assign var=productPackImageIds value="`$productPack.id_product`-`$productPack.image.id_image`"}
+                                                    <div style="padding: 20px;box-shadow: 0 10px 20px #0000000d;width: 100%;" class="d-flex">
+                                                        <img src="{$pmlink->getImageLink($productPack.presentation.link_rewrite, $productPackImageIds, $imageFormatProductSlideshow)}" alt="{$productPack.image.legend}" style="width: auto;max-height: 190px;max-width: 100%;margin: auto;">
+                                                    </div>
+                                                    <div class="position-absolute w-100 d-flex" style="bottom: -16px !important;">
+                                                        <span class="text-center m-auto" style="padding: 5px 20px;background-color: #79C144;width: 83px;color: #fff;font-weight: 600;font-size: 16px;">x{$productPack.quantity}</span>
+                                                    </div>
                                                 </div>
-                                                <div class="position-absolute w-100 d-flex" style="bottom: -16px !important;">
-                                                    <span class="text-center m-auto" style="padding: 5px 20px;background-color: #79C144;width: 83px;color: #fff;font-weight: 600;font-size: 16px;">x{$productPack.quantity}</span>
+                                                <div class="col-md-10 content-kit-description">
+                                                    <h3 class="h5 text-uppercase fs-16">{$productPack.presentation.name}</h3>
+                                                    <div class="product-description">{$productPack.presentation.description_short nofilter}</div>
+                                                    <div class="mt-10">
+                                                        <a class="btn btn-primary add_to_cart" href="{$productPack.presentation.link}">Voir le produit</a>
+                                                    </div>
+                                                    {block name='product_reviews'}
+                                                        {hook h='displayProductListReviews' product=$productPack.presentation}
+                                                    {/block}
                                                 </div>
                                             </div>
-                                            <div class="col-md-10 content-kit-description">
-                                                <h3 class="h5 text-uppercase fs-16">{$productPack.presentation.name}</h3>
-                                                <div class="product-description">{$productPack.presentation.description_short nofilter}</div>
-                                                <div class="mt-10">
-                                                    <a class="btn btn-primary add_to_cart" href="{$productPack.presentation.link}">Voir le produit</a>
-                                                </div>
-                                                {block name='product_reviews'}
-                                                    {hook h='displayProductListReviews' product=$productPack.presentation}
-                                                {/block}
-                                            </div>
-                                        </div>
-                                    {/foreach}
+                                        {/foreach}
+                                    </div>
                                 </div>
 
                                 <div class="tab-pane fade in" id="description" role="tabpanel">
@@ -381,6 +415,13 @@
 
                                     </section>
                                 </div>
+
+                                {* Contenu de l'onglet FAQ *}
+                                {if $faq_has_content}
+                                    <div class="tab-pane fade in" id="product-faq" role="tabpanel">
+                                        {include file="module:productfaq/views/templates/hook/product_faq.tpl"}
+                                    </div>
+                                {/if}
 
                                 {foreach from=$product.extraContent item=extra key=extraKey}
                                 <div class="tab-pane fade in {$extra.attr.class}" id="extra-{$extraKey}" role="tabpanel"

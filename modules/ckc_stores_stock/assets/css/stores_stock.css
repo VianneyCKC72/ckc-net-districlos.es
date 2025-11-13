@@ -1,3 +1,19 @@
+/* Animation pour le message de limitation de quantité */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.quantity-limit-message {
+    animation: slideIn 0.3s ease-out;
+}
+
 #stock-summary-content {
 	margin-top: 1.75rem;
 }
@@ -81,24 +97,23 @@
 	opacity: 0.8;
 }
 
-/* Styles pour produit en fin de vie */
-.fin-de-vie .style_findevie {
+/* Styles de base pour états spéciaux (fin de vie et victime de succès) */
+.stock-special .style_findevie {
 	font-weight: bold !important;
 }
 
-.fin-de-vie .stock-display {
-	color: #ff144e !important;
-}
-
-.fin-de-vie .remove_findevie {
+.stock-special .remove_findevie {
 	display: none !important;
 }
 
-.fin-de-vie .blockDeliveryDisplayStock img {
-	content: url('/modules/ckc_stores_stock/assets/img/deliveryFinDeVie.png');
+/* Styles spécifiques fin de vie */
+.stock-special.fin-de-vie .style_findevie,
+.stock-special.fin-de-vie .stock-display {
+	color: #ff144e !important;
 }
 
-/* Styles normaux (sans fin de vie) */
-.blockDeliveryDisplayStock img {
-	content: url('/modules/ckc_stores_stock/assets/img/delivery.png');
+/* Styles spécifiques victime de succès */
+.stock-special.victime-succes .style_findevie,
+.stock-special.victime-succes .stock-display {
+	color: #ff144e !important;
 }

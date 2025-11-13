@@ -30,10 +30,12 @@
 {/block}
 
 {block name='head_seo'}
-  <title>{block name='head_seo_title'}{$page.meta.title|escape:'html':'UTF-8'}{/block}</title>
-  {if isset($abtest) && $abtest}
-    <script src="https://cdn.ablyft.com/s/50855186.js"></script>
+  <title>{block name='head_seo_title'}{$page.meta.title}{/block}</title>
+
+  {if isset($abtest_active) && $abtest_active && isset($abtest_script_url) && $abtest_script_url}
+    <script src="{$abtest_script_url}"></script>
   {/if}
+
   {block name='hook_after_title_tag'}
     {hook h='displayAfterTitleTag'}
   {/block}
@@ -58,7 +60,7 @@
 {*    <meta name="robots" content="{$page.meta.robots}">*}
 {*  {/if}*}
   {if $page.canonical}
-    <link rel="canonical" href="{$page.canonical|escape:'html':'UTF-8'}" />
+    <link rel="canonical" href="{$page.canonical}">
   {/if}
   {block name='head_hreflang'}
     {foreach from=$urls.alternative_langs item=pageUrl key=code}
@@ -77,15 +79,13 @@
   {/block}
 
   {block name='head_open_graph'}
-    <meta property="og:title" content="{$page.meta.title|escape:'html':'UTF-8'}" />
-    <meta property="og:description" content="{$page.meta.description|escape:'html':'UTF-8'}" />
-    <meta property="og:url" content="{$urls.current_url|escape:'html':'UTF-8'}" />
-    <meta property="og:site_name" content="{$shop.name|escape:'html':'UTF-8'}" />
+    <meta property="og:title" content="{$page.meta.title}" />
+    <meta property="og:description" content="{$page.meta.description}" />
+    <meta property="og:url" content="{$urls.current_url}" />
+    <meta property="og:site_name" content="{$shop.name}" />
     {if !isset($product) && $page.page_name != 'product'}
-      <meta property="og:type" content="website" />
-    {/if}
+    <meta property="og:type" content="website" />{/if}
   {/block}
-
 {/block}
 
 {if $page.page_name == 'module-responsivegallery-galleryitems'}
@@ -101,14 +101,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 {block name='head_icons'}
-  {if isset($shop.favicon) && $shop.favicon}
-    <link rel="icon" type="image/vnd.microsoft.icon"
-          href="{$shop.favicon|escape:'html'}{if isset($shop.favicon_update_time)}?{$shop.favicon_update_time|escape:'html'}{/if}">
-    <link rel="shortcut icon" type="image/x-icon"
-          href="{$shop.favicon|escape:'html'}{if isset($shop.favicon_update_time)}?{$shop.favicon_update_time|escape:'html'}{/if}">
-  {/if}
+  <link rel="icon" type="image/vnd.microsoft.icon" href="{$shop.favicon}?{$shop.favicon_update_time}">
+  <link rel="shortcut icon" type="image/x-icon" href="{$shop.favicon}?{$shop.favicon_update_time}">
 {/block}
-
 
 {block name='stylesheets'}
   {include file="_partials/stylesheets.tpl" stylesheets=$stylesheets}

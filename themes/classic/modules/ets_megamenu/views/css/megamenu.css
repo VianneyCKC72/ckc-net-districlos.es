@@ -57,8 +57,8 @@ body .container .ets_mm_megamenu.bg_submenu:before {
     z-index: 1;
 }
 .mm_tab_toggle_title img {
-    margin-right: 5px;
-    width: 16px;
+    margin-right: 20px;
+    width: 60px;
 }
 li.menu_block_product {
     padding: 0;
@@ -1462,8 +1462,9 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         height: auto;
     }
     .mm_tab_toggle_title a {
-        margin: -9px -15px;
-        padding: 9px 15px;
+/*          margin: -9px -15px;
+            padding: 9px 15px; */
+            padding: 0 10px;
     }
     .clicktext_show_submenu .mm_tab_toggle_title a {
         min-width: calc(100% + 30px);
@@ -1543,7 +1544,7 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
     }
     .back_first {
         display: block;
-        padding: 10px 31px 10px 25px !important;
+        padding: 0px 25px !important;
     }
 
     .ets_mm_megamenu .container {
@@ -3111,8 +3112,10 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
     }
 
 
+    /* Image de fond désactivée - remplacée par le système d'image dynamique au survol */
     .ets_mm_megamenu.layout_layout1:not(.ybc_vertical_menu) .mm_menus_ul.mm_menus_ul_big {
-        background: #fff url("/img/cms/menu/fond-menu.jpg") no-repeat top right !important;
+        background: #fff !important;
+        /* background: #fff url("/img/cms/menu/fond-menu.jpg") no-repeat top right !important; */
     }
 }
 @media (min-width: 1200px) {
@@ -3152,6 +3155,50 @@ li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name {
 
 li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name a {
     color:white;
+}
+
+/* Image dynamique au survol - optimisée */
+.mm_subcat_img.promoted {
+    background: center/cover no-repeat;
+    transition: background-image 0.3s ease-in-out;
+    display: none;
+}
+
+@media (max-width: 990px) {
+    .mm_subcat_img.promoted {
+        width: 100%;
+        min-height: 250px;
+    }
+}
+
+@media (min-width: 991px) {
+    .mm_subcat_img.promoted {
+        position: fixed;
+        top: 20px;
+        right: 50px;
+        width: 250px;
+        height: 250px;
+        z-index: 999;
+        pointer-events: none;
+        will-change: background-image;
+        display: none;
+    }
+
+    /* Quand le volet est actif : affichage avec animation */
+    .mm_columns_contents_ul.active .mm_subcat_img.promoted {
+        display: block;
+        animation: fadeInImage 0.3s ease-in-out 0.5s both;
+    }
+}
+
+/* Animation d'apparition */
+@keyframes fadeInImage {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name:hover,
@@ -3198,6 +3245,12 @@ li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name.active,
     }
     @media (max-width: 340px){
         font-size: 22px;
+    }
+}
+
+.mm_tabs_li .mm_tab_toggle_title {
+    @media (max-width: 769px) {
+        height: auto !important;
     }
 }
 
@@ -3266,6 +3319,8 @@ body.menu-opened {
     overflow: hidden;
 }
 
+
+
 body.menu-opened::before {
     content: "";
     position: fixed;
@@ -3319,6 +3374,8 @@ body.menu-opened #ckcpromobarre {
         justify-content: space-around;
     }
 }
+
+
 .info-menu-mobile-only{
     display: none;
     @media (max-width: 768px){
@@ -3382,8 +3439,8 @@ body.menu-opened #ckcpromobarre {
         align-items: center;
         border-radius: 50px;
         max-width: 380px;
-        height: 93px;
-        margin-top: 55px;
+        height: 80px;
+        margin-top: 40px;
         padding: 0 35px;
         margin-bottom: 40px;
         align-self: center;
@@ -3410,7 +3467,7 @@ body.menu-opened #ckcpromobarre {
 .menu-mobile-custom-container-links a.btn-configurateur-mobile .medium-text{
     @media (max-width: 768px) {
         font-weight: 600;
-        font-size: 30px;
+        font-size: 20px;
         line-height: 104%;
     }
     @media (max-width: 365px) {
@@ -3472,7 +3529,7 @@ a.menu-mobile-phone-contact .menu-mobile-phone-number{
 }
 .menu-mobile-stars{
     @media (max-width: 768px) {
-        margin-top: 40px;
+        margin-top: 100px;
         align-self: center;
     }
 }
@@ -3541,12 +3598,15 @@ span.mm_menu_content_title > div:nth-child(2){
     display: none !important;
 }
 @media (max-width: 767px){
-    .logo-menu-mobile-sub-cat {
+    /* .logo-menu-mobile-sub-cat {
         display: block !important;
         position: absolute;
         bottom: 35px;
         left: 25px;
         z-index: -1;
+    } */
+    .logo-menu-mobile-sub-cat {
+        display: none;
     }
     .mm_tab_toggle_title .arrow.YES.niveau2{
         width: 90px;

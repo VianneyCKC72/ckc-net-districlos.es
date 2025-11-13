@@ -26,7 +26,6 @@
 
 {block name='head' append}
     <meta property="og:type" content="product">
-
     {if $product.cover}
         <meta property="og:image" content="{$product.cover.large.url}">
     {/if}
@@ -51,17 +50,12 @@
     <section id="main">
         <meta content="{$product.url}">
 
-        {* Compte à rebours sur page catégorie - au-dessus du titre *}
-        {if !$customer.id_default_group || $customer.id_default_group != 10}
-            <div id="promo_frenchdays" style="margin: 10px 0 10px 0;"></div>
-        {/if}
-
         <div class="product-container js-product-container">
             <div class="row">
                 <div class="col-lg-7">
                     {block name='page_header_container'}
                         {block name='page_header'}
-                            <h1 class="h2 {if !$pro.env}mb-5{/if}">{block name='page_title'}{$product.name}{/block}</h1>
+                            <h1 class="h2">{block name='page_title'}{$product.name}{/block}</h1>
                         {/block}
                     {/block}
                     {hook h='displayPromoProductDescription'}
@@ -74,15 +68,6 @@
                             {/block}
                         {/block}
                     {/block}
-                    {if $product.attachments && $pro.env}
-                        <div class="product-attachments-header mt-3">
-                            {foreach from=$product.attachments item=attachment}
-                                <a class="" href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}">
-                                    {$attachment.description}
-                                </a>
-                            {/foreach}
-                        </div>
-                    {/if}
                 </div>
                 <div class="col-lg-5">
                     <div class="product-information">
@@ -411,9 +396,9 @@
 
                             {* Onglet FAQ *}
                             {if $faq_has_content}
-                                <div class="tab-pane fade in" id="product-faq" role="tabpanel">
-                                    {include file="module:productfaq/views/templates/hook/product_faq.tpl"}
-                                </div>
+                            <div class="tab-pane fade in" id="product-faq" role="tabpanel">
+                                {include file="module:productfaq/views/templates/hook/product_faq.tpl"}
+                            </div>
                             {/if}
 
                         </div>
