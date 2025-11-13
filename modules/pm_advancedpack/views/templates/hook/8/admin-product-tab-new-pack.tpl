@@ -105,6 +105,36 @@
 									</div>
 								</div>
 							</div>
+
+							<div class="clearfix">
+								<div class="row">
+									<label class="control-label col-lg-6" for="ap5_auto_choose">
+												<span class="label-tooltip" data-toggle="{$tooltipToggle}" title="Cochez cette case si vous voulez une correspondance des déclinaisons en front (valable uniquement pour les produits avec le même nombre de déclinaison)">
+													Choix des déclinaisons piloté
+												</span>
+									</label>
+									<div class="col-lg-1">
+										<div class="input-group">
+											<input type="checkbox"{if $packAutoChoose} checked="checked"{/if} value="1" id="ap5_auto_choose" name="ap5_auto_choose" />
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div id="ap5_price_rules_4_configuration" class="clearfix">
+								<div class="row">
+									<label class="control-label col-lg-6" for="ap5_ml_choose">
+														<span class="label-tooltip" data-toggle="{$tooltipToggle}" title="Cochez cette case si vous voulez que la quantité en front soit sélectionnable en ML">
+															Sélection de la quantité en ML
+														</span>
+									</label>
+									<div class="col-lg-1">
+										<div class="input-group">
+											<input type="checkbox"{if $packMlChoose} checked="checked"{/if} value="1" id="ap5_ml_choose" name="ap5_ml_choose" />
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 						<div class="col-lg-5">
 							<h4>{l s='Pack price simulation' mod='pm_advancedpack'}</h4>
@@ -134,6 +164,13 @@
 				</div>
 
 				<div class="form-group">
+					<div class="alert alert-info">
+						Voici les shortcodes disponibles pour les formules de quantité produit :
+						<ul>
+							<li>[QUANTITY] : Quantité originale du produit (back)</li>
+							<li>[ML] : Nombre de mètres linéaire (front)</li>
+						</ul>
+					</div>
 					<table id="ap5-pack-content-table" class="table configuration">
 						<thead>
 							<tr class="nodrag nodrop">

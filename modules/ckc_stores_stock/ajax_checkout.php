@@ -13,12 +13,14 @@ while (ob_get_level()) {
 try {
     $selectedDelivery = $_POST['selectedDelivery'] ?? $_GET['selectedDelivery'] ?? '';
     $delivery = str_replace('delivery_option_', '', $selectedDelivery);
-    
+
     $stockManager = new StockManager();
-    $data = $stockManager->getDelivery($delivery);
-    
+    $id_store = Tools::getValue('id_store');
+
+    $data = $stockManager->getDelivery($delivery, $id_store);
+
     echo json_encode(['success' => true, 'data' => $data]);
-    
+
 } catch (Exception $e) {
     echo json_encode([
         'success' => false,

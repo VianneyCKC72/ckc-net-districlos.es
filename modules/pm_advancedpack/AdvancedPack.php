@@ -219,7 +219,7 @@ class AdvancedPack extends Product
         $idLang = (int)self::getContext()->language->id;
         $cacheId = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idProductAttribute . (int)$withFrontDatas . serialize($attributesList) . serialize($quantityList), true);
         $cacheIdWithoutFront = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idProductAttribute . serialize($quantityList));
-            
+
         if (!self::isInCache($cacheId)) {
             if (!self::isInCache($cacheIdWithoutFront)) {
                 $sql = new DbQuery();
@@ -662,8 +662,8 @@ class AdvancedPack extends Product
                         continue;
                     }
                     $packClassicPrice += $packProduct['priceInfos']['productClassicPrice'] * (int)$packProduct['quantity'];
-                    $packClassicPriceWt += $packProduct['priceInfos']['productClassicPriceWt'] * (int)$packProduct['quantity'];
-                    $packPriceWt += $packProduct['priceInfos']['productPackPriceWt'] * (int)$packProduct['quantity'];
+                    $packClassicPriceWt += round($packProduct['priceInfos']['productClassicPriceWt'], 2) * (int)$packProduct['quantity'];
+                    $packPriceWt += round($packProduct['priceInfos']['productPackPriceWt'], 2) * (int)$packProduct['quantity'];
                     $packPrice += $packProduct['priceInfos']['productPackPrice'] * (int)$packProduct['quantity'];
                     $totalPackEcoTax += $packProduct['priceInfos']['productEcoTax'] * (int)$packProduct['quantity'];
                     $totalPackEcoTaxWt += $packProduct['priceInfos']['productEcoTaxWt'] * (int)$packProduct['quantity'];
@@ -671,8 +671,8 @@ class AdvancedPack extends Product
             }else{
                 PrestaShopLogger::addLog('Pack error : '.$idPack);
             }
-            
-            
+
+
             if ($includeEcoTax) {
                 $packPriceWt += $totalPackEcoTaxWt;
                 $packPrice += $totalPackEcoTax;
@@ -1224,7 +1224,7 @@ class AdvancedPack extends Product
             $sql->where('app.`id_product`=' . (int)$idProduct);
             $sql->where('ap.`is_bundle`=0');
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-                
+
             if (AdvancedPackCoreClass::_isFilledArray($result)) {
                 foreach ($result as $row) {
                     $idPackList[] = (int)$row['id_pack'];
@@ -1595,7 +1595,7 @@ class AdvancedPack extends Product
                 }
             }
         }
-        
+
         if (!$idProductAttribute && $defaultCombination) {
             $idProductAttribute = Product::getDefaultAttribute($idPack);
             if ($idProductAttribute) {
@@ -1617,7 +1617,7 @@ class AdvancedPack extends Product
                 }
             }
         }
-        
+
         if (!$idProductAttribute) {
             if ($defaultCombination) {
                 $uniqueId = $idPack . '-defaultCombination';
@@ -1629,12 +1629,12 @@ class AdvancedPack extends Product
             } else {
                 $attributeObj = new Attribute();
             }
-            
+
             $attributeObj->id_attribute_group = self::getPackAttributeGroupId();
             foreach (Language::getLanguages(false) as $lang) {
                 $attributeObj->name[$lang['id_lang']] = $uniqueId;
             }
-            
+
             if ($attributeObj->save()) {
                 $idAttribute = $attributeObj->id;
                 $combinationObj = new Combination();
@@ -1688,7 +1688,7 @@ class AdvancedPack extends Product
         if (!Validate::isLoadedObject($combinationObj)) {
             return false;
         }
-        
+
         if (AdvancedPack::isValidPack($idPack, true)) {
             self::setStockAvailableQuantity($idPack, $combinationObj->id, self::getPackAvailableQuantity($idPack, $attributesList, [], [], $combinationObj->id, false), false);
         } else {
@@ -1697,7 +1697,7 @@ class AdvancedPack extends Product
         if ($defaultCombination) {
             self::setDefaultPackAttribute((int)$idPack, (int)$combinationObj->id);
         }
-        
+
         return (int)$combinationObj->id;
     }
     public static function setStockAvailableQuantity($idProduct, $idProductAttribute, $quantity, $runUpdateQuantityHook = true)
@@ -3509,9 +3509,9 @@ class AdvancedPack extends Product
     {
         /*$cacheDir = _PS_MODULE_DIR_ . 'pm_advancedpack/cache/';
         $cacheFile = $cacheDir . $key . '.cache';
-        
+
         if (file_exists($cacheFile)) {
-            
+
             return true;
         }
         return false;*/
@@ -3525,7 +3525,7 @@ class AdvancedPack extends Product
             $data = unserialize(file_get_contents($cacheFile));
             return $data;
         }
-        
+
         return null;*/
         return self::$ap5Cache[$key];
     }
@@ -3535,10 +3535,10 @@ class AdvancedPack extends Product
         //$cacheDir = _PS_MODULE_DIR_ . 'pm_advancedpack/cache/';
         //$cacheFile = $cacheDir . $key . '.cache';
         //file_put_contents($cacheFile, serialize($value));
-        
+
         //Cache::store($key, $value);
-        //Cache::store('pm_pack_keys', $key);   
-        //return true; 
+        //Cache::store('pm_pack_keys', $key);
+        //return true;
     }
     public static function clearAP5Cache()
     {
@@ -3724,5 +3724,25 @@ class AdvancedPack extends Product
             return false;
         }
         return true;
+    }
+
+    public static function evaluateMathExpression($formula)
+    {
+        $formula = preg_replace('/\s+/', '', $formula);
+
+        if (!preg_match('/^[0-9+\-*\/().]+$/', $formula)) {
+            throw new InvalidArgumentException('Invalid characters in formula');
+        }
+
+        try {
+
+            $result = @eval("return ceil($formula);");
+            if ($result === false) {
+                throw new RuntimeException('Error evaluating formula');
+            }
+            return $result;
+        } catch (ParseError $e) {
+            throw new RuntimeException('Error evaluating formula: ' . $e->getMessage());
+        }
     }
 }

@@ -392,6 +392,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                     'id_product_pack' => (is_numeric($idProductPack) && $idProductPack ? (int)$idProductPack : null),
                     'id_product' => $productFormValues['ap5_originalIdProduct-' . $idProductPack],
                     'quantity' => $productFormValues['ap5_quantity-' . $idProductPack],
+                    'formula' => $productFormValues['ap5_formula-' . $idProductPack],
                     'reduction_amount' => ($productFormValues['ap5_reductionType-' . $idProductPack] == 'percentage' ? $productFormValues['ap5_reductionAmount-' . $idProductPack] / 100 : $productFormValues['ap5_reductionAmount-' . $idProductPack]),
                     'reduction_type' => $productFormValues['ap5_reductionType-' . $idProductPack],
                     'exclusive' => (isset($productFormValues['ap5_exclusive-' . $idProductPack]) && $productFormValues['ap5_exclusive-' . $idProductPack] ? (int)$productFormValues['ap5_exclusive-' . $idProductPack] : 0),
@@ -1520,20 +1521,25 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     {
         if (Tools::getValue('new_pack') == 1 && isset($params['product'])) {
             $params['product']->addToCategories([$this->context->shop->id_category]);
-            if (version_compare(_PS_VERSION_, '8.1.0', '>=')) {
-                if (Tools::getValue('source_id_product')) {
-                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_products_edit', ['productId' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
-                } else {
-                    $url = $this->getContainer()->get('router')->generate('admin_products_edit', ['productId' => $params['product']->id]);
-                    $url = str_replace('products-v2/'.$params['product']->id.'/edit', 'products/'.$params['product']->id, $url);
-                    Tools::redirectAdmin($url . '&is_real_new_pack=1');
-                }
+//            if (version_compare(_PS_VERSION_, '8.1.0', '>=')) {
+//                if (Tools::getValue('source_id_product')) {
+//                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_products_edit', ['productId' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
+//                } else {
+//                    $url = $this->getContainer()->get('router')->generate('admin_products_edit', ['productId' => $params['product']->id]);
+//                    $url = str_replace('products-v2/'.$params['product']->id.'/edit', 'products/'.$params['product']->id, $url);
+//                    Tools::redirectAdmin($url . '&is_real_new_pack=1');
+//                }
+//            } else {
+//                if (Tools::getValue('source_id_product')) {
+//                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
+//                } else {
+//                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1');
+//                }
+//            }
+            if (Tools::getValue('source_id_product')) {
+                Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
             } else {
-                if (Tools::getValue('source_id_product')) {
-                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
-                } else {
-                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1');
-                }
+                Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1');
             }
         }
     }
@@ -2383,6 +2389,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                         'id_pack' => $idPack,
                         'id_product' => Tools::getValue('ap5_originalIdProduct-' . $idProductPack),
                         'quantity' => Tools::getValue('ap5_quantity-' . $idProductPack),
+                        'formula' => Tools::getValue('ap5_formula-' . $idProductPack),
                         'reduction_amount' => (Tools::getValue('ap5_reductionType-' . $idProductPack) == 'percentage' ? Tools::getValue('ap5_reductionAmount-' . $idProductPack) / 100 : Tools::getValue('ap5_reductionAmount-' . $idProductPack)),
                         'reduction_type' => Tools::getValue('ap5_reductionType-' . $idProductPack),
                         'exclusive' => (Tools::getIsset('ap5_exclusive-' . $idProductPack) && Tools::getValue('ap5_exclusive-' . $idProductPack) ? (int)Tools::getValue('ap5_exclusive-' . $idProductPack) : 0),
@@ -2647,7 +2654,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 $product = new Product((int)$currentIdProduct, false, $this->context->language->id, $this->context->shop->id);
             }
             $idPackList = AdvancedPack::getIdsPacks(true);
-                
+
             if (Validate::isLoadedObject($product)) {
                 if (AdvancedPack::isValidPack($product->id) && !AdvancedPack::isFromShop($product->id, Context::getContext()->shop->id) && count($this->context->controller->confirmations)) {
                     $this->context->controller->errors[] = $this->l('You must select the right shop in order to continue (where the pack has been created).');
@@ -2679,7 +2686,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 $this->context->controller->addRowActionSkipList('delete', $featureId);
             }
         }
-        
+
         if ($currentIdProduct) {
             $product = new Product((int)$currentIdProduct, false, $this->context->language->id, $this->context->shop->id);
             $config = $this->_getModuleConfiguration();
@@ -2976,7 +2983,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
 
         if (isset($config['enablePackCrossSellingBlock']) && $config['enablePackCrossSellingBlock']) {
             $currentProductObj = $this->getCurrentProduct();
-            
+
             if (Validate::isLoadedObject($currentProductObj) && self::_isFilledArray(AdvancedPack::getIdPacksByIdProduct($currentProductObj->id))) {
                 $packList = [];
                 $assembler = new ProductAssembler($this->context);
@@ -3082,7 +3089,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     public function hookDisplayAdminProductsMainStepLeftColumnBottom($params)
     {
         $product = new Product((int) $params['id_product']);
-        
+
         if (!Validate::isLoadedObject($product) || Tools::getValue('is_real_new_pack') || AdvancedPack::isValidPack((int)$params['id_product'])) {
             return;
         }
@@ -3551,6 +3558,16 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
         } else {
             return $this->display(__FILE__, 'views/templates/hook/' . $this->getPrestaShopTemplateVersion() . '/pack-product-list-extra-right.tpl');
         }
+    }
+
+    public function displayPackProductContainer($idPack, $packAttributesList, $packQuantityList = [], $packExcludeList = [], $packErrorsList = [], $packFatalErrorsList = [])
+    {
+        $packContent = AdvancedPack::getPackContent($idPack, null, true, $packAttributesList, $packQuantityList);
+        $this->context->smarty->assign([
+            'productsPackUnique' => AdvancedPack::getPackContentGroupByProduct($packContent),
+        ]);
+
+        return $this->display(__FILE__, 'views/templates/front/' . $this->getPrestaShopTemplateVersion() . '/pack-product-container.tpl');
     }
     public function displayPackPriceContainer($idPack, $packAttributesList, $packQuantityList = [], $packExcludeList = [], $packErrorsList = [], $packFatalErrorsList = [])
     {

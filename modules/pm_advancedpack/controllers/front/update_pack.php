@@ -30,6 +30,9 @@ class pm_advancedpackupdate_packModuleFrontController extends ModuleFrontControl
     public $display_footer = false;
     public $display_column_left = false;
     public $display_column_right = false;
+    protected $pack_ml = null;
+    protected $ml = 0;
+
     public function init()
     {
         parent::init();
@@ -38,6 +41,10 @@ class pm_advancedpackupdate_packModuleFrontController extends ModuleFrontControl
         $this->idPack = (int)Tools::getValue('id_pack');
         if (Tools::getIsset('productPackExclude')) {
             $this->productPackExclude = array_unique(array_map('intval', (array)Tools::getValue('productPackExclude')));
+        }
+        if (Tools::getIsset('quantity_ml') && (int)Tools::getValue('quantity_ml') > 0) {
+            $this->pack_ml = true;
+            $this->ml = (int)Tools::getValue('quantity_ml');
         }
         if (Tools::getIsset('productPackChoice')) {
             $tmp_productPackChoice = (array)Tools::getValue('productPackChoice');
@@ -69,6 +76,22 @@ class pm_advancedpackupdate_packModuleFrontController extends ModuleFrontControl
                         $packChoiceRow['quantity'] = 1;
                     }
                     $this->productPackQuantityList[(int)$packChoiceRow['idProductPack']] = (int)$packChoiceRow['quantity'];
+                }
+            }
+        }
+        if ($this->pack_ml) {
+            $packProducts = AdvancedPack::getPackContent($this->idPack, null, false, [], $this->productPackQuantityList);
+            foreach ($packProducts as $packProduct) {
+                $formula = $packProduct['formula'];
+                if ($formula) {
+                    $quantity = (int)$packProduct['quantity'];
+                    $ml = $this->ml;
+                    $formula = str_replace('[ML]', $ml, $formula);
+                    $formula = str_replace('[QUANTITY]', $quantity, $formula);
+                    $newQuantity = AdvancedPack::evaluateMathExpression($formula);
+                    $this->productPackQuantityList[(int)$packProduct['id_product_pack']] = (int)$newQuantity;
+                }else{
+                    $this->productPackQuantityList[(int)$packProduct['id_product_pack']] = (int)$packProduct['quantity'];
                 }
             }
         }
@@ -192,6 +215,7 @@ class pm_advancedpackupdate_packModuleFrontController extends ModuleFrontControl
                 $this->jsonOutput['packAvailableQuantity'] = AdvancedPack::getPackAvailableQuantity($this->idPack, $this->packAttributesList, $this->productPackQuantityList, $this->productPackExclude);
                 $this->jsonOutput['packContentTable'] = $this->module->displayPackContentTable($this->idPack, $this->packAttributesList, $packCompleteAttributesList, $this->productPackQuantityList, $this->productPackExclude, $packErrorsList, $packFatalErrorsList, $packForceHideInfoList);
                 $this->jsonOutput['packPriceContainer'] = $this->module->displayPackPriceContainer($this->idPack, $this->packAttributesList, $this->productPackQuantityList, $this->productPackExclude, $packErrorsList, $packFatalErrorsList);
+                $this->jsonOutput['packProductContainer'] = $this->module->displayPackProductContainer($this->idPack, $this->packAttributesList, $this->productPackQuantityList, $this->productPackExclude, $packErrorsList, $packFatalErrorsList);
                 $this->jsonOutput['packUrlAnchor'] = AdvancedPack::getPackAnchorByAttributes($this->idPack, $this->packAttributesList);
                 $this->jsonOutput['HOOK_EXTRA_RIGHT'] = Hook::exec('displayRightColumnProduct');
                 $this->jsonOutput['packErrorsList'] = $packErrorsList;

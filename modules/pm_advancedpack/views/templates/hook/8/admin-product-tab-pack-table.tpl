@@ -35,6 +35,7 @@
 						{else}
 						{l s='N/A' mod='pm_advancedpack'}
 						{/if}
+						<input type="text" value="{$packProduct['formula']}" size="2" id="form_ap5_formula-{$idProductPack|escape:'html':'UTF-8'}" name="ap5_formula-{$idProductPack|escape:'html':'UTF-8'}" class="ap5_formula form-control text-center" placeholder="{l s='Formule ML' mod='pm_advancedpack'}" />
 					</td>
 					<td class="text-center">
 						{l s='Combinations:' mod='pm_advancedpack'}&nbsp;
