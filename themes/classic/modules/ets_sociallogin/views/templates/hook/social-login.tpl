@@ -16,7 +16,7 @@
  * @copyright  ETS Software Technology Co., Ltd
  * @license    Valid for 1 website (or project) for each purchase of license
 *}
-{if !empty($nets) && !empty($design)}
+{if !empty($nets) && !empty($design) && Context::getContext()->shop->id == 1}
 
 <div class="ets_solo_social_wrapper{if !empty($is_rtl)} rtl{/if} {if isset($design.ETS_SOLO_WIDGET_EVENT) && $design.ETS_SOLO_WIDGET_EVENT}{$design.ETS_SOLO_WIDGET_EVENT|escape:'html':'UTF-8'}{/if}{if $hook == 'slw' || $hook == 'alw' || ($hook=='admin' && ($pos == 'slw' || $pos == 'alw'))} slw_and_alw{/if} {$hook|escape:'html':'UTF-8'}{if isset($design.ETS_SOLO_WIDGET_POSITION) && $design.ETS_SOLO_WIDGET_POSITION} pos_{$design.ETS_SOLO_WIDGET_POSITION|escape:'quotes':'UTF-8'}{/if}{if isset($design.ETS_SOLO_HIDE_ON_MOBILE) && $design.ETS_SOLO_HIDE_ON_MOBILE} hide_on_mobile{else} mobile{/if}">
     {if $hook == 'slw'}
