@@ -55,7 +55,7 @@
                 <div class="col-lg-7">
                     {block name='page_header_container'}
                         {block name='page_header'}
-                            <h1 class="h2">{block name='page_title'}{$product.name}{/block}</h1>
+                            <h1 class="h2 {if !$pro.env}mb-5{/if}">{block name='page_title'}{$product.name}{/block}</h1>
                         {/block}
                     {/block}
                     {hook h='displayPromoProductDescription'}
@@ -68,20 +68,31 @@
                             {/block}
                         {/block}
                     {/block}
+                    {if $product.attachments && $pro.env}
+                        <div class="product-attachments-header mt-3">
+                            {foreach from=$product.attachments item=attachment}
+                                <a class="" href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}">
+                                    {$attachment.description}
+                                </a>
+                            {/foreach}
+                        </div>
+                    {/if}
                 </div>
                 <div class="col-lg-5">
                     <div class="product-information">
-                        <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mb-3">
-                            <div>
-                                <p class="small mb-0 font-weight-bold mb-1">
-                                    Produit garanti moins cher du web
-                                </p>
-                                <p class="thin mb-0">
-                                    Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.
-                                </p>
+                        {if !$pro.env}
+                            <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mb-3">
+                                <div>
+                                    <p class="small mb-0 font-weight-bold mb-1">
+                                        Produit garanti moins cher du web
+                                    </p>
+                                    <p class="thin mb-0">
+                                        Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.
+                                    </p>
+                                </div>
+                                <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
                             </div>
-                            <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
-                        </div>
+                        {/if}
                         <div class="d-flex align-items-center mb-3 gap-16 flex-wrap">
                             {if $product.quantity > 0}
                                 <div class="small text-secondary">
@@ -108,17 +119,22 @@
                         {block name='product_description_short'}
                             <div id="product-description-short-{$product.id}" class="product-description mb-4">
                                 {$product.description_short nofilter}
-{*                                <a href="#block-description-long"*}
-{*                                   class="lire-plus small font-weight-bold text-black d-flex align-items-center">*}
-{*                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"*}
-{*                                         fill="none"*}
-{*                                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round"*}
-{*                                         stroke-linejoin="round"*}
-{*                                         class="lucide lucide-plus mr-2">*}
-{*                                        <path d="M5 12h14"/>*}
-{*                                        <path d="M12 5v14"/>*}
-{*                                    </svg>*}
-{*                                    Lire davantage</a>*}
+                                {*                                <a href="#block-description-long"*}
+                                {*                                   class="lire-plus small font-weight-bold text-black d-flex align-items-center">*}
+                                {*                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"*}
+                                {*                                         fill="none"*}
+                                {*                                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round"*}
+                                {*                                         stroke-linejoin="round"*}
+                                {*                                         class="lucide lucide-plus mr-2">*}
+                                {*                                        <path d="M5 12h14"/>*}
+                                {*                                        <path d="M12 5v14"/>*}
+                                {*                                    </svg>*}
+                                {*                                    Lire davantage</a>*}
+                                {if $pro.env}
+                                    <div class="text-left">
+                                        <a href="#block-description-long" class="text-bold">Lire d'avantage</a>
+                                    </div>
+                                {/if}
                             </div>
                         {/block}
 
@@ -136,7 +152,7 @@
                         <div class="product-actions js-product-actions">
 
                             {block name='product_buy'}
-                               <form action="{$urls.pages.cart}" method="post" id="add-to-cart-or-refresh">
+                                <form action="{$urls.pages.cart}" method="post" id="add-to-cart-or-refresh">
                                     <input type="hidden" name="token" value="{$static_token}">
                                     <input type="hidden" name="id_product" value="{$product.id}"
                                            id="product_page_product_id">
@@ -178,9 +194,9 @@
 
                                     {/block}
 
-                                   {block name='hook_display_accessories'}
-                                       {hook h='displayMultiAccessoriesProduct'}
-                                   {/block}
+                                    {block name='hook_display_accessories'}
+                                        {hook h='displayMultiAccessoriesProduct'}
+                                    {/block}
 
                                     {block name='product_discounts'}
 
@@ -213,9 +229,11 @@
             </div>
             <div class="row">
                 <div class="col-12">
+                    {if !$pro.env}
                     {block name='hook_display_reassurance'}
                         {hook h='displayReassurance'}
                     {/block}
+                    {/if}
 
                     {block name='product_tabs'}
                         <div class="tabs product-tabs" id="block-description-long">
@@ -282,9 +300,9 @@
                     {/if}" id="description" role="tabpanel">
 
                                     {block name='product_description'}
-{*                                        <hr>*}
-{*                                        {$product.description}*}
-{*                                        <hr>*}
+                                        {*                                        <hr>*}
+                                        {*                                        {$product.description}*}
+                                        {*                                        <hr>*}
                                         <div class="product-description">
                                             {$product.description nofilter}
                                         </div>
@@ -387,9 +405,9 @@
 
                             {* Onglet FAQ *}
                             {if $faq_has_content}
-                            <div class="tab-pane fade in" id="product-faq" role="tabpanel">
-                                {include file="module:productfaq/views/templates/hook/product_faq.tpl"}
-                            </div>
+                                <div class="tab-pane fade in" id="product-faq" role="tabpanel">
+                                    {include file="module:productfaq/views/templates/hook/product_faq.tpl"}
+                                </div>
                             {/if}
 
                         </div>
@@ -422,46 +440,46 @@
     </section>
 
     <script>
-    function initializeProductImgWidth() {
-        var $element = $(".wrapper__swiper__product-img");
-        if ($element.length) {
-            function updateWidth() {
-                var width = $element.width();
-                $element.css("--product-img-width", width + "px");
+        function initializeProductImgWidth() {
+            var $element = $(".wrapper__swiper__product-img");
+            if ($element.length) {
+                function updateWidth() {
+                    var width = $element.width();
+                    $element.css("--product-img-width", width + "px");
+                }
+
+                var resizeObserver = new ResizeObserver(updateWidth);
+                resizeObserver.observe($element[0]);
+                updateWidth();
             }
-
-            var resizeObserver = new ResizeObserver(updateWidth);
-            resizeObserver.observe($element[0]);
-            updateWidth();
         }
-    }
 
-    function waitForJQuery() {
-        if (typeof $ !== 'undefined') {
-            // Initialisation au chargement de la page
-            $(document).ready(function() {
-                initializeProductImgWidth();
-            });
-
-            // Écouter l'événement updatedProduct
-            if (typeof prestashop !== 'undefined') {
-                prestashop.on('updatedProduct', function(event) {
-                    setTimeout(function() {
-                        var $element = $(".wrapper__swiper__product-img");
-                        if ($element.length) {
-                            var width = $element.width();
-                            if (width > 0) {
-                                $element.css("--product-img-width", width + "px");
-                            }
-                        }
-                    }, 200);
+        function waitForJQuery() {
+            if (typeof $ !== 'undefined') {
+                // Initialisation au chargement de la page
+                $(document).ready(function() {
+                    initializeProductImgWidth();
                 });
+
+                // Écouter l'événement updatedProduct
+                if (typeof prestashop !== 'undefined') {
+                    prestashop.on('updatedProduct', function(event) {
+                        setTimeout(function() {
+                            var $element = $(".wrapper__swiper__product-img");
+                            if ($element.length) {
+                                var width = $element.width();
+                                if (width > 0) {
+                                    $element.css("--product-img-width", width + "px");
+                                }
+                            }
+                        }, 200);
+                    });
+                }
+            } else {
+                setTimeout(waitForJQuery, 100);
             }
-        } else {
-            setTimeout(waitForJQuery, 100);
         }
-    }
-    
-    waitForJQuery();
+
+        waitForJQuery();
     </script>
 {/block}

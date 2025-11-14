@@ -102,8 +102,9 @@ $(document).ready(function () {
     $first = $(".first");
     $second = $(".second");
     $third = $(".third");
+    $fourth = $(".fourth");
     $preview = $(".preview");
-    $all = $(".first, .second, .third, .preview");
+    $all = $(".first, .second, .third, .fourth, .preview");
     $session = $(".configurator-session");
     $products = $(".configurator-products-list div.list");
     $loader = $("#configurator-loader");
@@ -122,11 +123,14 @@ $(document).ready(function () {
                 $selected.addClass('selected');
                 $second.html(response.second);
                 $third.html(response.third);
+                $fourth.html(response.fourth);
 
                 $second.show();
                 $third.show();
+                $fourth.show();
                 $second.removeClass('disabled');
                 $third.removeClass('disabled');
+                $fourth.removeClass('disabled');
                 $preview.removeClass('disabled');
 
                 Preview.render(response.preview);
@@ -344,7 +348,11 @@ $(document).ready(function () {
         $("#addToCartAlias").click();
     });
     $("#addToCartAlias").on('click', function (event) {
-        $(".options-form").submit();
+        if($(".fourth .configurator-fourth").length){
+            $(".options-form-service").submit();
+        } else {
+            $(".options-form").submit();
+        }
         event.preventDefault();
     });
 
@@ -368,6 +376,36 @@ $(document).ready(function () {
                 ajax: true, addToCart: true, grillage: grillage, options: options,
             }, dataType: 'json', success: function (response) {
                 if (response.success) {
+                    window.location = '/panier?action=show';
+                }
+                $loader.hide();
+            }
+        });
+    });
+
+    $fourth.on('submit', '.options-form-service', function (event) {
+        event.preventDefault();
+
+        $loader.show();
+
+        var grillage = {};
+        $.each($('.core-form').serializeArray(), function () {
+            grillage[this.name] = this.value;
+        });
+
+        var options = {};
+        $.each($(this).serializeArray(), function () {
+            options[this.name] = this.value;
+        });
+
+        $.ajax({
+            url: window.location.href, method: "post", data: {
+                ajax: true, addToCart: true, grillage: grillage, options: options,
+            }, dataType: 'json', success: function (response) {
+                if (response.success) {
+                    localStorage.setItem("dealt_product_id", response.dealt_product_id);
+                    localStorage.setItem("dealt_service_product_id", response.dealt_service_product_id);
+                    localStorage.setItem("dealt_id_product_attribute", response.dealt_id_product_attribute);
                     window.location = '/panier?action=show';
                 }
                 $loader.hide();
@@ -416,18 +454,18 @@ $(document).ready(function () {
         refreshPrice(true);
     });
 
-    $all.on('click', '#sousbassement_hauteur, input[name="sousbassement_couleur"], #checkbox_occultation, #checkbox_panneau_deco, #checkbox_portillon, #checkbox_soubassement', function (event) {
+    $all.on('click', '#sousbassement_hauteur, input[name="sousbassement_couleur"], #checkbox_occultation, #checkbox_service, #checkbox_panneau_deco, #checkbox_portillon, #checkbox_soubassement', function (event) {
         event.preventDefault();
 
         // if id is not checkbox_soubassement
-        if ($(this).attr('id') !== 'checkbox_soubassement' && $(this).attr('id') !== 'checkbox_panneau_deco' && $(this).attr('id') !== 'checkbox_portillon' && $(this).attr('id') !== 'checkbox_occultation') {
+        if ($(this).attr('id') !== 'checkbox_soubassement' && $(this).attr('id') !== 'checkbox_panneau_deco' && $(this).attr('id') !== 'checkbox_portillon' && $(this).attr('id') !== 'checkbox_occultation'  && $(this).attr('id') !== 'checkbox_service') {
             var $item = $(this).parent();
         }else{
             var $item = $(this);
         }
 
         if (!$item.hasClass('selected')) {
-            if ($(this).attr('id') !== 'checkbox_soubassement' && $(this).attr('id') !== 'checkbox_panneau_deco' && $(this).attr('id') !== 'checkbox_portillon' && $(this).attr('id') !== 'checkbox_occultation') {
+            if ($(this).attr('id') !== 'checkbox_soubassement' && $(this).attr('id') !== 'checkbox_panneau_deco' && $(this).attr('id') !== 'checkbox_portillon' && $(this).attr('id') !== 'checkbox_occultation' && $(this).attr('id') !== 'checkbox_service') {
                 $(this).parent().addClass('selected');
             }else{
                 $(this).addClass('selected');
@@ -464,12 +502,13 @@ $(document).ready(function () {
         var portillon = $(".configurator-form.options-form .portillon.form-title").hasClass('selected');
         var occultation = $(".configurator-form.options-form .occultation.form-title").hasClass('selected');
         var panneau_deco = $("#checkbox_panneau_deco").hasClass('selected');
+        var service = $('[data-name="service_id"]').hasClass('selected');
 
         if (grillage.espacement == 0 && grillage.type == 310) {
             grillage.espacement = 1;
         }
 
-        if (portillon || occultation || panneau_deco) {
+        if (portillon || occultation || panneau_deco || service) {
             change = true;
         }
 
@@ -493,6 +532,10 @@ $(document).ready(function () {
                     active: portillon,
                     id: $('.configurator-action.selected[data-name="portillon_id"]').data('id'),
                     id_product_attribute: $('.configurator-action.selected[data-name="portillon_id"]').data('id-product-attribute'),
+                },
+                service : {
+                    active: service,
+                    id: $('[data-name="service_id"].selected').data('id'),
                 }
             }, dataType: 'json', success: function (response) {
                 if (!change) {
@@ -593,6 +636,53 @@ $(document).ready(function () {
                             $('*[data-name="occultation_id"][data-id-product-attribute="' + response.selected_occultation_id_product_attribute + '"]').trigger('click');
                         }
                     }
+                }
+
+                let serviceTitles = $('#servicesPrev').text()
+                /*console.log(response.serviceTitles)*/
+
+                if (null !== response.serviceTitles && JSON.stringify(response.serviceTitles) != serviceTitles){
+                    $('.fourth .hide-row > .row-items > .col-md-12').html('')
+                    htmlService = '';
+                    response.services.forEach(function (service, key) {
+                        htmlService += '<a href="#" data-id="'+service.dealt_service_product_id+'"'
+                        htmlService += ' data-name="service_id" class="configurator-action d-flex mb-4">'
+                        htmlService += '<div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;width: 100%;">'
+                        htmlService += '<div class="infos-top">'
+                        htmlService += '<span class="name">'+response.serviceTitles[key]+'</span>'
+                        htmlService += '<svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected">'
+                        htmlService += '<rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/>'
+                        htmlService += '<path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/>'
+                        htmlService += '</svg>'
+                        htmlService += '<svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-selected">'
+                        htmlService += '<rect y="0.5" width="38" height="38" rx="10" fill="white"/>'
+                        htmlService += '<path d="M25.5761 12.5007L25.576 12.5007C25.1976 12.5135 24.8533 12.6922 24.61 12.9746L15.9182 22.832L13.3948 19.9703C13.2719 19.8262 13.1217 19.7071 12.9508 19.6234C12.778 19.5387 12.5891 19.4926 12.3959 19.4904C12.2026 19.4882 12.0127 19.5298 11.838 19.6107C11.6636 19.6915 11.5096 19.8089 11.3831 19.9523C11.2567 20.0957 11.1596 20.2628 11.0949 20.4426C11.0302 20.6223 10.9984 20.8131 11.0001 21.0043C11.0018 21.1955 11.0371 21.3857 11.1051 21.5642C11.1725 21.741 11.2714 21.9047 11.3989 22.0446L14.9202 26.0381L14.9203 26.0382C15.173 26.3247 15.5302 26.5 15.9182 26.5C16.3061 26.5 16.6633 26.3247 16.9161 26.0382L16.9162 26.0381L26.606 15.049C26.7987 14.8354 26.9242 14.5683 26.9747 14.2853C27.0254 14.001 26.9997 13.7054 26.8988 13.435C26.7978 13.1645 26.6234 12.9246 26.3889 12.754C26.1533 12.5825 25.8698 12.4909 25.5761 12.5007Z" fill="#7CBA49" stroke="#7CBA49"/>'
+                        htmlService += '</svg>'
+                        htmlService += '</div>'
+
+                        htmlService += '<span style="font-size: 13px;line-height: 16px;width: 100%;">'
+                        htmlService +=  service.dealt_customer_commercial_description
+                        htmlService += '</span>'
+                        htmlService += '</div>'
+                        htmlService += '</a>'
+                    });
+
+                    $('.fourth .hide-row > .row-items > .col-md-12').append(htmlService)
+                    $('.fourth .form-title').removeClass('selected')
+
+                    $('#servicesPrev').text(JSON.stringify(response.serviceTitles))
+                } else if (change && null == response.serviceTitles && JSON.stringify(response.serviceTitles) != serviceTitles) {
+                    htmlService = '<div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;width: 100%;">'
+                    htmlService += '<div class="infos-top">'
+                    htmlService += '<span class="name">Pas de services pour ce produit.</span>'
+                    htmlService += '</div>'
+                    htmlService += '</div>'
+
+                    $('.fourth .hide-row > .row-items > .col-md-12').html('')
+                    $('.fourth .hide-row > .row-items > .col-md-12').append(htmlService)
+                    $('.fourth .form-title').removeClass('selected')
+                    /*                    $('.fourth .hide-row').css('display', 'none')*/
+                    $('#servicesPrev').text(JSON.stringify(response.serviceTitles))
                 }
 
                 viewInformationAlum();
@@ -835,20 +925,23 @@ $(document).ready(function () {
 
                 html += "<div style='float: left; margin-left: 2px; margin-right: 10px; width: 40%; display: flex; justify-content: center; align-items: center;'>";
                 html += "<div class='custom-quantity-selector'>";
-                html += "<button type='button' class='select_number btn-quantity' data-action='less' data-id='" + product.id + "'>";
-                html += "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-minus'>";
-                html += "<path d='M5 12h14'></path>";
-                html += "</svg>";
-                html += "</button>";
+                if (!product.name.includes("Pose de") && !product.name.includes("Pose d'un") && !product.name.includes("Pose d'") && !product.name.includes("Installation d'un")) {
 
-                html += "<input type='number' disabled name='qty' inputmode='numeric' pattern='[0-9]*' value='"+(product.name.includes('Barre de tension') ? totalRouleau : product.quantity)+"' min='1' class='quantity-input' aria-label='Quantité'/>";
+                    html += "<button type='button' class='select_number btn-quantity' data-action='less' data-id='" + product.id + "'>";
+                    html += "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-minus'>";
+                    html += "<path d='M5 12h14'></path>";
+                    html += "</svg>";
+                    html += "</button>";
 
-                html += "<button type='button' class='btn-quantity select_number' data-action='more' data-id='" + product.id + "'>";
-                html += "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-plus'>";
-                html += "<path d='M5 12h14'></path>";
-                html += "<path d='M12 5v14'></path>";
-                html += "</svg>";
-                html += "</button>";
+                    html += "<input type='number' disabled name='qty' inputmode='numeric' pattern='[0-9]*' value='"+(product.name.includes('Barre de tension') ? totalRouleau : product.quantity)+"' min='1' class='quantity-input' aria-label='Quantité'/>";
+
+                    html += "<button type='button' class='btn-quantity select_number' data-action='more' data-id='" + product.id + "'>";
+                    html += "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' class='lucide lucide-plus'>";
+                    html += "<path d='M5 12h14'></path>";
+                    html += "<path d='M12 5v14'></path>";
+                    html += "</svg>";
+                    html += "</button>";
+                }
                 html += "</div>";
                 html += "</div>"; // Fermeture du div contenant les boutons et la quantité
 

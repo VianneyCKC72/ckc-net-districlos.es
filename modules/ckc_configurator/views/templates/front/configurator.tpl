@@ -101,6 +101,9 @@
 
             <div class="step third disabled" data-step="third" style="margin-bottom: 2rem;display:none;">
             </div>
+
+            <div class="step fourth disabled" data-step="fourth" style="margin-bottom: 2rem;display:none;">
+            </div>
         </div>
 
         <div class="col-xl-4 mobil_session">

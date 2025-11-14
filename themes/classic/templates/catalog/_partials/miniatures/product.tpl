@@ -152,21 +152,34 @@
                         <div class="product-info-custom-block-miniature-price-stars">
                             {block name='product_price_and_shipping'}
                                 {if $product.show_price}
+                                    {if Context::getContext()->shop->id != 2 OR (Context::getContext()->shop->id == 2 && Context::getContext()->customer->id)}
                                     <div class="product-price-and-shipping flex_cln">
                                         {*                                    {hook h='displayProductPriceBlock' product=$product type="before_price"}*}
-                                        <span class="price">
-                                        {$product.price} {if $env_pro == 1}HT{else}TTC{/if}
+
+                                      
+                                        {if $pro.env == 1 && isset($product.discount_qty_slider) }
+                                            <span class="price">
+                                                {$product.specific_price_ht} € HT 
+                                            </span>
+                                            <small>dès {$product.from_quantity} unités*</small>
+                                            <div class="product-price-and-shipping">
+                                                <span class="regular-price">{$product.initial_price_ht} € HT </span>
+                                            </div>
+                                         {else} 
+                                            {$product.price} 
+                                         {/if} 
                                     </span>
 
-                                        {if $product.has_discount}
+                                        {if ($product.has_discount && !$pro.env) OR ($product.has_discount && $pro.env == 1 && !isset($product.discount_qty_slider))}
                                             {hook h='displayProductPriceBlock' product=$product type="old_price"}
-                                            <span class="regular-price">{$product.regular_price}{if $env_pro == 1}HT{else}TTC{/if}</span>
+                                            <span class="regular-price">{$product.regular_price}</span>
                                         {/if}
 
                                         {*                                    {hook h='displayProductPriceBlock' product=$product type='unit_price'}*}
 
                                         {*                                    {hook h='displayProductPriceBlock' product=$product type='weight'}*}
                                     </div>
+                                    {/if}
                                 {/if}
                             {/block}
 
@@ -183,7 +196,9 @@
                             {hook h='displayProductListReviews' product=$product}
                         {/block}
                     </div>
-                    <a href="{$product.url}" class="btn btn-primary">Voir le produit</a>
+                    {if $pro.env == 0 }
+                        <a href="{$product.url}" class="btn btn-primary">Voir le produit</a>
+                    {/if}
                 </div>
 
                 {*                {include file='catalog/_partials/product-flags.tpl'}*}

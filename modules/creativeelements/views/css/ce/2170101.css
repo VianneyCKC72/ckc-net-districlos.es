@@ -1,0 +1,23 @@
+.elementor-2170101 .elementor-element.elementor-element-a3ea261{margin-top:20px;margin-bottom:0px;}.elementor-2170101 .elementor-element.elementor-element-918d6ea{text-align:left;}.elementor-2170101 .elementor-element.elementor-element-918d6ea .elementor-image img{width:100%;max-width:100%;}.elementor-2170101 .elementor-element.elementor-element-918d6ea > .elementor-widget-container{margin:0px 0px 10px 0px;}.elementor-2170101 .elementor-element.elementor-element-b1a5e08{font-size:12px;font-weight:400;line-height:17px;width:240px;max-width:max(240px, 100%);}.elementor-2170101 .elementor-element.elementor-element-b1a5e08 .elementor-text-editor{column-gap:0px;}.elementor-2170101 .elementor-element.elementor-element-b1a5e08 > .elementor-widget-container{margin:0px 0px 10px 0px;}.elementor-2170101 .elementor-element.elementor-element-7c993ab{text-align:left;}.elementor-2170101 .elementor-element.elementor-element-7c993ab .elementor-social-icon{background-color:#026473;font-size:24px;}.elementor-2170101 .elementor-element.elementor-element-7c993ab .elementor-social-icon:not(:last-child){margin-right:7px;}.elementor-2170101 .elementor-element.elementor-element-7c993ab .elementor-icon{border-radius:10px 10px 10px 10px;}.elementor-2170101 .elementor-element.elementor-element-7c993ab > .elementor-widget-container{margin:0px 0px 20px 0px;}.elementor-2170101 .elementor-element.elementor-element-d79a163{color:#000000;font-size:12px;font-weight:400;line-height:17px;}.elementor-2170101 .elementor-element.elementor-element-b9b233f > .elementor-column-wrap > .elementor-widget-wrap > .elementor-widget:not(.elementor-widget__width-auto):not(.elementor-widget__width-initial, .elementor-widget__width-calc):not(:last-child):not(.elementor-absolute){margin-bottom:0px;}.elementor-2170101 .elementor-element.elementor-element-b9b233f > .elementor-element-populated{margin:0px 0px 0px 0px;padding:0px 0px 0px 0px;}@media(min-width:768px){.elementor-2170101 .elementor-element.elementor-element-61f6f1a{width:24.408%;}.elementor-2170101 .elementor-element.elementor-element-b9b233f{width:75.257%;}}/* Start custom CSS for social-icons, class: .elementor-element-7c993ab */@media (min-width: 768px) and (max-width: 1420px) {
+    .elementor-2170101 .elementor-element.elementor-element-7c993ab .elementor-social-icons-wrapper a.elementor-social-icon{
+        margin-top: 10px;
+    }
+}/* End custom CSS */
+/* Start custom CSS for html, class: .elementor-element-c901329 */.elementor-2170101 .elementor-element.elementor-element-c901329 .elementor-heading-title{
+    color: #000000;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 21px;
+    margin-bottom: 15px;
+}
+.elementor-2170101 .elementor-element.elementor-element-c901329 .elementor-page-link:not(#e){
+    color: #000000;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 24px;
+}
+@media (max-width: 991px) and (min-width: 768px){
+    .elementor-2170101 .elementor-element.elementor-element-c901329 .navbar-toggler.collapse-icons{
+        display: none;
+    }
+}/* End custom CSS */

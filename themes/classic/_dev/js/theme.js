@@ -11577,6 +11577,8 @@ $(document).ready(function () {
 
         $(".logoFooterContainer img").attr('loading', 'lazy')
         $(".logoFooterContainer img").attr('src', '/img/logo-text-white.svg')
+        $(".logoFooterContainerPro img").attr('loading', 'lazy')
+        $(".logoFooterContainerPro img").attr('src', '/img/DISTRICLOS_pro_logo_mobile.png')
 
         if (socialIconFooter.length > 0 && copyrightFooter.length > 0 && linksBlockFooter.length > 0){
             socialIconFooter.insertAfter(linksBlockFooter)
@@ -11751,8 +11753,6 @@ $(document).ready(function () {
             $alert.fadeOut(500);
         }, 5000);
     }
-
-    $("#everpspopup_block_center img").attr('loading', 'lazy')
 });
 
 

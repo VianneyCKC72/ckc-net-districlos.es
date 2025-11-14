@@ -1,0 +1,24 @@
+.elementor-16010000 .elementor-element.elementor-element-bfa6eeb{margin-top:50px;margin-bottom:20px;}.elementor-16010000 .elementor-element.elementor-element-8be796e{margin-top:0px;margin-bottom:70px;}.elementor-16010000 .elementor-element.elementor-element-584b958 .swiper:not(.swiper-initialized) .swiper-wrapper{grid-column-gap:25px;}.elementor-16010000 .elementor-element.elementor-element-584b958 .swiper-slide > *{padding:0px 0px 0px 0px !important;}.elementor-16010000 .elementor-element.elementor-element-584b958 .swiper-pagination-bullet{width:5px;height:5px;}/* Start custom CSS for section, class: .elementor-element-bfa6eeb */.elementor-16010000 .elementor-element.elementor-element-bfa6eeb{
+    display: none;
+}
+@media (max-width: 767px){
+    .elementor-16010000 .elementor-element.elementor-element-bfa6eeb{
+        display: block;
+    }
+}/* End custom CSS */
+/* Start custom CSS for section, class: .elementor-element-8be796e */.elementor-16010000 .elementor-element.elementor-element-8be796e{
+    display: none;
+}
+@media (max-width: 767px){
+    .elementor-16010000 .elementor-element.elementor-element-8be796e{
+        display: block;
+    }
+}
+@media (max-width: 767px){
+    .elementor-element-8be796e {
+        overflow: hidden !important;
+    }
+    .elementor-16010000 .elementor-element.elementor-element-8be796e .product-miniature.js-product-miniature .thumbnail-container{
+        align-items: center;
+    }
+}/* End custom CSS */

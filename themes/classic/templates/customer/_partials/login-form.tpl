@@ -7,7 +7,7 @@
     <form id="login-form" action="{$action}" method="post">
         <input type="hidden" name="submitLogin" value="1">
 
-        {if $espace_pro != true && (!isset($show_title) || $show_title===false)}
+        {if $pro.env == 0 && (!isset($show_title) || $show_title===false)}
             <div class="not-account-yet">
                 <div class="img">
                     <picture>
@@ -26,7 +26,7 @@
 
 
         <div class="inside-login-form my-4">
-            {if $espace_pro != true && (!isset($show_title) || $show_title===false)}
+            {if $pro.env == 0 && (!isset($show_title) || $show_title===false)}
                 {block name='page_title'}
                     <h1 class="h1 mb-4">Se connecter</h1>
                 {/block}
@@ -39,7 +39,7 @@
                     {/block}
                 {/foreach}
             {/block}
-            {if $espace_pro != true}
+            {if $pro.env == 0}
                 <div class="actions-container-login">
                     <button type="submit" class="btn btn-primary">
                         {l s='Se connecter' d='Shop.Theme.Actions'}
@@ -60,7 +60,7 @@
             {/if}
         </div>
 
-        {if $espace_pro == 1}
+        {if $pro.env == 1}
             {include file="customer/_partials/_espacepro/login-form-espacepro.tpl"}
         {/if}
 

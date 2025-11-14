@@ -23,38 +23,73 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 {if $product.show_price}
+{if Context::getContext()->shop->id != 2 OR (Context::getContext()->shop->id == 2 && Context::getContext()->customer->id)}
   <div class="product-prices js-product-prices mb-4">
     {block name='product_price'}
-      {include file='catalog/_partials/product-prices/has-discount.tpl'}
+      {if !$pro.env}
+        {include file='catalog/_partials/product-prices/has-discount.tpl'}
+      {/if}
       {include file='catalog/_partials/product-prices/price.tpl'}
       {if ($product.price_amount * $product.quantity_wanted > 300)}
         <div>
           <p class="mb-0">Payez en plusieurs fois
-              {if $product.price_amount * $product.quantity_wanted >= 2000}
-                  <span style="margin-inline: 10px">
-                      <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
-                  </span>
-              {elseif ($product.price_amount * $product.quantity_wanted >= 500) && ($product.price_amount * $product.quantity_wanted < 2000)}
-                  <span style="margin-inline: 10px">
-                      <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
-                  </span>
-              {else}
-                  <span style="margin-inline: 10px">
-                      <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
-                  </span>
-              {/if}
-              en carte bancaire sans frais <a href="#" id="oneySimulation" style="color: black;">
-                  <strong>Simuler</strong>
-              </a>.</p>
+            {if $product.price_amount * $product.quantity_wanted >= 2000}
+              <span style="margin-inline: 10px">
+                <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
+              </span>
+            {elseif ($product.price_amount * $product.quantity_wanted >= 500) && ($product.price_amount * $product.quantity_wanted < 2000)}
+              <span style="margin-inline: 10px">
+                <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
+              </span>
+            {else}
+              <span style="margin-inline: 10px">
+                <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
+              </span>
+            {/if}
+            en carte bancaire sans frais <a href="#" id="oneySimulation" style="color: black;">
+              <strong>Simuler</strong>
+            </a>.
+          </p>
           <p class="mb-0 thin">Un crédit vous engage et doit être remboursé. vérifiez vos capacités de remboursement avant
             de vous engager.</p>
         </div>
       {/if}
-        {block name='product_add_to_cart'}
+      {block name='product_add_to_cart'}
 
-            {include file='catalog/_partials/product-add-to-cart.tpl'}
+        {include file='catalog/_partials/product-add-to-cart.tpl'}
 
+      {/block}
+
+      {* <div class="product-price{if $product.has_discount}has-discount{/if}">
+
+        <div class="current-price">
+          <span class='current-price-value' content="{$product.rounded_display_price}">
+            {capture name='custom_price'}{hook h='displayProductPriceBlock' product=$product type='custom_price' hook_origin='product_sheet'}{/capture}
+            {if '' !== $smarty.capture.custom_price}
+              {$smarty.capture.custom_price nofilter}
+            {else}
+              {$product.price}
+            {/if}
+          </span>
+
+          {if $product.has_discount}
+            {if $product.discount_type === 'percentage'}
+              <span
+                class="discount discount-percentage">{l s='Save %percentage%' d='Shop.Theme.Catalog' sprintf=['%percentage%' => $product.discount_percentage_absolute]}</span>
+            {else}
+              <span class="discount discount-amount">
+                {l s='Save %amount%' d='Shop.Theme.Catalog' sprintf=['%amount%' => $product.discount_to_display]}
+              </span>
+            {/if}
+          {/if}
+        </div>
+
+        {block name='product_unit_price'}
+          {if $displayUnitPrice}
+            <p class="product-unit-price sub">{$product.unit_price_full}</p>
+          {/if}
         {/block}
+      </div> *}
     {/block}
 
     {block name='product_without_taxes'}
@@ -128,4 +163,5 @@
     </div>
 
   </div>
+{/if}
 {/if}

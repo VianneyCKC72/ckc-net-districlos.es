@@ -15,15 +15,11 @@
 @ini_set('max_input_time', '300');
 @ini_set('memory_limit', '512M');
 
-require __DIR__ . '/../../classes/HelperEspacePro.php';
-
 defined('_PS_VERSION_') or exit;
 
 class AdminEspaceProController extends ModuleAdminController
 {
     public $translator;
-
-    const ID_GROUP_PRO = 10; // Groupe pro
 
     const VIEWS_TPL = _PS_MODULE_DIR_ . 'ckc_espacepro/views/';
 
@@ -127,67 +123,61 @@ class AdminEspaceProController extends ModuleAdminController
         }
     }
 
-    /**
-     * @return array|false
-     */
     protected function getAllCustomersEp($includeDateCondition = false)
     {
-        // Début de la requête SQL sans condition de date
-        $sql = 'SELECT c.*, cl.name AS country_name, ad.vat_number as vat_number
-FROM ps_customer c
-INNER JOIN ps_customer_group cg ON cg.id_customer = c.id_customer
-LEFT JOIN ps_country_lang cl ON cl.id_country = c.pays
-LEFT JOIN ps_address ad ON ad.id_customer = c.id_customer
-WHERE id_group = 10';
+        $idLang      = (int)$this->context->language->id;
+        $gidPro      = (int)$this->getProGroupId();
+        $gidProti    = (int)$this->getProticulierGroupId();
 
-        // Si $includeDateCondition est vrai, ajouter la condition de date à la requête
+        $sql = 'SELECT c.*,
+                   gl.name AS default_group_name,
+                   cl.name AS country_name,
+                   ad.vat_number as vat_number
+            FROM `'._DB_PREFIX_.'customer` c
+            LEFT JOIN `'._DB_PREFIX_.'group_lang` gl
+                   ON gl.id_group = c.id_default_group AND gl.id_lang = '.$idLang.'
+            LEFT JOIN `'._DB_PREFIX_.'country_lang` cl
+                   ON cl.id_country = c.pays AND cl.id_lang = '.$idLang.'
+            LEFT JOIN `'._DB_PREFIX_.'address` ad
+                   ON ad.id_customer = c.id_customer
+            WHERE c.id_default_group IN ('.(int)$gidPro.', '.(int)$gidProti.')';
+
         if ($includeDateCondition) {
             $date30DaysAgo = date('Y-m-d', strtotime('-30 days'));
-            $sql           .= ' AND c.date_add >= \'' . $date30DaysAgo . '\'';
+            $sql .= ' AND c.date_add >= \''.$date30DaysAgo.'\'';
         }
 
-        // Continuation de la requête
-        $sql .= ' GROUP BY c.id_customer, c.email ORDER BY c.id_customer DESC';
+        $sql .= ' GROUP BY c.id_customer, c.email
+              ORDER BY c.id_customer DESC';
 
-        // Exécution de la requête
         $customers = Db::getInstance()->ExecuteS($sql);
+        if (empty($customers)) return false;
 
-        if (empty($customers)) {
-            return false;
-        }
-
-        $array = [];
-        foreach ($customers as $customer) {
-            // Supposant que 'rib' et 'fileUpload' sont des colonnes dans votre base de données
-            // Extrayez l'extension du fichier et ajoutez-la aux données du client
+        foreach ($customers as &$customer) {
             $customer['ribFileExtension'] = isset($customer['rib']) ? strtolower(pathinfo($customer['rib'], PATHINFO_EXTENSION)) : '';
             $customer['fileExtension']    = isset($customer['fileUpload']) ? strtolower(pathinfo($customer['fileUpload'], PATHINFO_EXTENSION)) : '';
-            $array[]                      = $customer;
         }
-        return $array;
+        return $customers;
     }
-
 
     protected function getInactiveCount($includeDateCondition = false)
     {
-        // Début de la requête SQL sans condition de date
-        $sqlInactiveCount = 'SELECT COUNT(*) as inactiveCount FROM `ps_customer` c
-        INNER JOIN ps_customer_group cg ON cg.id_customer = c.id_customer
-        WHERE id_group = ' . self::ID_GROUP_PRO . ' 
-        AND c.active = 0
-        AND c.refuse = 0';
+        $gidPro   = (int)$this->getProGroupId();
+        $gidProti = (int)$this->getProticulierGroupId();
 
-        // Si $includeDateCondition est vrai, ajouter la condition de date à la requête
+        $sql = 'SELECT COUNT(*) as inactiveCount
+            FROM `'._DB_PREFIX_.'customer` c
+            WHERE c.id_default_group IN ('.$gidPro.', '.$gidProti.')
+              AND c.active = 0
+              AND c.refuse = 0';
+
         if ($includeDateCondition) {
-            $date30DaysAgo    = date('Y-m-d', strtotime('-30 days'));
-            $sqlInactiveCount .= ' AND c.date_add >= \'' . $date30DaysAgo . '\'';
+            $date30DaysAgo = date('Y-m-d', strtotime('-30 days'));
+            $sql .= ' AND c.date_add >= \'' . pSQL($date30DaysAgo) . '\'';
         }
 
-        // Exécution de la requête
-        $inactiveCountResult = Db::getInstance()->getRow($sqlInactiveCount);
-        $inactiveCount       = $inactiveCountResult ? (int)$inactiveCountResult['inactiveCount'] : 0;
-
-        return $inactiveCount;
+        $row = Db::getInstance()->getRow($sql);
+        return $row ? (int)$row['inactiveCount'] : 0;
     }
 
     /**
@@ -195,23 +185,23 @@ WHERE id_group = 10';
      */
     protected function getRefuseCount($includeDateCondition = false)
     {
-        // Début de la requête SQL sans condition de date
-        $sqlRefuseCount = 'SELECT COUNT(*) as refuseCount FROM `ps_customer` c
-    INNER JOIN ps_customer_group cg ON cg.id_customer = c.id_customer
-    WHERE id_group = ' . self::ID_GROUP_PRO . ' AND c.refuse = 1';
+        $gidPro   = (int)$this->getProGroupId();            // lit CKC_GROUP_PRO_ID
+        $gidProti = (int)$this->getProticulierGroupId();    // lit CKC_GROUP_PROTICULIER_ID
 
-        // Si $includeDateCondition est vrai, ajouter la condition de date à la requête
+        $sql = 'SELECT COUNT(*) AS refuseCount
+            FROM `'._DB_PREFIX_.'customer` c
+            WHERE c.id_default_group IN ('.$gidPro.', '.$gidProti.')
+              AND c.refuse = 1';
+
         if ($includeDateCondition) {
-            $date30DaysAgo  = date('Y-m-d', strtotime('-30 days'));
-            $sqlRefuseCount .= ' AND c.date_add >= \'' . $date30DaysAgo . '\'';
+            $date30 = pSQL(date('Y-m-d', strtotime('-30 days')));
+            $sql   .= " AND c.date_add >= '{$date30}'";
         }
 
-        // Exécution de la requête
-        $refuseCountResult = Db::getInstance()->getRow($sqlRefuseCount);
-        $refuseCount       = $refuseCountResult ? (int)$refuseCountResult['refuseCount'] : 0;
-
-        return $refuseCount;
+        $row = Db::getInstance()->getRow($sql);
+        return $row ? (int)$row['refuseCount'] : 0;
     }
+
 
     public function setMedia($isNewTheme = false)
     {
@@ -222,51 +212,55 @@ WHERE id_group = 10';
 
 
     /**
-     * @param $status       indique le statut à mettre à jour (1 pour actif ou refusé, 0 pour non-actif ou non-refusé).
-     * @param $isActivation est un booléen qui détermine si l'action concerne l'activation (true) ou le refus (false)
-     *                      du compte.
-     *
      * @return void
      */
     protected function updateCustomerStatusAndSendEmail($status, $isActivation, $id_customer = null)
     {
         if (!$id_customer) {
-            $id_customer = Tools::getValue('id_customer');
+            $id_customer = (int)Tools::getValue('id_customer');
         }
-
         if (!$id_customer) return;
 
-        $statusColumn  = $isActivation ? '`active`' : '`refuse`';
+        // Colonne ciblée
+        $statusColumn  = $isActivation ? 'active' : 'refuse';
         $emailTemplate = $isActivation ? 'compte_actif_pro' : 'compte_refuse_pro';
-        $emailSubject  = $isActivation ?
-            "Confirmation de Création de Votre Compte Professionnel Districlos" :
-            "Refus Activation Compte Pro DISTRICLOS : Informations Importantes";
+        $emailSubject  = $isActivation
+            ? "Confirmation de Création de Votre Compte Professionnel Districlos"
+            : "Refus Activation Compte Pro DISTRICLOS : Informations Importantes";
 
-        Db::getInstance()->execute("UPDATE `ps_customer` SET $statusColumn = $status WHERE `id_customer` = " . (int)$id_customer);
+        // UPDATE avec préfixe
+        Db::getInstance()->update(
+            'customer',
+            [$statusColumn => (int)$status],
+            'id_customer = '.(int)$id_customer
+        );
 
-        $customer = Db::getInstance()->getRow("SELECT * FROM `ps_customer` WHERE `id_customer` = " . (int)$id_customer);
+        // Lecture client (avec préfixe correct)
+        $customer = Db::getInstance()->getRow(
+            'SELECT * FROM `'._DB_PREFIX_.'customer` WHERE `id_customer` = '.(int)$id_customer
+        );
 
         if ($customer) {
+            // ⚠️ Assure-toi que le template existe en /mails/<lang>/$emailTemplate.html
             Mail::Send(
-                Configuration::get('PS_LANG_DEFAULT'),
+                (int)Configuration::get('PS_LANG_DEFAULT'),
                 $emailTemplate,
                 $emailSubject,
                 [
                     '{firstname}' => $customer['firstname'],
                     '{lastname}'  => $customer['lastname'],
                     '{shop_name}' => Configuration::get('PS_SHOP_NAME'),
-                    '{shop_url}'  => $this->context->link->getBaseLink($this->context->shop->id, true),
+                    '{shop_url}'  => $this->context->link->getBaseLink((int)$this->context->shop->id, true),
                 ],
                 $customer['email'],
-                Configuration::get('PS_SHOP_NAME'),
-                "info@cloture-discount.fr",
+                $customer['firstname'].' '.$customer['lastname'],
+                'info@cloture-discount.fr',
                 Configuration::get('PS_SHOP_NAME')
             );
         }
-        $HelperEspacePro = new HelperEspacePro();
-        $HelperEspacePro->redirect();
-    }
 
+        (new HelperEspacePro())->redirect();
+    }
 
     /**
      * Set values for the inputs.
@@ -309,58 +303,244 @@ WHERE id_group = 10';
         }
         parent::postProcess();
     }
-
     public function display()
     {
-        $activation         = Tools::getValue('active');
-        $refuse             = Tools::getValue('refuse');
-        $accept             = Tools::getValue('accept');
-        $nbCustomersLastDay = 0;
-        $nbCustomers        = 0;
-        $id_customer        = Tools::getValue('id_customer');
+        $tplPath = self::VIEWS_TPL . 'templates/customers.tpl';
 
-//        dump($activation);
-//        dump($refuse);
-//        exit;
-
-        if ($activation === '0' || $activation === '1') {
-            $this->updateCustomerStatusAndSendEmail($activation, true, $id_customer);
-        } elseif ($refuse === '0' || $refuse === '1') {
-            $this->updateCustomerStatusAndSendEmail($refuse, false, $id_customer);
+        // === LOGS DANS LE MODULE ===
+        $logDir  = _PS_MODULE_DIR_ . 'ckc_espacepro/var/log';
+        if (!is_dir($logDir)) {
+            @mkdir($logDir, 0775, true);
         }
+        $logFile = $logDir . '/ckc_ep_tpl_debug.log';
+        $compileDir = _PS_ROOT_DIR_ . '/var/cache/dev/smarty/compile';
 
-        if($accept === '1'){
-            $this->updateCustomerStatusAndSendEmail(1, true, $id_customer);
-        }
-
+        // --- Données ---
         $customers        = $this->getAllCustomersEp();
         $customersLastDay = $this->getAllCustomersEp(true);
-        if (!empty(count($customers))) {
-            $nbCustomers = count($customers);
+
+        // Sanitize dur : aucune valeur array/object dans $customers
+        $sanitized = [];
+        if (is_array($customers)) {
+            foreach ($customers as $row) {
+                if (!is_array($row)) { continue; }
+                foreach ($row as $k => $v) {
+                    if (is_array($v) || is_object($v)) { $row[$k] = ''; }
+                    elseif ($v === null)               { $row[$k] = ''; }
+                    elseif (is_bool($v))               { $row[$k] = (int)$v; }
+                }
+                $sanitized[] = $row;
+            }
         }
-        if (!empty(count($customers))) {
-            $nbCustomersLastDay = count($customers);
+
+        $nbCustomers        = (int)count($sanitized);
+        $nbCustomersLastDay = (int)(is_array($customersLastDay) ? count($customersLastDay) : 0);
+
+        $ajaxUrl = (string)$this->context->link->getAdminLink('AdminEspacePro', true, [], [
+            'ajax'   => 1,
+            'action' => 'changeCustomerGroup',
+        ]);
+
+        $groupsSwitchable = [
+            ['id_group' => (int)$this->getProticulierGroupId(), 'name' => $this->l('Proticulier')],
+            ['id_group' => (int)$this->getProGroupId(),         'name' => $this->l('Professionnel')],
+        ];
+
+        $counts        = (array)$this->getCountsByType();
+        $nbPro         = (int)($counts['nbPro'] ?? 0);
+        $nbProticulier = (int)($counts['nbProticulier'] ?? 0);
+
+        $editKbis = (string)$this->createHelperForm('submitKbisCkc_ep', $this->getConfigFormValues(), $this->getEditUserKbisForm());
+        $editRib  = (string)$this->createHelperForm('submitRibCkc_ep',  $this->getConfigFormValues(), $this->getEditUserRibForm());
+
+        $assign = [
+            'customers'              => $sanitized,
+            'customersLastDay'       => is_array($customersLastDay) ? $customersLastDay : [],
+            'nbCustomers'            => $nbCustomers,
+            'nbCustomersLastDay'     => $nbCustomersLastDay,
+            'nbPro'                  => $nbPro,
+            'nbProticulier'          => $nbProticulier,
+            'editkbis'               => $editKbis,
+            'editrib'                => $editRib,
+            'groupsSwitchable'       => $groupsSwitchable,
+            'id_group_pro'           => (int)$this->getProGroupId(),
+            'id_group_proticulier'   => (int)$this->getProticulierGroupId(),
+            'ajax_change_group_url'  => $ajaxUrl,
+        ];
+
+        // --- Log des types envoyés au tpl ---
+        $typeLines = [];
+        foreach ($assign as $k => $v) {
+            $typeLines[] = $k . '=' . (is_array($v) ? 'array(' . count($v) . ')' : gettype($v));
         }
+        @file_put_contents($logFile, '[' . date('c') . "] assign types => " . implode(', ', $typeLines) . "\n", FILE_APPEND);
 
-        $this->context->smarty->assign('customers', $customers);
-        $this->context->smarty->assign('nbCustomers', $nbCustomers);
-        $this->context->smarty->assign('nbCustomersLastDay', $nbCustomersLastDay);
-        $this->context->smarty->assign('InactiveCount', $this->getInactiveCount());
-        $this->context->smarty->assign('RefuseCount', $this->getRefuseCount());
-        $this->context->smarty->assign('InactiveCountLastDay', $this->getInactiveCount(true));
-        $this->context->smarty->assign('RefuseCountLastDay', $this->getRefuseCount(true));
-        $this->context->smarty->assign('editkbis', $this->renderFormKbis());
-        $this->context->smarty->assign('editrib', $this->renderFormRib());
+        // --- Assign + rendu ---
+        $this->context->smarty->clearAssign(array_keys($assign));
+        $this->context->smarty->assign($assign);
 
-        $output = $this->context->smarty->fetch(self::VIEWS_TPL . 'templates/customers.tpl');
+        try {
+            $output = $this->context->smarty->fetch($tplPath);
+            $this->context->smarty->assign(['content' => (string)$output]);
+        } catch (\Throwable $e) {
+            // On tente de retrouver le fichier compilé de customers.tpl et de dumper ~20 lignes autour de la ligne fautive.
+            $compiledHit = '';
+            $lineGuess   = 154; // valeur remontée par le stack trace
+            $snippet     = '';
 
-        $this->context->smarty->assign(['content' => $output]);
+            if (is_dir($compileDir)) {
+                $rii = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($compileDir));
+                foreach ($rii as $file) {
+                    if (!$file->isFile()) continue;
+                    $fp = $file->getPathname();
+                    // cible le compiled de customers.tpl
+                    if (strpos($fp, 'file.customers.tpl.php') !== false) {
+                        $compiledHit = $fp;
+                        break;
+                    }
+                }
+            }
+
+            // Dump du code autour de la ligne suspecte
+            if ($compiledHit && is_readable($compiledHit)) {
+                $lines = @file($compiledHit, FILE_IGNORE_NEW_LINES);
+                if ($lines !== false) {
+                    $start = max(0, $lineGuess - 10);
+                    $end   = min(count($lines) - 1, $lineGuess + 10);
+                    $chunk = array_slice($lines, $start, $end - $start + 1, true);
+                    foreach ($chunk as $ln => $code) {
+                        $snippet .= sprintf("%06d: %s\n", $ln + 1, $code);
+                    }
+                }
+            }
+
+            @file_put_contents(
+                $logFile,
+                '[' . date('c') . "] FETCH ERROR: " . $e->getMessage() . "\ncompiled: " . $compiledHit .
+                "\n---- code around line " . $lineGuess . " ----\n" . $snippet .
+                "\n-----------------------------------\n",
+                FILE_APPEND
+            );
+
+            // Message BO clair
+            die(
+                '<pre style="white-space:pre-wrap;max-width:100%;font:12px/1.4 monospace">' .
+                "Template fetch FAILED: " . htmlspecialchars($e->getMessage()) . "\n\n" .
+                "Compiled file: " . htmlspecialchars($compiledHit ?: '[not found]') . "\n" .
+                "Log file: " . htmlspecialchars($logFile) . "\n" .
+                "→ Ouvre ce log dans le module pour voir le code exact autour de la ligne suspecte.\n" .
+                "</pre>"
+            );
+        }
 
         $this->display_footer = false;
-
         parent::display();
     }
 
+
+    protected function getCountsByType(): array
+    {
+        $gidPro   = (int)$this->getProGroupId();
+        $gidProti = (int)$this->getProticulierGroupId();
+
+        $row = Db::getInstance()->getRow('
+        SELECT
+          SUM(c.id_default_group='.(int)$gidPro.')   AS nb_pro,
+          SUM(c.id_default_group='.(int)$gidProti.') AS nb_proticulier
+        FROM `'._DB_PREFIX_.'customer` c
+        WHERE c.id_default_group IN ('.(int)$gidPro.', '.(int)$gidProti.')
+    ');
+        return [
+            'nbPro'         => (int)($row['nb_pro'] ?? 0),
+            'nbProticulier' => (int)($row['nb_proticulier'] ?? 0),
+        ];
+    }
+
+
+    public function ajaxProcessChangeCustomerGroup()
+    {
+        header('Content-Type: application/json');
+
+        if (!$this->access('edit')) {
+            echo Tools::jsonEncode(['success' => false, 'message' => $this->l('Permission refusée')]);
+            exit;
+        }
+
+        $idCustomer = (int)Tools::getValue('id_customer');
+        $idGroup    = (int)Tools::getValue('id_group');
+
+        if (!$idCustomer || !$idGroup) {
+            echo Tools::jsonEncode(['success' => false, 'message' => $this->l('Paramètres manquants')]);
+            exit;
+        }
+
+        $customer = new Customer($idCustomer);
+        if (!Validate::isLoadedObject($customer)) {
+            echo Tools::jsonEncode(['success' => false, 'message' => $this->l('Client introuvable')]);
+            exit;
+        }
+
+        $gidPro   = (int)$this->getProGroupId();
+        $gidProti = (int)$this->getProticulierGroupId();
+        if (!in_array($idGroup, [$gidPro, $gidProti], true)) {
+            echo Tools::jsonEncode(['success' => false, 'message' => $this->l('Groupe non autorisé')]);
+            exit;
+        }
+
+        $db = Db::getInstance();
+
+        $ok = $db->update(
+            'customer',
+            ['id_default_group' => (int)$idGroup],
+            'id_customer = '.(int)$idCustomer
+        );
+        if (!$ok) {
+            $err = method_exists($db, 'getMsgError') ? $db->getMsgError() : '';
+            echo Tools::jsonEncode(['success' => false, 'message' => ($err ?: $this->l('Échec mise à jour client'))]);
+            exit;
+        }
+
+        $db->insert(
+            'customer_group',
+            ['id_customer' => (int)$idCustomer, 'id_group' => (int)$idGroup],
+            false,
+            true,
+            Db::INSERT_IGNORE
+        );
+
+        $db->delete(
+            'customer_group',
+            'id_customer='.(int)$idCustomer.' AND id_group IN ('.(int)$gidPro.','.(int)$gidProti.') AND id_group!='.(int)$idGroup
+        );
+
+        Hook::exec('actionCustomerAccountUpdate', ['customer' => $customer]);
+
+        echo json_encode(['success' => true]);
+        exit;
+    }
+
+
+    private function getProGroupId(): int
+    {
+        $v = (int)Configuration::get('CKC_GROUP_PRO_ID');
+        return $v > 0 ? $v : 10;
+    }
+
+    private function getProticulierGroupId(): int
+    {
+        $v = (int)Configuration::get('CKC_GROUP_PROTICULIER_ID');
+        return $v > 0 ? $v : 11;
+    }
+
+    public function initProcess()
+    {
+        parent::initProcess();
+
+        if (Tools::getIsset('ajax') && Tools::getValue('action') === 'changeCustomerGroup') {
+            $this->ajaxProcessChangeCustomerGroup();
+            exit; // important
+        }
+    }
     /**
      * Create the form that will be displayed in the configuration of your module.
      */

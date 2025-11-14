@@ -1,0 +1,20 @@
+
+.action-header-espace-pro {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+#ckcpromobarre {
+    background-color: $primary-color-pro!important;
+}
+
+.btn.btn-primary{
+    background-color: $primary-color-pro;
+    &:hover {
+     filter: brightness(65%);
+    }
+  }
