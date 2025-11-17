@@ -5,7 +5,7 @@
 
             <!-- Logo Desktop (Visible seulement à partir de md) -->
             <div class="flex-grow-0 flex-shrink-0 d-none d-md-block">
-                <a href="https://pro.cloture-discount.fr">
+                <a href="{$pro.url_domain}">
                     <img class="" width="180" src="/themes/classic/assets/img/logo-pro.png" alt="{$shop.name} Pro" />
                 </a>
             </div>
