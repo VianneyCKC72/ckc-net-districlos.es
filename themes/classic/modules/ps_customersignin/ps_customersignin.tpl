@@ -24,25 +24,36 @@
 <div id="_desktop_user_info">
     <div class="user-info">
         {if $logged}
-                <a
-                        class="ico"
-                        href="{$urls.pages.my_account}"
-                        title="{l s='View my customer account' d='Shop.Theme.Customeraccount'}"
-                        rel="nofollow"
-                >
-                    <img src="/themes/classic/assets/img/ico-compte.svg" alt="Connexion">
-                    <span class="hidden-sm-down">Mon compte</span>
-                </a>
+            <a
+                    class="ico"
+                    href="{$urls.pages.my_account}"
+                    title="{l s='View my customer account' d='Shop.Theme.Customeraccount'}"
+                    rel="nofollow"
+            >
+                <img src="/themes/classic/assets/img/ico-compte.svg" alt="Connexion">
+                <span class="hidden-sm-down">Mon compte</span>
+            </a>
+        {elseif isset($pro.env) && $pro.env == 1 && Context::getContext()->shop->id == 2}
+            <a
+                    href="{$pro.url_domain}"
+                    title="{l s='Log in to your customer account' d='Shop.Theme.Customeraccount'}"
+                    class="ico"
+                    rel="nofollow"
+            >
+                <img src="/themes/classic/assets/img/ico-compte.svg" alt="Connexion">
+                <span class="hidden-sm-down">{l s='Sign in' d='Shop.Theme.Actions'}</span>
+            </a>
+
         {else}
-                <a
-                        href="{$urls.pages.authentication}?back={$urls.current_url|urlencode}"
-                        title="{l s='Log in to your customer account' d='Shop.Theme.Customeraccount'}"
-                        class="ico"
-                        rel="nofollow"
-                >
-                    <img src="/themes/classic/assets/img/ico-compte.svg" alt="Connexion">
-                    <span class="hidden-sm-down">{l s='Sign in' d='Shop.Theme.Actions'}</span>
-                </a>
+            <a
+                    href="{$urls.pages.authentication}?back={$urls.current_url|urlencode}"
+                    title="{l s='Log in to your customer account' d='Shop.Theme.Customeraccount'}"
+                    class="ico"
+                    rel="nofollow"
+            >
+                <img src="/themes/classic/assets/img/ico-compte.svg" alt="Connexion">
+                <span class="hidden-sm-down">{l s='Sign in' d='Shop.Theme.Actions'}</span>
+            </a>
         {/if}
     </div>
 </div>
