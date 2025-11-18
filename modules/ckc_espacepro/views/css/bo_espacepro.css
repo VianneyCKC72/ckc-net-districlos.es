@@ -28,3 +28,23 @@
 .ckc-ep-footnote{margin-top:14px;color:#456;font-size:13px}
 .ckc-ep-footnote i{color:#ffa400;margin-right:6px}
 .ckc-ep-config a.slide-button {display:none; !important;}
+/* cible par id propre */
+#CKC_GROUP_PRO_IDS {
+    min-height: 220px !important;
+    resize: vertical;
+    overflow-y: auto;
+}
+
+/* fallback si jamais l’id n’est pas repris par HelperForm */
+select[name="CKC_GROUP_PRO_IDS[]"] {
+    min-height: 220px !important;
+    resize: vertical;
+    overflow-y: auto;
+}
+
+/* ou via la classe dédiée */
+.js-ckc-pro-groups {
+    min-height: 220px !important;
+    resize: vertical;
+    overflow-y: auto;
+}

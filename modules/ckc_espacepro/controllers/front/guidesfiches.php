@@ -6,12 +6,13 @@ class ckc_espaceproguidesfichesModuleFrontController extends ModuleFrontControll
 {
    public function initContent()
    {
+
         parent::initContent();
 
          $idProduct = (int)Tools::getValue('download_product');
          if ($idProduct) {
-               $this->downloadProductZip($idProduct);
-               return; 
+            $this->downloadProductZip($idProduct);
+            return; 
          }
 
         $service = new ProductsService();
@@ -74,8 +75,10 @@ class ckc_espaceproguidesfichesModuleFrontController extends ModuleFrontControll
 
             $filePath = _PS_DOWNLOAD_DIR_ . $attachment->file;
             if (is_file($filePath)) {
-                // Nettoyage du nom du document pour le ZIP
+                // Nom unique dans le ZIP : on ajoute l'ID de l'attachment
                 $safeDocName = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $doc['name']);
+                $safeDocName = $safeDocName . '_' . $doc['id_attachment'] . '.pdf';
+
                 $zip->addFile($filePath, $safeDocName);
             }
         }
@@ -93,4 +96,5 @@ class ckc_espaceproguidesfichesModuleFrontController extends ModuleFrontControll
         unlink($zipFilename);
         exit;
     }
+
 }

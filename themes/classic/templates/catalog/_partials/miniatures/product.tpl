@@ -72,7 +72,11 @@
                             </picture>
 
                             {* Détection de la première image non-cover *}
-                            {assign var="hoverImage" value=$product.images[1]}
+                            {if isset($product.images[1])}
+                                {assign var="hoverImage" value=$product.images[1]}
+                            {else}
+                                {assign var="hoverImage" value=$product.images[0]}
+                            {/if}
 
                             {* Image en hover *}
                             <picture class="product-image second-image">

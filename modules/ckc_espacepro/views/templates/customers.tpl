@@ -1,5 +1,5 @@
 {*
- * BO Espace Pro – listing clients (sélecteur seul + code couleur lignes)
+ * BO Espace Pro – listing clients (multi-groupes PRO support)
  *}
 
 <link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet" crossorigin="anonymous">
@@ -74,9 +74,9 @@
             </tr>
             </thead>
             <tbody>
-            {* debug marker v3 *}
             {foreach $customers as $customer}
-                <tr class="{if $customer.id_default_group == $id_group_pro}row-pro{else}row-proticulier{/if}">
+                {assign var=isPro value=in_array($customer.id_default_group, $id_groups_pro)}
+                <tr class="{if $isPro}row-pro{else}row-proticulier{/if}">
                     <td>{$customer.id_customer|intval}</td>
 
                     <td>
@@ -96,7 +96,6 @@
                             <div class="small-muted"><strong>Société :</strong> {$customer.company|escape:'html'}</div>
                         {/if}
 
-                        {* Adresse en une ligne, sans assign, sans implode *}
                         {if $customer.adresse || $customer.adresse2 || $customer.cp || $customer.ville || $customer.country_name}
                             <div class="small-muted">
                                 {if $customer.adresse}{$customer.adresse|escape:'html'}{/if}
@@ -123,9 +122,16 @@
 
                     <td>
                         <div class="account-type">
-        <span class="status-badge {if $customer.id_default_group == $id_group_pro}badge-pro{else}badge-proti{/if}">
-          {if $customer.id_default_group == $id_group_pro}Professionnel{else}Proticulier{/if}
-        </span>
+                <span class="status-badge {if $isPro}badge-pro{else}badge-proti{/if}">
+                  {if $isPro}
+                      {foreach $groupsSwitchable as $g}
+                          {if $g.id_group == $customer.id_default_group}{$g.name|escape:'html'}{/if}
+                      {/foreach}
+                  {else}
+                      Proticulier
+                  {/if}
+                </span>
+
                             <select
                                     class="form-control type-select js-change-group"
                                     data-id-customer="{$customer.id_customer|intval}"
@@ -141,12 +147,13 @@
                     </td>
 
                     <td>
-                        {if isset($customer.fileUpload) && $customer.fileUpload}
-                            {if isset($customer.fileExtension) && ($customer.fileExtension == 'jpg' || $customer.fileExtension == 'jpeg' || $customer.fileExtension == 'png')}
+                        {if $customer.fileUpload}
+                            {assign var=ext value=$customer.fileExtension|default:''|lower}
+                            {if in_array($ext, ['jpg','jpeg','png'])}
                                 <a href="/upload/{$customer.fileUpload|escape:'url'}" target="_blank" class="file-chip" title="Voir le KBIS">
                                     <img src="/upload/{$customer.fileUpload|escape:'url'}" alt="KBIS">
                                 </a>
-                            {elseif isset($customer.fileExtension) && $customer.fileExtension == 'pdf'}
+                            {elseif $ext == 'pdf'}
                                 <a href="/upload/{$customer.fileUpload|escape:'url'}" target="_blank" class="file-chip" title="Ouvrir le PDF">
                                     <span class="icon"></span> <span>KBIS.pdf</span>
                                 </a>
@@ -159,12 +166,13 @@
                     </td>
 
                     <td>
-                        {if isset($customer.rib) && $customer.rib}
-                            {if isset($customer.ribFileExtension) && ($customer.ribFileExtension == 'jpg' || $customer.ribFileExtension == 'jpeg' || $customer.ribFileExtension == 'png')}
+                        {if $customer.rib}
+                            {assign var=ext value=$customer.ribFileExtension|default:''|lower}
+                            {if in_array($ext, ['jpg','jpeg','png'])}
                                 <a href="/upload/{$customer.rib|escape:'url'}" target="_blank" class="file-chip" title="Voir le RIB">
                                     <img src="/upload/{$customer.rib|escape:'url'}" alt="RIB">
                                 </a>
-                            {elseif isset($customer.ribFileExtension) && $customer.ribFileExtension == 'pdf'}
+                            {elseif $ext == 'pdf'}
                                 <a href="/upload/{$customer.rib|escape:'url'}" target="_blank" class="file-chip" title="Ouvrir le PDF">
                                     <span class="icon"></span> <span>RIB.pdf</span>
                                 </a>
@@ -178,7 +186,6 @@
                 </tr>
             {/foreach}
             </tbody>
-
         </table>
     </div>
 {else}
@@ -191,10 +198,9 @@
 {/if}
 
 <script>
-    window.PRO_GROUP_ID = {$id_group_pro|intval};
+    window.PRO_GROUP_IDS = {$id_groups_pro|json_encode nofilter};
     window.PROTI_GROUP_ID = {$id_group_proticulier|intval};
     var ajax_change_group_url = '{$ajax_change_group_url|escape:'javascript'}';
-    document.body.setAttribute('data-pro-id', '{$id_group_pro|intval}');
 </script>
 
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
