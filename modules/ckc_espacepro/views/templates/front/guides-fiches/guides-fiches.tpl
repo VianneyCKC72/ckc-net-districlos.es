@@ -14,6 +14,9 @@
     </section>
 
     <section>
+    {* <pre>
+        {$sections|var_dump}
+    </pre> *}
         {foreach from=$sections item=section}
             <div class="row">
                 <div class="col-12">

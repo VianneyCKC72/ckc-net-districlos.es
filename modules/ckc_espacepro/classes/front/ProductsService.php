@@ -36,25 +36,36 @@ class ProductsService
             return [];
         }
 
+     
         $sql = new \DbQuery();
         $sql->select('
-            cp.id_category,
-            p.id_product,
-            pl.name AS product_name,
-            pl.link_rewrite,
-            p.active,
-            i.id_image,
-            a.id_attachment,
+            cp.id_category, 
+            p.id_product, 
+            pl.name AS product_name, 
+            pl.link_rewrite, 
+            p.active, 
+            i.id_image, 
+            a.id_attachment, 
             al.name AS attachment_name
         ')
-            ->from('category_product', 'cp')
-            ->innerJoin('product', 'p', 'p.id_product = cp.id_product')
-            ->leftJoin('product_lang', 'pl', 'pl.id_product = p.id_product AND pl.id_lang = ' . (int)$this->idLang)
-            ->leftJoin('image', 'i', 'i.id_product = p.id_product AND i.cover = 1')
-            ->leftJoin('product_attachment', 'pa', 'pa.id_product = p.id_product')
-            ->leftJoin('attachment', 'a', 'a.id_attachment = pa.id_attachment')
-            ->leftJoin('attachment_lang', 'al', 'al.id_attachment = a.id_attachment AND al.id_lang = ' . (int)$this->idLang)
-            ->where('cp.id_category IN (' . implode(',', $categoryIds) . ')');
+        ->from('category_product', 'cp')
+        ->innerJoin('product', 'p', 'p.id_product = cp.id_product AND p.active = 1')
+        ->leftJoin('product_lang', 'pl', 'pl.id_product = p.id_product AND pl.id_lang = ' . (int)$this->idLang)
+        ->leftJoin('image', 'i', 'i.id_product = p.id_product AND i.cover = 1')
+        ->innerJoin('product_attachment', 'pa', 'pa.id_product = p.id_product')
+        ->innerJoin('attachment', 'a', 'a.id_attachment = pa.id_attachment')
+        ->innerJoin('attachment_lang', 'al', 'al.id_attachment = a.id_attachment AND al.id_lang = ' . (int)$this->idLang)
+        ->where("
+        cp.id_category IN (" . implode(',', $categoryIds) . ")
+        AND a.file LIKE '%.pdf'
+        AND (
+                al.name LIKE 'Fiche technique%' OR
+                al.name LIKE 'Plan de maçonnerie%' OR
+                al.name LIKE 'Notice de montage%' OR
+                al.name LIKE 'Plan technique%'
+            )
+        ")
+        ->groupBy('p.id_product, a.id_attachment');
 
         $rows = $this->db->executeS($sql);
 
@@ -62,12 +73,9 @@ class ProductsService
         $productsByCategory = [];
 
         foreach ($rows as $row) {
-            if (!(int)$row['active']) {
-                continue;
-            }
-
             $idCategory = (int)$row['id_category'];
             $idProduct = (int)$row['id_product'];
+            $idAttachment = (int)$row['id_attachment'];
 
             if (!isset($productsByCategory[$idCategory][$idProduct])) {
                 $imageUrl = $row['id_image']
@@ -75,43 +83,50 @@ class ProductsService
                     : null;
 
                 $productsByCategory[$idCategory][$idProduct] = [
-                    'id' => $idProduct,
-                    'name' => $row['product_name'],
-                    'image' => $imageUrl,
+                    'id'           => $idProduct,
+                    'name'         => $row['product_name'],
+                    'image'        => $imageUrl,
                     'link_rewrite' => $row['link_rewrite'],
-                    'documents' => [],
+                    'documents'    => [],
                 ];
             }
 
-            // Filtrer uniquement les documents PDF
-            if (!empty($row['id_attachment']) && isset($row['attachment_name'])) {
-                $ext = strtolower(pathinfo($row['attachment_name'], PATHINFO_EXTENSION));
-                if ($ext === 'pdf') {
-                    $downloadUrl = $link->getPageLink('attachment', true, null, [
-                        'id_attachment' => (int)$row['id_attachment'],
-                        'filename' => urlencode(\Tools::str2url($row['attachment_name']))
-                    ]);
+            // Ajout du document PDF (déjà filtré par SQL)
+            if (!isset($productsByCategory[$idCategory][$idProduct]['documents'][$idAttachment])) {
+                $downloadUrl = $link->getPageLink('attachment', true, null, [
+                    'id_attachment' => $idAttachment,
+                    'filename'      => urlencode(\Tools::str2url($row['attachment_name']))
+                ]);
 
-                    $productsByCategory[$idCategory][$idProduct]['documents'][] = [
-                        'id_attachment' => (int)$row['id_attachment'],
-                        'name' => $row['attachment_name'],
-                        'download_url' => $downloadUrl,
-                    ];
-                }
+                $productsByCategory[$idCategory][$idProduct]['documents'][$idAttachment] = [
+                    'id_attachment' => $idAttachment,
+                    'name'          => $row['attachment_name'],
+                    'download_url'  => $downloadUrl,
+                ];
             }
         }
 
-        // Associer les produits à chaque section, seulement s’ils ont des PDF
+        // Associer les produits filtrés aux sections
         foreach ($sections as &$section) {
             $idCategory = (int)$section['id_category'];
-            $section['products'] = isset($productsByCategory[$idCategory])
-                ? array_values(array_filter($productsByCategory[$idCategory], function ($p) {
-                    return !empty($p['documents']); // garde uniquement les produits avec des PDFs
-                }))
-                : [];
+
+            if (!isset($productsByCategory[$idCategory])) {
+                $section['products'] = [];
+                continue;
+            }
+
+            $sectionProducts = [];
+            foreach ($productsByCategory[$idCategory] as $product) {
+                // Ré-indexation des documents
+                $product['documents'] = array_values($product['documents']);
+                $sectionProducts[] = $product;
+            }
+
+            $section['products'] = $sectionProducts;
         }
 
         return $sections;
     }
+
 
 }
