@@ -10,25 +10,42 @@
     {else}
         {assign var=errMsg value="Impossible de vous connecter. Veuillez réessayer."}
     {/if}
-
     <div class="alert alert-danger" role="alert">{$errMsg}</div>
 {/if}
 
+
 <div class="pro-auth">
+    <ul class="breadcrumb">
+        <li>
+            <svg role="navigation" aria-label="Accueil" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                 stroke-linejoin="round" class="lucide lucide-house">
+                <title>Accueil</title>
+                <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"></path>
+                <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            </svg>
+        </li>
+
+        <li>
+            <span>Connectez-vous à votre compte</span>
+        </li>
+    </ul>
+
     <div class="pro-auth__intro">
         <p>
-            Bienvenue dans votre Espace Professionnel dédié aux experts du bâtiment, aux jardiniers et aux paysagistes passionnés.
-            Chez Districlos, nous comprenons l’importance d’un partenariat solide pour mener à bien vos projets. C’est pourquoi
-            nous avons créé cet espace exclusif, où vous bénéficiez de tarifs avantageux et de remises toute l’année sur nos clôtures,
+            Bienvenue dans votre Espace Professionnel dédié aux experts du bâtiment, aux jardiniers et aux paysagistes
+            passionnés.
+            Chez Districlos, nous comprenons l’importance d’un partenariat solide pour mener à bien vos projets. C’est
+            pourquoi
+            nous avons créé cet espace exclusif, où vous bénéficiez de tarifs avantageux et de remises toute l’année sur
+            nos clôtures,
             grillages et portails de qualité supérieure.
         </p>
     </div>
 
-    <h2 class="pro-auth__title">Je me connecte à mon espace</h2>
-
     <div class="pro-auth__grid">
         <section class="pro-auth__form">
-            <h3 class="sr-only">Connexion à votre espace pro</h3>
+            <h3 class="pro-auth__title">Je me connecte à mon espace</h3>
 
             {if isset($login_error) && $login_error}
                 <div class="alert alert-danger" role="alert">
@@ -49,7 +66,8 @@
                 <div class="pro-field">
                     <label for="pro-login-pass">Votre mot de passe</label>
                     <div class="pro-input-wrap">
-                        <input class="pro-input" type="password" name="password" id="pro-login-pass" required autocomplete="current-password">
+                        <input class="pro-input" type="password" name="password" id="pro-login-pass" required
+                               autocomplete="current-password">
                         <button type="button" class="pro-eye" aria-label="Afficher / masquer le mot de passe"></button>
                     </div>
                 </div>
@@ -59,11 +77,11 @@
                 </div>
 
                 <div class="pro-auth__actions">
-                    <button class="pro-btn pro-btn--primary" type="submit" name="submitLogin">Se connecter</button>
+                    <button class="pro-btn pro-btn--ghost" type="submit" name="submitLogin">Se connecter</button>
 
                     <div class="pro-auth__cta">
                         <span class="pro-badge-text">100€ offert&nbsp;!</span>
-                        <a class="pro-btn pro-btn--ghost"
+                        <a class="pro-btn pro-btn--primary"
                            href="inscription?ep=1">
                             Créer un compte
                         </a>
@@ -77,7 +95,8 @@
             <figure class="pro-figure">
                 <picture>
                     <source srcset="/img/cms/auth/img-espace-pro2.webp" type="image/webp">
-                    <img src="/img/cms/auth/img-espace-pro2.jpeg" alt="Districlos sur salon professionnel" loading="lazy">
+                    <img src="/img/cms/auth/img-espace-pro2.jpeg" alt="Districlos sur salon professionnel"
+                         loading="lazy">
                 </picture>
 
                 <figcaption class="pro-quote">
@@ -95,8 +114,12 @@
     </div>
 
     <div class="pro-steps">
-        <div class="pro-step"><span class="pro-step__num">1</span><span class="pro-step__txt">Je remplis le formulaire d’inscription</span></div>
-        <div class="pro-step"><span class="pro-step__num">2</span><span class="pro-step__txt">Mon compte est validé par les équipes Districlos</span></div>
-        <div class="pro-step"><span class="pro-step__num">3</span><span class="pro-step__txt">Je bénéficie de <strong>100€ offerts</strong> dès 1&nbsp;000€ d’achat</span></div>
+        <div class="pro-step"><span class="pro-step__num">1</span><span
+                    class="pro-step__txt">Je remplis le formulaire<br>d’inscription</span>
+        </div>
+        <div class="pro-step"><span class="pro-step__num">2</span><span class="pro-step__txt">Mon compte est validé<br>par les équipes Districlos</span>
+        </div>
+        <div class="pro-step"><span class="pro-step__num">3</span><span class="pro-step__txt">Je bénéficie de <strong>100€ offerts<br>dès 1&nbsp;000€ d’achat</strong></span>
+        </div>
     </div>
 </div>
