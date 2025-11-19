@@ -46,7 +46,7 @@
     <div class="pro-auth__grid">
         <section class="pro-auth__form">
             <h3 class="pro-auth__title">Je me connecte à mon espace</h3>
-
+²
             {if isset($login_error) && $login_error}
                 <div class="alert alert-danger" role="alert">
                     {$login_error}
