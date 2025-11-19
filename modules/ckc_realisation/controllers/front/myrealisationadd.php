@@ -21,15 +21,21 @@ class Ckc_RealisationMyrealisationaddModuleFrontController extends ModuleFrontCo
 
         // CSRF
         if (Tools::getToken(false) !== Tools::getValue('token')) {
-            return $this->redirectToList(['err' => 'token']);
+            /*            return $this->redirectToList(['err' => 'token']);*/
+            echo json_encode(['err' => 'token']);
+            exit();
         }
 
         // Fichier ?
         if (empty($_FILES['file']['name'])) {
-            return $this->redirectToList(['err' => 'nofile']);
+            /*            return $this->redirectToList(['err' => 'nofile']);*/
+            echo json_encode(['err' => 'nofile']);
+            exit();
         }
         if ((int)$_FILES['file']['error'] !== UPLOAD_ERR_OK) {
-            return $this->redirectToList(['err' => 'upload']);
+            /*            return $this->redirectToList(['err' => 'upload']);*/
+            echo json_encode(['err' => 'upload']);
+            exit();
         }
 
         // Vérifs MIME & taille
@@ -43,10 +49,14 @@ class Ckc_RealisationMyrealisationaddModuleFrontController extends ModuleFrontCo
             $mime = @mime_content_type($tmp);
         }
         if (!in_array($mime, ['image/jpeg','image/png'], true)) {
-            return $this->redirectToList(['err' => 'mime']);
+            /*            return $this->redirectToList(['err' => 'mime']);*/
+            echo json_encode(['err' => 'mime']);
+            exit();
         }
         if ((int)$_FILES['file']['size'] > 5*1024*1024) {
-            return $this->redirectToList(['err' => 'size']);
+            /*            return $this->redirectToList(['err' => 'size']);*/
+            echo json_encode(['err' => 'size']);
+            exit();
         }
 
         // Déplacement
@@ -58,7 +68,9 @@ class Ckc_RealisationMyrealisationaddModuleFrontController extends ModuleFrontCo
         $ext      = ($mime === 'image/png') ? '.png' : '.jpg';
         $filename = uniqid('real_', true).$ext;
         if (!@move_uploaded_file($tmp, $destDir.$filename)) {
-            return $this->redirectToList(['err' => 'move']);
+            /*            return $this->redirectToList(['err' => 'move']);*/
+            echo json_encode(['err' => 'move']);
+            exit();
         }
 
         // Thumbnail
@@ -79,14 +91,28 @@ class Ckc_RealisationMyrealisationaddModuleFrontController extends ModuleFrontCo
         $obj->mime          = $mime ?: '';
         $obj->filesize      = (int)$_FILES['file']['size'];
 
+        $shopId = (int) Context::getContext()->shop->id;
+        $fileBaseUrl = Context::getContext()->link->getBaseLink($shopId)
+            .'modules/'.$this->module->name.'/uploads/'.$shopId.'/';
+
         if (!$obj->add()) {
             @unlink($destDir.$filename);
             @unlink($destDir.'thumb_'.$filename);
-            return $this->redirectToList(['err' => 'save']);
+            /*            return $this->redirectToList(['err' => 'save']);*/
+            echo json_encode(['err' => 'save']);
+            exit();
         }
 
+        $item = [
+            'id' => $obj->id,
+            'thumb' => $fileBaseUrl.$obj->filename,
+            'status' => $obj->status,
+        ];
+
         // Succès
-        return $this->redirectToList(['ok' => 1]);
+        /*        return $this->redirectToList(['ok' => 1]);*/
+        echo json_encode(['ok' => 1, 'item' => $item]);
+        exit();
     }
 
     public function initContent()
