@@ -44,7 +44,7 @@
                     <span class="d-block fz-23 font-weight-bold m-b-3 text-white">Profitez de nos remises sur la quantité !</span>
                 </div>
             </div>
-            {hook h='CETemplate' id=18}
+            {hook h='CETemplate' id=38}
         </div>
     </section>
 
