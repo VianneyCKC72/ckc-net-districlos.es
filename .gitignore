@@ -398,6 +398,9 @@ $RECYCLE.BIN/
 # Ignorer le fichier .htpasswd
 .htpasswd
 
+# Ignorer le fichier .htaccess
+.htaccess
+
 # Windows shortcuts
 *.lnk
 
