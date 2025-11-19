@@ -150,15 +150,15 @@
                         {if $customer.fileUpload}
                             {assign var=ext value=$customer.fileExtension|default:''|lower}
                             {if in_array($ext, ['jpg','jpeg','png'])}
-                                <a href="/upload/{$customer.fileUpload|escape:'url'}" target="_blank" class="file-chip" title="Voir le KBIS">
-                                    <img src="/upload/{$customer.fileUpload|escape:'url'}" alt="KBIS">
+                                <a href="/upload/pro_docs/{$customer.fileUpload|escape:'url'}" target="_blank" class="file-chip" title="Voir le KBIS">
+                                    <img src="/upload/pro_docs/{$customer.fileUpload|escape:'url'}" alt="KBIS">
                                 </a>
                             {elseif $ext == 'pdf'}
-                                <a href="/upload/{$customer.fileUpload|escape:'url'}" target="_blank" class="file-chip" title="Ouvrir le PDF">
+                                <a href="/upload/pro_docs/{$customer.fileUpload|escape:'url'}" target="_blank" class="file-chip" title="Ouvrir le PDF">
                                     <span class="icon"></span> <span>KBIS.pdf</span>
                                 </a>
                             {else}
-                                <span class="small-muted">Fichier : /upload/{$customer.fileUpload|escape:'html'}</span>
+                                <span class="small-muted">Fichier : /upload/pro_docs/{$customer.fileUpload|escape:'html'}</span>
                             {/if}
                         {else}
                             <span class="small-muted">—</span>
@@ -169,15 +169,15 @@
                         {if $customer.rib}
                             {assign var=ext value=$customer.ribFileExtension|default:''|lower}
                             {if in_array($ext, ['jpg','jpeg','png'])}
-                                <a href="/upload/{$customer.rib|escape:'url'}" target="_blank" class="file-chip" title="Voir le RIB">
-                                    <img src="/upload/{$customer.rib|escape:'url'}" alt="RIB">
+                                <a href="/upload/pro_docs/{$customer.rib|escape:'url'}" target="_blank" class="file-chip" title="Voir le RIB">
+                                    <img src="/upload/pro_docs/{$customer.rib|escape:'url'}" alt="RIB">
                                 </a>
                             {elseif $ext == 'pdf'}
-                                <a href="/upload/{$customer.rib|escape:'url'}" target="_blank" class="file-chip" title="Ouvrir le PDF">
+                                <a href="/upload/pro_docs/{$customer.rib|escape:'url'}" target="_blank" class="file-chip" title="Ouvrir le PDF">
                                     <span class="icon"></span> <span>RIB.pdf</span>
                                 </a>
                             {else}
-                                <span class="small-muted">Fichier : /upload/{$customer.rib|escape:'html'}</span>
+                                <span class="small-muted">Fichier : /upload/pro_docs/{$customer.rib|escape:'html'}</span>
                             {/if}
                         {else}
                             <span class="small-muted">—</span>
