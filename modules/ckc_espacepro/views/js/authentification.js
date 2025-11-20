@@ -55,7 +55,7 @@ $(document).ready(function () {
        4️⃣ Réorganisation du formulaire (comme création compte)
     ---------------------------------------------------- */
     function reorderForm() {
-        const form = document.querySelector(".identity-form") || document.querySelector("#customer-form");
+        const form = document.querySelector(".identity-form form") || document.querySelector("#customer-form");
         if (!form) return;
 
         const order = [
@@ -103,7 +103,7 @@ $(document).ready(function () {
         form.innerHTML = "";
         form.appendChild(fragment);
 
-        console.log("✅ Champs réordonnés dans .identity-form");
+        console.log("✅ Champs réordonnés dans .identity-form form / #customer-form");
     }
 
     reorderForm();
