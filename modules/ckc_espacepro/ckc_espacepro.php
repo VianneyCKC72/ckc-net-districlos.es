@@ -613,7 +613,7 @@ class ckc_espacepro extends Module
 
             Db::getInstance()->update('customer', $row, 'id_customer=' . (int)$customer->id, true, Db::INSERT_IGNORE);
 
-            $helper->success[] = "Votre compte a bien été créé en tant que Proticulier. Vous pouvez déjà commander au tarif particulier. Notre équipe pourra ensuite basculer votre compte en PRO si éligible.";
+            $helper->success[] = "Votre compte est maintenant actif. Vous pouvez dès à présent passer vos commandes. NNous étudions votre demande pour vous donner accès aux tarifs et avantages Professionnels, et vous tiendrons informé dès que votre compte sera validé.";
 
             if (!$mode_local) {
                 $data = [

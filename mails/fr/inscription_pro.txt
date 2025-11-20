@@ -1,8 +1,8 @@
 Bonjour {firstname} {lastname},
 
 Merci pour votre inscription sur {shop_name}.
-
-Votre compte est actif et créé en tant que Proticulier. Vous pouvez dès maintenant vous connecter et commander. Si vous souhaitez accéder aux tarifs et avantages Professionnels, complétez votre profil et déposez vos justificatifs (KBIS, RIB, N° TVA, SIRET). Notre équipe étudiera votre demande et vous notifiera dès que le statut Professionnel sera accordé.
+Votre compte est maintenant actif et vous pouvez dès à présent vous connecter et passer vos commandes.
+Nous étudions votre demande pour vous donner accès aux tarifs et avantages Professionnels, et vous tiendrons informé dès que votre compte sera validé.
 
 Récapitulatif des informations reçues :
 Société : {company}
@@ -18,6 +18,6 @@ Téléphone : {phone}
 
 Accéder à votre espace : {shop_url}
 
-Besoin d’aide ? Nous sommes à votre écoute.
+Merci de votre confiance et à très bientôt sur notre site !
 
 {shop_name}
