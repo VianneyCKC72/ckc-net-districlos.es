@@ -217,6 +217,50 @@
                         {hook h='displayReassurance'}
                     {/block}
 
+                    {* Barre de navigation fixe mobile *}
+                    <div class="mobile-product-nav-fixed d-md-none" id="mobile-product-nav">
+                        <div class="mobile-nav-container">
+                            <ul class="mobile-nav-tabs" role="tablist">
+                                {if $product.description}
+                                    <li class="mobile-nav-item">
+                                        <a class="mobile-nav-link
+                                            {if $product.description} active js-product-nav-active
+                                            {/if}" data-toggle="tab" href="#description" role="tab" aria-controls="description"
+                                                {if $product.description} aria-selected="true"
+                                                {/if}>
+                                            {l s='Description' d='Shop.Theme.Catalog'}</a>
+                                    </li>
+                                {/if}
+                                <li class="mobile-nav-item">
+                                    <a class="mobile-nav-link
+                                        {if !$product.description} active js-product-nav-active
+                                        {/if}" data-toggle="tab" href="#product-details" role="tab" aria-controls="product-details"
+                                            {if !$product.description} aria-selected="true"
+                                            {/if}>
+                                        {l s='Product Details' d='Shop.Theme.Catalog'}</a>
+                                </li>
+
+                                {if $product.attachments}
+                                    <li class="mobile-nav-item">
+                                        <a class="mobile-nav-link" data-toggle="tab" href="#attachments" role="tab"
+                                           aria-controls="attachments">
+                                            {l s='Attachments' d='Shop.Theme.Catalog'}</a>
+                                    </li>
+                                {/if}
+
+                                {* Onglet FAQ *}
+                                {assign var="faq_module" value=Module::getInstanceByName('productfaq')}
+                                {assign var="faq_has_content" value=$faq_module && $faq_module->getFaqsByProduct($product.id, true)}
+                                {if $faq_has_content}
+                                    <li class="mobile-nav-item">
+                                        <a class="mobile-nav-link" data-toggle="tab" href="#product-faq" role="tab"
+                                           aria-controls="product-faq">FAQ</a>
+                                    </li>
+                                {/if}
+                            </ul>
+                        </div>
+                    </div>
+
                     {block name='product_tabs'}
                         <div class="tabs product-tabs" id="block-description-long">
                             <ul class="nav nav-tabs" role="tablist">
@@ -325,6 +369,23 @@
                                     {/if}
 
                                     {hook h='displayCkcProductExtraAdvice' product=$product}
+
+                                    {* Avis vérifiés dans la section description - mobile uniquement *}
+                                    <div class="d-md-none mt-4">
+                                        <div class="avis-section">
+                                            <div class="netreviews_reviews_tab d-flex">
+                                                <div class="skeepers_product__reviews"
+                                                     data-product-id="{$product.id}"
+                                                     data-locale="fr_FR"
+                                                     data-price="{$product.price}"
+                                                     data-currency="{$currency.iso_code}"
+                                                     data-name="{$product.title}"
+                                                     data-url="{$urls.current_url}"
+                                                     data-image="{$product.cover.bySize.large_default.url}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 {block name='product_details'}
@@ -359,6 +420,23 @@
                                                     {/foreach}
                                                 </div>
                                             </section>
+
+                                            {* Avis vérifiés dans la section documents joints - mobile uniquement *}
+                                            <div class="d-md-none mt-4">
+                                                <div class="avis-section">
+                                                    <div class="netreviews_reviews_tab d-flex">
+                                                        <div class="skeepers_product__reviews"
+                                                             data-product-id="{$product.id}"
+                                                             data-locale="fr_FR"
+                                                             data-price="{$product.price}"
+                                                             data-currency="{$currency.iso_code}"
+                                                             data-name="{$product.title}"
+                                                             data-url="{$urls.current_url}"
+                                                             data-image="{$product.cover.bySize.large_default.url}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     {/if}
                                 {/block}
@@ -387,6 +465,26 @@
 
                             {* Onglet FAQ *}
                             {if $faq_has_content}
+                            <div class="tab-pane fade in" id="product-faq" role="tabpanel">
+                                {include file="module:productfaq/views/templates/hook/product_faq.tpl"}
+
+                                {* Avis vérifiés dans la section FAQ - mobile uniquement *}
+                                <div class="d-md-none mt-4">
+                                    <div class="avis-section">
+                                        <div class="netreviews_reviews_tab d-flex">
+                                            <div class="skeepers_product__reviews"
+                                                 data-product-id="{$product.id}"
+                                                 data-locale="fr_FR"
+                                                 data-price="{$product.price}"
+                                                 data-currency="{$currency.iso_code}"
+                                                 data-name="{$product.title}"
+                                                 data-url="{$urls.current_url}"
+                                                 data-image="{$product.cover.bySize.large_default.url}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="tab-pane fade in" id="product-faq" role="tabpanel">
                                 {include file="module:productfaq/views/templates/hook/product_faq.tpl"}
                             </div>

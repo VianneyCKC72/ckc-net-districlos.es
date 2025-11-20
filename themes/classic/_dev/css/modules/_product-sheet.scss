@@ -1538,3 +1538,90 @@
 #product #footer.js-footer {
   padding-bottom: 8rem;
 }
+
+// Barre de navigation fixe mobile pour les onglets produit
+.mobile-product-nav-fixed {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  background-color: $sand-light-color;
+  border-bottom: 2px solid $gray;
+  z-index: 999;
+  box-shadow: 0 2px 8px rgba($black, 0.1);
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  display: none;
+
+  &.show {
+    transform: translateY(0);
+    opacity: 1;
+    display: block;
+  }
+}
+
+.mobile-nav-container {
+  padding: 0;
+  margin: 0;
+}
+
+.mobile-nav-tabs {
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.mobile-nav-item {
+  flex: 1;
+  list-style: none;
+  margin: 0 2px;
+}
+
+.mobile-nav-link {
+  display: block;
+  padding: 10px 8px;
+  color: $primary-light-color;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  background-color: $sand-light-color;
+  border: 1px solid $primary-light-color;
+  border-radius: 20px;
+  margin: 8px 0;
+  transition: all 0.2s ease;
+  text-align: center;
+
+  &:hover {
+    color: $primary-light-color;
+    text-decoration: none;
+    background-color: $gray;
+  }
+
+  &.active {
+    color: $white;
+    background-color: $primary-light-color;
+    border-color: $primary-light-color;
+  }
+}
+
+// Masquer les onglets desktop sur mobile
+@media (max-width: 767px) {
+  .product-tabs > .nav-tabs {
+    display: none !important;
+  }
+}
+
+// Masquer la barre mobile sur desktop
+@media (min-width: 768px) {
+  .mobile-product-nav-fixed {
+    display: none !important;
+  }
+}
