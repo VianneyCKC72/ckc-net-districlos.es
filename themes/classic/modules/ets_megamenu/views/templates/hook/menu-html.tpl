@@ -304,15 +304,23 @@
                     <p>COMPTE</p>
                 </a>
             </div>
-            <a href="/configurateur" class="btn-configurateur-mobile">
-                <div class="text-btn">
+            {if Context::getContext()->shop->id == 2}
+                <a href="/avantages-pro" class="btn btn-primary btn-avantages-mobile">
+                    <div class="text-btn">
+                        <span class="medium-text">Mes avantages</span>
+                    </div>
+                </a>
+            {else}
+                <a href="/configurateur" class="btn-configurateur-mobile">
+                    <div class="text-btn">
                                 <span class="small-text">
                                     Configurez<br>
                                 </span>
-                    <span class="medium-text">votre clôture</span>
-                </div>
-                <img width="63px" height="63px" alt="cloture" src="/img/menu-mobile-fence.svg">
-            </a>
+                        <span class="medium-text">votre clôture</span>
+                    </div>
+                    <img width="63px" height="63px" alt="cloture" src="/img/menu-mobile-fence.svg">
+                </a>
+            {/if}
             <a href="tel:+33422531034" class="menu-mobile-phone-contact">
                 <img loading="lazy" src="/img/menu-mobile-phone.svg" alt="contact téléphone" width="27px" height="25px">
                 <span class="menu-mobile-phone-text">Des questions ?&nbsp;</span>
