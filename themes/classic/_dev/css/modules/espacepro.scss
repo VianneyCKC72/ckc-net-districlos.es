@@ -466,8 +466,12 @@ body#checkout.espace_pro section.checkout-step .step-number {
   z-index: 1;
 }
 
-
-
+h2.elementor-heading-title {
+  margin-bottom: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: 23px;
+  font-weight: 700;
+}
 /* =========================
    Mixins
    ========================= */
