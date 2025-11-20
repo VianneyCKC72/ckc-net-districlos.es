@@ -166,6 +166,10 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
     }
   }
 }
+#category.-pro .view_choice svg:not(.active){
+  opacity: .4;
+  cursor: pointer;
+}
 body#checkout.-pro #payment-confirmation .ps-shown-by-js button.btn[type=submit],
 body#checkout.-pro #payment-confirmation .ps-shown-by-js button.btn.disabled[type=submit]{
   background-color: $pro-color;
