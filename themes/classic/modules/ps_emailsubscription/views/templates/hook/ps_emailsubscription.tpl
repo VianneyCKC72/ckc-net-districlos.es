@@ -1,6 +1,10 @@
 {if $page.page_name == 'category'}
     <div class="col-xs-12 only-category-block">
-        {hook h='CETemplate' id=14}
+        {if Context::getContext()->shop->id != 2}
+            {hook h='CETemplate' id=14}
+        {else}
+            {hook h='CETemplate' id=40}
+        {/if}
     </div>
 {/if}
 
