@@ -169,6 +169,9 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
   .banner__newsletter .col-text .btn.btn-primary-light{
     background-color: $pro-color;
   }
+  .product-attachments-header{
+    margin-bottom: 20px;
+  }
 }
 #category.-pro .view_choice svg:not(.active){
   opacity: .4;

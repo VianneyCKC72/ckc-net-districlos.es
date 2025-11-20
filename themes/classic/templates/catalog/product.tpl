@@ -72,7 +72,7 @@
                         <div class="product-attachments-header mt-3">
                             {foreach from=$product.attachments item=attachment}
                                 <a class="" href="{url entity='attachment' params=['id_attachment' => $attachment.id_attachment]}">
-                                    {$attachment.description}
+                                    Télécharger {$attachment.description}
                                 </a>
                             {/foreach}
                         </div>
