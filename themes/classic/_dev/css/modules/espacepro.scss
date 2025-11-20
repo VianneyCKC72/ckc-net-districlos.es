@@ -151,13 +151,28 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
   #inscription.btn.btn-secondary:hover,
   .pro-btn.pro-btn--primary[name=submitLogin]:hover,
   .product-quantity .add .btn-secondary.add-to-cart:hover,
-  #payment-confirmation button.btn[type=submit]:hover{
+  #payment-confirmation button.btn[type=submit]:hover,
+  .banner__newsletter .col-text .btn.btn-primary-light:hover{
     filter: brightness(65%);
   }
 
   .product-quantity .add .btn-secondary.add-to-cart:hover{
     background-color: $pro-color;
   }
+  #left-column .PM_ASBlockOutput.PM_ASBlockOutputVertical{
+    a.PM_ASLabelLink,
+    .PM_ASCriterionCheckbox:checked+.PM_ASLabelCheckbox,
+    label.PM_ASLabelCheckbox{
+      color: $white;
+    }
+  }
+  .banner__newsletter .col-text .btn.btn-primary-light{
+    background-color: $pro-color;
+  }
+}
+#category.-pro .view_choice svg:not(.active){
+  opacity: .4;
+  cursor: pointer;
 }
 body#checkout.-pro #payment-confirmation .ps-shown-by-js button.btn[type=submit],
 body#checkout.-pro #payment-confirmation .ps-shown-by-js button.btn.disabled[type=submit]{

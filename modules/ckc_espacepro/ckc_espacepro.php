@@ -230,10 +230,10 @@ class ckc_espacepro extends Module
     private function buildAuthUrlForShop(int $targetShopId, string $back, string $email, int $reasonCode): string
     {
         $qs = http_build_query([
-                                   'back'        => $back,
-                                   'login_email' => $email,
-                                   'pro_reason'  => $reasonCode,
-                               ], '', '&', PHP_QUERY_RFC3986);
+            'back'        => $back,
+            'login_email' => $email,
+            'pro_reason'  => $reasonCode,
+        ], '', '&', PHP_QUERY_RFC3986);
 
         $base = $this->context->link->getBaseLink($targetShopId, true);
         return rtrim($base, '/') . '/connexion?' . $qs;
@@ -424,8 +424,8 @@ class ckc_espacepro extends Module
         // ne plus alimenter login_error
         $this->context->smarty->assign([
             'login_email' => Tools::safeOutput($loginEmail),
-                                           'pro_reason' => (int)Tools::getValue('pro_reason', 0),
-                                       ]);
+            'pro_reason' => (int)Tools::getValue('pro_reason', 0),
+        ]);
 
         $this->injectGlobals();
     }
@@ -487,9 +487,16 @@ class ckc_espacepro extends Module
             $this->putFranceFirst($countries);
 
             $customer = $this->context->customer;
-            $isIdentityPage = (strpos($_SERVER['REQUEST_URI'], 'identity') !== false);
+            $isIdentityPage = (strpos($_SERVER['REQUEST_URI'], 'identity') !== false) || (strpos($_SERVER['REQUEST_URI'], 'identite') !== false);
 
-//            dump($isIdentityPage);
+            if($isIdentityPage){
+                $customerInfo = Db::getInstance()->executeS('SELECT c.naf FROM `'._DB_PREFIX_.'customer` c
+                WHERE c.id_customer = '.(int)$customer->id);
+                if(!empty($customerInfo[0])){
+                    $customer->ape = $customerInfo[0]['naf'];
+                }
+            }
+
             $this->context->smarty->assign([
                 'customerGroups' => $groups,
                 'countries' => $countries,

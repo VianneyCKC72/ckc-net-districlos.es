@@ -432,7 +432,8 @@ li.menu_block_product {
 .ets-dir-rtl .mm_menus_li {
     float: right;
 }
-.mm_menus_li > a:not(.btn-configurateur-mobile) {
+.mm_menus_li > a:not(.btn-configurateur-mobile),
+.mm_menus_li > a:not(.btn-avantages-mobile) {
     float: left;
     font-size: 16px;
     font-weight: bold;
@@ -1462,9 +1463,9 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         height: auto;
     }
     .mm_tab_toggle_title a {
-/*          margin: -9px -15px;
-            padding: 9px 15px; */
-            padding: 0 10px;
+        /*          margin: -9px -15px;
+                    padding: 9px 15px; */
+        padding: 0 10px;
     }
     .clicktext_show_submenu .mm_tab_toggle_title a {
         min-width: calc(100% + 30px);
@@ -1595,7 +1596,8 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
     .mm_menus_ul .arrow.opened::after {
         display: none;
     }
-    .mm_menus_li > a:not(.btn-configurateur-mobile) {
+    .mm_menus_li > a:not(.btn-configurateur-mobile),
+    .mm_menus_li > a:not(.btn-avantages-mobile) {
         color: #484848 !important;
         background-color: transparent !important;
     }
@@ -3446,9 +3448,31 @@ body.menu-opened #ckcpromobarre {
         align-self: center;
     }
 }
+.menu-mobile-custom-container-links a.btn-avantages-mobile {
+    @media (max-width: 768px) {
+        display: flex;
+        color: #fff !important;
+        background-color: #ffa400 !important;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50px;
+        max-width: 380px;
+        height: 80px;
+        margin-top: 40px;
+        padding: 0 35px;
+        margin-bottom: 40px;
+        align-self: center;
+    }
+}
 .menu-mobile-custom-container-links a.btn-configurateur-mobile:hover{
     @media (max-width: 768px) {
         background: #013841 !important;
+    }
+}
+.menu-mobile-custom-container-links a.btn-avantages-mobile:hover{
+    @media (max-width: 768px) {
+        filter: brightness(65%);
     }
 }
 .menu-mobile-custom-container-links a.btn-configurateur-mobile .small-text{
@@ -3464,7 +3488,8 @@ body.menu-opened #ckcpromobarre {
         font-size: 14px;
     }
 }
-.menu-mobile-custom-container-links a.btn-configurateur-mobile .medium-text{
+.menu-mobile-custom-container-links a.btn-configurateur-mobile .medium-text,
+.menu-mobile-custom-container-links a.btn-avantages-mobile .medium-text{
     @media (max-width: 768px) {
         font-weight: 600;
         font-size: 20px;

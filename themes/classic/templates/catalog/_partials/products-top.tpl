@@ -26,8 +26,18 @@
 
     <div class="block-left-products-list">
         <div class="view_choice">
-            <img class="show_grid {if !isset($smarty.cookies.show_list) } active {/if}"
-                 src="{$urls.img_url}view-grid.svg" alt="list">
+            {if Context::getContext()->shop->id == 2}
+                <svg class="show_grid {if !isset($smarty.cookies.show_list) } active {/if}" alt="list" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <rect width="7" height="7" fill="#ffa400"/>
+                    <rect x="9" width="7" height="7" fill="#ffa400"/>
+                    <rect y="9" width="7" height="7" fill="#ffa400"/>
+                    <rect x="9" y="9" width="7" height="7" fill="#ffa400"/>
+                    <script xmlns=""/>
+                </svg>
+            {else}
+                <img class="show_grid {if !isset($smarty.cookies.show_list) } active {/if}"
+                     src="{$urls.img_url}view-grid.svg" alt="list">
+            {/if}
             <img class="show_list {if isset($smarty.cookies.show_list) } active {/if}"
                  src="{$urls.img_url}view-list.svg" alt="grid">
         </div>
@@ -45,13 +55,13 @@
             {block name='sort_by'}
                 {include file='catalog/_partials/sort-orders.tpl' sort_orders=$listing.sort_orders}
             {/block}
-{*            {if !empty($listing.rendered_facets)}*}
-{*                <div class="col-xs-4 col-sm-3 hidden-md-up filter-button">*}
-{*                    <button id="search_filter_toggler" class="btn btn-secondary js-search-toggler">*}
-{*                        {l s='Filter' d='Shop.Theme.Actions'}*}
-{*                    </button>*}
-{*                </div>*}
-{*            {/if}*}
+            {*            {if !empty($listing.rendered_facets)}*}
+            {*                <div class="col-xs-4 col-sm-3 hidden-md-up filter-button">*}
+            {*                    <button id="search_filter_toggler" class="btn btn-secondary js-search-toggler">*}
+            {*                        {l s='Filter' d='Shop.Theme.Actions'}*}
+            {*                    </button>*}
+            {*                </div>*}
+            {*            {/if}*}
         </div>
     </div>
     {*<div class="col-sm-12 hidden-md-up text-sm-center showing">
