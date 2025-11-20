@@ -48,32 +48,33 @@
                    value="{$customer->vat_number|default:''|escape:'htmlall':'UTF-8'}">
         </div>
     </div>
-
-    <!-- KBIS (upload) -->
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label class="form-label" for="file-upload">Kbis*</label>
-            <div class="file-wrap">
-                <label for="file-upload" class="custom-file-upload">Choisir un fichier</label>
-                <input style="opacity:0;height:0;width:0;" id="file-upload" class="file-input js-file-input" type="file"
-                       name="kbis" accept=".pdf,.jpg,.png">
-                <span class="file-chosen js-file-name">Aucun fichier choisi</span>
+    {if $showAddressFields}
+        <!-- KBIS (upload) -->
+        <div class="form-group row">
+            <div class="col-md-12">
+                <label class="form-label" for="file-upload">Kbis*</label>
+                <div class="file-wrap">
+                    <label for="file-upload" class="custom-file-upload">Choisir un fichier</label>
+                    <input style="opacity:0;height:0;width:0;" id="file-upload" class="file-input js-file-input" type="file"
+                           name="kbis" accept=".pdf,.jpg,.png">
+                    <span class="file-chosen js-file-name">Aucun fichier choisi</span>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- RIB (upload) -->
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label class="form-label" for="rib-upload">Relevé d'identité bancaire* (RIB)</label>
-            <div class="file-wrap">
-                <label for="rib-upload" class="custom-file-upload">Choisir un fichier</label>
-                <input style="opacity:0;height:0;width:0;" id="rib-upload" class="file-input js-file-input" type="file"
-                       name="rib" accept=".pdf,.jpg,.png">
-                <span class="file-chosen js-file-name">Aucun fichier choisi</span>
+        <!-- RIB (upload) -->
+        <div class="form-group row">
+            <div class="col-md-12">
+                <label class="form-label" for="rib-upload">Relevé d'identité bancaire* (RIB)</label>
+                <div class="file-wrap">
+                    <label for="rib-upload" class="custom-file-upload">Choisir un fichier</label>
+                    <input style="opacity:0;height:0;width:0;" id="rib-upload" class="file-input js-file-input" type="file"
+                           name="rib" accept=".pdf,.jpg,.png">
+                    <span class="file-chosen js-file-name">Aucun fichier choisi</span>
+                </div>
             </div>
         </div>
-    </div>
+    {/if}
 
     <!-- Pays -->
     <div class="form-group row">
