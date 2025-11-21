@@ -200,7 +200,7 @@
                             {hook h='displayProductListReviews' product=$product}
                         {/block}
                     </div>
-                    {if $pro.env == 0 }
+                    {if $pro.env == 0 OR ($pro.env == 1 && $page.page_name == 'product') OR ($pro.env == 1 && $page.page_name == 'category')}
                         <a href="{$product.url}" class="btn btn-primary">Voir le produit</a>
                     {/if}
                 </div>
