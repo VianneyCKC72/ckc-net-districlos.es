@@ -36,8 +36,8 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
     max-width: 240px;
     border-radius: 5px;
   }
-  .product-miniature .thumbnail-container .product-thumbnail img,
-  .product-miniature .thumbnail-container .product-image img {
+  .product-miniature .thumbnail-container .product-thumbnail picture img,
+  .product-miniature .thumbnail-container .product-image picture img {
     padding:0;
     width: 100%;
   }
