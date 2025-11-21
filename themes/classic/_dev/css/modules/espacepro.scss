@@ -290,6 +290,14 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
       }
     }
   }
+  @media (min-width: 768px){
+    .d-block.d-xl-none.flex-grow-0.flex-shrink-0{
+      .logo.img-fluid,
+      a > div{
+        display: none;
+      }
+    }
+  }
 }
 body#checkout.-pro #payment-confirmation .ps-shown-by-js button.btn[type=submit],
 body#checkout.-pro #payment-confirmation .ps-shown-by-js button.btn.disabled[type=submit]{
