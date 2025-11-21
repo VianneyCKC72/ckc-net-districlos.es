@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
     // On agit uniquement dans l'espace pro
     if (!$('.espace_pro').length) return;
 
@@ -18,7 +17,7 @@ $(document).ready(function () {
     ---------------------------------------------------- */
     var select = $("#nafCodeSelect").hide();
     var selectedNaf = $("#nafCodeSelect").find(":selected").val()
-    if(selectedNaf.length){
+    if(typeof selectedNaf != 'undefined'){
         var inputHtml = '<input class="form-control pad20" placeholder="Code NAF*" type="text" name="nafCodeInput" value="'+selectedNaf+'" id="nafCodeInput">';
     } else {
         var inputHtml = '<input class="form-control pad20" placeholder="Code NAF*" type="text" name="nafCodeInput" id="nafCodeInput">';

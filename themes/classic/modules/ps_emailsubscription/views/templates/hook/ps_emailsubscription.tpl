@@ -1,6 +1,10 @@
 {if $page.page_name == 'category'}
     <div class="col-xs-12 only-category-block">
-        {hook h='CETemplate' id=14}
+        {if Context::getContext()->shop->id != 2}
+            {hook h='CETemplate' id=14}
+        {else}
+            {hook h='CETemplate' id=40}
+        {/if}
     </div>
 {/if}
 
@@ -102,6 +106,11 @@
             <img class="img-cover" src="/img/photo-portail-newsletter.png" alt="Banière newsletter" loading="lazy"/>
         </div>
     </div>
+    {if $page.page_name == 'category' OR $page.page_name == 'product'}
+        <div>
+            {hook h='CETemplate' id=39}
+        </div>
+    {/if}
 {elseif $page.page_name == 'checkout'}
     <div>
         {hook h='CETemplate' id=15}

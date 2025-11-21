@@ -36,6 +36,23 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
     max-width: 240px;
     border-radius: 5px;
   }
+  .product-miniature .thumbnail-container .product-thumbnail img,
+  .product-miniature .thumbnail-container .product-image img {
+    padding:0;
+    width: 100%;
+  }
+  .elementor-6010000 {
+    margin-bottom:70px;
+  }
+
+  .bg_primary {
+    .stars__rating,
+    .stars__rating span,
+    .star-svg path {
+      color: white !important;
+      fill: white !important;
+    }
+  }
   .product-miniature .thumbnail-container .product-image img {
     padding:0;
     width: 100%;
@@ -197,10 +214,23 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
   .product-attachments-header{
     margin-bottom: 20px;
   }
+  .product-attachments-header{
+    margin-bottom: 20px;
+  }
+  .text-left a.product-description-read-more-link{
+    font-size: 15px;
+    color: #000;
+    font-weight: 600;
+  }
 }
 body#checkout.-pro #payment-confirmation .ps-shown-by-js button.btn[type=submit],
 body#checkout.-pro #payment-confirmation .ps-shown-by-js button.btn.disabled[type=submit]{
   background-color: $pro-color;
+}
+body#category.-pro .container .banner__newsletter{
+  display: flex;
+  width: 100%;
+  padding-top: 50px;
 }
 .registration-pro .custom-customer-pays {
   padding-right: 15px;
