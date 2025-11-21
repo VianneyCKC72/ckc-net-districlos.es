@@ -132,7 +132,7 @@
                                 {*                                    Lire davantage</a>*}
                                 {if $pro.env}
                                     <div class="text-left">
-                                        <a href="#block-description-long" class="text-bold">Lire d'avantage</a>
+                                        <a href="#block-description-long" class="text-bold product-description-read-more-link">+ Lire d'avantage</a>
                                     </div>
                                 {/if}
                             </div>
@@ -230,9 +230,9 @@
             <div class="row">
                 <div class="col-12">
                     {if !$pro.env}
-                    {block name='hook_display_reassurance'}
-                        {hook h='displayReassurance'}
-                    {/block}
+                        {block name='hook_display_reassurance'}
+                            {hook h='displayReassurance'}
+                        {/block}
                     {/if}
 
                     {block name='product_tabs'}
