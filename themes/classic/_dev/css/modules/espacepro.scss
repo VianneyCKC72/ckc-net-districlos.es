@@ -768,6 +768,10 @@ $bp-md: 768px;
     align-items: center;
     gap: 16px;
     flex-wrap: wrap;
+    @media (max-width: 420px){
+      flex-direction: column;
+      align-items: center;
+    }
   }
 
   .pro-btn {
@@ -823,6 +827,12 @@ $bp-md: 768px;
         width: 100%;
         height: auto;
         display: block;
+        @media (max-width: 410px){
+          min-height: 300px;
+        }
+        @media (max-width: 330px){
+          min-height: 330px;
+        }
       }
     }
 
@@ -843,6 +853,10 @@ $bp-md: 768px;
       padding: 12px 16px;
       width: calc(100% - 80px);
       margin-left: 40px;
+      @media (max-width: 330px){
+        width: calc(100% - 40px);
+        margin-left: 20px;
+      }
       strong {
         display: block;
         font-size: 16px;
@@ -861,6 +875,15 @@ $bp-md: 768px;
     margin-top: 30px;
     align-items: start;
     text-align: center;
+    @media (max-width: 450px){
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      .pro-step{
+        margin-bottom: 15px;
+      }
+    }
 
     // Ligne entre les pastilles
     &::before {
