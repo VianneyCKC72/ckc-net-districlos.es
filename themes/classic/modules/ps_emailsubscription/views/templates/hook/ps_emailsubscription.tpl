@@ -106,7 +106,7 @@
             <img class="img-cover" src="/img/photo-portail-newsletter.png" alt="Banière newsletter" loading="lazy"/>
         </div>
     </div>
-    {if $page.page_name == 'category'}
+    {if $page.page_name == 'category' OR $page.page_name == 'product'}
         <div>
             {hook h='CETemplate' id=39}
         </div>
