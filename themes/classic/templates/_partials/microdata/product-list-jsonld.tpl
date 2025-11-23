@@ -32,7 +32,20 @@
         "@type": "ListItem",
         "position": {$smarty.foreach.productsForJsonLd.iteration},
         "name": "{$item.name}",
-        "url": "{$item.url}"
+        "url": "{$item.url}",
+        "image": "{$item.cover.bySize.home_default.url}",
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "{$item.avg_rate}",
+          "reviewCount": "{$item.total_rate}"
+        },
+        "offers": {
+          "@type": "Offer",
+          "availability": "https://schema.org/InStock",
+          "price": "{$product.price}",
+          "priceCurrency": "EUR",
+          "url": "{$item.url}"
+        }
       }{if !$smarty.foreach.productsForJsonLd.last},{/if}
     {/foreach}
     ]
