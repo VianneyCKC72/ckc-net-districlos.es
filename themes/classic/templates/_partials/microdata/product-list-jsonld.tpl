@@ -42,7 +42,7 @@
         "offers": {
           "@type": "Offer",
           "availability": "https://schema.org/InStock",
-          "price": "{$product.price}",
+          "price": "{$item.price}",
           "priceCurrency": "EUR",
           "url": "{$item.url}"
         }

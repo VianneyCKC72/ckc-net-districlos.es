@@ -205,7 +205,7 @@ class CkcProductReviews extends Module implements WidgetInterface
             }
 
             $sql = 'SELECT 
-                    AVG(rating) AS avg_rate, 
+                    AVG(rate) AS avg_rate, 
                     COUNT(*) AS total_rate
                 FROM '._DB_PREFIX_.'av_products_reviews
                 WHERE ref_product = '.(int) $idProduct;
