@@ -214,7 +214,7 @@ class CkcProductReviews extends Module implements WidgetInterface
 
             $row = $results[0] ?? null;
 
-            $grade = isset($row['avg_rate']) ? (float) $row['avg_rate'] : 0;
+            $grade = isset($row['avg_rate']) ? (float) round($row['avg_rate'], 2) : 0;
             $nbComments = isset($row['total_rate']) ? (int) $row['total_rate'] : 0;
 
             $product['avg_rate'] = $grade;
