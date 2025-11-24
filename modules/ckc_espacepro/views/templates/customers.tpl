@@ -75,7 +75,9 @@
             </thead>
             <tbody>
             {foreach $customers as $customer}
+
                 {assign var=isPro value=in_array($customer.id_default_group, $id_groups_pro)}
+
                 <tr class="{if $isPro}row-pro{else}row-proticulier{/if}">
                     <td>{$customer.id_customer|intval}</td>
 
@@ -122,39 +124,45 @@
 
                     <td>
                         <div class="account-type">
-                <span class="status-badge {if $isPro}badge-pro{else}badge-proti{/if}">
-                  {if $isPro}
-                      {foreach $groupsSwitchable as $g}
-                          {if $g.id_group == $customer.id_default_group}{$g.name|escape:'html'}{/if}
-                      {/foreach}
-                  {else}
-                      Proticulier
-                  {/if}
-                </span>
+                            <span class="status-badge {if $isPro}badge-pro{else}badge-proti{/if}">
+                              {if $isPro}
+                                  {foreach $groupsSwitchable as $g}
+                                      {if $g.id_group == $customer.id_default_group}
+                                          {$g.name|escape:'html'}
+                                      {/if}
+                                  {/foreach}
+                              {else}
+                                  Proticulier
+                              {/if}
+                            </span>
 
                             <select
                                     class="form-control type-select js-change-group"
                                     data-id-customer="{$customer.id_customer|intval}"
                                     data-prev="{$customer.id_default_group|default:0|intval}">
                                 {foreach $groupsSwitchable as $g}
-                                    <option value="{$g.id_group|intval}" {if $g.id_group == $customer.id_default_group}selected{/if}>
+                                    <option value="{$g.id_group|intval}"
+                                            {if $g.id_group == $customer.id_default_group}selected{/if}>
                                         {$g.name|escape:'html'}
                                     </option>
                                 {/foreach}
                             </select>
                         </div>
-                        <div class="small-muted">Groupe par défaut : {$customer.default_group_name|default:'—'|escape:'html'}</div>
+                        <div class="small-muted">Groupe par défaut
+                            : {$customer.default_group_name|default:'—'|escape:'html'}</div>
                     </td>
 
                     <td>
                         {if $customer.fileUpload}
                             {assign var=ext value=$customer.fileExtension|default:''|lower}
                             {if in_array($ext, ['jpg','jpeg','png'])}
-                                <a href="/upload/pro_docs/{$customer.fileUpload|escape:'url'}" target="_blank" class="file-chip" title="Voir le KBIS">
+                                <a href="/upload/pro_docs/{$customer.fileUpload|escape:'url'}" target="_blank"
+                                   class="file-chip" title="Voir le KBIS">
                                     <img src="/upload/pro_docs/{$customer.fileUpload|escape:'url'}" alt="KBIS">
                                 </a>
                             {elseif $ext == 'pdf'}
-                                <a href="/upload/pro_docs/{$customer.fileUpload|escape:'url'}" target="_blank" class="file-chip" title="Ouvrir le PDF">
+                                <a href="/upload/pro_docs/{$customer.fileUpload|escape:'url'}" target="_blank"
+                                   class="file-chip" title="Ouvrir le PDF">
                                     <span class="icon"></span> <span>KBIS.pdf</span>
                                 </a>
                             {else}
@@ -169,11 +177,13 @@
                         {if $customer.rib}
                             {assign var=ext value=$customer.ribFileExtension|default:''|lower}
                             {if in_array($ext, ['jpg','jpeg','png'])}
-                                <a href="/upload/pro_docs/{$customer.rib|escape:'url'}" target="_blank" class="file-chip" title="Voir le RIB">
+                                <a href="/upload/pro_docs/{$customer.rib|escape:'url'}" target="_blank"
+                                   class="file-chip" title="Voir le RIB">
                                     <img src="/upload/pro_docs/{$customer.rib|escape:'url'}" alt="RIB">
                                 </a>
                             {elseif $ext == 'pdf'}
-                                <a href="/upload/pro_docs/{$customer.rib|escape:'url'}" target="_blank" class="file-chip" title="Ouvrir le PDF">
+                                <a href="/upload/pro_docs/{$customer.rib|escape:'url'}" target="_blank"
+                                   class="file-chip" title="Ouvrir le PDF">
                                     <span class="icon"></span> <span>RIB.pdf</span>
                                 </a>
                             {else}

@@ -505,10 +505,6 @@ class ckc_espacepro extends Module
                 'showAddressFields' => !$isIdentityPage,
                 'ckc_form_minimal' => (int)Configuration::get('CKC_FORM_MIN_EP'),
             ]);
-//
-//            dump($params['fields_value']);
-//            dump($this->context->customer);
-//            exit;
 
             return $this->display(__FILE__, 'hookDisplayCustomerAccountForm.tpl');
         }
@@ -801,11 +797,11 @@ class ckc_espacepro extends Module
         $isProEnv = $this->isProEnvironment();
         $frontSuffix = $isProEnv ? '-pro' : '';
 
-        // ✅ récupère un tableau complet de groupes PRO
+        // Récupère un tableau complet de groupes PRO
         $gidProList = $this->getProGroupIds();
         $gidProticulier = (int)$this->getProticulierGroupId();
 
-        // ✅ teste si le client appartient à un des groupes PRO
+        // Teste si le client appartient à un des groupes PRO
         $inPro = $isLogged && count(array_intersect($gidProList, $groups)) > 0;
         $inProticulier = $isLogged && in_array($gidProticulier, $groups, true);
         $isVisitor = !$isLogged;
@@ -827,7 +823,7 @@ class ckc_espacepro extends Module
             'rib' => null,
         ];
 
-        // ✅ on récupère aussi les infos PRO si connecté
+        // On récupère aussi les infos PRO si connecté
         if ($userId > 0 && ($inPro || $inProticulier)) {
             $infos = $this->getInfosProCustomer($userId);
             if (!empty($infos)) {

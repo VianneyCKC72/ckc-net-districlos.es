@@ -125,41 +125,57 @@ class AdminEspaceProController extends ModuleAdminController
     protected function getAllCustomersEp($includeDateCondition = false)
     {
         $idLang   = (int)$this->context->language->id;
-        $proIds   = $this->getProGroupIds();
-        $gidProti = $this->getProticulierGroupId();
+        $proIds   = $this->getProGroupIds();             // groupes PRO
+        $gidProti = $this->getProticulierGroupId();      // groupe proticulier
 
+        // SEUL LE DEFAULT GROUP COMPTE
         $idsFilter = $this->sqlList(array_merge($proIds, [$gidProti]));
+
+        // Boutique PRO = id_shop = 2
+        $idShopPro = 2;
 
         $sql = 'SELECT c.*,
                    gl.name AS default_group_name,
                    cl.name AS country_name,
-                   ad.vat_number as vat_number
+                   ad.vat_number AS vat_number
             FROM `'._DB_PREFIX_.'customer` c
+
             LEFT JOIN `'._DB_PREFIX_.'group_lang` gl
-                   ON gl.id_group = c.id_default_group AND gl.id_lang = '.$idLang.'
-            LEFT JOIN `'._DB_PREFIX_.'country_lang` cl
-                   ON cl.id_country = c.pays AND cl.id_lang = '.$idLang.'
+                   ON gl.id_group = c.id_default_group
+                  AND gl.id_lang = '.$idLang.'
+
+            /* JOIN SUR ADRESSE PAR DÉFAUT (IMPORTANT !) */
             LEFT JOIN `'._DB_PREFIX_.'address` ad
-                   ON ad.id_customer = c.id_customer
-            WHERE c.id_default_group IN ('.$idsFilter.')';
+                   ON ad.id_address = c.id_address_default
+
+            LEFT JOIN `'._DB_PREFIX_.'country_lang` cl
+                   ON cl.id_country = ad.id_country
+                  AND cl.id_lang = '.$idLang.'
+
+            WHERE c.id_default_group IN ('.$idsFilter.')
+              AND c.id_shop = '.(int)$idShopPro;
 
         if ($includeDateCondition) {
-            $date30DaysAgo = pSQL(date('Y-m-d', strtotime('-30 days')));
-            $sql .= " AND c.date_add >= '{$date30DaysAgo}'";
+            $date30 = pSQL(date('Y-m-d', strtotime('-30 days')));
+            $sql .= " AND c.date_add >= '{$date30}'";
         }
 
-        $sql .= ' GROUP BY c.id_customer, c.email
-                  ORDER BY c.id_customer DESC';
+        $sql .= ' GROUP BY c.id_customer
+              ORDER BY c.id_customer DESC';
 
         $customers = Db::getInstance()->ExecuteS($sql);
         if (empty($customers)) return false;
 
+        /* PETIT TRAITEMENT DES EXTENSIONS (inchangé) */
         foreach ($customers as &$customer) {
-            $customer['ribFileExtension']  = !empty($customer['rib']) ? strtolower(pathinfo($customer['rib'], PATHINFO_EXTENSION)) : '';
-            $customer['fileExtension']     = !empty($customer['fileUpload']) ? strtolower(pathinfo($customer['fileUpload'], PATHINFO_EXTENSION)) : '';
+            $customer["ribFileExtension"]  = !empty($customer["rib"]) ? strtolower(pathinfo($customer["rib"], PATHINFO_EXTENSION)) : "";
+            $customer["fileExtension"]     = !empty($customer["fileUpload"]) ? strtolower(pathinfo($customer["fileUpload"], PATHINFO_EXTENSION)) : "";
         }
+
         return $customers;
     }
+
+
 
     protected function getInactiveCount($includeDateCondition = false)
     {
@@ -268,8 +284,10 @@ class AdminEspaceProController extends ModuleAdminController
         $tplPath = self::VIEWS_TPL . 'templates/customers.tpl';
 
         // logs
-        $logDir  = _PS_MODULE_DIR_ . 'ckc_espacepro/var/log';
-        if (!is_dir($logDir)) { @mkdir($logDir, 0775, true); }
+        $logDir = _PS_MODULE_DIR_ . 'ckc_espacepro/var/log';
+        if (!is_dir($logDir)) {
+            @mkdir($logDir, 0775, true);
+        }
         $logFile    = $logDir . '/ckc_ep_tpl_debug.log';
         $compileDir = _PS_ROOT_DIR_ . '/var/cache/dev/smarty/compile';
 
@@ -277,57 +295,73 @@ class AdminEspaceProController extends ModuleAdminController
         $customers        = $this->getAllCustomersEp();
         $customersLastDay = $this->getAllCustomersEp(true);
 
-        // sanitize
+        // sanitize rows
         $sanitized = [];
         if (is_array($customers)) {
             foreach ($customers as $row) {
-                if (!is_array($row)) continue;
+                if (!is_array($row)) {
+                    continue;
+                }
                 foreach ($row as $k => $v) {
-                    if (is_array($v) || is_object($v)) { $row[$k] = ''; }
-                    elseif ($v === null)               { $row[$k] = ''; }
-                    elseif (is_bool($v))               { $row[$k] = (int)$v; }
+                    if (is_array($v) || is_object($v) || $v === null) {
+                        $row[$k] = '';
+                    } elseif (is_bool($v)) {
+                        $row[$k] = (int) $v;
+                    }
                 }
                 $sanitized[] = $row;
             }
         }
 
-        $nbCustomers        = (int)count($sanitized);
-        $nbCustomersLastDay = (int)(is_array($customersLastDay) ? count($customersLastDay) : 0);
+        $nbCustomers        = count($sanitized);
+        $nbCustomersLastDay = is_array($customersLastDay) ? count($customersLastDay) : 0;
 
-        $ajaxUrl = (string)$this->context->link->getAdminLink('AdminEspacePro', true, [], [
+        $ajaxUrl = $this->context->link->getAdminLink('AdminEspacePro', true, [], [
             'ajax'   => 1,
             'action' => 'changeCustomerGroup',
         ]);
 
-        // Groupes switchables = Proticulier + tous les PRO (avec noms)
-        $proIds        = $this->getProGroupIds();
-        $proIdsMap     = array_fill_keys($proIds, true);
-        $gidProti      = $this->getProticulierGroupId();
-        $primaryProId  = $this->getPrimaryProGroupId();
-
-        $allGroupsLang = array_values(Group::getGroups($this->context->language->id)); // id_group, name
+        // Groupes switchables = Proticulier + PRO
         $groupsSwitchable = [];
-        // proticulier d'abord
+
+        $proIds       = array_unique($this->getProGroupIds());
+        $proIdsMap    = array_fill_keys($proIds, true);
+        $gidProti     = (int) $this->getProticulierGroupId();
+        $primaryProId = (int) $this->getPrimaryProGroupId();
+
+        $allGroupsLang = Group::getGroups($this->context->language->id);
+
+        // ajouter Proticulier en premier
         foreach ($allGroupsLang as $g) {
-            if ((int)$g['id_group'] === $gidProti) {
-                $groupsSwitchable[] = ['id_group' => (int)$g['id_group'], 'name' => $g['name']];
+            if ((int) $g['id_group'] === $gidProti) {
+                $groupsSwitchable[] = [
+                    'id_group' => (int) $g['id_group'],
+                    'name'     => $g['name'],
+                ];
                 break;
             }
         }
-        // puis tous les pro dans l’ordre des ids configurés
+
+        // ajouter les PRO
         foreach ($proIds as $pid) {
             foreach ($allGroupsLang as $g) {
-                if ((int)$g['id_group'] === (int)$pid) {
-                    $groupsSwitchable[] = ['id_group' => (int)$g['id_group'], 'name' => $g['name']];
+                if ((int) $g['id_group'] === (int) $pid) {
+                    $groupsSwitchable[] = [
+                        'id_group' => (int) $g['id_group'],
+                        'name'     => $g['name'],
+                    ];
                     break;
                 }
             }
         }
 
+        // dédoublonnage propre des arrays multidimensionnels
+        $groupsSwitchable = array_values(array_unique($groupsSwitchable, SORT_REGULAR));
+
         // compteurs
-        $counts        = (array)$this->getCountsByType();
-        $nbPro         = (int)($counts['nbPro'] ?? 0);
-        $nbProticulier = (int)($counts['nbProticulier'] ?? 0);
+        $counts        = (array) $this->getCountsByType();
+        $nbPro         = (int) ($counts['nbPro'] ?? 0);
+        $nbProticulier = (int) ($counts['nbProticulier'] ?? 0);
 
         $assign = [
             'customers'               => $sanitized,
@@ -336,12 +370,11 @@ class AdminEspaceProController extends ModuleAdminController
             'nbCustomersLastDay'      => $nbCustomersLastDay,
             'nbPro'                   => $nbPro,
             'nbProticulier'           => $nbProticulier,
-            'editkbis'                => (string)$this->createHelperForm('submitKbisCkc_ep', $this->getConfigFormValues(), $this->getEditUserKbisForm()),
-            'editrib'                 => (string)$this->createHelperForm('submitRibCkc_ep',  $this->getConfigFormValues(), $this->getEditUserRibForm()),
+            'editkbis'                => (string) $this->createHelperForm('submitKbisCkc_ep', $this->getConfigFormValues(), $this->getEditUserKbisForm()),
+            'editrib'                 => (string) $this->createHelperForm('submitRibCkc_ep',  $this->getConfigFormValues(), $this->getEditUserRibForm()),
             'groupsSwitchable'        => $groupsSwitchable,
-            // compat + nouveau :
-            'id_group_pro'            => (int)$primaryProId,
-            'id_group_proticulier'    => (int)$gidProti,
+            'id_group_pro'            => $primaryProId,
+            'id_group_proticulier'    => $gidProti,
             'id_groups_pro'           => $proIds,
             'id_groups_pro_map'       => $proIdsMap,
             'ajax_change_group_url'   => $ajaxUrl,
@@ -350,9 +383,9 @@ class AdminEspaceProController extends ModuleAdminController
         // log types
         $typeLines = [];
         foreach ($assign as $k => $v) {
-            $typeLines[] = $k . '=' . (is_array($v) ? 'array(' . count($v) . ')' : gettype($v));
+            $typeLines[] = $k . '=' . (is_array($v) ? 'array('.count($v).')' : gettype($v));
         }
-        @file_put_contents($logFile, '[' . date('c') . "] assign types => " . implode(', ', $typeLines) . "\n", FILE_APPEND);
+        @file_put_contents($logFile, '['.date('c')."] assign types => ".implode(', ', $typeLines)."\n", FILE_APPEND);
 
         // assign + render
         $this->context->smarty->clearAssign(array_keys($assign));
@@ -360,47 +393,58 @@ class AdminEspaceProController extends ModuleAdminController
 
         try {
             $output = $this->context->smarty->fetch($tplPath);
-            $this->context->smarty->assign(['content' => (string)$output]);
+            $this->context->smarty->assign(['content' => (string) $output]);
         } catch (\Throwable $e) {
-            // aide debug
+
             $compiledHit = '';
             $lineGuess   = 154;
             $snippet     = '';
+
             $rii = is_dir($compileDir)
                 ? new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($compileDir))
                 : null;
 
             if ($rii) {
                 foreach ($rii as $file) {
-                    if (!$file->isFile()) continue;
+                    if (!$file->isFile()) {
+                        continue;
+                    }
                     $fp = $file->getPathname();
-                    if (strpos($fp, 'file.customers.tpl.php') !== false) { $compiledHit = $fp; break; }
+                    if (strpos($fp, 'file.customers.tpl.php') !== false) {
+                        $compiledHit = $fp;
+                        break;
+                    }
                 }
             }
+
             if ($compiledHit && is_readable($compiledHit)) {
                 $lines = @file($compiledHit, FILE_IGNORE_NEW_LINES);
                 if ($lines !== false) {
-                    $start = max(0, $lineGuess - 10);
-                    $end   = min(count($lines) - 1, $lineGuess + 10);
-                    $chunk = array_slice($lines, $start, $end - $start + 1, true);
+                    $start  = max(0, $lineGuess - 10);
+                    $end    = min(count($lines) - 1, $lineGuess + 10);
+                    $chunk  = array_slice($lines, $start, $end - $start + 1, true);
+
                     foreach ($chunk as $ln => $code) {
                         $snippet .= sprintf("%06d: %s\n", $ln + 1, $code);
                     }
                 }
             }
+
             @file_put_contents(
                 $logFile,
-                '[' . date('c') . "] FETCH ERROR: " . $e->getMessage() . "\ncompiled: " . $compiledHit .
-                "\n---- code around line " . $lineGuess . " ----\n" . $snippet .
+                '['.date('c')."] FETCH ERROR: ".$e->getMessage().
+                "\ncompiled: ".$compiledHit.
+                "\n---- code around line ".$lineGuess." ----\n".$snippet.
                 "\n-----------------------------------\n",
                 FILE_APPEND
             );
+
             die(
-                '<pre style="white-space:pre-wrap;max-width:100%;font:12px/1.4 monospace">' .
-                "Template fetch FAILED: " . htmlspecialchars($e->getMessage()) . "\n\n" .
-                "Compiled file: " . htmlspecialchars($compiledHit ?: '[not found]') . "\n" .
-                "Log file: " . htmlspecialchars($logFile) . "\n" .
-                "→ Ouvre ce log dans le module pour voir le code exact autour de la ligne suspecte.\n" .
+                '<pre style="white-space:pre-wrap;max-width:100%;font:12px/1.4 monospace">'.
+                "Template fetch FAILED: ".htmlspecialchars($e->getMessage())."\n\n".
+                "Compiled file: ".htmlspecialchars($compiledHit ?: '[not found]')."\n".
+                "Log file: ".htmlspecialchars($logFile)."\n".
+                "→ Ouvre ce log dans le module pour voir le code exact.\n".
                 "</pre>"
             );
         }
@@ -408,6 +452,7 @@ class AdminEspaceProController extends ModuleAdminController
         $this->display_footer = false;
         parent::display();
     }
+
 
     protected function getCountsByType(): array
     {
