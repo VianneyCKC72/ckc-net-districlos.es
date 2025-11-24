@@ -29,26 +29,28 @@
         </div>
     {/if}
 
-    <!-- Soumis à la TVA -->
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label class="form-label" for="customer-tva">Soumis à la TVA*</label>
-            <select name="customer-tva" id="customer-tva" class="form-control" required>
-                <option value="0" {if isset($customer->tva) && $customer->tva == 0}selected{/if}>Non</option>
-                <option value="1" {if isset($customer->tva) && $customer->tva == 1}selected{/if}>Oui</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- Numéro de TVA -->
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label class="form-label" for="customer-vat_number">Numéro de TVA</label>
-            <input class="form-control pad20" type="text" name="customer-vat_number" id="customer-vat_number"
-                   value="{$customer->vat_number|default:''|escape:'htmlall':'UTF-8'}">
-        </div>
-    </div>
     {if $showAddressFields}
+        <!-- Soumis à la TVA -->
+        <div class="form-group row">
+            <div class="col-md-12">
+                <label class="form-label" for="customer-tva">Soumis à la TVA*</label>
+                <select name="customer-tva" id="customer-tva" class="form-control" required>
+                    <option value="0" {if isset($customer->tva) && $customer->tva == 0}selected{/if}>Non</option>
+                    <option value="1" {if isset($customer->tva) && $customer->tva == 1}selected{/if}>Oui</option>
+                </select>
+            </div>
+        </div>
+
+
+        <!-- Numéro de TVA -->
+        <div class="form-group row">
+            <div class="col-md-12">
+                <label class="form-label" for="customer-vat_number">Numéro de TVA</label>
+                <input class="form-control pad20" type="text" name="customer-vat_number" id="customer-vat_number"
+                       value="{$customer->vat_number|default:''|escape:'htmlall':'UTF-8'}">
+            </div>
+        </div>
+
         <!-- KBIS (upload) -->
         <div class="form-group row">
             <div class="col-md-12">

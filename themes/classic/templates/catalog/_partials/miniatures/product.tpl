@@ -145,8 +145,8 @@
                     <div class="product-info-custom-block-miniature">
                         {block name='product_name'}
                             {if $page.page_name == 'category'}
-                                <h2 class="h3 product-title"><a href="{$link->getProductLink($product.id_product, $product.link_rewrite)}"
-                                                                content="{$product.url}">{$product.name}</a></h2>
+                                <h3 class="h3 product-title"><a href="{$link->getProductLink($product.id_product, $product.link_rewrite)}"
+                                                                content="{$product.url}">{$product.name}</a></h3>
                             {else}
                                 <div class="h3 product-title"><a href="{$product.url}"
                                                                  content="{$product.url}">{$product.name}</a></div>
@@ -160,18 +160,18 @@
                                     <div class="product-price-and-shipping flex_cln">
                                         {*                                    {hook h='displayProductPriceBlock' product=$product type="before_price"}*}
 
-                                      
+
                                         {if $pro.env == 1 && isset($product.discount_qty_slider) }
                                             <span class="price">
-                                                {$product.specific_price_ht} € HT 
+                                                {$product.specific_price_ht} € HT
                                             </span>
                                             <small>dès {$product.from_quantity} unités*</small>
                                             <div class="product-price-and-shipping">
                                                 <span class="regular-price">{$product.initial_price_ht} € HT </span>
                                             </div>
-                                         {else} 
-                                            {$product.price} 
-                                         {/if} 
+                                         {else}
+                                            {$product.price}
+                                         {/if}
                                     </span>
 
                                         {if ($product.has_discount && !$pro.env) OR ($product.has_discount && $pro.env == 1 && !isset($product.discount_qty_slider))}

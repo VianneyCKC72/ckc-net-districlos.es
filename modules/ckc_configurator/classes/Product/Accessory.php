@@ -407,7 +407,7 @@ class Accessory extends ProductFactory
         }
 
         if ($id_product == 1333 && self::$session->isAluminium()) {
-            return 11780036;
+            return 11815933;
         }
 
         if ($id_product == 1328 && self::$session->isAluminium()) {

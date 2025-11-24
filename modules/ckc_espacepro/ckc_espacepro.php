@@ -734,11 +734,12 @@ class ckc_espacepro extends Module
         $sql = 'SELECT sp.`id_cms_detail`
             FROM `' . _DB_PREFIX_ . 'ckcstorespresentation` sp
             inner join `' . _DB_PREFIX_ . 'ckc_favorite_stores` fs
-                on fs.`id_favorite_store` = sp.`id_ckcstorespresentation`
-            AND fs.`id_customer` = ' . (int)$this->context->customer->id;
+                on fs.`id_store` = sp.`id_multiboutique`
+            WHERE fs.`id_customer` = ' . (int)$this->context->customer->id;
 
         $favoriteStoreId = Db::getInstance()->getRow($sql);
-        if (!$favoriteStoreId) $favoriteStoreId = 11;
+
+        if (!$favoriteStoreId) $favoriteStoreId = 0;
 
         $this->context->smarty->assign(compact('favoriteStoreId'));
         $this->context->smarty->assign('sidebar', $params['sidebar']);
