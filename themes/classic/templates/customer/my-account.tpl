@@ -30,9 +30,6 @@
     {if $pro.suffix == '-pro'}
         {include file="themes/classic/templates/customer/my-account-pro.tpl"}
     {else}
-        {block name='page_title'}
-            <h1>{l s='Your account' d='Shop.Theme.Customeraccount'}</h1>
-        {/block}
         <div class="small_container">
             <div class="row">
                 {include file='customer/links_account.tpl'}

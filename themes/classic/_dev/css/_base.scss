@@ -3531,12 +3531,10 @@ a.tag:hover {
 }
 
 .alert-info {
-  background-color: lighten(
-                  $primary-light-color,
-                  40%
-  ); // Un bleu clair basé sur $primary-light-color
-  border-color: lighten($primary-light-color, 20%);
-  color: darken($primary-light-color, 20%);
+  background-color: #1a8a99;
+  border-color: #3bcbde;
+  color: white;
+  border: none;
 }
 
 .alert-info hr {

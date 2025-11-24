@@ -25,7 +25,7 @@
 
 
 {if $pro.env}
-  <span class="h6 mb-2 w-100">Choisissez votre produit</span>
+  <span class="h6 mb-2 w-100 chooseYourProduct">Choisissez votre produit</span>
 {/if}
 <div class="product-variants js-product-variants mb-4">
 
