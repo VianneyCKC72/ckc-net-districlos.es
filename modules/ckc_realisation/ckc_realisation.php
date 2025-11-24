@@ -26,6 +26,7 @@ class Ckc_Realisation extends Module
     {
         return parent::install()
             && $this->installSql()
+            && $this->installModuleTab('AdminCkcRealisationTab', 'IMPROVE', 'Ckc Réalisations')
             && $this->registerHook('displayHeader')
             && $this->registerHook('moduleRoutes')
             && $this->registerHook('displayCustomerAccount')
@@ -35,8 +36,31 @@ class Ckc_Realisation extends Module
             && $this->ensureUploadFolders();
     }
 
+    private function installModuleTab($tabClass, $parent, $tabName)
+    {
+        $tab             = new Tab();
+        $tab->active     = 1;
+        $tab->class_name = $tabClass;
+        $tab->id_parent  = (int)Tab::getIdFromClassName($parent);
+        $tab->position   = Tab::getNewLastPosition($tab->id_parent);
+        foreach (Language::getLanguages() as $lang) {
+            $tab->name[$lang['id_lang']] = $this->trans($tabName, [], 'Modules.Ckc_Realisation.Admin', $lang['locale']);
+        }
+        $tab->icon   = 'icon-AdminCkcRealisationTab';
+        $tab->module = $this->name;
+        return $tab->add();
+    }
+
+    private function uninstallModuleTab($tabClass)
+    {
+        $tab = new Tab((int)Tab::getIdFromClassName($tabClass));
+
+        return $tab->delete();
+    }
+
     public function uninstall()
     {
+        $this->uninstallModuleTab('AdminCkcRealisationTab');
         // On tente le nettoyage SQL sans bloquer la désinstall si erreur
 //        try { $this->uninstallSql(); } catch (\Throwable $e) {}
         return parent::uninstall();
@@ -61,7 +85,7 @@ class Ckc_Realisation extends Module
     public function hookDisplayBackOfficeHeader($params)
     {
 
-
+        $this->context->controller->addCSS(($this->_path) . 'views/css/menuTabIcon.css');
         if (Tools::getValue('configure') === $this->name) {
             $this->context->controller->addCSS($this->_path . 'views/css/admin.css');
         }
