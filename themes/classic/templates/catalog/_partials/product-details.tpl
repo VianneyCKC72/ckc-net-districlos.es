@@ -25,15 +25,21 @@
     {/if}
   {/block}
 
-  {block name='product_quantities'}
-    {if $product.show_quantities}
-      <div class="product-quantities">
-        <label class="label">{l s='In stock' d='Shop.Theme.Catalog'}</label>
-        <span data-stock="{$product.quantity}" data-allow-oosp="{$product.allow_oosp}">{$product.quantity}
-          {$product.quantity_label}</span>
-      </div>
-    {/if}
-  {/block}
+    {block name='product_quantities'}
+        {if $product.show_quantities && Context::getContext()->shop->id == 1}
+            <div class="product-quantities">
+                <label class="label">{l s='In stock' d='Shop.Theme.Catalog'} : </label>
+                <span data-stock="{$product.quantity}" data-allow-oosp="{$product.allow_oosp}">{$product.quantity}
+                    {$product.quantity_label}</span>
+            </div>
+        {elseif Context::getContext()->shop->id == 2}
+            <div class="product-quantities">
+                <label class="label">{l s='In stock' d='Shop.Theme.Catalog'} : </label>
+                <span data-stock="{$product.quantity}" data-allow-oosp="{$product.allow_oosp}">{$product.quantity}
+                Produit(s)</span>
+            </div>
+        {/if}
+    {/block}
 
   {block name='product_availability_date'}
     {if $product.availability_date}
