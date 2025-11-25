@@ -2,6 +2,12 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <link rel="stylesheet" href="{$module_dir}views/css/admin.css?v=3">
 
+{if Context::getContext()->shop->id == 1}
+    <div class="ckc-realisation-alert-danger">
+        Vous êtes dans la boutique pour les Particuliers ! Ce module est uniquement pour la boutique PRO.
+    </div>
+{/if}
+
 <div class="ckc-real ckc-theme-pro">
     <div class="panel">
         <div class="panel-heading">

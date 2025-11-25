@@ -103,7 +103,13 @@
                       {if $r.status=='approved'}real-badge--approved
                       {elseif $r.status=='rejected'}real-badge--rejected
                       {else}real-badge--pending{/if}">
-                      {$r.status|escape:'html'}
+                      {if $r.status == 'approved'}
+                          Mise en ligne
+                      {elseif $r.status=='rejected'}
+                          Rejetée
+                      {elseif $r.status=='pending'}
+                          En attente de validation
+                      {/if}
                     </span>
                                     </div>
                                 </article>
@@ -265,7 +271,7 @@
                                     '</form>'+
                                     '</div>'+
                                     '<div class="real-meta">'+
-                                    '<span class="real-badge real-badge--pending">' + (res.item.status || 'pending') + '</span>'+
+                                    '<span class="real-badge real-badge--pending">' + (res.item.status || 'En attente de validation') + '</span>'+
                                     '</div>';
 
                                 // Enlève le message "aucune photo" s'il est présent
