@@ -429,6 +429,16 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
   .btn-primary:active, .btn-primary:focus{
     background-color: $pro-color !important;
   }
+  @media (max-width: 1310px) {
+    .product-container .shipping-block-product-info{
+      margin-bottom: 35px;
+    }
+  }
+  @media (max-width: 1199px) {
+    .product-container .tabs.product-tabs .nav-tabs .nav-item {
+      margin-bottom: 20px;
+    }
+  }
 }
 
 body#checkout.-pro #payment-confirmation .ps-shown-by-js button.btn[type=submit],
