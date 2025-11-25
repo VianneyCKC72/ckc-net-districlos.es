@@ -34,11 +34,6 @@
         "name": "{$item.name}",
         "url": "{$item.url}",
         "image": "{$item.cover.bySize.home_default.url}",
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "{$item.avg_rate}",
-          "reviewCount": "{$item.total_rate}"
-        },
         "offers": {
           "@type": "Offer",
           "availability": "https://schema.org/InStock",
