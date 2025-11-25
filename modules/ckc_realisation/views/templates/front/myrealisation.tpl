@@ -253,6 +253,13 @@
                                 var wrapper = document.createElement('article');
                                 wrapper.className = 'real-card';
                                 wrapper.id = 'real-item-' + res.item.id;
+
+                                if(res.item.status == "pending") {
+                                    var statusFr = 'En attente de validation'
+                                } else {
+                                    var statusFr = res.item.status
+                                }
+
                                 wrapper.innerHTML =
                                     '<img class="real-thumb" src="' + res.item.thumb + '" alt="">'+
                                     '<div class="real-actions">'+
@@ -271,7 +278,7 @@
                                     '</form>'+
                                     '</div>'+
                                     '<div class="real-meta">'+
-                                    '<span class="real-badge real-badge--pending">' + (res.item.status || 'En attente de validation') + '</span>'+
+                                    '<span class="real-badge real-badge--pending">' + (statusFr || 'En attente de validation') + '</span>'+
                                     '</div>';
 
                                 // Enlève le message "aucune photo" s'il est présent
