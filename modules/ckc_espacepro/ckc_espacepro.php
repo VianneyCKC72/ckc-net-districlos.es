@@ -616,7 +616,7 @@ class ckc_espacepro extends Module
 
             Db::getInstance()->update('customer', $row, 'id_customer=' . (int)$customer->id, true, Db::INSERT_IGNORE);
 
-            $helper->success[] = "Votre compte est maintenant actif. Vous pouvez dès à présent passer vos commandes. NNous étudions votre demande pour vous donner accès aux tarifs et avantages Professionnels, et vous tiendrons informé dès que votre compte sera validé.";
+            $helper->success[] = "Votre compte est maintenant actif. Vous pouvez dès à présent passer vos commandes. Nous étudions votre demande pour vous donner accès aux tarifs et avantages Professionnels, et vous tiendrons informé dès que votre compte sera validé.";
 
             if (!$mode_local) {
                 $data = [
