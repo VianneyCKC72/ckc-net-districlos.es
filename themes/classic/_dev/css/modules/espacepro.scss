@@ -426,6 +426,9 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
       }
     }
   }
+  .btn-primary:active, .btn-primary:focus{
+    background-color: $pro-color !important;
+  }
 }
 
 body#checkout.-pro #payment-confirmation .ps-shown-by-js button.btn[type=submit],
