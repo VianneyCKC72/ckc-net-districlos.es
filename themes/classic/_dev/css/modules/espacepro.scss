@@ -504,7 +504,16 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
     }
   }
 }
-
+body#category.-pro{
+  @media (max-width: 768px) {
+    .sidebar-bestseller.block{
+      display: none;
+    }
+    #left-column .elementor{
+      margin-bottom: 20px;
+    }
+  }
+}
 body#checkout.-pro #payment-confirmation .ps-shown-by-js button.btn[type=submit],
 body#checkout.-pro #payment-confirmation .ps-shown-by-js button.btn.disabled[type=submit] {
   background-color: $pro-color;
