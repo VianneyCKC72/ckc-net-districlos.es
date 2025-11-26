@@ -27,11 +27,10 @@
     {if $cart.products}
     <ul class="cart-items">
       {foreach from=$cart.products item=product}
-          {if $product.id_product == 1215 || $product.id_product == 1213 || $product.id_product == 1302 || $product.id_product == 1223 || $product.id_product == 1285 || $product.id_product == 1305 || $product.id_product == 1306 }
+          {if $product.id_product == 1215 || $product.id_product == 1213 || $product.id_product == 1302 || $product.id_product == 1223 || $product.id_product == 1285 || $product.id_product == 1305 || $product.id_product == 1306 || $product.id_product == 151 }
               {if isset($custom_product_message) && sizeof($custom_product_message) > 0 && isset($custom_product_message[$product.id_product]) && $custom_product_message[$product.id_product] != ''}
-                  <div class="custom-alert alert alert-warning">
-                      {$custom_product_message[$product.id_product] nofilter}
-                  </div>
+                  {* Le message peut contenir déjà des blocs (cas de plusieurs produits manquants) ou être un message simple *}
+                  {$custom_product_message[$product.id_product] nofilter}
               {/if}
           {/if}
         <li class="cart-item">
