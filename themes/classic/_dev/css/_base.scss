@@ -8629,6 +8629,10 @@ form
   transition: 0.25s ease-out;
 }
 
+.grecaptcha-badge {
+  display: none !important;
+}
+
 @media print {
   *,
   .page-content.page-cms ul::first-line,
