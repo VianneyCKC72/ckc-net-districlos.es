@@ -504,7 +504,8 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
     }
   }
 }
-body#category.-pro{
+body#category.-pro,
+body#module-pm_advancedsearch4-searchresults.-pro{
   .view_choice svg:not(.active){
     opacity: 0.4;
   }
@@ -512,8 +513,17 @@ body#category.-pro{
     .sidebar-bestseller.block{
       display: none;
     }
-    #left-column .elementor{
-      margin-bottom: 20px;
+    #content-wrapper{
+      min-width: 100%;
+    }
+    #left-column{
+      min-width: 100%;
+      section.elementor-element{
+        width: 100%;
+      }
+      .elementor{
+        margin-bottom: 20px;
+      }
     }
   }
 }
