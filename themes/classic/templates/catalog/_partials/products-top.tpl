@@ -32,7 +32,6 @@
                     <rect x="9" width="7" height="7" fill="#ffa400"/>
                     <rect y="9" width="7" height="7" fill="#ffa400"/>
                     <rect x="9" y="9" width="7" height="7" fill="#ffa400"/>
-                    <script xmlns=""/>
                 </svg>
             {else}
                 <img class="show_grid {if !isset($smarty.cookies.show_list) } active {/if}"
