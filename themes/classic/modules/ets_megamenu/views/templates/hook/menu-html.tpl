@@ -43,7 +43,11 @@
     <ul class="mm_menus_ul {if isset($mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB) && $mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB} clicktext_show_submenu{/if} {if isset($mm_config.ETS_MM_SHOW_ICON_VERTICAL)&& !$mm_config.ETS_MM_SHOW_ICON_VERTICAL} hide_icon_vertical{/if}">
         <li class="close_menu">
             <a class="pull-left" href="{$urls.base_url}">
-                <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                {if Context::getContext()->shop->id == 2}
+                    <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
+                {else}
+                    <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                {/if}
             </a>
             <div class="pull-right">
                 <span class="mm_menus_back">
@@ -204,7 +208,11 @@
                                                     {/if}
                                                 {/foreach}
                                                 <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.base_url}">
-                                                    <img class="logo img-fluid" src="/img/logo-text-white.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                                                    {if Context::getContext()->shop->id == 2}
+                                                        <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo_mobile.png" alt="Districlos" width="178" height="48" loading="lazy">>
+                                                    {else}
+                                                        <img class="logo img-fluid" src="/img/logo-text-white.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                                                    {/if}
                                                 </a>
                                             </ul>
                                         {/if}
@@ -214,7 +222,11 @@
                                 </li>
                             {/foreach}
                             <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.base_url}">
-                                <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                                {if Context::getContext()->shop->id == 2}
+                                    <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
+                                {else}
+                                    <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                                {/if}
                             </a>
                         </ul>
                     {/if}
