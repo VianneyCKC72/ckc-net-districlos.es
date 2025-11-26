@@ -831,21 +831,29 @@ body.registration-pro {
   }
 }
 
-body#checkout.espace_pro section.checkout-step .step-number {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: $pro-color;
-  color: $white;
-  font-size: 12px;
-  margin-bottom: 10px;
-  position: relative;
-  z-index: 1;
+body#checkout.espace_pro{
+  section.checkout-step .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: 35px;
+    border-radius: 8px;
+    background-color: $pro-color;
+    color: $white;
+    font-size: 12px;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+    padding: 10px;
+  }
+  #checkout-addresses-step .address-item.selected header {
+    background-color: $pro-color;
+  }
+  .-current .progress-bar {
+    background-color: $pro-color;
+  }
 }
-
 h2.elementor-heading-title {
   margin-bottom: 0;
   font-family: "Poppins", sans-serif;
