@@ -14,7 +14,26 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
   @import "components-pro/_reassurances";
   @import "components-pro/_buttons";
   @import "components-pro/_account";
-
+  @media (max-width: 767px) {
+    .flexslider .slides img {
+      max-width: 290px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin: 0 auto;
+    }
+    .elementor-36010000 .elementor-element.elementor-element-c228bf7 .content {
+      height: 200px;
+    }
+    .elementor-36010000 .elementor-element.elementor-element-1effc5d,
+    .elementor-36010000 .elementor-element.elementor-element-dfb3a8b {
+      margin-bottom: 35px;
+    }
+    .product-miniature .product-description {
+      min-height: 160px;
+    }
+  }
   .text-secondary {
     color: #ffa800 !important;
   }
