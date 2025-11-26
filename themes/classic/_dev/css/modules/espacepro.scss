@@ -505,6 +505,9 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
   }
 }
 body#category.-pro{
+  .view_choice svg:not(.active){
+    opacity: 0.4;
+  }
   @media (max-width: 768px) {
     .sidebar-bestseller.block{
       display: none;
