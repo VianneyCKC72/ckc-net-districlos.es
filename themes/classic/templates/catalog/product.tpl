@@ -49,7 +49,7 @@
 {block name='content'}
     <section id="main">
         <meta  property="og:url" content="{$product.url}">
-
+        {hook h='CETemplate' id=43}
         <div class="product-container js-product-container">
             <div class="row">
                 <div class="col-lg-7">
