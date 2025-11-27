@@ -177,7 +177,9 @@
                                                 <span class="regular-price">{$product.initial_price_ht} € HT </span>
                                             </div>
                                          {else}
-                                            {$product.price}
+                                            <span class="price">
+                                                {$product.price}
+                                            </span>
                                          {/if}
                                     </span>
 
