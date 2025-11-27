@@ -48,7 +48,7 @@
 
 {block name='content'}
     <section id="main">
-        <meta content="{$product.url}">
+        <meta  property="og:url" content="{$product.url}">
 
         <div class="product-container js-product-container">
             <div class="row">
@@ -132,7 +132,7 @@
                                 {*                                    Lire davantage</a>*}
                                 {if $pro.env}
                                     <div class="text-left">
-                                        <a href="#block-description-long" class="text-bold product-description-read-more-link">+ Lire d'avantage</a>
+                                        <a href="#block-description-long" class="text-bold product-description-read-more-link">+ Lire davantage</a>
                                     </div>
                                 {/if}
                             </div>
@@ -475,8 +475,12 @@
                                 </div>
 
                                 {foreach from=$product.extraContent item=extra key=extraKey}
-                                <div class="tab-pane fade in {$extra.attr.class}" id="extra-{$extraKey}" role="tabpanel"
-                                {foreach $extra.attr as $key => $val} {$key}="{$val}" {/foreach}>
+                                <div
+                                        class="tab-pane fade in {$extra.attr.class}"
+                                        id="extra-{$extraKey}"
+                                        role="tabpanel"
+                                {foreach $extra.attr as $key => $val} {$key}="{$val}" {/foreach}
+                                >
                                 {$extra.content nofilter}
                             </div>
                             {/foreach}
@@ -485,30 +489,24 @@
                             {if $faq_has_content}
                                 <div class="tab-pane fade in" id="product-faq" role="tabpanel">
                                     {include file="module:productfaq/views/templates/hook/product_faq.tpl"}
-                                </div>
-                            <div class="tab-pane fade in" id="product-faq" role="tabpanel">
-                                {include file="module:productfaq/views/templates/hook/product_faq.tpl"}
 
-                                {* Avis vérifiés dans la section FAQ - mobile uniquement *}
-                                <div class="d-md-none mt-4">
-                                    <div class="avis-section">
-                                        <div class="netreviews_reviews_tab d-flex">
-                                            <div class="skeepers_product__reviews"
-                                                 data-product-id="{$product.id}"
-                                                 data-locale="fr_FR"
-                                                 data-price="{$product.price}"
-                                                 data-currency="{$currency.iso_code}"
-                                                 data-name="{$product.title}"
-                                                 data-url="{$urls.current_url}"
-                                                 data-image="{$product.cover.bySize.large_default.url}">
+                                    {* Avis vérifiés dans la section FAQ - mobile uniquement *}
+                                    <div class="d-md-none mt-4">
+                                        <div class="avis-section">
+                                            <div class="netreviews_reviews_tab d-flex">
+                                                <div class="skeepers_product__reviews"
+                                                     data-product-id="{$product.id}"
+                                                     data-locale="fr_FR"
+                                                     data-price="{$product.price}"
+                                                     data-currency="{$currency.iso_code}"
+                                                     data-name="{$product.title}"
+                                                     data-url="{$urls.current_url}"
+                                                     data-image="{$product.cover.bySize.large_default.url}">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="tab-pane fade in" id="product-faq" role="tabpanel">
-                                {include file="module:productfaq/views/templates/hook/product_faq.tpl"}
-                            </div>
                             {/if}
 
                         </div>
