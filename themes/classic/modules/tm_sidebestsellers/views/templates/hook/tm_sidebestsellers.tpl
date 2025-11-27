@@ -61,6 +61,7 @@
                             {block name='product_price_and_shipping'}
 
                                 {if $product.show_price}
+                                {if Context::getContext()->shop->id != 2 OR (Context::getContext()->shop->id == 2 && Context::getContext()->customer->id)}
                                     <div class="product-price-and-shipping">
                                         <div>
                                             {if $product.customizable == "1"}
@@ -90,6 +91,7 @@
 
                                         {hook h='displayProductPriceBlock' product=$product type='weight'}
                                     </div>
+                                {/if}
                                 {/if}
                             {/block}
                             <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>

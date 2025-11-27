@@ -63,9 +63,11 @@
         </div>
 
         {if $showPackProductsPrice}
-          <div class="pack-product-price">
-            <strong>{$product.price}</strong>
-          </div>
+          {if Context::getContext()->shop->id != 2 OR (Context::getContext()->shop->id == 2 && Context::getContext()->customer->id)}
+            <div class="pack-product-price">
+              <strong>{$product.price}</strong>
+            </div>
+          {/if}
         {/if}
 
         <div class="pack-product-quantity">

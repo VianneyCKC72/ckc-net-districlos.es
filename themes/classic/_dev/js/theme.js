@@ -11550,19 +11550,21 @@ $(document).ready(function () {
     $(window).ready(() => {
         const isMobile = $(window).width() < 768
 
-        isMobile && $(".flexslider-mobile").length && $(".flexslider-desktop").length ?
-            $(".flexslider-mobile").flexslider({
-                slideshowSpeed: $(".flexslider-mobile").data("interval"),
-                pauseOnHover: $(".flexslider-mobile").data("pause"),
-                animation: "none",
-                animationLoop: false
-            })
-            : $(".flexslider-desktop").flexslider({
-                slideshowSpeed: $(".flexslider-desktop").data("interval"),
-                pauseOnHover: $(".flexslider-desktop").data("pause"),
-                animation: "none",
-                animationLoop: false
-            })
+        if(!$('body#category.espace_pro.-pro').length) {
+            isMobile && $(".flexslider-mobile").length && $(".flexslider-desktop").length ?
+                $(".flexslider-mobile").flexslider({
+                    slideshowSpeed: $(".flexslider-mobile").data("interval"),
+                    pauseOnHover: $(".flexslider-mobile").data("pause"),
+                    animation: "none",
+                    animationLoop: false
+                })
+                : $(".flexslider-desktop").flexslider({
+                    slideshowSpeed: $(".flexslider-desktop").data("interval"),
+                    pauseOnHover: $(".flexslider-desktop").data("pause"),
+                    animation: "none",
+                    animationLoop: false
+                })
+        }
     })
 
     if ($(window).width() <= 480 && $(".banner__newsletter .form-newsletter").length > 0) {
@@ -11577,6 +11579,8 @@ $(document).ready(function () {
 
         $(".logoFooterContainer img").attr('loading', 'lazy')
         $(".logoFooterContainer img").attr('src', '/img/logo-text-white.svg')
+        $(".logoFooterContainerPro img").attr('loading', 'lazy')
+        $(".logoFooterContainerPro img").attr('src', '/img/DISTRICLOS_pro_logo_mobile.png')
 
         if (socialIconFooter.length > 0 && copyrightFooter.length > 0 && linksBlockFooter.length > 0){
             socialIconFooter.insertAfter(linksBlockFooter)
@@ -11751,8 +11755,6 @@ $(document).ready(function () {
             $alert.fadeOut(500);
         }, 5000);
     }
-
-    $("#everpspopup_block_center img").attr('loading', 'lazy')
 });
 
 

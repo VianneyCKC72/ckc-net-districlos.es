@@ -43,7 +43,11 @@
     <ul class="mm_menus_ul {if isset($mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB) && $mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB} clicktext_show_submenu{/if} {if isset($mm_config.ETS_MM_SHOW_ICON_VERTICAL)&& !$mm_config.ETS_MM_SHOW_ICON_VERTICAL} hide_icon_vertical{/if}">
         <li class="close_menu">
             <a class="pull-left" href="{$urls.base_url}">
-                <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                {if Context::getContext()->shop->id == 2}
+                    <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
+                {else}
+                    <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                {/if}
             </a>
             <div class="pull-right">
                 <span class="mm_menus_back">
@@ -204,7 +208,11 @@
                                                     {/if}
                                                 {/foreach}
                                                 <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.base_url}">
-                                                    <img class="logo img-fluid" src="/img/logo-text-white.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                                                    {if Context::getContext()->shop->id == 2}
+                                                        <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo_mobile.png" alt="Districlos" width="178" height="48" loading="lazy">>
+                                                    {else}
+                                                        <img class="logo img-fluid" src="/img/logo-text-white.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                                                    {/if}
                                                 </a>
                                             </ul>
                                         {/if}
@@ -214,7 +222,11 @@
                                 </li>
                             {/foreach}
                             <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.base_url}">
-                                <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                                {if Context::getContext()->shop->id == 2}
+                                    <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
+                                {else}
+                                    <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                                {/if}
                             </a>
                         </ul>
                     {/if}
@@ -274,17 +286,29 @@
                 </div>
             </li>
         {/foreach}
-        <li class="info-menu-mobile-only mm_menus_li distri_megamenu mm_sub_align_full"><a href="/400-destockage">
-                <span class="mm_menu_content_title"><svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" viewBox="0 0 576 512"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/></svg> DESTOCKAGE</span>
-            </a></li>
+        {if $pro.env != 1}
+            <li class="info-menu-mobile-only mm_menus_li distri_megamenu mm_sub_align_full"><a href="/400-destockage">
+                    <span class="mm_menu_content_title"><svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" viewBox="0 0 576 512"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/></svg> DESTOCKAGE</span>
+                </a></li>
+        {else}
+            <li class="info-menu-mobile-only mm_menus_li distri_megamenu mm_sub_align_full"><a href="/content/660-les-offres-au-volume">
+                    <span class="mm_menu_content_title">{*<svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" viewBox="0 0 576 512"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/></svg>*}Les offres au volume</span>
+                </a></li>
+        {/if}
         <li class="menu-mobile-custom-container-links mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
             <div class="menu-mobile-custom-useful-links">
-                {if (!$env_particulier)}
-                    <a class="menu-mobile-useful-link" href="{$urls.pages.authentication}?back=my-account&amp;ep=1">
+                {if $pro.env != 1}
+                    <a class="menu-mobile-useful-link" href="{$pro.url_domain}">
                         <img src="/img/menu-mobile-espace-pro.svg" alt="espace pro" width="19px" height="18px">
                         <p>ESPACE<br>
                             PRO</p>
                     </a>
+                {else}
+                    {*                    Todo : en attnete du client !*}
+                    {*                    <a class="menu-mobile-useful-link" href="{$urls.base_url}guides-et-fiches-techniques-produits">*}
+                    {*                        <img src="/img/menu-mobile-espace-pro.svg" alt="documents" width="19px" height="18px">*}
+                    {*                        <p>DOCUMENTS</p>*}
+                    {*                    </a>*}
                 {/if}
                 <a class="menu-mobile-useful-link" href="/module/opartdevis/simplequotation">
                     <img src="/img/menu-mobile-devis.svg" alt="devis" width="20px" height="19px">
@@ -299,15 +323,23 @@
                     <p>COMPTE</p>
                 </a>
             </div>
-            <a href="/configurateur" class="btn-configurateur-mobile">
-                <div class="text-btn">
+            {if Context::getContext()->shop->id == 2}
+                <a href="/avantages-pro" class="btn btn-primary btn-avantages-mobile">
+                    <div class="text-btn">
+                        <span class="medium-text">Mes avantages</span>
+                    </div>
+                </a>
+            {else}
+                <a href="/configurateur" class="btn-configurateur-mobile">
+                    <div class="text-btn">
                                 <span class="small-text">
                                     Configurez<br>
                                 </span>
-                    <span class="medium-text">votre clôture</span>
-                </div>
-                <img width="63px" height="63px" alt="cloture" src="/img/menu-mobile-fence.svg">
-            </a>
+                        <span class="medium-text">votre clôture</span>
+                    </div>
+                    <img width="63px" height="63px" alt="cloture" src="/img/menu-mobile-fence.svg">
+                </a>
+            {/if}
             <a href="tel:+33422531034" class="menu-mobile-phone-contact">
                 <img loading="lazy" src="/img/menu-mobile-phone.svg" alt="contact téléphone" width="27px" height="25px">
                 <span class="menu-mobile-phone-text">Des questions ?&nbsp;</span>

@@ -26,13 +26,13 @@
 
 
 {block name='page_content'}
-  {block name='page_title'}
-    <h1>{l s='Your account' d='Shop.Theme.Customeraccount'}</h1>
-  {/block}
+
   <div class="small_container">
 
     <div class="row">
-      {include file='customer/links_account.tpl'}
+
+      {include file='customer/sidebar-account.tpl'}
+
       <div class="col-md-9">
         <div class="content_right">
 
@@ -40,6 +40,9 @@
             <h2>{l s='Order history' d='Shop.Theme.Customeraccount'}</h2>
           {/block}
           <h6>{l s='Here are the orders you\'ve placed since your account was created.' d='Shop.Theme.Customeraccount'}</h6>
+          {if $pro.env}
+            <h6>{l s='LES FACTURES ET DEVIS REALISES EN MAGASIN SERONT BIENTÔT DISPONIBLE DANS VOTRE ESPACE.' d='Shop.Theme.Customeraccount'}</h6>
+          {/if}
 
           {if $orders}
             <table class="table table-striped table-bordered table-labeled hidden-sm-down">

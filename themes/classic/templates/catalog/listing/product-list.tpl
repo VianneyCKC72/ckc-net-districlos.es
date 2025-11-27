@@ -73,16 +73,71 @@
     </style>
 {/block}
 
+
+{block name='head'}
+    {$smarty.block.parent}
+    <style>
+        #category #products .thumbnail-container .thumbnail-top {
+            position: relative;
+        }
+
+        #category #products .product-first-ribbon {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            color: yellow;
+            background: #000;
+            font-weight: 700;
+            font-size: 14px;
+            z-index: 3;
+        }
+
+        #category #products .product-first-ribbon__icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #category #products .product-first-ribbon__icon img {
+            height: 18px;
+        }
+
+        #category #products .category-mobile-banner {
+            display: none;
+        }
+
+        #category #products .category-mobile-banner img {
+            height: auto;
+        }
+
+        @media (max-width: 767px) {
+            #category #products .category-mobile-banner {
+                display: block;
+            }
+        }
+
+    </style>
+{/block}
+
+
 {block name='head_microdata_special'}
     {include file='_partials/microdata/product-list-jsonld.tpl' listing=$listing}
 {/block}
 
 {block name='left_column'}
     <div class="col-xs-12 col-md-4 col-lg-3" id="left-column">
-        {if $page.page_name == "prices-drop"}
-            {hook h='displayPromoPageText'}
+        {if Context::getContext()->shop->id != 2}
+            {if $page.page_name == "prices-drop"}
+                {hook h='displayPromoPageText'}
+            {/if}
+            {hook h='CETemplate' id=12}
+        {else}
+            {hook h='CETemplate' id=35}
         {/if}
-        {hook h='CETemplate' id=12}
     </div>
 {/block}
 

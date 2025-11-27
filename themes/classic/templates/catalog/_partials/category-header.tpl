@@ -23,7 +23,7 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 <div id="js-product-list-header">
-    {if $listing.pagination.items_shown_from == 1}
+    {if $listing.pagination.items_shown_from == 1 && Context::getContext()->shop->id == 1}
         <div class="block-category card-block">
             {hook h='CETemplate' id=43}
             <div class="head-top-category">
@@ -52,5 +52,8 @@
             </div>
 
         </div>
+    {/if}
+    {if ($category.id == 3 OR $category.id == 2 OR $category.id == 128) && Context::getContext()->shop->id == 2}
+        {hook h="displayCustomFilterSelector"}
     {/if}
 </div>

@@ -22,7 +22,13 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
+
+
+{if $pro.env}
+  <span class="h6 mb-2 w-100 chooseYourProduct">Choisissez votre produit</span>
+{/if}
 <div class="product-variants js-product-variants mb-4">
+
   {foreach from=$groups key=id_attribute_group item=group}
     {if !empty($group.attributes)}
       <div class="clearfix product-variants-item">

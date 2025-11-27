@@ -190,6 +190,20 @@ $(document).ready(function () {
         } else {
             formDataCart = getFormData(cart, object, direction, differential);
             requestURL = $(object).attr('data-update-url');
+
+            let main_product_id = localStorage.getItem('dealt_product_id')
+            let main_product_id_attribute = localStorage.getItem('dealt_id_product_attribute')
+            let service_product_id = localStorage.getItem('dealt_service_product_id')
+
+            if (requestURL.indexOf(main_product_id) >= 0 && requestURL.indexOf(main_product_id_attribute) >= 0) {
+
+                $("input.quantity-input.js-cart-line-product-quantity").each(function(){
+                    if ($(this).data('product-id') == service_product_id) {
+                        updateServiceProduct = true
+                        return false
+                    }
+                })
+            }
         }
 
         $.ajax({
@@ -206,6 +220,11 @@ $(document).ready(function () {
                 if (data) {
                     if (cart) {
                         refreshCart();
+                        if(updateServiceProduct){
+                            $(".warning_dealt").remove()
+                            let $warning_dealt = '<div class="alert alert-danger warning_dealt">Vous venez de modifier la quantité d\'un produit, merci de mettre à jour le service correspondant.</div>'
+                            $('.notifications-container.container').append($warning_dealt)
+                        }
                     } else {
                         updateViewProduct(data, formData.quantity);
                     }
@@ -221,7 +240,8 @@ $(document).ready(function () {
         $.each(data, function (key, value) {
             let selectorMap = {
                 product_add_to_cart: ".js-product-add-to-cart",
-                product_prices: ".js-product-prices"
+                product_prices: ".js-product-prices",
+                product_additional_info: ".js-product-additional-info",
             };
             if (key in selectorMap && value) {
                 $(selectorMap[key]).replaceWith(value);
@@ -304,12 +324,41 @@ $(document).ready(function () {
                 'cart_summary_subtotals_container': '.js-cart-summary-subtotals-container',
                 'cart_summary_top': '.js-cart-summary-top',
                 'cart_summary_totals': '.cart-summary-totals',
-                'cart_promos': '.cart-promos'
+                'cart_promos': '.cart-promos',
+                'cart_footer_dealt': '.dealt-cart-services-container'
             };
             if (key in selectorMap && value) {
                 $(selectorMap[key]).replaceWith(value);
             }
         });
+
+        let availables_services_id = [];
+        let all_products_cart_id = [];
+        dealt_cart_services.map((product) => availables_services_id.push(product.service_product_id))
+
+        $(".custom-quantity-selector").each(function (){
+            if($(this).find("input#quantity_wanted").data('product-id') == localStorage.getItem('dealt_service_product_id')){
+                $(this).css('display', 'none');
+                $(".dealt-cart-service-box").each(function (){
+                    $(this).css('display', 'none');
+                });
+            }
+            all_products_cart_id.push($(this).find("input#quantity_wanted").data('product-id'))
+        })
+
+        const intersection = availables_services_id.filter(element => all_products_cart_id.includes(element));
+
+        const localMatch = all_products_cart_id.includes(parseInt(localStorage.getItem('dealt_service_product_id'), 10));
+
+        if(!intersection.length && !localMatch){
+            $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'none')
+            $(".btn-add.dealt-tva-open-popup").css('background', '#b6c7a8 0% 0% no-repeat padding-box')
+            $("#tva-submit-btn").attr('disabled', true)
+        } else {
+            $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'auto')
+            $(".btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box')
+            $("#tva-submit-btn").attr('disabled', false)
+        }
 
         let total = 0;
         $("[data-valueqty]").each(function () {
@@ -372,6 +421,33 @@ $(document).ready(function () {
     prestashop.on('updatedCart', (event) => {
         if (typeof $(".cart-promos") !== "undefined") {
             $(".cart-promos").replaceWith(event.resp.cart_promos)
+        }
+        let availables_services_id = [];
+        let all_products_cart_id = [];
+        dealt_cart_services.map((product) => availables_services_id.push(product.service_product_id))
+
+        $(".custom-quantity-selector").each(function (){
+            if($(this).find("input#quantity_wanted").data('product-id') == localStorage.getItem('dealt_service_product_id')){
+                $(this).css('display', 'none');
+                $(".dealt-cart-service-box").each(function (){
+                    $(this).css('display', 'none');
+                });
+            }
+            all_products_cart_id.push($(this).find("input#quantity_wanted").data('product-id'))
+        })
+
+        const intersection = availables_services_id.filter(element => all_products_cart_id.includes(element));
+
+        const localMatch = all_products_cart_id.includes(parseInt(localStorage.getItem('dealt_service_product_id'), 10));
+
+        if(!intersection.length && !localMatch){
+            $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'none')
+            $(".btn-add.dealt-tva-open-popup").css('background', '#b6c7a8 0% 0% no-repeat padding-box')
+            $("#tva-submit-btn").attr('disabled', true)
+        } else {
+            $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'auto')
+            $(".btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box')
+            $("#tva-submit-btn").attr('disabled', false)
         }
     });
 

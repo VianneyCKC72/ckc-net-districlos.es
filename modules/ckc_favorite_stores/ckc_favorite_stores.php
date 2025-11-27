@@ -24,12 +24,13 @@ class Ckc_Favorite_Stores extends Module
         return parent::install()
             && $this->registerHook('displayHeader')
             && $this->registerHook('displayCustomerAccount')
+            && $this->registerHook('displayCustomerAccount')
             && $this->installDb();
     }
 
     public function uninstall()
     {
-        return parent::uninstall() && $this->uninstallDb();
+        return parent::uninstall() && $this->uninstallDb() && $this->registerHook('displayCustomerAccount');
     }
 
     private function installDb()
