@@ -31,7 +31,7 @@
             {block name='header_nav'}
                 <nav class="header-nav d-flex align-items-center">
                     <div class="displayMenu">
-                        <a class="link-danger" href="/content/659-les-offres-au-volume">Les offres au volume</a>
+                        <a class="link-danger" href="/content/660-les-offres-au-volume">Les offres au volume</a>
                     </div>
 
                     <div class="displayTop">
