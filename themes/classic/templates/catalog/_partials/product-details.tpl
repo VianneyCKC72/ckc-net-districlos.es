@@ -96,4 +96,21 @@
       </div>
     {/if}
   {/block}
+
+    {* Avis vérifiés dans la section détails du produit - mobile uniquement *}
+    <div class="d-md-none mt-4">
+        <div class="avis-section">
+            <div class="netreviews_reviews_tab d-flex">
+                <div class="skeepers_product__reviews"
+                     data-product-id="{$product.id}"
+                     data-locale="fr_FR"
+                     data-price="{$product.price}"
+                     data-currency="{$currency.iso_code}"
+                     data-name="{$product.title}"
+                     data-url="{$urls.current_url}"
+                     data-image="{$product.cover.bySize.large_default.url}">
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

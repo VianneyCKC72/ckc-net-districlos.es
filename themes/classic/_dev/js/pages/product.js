@@ -615,5 +615,73 @@ $(document).ready(function () {
         });
     }
 
+    // Barre de navigation mobile fixe pour les onglets produit
+    const mobileNav = document.getElementById('mobile-product-nav');
+    const productTabs = document.querySelector('.product-tabs');
+
+    if (mobileNav && productTabs) {
+        // Fonction pour gérer l'affichage de la barre lors du scroll
+        let ticking = false;
+        function handleScroll() {
+            if (!ticking) {
+                requestAnimationFrame(function() {
+                    const tabsRect = productTabs.getBoundingClientRect();
+                    const headerHeight = 200; // Hauteur du header + marge pour apparaître plus tôt
+
+                    // Afficher la barre quand on arrive à la section des onglets
+                    if (tabsRect.top <= headerHeight) {
+                        mobileNav.classList.add('show');
+                    } else {
+                        mobileNav.classList.remove('show');
+                    }
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }
+
+        // Écouter le scroll avec throttling
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        // Vérifier au chargement
+        handleScroll();
+
+        // Synchroniser les onglets mobiles avec les onglets originaux
+        const mobileLinks = mobileNav.querySelectorAll('.mobile-nav-link');
+        const originalLinks = productTabs.querySelectorAll('.nav-link');
+
+        mobileLinks.forEach(function(mobileLink) {
+            mobileLink.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Retirer la classe active de tous les onglets mobiles
+                mobileLinks.forEach(link => link.classList.remove('active'));
+
+                // Ajouter la classe active à l'onglet cliqué
+                this.classList.add('active');
+
+                // Déclencher le clic sur l'onglet original correspondant
+                const targetId = this.getAttribute('href');
+                const originalLink = productTabs.querySelector('a[href="' + targetId + '"]');
+                if (originalLink) {
+                    originalLink.click();
+                }
+            });
+        });
+
+        // Synchroniser les onglets originaux avec les onglets mobiles
+        originalLinks.forEach(function(originalLink) {
+            originalLink.addEventListener('click', function() {
+                const targetId = this.getAttribute('href');
+                const mobileLink = mobileNav.querySelector('a[href="' + targetId + '"]');
+                if (mobileLink) {
+                    // Retirer la classe active de tous les onglets mobiles
+                    mobileLinks.forEach(link => link.classList.remove('active'));
+                    // Ajouter la classe active à l'onglet mobile correspondant
+                    mobileLink.classList.add('active');
+                }
+            });
+        });
+    }
 
 });

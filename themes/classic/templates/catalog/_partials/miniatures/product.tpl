@@ -32,6 +32,7 @@
                  data-product-category="{$product.category_name}">
             <div class="thumbnail-container">
                 <div class="thumbnail-top">
+
                     {if $page.page_name == 'category'}
                         <div class="product-first-ribbon" aria-hidden="true">
                             <span class="product-first-ribbon__icon">
@@ -40,6 +41,7 @@
                             <span class="product-first-ribbon__text">BLACK 2 WEEKS</span>
                         </div>
                     {/if}
+
                     {if !$product.from_europe}
                         <div class="pastille_fr">
                             <img src="/img/pastille_produit_france.svg" alt="Fabriqué en France" class="pastille_fr_icon">
@@ -218,4 +220,15 @@
             </div>
         </article>
     </div>
-{/block}
+
+     {if $page.page_name == 'category' && isset($position) && (($position+1) % 4 == 0)}
+         <div class="category-mobile-banner">
+             <img src="{$urls.theme_assets}img/image-b2w-habillage.jpg"
+                  alt="{l s='Black 2 Weeks' d='Shop.Theme.Catalog'}"
+                  loading="lazy"
+                  width="640"
+                  height="200">
+         </div>
+     {/if}
+
+ {/block}
