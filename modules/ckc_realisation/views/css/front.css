@@ -348,6 +348,7 @@
     width: 367px;
     height: 400px;
     object-fit: cover;
+    min-height: 400px;
 }
 #module-ckc_realisation-allgalleries .page-header h1{
     font-size: 45px;
