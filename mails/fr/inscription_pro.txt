@@ -1,25 +1,23 @@
-Cher {firstname} {lastname},
+Bonjour {firstname} {lastname},
 
-Nous sommes ravis de vous accueillir sur notre plateforme professionnelle {shop_name} !
+Merci pour votre inscription sur {shop_name}.
+Votre compte est maintenant actif et vous pouvez dès à présent vous connecter et passer vos commandes.
+Nous étudions votre demande pour vous donner accès aux tarifs et avantages Professionnels, et vous tiendrons informé dès que votre compte sera validé.
 
-Voici les informations que vous nous avez fournies :
-
+Récapitulatif des informations reçues :
 Société : {company}
 Code NAF : {naf}
 TVA : {tva}
-Siret : {siret}
+SIRET : {siret}
 Nom : {lastname}
 Prénom : {firstname}
 E-mail : {email}
 Adresse : {adresse}
 Code postal : {cp}
 Téléphone : {phone}
-En créant un compte sur notre site, vous débutez la première étape de l’inscription. Actuellement, votre compte est en cours de validation par nos équipes. Vous recevrez très prochainement un e-mail confirmant que votre compte a été approuvé et que vous pouvez commencer à explorer notre catalogue complet de produits à prix pro.
 
-D'ici là, n'hésitez pas à parcourir notre site et à prendre connaissance des différentes options que nous proposons. Si vous avez des questions ou des besoins particuliers, notre équipe est à votre disposition pour vous aider et vous guider dans vos choix.
+Accéder à votre espace : {shop_url}
 
-Nous sommes impatients de vous accompagner dans vos projets futurs et de contribuer à leur réussite !
-
-Pour toute question ou besoin supplémentaire, n'hésitez pas à nous contacter.
+Merci de votre confiance et à très bientôt sur notre site !
 
 {shop_name}

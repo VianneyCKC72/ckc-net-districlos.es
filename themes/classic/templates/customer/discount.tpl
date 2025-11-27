@@ -26,17 +26,13 @@
 
 
 {block name='page_content'}
-{block name='page_title'}
-  <h1>{l s='Your account' d='Shop.Theme.Customeraccount'}</h1>
-{/block}
+
 <div class="small_container">
   {if $cart_rules}
   <div class="row">
-    {include file='customer/links_account.tpl'}
+      {include file='customer/sidebar-account.tpl'}
     <div class="col-md-9">
-      {block name='page_title'}
-        <h1> {l s='Your vouchers' d='Shop.Theme.Customeraccount'}</h1>
-      {/block}
+
       <table class="table table-striped table-bordered hidden-sm-down">
         <thead class="thead-default">
         <tr>
@@ -102,7 +98,7 @@
     </div>
     {else}
     <div class="row">
-      {include file='customer/links_account.tpl'}
+      {include file='customer/sidebar-account.tpl'}
       <div class="col-md-9">
         <div class="alert alert-info" role="alert" data-alert="info">{l s='You do not have any vouchers.' d='Shop.Notifications.Warning'}</div>
       </div>

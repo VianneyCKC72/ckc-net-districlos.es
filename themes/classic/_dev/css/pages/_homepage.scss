@@ -1,10 +1,5 @@
 #index {
 
-  .slide {
-    img{
-      /*      image-rendering: pixelated;*/
-    }
-  }
   #elm-banner-services {
     width: 100%;
   }
@@ -326,28 +321,6 @@
     color: #fff;
   }
 }
-.btn-rouge-custom,
-.has-discount .btn-rouge-custom{
-  background-color: $red;
-  color: $white;
-  padding: 8px 18px;
-  border-radius: 40px;
-  font-size: 10px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-right: .5rem;
-  border: 2px solid transparent;
-  transition: all 0.3s ease-out;
-}
-
-.btn-rouge-custom:hover,
-.has-discount .btn-rouge-custom:hover{
-  background-color: transparent;
-  color: $red;
-  border: 2px solid $red;
-  transition: all 0.3s ease-out;
-}
-
 .close-video-button{
   position: absolute;
   top: -18px;

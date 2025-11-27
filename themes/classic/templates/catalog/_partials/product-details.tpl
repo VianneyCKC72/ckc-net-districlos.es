@@ -1,6 +1,6 @@
 <div class="js-product-details tab-pane fade{if !$product.description} in active{/if}" id="product-details"
   data-product="{$product.embedded_attributes|json_encode}" role="tabpanel">
-  
+
   {block name='product_reference'}
     {if isset($product_manufacturer->id)}
       <div class="product-manufacturer">
@@ -19,21 +19,27 @@
     {/if}
     {if isset($product.reference_to_display) && $product.reference_to_display neq ''}
       <div class="product-reference">
-        <label class="label">{l s='Reference' d='Shop.Theme.Catalog'} </label>
+        <label class="label reflabel">{l s='Reference' d='Shop.Theme.Catalog'}: </label>
         <span>{$product.reference_to_display}</span>
       </div>
     {/if}
   {/block}
 
-  {block name='product_quantities'}
-    {if $product.show_quantities}
-      <div class="product-quantities">
-        <label class="label">{l s='In stock' d='Shop.Theme.Catalog'}</label>
-        <span data-stock="{$product.quantity}" data-allow-oosp="{$product.allow_oosp}">{$product.quantity}
-          {$product.quantity_label}</span>
-      </div>
-    {/if}
-  {/block}
+    {block name='product_quantities'}
+        {if $product.show_quantities && Context::getContext()->shop->id == 1}
+            <div class="product-quantities">
+                <label class="label">{l s='In stock' d='Shop.Theme.Catalog'} : </label>
+                <span data-stock="{$product.quantity}" data-allow-oosp="{$product.allow_oosp}">{$product.quantity}
+                    {$product.quantity_label}</span>
+            </div>
+        {elseif Context::getContext()->shop->id == 2}
+            <div class="product-quantities">
+                <label class="label">{l s='In stock' d='Shop.Theme.Catalog'} : </label>
+                <span data-stock="{$product.quantity}" data-allow-oosp="{$product.allow_oosp}">{$product.quantity}
+                Produit(s)</span>
+            </div>
+        {/if}
+    {/block}
 
   {block name='product_availability_date'}
     {if $product.availability_date}
@@ -53,7 +59,9 @@
   {block name='product_features'}
     {if $product.grouped_features}
       <section class="product-features mt-4">
-        <p class="h6">{l s='Data sheet' d='Shop.Theme.Catalog'}</p>
+        {if !$pro.env}
+          <p class="h6">{l s='Data sheet' d='Shop.Theme.Catalog'}</p>
+        {/if}
         <dl class="data-sheet">
           {foreach from=$product.grouped_features item=feature}
             <dt class="name">{$feature.name}</dt>

@@ -139,6 +139,18 @@
 .ckcpromobarre-text{
     white-space: nowrap;
 }
+@media (max-width: 768px){
+    #ckcpromobarre {
+        min-height: auto;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        font-size: 11px;
+    }
+    .ckcpromobarre-text{
+        white-space: wrap;
+        font-size: 11px;
+    }
+}
 #ckcpromobarre > span > .container > div:first-child{
     display: flex;
     flex-direction: row;

@@ -37,6 +37,7 @@ class CkcstorespresentationNosMagasinsModuleFrontController extends ModuleFrontC
 
     public function initContent()
     {
+
         $magasins = Db::getInstance()->executeS('SELECT * from `' . _DB_PREFIX_ . 'ckcstorespresentation`');
         $this->context->controller->addJquery();
 

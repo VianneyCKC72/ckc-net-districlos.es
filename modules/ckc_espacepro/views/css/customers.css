@@ -1,161 +1,41 @@
-/* Style pour le bouton et l'input de type text */
-.fixed-width-xl {
-    width:400px !important;
-}
-.panel-inside.notification-panel {
-    background-color: #ffa400;
-    border-left: 5px solid #ffa400;
-    padding: 10px 20px;
-    margin: 20px 0;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-#module_form_submit_btn .process-icon-save {
-    display: none;
-}
-.label-refunded {
-    background: #dc3545;
-}
-.espace_pro .ets_solo_social_wrapper {
-    display:none;
-}
-#module_form_submit_btn,
-#module_form_submit_btn_1 {
-    color: #fff;
-    background: #25b9d7;
-    border-color: #25b9d7;
-    text-shadow: none;
-}
-
-.panel-heading {
-    margin-bottom: 20px;
-}
-
-.process-icon-save {
-    display: none;
-}
-
-.notification-title {
-    margin: 0; /* Annuler la marge par défaut pour le titre */
-    color: #333; /* Couleur de texte pour un bon contraste sur fond jaune */
-    font-size: 18px; /* Taille de police appropriée pour l'importance */
-}
-
-/* Centrage du contenu de la dernière colonne */
-.table td:last-child {
-    text-align: center;
-}
-
-.NotActive {
-    background-color: #ffcccc;
-}
-
-.isActive {
-    background-color: #f3f4f6;
-}
-
-.btn {
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.btn:hover {
-    opacity: 0.8;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    transform: translateY(-2px);
-}
-
-.btn-primary {
-    text-shadow: none;
-    color: #fff !important;
-    background: #25b9d7 !important;
-    border-color: #25b9d7 !important;
-}
-
-.btn-alert {
-    text-shadow: none;
-    background: #dc3545 !important;
-    border-color: #dc3545 !important;
-    color: #fff !important;
-}
-
-/* Ajoutez également une transition pour le bouton en état actif ou focus pour améliorer l'accessibilité */
-.btn:active,
-.btn:focus {
-    outline: none;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-    transform: translateY(1px);
-}
-.paginate_button.disabled, .paginate_button.disabled:hover {
-    background-color:#007bff!important;
-}
-.paginate_button.next,  .paginate_button.previous  {
-    background:#007bff;
-}
-.dataTables_paginate {
-    /* display: flex; */
-    align-items: center;
-    justify-content: center;
-    padding: 20px 0;
-    margin-top: 20px;
-    float: left;
-    display: block;
-    width: 100%;
-}
-
-.paginate_button {
-    border: 1px solid #007bff;
-    padding: 5px 10px;
-    margin: 0 5px;
-    border-radius: 5px;
-    cursor: pointer;
-    color: #007bff;
-    text-decoration: none;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.paginate_button:hover {
-    background-color: #007bff;
-    color: white;
-}
-
-.paginate_button.disabled, .paginate_button.disabled:hover {
-    color: #ccc;
-    border-color: #ccc;
-    cursor: not-allowed;
-    background-color: transparent;
-}
-
-.paginate_button.current {
-    background-color: #007bff;
-    color: white;
-}
-
-/* Ajout d'un style spécifique pour les boutons Précédente et Suivante si nécessaire */
-#customers_previous, #customers_next {
-    font-weight: bold;
-    color:white;
-}
-
-.custom-customer-pays {
-    margin-right: 5px;
-}
-
-#registration .espace_pro .txt_ou_bien {
-    display:none;
-}
-
-#registration .espace_pro .id_gender{
-    margin-right: 15px;
-    float:left;
-}
+.fixed-width-xl{width:400px!important}
+.panel-heading{margin-bottom:20px}
+.process-icon-save,#module_form_submit_btn .process-icon-save{display:none}
+#module_form_submit_btn,#module_form_submit_btn_1{color:#ffffff;background:#026473;border-color:#026473;text-shadow:none}
+.kpi-container .kpi-content .title{font-weight:600;display:block}
+.kpi-container .kpi-content .subtitle{font-size:12px;color:#6c868e;display:block;margin-top:2px}
+.kpi-container .kpi-content .value{font-size:20px;font-weight:700;margin-top:4px;display:block}
+.small-muted{font-size:12px;color:#6c868e}
+#customers thead th{white-space:nowrap}
+#customers td{vertical-align:top}
+.table td:last-child{text-align:center}
+.file-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #DBE6E8;border-radius:8px}
+.file-chip img{max-height:64px;border-radius:6px}
+.file-chip .icon{width:18px;height:18px;display:inline-block;background:#026473;border-radius:3px;position:relative}
+.file-chip .icon:after{content:'';position:absolute;left:4px;top:3px;width:10px;height:12px;background:#ffffff}
+.type-select{min-width:180px}
+.account-type{display:flex;align-items:center;gap:8px}
+.status-badge{display:inline-block;font-size:11px;font-weight:600;line-height:1;padding:4px 8px;border-radius:999px;border:1px solid transparent}
+.status-badge.badge-pro{color:#ffa400;background:#ffffff;border-color:#ffa400}
+.status-badge.badge-proti{color:#008397;background:#ffffff;border-color:#008397}
+.btn{border:none;color:#ffffff;padding:8px 14px;text-align:center;text-decoration:none;display:inline-block;font-size:13px;cursor:pointer;border-radius:5px;transition:background-color .2s ease,box-shadow .2s ease,transform .1s ease;box-shadow:0 2px 5px rgba(0,0,0,.15)}
+.btn:hover{opacity:.9;box-shadow:0 4px 12px rgba(0,0,0,.2);transform:translateY(-1px)}
+.btn:active,.btn:focus{outline:none;box-shadow:0 3px 10px rgba(0,0,0,.25);transform:translateY(0)}
+.btn-default{background:#7CBA49;border-color:#7CBA49;color:#ffffff}
+.btn-primary{background:#026473;border-color:#026473;color:#ffffff}
+.dataTables_paginate{display:block;width:100%;float:left;align-items:center;justify-content:center;padding:20px 0;margin-top:20px}
+.paginate_button{border:1px solid #026473;padding:5px 10px;margin:0 5px;border-radius:5px;cursor:pointer;color:#026473;text-decoration:none;transition:background-color .2s,color .2s}
+.paginate_button:hover{background-color:#008397;color:#ffffff}
+.paginate_button.current{background-color:#026473;color:#ffffff}
+.paginate_button.disabled,.paginate_button.disabled:hover{color:#DCD6CD;border-color:#DCD6CD;cursor:not-allowed;background-color:transparent}
+#customers_previous,#customers_next{font-weight:bold;color:#ffffff}
+.paginate_button.next,.paginate_button.previous{background:#026473}
+.custom-customer-pays{margin-right:5px}
+#registration .espace_pro .txt_ou_bien{display:none}
+#registration .espace_pro .id_gender{margin-right:15px;float:left}
+.espace_pro .ets_solo_social_wrapper{display:none}
+.label-refunded{background:#FF144E}
+.NotActive,.isActive{background:transparent!important}
+#customers tbody tr.row-pro td{background:#ffffff;border-left:3px solid #ffa400}
+#customers tbody tr.row-proticulier td{background:#ffffff;border-left:3px solid #008397}
+#customers tbody tr:hover td{background:#F6F2EB}

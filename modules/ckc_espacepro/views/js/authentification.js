@@ -1,19 +1,35 @@
 $(document).ready(function () {
+    // On agit uniquement dans l'espace pro
+    if (!$('.espace_pro').length) return;
+
+    console.log("🔧 Script espace pro chargé");
+
+    /* ----------------------------------------------------
+       1️⃣ Suppression et gestion des éléments spécifiques
+    ---------------------------------------------------- */
     var espaceProElements = document.querySelectorAll('.espace_pro .ets_solo_social_wrapper');
     espaceProElements.forEach(function (element) {
         element.parentNode.removeChild(element);
     });
 
+    /* ----------------------------------------------------
+       2️⃣ Champ NAF avec autocomplete
+    ---------------------------------------------------- */
     var select = $("#nafCodeSelect").hide();
-    var inputHtml = '<input class="form-control pad20" placeholder="Code NAF*" type="text" name="nafCodeInput" id="nafCodeInput">';
+    var selectedNaf = $("#nafCodeSelect").find(":selected").val()
+    if(typeof selectedNaf != 'undefined'){
+        var inputHtml = '<input class="form-control pad20" placeholder="Code NAF*" type="text" name="nafCodeInput" value="'+selectedNaf+'" id="nafCodeInput">';
+    } else {
+        var inputHtml = '<input class="form-control pad20" placeholder="Code NAF*" type="text" name="nafCodeInput" id="nafCodeInput">';
+    }
+
     select.after(inputHtml);
     var input = $("#nafCodeInput");
 
     var selectOptions = select.children('option').map(function () {
-        return {label: $(this).text(), value: $(this).val()};
+        return { label: $(this).text(), value: $(this).val() };
     }).get();
 
-    // Initialisation de l'autocomplete
     input.autocomplete({
         source: function (request, response) {
             var filteredOptions = $.ui.autocomplete.filter(selectOptions, request.term);
@@ -27,6 +43,9 @@ $(document).ready(function () {
         $(this).autocomplete("search", "");
     });
 
+    /* ----------------------------------------------------
+       3️⃣ Ajustement TVA / Numéro de TVA
+    ---------------------------------------------------- */
     var tvaSelect = $('#customer-tva');
     var vatNumberInput = $('#customer-vat_number');
 
@@ -37,38 +56,92 @@ $(document).ready(function () {
 
     tvaSelect.change(ajusterChampTva).trigger('change');
 
-    ajusterChampTva();
-    var blockRegister = document.querySelector('.block-register-espace-pro');
-    var passwordInput = document.querySelector('section.register-form input[name="password"]');
-    var registerSection = document.querySelector('section.register-form');
+    /* ----------------------------------------------------
+       4️⃣ Réorganisation du formulaire (comme création compte)
+    ---------------------------------------------------- */
+    function reorderForm() {
+        const form = document.querySelector(".identity-form form") || document.querySelector("#customer-form");
+        if (!form) return;
 
-    if (passwordInput !== null && blockRegister !== null && registerSection !== null) {
-        var passwordFormGroup = passwordInput.closest('.form-group');
-        blockRegister.parentNode.removeChild(blockRegister);
-        passwordFormGroup.parentNode.insertBefore(blockRegister, passwordFormGroup.nextSibling);
+        const order = [
+            ".form-group-id_gender",
+            ".form-group-firstname",
+            ".form-group-lastname",
+            "#customer-company",
+            "#customer-siret",
+            "#nafCodeInput",
+            "#customer-tva",
+            "#customer-vat_number",
+            "#file-upload",
+            "#rib-upload",
+            "#customer-adresse",
+            "#customer-adresse2",
+            "#customer-cp",
+            "#customer-ville",
+            "#customer-pays",
+            "#customer-tel",
+            ".form-group-email",
+            ".form-group-password",
+            ".form-group-new_password",
+            ".form-group-psgdpr",
+            ".form-group-newsletter",
+            "input[name='sms_optin']",
+            "#captcha-box",
+            ".actions-container-register"
+        ];
+
+        const getFieldWrapper = (selector) => {
+            const el = form.querySelector(selector);
+            if (!el) return null;
+            if (el.closest(".form-group")) return el.closest(".form-group");
+            if (el.closest(".form-group.row")) return el.closest(".form-group.row");
+            if (el.closest(".field-password-policy")) return el.closest(".field-password-policy");
+            return el;
+        };
+
+        const fragment = document.createDocumentFragment();
+        order.forEach((selector) => {
+            const field = getFieldWrapper(selector);
+            if (field) fragment.appendChild(field);
+        });
+
+        form.innerHTML = "";
+        form.appendChild(fragment);
+
+        console.log("✅ Champs réordonnés dans .identity-form form / #customer-form");
     }
 
+    reorderForm();
+
+    /* ----------------------------------------------------
+       5️⃣ Gestion upload fichiers (label dynamique)
+    ---------------------------------------------------- */
     ['file-upload', 'rib-upload'].forEach(id => {
         if (document.getElementById(id) !== null) {
             document.getElementById(id).addEventListener('change', function () {
                 var label = document.querySelector(`label[for="${id}"]`);
-                label.textContent = this.files[0].name;
+                if (label && this.files.length > 0) {
+                    label.textContent = this.files[0].name;
+                }
             });
         }
     });
 
+    /* ----------------------------------------------------
+       6️⃣ Vérification des champs à la soumission
+    ---------------------------------------------------- */
     var form = document.getElementById('customer-form');
     var paysSelect = document.getElementById('customer-pays');
     var siretInput = document.getElementById('customer-siret');
-    var fileInput = document.getElementById('file-upload'); // Référence à l'input de fichier
+    var fileInput = document.getElementById('file-upload');
     var genderInputs = document.querySelectorAll('input[name="id_gender"]');
-    var nafCodeInput = document.getElementById('nafCodeInput'); // Référence à l'input de code NAF
+    var nafCodeInput = document.getElementById('nafCodeInput');
 
     function verifierSiret() {
         if (siretInput) {
-            if (paysSelect && paysSelect.value === "8") { // la France
+            if (paysSelect && paysSelect.value === "8") {
                 siretInput.setAttribute('required', '');
-                siretInput.placeholder = 'Siret*'; // Indique que le champ est obligatoire pour la France
+                siretInput.placeholder = 'Siret*';
             } else {
                 siretInput.removeAttribute('required');
                 siretInput.placeholder = 'Siret';
@@ -76,143 +149,39 @@ $(document).ready(function () {
         }
     }
 
-    function validerFormulaire(event) {
-        var siretValue = siretInput.value;
-        var isGenderSelected = Array.from(genderInputs).some(input => input.checked);
-        var isFileSelected = fileInput.files.length > 0; // Vérifie si un fichier est sélectionné
-        var isRibSelected = document.getElementById('rib-upload').files.length > 0; // Vérifie si le fichier RIB est sélectionné
-        var isNafCodeFilled = nafCodeInput.value.trim() !== ''; // Vérifie si le champ code NAF est rempli
-        // Récupération de la valeur du code postal (ajoutez l'ID correct pour le champ code postal)
-        var codePostalInput = document.getElementById('customer-cp');
-        var codePostalValue = codePostalInput ? codePostalInput.value : '';
-
-        if (!isGenderSelected) {
-            event.preventDefault();
-            alert('Veuillez sélectionner une option de civilité.');
-            return;
-        }
-
-        if (!isRibSelected) {
-            event.preventDefault();
-            alert('Veuillez joindre votre RIB.');
-            return;
-        }
-
-        if (!isFileSelected) {
-            event.preventDefault();
-            alert('Veuillez joindre un fichier (ex: KBIS).');
-            return;
-        }
-
-        if (!isNafCodeFilled) {
-            event.preventDefault();
-            alert('Veuillez remplir le champ Code NAF.');
-            nafCodeInput.focus();
-            return;
-        }
-
-        // Vérification du code postal
-        if (!validerCodePostal(codePostalValue)) {
-            event.preventDefault();
-            alert('Veuillez entrer un code postal valide.');
-            codePostalInput.focus();
-            return;
-        }
-
-        // Vérification spécifique pour le champ Numéro de TVA si "Soumis à la TVA" est coché sur "Oui"
-        var isTvaRequired = $('#customer-tva').val() === "1";
-        var isVatNumberFilled = vatNumberInput.val().trim() !== '';
-        if (isTvaRequired && !isVatNumberFilled) {
-            validationMessages.push('Le Numéro de TVA est obligatoire lorsque soumis à la TVA.');
-            isFormValid = false;
-        }
-
-        if (paysSelect.value === "8") {
-            var isSiretValid = siretValue.length === 14 && !isNaN(siretValue) && siretValue.trim() !== '';
-
-            if (!isSiretValid) {
-                event.preventDefault();
-                alert('Le SIRET doit être composé de 14 chiffres.');
-                siretInput.focus();
-                return;
-            }
-        }
-
-        sauvegarderChamps(); // Imaginez que cette fonction existe déjà pour sauvegarder les champs
-    }
-
-    if (paysSelect) {
-        paysSelect.addEventListener('change', verifierSiret);
-    }
-    if (form) {
-        form.addEventListener('submit', validerFormulaire);
-    }
-
-    verifierSiret();
-
-// Fonction pour sauvegarder les valeurs des champs dans le localStorage
-    function sauvegarderChamps() {
-        document.querySelectorAll('input, select').forEach(function (input) {
-            if (
-                input.id !== 'nafCodeInput' &&
-                input.type !== 'submit' &&
-                input.type !== 'password' &&
-                input.name !== 'firstname' &&
-                input.name !== 'lastname' &&
-                input.name !== 'email' &&
-                input.name !== 'token' &&
-                input.name !== 'alias' &&
-                !input.classList.contains('g-recaptcha-response') // Exclut les champs reCAPTCHA
-            ) {
-                localStorage.setItem(input.name, input.value);
-            }
-        });
-    }
-
-    function restaurerChamps() {
-        document.querySelectorAll('input, select').forEach(function (input) {
-            if (
-                input.type !== 'submit' &&
-                input.type !== 'password' &&
-                input.type !== 'file' &&
-                input.name !== 'firstname' &&
-                input.name !== 'lastname' &&
-                input.name !== 'email' &&
-                input.name !== 'token' &&
-                input.name !== 'alias' &&
-                !input.classList.contains('g-recaptcha-response') // Exclut les champs reCAPTCHA
-            ) {
-                var savedValue = localStorage.getItem(input.name);
-                if (savedValue) {
-                    if (input.type === 'checkbox' || input.type === 'radio') {
-                        // Pour les radio et checkboxes, vérifiez si la valeur sauvegardée correspond à la valeur de l'input
-                        input.checked = input.value === savedValue;
-                    } else {
-                        // Pour les autres types d'input, restaurez simplement la valeur
-                        input.value = savedValue;
-                    }
-                }
-            }
-        });
-    }
-
-    restaurerChamps();
-
-    var submitButton = document.querySelector('.form-control-submit');
-
-    if (submitButton) {
-        // Ajoutez un écouteur d'événements sur le bouton pour sauvegarder les champs au survol
-        submitButton.addEventListener('click', function (event) {
-            sauvegarderChamps(); // Sauvegarde les champs à chaque survol du bouton de soumission
-        });
-    }
-
-
     function validerCodePostal(codePostal) {
-        // Exemple de regex pour les codes postaux français (5 chiffres)
         var regex = /^[0-9]{5}$/;
         return regex.test(codePostal);
     }
 
-    // localStorage.clear()
+    function validerFormulaire(event) {
+        var siretValue = siretInput.value;
+        var isGenderSelected = Array.from(genderInputs).some(input => input.checked);
+        var isFileSelected = fileInput.files.length > 0;
+        var isRibSelected = document.getElementById('rib-upload').files.length > 0;
+        var isNafCodeFilled = nafCodeInput.value.trim() !== '';
+        var codePostalInput = document.getElementById('customer-cp');
+        var codePostalValue = codePostalInput ? codePostalInput.value : '';
+
+        if (!isGenderSelected) { alert('Veuillez sélectionner une civilité.'); event.preventDefault(); return; }
+        if (!isRibSelected && $("body#registration").length) { alert('Veuillez joindre votre RIB.'); event.preventDefault(); return; }
+        if (!isFileSelected && $("body#registration").length) { alert('Veuillez joindre un fichier (ex: KBIS).'); event.preventDefault(); return; }
+        if (!isNafCodeFilled && $("body#registration").length) { alert('Veuillez remplir le champ Code NAF.'); event.preventDefault(); nafCodeInput.focus(); return; }
+        if (!validerCodePostal(codePostalValue) && $("body#registration").length) { alert('Veuillez entrer un code postal valide.'); event.preventDefault(); codePostalInput.focus(); return; }
+
+        if (paysSelect.value === "8") {
+            var isSiretValid = siretValue.length === 14 && !isNaN(siretValue);
+            if (!isSiretValid) {
+                alert('Le SIRET doit comporter 14 chiffres.');
+                event.preventDefault();
+                siretInput.focus();
+                return;
+            }
+        }
+    }
+
+    if (paysSelect) paysSelect.addEventListener('change', verifierSiret);
+    if (form) form.addEventListener('submit', validerFormulaire);
+
+    verifierSiret();
 });

@@ -257,6 +257,7 @@ modules/*
 !modules/ckc*/
 !modules/pm_advancedpack/
 modules/ckcstorespresentation/uploads/*
+!modules/creativeelements
 #override/*
 themes/*/
 !themes/classic/
@@ -397,6 +398,9 @@ $RECYCLE.BIN/
 # Ignorer le fichier .htpasswd
 .htpasswd
 
+# Ignorer le fichier .htaccess
+.htaccess
+
 # Windows shortcuts
 *.lnk
 
@@ -435,3 +439,7 @@ var/
 
 modules/ckcadcampaignconfigurator/uploads/menus/
 error_log.txt.gz
+/modules/creativeelements/views/css/
+/admin024h9xfokhvsbvfmnzn/prices/
+/admin024h9xfokhvsbvfmnzn/prices/
+/modules/creativeelements/views/css/ce/

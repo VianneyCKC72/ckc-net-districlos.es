@@ -1,10 +1,12 @@
-<div class="d-flex align-items-center mb-2 mt-4">
-    <img src="/modules/ckc_shipping_estimator/assets/img/delivery.svg" loading="lazy" alt="Icone livraison">
-    <div class="small ml-4">
-        Livraison à domicile  {hook h='displayPromoImpactFranco'}<br>
-        <span class="thin">sous 10 jours</span>
+{if Context::getContext()->shop->id != 2}
+    <div class="d-flex align-items-center mb-2 mt-4">
+        <img src="/modules/ckc_shipping_estimator/assets/img/delivery.svg" loading="lazy" alt="Icone livraison">
+        <div class="small ml-4">
+            Livraison à domicile  {hook h='displayPromoImpactFranco'}<br>
+            <span class="thin">sous 10 jours</span>
+        </div>
     </div>
-</div>
+{/if}
 <a href="#estimate-shipping-cost" id="openModalShippingCost" class="d-block small text-black font-weight-bold">Estimez vos frais de livraison <svg
             xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"

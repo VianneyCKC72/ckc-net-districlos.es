@@ -1,0 +1,298 @@
+/* 
+ * Styles pour la bannière de promotion professionnelle
+ * Module CKC Espace Pro
+ */
+
+.ckc-promo-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    animation: slideDown 0.5s ease-out;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.ckc-promo-banner.ckc-promo-pro {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.ckc-promo-banner.ckc-promo-proticulier {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.ckc-promo-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 15px 20px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.ckc-promo-content {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 20px;
+}
+
+.ckc-promo-icon {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ckc-promo-icon i {
+    color: white;
+    font-size: 24px;
+}
+
+.ckc-promo-text {
+    flex: 1;
+    color: white;
+}
+
+.ckc-promo-title {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ckc-promo-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ckc-promo-message {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    opacity: 0.9;
+    line-height: 1.4;
+}
+
+.ckc-promo-code-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.ckc-promo-code-label {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.ckc-promo-code {
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ckc-promo-code:hover {
+    background: white;
+    transform: translateY(-1px);
+}
+
+.ckc-promo-copy-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 4px;
+    padding: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ckc-promo-copy-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.ckc-promo-copy-btn.copied {
+    background: rgba(76, 175, 80, 0.8);
+}
+
+.ckc-promo-copy-btn i {
+    color: white;
+    font-size: 16px;
+}
+
+.ckc-promo-discount {
+    text-align: center;
+    color: white;
+    margin: 0 20px;
+    flex-shrink: 0;
+}
+
+.ckc-promo-percent {
+    display: block;
+    font-size: 32px;
+    font-weight: bold;
+    line-height: 1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.ckc-promo-off {
+    display: block;
+    font-size: 12px;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ckc-promo-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ckc-promo-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.ckc-promo-close i {
+    color: white;
+    font-size: 18px;
+}
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ckc-promo-container {
+        padding: 12px 15px;
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .ckc-promo-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .ckc-promo-title {
+        font-size: 16px;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .ckc-promo-message {
+        font-size: 13px;
+    }
+    
+    .ckc-promo-discount {
+        margin: 0;
+    }
+    
+    .ckc-promo-percent {
+        font-size: 28px;
+    }
+    
+    .ckc-promo-close {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ckc-promo-code-container {
+        justify-content: center;
+    }
+    
+    .ckc-promo-code {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+    
+    .ckc-promo-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .ckc-promo-icon i {
+        font-size: 20px;
+    }
+}
+
+/* Ajustement pour éviter que la bannière cache le contenu */
+body.has-promo-banner {
+    padding-top: 80px;
+}
+
+@media (max-width: 768px) {
+    body.has-promo-banner {
+        padding-top: 120px;
+    }
+}
+
+/* Styles pour l'intégration avec PrestaShop */
+.ckc-promo-banner + #header,
+.ckc-promo-banner + .header-top {
+    margin-top: 0;
+}
+
+/* Compatibilité avec les thèmes PrestaShop courants */
+.ckc-promo-banner + .header-container,
+.ckc-promo-banner + .header-nav,
+.ckc-promo-banner + .top-header {
+    position: relative;
+    z-index: 9998;
+}

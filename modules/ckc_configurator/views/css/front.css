@@ -1518,3 +1518,6 @@ a[data-action] {
   }
 
 }
+.step.fourth form [data-name=service_id] li{
+  list-style-position: inside;
+}

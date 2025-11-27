@@ -39,6 +39,8 @@ use PrestaShop\PrestaShop\Core\Product\Search\SortOrder;
  */
 abstract class ProductListingFrontController extends ProductListingFrontControllerCore
 {
+
+ 
     /**
      * Generates an URL to a product listing controller
      * with only the essential query params and page remaining.
@@ -77,6 +79,7 @@ abstract class ProductListingFrontController extends ProductListingFrontControll
     // @phpstan-ignore-next-line
     private function prepareProductForTemplate(array $rawProduct)
     {
+
         // Enrich data of product
         $product = (new ProductAssembler($this->context))
             ->assembleProduct($rawProduct);
@@ -103,6 +106,7 @@ abstract class ProductListingFrontController extends ProductListingFrontControll
      */
     protected function prepareMultipleProductsForTemplate(array $products)
     {
+
         // Enrich data set of products
         $products = (new ProductAssembler($this->context))
             ->assembleProducts($products);
@@ -593,37 +597,102 @@ abstract class ProductListingFrontController extends ProductListingFrontControll
      */
     protected function getAjaxProductSearchVariables()
     {
+        $pro = [
+            'env'       => 0,
+            'suffix'    => '',
+            'url_domain'=> '',
+            'user'      => [
+                'id'             => 0,
+                'is_logged'      => 0,
+                'is_pro'         => 0,
+                'is_proticulier' => 0,
+                'is_particulier' => 0,
+                'is_visitor'     => 1,
+                'status'         => 'visitor',
+                'info'           => ['siret'=>null,'tva'=>0,'kbis'=>null],
+            ],
+        ];
 
-        $display_espace_pro = Configuration::get('CKC_DISPLAY_EP');
+        $env_pro = 0;
+        $is_pro = 0;
+        $is_proticulier = 0;
+        $is_particulier = 0;
+        $is_visitor = 1;
 
-        if ($display_espace_pro == 1) {
-            // Vérification si le client est défini pour extraire l'ID
-            if (!empty($this->context->customer)) {
-                $userId = $this->context->customer->id;
-                // Vérification directe de l'état de connexion du client
-                $isLogged = $this->context->customer->logged;
+        $display_espace_pro = (int) Configuration::get('CKC_DISPLAY_EP');
 
-                // Détermination si l'utilisateur appartient au groupe avec l'ID 10
-                $env_pro = $isLogged && in_array(10, $this->context->customer->getGroups());
-                $connecter_avec_un_compte_particulier = (int)($isLogged && !in_array(10, $this->context->customer->getGroups()));
+        if ($display_espace_pro === 1) {
+            $m = Module::isInstalled('ckc_espacepro') ? Module::getInstanceByName('ckc_espacepro') : null;
+            if ($m && Validate::isLoadedObject($m) && method_exists($m, 'assignProVars')) {
+                $pro = (array) $m->assignProVars(); // construit exactement le même payload que partout
+            } else {
+                $customer = $this->context->customer;
+                if ($customer && Validate::isLoadedObject($customer) && $customer->isLogged()) {
+                    $groups = (array) $customer->getGroups();
+                    $gidPro = (int) Configuration::get('CKC_GROUP_PRO_ID') ?: 10;
+                    $gidProticulier = (int) Configuration::get('CKC_GROUP_PROTICULIER_ID') ?: 11;
+
+                    $is_pro         = (int) in_array($gidPro, $groups, true);
+                    $is_proticulier = (int) in_array($gidProticulier, $groups, true);
+                    $is_particulier = (int) (!$is_pro && !$is_proticulier);
+                    $is_visitor     = 0;
+
+                    // détection env pro simple (host == host configuré)
+                    $idShop = (int) $this->context->shop->id;
+                    $proUrl = (string) Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, $idShop);
+                    $host    = Tools::getShopDomainSsl(false);
+                    $proHost = parse_url($proUrl, PHP_URL_HOST);
+                    $env_pro = (int) ($proHost && Tools::strtolower($proHost) === Tools::strtolower($host));
+
+                    $pro = [
+                        'env'       => $env_pro,
+                        'suffix'    => $env_pro ? '-pro' : '',
+                        'url_domain'=> (string) Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, $idShop),
+                        'user'      => [
+                            'id'             => (int) $customer->id,
+                            'is_logged'      => 1,
+                            'is_pro'         => $is_pro,
+                            'is_proticulier' => $is_proticulier,
+                            'is_particulier' => $is_particulier,
+                            'is_visitor'     => 0,
+                            'status'         => $is_pro ? 'pro' : ($is_proticulier ? 'proticulier' : 'particulier'),
+                            'info'           => ['siret'=>null,'tva'=>0,'kbis'=>null],
+                        ],
+                    ];
+                }
             }
-        } else {
-            $env_pro = 0;
+
+            $env_pro        = (int) ($pro['env'] ?? 0);
+            $is_pro         = (int) ($pro['user']['is_pro'] ?? 0);
+            $is_proticulier = (int) ($pro['user']['is_proticulier'] ?? 0);
+            $is_particulier = (int) ($pro['user']['is_particulier'] ?? 0);
+            $is_visitor     = (int) ($pro['user']['is_visitor'] ?? (int)!($pro['user']['is_logged'] ?? 0));
         }
-        $this->context->smarty->assign([
-            'env_pro' => $env_pro,
-        ]);
+
+        $vars = [
+            'pro'                => $pro,
+            'env_pro'            => $env_pro,
+            'is_pro'             => $is_pro,
+            'is_proticulier'     => $is_proticulier,
+            'is_particulier'     => $is_particulier,
+            'is_visitor'         => $is_visitor,
+            'pro_suffix'         => (string) ($pro['suffix'] ?? ''),
+        ];
+        $this->context->smarty->assign($vars);
+        foreach ($vars as $k => $v) {
+            $this->context->smarty->tpl_vars[$k] = new Smarty_Variable($v, true); // nocache
+        }
 
         $search = $this->getProductSearchVariables();
 
-        $rendered_products_top = $this->render('catalog/_partials/products-top', ['listing' => $search]);
-        $rendered_products = $this->render('catalog/_partials/products', ['listing' => $search]);
+        $rendered_products_top    = $this->render('catalog/_partials/products-top',    ['listing' => $search]);
+        $rendered_products        = $this->render('catalog/_partials/products',        ['listing' => $search]);
         $rendered_products_bottom = $this->render('catalog/_partials/products-bottom', ['listing' => $search]);
 
         $data = array_merge(
             [
-                'rendered_products_top' => $rendered_products_top,
-                'rendered_products' => $rendered_products,
+                'rendered_products_top'    => $rendered_products_top,
+                'rendered_products'        => $rendered_products,
                 'rendered_products_bottom' => $rendered_products_bottom,
             ],
             $search
@@ -635,6 +704,7 @@ abstract class ProductListingFrontController extends ProductListingFrontControll
 
         return $data;
     }
+
 
     /**
      * Cleans the products array with only whitelisted properties.

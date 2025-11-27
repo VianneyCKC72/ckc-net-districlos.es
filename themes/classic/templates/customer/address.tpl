@@ -27,22 +27,14 @@
 
 
 {block name='page_content'}
-  {block name='page_title'}
-    <h1>{l s='Your account' d='Shop.Theme.Customeraccount'}</h1>
-  {/block}
   <div class="small_container">
 
     <div class="row">
-      {include file='customer/links_account.tpl'}
+      
+      {include file='customer/sidebar-account.tpl'}
+
       <div class="col-md-9">
         <div class="content_right">
-          {block name='page_title'}
-            {if $editing}
-              <h1>{l s='Update your address' d='Shop.Theme.Customeraccount'}</h1>
-            {else}
-              <h1>{l s='New address' d='Shop.Theme.Customeraccount'}</h1>
-            {/if}
-          {/block}
           <div class="address-form">
             {render template="customer/_partials/address-form.tpl" ui=$address_form}
           </div>
