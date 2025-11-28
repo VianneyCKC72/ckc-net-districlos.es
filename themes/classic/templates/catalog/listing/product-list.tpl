@@ -130,10 +130,10 @@
 
 {block name='left_column'}
     <div class="col-xs-12 col-md-4 col-lg-3" id="left-column">
+        {if $page.page_name == "prices-drop"}
+            {hook h='displayPromoPageText'}
+        {/if}
         {if Context::getContext()->shop->id != 2}
-            {if $page.page_name == "prices-drop"}
-                {hook h='displayPromoPageText'}
-            {/if}
             {hook h='CETemplate' id=12}
         {else}
             {hook h='CETemplate' id=35}
