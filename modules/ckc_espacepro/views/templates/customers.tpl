@@ -162,7 +162,8 @@
                                                                 </a>*}
                                 <div data-file-name="{$customer.fileUpload|escape:'url'}" data-type="image/{$ext}"
                                      class="file-chip file-download" style="cursor: pointer;">
-                                    <img src="/upload/pro_docs/{$customer.fileUpload|escape:'url'}" alt="KBIS">
+                                    {*<img src="/upload/pro_docs/{$customer.fileUpload|escape:'url'}" alt="KBIS">*}
+                                    <span class="icon"></span> <span>KBIS.{$ext}</span>
                                 </div>
                             {elseif $ext == 'pdf'}
                                 <div data-file-name="{$customer.fileUpload|escape:'url'}" data-type="{$ext}"
@@ -183,12 +184,13 @@
                             {if in_array($ext, ['jpg','jpeg','png'])}
                                 <div data-file-name="{$customer.rib|escape:'url'}" data-type="image/{$ext}"
                                      class="file-chip file-download" style="cursor: pointer;">
-                                    <img src="/upload/pro_docs/{$customer.rib|escape:'url'}" alt="KBIS">
+                                    <span class="icon"></span> <span>RIB.{$ext}</span>
+                                    {*<img src="/upload/pro_docs/{$customer.rib|escape:'url'}" alt="RIB">*}
                                 </div>
                             {elseif $ext == 'pdf'}
                                 <div data-file-name="{$customer.rib|escape:'url'}" data-type="{$ext}"
                                      class="file-chip file-download" style="cursor: pointer;">
-                                    <span class="icon"></span> <span>KBIS.pdf</span>
+                                    <span class="icon"></span> <span>RIB.pdf</span>
                                 </div>
                             {else}
                                 <span class="small-muted">Fichier : /upload/pro_docs/{$customer.rib|escape:'html'}</span>
