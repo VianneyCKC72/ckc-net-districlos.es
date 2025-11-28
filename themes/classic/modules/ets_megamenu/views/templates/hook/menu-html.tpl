@@ -304,11 +304,10 @@
                             PRO</p>
                     </a>
                 {else}
-                    {*                    Todo : en attnete du client !*}
-                    {*                    <a class="menu-mobile-useful-link" href="{$urls.base_url}guides-et-fiches-techniques-produits">*}
-                    {*                        <img src="/img/menu-mobile-espace-pro.svg" alt="documents" width="19px" height="18px">*}
-                    {*                        <p>DOCUMENTS</p>*}
-                    {*                    </a>*}
+                    <a class="menu-mobile-useful-link" href="{$urls.base_url}guides-et-fiches-techniques-produits">
+                        <img src="/img/menu-mobile-espace-pro.svg" alt="documents" width="19px" height="18px">
+                        <p>DOCUMENTS</p>
+                    </a>
                 {/if}
                 <a class="menu-mobile-useful-link" href="/module/opartdevis/simplequotation">
                     <img src="/img/menu-mobile-devis.svg" alt="devis" width="20px" height="19px">
