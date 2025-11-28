@@ -93,4 +93,37 @@ $(document).ready(function () {
             })
             .finally(() => { el.disabled = false; });
     });
+
+    $(".file-download").on("click", function() {
+        let fileName = $(this).attr('data-file-name');
+        let fileExtension = $(this).attr('data-type');
+        var xhrOverride = new XMLHttpRequest();
+        xhrOverride.responseType = 'arraybuffer';
+        if(fileName.length > 0) {
+            $.ajax({
+                type: "POST",
+                url: ajax_download_file_url,
+                data: {
+                    controller : 'AdminEspacePro',
+                    "fileName": fileName,
+                    action: "DownloadFile",
+                    ajax : true
+                },
+                xhr: function() { return xhrOverride; },
+                success: function(responseData){
+                    var binaryData = [];
+                    binaryData.push(responseData);
+                    var blob = new Blob(binaryData, {type: "application/"+fileExtension})
+                    const url = window.URL.createObjectURL(blob)
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', fileName);
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                }
+            })
+        }
+    });
+
 });
