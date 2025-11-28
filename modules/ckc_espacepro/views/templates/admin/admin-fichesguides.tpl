@@ -22,7 +22,7 @@
     <select name="id_category" id="id_category" class="form-control select2 d-block" required>
         <option value="">-- Choisissez une catégorie --</option>
         {foreach from=$categories item=cat}
-            <option value="{$cat.id}">{$cat.name}</option>
+            <option value="{$cat.id_category}">{$cat.full_path}</option>
         {/foreach}
     </select>
 
@@ -43,57 +43,57 @@
     </button>
 </form>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th><input type="checkbox" id="check-all" /></th>
-                <th>#</th>
-                <th>ID</th>
-                <th>ID Catégorie</th>
-                <th>Titre de la section en front-office</th>
-                <th>Active</th>
-                <th>Créé le</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="sortable-sections">
-            {foreach from=$sections item=section}
-                <tr data-id="{$section.id_section}" class="sortable-row">
-                    <td><input type="checkbox" name="bulk_ids[]" form="bulk-delete-form"  value="{$section.id_section}" class="bulk-checkbox" /></td>
-                    <td class="drag-handle"><i class="icon-arrows"></i></td>
-                    <td>{$section.id_section}</td>
-                    <td>{$section.id_category}</td>
-                    <td>
-                        <form method="post" style="display: flex; gap: 5px;">
-                            <input type="hidden" name="id_section" value="{$section.id_section}" />
-                            <input  type="text" name="title_section" value="{$section.title_section|escape:'htmlall'}" class="form-control form-control-sm" required />
-                            <button type="submit" name="update_section" class="btn btn-sm btn-primary">
-                                Modifier
-                            </button>
-                        </form>
-                    </td>
-                    <td>
-                        <a href="#" class="toggle-active" data-id="{$section.id_section}" title="Activer / Désactiver">
-                            {if $section.active}
-                                <i class="icon-check text-success"></i>
-                            {else}
-                                <i class="icon-remove text-danger"></i>
-                            {/if}
-                        </a>
-                    </td>
-                    <td>{$section.created_at}</td>
-                    <td>
-                        <form method="post">
-                            <input type="hidden" name="id_section" value="{$section.id_section}">
-                            <button type="submit" name="delete_section" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer cette section ?');">
-                                Supprimer
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-            {/foreach}
-        </tbody>
-    </table>
+<table class="table">
+    <thead>
+    <tr>
+        <th><input type="checkbox" id="check-all" /></th>
+        <th>#</th>
+        <th>ID</th>
+        <th>ID Catégorie</th>
+        <th>Titre de la section en front-office</th>
+        <th>Active</th>
+        <th>Créé le</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody id="sortable-sections">
+    {foreach from=$sections item=section}
+        <tr data-id="{$section.id_section}" class="sortable-row">
+            <td><input type="checkbox" name="bulk_ids[]" form="bulk-delete-form"  value="{$section.id_section}" class="bulk-checkbox" /></td>
+            <td class="drag-handle"><i class="icon-arrows"></i></td>
+            <td>{$section.id_section}</td>
+            <td>{$section.id_category}</td>
+            <td>
+                <form method="post" style="display: flex; gap: 5px;">
+                    <input type="hidden" name="id_section" value="{$section.id_section}" />
+                    <input  type="text" name="title_section" value="{$section.title_section|escape:'htmlall'}" class="form-control form-control-sm" required />
+                    <button type="submit" name="update_section" class="btn btn-sm btn-primary">
+                        Modifier
+                    </button>
+                </form>
+            </td>
+            <td>
+                <a href="#" class="toggle-active" data-id="{$section.id_section}" title="Activer / Désactiver">
+                    {if $section.active}
+                        <i class="icon-check text-success"></i>
+                    {else}
+                        <i class="icon-remove text-danger"></i>
+                    {/if}
+                </a>
+            </td>
+            <td>{$section.created_at}</td>
+            <td>
+                <form method="post">
+                    <input type="hidden" name="id_section" value="{$section.id_section}">
+                    <button type="submit" name="delete_section" class="btn btn-danger btn-sm" onclick="return confirm('Supprimer cette section ?');">
+                        Supprimer
+                    </button>
+                </form>
+            </td>
+        </tr>
+    {/foreach}
+    </tbody>
+</table>
 
 
 
@@ -121,7 +121,7 @@
             $.ajax({
                 url: '{$url}',
                 type: 'POST',
-                data: { 
+                data: {
                     id_section: id_section,
                     ajax: 1,
                     action: 'ToggleActive'
@@ -165,9 +165,9 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: '{$url}',  
-                    data: { 
-                            ordered_ids: orderedIDs,
+                    url: '{$url}',
+                    data: {
+                        ordered_ids: orderedIDs,
                         ajax: 1,
                         action: 'UpdateOrdering'
                     },

@@ -78,7 +78,7 @@
 
                 {assign var=isPro value=in_array($customer.id_default_group, $id_groups_pro)}
 
-                <tr class="{if $isPro}row-pro{else}row-proticulier{/if}">
+                <tr class="{if $customer.default_group_name != "Proticulier"}row-pro{else}row-proticulier{/if}">
                     <td>{$customer.id_customer|intval}</td>
 
                     <td>
@@ -124,7 +124,7 @@
 
                     <td>
                         <div class="account-type">
-                            <span class="status-badge {if $isPro}badge-pro{else}badge-proti{/if}">
+                            <span class="status-badge {if $customer.default_group_name != "Proticulier"}badge-pro{else}badge-proti{/if}">
                               {if $isPro}
                                   {foreach $groupsSwitchable as $g}
                                       {if $g.id_group == $customer.id_default_group}

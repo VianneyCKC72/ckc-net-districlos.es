@@ -22,6 +22,7 @@ class AdminGuidesFichesController extends ModuleAdminController
         $sections = CkcSectionGuidesFiches::getSections();
         $categories = CkcSectionGuidesFiches::getCategories();
 
+        // dump($categories);die;
         $this->context->smarty->assign([
             'categories' => $categories,
             'sections' => $sections,
@@ -30,6 +31,7 @@ class AdminGuidesFichesController extends ModuleAdminController
 
         $this->setTemplate('admin-fichesguides.tpl');
     }
+
 
     public function postProcess()
     {
@@ -72,8 +74,8 @@ class AdminGuidesFichesController extends ModuleAdminController
         }
 
         if ($result !== null) {
-                Tools::redirectAdmin(self::$currentIndex . '&token=' . Tools::getAdminTokenLite('AdminGuidesFiches'));
-            }
+            Tools::redirectAdmin(self::$currentIndex . '&token=' . Tools::getAdminTokenLite('AdminGuidesFiches'));
+        }
     }
 
     public function ajaxProcessToggleActive()
