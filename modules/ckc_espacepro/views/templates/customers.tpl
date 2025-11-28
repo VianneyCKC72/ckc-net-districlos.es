@@ -156,15 +156,19 @@
                         {if $customer.fileUpload}
                             {assign var=ext value=$customer.fileExtension|default:''|lower}
                             {if in_array($ext, ['jpg','jpeg','png'])}
-                                <a href="/upload/pro_docs/{$customer.fileUpload|escape:'url'}" target="_blank"
-                                   class="file-chip" title="Voir le KBIS">
+                                {*                                <a href="/upload/pro_docs/{$customer.fileUpload|escape:'url'}" target="_blank"
+                                                                   class="file-chip" title="Voir le KBIS">
+                                                                    <img src="/upload/pro_docs/{$customer.fileUpload|escape:'url'}" alt="KBIS">
+                                                                </a>*}
+                                <div data-file-name="{$customer.fileUpload|escape:'url'}" data-type="image/{$ext}"
+                                     class="file-chip file-download" style="cursor: pointer;">
                                     <img src="/upload/pro_docs/{$customer.fileUpload|escape:'url'}" alt="KBIS">
-                                </a>
+                                </div>
                             {elseif $ext == 'pdf'}
-                                <a href="/upload/pro_docs/{$customer.fileUpload|escape:'url'}" target="_blank"
-                                   class="file-chip" title="Ouvrir le PDF">
+                                <div data-file-name="{$customer.fileUpload|escape:'url'}" data-type="{$ext}"
+                                     class="file-chip file-download" style="cursor: pointer;">
                                     <span class="icon"></span> <span>KBIS.pdf</span>
-                                </a>
+                                </div>
                             {else}
                                 <span class="small-muted">Fichier : /upload/pro_docs/{$customer.fileUpload|escape:'html'}</span>
                             {/if}
@@ -177,15 +181,15 @@
                         {if $customer.rib}
                             {assign var=ext value=$customer.ribFileExtension|default:''|lower}
                             {if in_array($ext, ['jpg','jpeg','png'])}
-                                <a href="/upload/pro_docs/{$customer.rib|escape:'url'}" target="_blank"
-                                   class="file-chip" title="Voir le RIB">
-                                    <img src="/upload/pro_docs/{$customer.rib|escape:'url'}" alt="RIB">
-                                </a>
+                                <div data-file-name="{$customer.rib|escape:'url'}" data-type="image/{$ext}"
+                                     class="file-chip file-download" style="cursor: pointer;">
+                                    <img src="/upload/pro_docs/{$customer.rib|escape:'url'}" alt="KBIS">
+                                </div>
                             {elseif $ext == 'pdf'}
-                                <a href="/upload/pro_docs/{$customer.rib|escape:'url'}" target="_blank"
-                                   class="file-chip" title="Ouvrir le PDF">
-                                    <span class="icon"></span> <span>RIB.pdf</span>
-                                </a>
+                                <div data-file-name="{$customer.rib|escape:'url'}" data-type="{$ext}"
+                                     class="file-chip file-download" style="cursor: pointer;">
+                                    <span class="icon"></span> <span>KBIS.pdf</span>
+                                </div>
                             {else}
                                 <span class="small-muted">Fichier : /upload/pro_docs/{$customer.rib|escape:'html'}</span>
                             {/if}
@@ -211,6 +215,7 @@
     window.PRO_GROUP_IDS = {$id_groups_pro|json_encode nofilter};
     window.PROTI_GROUP_ID = {$id_group_proticulier|intval};
     var ajax_change_group_url = '{$ajax_change_group_url|escape:'javascript'}';
+    var ajax_download_file_url = '{$downloadFileUrl|escape:'javascript'}';
 </script>
 
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>

@@ -41,7 +41,7 @@ class AdminEspaceProController extends ModuleAdminController
         $helper->identifier               = $this->identifier;
         $helper->submit_action            = $submitAction;
         $helper->currentIndex             = $this->context->link->getAdminLink('AdminEspacePro', false)
-                                            . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+            . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
         $helper->token                    = Tools::getAdminTokenLite('AdminEspacePro');
         $helper->tpl_vars                 = [
             'fields_value' => $fieldsValue,
@@ -58,6 +58,23 @@ class AdminEspaceProController extends ModuleAdminController
 
     public function postProcessRib()  { $this->postProcessFile('rib'); }
     public function postProcessKbis() { $this->postProcessFile('kbis'); }
+
+    public function ajaxProcessDownloadFile(){
+
+        $fileName = Tools::getValue('fileName');
+
+        $file =_PS_UPLOAD_DIR_."pro_docs/".$fileName;
+
+        header("Content-Description: File Transfer");
+        header("Content-Type: application/octet-stream");
+        header("Content-Disposition: attachment; filename=\"". basename($file) ."\"");
+        header('User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36');
+        header('Content-Length:' . filesize($file));
+
+        readfile($file);
+
+        exit();
+    }
 
     public function postProcessFile($key)
     {
@@ -372,6 +389,7 @@ class AdminEspaceProController extends ModuleAdminController
             'nbProticulier'           => $nbProticulier,
             'editkbis'                => (string) $this->createHelperForm('submitKbisCkc_ep', $this->getConfigFormValues(), $this->getEditUserKbisForm()),
             'editrib'                 => (string) $this->createHelperForm('submitRibCkc_ep',  $this->getConfigFormValues(), $this->getEditUserRibForm()),
+            'downloadFileUrl'         => Context::getContext()->link->getAdminLink('AdminEspacePro', true, [], ['action' => 'DownloadFile', 'ajax' => 1]),
             'groupsSwitchable'        => $groupsSwitchable,
             'id_group_pro'            => $primaryProId,
             'id_group_proticulier'    => $gidProti,
