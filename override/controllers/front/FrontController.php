@@ -9,6 +9,7 @@ class FrontController extends FrontControllerCore
 {
     public function initContent()
     {
+
         $isLogged = $this->context->customer ? (bool)$this->context->customer->isLogged() : false;
         $newClient                            = 0;
         $isConfirmationPage = strpos($_SERVER['REQUEST_URI'], 'confirmation') !== false;

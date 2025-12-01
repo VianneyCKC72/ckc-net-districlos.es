@@ -63,6 +63,8 @@ class ckc_espacepro extends Module
         $ok =
             $this->registerHook('displayCustomerAccountForm') &&
             $this->registerHook('actionCustomerAccountAdd') &&
+            $this->registerHook('actionSubmitAccountBefore') &&
+
             $this->registerHook('actionCustomerLogoutAfter') &&
             $this->registerHook('actionFrontControllerSetMedia') &&
             $this->registerHook('displayBackOfficeHeader') &&
@@ -156,7 +158,19 @@ class ckc_espacepro extends Module
 
         return $this->context->link->getModuleLink('ckc_espacepro', 'consume', $params, true, null, $targetShopId);
     }
-
+    public function hookActionSubmitAccountBefore($params)
+    {
+        foreach (['kbis', 'rib'] as $fileKey) {
+            if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+                $newFileName = $this->uploadProFile($_FILES[$fileKey], $fileKey);
+                if ($newFileName) {
+                    // stocke temporairement dans le cookie le nom du fichier
+                    $this->context->cookie->__set($fileKey . '_tmp', $newFileName);
+                }
+            }
+        }
+        return true;
+    }
     public function hookActionAuthentication($params)
     {
         $ctrl = $this->context->controller ? strtolower($this->context->controller->php_self) : '';
@@ -170,9 +184,9 @@ class ckc_espacepro extends Module
 
         $shopId         = (int)$this->context->shop->id;
         $gidDefault     = (int)($c->id_default_group ?? 0);
-        $gidPro         = (int)$this->getProGroupId();
+        $gidProList = $this->getProGroupIds(); // array<int>
+        $isProGroup = in_array($gidDefault, $gidProList, true);
         $gidProticulier = (int)$this->getProticulierGroupId();
-        $isProGroup     = in_array($gidDefault, [$gidPro, $gidProticulier], true);
 
         $targetShopId = 0; $reasonCode = 0;
         if ($shopId === 1 && $isProGroup) { $targetShopId = 2; $reasonCode = 11; } // PART -> PRO
@@ -216,10 +230,10 @@ class ckc_espacepro extends Module
     private function buildAuthUrlForShop(int $targetShopId, string $back, string $email, int $reasonCode): string
     {
         $qs = http_build_query([
-                                   'back'        => $back,
-                                   'login_email' => $email,
-                                   'pro_reason'  => $reasonCode,
-                               ], '', '&', PHP_QUERY_RFC3986);
+            'back'        => $back,
+            'login_email' => $email,
+            'pro_reason'  => $reasonCode,
+        ], '', '&', PHP_QUERY_RFC3986);
 
         $base = $this->context->link->getBaseLink($targetShopId, true);
         return rtrim($base, '/') . '/connexion?' . $qs;
@@ -367,11 +381,12 @@ class ckc_espacepro extends Module
         $customer = $this->context->customer;
         $groups = (array)$customer->getGroups();
 
-        $gidPro = $this->getProGroupId();
+        $gidProList = $this->getProGroupIds();
+        $isPro = count(array_intersect($gidProList, $groups)) > 0;
         $gidProticulier = $this->getProticulierGroupId();
 
         // Vérifier si l'utilisateur est professionnel ou proticulier
-        $isPro = in_array($gidPro, $groups, true);
+        $isPro = in_array($gidProList, $groups, true);
         $isProticulier = in_array($gidProticulier, $groups, true);
 
         if (!$isPro && !$isProticulier) {
@@ -409,8 +424,8 @@ class ckc_espacepro extends Module
         // ne plus alimenter login_error
         $this->context->smarty->assign([
             'login_email' => Tools::safeOutput($loginEmail),
-                                           'pro_reason' => (int)Tools::getValue('pro_reason', 0),
-                                       ]);
+            'pro_reason' => (int)Tools::getValue('pro_reason', 0),
+        ]);
 
         $this->injectGlobals();
     }
@@ -472,9 +487,16 @@ class ckc_espacepro extends Module
             $this->putFranceFirst($countries);
 
             $customer = $this->context->customer;
-            $isIdentityPage = (strpos($_SERVER['REQUEST_URI'], 'identity') !== false);
+            $isIdentityPage = (strpos($_SERVER['REQUEST_URI'], 'identity') !== false) || (strpos($_SERVER['REQUEST_URI'], 'identite') !== false);
 
-//            dump($isIdentityPage);
+            if($isIdentityPage){
+                $customerInfo = Db::getInstance()->executeS('SELECT c.naf FROM `'._DB_PREFIX_.'customer` c
+                WHERE c.id_customer = '.(int)$customer->id);
+                if(!empty($customerInfo[0])){
+                    $customer->ape = $customerInfo[0]['naf'];
+                }
+            }
+
             $this->context->smarty->assign([
                 'customerGroups' => $groups,
                 'countries' => $countries,
@@ -483,10 +505,6 @@ class ckc_espacepro extends Module
                 'showAddressFields' => !$isIdentityPage,
                 'ckc_form_minimal' => (int)Configuration::get('CKC_FORM_MIN_EP'),
             ]);
-//
-//            dump($params['fields_value']);
-//            dump($this->context->customer);
-//            exit;
 
             return $this->display(__FILE__, 'hookDisplayCustomerAccountForm.tpl');
         }
@@ -550,19 +568,11 @@ class ckc_espacepro extends Module
 
 
             if ((int)Configuration::get('CKC_FORM_MIN_EP') === 0) {
-                $files = ['kbis', 'rib'];
-                foreach ($files as $fileKey) {
-                    if (isset($_FILES[$fileKey]) && (int)$_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
-                        $newFileName = $this->uploadProFile($_FILES[$fileKey], $fileKey);
-                        if ($newFileName) {
-                            if ($fileKey === 'kbis') {
-                                $row['fileUpload'] = pSQL($newFileName);
-                            } else {
-                                $row['rib'] = pSQL($newFileName);
-                            }
-                        }
-                    }
-                }
+                $row['fileUpload'] = $this->context->cookie->__get('kbis_tmp') ?? null;
+                $row['rib'] = $this->context->cookie->__get('rib_tmp') ?? null;
+
+// Nettoyage des cookies après usage
+                unset($this->context->cookie->kbis_tmp, $this->context->cookie->rib_tmp);
             }
 
             $row += [
@@ -606,7 +616,7 @@ class ckc_espacepro extends Module
 
             Db::getInstance()->update('customer', $row, 'id_customer=' . (int)$customer->id, true, Db::INSERT_IGNORE);
 
-            $helper->success[] = "Votre compte a bien été créé en tant que Proticulier. Vous pouvez déjà commander au tarif particulier. Notre équipe pourra ensuite basculer votre compte en PRO si éligible.";
+            $helper->success[] = "Votre compte est maintenant actif. Vous pouvez dès à présent passer vos commandes. Nous étudions votre demande pour vous donner accès aux tarifs et avantages Professionnels, et vous tiendrons informé dès que votre compte sera validé.";
 
             if (!$mode_local) {
                 $data = [
@@ -724,11 +734,12 @@ class ckc_espacepro extends Module
         $sql = 'SELECT sp.`id_cms_detail`
             FROM `' . _DB_PREFIX_ . 'ckcstorespresentation` sp
             inner join `' . _DB_PREFIX_ . 'ckc_favorite_stores` fs
-                on fs.`id_favorite_store` = sp.`id_ckcstorespresentation`
-            AND fs.`id_customer` = ' . (int)$this->context->customer->id;
+                on fs.`id_store` = sp.`id_multiboutique`
+            WHERE fs.`id_customer` = ' . (int)$this->context->customer->id;
 
         $favoriteStoreId = Db::getInstance()->getRow($sql);
-        if (!$favoriteStoreId) $favoriteStoreId = 11;
+
+        if (!$favoriteStoreId) $favoriteStoreId = 0;
 
         $this->context->smarty->assign(compact('favoriteStoreId'));
         $this->context->smarty->assign('sidebar', $params['sidebar']);
@@ -787,24 +798,34 @@ class ckc_espacepro extends Module
         $isProEnv = $this->isProEnvironment();
         $frontSuffix = $isProEnv ? '-pro' : '';
 
-        $gidPro = $this->getProGroupId();
-        $gidProticulier = $this->getProticulierGroupId();
+        // Récupère un tableau complet de groupes PRO
+        $gidProList = $this->getProGroupIds();
+        $gidProticulier = (int)$this->getProticulierGroupId();
 
-        $inPro = $isLogged && in_array($gidPro, $groups, true);
+        // Teste si le client appartient à un des groupes PRO
+        $inPro = $isLogged && count(array_intersect($gidProList, $groups)) > 0;
         $inProticulier = $isLogged && in_array($gidProticulier, $groups, true);
         $isVisitor = !$isLogged;
         $isParticulier = $isLogged && !$inPro && !$inProticulier;
 
-        $status = $isVisitor ? 'visitor' : ($inPro ? 'pro' : ($inProticulier ? 'proticulier' : 'particulier'));
+        $status = $isVisitor
+            ? 'visitor'
+            : ($inPro
+                ? 'pro'
+                : ($inProticulier
+                    ? 'proticulier'
+                    : 'particulier'));
 
         $customerInfo = [
             'id' => $userId,
             'siret' => null,
             'tva' => 0,
             'kbis' => null,
+            'rib' => null,
         ];
 
-        if ($inPro && $userId > 0) {
+        // On récupère aussi les infos PRO si connecté
+        if ($userId > 0 && ($inPro || $inProticulier)) {
             $infos = $this->getInfosProCustomer($userId);
             if (!empty($infos)) {
                 $customerInfo['siret'] = $infos['siret'] ?? null;
@@ -814,7 +835,15 @@ class ckc_espacepro extends Module
                     $ext = Tools::strtolower(pathinfo($infos['fileUpload'], PATHINFO_EXTENSION));
                     $customerInfo['kbis'] = [
                         'file' => $infos['fileUpload'],
-                        'ext' => $ext,
+                        'ext'  => $ext,
+                    ];
+                }
+
+                if (!empty($infos['rib'])) {
+                    $ext = Tools::strtolower(pathinfo($infos['rib'], PATHINFO_EXTENSION));
+                    $customerInfo['rib'] = [
+                        'file' => $infos['rib'],
+                        'ext'  => $ext,
                     ];
                 }
             }
@@ -823,7 +852,12 @@ class ckc_espacepro extends Module
         $pro = [
             'env' => (int)$isProEnv,
             'suffix' => $frontSuffix,
-            'url_domain' => (string)Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, (int)$this->context->shop->id),
+            'url_domain' => (string)Configuration::get(
+                'CKC_PRO_URL_BOUTIQUE',
+                null,
+                null,
+                (int)$this->context->shop->id
+            ),
             'user' => [
                 'id' => $userId,
                 'is_logged' => (int)$isLogged,
@@ -839,6 +873,7 @@ class ckc_espacepro extends Module
         $ctx->smarty->assign('pro', $pro);
         return $pro;
     }
+
 
     /** Injecte les variables globales Smarty */
     private function injectGlobals(bool $bo = false): void
@@ -988,16 +1023,24 @@ class ckc_espacepro extends Module
                         'desc' => 'Clé serveur (ne pas la hardcoder dans le code).',
                     ],
                     [
-                        'type' => 'select',
-                        'label' => 'Groupe Professionnel',
-                        'name' => 'CKC_GROUP_PRO_ID',
-                        'options' => [
+                        'type'     => 'select',
+                        'label'    => 'Groupes Professionnels',
+                        // IMPORTANT : name avec [] pour multiple
+                        'name'     => 'CKC_GROUP_PRO_IDS[]',
+                        // Force un id propre (sans crochets)
+                        'id'       => 'CKC_GROUP_PRO_IDS',
+                        'class'    => 'fixed-width-xl js-ckc-pro-groups',
+                        'multiple' => true,
+                        // Donne une hauteur native via <select size="…">
+                        'size'     => 10, // ~200px selon le thème
+                        'options'  => [
                             'query' => array_values(Group::getGroups($this->context->language->id)),
-                            'id' => 'id_group',
-                            'name' => 'name',
+                            'id'    => 'id_group',
+                            'name'  => 'name',
                         ],
-                        'desc' => 'Sélectionnez le groupe client utilisé pour les comptes professionnels.',
+                        'desc'     => 'Sélectionnez tous les groupes clients considérés comme professionnels (Professionnel, Red, Négoce, Pro Plus...).',
                     ],
+
                     [
                         'type' => 'select',
                         'label' => 'Groupe Proticulier',
@@ -1027,14 +1070,30 @@ class ckc_espacepro extends Module
     /** Valeurs du formulaire BO */
     public function getConfigFormValues()
     {
+
+        $shopId = (int)$this->context->shop->id;
+
+        // Récupération sûre + fallback [] si vide/mal formé
+        $raw = Configuration::get('CKC_GROUP_PRO_IDS', null, null, $shopId);
+        $groupProIds = [];
+        if (is_string($raw) && $raw !== '') {
+            $decoded = json_decode($raw, true);
+            if (is_array($decoded)) {
+                $groupProIds = array_map('intval', $decoded);
+            } else {
+                // au cas où l’ancienne valeur soit un CSV
+                $groupProIds = array_filter(array_map('intval', array_map('trim', explode(',', $raw))));
+            }
+        }
+
         return [
             'CKC_DISPLAY_EP' => (int)Configuration::get('CKC_DISPLAY_EP', 0),
             'CKC_FORM_MIN_EP' => (int)Configuration::get('CKC_FORM_MIN_EP', 0),
+            'CKC_GROUP_PRO_IDS[]'       => $groupProIds,
             'CKC_PRO_URL_BOUTIQUE' => Configuration::get('CKC_PRO_URL_BOUTIQUE', null, null, (int)$this->context->shop->id),
             'CKC_PART_URL_BOUTIQUE' => Configuration::get('CKC_PART_URL_BOUTIQUE', null, null, (int)$this->context->shop->id),
             'CKC_RECAPTCHA_ENABLED' => (int)Configuration::get('CKC_RECAPTCHA_ENABLED', 0),
             'CKC_RECAPTCHA_SECRET' => (string)Configuration::get('CKC_RECAPTCHA_SECRET', ''),
-            'CKC_GROUP_PRO_ID' => (int)Configuration::get('CKC_GROUP_PRO_ID', 10),
             'CKC_EP_SSO_SECRET' => (string)Configuration::get('CKC_EP_SSO_SECRET', ''),
             'CKC_GROUP_PROTICULIER_ID' => (int)Configuration::get('CKC_GROUP_PROTICULIER_ID', 15),
         ];
@@ -1053,17 +1112,20 @@ class ckc_espacepro extends Module
         $formMinEp = (int)Tools::getValue('CKC_FORM_MIN_EP', 0);
         $recaptchaOn = (int)Tools::getValue('CKC_RECAPTCHA_ENABLED', 0);
         $recaptchaKey = (string)Tools::getValue('CKC_RECAPTCHA_SECRET', '');
-        $gidPro = (int)Tools::getValue('CKC_GROUP_PRO_ID', 10);
         $gidProticulier = (int)Tools::getValue('CKC_GROUP_PROTICULIER_ID', 15);
+        $gidProList = Tools::getValue('CKC_GROUP_PRO_IDS', []);
+        Configuration::updateValue('CKC_GROUP_PRO_IDS', json_encode(array_map('intval', $gidProList)));
 
-        $applyForShop = function (int $idShop) use ($urlPro, $urlPart, $displayEp, $formMinEp, $recaptchaOn, $recaptchaKey, $gidPro, $gidProticulier) {
+        $applyForShop = function (int $idShop) use ($urlPro, $urlPart, $displayEp, $formMinEp, $recaptchaOn, $recaptchaKey, /* $gidPro, */ $gidProticulier) {
+            Configuration::updateValue('CKC_GROUP_PROTICULIER_ID', $gidProticulier, false, null, $idShop);
+        };
+        $applyForShop = function (int $idShop) use ($urlPro, $urlPart, $displayEp, $formMinEp, $recaptchaOn, $recaptchaKey, $gidProticulier) {
             Configuration::updateValue('CKC_PRO_URL_BOUTIQUE', $urlPro, false, null, $idShop);
             Configuration::updateValue('CKC_PART_URL_BOUTIQUE', $urlPart, false, null, $idShop);
             Configuration::updateValue('CKC_DISPLAY_EP', $displayEp, false, null, $idShop);
             Configuration::updateValue('CKC_FORM_MIN_EP', $formMinEp, false, null, $idShop);
             Configuration::updateValue('CKC_RECAPTCHA_ENABLED', $recaptchaOn, false, null, $idShop);
             Configuration::updateValue('CKC_RECAPTCHA_SECRET', $recaptchaKey, false, null, $idShop);
-            Configuration::updateValue('CKC_GROUP_PRO_ID', $gidPro, false, null, $idShop);
             Configuration::updateValue('CKC_GROUP_PROTICULIER_ID', $gidProticulier, false, null, $idShop);
         };
 
@@ -1099,26 +1161,33 @@ class ckc_espacepro extends Module
         Cache::clean('*');
     }
 
-    /** Infos PRO étendues pour un client */
+
     private function getInfosProCustomer(int $id): array
     {
-        if ($id <= 0) return [];
-        $gidPro = (int)$this->getProGroupId();
+        if ($id <= 0) {
+            return [];
+        }
 
-        $sql = 'SELECT c.`tva`, c.`adresse`, c.`adresse2`, c.`cp`, c.`ville`, c.`tel`, c.`fileUpload`, c.`rib`, c.`naf`, c.`siret`
+        // Ne filtre PAS sur le groupe ici : on veut les infos même pour "Proticulier"
+        $sql = 'SELECT c.`tva`, c.`adresse`, c.`adresse2`, c.`cp`, c.`ville`, c.`tel`,
+                   c.`fileUpload`, c.`rib`, c.`naf`, c.`siret`
             FROM `' . _DB_PREFIX_ . 'customer` c
-            WHERE c.`id_default_group` = ' . (int)$gidPro . '
-              AND c.`id_customer` = ' . (int)$id;
+            WHERE c.`id_customer` = ' . (int)$id;
 
-        return (array)Db::getInstance()->getRow($sql);
+        $row = Db::getInstance()->getRow($sql);
+
+        return is_array($row) ? $row : [];
     }
 
+
     /** ID groupe PRO (fallback) */
-    private function getProGroupId(): int
+    private function getProGroupIds(): array
     {
-        $idShop = (int)$this->context->shop->id;
-        $v = (int)Configuration::get('CKC_GROUP_PRO_ID', null, null, $idShop);
-        return $v > 0 ? $v : 10;
+        $ids = json_decode(Configuration::get('CKC_GROUP_PRO_IDS', '[]'), true);
+        if (!is_array($ids) || empty($ids)) {
+            $ids = [(int)Configuration::get('CKC_GROUP_PRO_ID', 10)];
+        }
+        return array_map('intval', $ids);
     }
 
     /** ID groupe Proticulier (fallback) */

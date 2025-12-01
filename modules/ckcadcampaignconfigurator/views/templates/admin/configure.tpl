@@ -80,8 +80,8 @@
 							</a>
 						</li>
 						<li>
-							<a href="#"
-								onclick="return confirm('{l s='Do you really want to delete this campaign?' d='Modules.Facetedsearch.Admin'}');">
+							<a href="{$current_url}&amp;delete_campaign&ID={$campaign.id}"
+							   onclick="return confirm('{l s='Voulez-vous vraiment supprimer cette campagne ?' mod='ckcadcampaignconfigurator'}');">
 								<i class="icon-trash"></i> {l s='Delete' d='Admin.Actions'}
 							</a>
 						</li>

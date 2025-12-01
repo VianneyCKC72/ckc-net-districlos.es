@@ -447,6 +447,12 @@ class Ckcadcampaignconfigurator extends Module
             // Rafraîchir la page
             Tools::redirect($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => 'ckcadcampaignconfigurator', 'edit_campaign' => true, 'ID' => $idCampaign]));
 
+        } elseif (((bool)Tools::isSubmit('delete_campaign')) == true) {
+            $idCampaign = Tools::getValue('ID');
+            if(isset($idCampaign) && !empty($idCampaign)) {
+                $this->deleteCampaign($idCampaign);
+            }
+            Tools::redirect($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => 'ckcadcampaignconfigurator']));
         } else {
             $campaigns = Db::getInstance()->executeS("SELECT * FROM " . _DB_PREFIX_ . "ckccampaign_config_list");
 
@@ -1583,6 +1589,38 @@ class Ckcadcampaignconfigurator extends Module
         }
 
         return $newId;
+    }
+
+    public function deleteCampaign($idCampaign){
+        $deleteMainCampaign = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_list` WHERE id = '.$idCampaign);
+
+        $categoryPromos = Db::getInstance()->executeS('SELECT c.id FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` c WHERE c.id_campaign = '.$idCampaign);
+
+        if(count($categoryPromos) > 0 && !empty($categoryPromos[0]['id'])){
+            foreach ($categoryPromos as $categoryPromo){
+                $deleteCategoryPromosShow = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_category_show` WHERE id_campaign = '.$categoryPromo['id']);
+            }
+        }
+
+        $deleteCategoryPromos = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_category` WHERE id_campaign = '.$idCampaign);
+
+        $productPromos = Db::getInstance()->executeS('SELECT c.id FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_product` c WHERE c.id_campaign = '.$idCampaign);
+
+        if(count($productPromos) > 0 && !empty($productPromos[0]['id'])){
+            foreach ($productPromos as $productPromo){
+                $deleteProductPromosShow = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_product_show` WHERE id_product_content = '.$productPromo['id']);
+            }
+        }
+
+        $deleteProductPromos = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_product` WHERE id_campaign = '.$idCampaign);
+
+        $deleteCartPromos = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_cart` WHERE id_campaign = '.$idCampaign);
+
+        $deleteDevisPromo = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_devis` WHERE id_campaign = '.$idCampaign);
+
+        $deleteMenuPromo = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_menu` WHERE id_campaign = '.$idCampaign);
+
+        $deletePromoPagePromo = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_promopage` WHERE id_campaign = '.$idCampaign);
     }
 
     /**

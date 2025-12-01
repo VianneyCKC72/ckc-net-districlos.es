@@ -33,6 +33,15 @@
             <div class="thumbnail-container">
                 <div class="thumbnail-top">
 
+                    {if $page.page_name == 'category'}
+                        <div class="product-first-ribbon" aria-hidden="true">
+                            <span class="product-first-ribbon__icon">
+                                <img src="{$urls.theme_assets}img/RINGBELL1.svg" alt="" loading="lazy">
+                            </span>
+                            <span class="product-first-ribbon__text">BLACK 2 WEEKS</span>
+                        </div>
+                    {/if}
+
                     {if !$product.from_europe}
                         <div class="pastille_fr">
                             <img src="/img/pastille_produit_france.svg" alt="Fabriqué en France" class="pastille_fr_icon">
@@ -72,7 +81,11 @@
                             </picture>
 
                             {* Détection de la première image non-cover *}
-                            {assign var="hoverImage" value=$product.images[1]}
+                            {if isset($product.images[1])}
+                                {assign var="hoverImage" value=$product.images[1]}
+                            {else}
+                                {assign var="hoverImage" value=$product.images[0]}
+                            {/if}
 
                             {* Image en hover *}
                             <picture class="product-image second-image">
@@ -141,8 +154,8 @@
                     <div class="product-info-custom-block-miniature">
                         {block name='product_name'}
                             {if $page.page_name == 'category'}
-                                <h2 class="h3 product-title"><a href="{$link->getProductLink($product.id_product, $product.link_rewrite)}"
-                                                                content="{$product.url}">{$product.name}</a></h2>
+                                <h3 class="h3 product-title"><a href="{$link->getProductLink($product.id_product, $product.link_rewrite)}"
+                                                                content="{$product.url}">{$product.name}</a></h3>
                             {else}
                                 <div class="h3 product-title"><a href="{$product.url}"
                                                                  content="{$product.url}">{$product.name}</a></div>
@@ -156,18 +169,20 @@
                                     <div class="product-price-and-shipping flex_cln">
                                         {*                                    {hook h='displayProductPriceBlock' product=$product type="before_price"}*}
 
-                                      
+
                                         {if $pro.env == 1 && isset($product.discount_qty_slider) }
                                             <span class="price">
-                                                {$product.specific_price_ht} € HT 
+                                                {$product.specific_price_ht} € HT
                                             </span>
                                             <small>dès {$product.from_quantity} unités*</small>
                                             <div class="product-price-and-shipping">
                                                 <span class="regular-price">{$product.initial_price_ht} € HT </span>
                                             </div>
-                                         {else} 
-                                            {$product.price} 
-                                         {/if} 
+                                         {else}
+                                            <span class="price">
+                                                {$product.price}
+                                            </span>
+                                         {/if}
                                     </span>
 
                                         {if ($product.has_discount && !$pro.env) OR ($product.has_discount && $pro.env == 1 && !isset($product.discount_qty_slider))}
@@ -196,7 +211,7 @@
                             {hook h='displayProductListReviews' product=$product}
                         {/block}
                     </div>
-                    {if $pro.env == 0 }
+                    {if $pro.env == 0 OR ($pro.env == 1 && $page.page_name == 'product') OR ($pro.env == 1 && $page.page_name == 'category')}
                         <a href="{$product.url}" class="btn btn-primary">Voir le produit</a>
                     {/if}
                 </div>
@@ -205,4 +220,15 @@
             </div>
         </article>
     </div>
-{/block}
+
+     {if $page.page_name == 'category' && isset($position) && (($position+1) % 4 == 0)}
+         <div class="category-mobile-banner">
+             <img src="{$urls.theme_assets}img/image-b2w-habillage.jpg"
+                  alt="{l s='Black 2 Weeks' d='Shop.Theme.Catalog'}"
+                  loading="lazy"
+                  width="640"
+                  height="200">
+         </div>
+     {/if}
+
+ {/block}

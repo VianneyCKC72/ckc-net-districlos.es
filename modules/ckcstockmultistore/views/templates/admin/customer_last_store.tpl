@@ -1,4 +1,4 @@
-<div class="card card col-lg-6 m-3">
+<div id="ckc-customer-boutique-block" class="card card col-lg-6 m-3">
     <h3 class="card-header">
         Boutique
     </h3>

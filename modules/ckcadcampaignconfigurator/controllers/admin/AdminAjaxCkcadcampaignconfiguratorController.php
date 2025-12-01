@@ -169,7 +169,7 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
 
                         if ($moveResult) {
                             $updatelogo = Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckccampaign_config_content_menu` 
-                            SET `img_path` = "'.$file_name.'" WHERE id = '.$id);
+                            SET `img_path` = "'.$file_name.'" WHERE `id_campaign` = '.$id);
                         } else {
                             throw new Exception('Le document n\'a pas pu être enregistré.');
                         }

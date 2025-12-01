@@ -29,51 +29,54 @@
         </div>
     {/if}
 
-    <!-- Soumis à la TVA -->
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label class="form-label" for="customer-tva">Soumis à la TVA*</label>
-            <select name="customer-tva" id="customer-tva" class="form-control" required>
-                <option value="0" {if isset($customer->tva) && $customer->tva == 0}selected{/if}>Non</option>
-                <option value="1" {if isset($customer->tva) && $customer->tva == 1}selected{/if}>Oui</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- Numéro de TVA -->
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label class="form-label" for="customer-vat_number">Numéro de TVA</label>
-            <input class="form-control pad20" type="text" name="customer-vat_number" id="customer-vat_number"
-                   value="{$customer->vat_number|default:''|escape:'htmlall':'UTF-8'}">
-        </div>
-    </div>
-
-    <!-- KBIS (upload) -->
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label class="form-label" for="file-upload">Kbis*</label>
-            <div class="file-wrap">
-                <label for="file-upload" class="custom-file-upload">Choisir un fichier</label>
-                <input style="opacity:0;height:0;width:0;" id="file-upload" class="file-input js-file-input" type="file"
-                       name="kbis" accept=".pdf,.jpg,.png">
-                <span class="file-chosen js-file-name">Aucun fichier choisi</span>
+    {if $showAddressFields}
+        <!-- Soumis à la TVA -->
+        <div class="form-group row">
+            <div class="col-md-12">
+                <label class="form-label" for="customer-tva">Soumis à la TVA*</label>
+                <select name="customer-tva" id="customer-tva" class="form-control" required>
+                    <option value="0" {if isset($customer->tva) && $customer->tva == 0}selected{/if}>Non</option>
+                    <option value="1" {if isset($customer->tva) && $customer->tva == 1}selected{/if}>Oui</option>
+                </select>
             </div>
         </div>
-    </div>
 
-    <!-- RIB (upload) -->
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label class="form-label" for="rib-upload">Relevé d'identité bancaire* (RIB)</label>
-            <div class="file-wrap">
-                <label for="rib-upload" class="custom-file-upload">Choisir un fichier</label>
-                <input style="opacity:0;height:0;width:0;" id="rib-upload" class="file-input js-file-input" type="file"
-                       name="rib" accept=".pdf,.jpg,.png">
-                <span class="file-chosen js-file-name">Aucun fichier choisi</span>
+
+        <!-- Numéro de TVA -->
+        <div class="form-group row">
+            <div class="col-md-12">
+                <label class="form-label" for="customer-vat_number">Numéro de TVA</label>
+                <input class="form-control pad20" type="text" name="customer-vat_number" id="customer-vat_number"
+                       value="{$customer->vat_number|default:''|escape:'htmlall':'UTF-8'}">
             </div>
         </div>
-    </div>
+
+        <!-- KBIS (upload) -->
+        <div class="form-group row">
+            <div class="col-md-12">
+                <label class="form-label" for="file-upload">Kbis*</label>
+                <div class="file-wrap">
+                    <label for="file-upload" class="custom-file-upload">Choisir un fichier</label>
+                    <input style="opacity:0;height:0;width:0;" id="file-upload" class="file-input js-file-input" type="file"
+                           name="kbis" accept=".pdf,.jpg,.png">
+                    <span class="file-chosen js-file-name">Aucun fichier choisi</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIB (upload) -->
+        <div class="form-group row">
+            <div class="col-md-12">
+                <label class="form-label" for="rib-upload">Relevé d'identité bancaire* (RIB)</label>
+                <div class="file-wrap">
+                    <label for="rib-upload" class="custom-file-upload">Choisir un fichier</label>
+                    <input style="opacity:0;height:0;width:0;" id="rib-upload" class="file-input js-file-input" type="file"
+                           name="rib" accept=".pdf,.jpg,.png">
+                    <span class="file-chosen js-file-name">Aucun fichier choisi</span>
+                </div>
+            </div>
+        </div>
+    {/if}
 
     <!-- Pays -->
     <div class="form-group row">

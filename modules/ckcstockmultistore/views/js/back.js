@@ -40,3 +40,16 @@ $("#subtab-AdminCkcstockmultistoreTab ul li.link-leveltwo").each(function () {
 
 })
 }
+
+// Ajouter le nom de la boutique à côté du nom du magasin
+function addBoutiqueName() {
+    var shop = document.querySelector('.customer-shop-name');
+    var boutique = document.querySelector('#ckc-customer-boutique-block .card-body p');
+    
+    if (shop && boutique) {
+        shop.innerHTML = shop.textContent.trim() + ' / ' + boutique.textContent.trim();
+    }
+}
+
+setTimeout(addBoutiqueName, 500);
+setTimeout(addBoutiqueName, 1500);

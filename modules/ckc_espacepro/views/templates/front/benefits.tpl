@@ -8,7 +8,7 @@
         <div class="container px-0 z-0">
             <div class="row">
             <div class="col-12">
-                <span class="d-block h2 m-b-3">Les avantages pro</span>
+                <span class="d-block h2 m-b-3">Les avantages pro 222</span>
             </div>
                 {foreach from=$benefits item=card}
                     <div class="col-12 col-sm-6 col-lg-4 m-b-65">
@@ -44,7 +44,8 @@
                     <span class="d-block fz-23 font-weight-bold m-b-3 text-white">Profitez de nos remises sur la quantité !</span>
                 </div>
             </div>
-            {hook h='CETemplate' id=18}
+            TOTOTOTO
+           {hook h='CETemplate' id=38}
         </div>
     </section>
 

@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
     // On agit uniquement dans l'espace pro
     if (!$('.espace_pro').length) return;
 
@@ -17,7 +16,13 @@ $(document).ready(function () {
        2️⃣ Champ NAF avec autocomplete
     ---------------------------------------------------- */
     var select = $("#nafCodeSelect").hide();
-    var inputHtml = '<input class="form-control pad20" placeholder="Code NAF*" type="text" name="nafCodeInput" id="nafCodeInput">';
+    var selectedNaf = $("#nafCodeSelect").find(":selected").val()
+    if(typeof selectedNaf != 'undefined'){
+        var inputHtml = '<input class="form-control pad20" placeholder="Code NAF*" type="text" name="nafCodeInput" value="'+selectedNaf+'" id="nafCodeInput">';
+    } else {
+        var inputHtml = '<input class="form-control pad20" placeholder="Code NAF*" type="text" name="nafCodeInput" id="nafCodeInput">';
+    }
+
     select.after(inputHtml);
     var input = $("#nafCodeInput");
 
@@ -55,7 +60,7 @@ $(document).ready(function () {
        4️⃣ Réorganisation du formulaire (comme création compte)
     ---------------------------------------------------- */
     function reorderForm() {
-        const form = document.querySelector(".identity-form") || document.querySelector("#customer-form");
+        const form = document.querySelector(".identity-form form") || document.querySelector("#customer-form");
         if (!form) return;
 
         const order = [
@@ -103,7 +108,7 @@ $(document).ready(function () {
         form.innerHTML = "";
         form.appendChild(fragment);
 
-        console.log("✅ Champs réordonnés dans .identity-form");
+        console.log("✅ Champs réordonnés dans .identity-form form / #customer-form");
     }
 
     reorderForm();
@@ -159,10 +164,10 @@ $(document).ready(function () {
         var codePostalValue = codePostalInput ? codePostalInput.value : '';
 
         if (!isGenderSelected) { alert('Veuillez sélectionner une civilité.'); event.preventDefault(); return; }
-        if (!isRibSelected) { alert('Veuillez joindre votre RIB.'); event.preventDefault(); return; }
-        if (!isFileSelected) { alert('Veuillez joindre un fichier (ex: KBIS).'); event.preventDefault(); return; }
-        if (!isNafCodeFilled) { alert('Veuillez remplir le champ Code NAF.'); event.preventDefault(); nafCodeInput.focus(); return; }
-        if (!validerCodePostal(codePostalValue)) { alert('Veuillez entrer un code postal valide.'); event.preventDefault(); codePostalInput.focus(); return; }
+        if (!isRibSelected && $("body#registration").length) { alert('Veuillez joindre votre RIB.'); event.preventDefault(); return; }
+        if (!isFileSelected && $("body#registration").length) { alert('Veuillez joindre un fichier (ex: KBIS).'); event.preventDefault(); return; }
+        if (!isNafCodeFilled && $("body#registration").length) { alert('Veuillez remplir le champ Code NAF.'); event.preventDefault(); nafCodeInput.focus(); return; }
+        if (!validerCodePostal(codePostalValue) && $("body#registration").length) { alert('Veuillez entrer un code postal valide.'); event.preventDefault(); codePostalInput.focus(); return; }
 
         if (paysSelect.value === "8") {
             var isSiretValid = siretValue.length === 14 && !isNaN(siretValue);

@@ -50,7 +50,7 @@ $(document).ready(function () {
     updateFacets();
 
 
-    if ($(window).width() < 768) {
+    if ($(window).width() < 768 && $("body:not(.espace_pro)").length) {
         // Vérifier que le toggle n'existe pas déjà (éviter les doublons)
         if ($('.filter-toggle').length === 0) {
             let filterTitle = $('<div class="filter-toggle"><span>Filtres</span> <span class="chevron"></span></div>');

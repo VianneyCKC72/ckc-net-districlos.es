@@ -1497,6 +1497,236 @@
       }
     }
   }
+  .descrL_product {
+    column-gap: 1em;
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 2em;
+  }
+
+  .descr_contenance {
+    display: flex;
+    flex-direction: column;
+  }
+
+  span.nbrcontent {
+    padding: 5px 10px;
+  }
+
+  .descr_product_distri {
+    table {
+      font-size: 87%;
+    }
+  }
+
+  .descrL_color {
+    column-gap: 10px;
+    font-size: 80%;
+    row-gap: 10px;
+    text-align: center;
+  }
+
+  .descr_couleur {
+    border: 1px solid #000;
+    display: flex;
+    flex-direction: column;
+    font-size: 15px;
+    justify-content: center;
+    padding: 10px;
+    text-align: center;
+    width: auto !important;
+
+    &.descr_couleur_gris {
+      background-color: #303030;
+      color: #fff;
+    }
+
+    &.descr_couleur_noir {
+      background-color: #000;
+      padding: 10px;
+    }
+
+    &.descr_couleur_blanc {
+      background-color: #fff;
+      padding: 10px;
+    }
+
+    .descr_table {
+      max-width: calc(100vw - 60px);
+      overflow-x: auto;
+    }
+
+    &.descr_couleur_vert {
+      background-color: #004c17;
+      color: #fff;
+    }
+
+    p {
+      border: unset;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: normal;
+      margin-top: 1rem;
+      padding: 5px;
+
+      > span {
+        display: block;
+        font-size: 15px;
+      }
+    }
+  }
+
+  span.nbrcontent {
+    background-color: #026473;
+    color: #fff;
+    font-weight: 800;
+    margin-top: 18px;
+    padding: 5px 40px;
+  }
+
+  .kitcontent img,
+  #everpspopup_block_center.fancybox-content .container {
+    margin: auto;
+  }
+
+  .descr_contenance .descrL_product {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 2rem;
+  }
+
+  .descrL_conseil {
+    column-gap: 4em;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+  }
+
+  .descr_color, .descr_table, .descr_infosupp, .descr_conseils, .text_card_payment div {
+    margin-top: 30px
+  }
+
+  .descrL_color {
+    column-gap: 1em;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    row-gap: 3em;
+    width: 100%;
+  }
+
+  .skeepers_product__stars {
+    .review__header {
+      margin-bottom: 0;
+    }
+  }
+
+  .kitcontent {
+    position: relative;
+    text-align: center;
+
+    a {
+      color: black;
+    }
+
+    p {
+      font-size: 0.8em;
+      line-height: 1.2rem;
+      text-align: left;
+    }
+
+    h5 {
+      font-weight: 600;
+      margin: 10px 0 7px;
+      height: 60px;
+    }
+
+    img {
+      padding-top: 10px;
+      width: 50%;
+    }
+  }
+
+  .descr_couleur_multicolor {
+    background: radial-gradient(circle at 50% 0, #ff000080, #f000 70.71%), radial-gradient(circle at 6.7% 75%, #0000ff80, #00f0 70.71%), radial-gradient(circle at 93.3% 75%, #00ff0080, #0f00 70.71%) beige;
+    text-align: center;
+  }
+
+  .kitcontent {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    text-align: center;
+
+
+    h5 {
+      height: 60px;
+      font-weight: 600;
+      margin: 10px 0 7px;
+    }
+  }
+  @media screen and (max-width: 992px) {
+    .descrL_color {
+      column-gap: 10px;
+      row-gap: 10px;
+      font-size: 80%;
+      text-align: center;
+    }
+  }
+  @media (max-width: 768px) {
+    .descr_contenance {
+      .descrL_product {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-bottom: 2rem;
+      }
+
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+  }
+  @media screen and (min-width: 544px) {
+    .descrL_product {
+      column-gap: 1em;
+      grid-template-columns: repeat(1, 1fr);
+      row-gap: 2em;
+    }
+    .lire-plus {
+      font-size: 14px;
+    }
+    .title_descr {
+      text-align: left;
+    }
+  }
+  @media screen and (max-width: 533px) {
+    .descrL_color {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .lire-plus {
+      margin-top: 15px;
+    }
+    .shipping-block-product-info {
+      justify-content: center;
+      margin-top: 80px;
+      gap: 30px;
+    }
+  }
+  @media (max-width: 480px) {
+    .descr_contenance {
+      .descrL_product {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    .product-container .banner-services {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+
+      .service {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+    }
+  }
 }
 .product-variants {
   .ap5-attributes {
@@ -1540,4 +1770,91 @@
 
 #product #footer.js-footer {
   padding-bottom: 8rem;
+}
+
+// Barre de navigation fixe mobile pour les onglets produit
+.mobile-product-nav-fixed {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  background-color: $sand-light-color;
+  border-bottom: 2px solid $gray;
+  z-index: 999;
+  box-shadow: 0 2px 8px rgba($black, 0.1);
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  display: none;
+
+  &.show {
+    transform: translateY(0);
+    opacity: 1;
+    display: block;
+  }
+}
+
+.mobile-nav-container {
+  padding: 0;
+  margin: 0;
+}
+
+.mobile-nav-tabs {
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.mobile-nav-item {
+  flex: 1;
+  list-style: none;
+  margin: 0 2px;
+}
+
+.mobile-nav-link {
+  display: block;
+  padding: 10px 8px;
+  color: $primary-light-color;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  background-color: $sand-light-color;
+  border: 1px solid $primary-light-color;
+  border-radius: 20px;
+  margin: 8px 0;
+  transition: all 0.2s ease;
+  text-align: center;
+
+  &:hover {
+    color: $primary-light-color;
+    text-decoration: none;
+    background-color: $gray;
+  }
+
+  &.active {
+    color: $white;
+    background-color: $primary-light-color;
+    border-color: $primary-light-color;
+  }
+}
+
+// Masquer les onglets desktop sur mobile
+@media (max-width: 767px) {
+  .product-tabs > .nav-tabs {
+    display: none !important;
+  }
+}
+
+// Masquer la barre mobile sur desktop
+@media (min-width: 768px) {
+  .mobile-product-nav-fixed {
+    display: none !important;
+  }
 }

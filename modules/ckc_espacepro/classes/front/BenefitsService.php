@@ -19,34 +19,33 @@ class BenefitsService
                 [
                     'title' => 'Livraison offerte dès 450€',
                     'icon'  => 'panier',
-                    'text' => "Commandez l'esprit tranquille : nos experts prennent en charge l'installation et le montage, sans effort de votre part."
+                    'text' => "Profitez d’une livraison gratuite dès 450 € d’achat pour optimiser vos coûts sur chaque chantier.."
                 ],
                 [
                     'title' => 'Meilleur prix',
                     'icon'  => 'pouce',
-                    'text' => "Tous nos professionnels sont soigneusement vérifiés et notés après chaque intervention, pour vous garantir une prestation de qualité."
+                    'text' => "Districlos vous garantit des tarifs ultra-compétitifs, spécialement pensés pour les pros du jardin."
                 ],
                 [
                     'title' => '100 € offert dès 1000€ d\'achat',
                     'icon'  => 'clef_molette',
-                    'text' => "Chaque prestation est couverte par AXA Assurance pour une tranquillité d'esprit maximale."
+                    'text' => " Bénéficiez de 100 € offerts dès 1000 € d’achat : un coup de pouce direct pour augmenter votre rentabilité."
                 ],
                 [
                     'title' => 'Reprise de marchandise',
                     'icon'  => 'teleoperateur',
-                    'text' => "Notre service client est à votre écoute du lundi au vendredi de9h30 à 18h30 pour répondre à toutes vos questions."
+                    'text' => "Districlos reprend vos marchandises inutilisées pour vous offrir plus de flexibilité dans votre gestion de stock."
                 ],
                 [
                     'title' => 'Processus simplifié',
                     'icon'  => 'carton',
-                    'text' => "Dès l'expédition ou le retrait de votre commande, un expert vous contacte pour fixer votre rendez-vous d'installation."
+                    'text' => "Commandez l'esprit tranquille : nos experts prennent en charge l'installation et le montage, sans effort de votre part."
                 ],
                 [
                     'title' => 'Flexibilité garantie',
                     'icon'  => 'horloge',
-                    'text' => "Suivez votre prestation en temps réel et modifiez ou annulez votre rendez-vous jusqu'à 48h à l'avance sans frais."
+                    'text' => " Suivez votre prestation en temps réel et modifiez ou annulez votre rendez-vous jusqu'à 48h à l'avance sans frais."
                 ],
-
             ],
             'services' => [
                 [

@@ -378,7 +378,13 @@
     }
   }
 }
-
+.header-top{
+  .ico.btn-espace-pro{
+    span{
+      white-space: nowrap;
+    }
+  }
+}
 .pc_displayNav2_8 {
   display: flex;
   gap: 15px;

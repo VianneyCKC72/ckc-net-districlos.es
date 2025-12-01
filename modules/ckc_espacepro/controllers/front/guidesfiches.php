@@ -30,6 +30,7 @@ class ckc_espaceproguidesfichesModuleFrontController extends ModuleFrontControll
      */
     private function downloadProductZip(int $idProduct)
     {
+
         if (!Validate::isUnsignedId($idProduct)) {
             die('Produit invalide');
         }

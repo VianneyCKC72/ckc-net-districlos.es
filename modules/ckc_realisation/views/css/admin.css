@@ -227,3 +227,12 @@
 .select2-dropdown{
     border:1px solid #d7e0e6;
 }
+.ckc-realisation-alert-danger{
+    margin-bottom: 20px;
+    background: #f79797;
+    padding: 20px;
+    color: #fff;
+    font-size: 15px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
