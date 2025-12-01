@@ -39,33 +39,32 @@ class ProductsService
      
         $sql = new \DbQuery();
         $sql->select('
-            cp.id_category, 
-            p.id_product, 
-            pl.name AS product_name, 
-            pl.link_rewrite, 
-            p.active, 
-            i.id_image, 
-            a.id_attachment, 
-            al.name AS attachment_name
-        ')
-        ->from('category_product', 'cp')
-        ->innerJoin('product', 'p', 'p.id_product = cp.id_product AND p.active = 1')
-        ->leftJoin('product_lang', 'pl', 'pl.id_product = p.id_product AND pl.id_lang = ' . (int)$this->idLang)
-        ->leftJoin('image', 'i', 'i.id_product = p.id_product AND i.cover = 1')
-        ->innerJoin('product_attachment', 'pa', 'pa.id_product = p.id_product')
-        ->innerJoin('attachment', 'a', 'a.id_attachment = pa.id_attachment')
-        ->innerJoin('attachment_lang', 'al', 'al.id_attachment = a.id_attachment AND al.id_lang = ' . (int)$this->idLang)
-        ->where("
-        cp.id_category IN (" . implode(',', $categoryIds) . ")
-        AND a.file LIKE '%.pdf'
-        AND (
-                al.name LIKE 'Fiche technique%' OR
-                al.name LIKE 'Plan de maçonnerie%' OR
-                al.name LIKE 'Notice de montage%' OR
-                al.name LIKE 'Plan technique%'
-            )
-        ")
-        ->groupBy('p.id_product, a.id_attachment');
+                cp.id_category, 
+                p.id_product, 
+                pl.name AS product_name, 
+                pl.link_rewrite, 
+                p.active, 
+                i.id_image, 
+                a.id_attachment, 
+                al.name AS attachment_name
+            ')
+            ->from('category_product', 'cp')
+            ->innerJoin('product', 'p', 'p.id_product = cp.id_product AND p.active = 1')
+            ->leftJoin('product_lang', 'pl', 'pl.id_product = p.id_product AND pl.id_lang = ' . (int)$this->idLang)
+            ->leftJoin('image', 'i', 'i.id_product = p.id_product AND i.cover = 1')
+            ->innerJoin('product_attachment', 'pa', 'pa.id_product = p.id_product')
+            ->innerJoin('attachment', 'a', 'a.id_attachment = pa.id_attachment')
+            ->innerJoin('attachment_lang', 'al', 'al.id_attachment = a.id_attachment AND al.id_lang = ' . (int)$this->idLang)
+            ->where("
+                cp.id_category IN (" . implode(',', $categoryIds) . ")
+                AND (
+                        al.name LIKE 'Fiche technique%' 
+                        OR al.name LIKE 'Plan de maçonnerie%' 
+                        OR al.name LIKE 'Notice de montage%' 
+                        OR al.name LIKE 'Plan technique%'
+                    )
+            ")
+            ->groupBy('p.id_product, a.id_attachment');
 
         $rows = $this->db->executeS($sql);
 
