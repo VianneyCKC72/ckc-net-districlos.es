@@ -143,8 +143,99 @@ $(document).ready(function () {
         });
     });
 
+    // Empêcher le clic sur le lien du portillon jardin de déclencher l'action normale
+    $("body").on('click', '.portillon-jardin-action', function (event) {
+        // Si on clique sur le select, ne pas empêcher
+        if ($(event.target).is('select') || $(event.target).closest('select').length > 0) {
+            return;
+        }
+        // Si on clique sur le lien mais pas sur les SVG, empêcher le comportement par défaut
+        if (!$(event.target).closest('svg').length) {
+            event.preventDefault();
+        }
+    });
+
+    // Gestion du select pour les portillons avec déclinaisons
+    $("body").on('change', '.portillon-jardin-select', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var $select = $(this);
+        var selectedValue = $select.val();
+        var productId = $select.data('id');
+        var $selectedOption = $select.find('option:selected');
+        var idProductAttribute = $selectedOption.data('id-product-attribute');
+        var priceFormatted = $selectedOption.data('price-formatted');
+        var $priceContainer = $select.closest('.title-img').find('.portillon-jardin-price');
+        var $action = $select.closest('.portillon-jardin-action');
+        
+        if (selectedValue) {
+            // Mettre à jour le champ hidden
+            $('input[name="portillon_id"]').val(productId);
+            
+            // Afficher et mettre à jour le prix
+            if (priceFormatted) {
+                $priceContainer.find('.price-value').text(priceFormatted);
+                $priceContainer.show();
+            }
+            
+            // Si le produit est déjà sélectionné, mettre à jour la configuration (changement de déclinaison)
+            if ($action.hasClass('selected')) {
+                throttle(function () {
+                    refreshPrice(true);
+                }, interval);
+            }
+        }
+    });
+
     // GETTING HEIGHTS AND COLORS DEPENDING ON TYPE CHOOSE
     $("body").on('click', '.configurator-action[data-name]', function (event) {
+        // Ne pas traiter le portillon jardin ici (géré séparément)
+        if ($(this).hasClass('portillon-jardin-action')) {
+            // Si on clique sur les SVG, gérer la sélection
+            if ($(event.target).closest('svg').length) {
+                event.preventDefault();
+                var $action = $(this);
+                var name = $action.data('name');
+                
+                if (!$action.hasClass('selected')) {
+                    // Désélectionner tous les autres portillons (normaux et avec select)
+                    $('.configurator-action[data-name="portillon_id"]').removeClass('selected');
+                    
+                    // Sélectionner le nouveau portillon
+                    $action.addClass('selected');
+                    $('#checkbox_portillon').addClass('selected');
+                    $('input[name="' + name + '"]').val($action.data('id'));
+                    
+                    // S'assurer qu'une déclinaison est sélectionnée (première par défaut)
+                    var $select = $action.find('.portillon-jardin-select');
+                    if (!$select.val() && $select.find('option').length > 0) {
+                        $select.find('option:first').prop('selected', true);
+                        $select.trigger('change');
+                    } else if ($select.val()) {
+                        // Si une déclinaison est déjà sélectionnée, déclencher refreshPrice pour ajouter à la configuration
+                        throttle(function () {
+                            refreshPrice(true);
+                        }, interval);
+                    }
+                } else {
+                    // Désélectionner le produit
+                    $action.removeClass('selected');
+                    $('#checkbox_portillon').removeClass('selected');
+                    $('input[name="' + name + '"]').val('');
+                    // Remettre la première déclinaison par défaut
+                    var $select = $action.find('.portillon-jardin-select');
+                    if ($select.find('option').length > 0) {
+                        $select.find('option:first').prop('selected', true);
+                    }
+                    
+                    // Retirer le produit de la configuration
+                    throttle(function () {
+                        refreshPrice(true);
+                    }, interval);
+                }
+            }
+            return;
+        }
 
         event.preventDefault();
 
@@ -478,11 +569,115 @@ $(document).ready(function () {
             if ($item.next().hasClass('hide-row')) {
                 $item.next().hide();
             }
+            // Si on désélectionne le checkbox portillon, désélectionner tous les portillons et retirer de la configuration
+            if ($(this).attr('id') === 'checkbox_portillon') {
+                // Désélectionner tous les portillons (normaux et avec select)
+                $('.configurator-action[data-name="portillon_id"]').removeClass('selected');
+                // Remettre la première déclinaison par défaut pour les selects
+                $('.portillon-jardin-select').each(function() {
+                    if ($(this).find('option').length > 0) {
+                        $(this).find('option:first').prop('selected', true);
+                    }
+                });
+                $('input[name="portillon_id"]').val('');
+            }
         }
 
         $('.soubassement.hide-row').removeClass('selected')
         refreshPrice(true);
     });
+
+    // Fonctions utilitaires pour générer le HTML réutilisable
+    var HtmlGenerator = {
+        // SVG icons réutilisables
+        svgIconNotSelected: '<svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected"><rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/><path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/></svg>',
+        svgIconSelected: '<svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-selected"><rect y="0.5" width="38" height="38" rx="10" fill="white"/><path d="M25.5761 12.5007L25.576 12.5007C25.1976 12.5135 24.8533 12.6922 24.61 12.9746L15.9182 22.832L13.3948 19.9703C13.2719 19.8262 13.1217 19.7071 12.9508 19.6234C12.778 19.5387 12.5891 19.4926 12.3959 19.4904C12.2026 19.4882 12.0127 19.5298 11.838 19.6107C11.6636 19.6915 11.5096 19.8089 11.3831 19.9523C11.2567 20.0957 11.1596 20.2628 11.0949 20.4426C11.0302 20.6223 10.9984 20.8131 11.0001 21.0043C11.0018 21.1955 11.0371 21.3857 11.1051 21.5642C11.1725 21.741 11.2714 21.9047 11.3989 22.0446L14.9202 26.0381L14.9203 26.0382C15.173 26.3247 15.5302 26.5 15.9182 26.5C16.3061 26.5 16.6633 26.3247 16.9161 26.0382L16.9162 26.0381L26.606 15.049C26.7987 14.8354 26.9242 14.5683 26.9747 14.2853C27.0254 14.001 26.9997 13.7054 26.8988 13.435C26.7978 13.1645 26.6234 12.9246 26.3889 12.754C26.1533 12.5825 25.8698 12.4909 25.5761 12.5007Z" fill="#7CBA49" stroke="#7CBA49"/></svg>',
+        
+        // Extraire le nom court et la description d'un produit
+        parseProductName: function(productName) {
+            var newName = productName.split(' : ')[0];
+            var description = productName.replace(newName, '').replace(' :', '').split(', ').join('<br>');
+            return { name: newName, description: description };
+        },
+        
+        // Générer le HTML d'un portillon avec select
+        portillonWithSelect: function(product, selectedVariationId, isSelected) {
+            var selectedVariationData = null;
+            product.variations.forEach(function(variation) {
+                if (variation.id_product_attribute == selectedVariationId) {
+                    selectedVariationData = variation;
+                }
+            });
+            var defaultVariation = selectedVariationData || (product.variations.length > 0 ? product.variations[0] : null);
+            
+            var html = '<div class="col-md-12">';
+            html += '<a href="#" data-id="' + product.id + '" data-name="portillon_id" class="configurator-action portillon-jardin-action d-flex mb-4' + (isSelected ? ' selected' : '') + '">';
+            html += '<img style="padding:unset;margin:0;flex-shrink: 0;width: 150px;" src="' + product.image_url + '" class="img-responsive" alt="' + product.name + '" />';
+            html += '<div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;flex: 1;margin-left: 15px;">';
+            html += '<div class="infos-top">';
+            html += '<span class="name font-weight-bold">' + product.short_name + '</span>';
+            html += this.svgIconNotSelected;
+            html += this.svgIconSelected;
+            html += '</div>';
+            
+            if (defaultVariation && defaultVariation.price_formatted) {
+                html += '<div class="portillon-jardin-price" style="font-weight: bold; font-size: 16px; margin-bottom: 8px; color: #0B798A;"><span class="price-value">' + defaultVariation.price_formatted + '</span></div>';
+            } else {
+                html += '<div class="portillon-jardin-price" style="font-weight: bold; font-size: 16px; margin-bottom: 8px; color: #0B798A; display: none;"><span class="price-value"></span></div>';
+            }
+            
+            html += '<select name="portillon_jardin_variation" data-id="' + product.id + '" data-name="portillon_id" class="form-control portillon-jardin-select">';
+            var self = this;
+            product.variations.forEach(function(variation, index) {
+                var isSelectedOption = variation.id_product_attribute == selectedVariationId || (selectedVariationId == '' && index === 0);
+                html += '<option value="' + variation.id_product_attribute + '" data-id-product-attribute="' + variation.id_product_attribute + '" data-price="' + variation.price + '" data-price-formatted="' + variation.price_formatted + '"' + (isSelectedOption ? ' selected' : '') + '>' + variation.name + '</option>';
+            });
+            html += '</select>';
+            html += '</div>';
+            html += '</a>';
+            html += '</div>';
+            return html;
+        },
+        
+        // Générer le HTML d'un portillon normal
+        portillonNormal: function(product) {
+            var parsed = this.parseProductName(product.name);
+            var html = '<div class="col-md-12">';
+            html += '<a href="#" data-id="' + product.id + '" data-id-product-attribute="' + product.id_product_attribute + '" data-name="portillon_id" class="configurator-action d-flex mb-4">';
+            html += '<img style="padding:unset;margin:0;" src="' + product.image_url + '" class="img-responsive" alt="' + product.name + '" />';
+            html += '<div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;"><div class="infos-top"><span class="name">' + parsed.name + '</span>' + this.svgIconNotSelected + this.svgIconSelected + '</div><span style="font-size: 13px;line-height: 16px;">' + parsed.description + '</span></span></div>';
+            html += '</a>';
+            html += '</div>';
+            return html;
+        },
+        
+        // Générer le HTML d'une occultation
+        occultation: function(product) {
+            var parsed = this.parseProductName(product.name);
+            var html = '<div class="col-md-12">';
+            html += '<a href="#" data-id="' + product.id + '" data-id-product-attribute="' + product.id_product_attribute + '" data-name="occultation_id" class="configurator-action d-flex mb-4">';
+            html += '<img style="padding:unset;margin:0;" src="' + product.image_url + '" class="img-responsive" alt="' + product.name + '" />';
+            html += '<div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;width: 100%;"><div class="infos-top"><span class="name">' + parsed.name + '</span>' + this.svgIconNotSelected + this.svgIconSelected + '</div><span style="font-size: 13px;line-height: 16px;width: 100%;">' + parsed.description + '</span></span></div>';
+            html += '</a>';
+            html += '</div>';
+            return html;
+        }
+    };
+    
+    // Fonction pour détecter le portillon sélectionné avec select
+    function getSelectedPortillonJardin() {
+        var portillonJardinSelected = false;
+        var portillonJardinSelect = null;
+        $('.portillon-jardin-select').each(function() {
+            var $action = $(this).closest('.portillon-jardin-action');
+            if ($(this).val() != '' && $action.hasClass('selected')) {
+                portillonJardinSelected = true;
+                portillonJardinSelect = $(this);
+                return false;
+            }
+        });
+        return { selected: portillonJardinSelected, select: portillonJardinSelect };
+    }
 
     function refreshPrice(change) {
 
@@ -499,7 +694,10 @@ $(document).ready(function () {
         };
 
         var sousbassement = $(".configurator-form.options-form .soubassement.form-title").hasClass('selected');
-        var portillon = $(".configurator-form.options-form .portillon.form-title").hasClass('selected');
+        // Vérifier si un portillon avec select est explicitement sélectionné (classe 'selected')
+        var portillonJardin = getSelectedPortillonJardin();
+        // Un portillon est actif seulement si un portillon est explicitement sélectionné (normal ou avec select)
+        var portillon = $('.configurator-action.selected[data-name="portillon_id"]').length > 0 || portillonJardin.selected;
         var occultation = $(".configurator-form.options-form .occultation.form-title").hasClass('selected');
         var panneau_deco = $("#checkbox_panneau_deco").hasClass('selected');
         var service = $('[data-name="service_id"]').hasClass('selected');
@@ -530,8 +728,12 @@ $(document).ready(function () {
                 },
                 portillon: {
                     active: portillon,
-                    id: $('.configurator-action.selected[data-name="portillon_id"]').data('id'),
-                    id_product_attribute: $('.configurator-action.selected[data-name="portillon_id"]').data('id-product-attribute'),
+                    id: portillonJardin.select && portillonJardin.select.val() && portillonJardin.select.closest('.portillon-jardin-action').hasClass('selected')
+                        ? portillonJardin.select.data('id') 
+                        : $('.configurator-action.selected[data-name="portillon_id"]').data('id'),
+                    id_product_attribute: portillonJardin.select && portillonJardin.select.val() && portillonJardin.select.closest('.portillon-jardin-action').hasClass('selected')
+                        ? portillonJardin.select.val()
+                        : $('.configurator-action.selected[data-name="portillon_id"]').data('id-product-attribute'),
                 },
                 service : {
                     active: service,
@@ -542,35 +744,28 @@ $(document).ready(function () {
                     if (response.portillons.length > 0) {
                         $(".portillon .row").html('');
                         response.portillons.forEach(function (product, index) {
-                            let newName = (product.name).split(' : ')[0]
-                            let description = (product.name).replace(newName, '').replace(' :', '').split(', ').join('<br>');
-                            html = '<div class="col-md-12">';
-                            html += '<a href="#" data-id="' + product.id + '" data-id-product-attribute="' + product.id_product_attribute + '" data-name="portillon_id" class="configurator-action d-flex mb-4">';
-                            html += '<img style="padding:unset;margin:0;" src="' + product.image_url + '" class="img-responsive" alt="' + product.name + '" />';
-                            html += '<div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;"><div class="infos-top"><span class="name">' + newName + '</span><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected"><rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/><path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/></svg><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-selected"><rect y="0.5" width="38" height="38" rx="10" fill="white"/><path d="M25.5761 12.5007L25.576 12.5007C25.1976 12.5135 24.8533 12.6922 24.61 12.9746L15.9182 22.832L13.3948 19.9703C13.2719 19.8262 13.1217 19.7071 12.9508 19.6234C12.778 19.5387 12.5891 19.4926 12.3959 19.4904C12.2026 19.4882 12.0127 19.5298 11.838 19.6107C11.6636 19.6915 11.5096 19.8089 11.3831 19.9523C11.2567 20.0957 11.1596 20.2628 11.0949 20.4426C11.0302 20.6223 10.9984 20.8131 11.0001 21.0043C11.0018 21.1955 11.0371 21.3857 11.1051 21.5642C11.1725 21.741 11.2714 21.9047 11.3989 22.0446L14.9202 26.0381L14.9203 26.0382C15.173 26.3247 15.5302 26.5 15.9182 26.5C16.3061 26.5 16.6633 26.3247 16.9161 26.0382L16.9162 26.0381L26.606 15.049C26.7987 14.8354 26.9242 14.5683 26.9747 14.2853C27.0254 14.001 26.9997 13.7054 26.8988 13.435C26.7978 13.1645 26.6234 12.9246 26.3889 12.754C26.1533 12.5825 25.8698 12.4909 25.5761 12.5007Z" fill="#7CBA49" stroke="#7CBA49"/></svg></div><span style="font-size: 13px;line-height: 16px;">'+description+'</span></span></div>';
-                            html += '</a>';
-                            html += '</div>';
+                            var html = '';
+                            if (product.has_select && product.variations) {
+                                var selectedVariation = response.selected_portillon_id_product_attribute || '';
+                                var isSelected = response.selected_portillon_id == product.id;
+                                html = HtmlGenerator.portillonWithSelect(product, selectedVariation, isSelected);
+                            } else {
+                                html = HtmlGenerator.portillonNormal(product);
+                            }
                             $(".portillon .row").html($(".portillon .row").html() + html);
                         });
 
+                        // Sélection automatique pour les portillons normaux
                         if ($('*[data-name="portillon_id"][data-id-product-attribute="' + response.selected_portillon_id_product_attribute + '"]').length > 0) {
                             $('*[data-name="portillon_id"][data-id-product-attribute="' + response.selected_portillon_id_product_attribute + '"]').trigger('click');
                         }
+                        // Pour le portillon jardin, la sélection est déjà gérée par l'attribut "selected" dans le select
                     }
 
                     if (response.occultations.length > 0) {
                         $(".occultation .row").html('');
                         response.occultations.forEach(function (product, index) {
-                            let newName = (product.name).split(' : ')[0]
-                            let description = (product.name).replace(newName, '').replace(' :', '').split(', ').join('<br>');
-                            html = '<div class="col-md-12">';
-                            html += '<a href="#" data-id="' + product.id + '" data-id-product-attribute="' + product.id_product_attribute + '" data-name="occultation_id" class="configurator-action d-flex mb-4">';
-                            html += '<img style="padding:unset;margin:0;" src="' + product.image_url + '" class="img-responsive" alt="' + product.name + '" />';
-                            html += '<div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;width: 100%;"><div class="infos-top"><span class="name">' + newName + '</span><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected"><rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/><path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/></svg><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-selected"><rect y="0.5" width="38" height="38" rx="10" fill="white"/><path d="M25.5761 12.5007L25.576 12.5007C25.1976 12.5135 24.8533 12.6922 24.61 12.9746L15.9182 22.832L13.3948 19.9703C13.2719 19.8262 13.1217 19.7071 12.9508 19.6234C12.778 19.5387 12.5891 19.4926 12.3959 19.4904C12.2026 19.4882 12.0127 19.5298 11.838 19.6107C11.6636 19.6915 11.5096 19.8089 11.3831 19.9523C11.2567 20.0957 11.1596 20.2628 11.0949 20.4426C11.0302 20.6223 10.9984 20.8131 11.0001 21.0043C11.0018 21.1955 11.0371 21.3857 11.1051 21.5642C11.1725 21.741 11.2714 21.9047 11.3989 22.0446L14.9202 26.0381L14.9203 26.0382C15.173 26.3247 15.5302 26.5 15.9182 26.5C16.3061 26.5 16.6633 26.3247 16.9161 26.0382L16.9162 26.0381L26.606 15.049C26.7987 14.8354 26.9242 14.5683 26.9747 14.2853C27.0254 14.001 26.9997 13.7054 26.8988 13.435C26.7978 13.1645 26.6234 12.9246 26.3889 12.754C26.1533 12.5825 25.8698 12.4909 25.5761 12.5007Z" fill="#7CBA49" stroke="#7CBA49"/></svg></div><span style="font-size: 13px;line-height: 16px;width: 100%;">'+description+'</span></span></div>';
-                            html += '</a>';
-                            html += '</div>';
-
-                            $(".occultation .row").html($(".occultation .row").html() + html);
+                            $(".occultation .row").html($(".occultation .row").html() + HtmlGenerator.occultation(product));
                         });
 
                         if ($('*[data-name="occultation_id"][data-id-product-attribute="' + response.selected_occultation_id_product_attribute + '"]').length > 0) {
@@ -599,20 +794,22 @@ $(document).ready(function () {
                     if (response.portillons.length > 0) {
                         $(".portillon .row").html('');
                         response.portillons.forEach(function (product, index) {
-                            let newName = (product.name).split(' : ')[0]
-                            let description = (product.name).replace(newName, '').replace(' :', '').split(', ').join('<br>');
-                            html = '<div class="col-md-12">';
-                            html += '<a href="#" data-id="' + product.id + '" data-id-product-attribute="' + product.id_product_attribute + '" data-name="portillon_id" class="configurator-action d-flex mb-4">';
-                            html += '<img style="padding:unset;margin:0;" src="' + product.image_url + '" class="img-responsive" alt="' + product.name + '" />';
-                            html += '<div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;"><div class="infos-top"><span class="name">' + newName + '</span><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected"><rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/><path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/></svg><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-selected"><rect y="0.5" width="38" height="38" rx="10" fill="white"/><path d="M25.5761 12.5007L25.576 12.5007C25.1976 12.5135 24.8533 12.6922 24.61 12.9746L15.9182 22.832L13.3948 19.9703C13.2719 19.8262 13.1217 19.7071 12.9508 19.6234C12.778 19.5387 12.5891 19.4926 12.3959 19.4904C12.2026 19.4882 12.0127 19.5298 11.838 19.6107C11.6636 19.6915 11.5096 19.8089 11.3831 19.9523C11.2567 20.0957 11.1596 20.2628 11.0949 20.4426C11.0302 20.6223 10.9984 20.8131 11.0001 21.0043C11.0018 21.1955 11.0371 21.3857 11.1051 21.5642C11.1725 21.741 11.2714 21.9047 11.3989 22.0446L14.9202 26.0381L14.9203 26.0382C15.173 26.3247 15.5302 26.5 15.9182 26.5C16.3061 26.5 16.6633 26.3247 16.9161 26.0382L16.9162 26.0381L26.606 15.049C26.7987 14.8354 26.9242 14.5683 26.9747 14.2853C27.0254 14.001 26.9997 13.7054 26.8988 13.435C26.7978 13.1645 26.6234 12.9246 26.3889 12.754C26.1533 12.5825 25.8698 12.4909 25.5761 12.5007Z" fill="#7CBA49" stroke="#7CBA49"/></svg></div><span style="font-size: 13px;line-height: 16px;">'+description+'</span></span></div>';
-                            html += '</a>';
-                            html += '</div>';
+                            var html = '';
+                            if (product.has_select && product.variations) {
+                                var selectedVariation = response.selected_portillon_id_product_attribute || '';
+                                var isSelected = response.selected_portillon_id == product.id;
+                                html = HtmlGenerator.portillonWithSelect(product, selectedVariation, isSelected);
+                            } else {
+                                html = HtmlGenerator.portillonNormal(product);
+                            }
                             $(".portillon .row").html($(".portillon .row").html() + html);
                         });
 
+                        // Sélection automatique pour les portillons normaux
                         if ($('*[data-name="portillon_id"][data-id-product-attribute="' + response.selected_portillon_id_product_attribute + '"]').length > 0) {
                             $('*[data-name="portillon_id"][data-id-product-attribute="' + response.selected_portillon_id_product_attribute + '"]').trigger('click');
                         }
+                        // Pour le portillon jardin, la sélection est déjà gérée par l'attribut "selected" dans le select
                     }
                 }
 
@@ -620,16 +817,7 @@ $(document).ready(function () {
                     if (response.occultations.length > 0) {
                         $(".occultation .row").html('');
                         response.occultations.forEach(function (product, index) {
-                            let newName = (product.name).split(' : ')[0]
-                            let description = (product.name).replace(newName, '').replace(' :', '').split(', ').join('<br>');
-                            html = '<div class="col-md-12">';
-                            html += '<a href="#" data-id="' + product.id + '" data-id-product-attribute="' + product.id_product_attribute + '" data-name="occultation_id" class="configurator-action d-flex mb-4">';
-                            html += '<img style="padding:unset;margin:0;" src="' + product.image_url + '" class="img-responsive" alt="' + product.name + '" />';
-                            html += '<div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;width: 100%;"><div class="infos-top"><span class="name">' + newName + '</span><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected"><rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/><path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/></svg><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-selected"><rect y="0.5" width="38" height="38" rx="10" fill="white"/><path d="M25.5761 12.5007L25.576 12.5007C25.1976 12.5135 24.8533 12.6922 24.61 12.9746L15.9182 22.832L13.3948 19.9703C13.2719 19.8262 13.1217 19.7071 12.9508 19.6234C12.778 19.5387 12.5891 19.4926 12.3959 19.4904C12.2026 19.4882 12.0127 19.5298 11.838 19.6107C11.6636 19.6915 11.5096 19.8089 11.3831 19.9523C11.2567 20.0957 11.1596 20.2628 11.0949 20.4426C11.0302 20.6223 10.9984 20.8131 11.0001 21.0043C11.0018 21.1955 11.0371 21.3857 11.1051 21.5642C11.1725 21.741 11.2714 21.9047 11.3989 22.0446L14.9202 26.0381L14.9203 26.0382C15.173 26.3247 15.5302 26.5 15.9182 26.5C16.3061 26.5 16.6633 26.3247 16.9161 26.0382L16.9162 26.0381L26.606 15.049C26.7987 14.8354 26.9242 14.5683 26.9747 14.2853C27.0254 14.001 26.9997 13.7054 26.8988 13.435C26.7978 13.1645 26.6234 12.9246 26.3889 12.754C26.1533 12.5825 25.8698 12.4909 25.5761 12.5007Z" fill="#7CBA49" stroke="#7CBA49"/></svg></div><span style="font-size: 13px;line-height: 16px;width: 100%;">'+description+'</span></span></div>';
-                            html += '</a>';
-                            html += '</div>';
-
-                            $(".occultation .row").html($(".occultation .row").html() + html);
+                            $(".occultation .row").html($(".occultation .row").html() + HtmlGenerator.occultation(product));
                         });
 
                         if ($('*[data-name="occultation_id"][data-id-product-attribute="' + response.selected_occultation_id_product_attribute + '"]').length > 0) {

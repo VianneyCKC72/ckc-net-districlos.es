@@ -34,51 +34,102 @@ class Portillon extends ProductFactory
         $category = new \Category($category_configurator);
         $products = $category->getProducts($language_id, 1, 1000000, null, null, false, true, false, 1, false);
         $items    = [];
+        
+        // Produits à toujours regrouper par déclinaisons
+        $grouped_product_ids = [1182, 1213];
+        
+        // Ajouter les produits manquants s'ils existent et sont actifs
+        $found_ids = array_column($products, 'id_product');
+        foreach (array_diff($grouped_product_ids, $found_ids) as $product_id) {
+            $product_obj = new \Product($product_id, false, $language_id);
+            if (\Validate::isLoadedObject($product_obj) && $product_obj->active) {
+                $products[] = ['id_product' => $product_id, 'name' => $product_obj->name];
+            }
+        }
+
+        // S'il y a un sousbassement, calculer la hauteur ajustée
+        $sousbassement_height = 0;
+        if ($sousbassement_id == 416) {
+            $sousbassement_height = 0.25;
+        }
+        elseif ($sousbassement_id == 806) {
+            $sousbassement_height = 0.50;
+        }
 
         foreach ($products as $product) {
             $combinations = static::getAttributesInformationsByProduct($product['id_product']);
-            $changed      = false;
             $heights      = [];
-
+            $variations_by_height = [];
+            
+            // Récupérer toutes les hauteurs disponibles
             foreach ($combinations as $combination) {
                 $current_height = floatval(str_replace(['Ht ', 'ht-', 'm'], ['', '', '.'], $combination['attribute']));
-
                 if (($combination['group'] == 'Hauteur' || $combination['group'] == 'hauteur') && !in_array($current_height, $heights)) {
-                    $short_name = explode(' : ', \Product::getProductName($product['id_product'], $combination['id_product_attribute'], $language_id))[0];
-                    $description = str_replace($short_name, '', \Product::getProductName($product['id_product'], $combination['id_product_attribute'], $language_id));
-                    $description = str_replace(' :', '', $description);
-                    $description = explode(' ,', $description);
-                    $description = implode('<br>', $description);
                     $heights[] = $current_height;
                 }
             }
-
-            // S'il y a un sousbassement, le portillon doit être plus haut de la hauteur du sousbassement (portillon d'1m => 1,25m si sousbassement de 0,25)
-            $sousbassement_height = 0;
-            if ($sousbassement_id == 416) {
-                $sousbassement_height = 0.25;
+            
+            if (empty($heights)) {
+                continue; // Pas de hauteur, on skip
             }
-            elseif ($sousbassement_id == 806) {
-                $sousbassement_height = 0.50;
-            }
-
+            
             sort($heights, SORT_NUMERIC);
-
             $wantedHeight = self::getClosest($height + $sousbassement_height, $heights);
-
+            
+            // Récupérer toutes les déclinaisons à la hauteur voulue
             foreach ($combinations as $combination) {
                 $current_height = floatval(str_replace(['Ht ', 'ht-', 'm'], ['', '', '.'], $combination['attribute']));
-
-                if (($combination['group'] == 'Hauteur' || $combination['group'] == 'hauteur') && ($current_height == $wantedHeight)) {
-                    $items[] = [
-                        "id"                   => $product['id_product'],
-                        "image_url"            => self::getImageUrl(\Product::getCombinationImageById($combination['id_product_attribute'], $language_id)),
-                        "name"                 => \Product::getProductName($product['id_product'], $combination['id_product_attribute'], $language_id),
-                        "id_product_attribute" => $combination['id_product_attribute'],
-                        "short_name"           => explode(' : ', \Product::getProductName($product['id_product'], $combination['id_product_attribute'], $language_id))[0],
-                        "description"          => $description,
-                    ];
+                if (($combination['group'] == 'Hauteur' || $combination['group'] == 'hauteur') && $current_height == $wantedHeight) {
+                    $id_product_attribute = $combination['id_product_attribute'];
+                    if (!isset($variations_by_height[$id_product_attribute])) {
+                        $product_name = \Product::getProductName($product['id_product'], $id_product_attribute, $language_id);
+                        $price = Helper::getPrice($product['id_product'], $id_product_attribute, 1);
+                        
+                        $variations_by_height[$id_product_attribute] = [
+                            "id_product_attribute" => $id_product_attribute,
+                            "name"                 => $product_name,
+                            "height"               => $current_height,
+                            "price"                => $price['total_price'],
+                            "price_formatted"      => \Tools::displayPrice($price['total_price']),
+                        ];
+                    }
                 }
+            }
+            
+            if (empty($variations_by_height)) {
+                continue; // Pas de déclinaisons à cette hauteur
+            }
+            
+            $variations = array_values($variations_by_height);
+            $first_variation = $variations[0];
+            $short_name = explode(' : ', $first_variation['name'])[0];
+            $description = str_replace($short_name, '', $first_variation['name']);
+            $description = str_replace(' :', '', $description);
+            $description = explode(' ,', $description);
+            $description = implode('<br>', $description);
+            $first_image = self::getImageUrl(\Product::getCombinationImageById($first_variation['id_product_attribute'], $language_id));
+            
+            // Si plusieurs déclinaisons OU produit à regrouper, créer un item avec select
+            if (count($variations) > 1 || in_array($product['id_product'], $grouped_product_ids)) {
+                $items[] = [
+                    "id"                   => $product['id_product'],
+                    "image_url"            => $first_image,
+                    "name"                 => $short_name,
+                    "short_name"           => $short_name,
+                    "description"          => $description,
+                    "variations"           => $variations,
+                    "has_select"           => true, // Flag pour afficher un select
+                ];
+            } else {
+                // Une seule déclinaison, comportement normal
+                $items[] = [
+                    "id"                   => $product['id_product'],
+                    "image_url"            => $first_image,
+                    "name"                 => $first_variation['name'],
+                    "id_product_attribute" => $first_variation['id_product_attribute'],
+                    "short_name"           => $short_name,
+                    "description"          => $description,
+                ];
             }
         }
 

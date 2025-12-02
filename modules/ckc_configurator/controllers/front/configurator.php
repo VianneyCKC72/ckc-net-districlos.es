@@ -40,6 +40,9 @@ use CkcConfigurator\Product\Accessory;
 
 require __DIR__ . '/../../vendor/autoload.php';
 include_once _PS_MODULE_DIR_.'dealt/src/DealtHookHelper.php';
+if (file_exists(_PS_MODULE_DIR_.'dealt/src/DealtHookHelper.php')) {
+    include_once _PS_MODULE_DIR_.'dealt/src/DealtHookHelper.php';
+}
 
 class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontController implements Config
 {
@@ -86,6 +89,10 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
     {
         if ($this->module->isLive()) {
             if ($this->ajax) {
+                // S'assurer que la session est initialisée
+                if (!$this->session) {
+                    $this->session = Session::init($this->userKey(), $this->language_id);
+                }
 
                 // Clique sur l'une des 3 principales catégories
                 if (Tools::getValue('id_category', false)) {
@@ -136,6 +143,11 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                             'dealt_id_product_attribute' => $dealt_id_product_attribute,
                         ]));
                     }
+                }
+
+                // S'assurer que $this->data est initialisé
+                if (!isset($this->data)) {
+                    $this->data = [];
                 }
 
                 $sousbassement_id = $this->session->has('soubassement') ? $this->session->soubassement()['id_product'] : false;
@@ -213,7 +225,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
 
                 // complet !
                 //                dump($this->data['colors']);
-                if(!empty($products[0]["id"]) && !empty($this->session->length)){
+                if(!empty($products[0]["id"]) && !empty($this->session->length) && class_exists('\Dealt\DealtHookHelper')){
                     $serviceTitles = [];
                     $services = \Dealt\DealtHookHelper::buildProductAdditionalInfoData($this->context, (int)$products[0]["id"], (int)$this->session->length);
                     if(count($services)){
@@ -288,6 +300,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         }
 
         $data = $this->getAttributes($products);
+        $this->data = $data;
 
         $installations = self::INSTALLATIONS;
 
@@ -334,7 +347,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
 
         $products = $this->session->getProducts($this->language_id, $this->session);
 
-        if(!empty($products[0]["id"]) && !empty($this->session->length)){
+        if(!empty($products[0]["id"]) && !empty($this->session->length) && class_exists('\Dealt\DealtHookHelper')){
 
             $services = \Dealt\DealtHookHelper::buildProductAdditionalInfoData($this->context, (int)$products[0]["id"], (int)$this->session->length);
             $serviceTitles = [];
@@ -543,7 +556,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         $accessories  = Accessory::get($this->session, $this->language_id, $soubassement);
 
         foreach ($accessories as $accessory) {
-            if ($heightChanged && $accessory['id'] == 1182) {
+            if ($heightChanged && ($accessory['id'] == 1182 || $accessory['id'] == 1213)) {
 
             }else{
                 $this->session->insertEntry([
@@ -558,7 +571,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
 
         $productsAll = $this->session->getProducts($this->language_id, $this->session);
 
-        if(!empty($productsAll[0]["id"]) && !empty($this->session->length)){
+        if(!empty($productsAll[0]["id"]) && !empty($this->session->length) && class_exists('\Dealt\DealtHookHelper')){
             $this->session->deleteEntryByType('service');
             $service = \Dealt\DealtHookHelper::buildProductAdditionalInfoData($this->context, (int)$productsAll[0]["id"], (int)($this->session->length));
 
@@ -831,7 +844,9 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         }
 
         // Portillons
-        if (isset($portillon['active']) && $portillon['active'] == 'true' && !empty($portillon['id']) && !empty($portillon['id_product_attribute']) && !$heightChanged) {
+        $portillon_active = isset($portillon['active']) && ($portillon['active'] == 'true' || $portillon['active'] === true || $portillon['active'] == 1);
+        if ($portillon_active && !empty($portillon['id']) && !empty($portillon['id_product_attribute']) && !$heightChanged) {
+            $this->session->deleteEntryByType('portillon');
             $this->session->insertEntry([
                 'id_configurator_session' => $this->session->id,
                 'id_product'              => $portillon['id'],
@@ -839,6 +854,8 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                 'quantity'                => 1,
                 'type'                    => 'portillon'
             ]);
+        } else if (!$portillon_active && $this->session->portillon()) {
+            $this->session->deleteEntryByType('portillon');
         }
     }
 
