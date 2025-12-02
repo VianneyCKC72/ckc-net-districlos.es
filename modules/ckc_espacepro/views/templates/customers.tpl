@@ -123,7 +123,7 @@
                         {/if}
                     </td>
 
-                    <td>{$customer.date_add|date_format:"%H:%M:%S %d/%m/%Y"}</td>
+                    <td>{$customer.date_add|date_format:"%d/%m/%Y %H:%M:%S"}</td>
 
                     <td>
                         <div class="account-type">
