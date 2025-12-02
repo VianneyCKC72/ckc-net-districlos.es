@@ -33,14 +33,14 @@
             <div class="thumbnail-container">
                 <div class="thumbnail-top">
 
-                    {if $page.page_name == 'category'}
+                    {*{if $page.page_name == 'category'}
                         <div class="product-first-ribbon" aria-hidden="true">
                             <span class="product-first-ribbon__icon">
                                 <img src="{$urls.theme_assets}img/RINGBELL1.svg" alt="" loading="lazy">
                             </span>
                             <span class="product-first-ribbon__text">BLACK 2 WEEKS</span>
                         </div>
-                    {/if}
+                    {/if}*}
 
                     {if !$product.from_europe}
                         <div class="pastille_fr">
@@ -221,7 +221,7 @@
         </article>
     </div>
 
-     {if $page.page_name == 'category' && isset($position) && (($position+1) % 4 == 0)}
+     {*{if $page.page_name == 'category' && isset($position) && (($position+1) % 4 == 0)}
          <div class="category-mobile-banner">
              <img src="{$urls.theme_assets}img/image-b2w-habillage.jpg"
                   alt="{l s='Black 2 Weeks' d='Shop.Theme.Catalog'}"
@@ -229,6 +229,6 @@
                   width="640"
                   height="200">
          </div>
-     {/if}
+     {/if}*}
 
  {/block}
