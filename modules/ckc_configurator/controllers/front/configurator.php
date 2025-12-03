@@ -152,7 +152,9 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
 
                 $sousbassement_id = $this->session->has('soubassement') ? $this->session->soubassement()['id_product'] : false;
                 $selected_portillon_id_product_attribute   = '';
+                $selected_portillon_id = '';
                 $selected_occultation_id_product_attribute = '';
+                $selected_occultation_id = '';
                 $selected_panneau_deco_id_product_attribute = '';
 
                 if (!empty(Tools::getValue('panneau_deco')['id_product_attribute'])) {
@@ -187,18 +189,29 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                 }
                 $products = $this->session->getProducts($this->language_id, $this->session);
 
-                if (!empty(Tools::getValue('portillon')['id_product_attribute'])) {
+                // Récupérer les portillons et occultations sélectionnés depuis la session ou la requête
+                $portillon_session = $this->session->portillon();
+                if ($portillon_session) {
+                    $selected_portillon_id_product_attribute = $portillon_session['id_product_attribute'];
+                    $selected_portillon_id = $portillon_session['id_product'];
+                } elseif (!empty(Tools::getValue('portillon')['id_product_attribute'])) {
                     foreach ($products as $product) {
                         if (strpos($product['name'], 'Portillon') !== false) {
                             $selected_portillon_id_product_attribute = Tools::getValue('portillon')['id_product_attribute'];
+                            $selected_portillon_id = Tools::getValue('portillon')['id'];
                         }
                     }
                 }
 
-                if (!empty(Tools::getValue('occultation')['id_product_attribute'])) {
+                $occultation_session = $this->session->occultation();
+                if ($occultation_session) {
+                    $selected_occultation_id_product_attribute = $occultation_session['id_product_attribute'];
+                    $selected_occultation_id = $occultation_session['id_product'];
+                } elseif (!empty(Tools::getValue('occultation')['id_product_attribute'])) {
                     foreach ($products as $product) {
                         if (strpos($product['name'], 'Occultation') !== false || strpos($product['name'], 'Brise vue') !== false) {
                             $selected_occultation_id_product_attribute = Tools::getValue('occultation')['id_product_attribute'];
+                            $selected_occultation_id = Tools::getValue('occultation')['id'];
                         }
                     }
                 }
@@ -256,8 +269,10 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     "occultations"                              => Occultation::get($this->language_id, $this->session->id_product_attribute, $this->session->isSouple()),
                     "panneaux_deco"                             => PanneauDeco::get($this->language_id, $this->session->isAluminium(), $this->session),
                     "selected_occultation_id_product_attribute" => $selected_occultation_id_product_attribute,
+                    "selected_occultation_id"                   => $selected_occultation_id,
                     "portillons"                                => Portillon::get($this->language_id, $this->session->id_product_attribute, $sousbassement_id, $this->session->isSouple(), $this->session->isAluminium()),
                     "selected_portillon_id_product_attribute"   => $selected_portillon_id_product_attribute,
+                    "selected_portillon_id"                     => $selected_portillon_id,
                     "selected_panneau_deco_id_product_attribute" => $selected_panneau_deco_id_product_attribute,
                     "session"                                   => $this->session,
                     "products"                                  => $products,

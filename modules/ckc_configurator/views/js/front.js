@@ -143,8 +143,8 @@ $(document).ready(function () {
         });
     });
 
-    // Empêcher le clic sur le lien du portillon jardin de déclencher l'action normale
-    $("body").on('click', '.portillon-jardin-action', function (event) {
+    // Empêcher le clic sur les liens avec select de déclencher l'action normale (générique)
+    $("body").on('click', '.portillon-jardin-action, .occultation-action', function (event) {
         // Si on clique sur le select, ne pas empêcher
         if ($(event.target).is('select') || $(event.target).closest('select').length > 0) {
             return;
@@ -155,24 +155,29 @@ $(document).ready(function () {
         }
     });
 
-    // Gestion du select pour les portillons avec déclinaisons
-    $("body").on('change', '.portillon-jardin-select', function (event) {
+    // Gestion du select pour les produits avec déclinaisons (générique)
+    $("body").on('change', '.portillon-jardin-select, .occultation-select', function (event) {
         event.preventDefault();
         event.stopPropagation();
         var $select = $(this);
         var selectedValue = $select.val();
         var productId = $select.data('id');
+        var dataName = $select.data('name');
         var $selectedOption = $select.find('option:selected');
         var idProductAttribute = $selectedOption.data('id-product-attribute');
         var priceFormatted = $selectedOption.data('price-formatted');
         var imageUrl = $selectedOption.data('image-url');
-        var $priceContainer = $select.closest('.portillon-jardin-action').find('.portillon-jardin-price-action .portillon-jardin-price');
-        var $action = $select.closest('.portillon-jardin-action');
-        var $imageContainer = $action.find('.portillon-jardin-image img');
+        var $action = $select.closest('.portillon-jardin-action, .occultation-action');
+        var $priceContainer = $action.find('.portillon-jardin-price-action .portillon-jardin-price, .occultation-price-action .occultation-price');
+        var $imageContainer = $action.find('.portillon-jardin-image img, .occultation-image img');
+        var hiddenInputName = dataName;
+        var isPortillon = dataName === 'portillon_id';
+        var isOccultation = dataName === 'occultation_id';
+        var checkboxSelector = isPortillon ? '#checkbox_portillon' : '#checkbox_occultation';
         
         if (selectedValue) {
             // Mettre à jour le champ hidden
-            $('input[name="portillon_id"]').val(productId);
+            $('input[name="' + hiddenInputName + '"]').val(productId);
             
             // Mettre à jour l'image si disponible
             if (imageUrl && $imageContainer.length > 0) {
@@ -190,31 +195,49 @@ $(document).ready(function () {
                 throttle(function () {
                     refreshPrice(true);
                 }, interval);
+            } else {
+                // Si le produit n'est pas encore sélectionné, le sélectionner automatiquement
+                // Désélectionner tous les autres produits du même type
+                $('.configurator-action[data-name="' + dataName + '"]').removeClass('selected');
+                $action.addClass('selected');
+                $(checkboxSelector).addClass('selected');
+                
+                // Ajouter à la configuration
+                throttle(function () {
+                    refreshPrice(true);
+                }, interval);
             }
         }
     });
 
     // GETTING HEIGHTS AND COLORS DEPENDING ON TYPE CHOOSE
     $("body").on('click', '.configurator-action[data-name]', function (event) {
-        // Ne pas traiter le portillon jardin ici (géré séparément)
-        if ($(this).hasClass('portillon-jardin-action')) {
+        // Ne pas traiter les produits avec select ici (gérés séparément)
+        if ($(this).hasClass('portillon-jardin-action') || $(this).hasClass('occultation-action')) {
             // Si on clique sur les SVG, gérer la sélection
             if ($(event.target).closest('svg').length) {
                 event.preventDefault();
                 var $action = $(this);
                 var name = $action.data('name');
+                var isPortillon = name === 'portillon_id';
+                var isOccultation = name === 'occultation_id';
+                
+                // Déterminer les sélecteurs selon le type
+                var checkboxSelector = isPortillon ? '#checkbox_portillon' : '#checkbox_occultation';
+                var selectClass = isPortillon ? '.portillon-jardin-select' : '.occultation-select';
+                var otherProductsSelector = '.configurator-action[data-name="' + name + '"]';
                 
                 if (!$action.hasClass('selected')) {
-                    // Désélectionner tous les autres portillons (normaux et avec select)
-                    $('.configurator-action[data-name="portillon_id"]').removeClass('selected');
+                    // Désélectionner tous les autres produits du même type (normaux et avec select)
+                    $(otherProductsSelector).removeClass('selected');
                     
-                    // Sélectionner le nouveau portillon
+                    // Sélectionner le nouveau produit
                     $action.addClass('selected');
-                    $('#checkbox_portillon').addClass('selected');
+                    $(checkboxSelector).addClass('selected');
                     $('input[name="' + name + '"]').val($action.data('id'));
                     
                     // S'assurer qu'une déclinaison est sélectionnée (première par défaut)
-                    var $select = $action.find('.portillon-jardin-select');
+                    var $select = $action.find(selectClass);
                     if (!$select.val() && $select.find('option').length > 0) {
                         $select.find('option:first').prop('selected', true);
                         $select.trigger('change');
@@ -227,10 +250,10 @@ $(document).ready(function () {
                 } else {
                     // Désélectionner le produit
                     $action.removeClass('selected');
-                    $('#checkbox_portillon').removeClass('selected');
+                    $(checkboxSelector).removeClass('selected');
                     $('input[name="' + name + '"]').val('');
                     // Remettre la première déclinaison par défaut
-                    var $select = $action.find('.portillon-jardin-select');
+                    var $select = $action.find(selectClass);
                     if ($select.find('option').length > 0) {
                         $select.find('option:first').prop('selected', true);
                     }
@@ -250,6 +273,13 @@ $(document).ready(function () {
         $('input[name="' + name + '"]').val($(this).data('id'));
         $('.configurator-action[data-name="' + name + '"]').removeClass('selected');
         $(this).addClass('selected');
+        
+        // Cocher le checkbox correspondant pour portillon et occultation
+        if (name === 'portillon_id') {
+            $('#checkbox_portillon').addClass('selected');
+        } else if (name === 'occultation_id') {
+            $('#checkbox_occultation').addClass('selected');
+        }
 
         if (name == 'type') {
             viewEspacement();
@@ -354,6 +384,10 @@ $(document).ready(function () {
             }
 
             if (name == 'portillon_id' || name == 'occultation_id') {
+                // Ne pas traiter les produits avec select ici (gérés séparément)
+                if ($(this).hasClass('portillon-jardin-action') || $(this).hasClass('occultation-action')) {
+                    return;
+                }
                 var change = true;
             } else {
                 var change = false;
@@ -576,7 +610,7 @@ $(document).ready(function () {
             if ($item.next().hasClass('hide-row')) {
                 $item.next().hide();
             }
-            // Si on désélectionne le checkbox portillon, désélectionner tous les portillons et retirer de la configuration
+            // Si on désélectionne le checkbox portillon ou occultation, désélectionner tous les produits et retirer de la configuration
             if ($(this).attr('id') === 'checkbox_portillon') {
                 // Désélectionner tous les portillons (normaux et avec select)
                 $('.configurator-action[data-name="portillon_id"]').removeClass('selected');
@@ -587,6 +621,18 @@ $(document).ready(function () {
                     }
                 });
                 $('input[name="portillon_id"]').val('');
+            }
+            // Si on désélectionne le checkbox occultation, désélectionner toutes les occultations et retirer de la configuration
+            if ($(this).attr('id') === 'checkbox_occultation') {
+                // Désélectionner toutes les occultations (normales et avec select)
+                $('.configurator-action[data-name="occultation_id"]').removeClass('selected');
+                // Remettre la première déclinaison par défaut pour les selects
+                $('.occultation-select').each(function() {
+                    if ($(this).find('option').length > 0) {
+                        $(this).find('option:first').prop('selected', true);
+                    }
+                });
+                $('input[name="occultation_id"]').val('');
             }
         }
 
@@ -607,8 +653,14 @@ $(document).ready(function () {
             return { name: newName, description: description };
         },
         
-        // Générer le HTML d'un portillon avec select
-        portillonWithSelect: function(product, selectedVariationId, isSelected) {
+        // Générer le HTML d'un produit avec select (générique pour portillon et occultation)
+        productWithSelect: function(product, selectedVariationId, isSelected, type) {
+            type = type || 'portillon'; // 'portillon' ou 'occultation'
+            var prefix = type === 'portillon' ? 'portillon-jardin' : 'occultation';
+            var dataName = type === 'portillon' ? 'portillon_id' : 'occultation_id';
+            var selectName = type === 'portillon' ? 'portillon_jardin_variation' : 'occultation_variation';
+            var actionClass = type === 'portillon' ? 'portillon-jardin-action' : 'occultation-action';
+            
             var selectedVariationData = null;
             product.variations.forEach(function(variation) {
                 if (variation.id_product_attribute == selectedVariationId) {
@@ -618,25 +670,25 @@ $(document).ready(function () {
             var defaultVariation = selectedVariationData || (product.variations.length > 0 ? product.variations[0] : null);
             
             var html = '<div class="col-md-12">';
-            html += '<a href="#" data-id="' + product.id + '" data-name="portillon_id" class="configurator-action portillon-jardin-action d-flex mb-4' + (isSelected ? ' selected' : '') + '">';
+            html += '<a href="#" data-id="' + product.id + '" data-name="' + dataName + '" class="configurator-action ' + actionClass + ' d-flex mb-4' + (isSelected ? ' selected' : '') + '">';
             
             // Div 1 : Image
-            html += '<div class="portillon-jardin-image">';
+            html += '<div class="' + prefix + '-image">';
             html += '<img style="width: 100px;" src="' + product.image_url + '" class="img-responsive" alt="' + product.name + '" />';
             html += '</div>';
             
             // Div 2 : Titre produit et select
-            html += '<div class="portillon-jardin-content">';
-            html += '<div class="portillon-jardin-title">';
+            html += '<div class="' + prefix + '-content">';
+            html += '<div class="' + prefix + '-title">';
             html += '<span class="name font-weight-bold">' + product.short_name + '</span>';
             if (product.product_details) {
-                html += '<span class="portillon-info-icon">';
+                html += '<span class="' + prefix + '-info-icon">';
                 html += '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
                 html += '<circle cx="12" cy="12" r="10"></circle>';
                 html += '<line x1="12" y1="16" x2="12" y2="12"></line>';
                 html += '<line x1="12" y1="8" x2="12.01" y2="8"></line>';
                 html += '</svg>';
-                html += '<span class="portillon-info-tooltip">';
+                html += '<span class="' + prefix + '-info-tooltip">';
                 
                 // Caractéristiques
                 if (product.product_details.grouped_features && product.product_details.grouped_features.length > 0) {
@@ -654,7 +706,7 @@ $(document).ready(function () {
                 html += '</span>';
             }
             html += '</div>';
-            html += '<select name="portillon_jardin_variation" data-id="' + product.id + '" data-name="portillon_id" class="form-control portillon-jardin-select">';
+            html += '<select name="' + selectName + '" data-id="' + product.id + '" data-name="' + dataName + '" class="form-control ' + prefix + '-select">';
             var self = this;
             product.variations.forEach(function(variation, index) {
                 var isSelectedOption = variation.id_product_attribute == selectedVariationId || (selectedVariationId == '' && index === 0);
@@ -667,15 +719,15 @@ $(document).ready(function () {
             html += '</div>';
             
             // Div 3 : Prix et "+"
-            html += '<div class="portillon-jardin-price-action">';
+            html += '<div class="' + prefix + '-price-action">';
             if (defaultVariation && defaultVariation.price_formatted) {
-                html += '<div class="portillon-jardin-price" style="font-size: 16px;"><span class="price-value">' + defaultVariation.price_formatted + '</span></div>';
+                html += '<div class="' + prefix + '-price" style="font-size: 16px;"><span class="price-value">' + defaultVariation.price_formatted + '</span></div>';
             } else {
-                html += '<div class="portillon-jardin-price" style="font-size: 16px; display: none;"><span class="price-value"></span></div>';
+                html += '<div class="' + prefix + '-price" style="font-size: 16px; display: none;"><span class="price-value"></span></div>';
             }
             html += '<div>';
             html += this.svgIconNotSelected;
-            // SVG spécifique pour portillon jardin : fond vert, check blanc
+            // SVG sélectionné (fond vert pour portillon et occultation)
             html += '<svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-selected"><rect y="0.5" width="38" height="38" rx="10" fill="#79C046"/><path d="M25.5761 12.5007L25.576 12.5007C25.1976 12.5135 24.8533 12.6922 24.61 12.9746L15.9182 22.832L13.3948 19.9703C13.2719 19.8262 13.1217 19.7071 12.9508 19.6234C12.778 19.5387 12.5891 19.4926 12.3959 19.4904C12.2026 19.4882 12.0127 19.5298 11.838 19.6107C11.6636 19.6915 11.5096 19.8089 11.3831 19.9523C11.2567 20.0957 11.1596 20.2628 11.0949 20.4426C11.0302 20.6223 10.9984 20.8131 11.0001 21.0043C11.0018 21.1955 11.0371 21.3857 11.1051 21.5642C11.1725 21.741 11.2714 21.9047 11.3989 22.0446L14.9202 26.0381L14.9203 26.0382C15.173 26.3247 15.5302 26.5 15.9182 26.5C16.3061 26.5 16.6633 26.3247 16.9161 26.0382L16.9162 26.0381L26.606 15.049C26.7987 14.8354 26.9242 14.5683 26.9747 14.2853C27.0254 14.001 26.9997 13.7054 26.8988 13.435C26.7978 13.1645 26.6234 12.9246 26.3889 12.754C26.1533 12.5825 25.8698 12.4909 25.5761 12.5007Z" fill="white" stroke="white"/></svg>';
             html += '</div>';
             html += '</div>';
@@ -683,6 +735,11 @@ $(document).ready(function () {
             html += '</a>';
             html += '</div>';
             return html;
+        },
+        
+        // Générer le HTML d'un portillon avec select (alias pour compatibilité)
+        portillonWithSelect: function(product, selectedVariationId, isSelected) {
+            return this.productWithSelect(product, selectedVariationId, isSelected, 'portillon');
         },
         
         // Générer le HTML d'un portillon normal
@@ -697,8 +754,17 @@ $(document).ready(function () {
             return html;
         },
         
-        // Générer le HTML d'une occultation
-        occultation: function(product) {
+        // Générer le HTML d'une occultation (avec ou sans select)
+        occultation: function(product, selectedVariationId, isSelected) {
+            selectedVariationId = selectedVariationId || '';
+            isSelected = isSelected || false;
+            
+            // Si le produit a un select, utiliser la fonction générique
+            if (product.has_select) {
+                return this.productWithSelect(product, selectedVariationId, isSelected, 'occultation');
+            }
+            
+            // Sinon, comportement normal
             var parsed = this.parseProductName(product.name);
             var html = '<div class="col-md-12">';
             html += '<a href="#" data-id="' + product.id + '" data-id-product-attribute="' + product.id_product_attribute + '" data-name="occultation_id" class="configurator-action d-flex mb-4">';
@@ -725,6 +791,21 @@ $(document).ready(function () {
         return { selected: portillonJardinSelected, select: portillonJardinSelect };
     }
 
+    // Fonction pour détecter l'occultation sélectionnée avec select
+    function getSelectedOccultation() {
+        var occultationSelected = false;
+        var occultationSelect = null;
+        $('.occultation-select').each(function() {
+            var $action = $(this).closest('.occultation-action');
+            if ($(this).val() != '' && $action.hasClass('selected')) {
+                occultationSelected = true;
+                occultationSelect = $(this);
+                return false;
+            }
+        });
+        return { selected: occultationSelected, select: occultationSelect };
+    }
+
     function refreshPrice(change) {
 
         let grillage = {
@@ -744,6 +825,8 @@ $(document).ready(function () {
         var portillonJardin = getSelectedPortillonJardin();
         // Un portillon est actif seulement si un portillon est explicitement sélectionné (normal ou avec select)
         var portillon = $('.configurator-action.selected[data-name="portillon_id"]').length > 0 || portillonJardin.selected;
+        // Vérifier si une occultation avec select est explicitement sélectionnée (classe 'selected')
+        var occultationSelect = getSelectedOccultation();
         var occultation = $(".configurator-form.options-form .occultation.form-title").hasClass('selected');
         var panneau_deco = $("#checkbox_panneau_deco").hasClass('selected');
         var service = $('[data-name="service_id"]').hasClass('selected');
@@ -764,8 +847,16 @@ $(document).ready(function () {
                     color: $('input[name="sousbassement_couleur"]').val(),
                 }, occultation: {
                     active: occultation,
-                    id: $('input[name="occultation_id"]').val(),
-                    id_product_attribute: $('.configurator-action.selected[data-name="occultation_id"]').data('id-product-attribute'),
+                    id: occultationSelect.select && occultationSelect.select.val() && occultationSelect.select.closest('.occultation-action').hasClass('selected')
+                        ? occultationSelect.select.data('id') 
+                        : ($('.configurator-action.selected[data-name="occultation_id"]').length > 0 
+                            ? $('.configurator-action.selected[data-name="occultation_id"]').data('id') 
+                            : $('input[name="occultation_id"]').val()),
+                    id_product_attribute: occultationSelect.select && occultationSelect.select.val() && occultationSelect.select.closest('.occultation-action').hasClass('selected')
+                        ? occultationSelect.select.val()
+                        : ($('.configurator-action.selected[data-name="occultation_id"]').length > 0
+                            ? $('.configurator-action.selected[data-name="occultation_id"]').data('id-product-attribute')
+                            : ''),
                 },
                 panneau_deco: {
                     active: panneau_deco,
@@ -811,12 +902,15 @@ $(document).ready(function () {
                     if (response.occultations.length > 0) {
                         $(".occultation .row").html('');
                         response.occultations.forEach(function (product, index) {
-                            $(".occultation .row").html($(".occultation .row").html() + HtmlGenerator.occultation(product));
+                            var selectedVariation = response.selected_occultation_id_product_attribute || '';
+                            var isSelected = response.selected_occultation_id == product.id;
+                            $(".occultation .row").html($(".occultation .row").html() + HtmlGenerator.occultation(product, selectedVariation, isSelected));
                         });
-
+                        // Sélection automatique pour les occultations normales
                         if ($('*[data-name="occultation_id"][data-id-product-attribute="' + response.selected_occultation_id_product_attribute + '"]').length > 0) {
                             $('*[data-name="occultation_id"][data-id-product-attribute="' + response.selected_occultation_id_product_attribute + '"]').trigger('click');
                         }
+                        // Pour les occultations avec select, la sélection est déjà gérée par l'attribut "selected" dans le select
                     }
                     if (response.panneaux_deco.length > 0) {
                         $(".panneau_deco .row").html('');
@@ -863,12 +957,15 @@ $(document).ready(function () {
                     if (response.occultations.length > 0) {
                         $(".occultation .row").html('');
                         response.occultations.forEach(function (product, index) {
-                            $(".occultation .row").html($(".occultation .row").html() + HtmlGenerator.occultation(product));
+                            var selectedVariation = response.selected_occultation_id_product_attribute || '';
+                            var isSelected = response.selected_occultation_id == product.id;
+                            $(".occultation .row").html($(".occultation .row").html() + HtmlGenerator.occultation(product, selectedVariation, isSelected));
                         });
-
+                        // Sélection automatique pour les occultations normales
                         if ($('*[data-name="occultation_id"][data-id-product-attribute="' + response.selected_occultation_id_product_attribute + '"]').length > 0) {
                             $('*[data-name="occultation_id"][data-id-product-attribute="' + response.selected_occultation_id_product_attribute + '"]').trigger('click');
                         }
+                        // Pour les occultations avec select, la sélection est déjà gérée par l'attribut "selected" dans le select
                     }
                 }
 
