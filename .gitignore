@@ -438,7 +438,7 @@ $RECYCLE.BIN/
 var/
 
 *.sql.gz
-
+modules/ckclinkobfuscation
 modules/ckcadcampaignconfigurator/uploads/menus/
 error_log.txt.gz
 /modules/creativeelements/views/css/
