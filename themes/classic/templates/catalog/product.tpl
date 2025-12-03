@@ -55,7 +55,7 @@
                 <div class="col-lg-7">
                     {block name='page_header_container'}
                         {block name='page_header'}
-                            <h1 class="h2 {if !$pro.env}mb-5{/if}">{block name='page_title'}{$product.name}{/block}</h1>
+                            <h1 class="h2">{block name='page_title'}{$product.name}{/block}</h1>
                         {/block}
                     {/block}
                     {hook h='displayPromoProductDescription'}

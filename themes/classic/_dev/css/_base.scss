@@ -7169,9 +7169,16 @@ li:not([data-depth="0"]):not([data-depth="1"])::before {
   text-decoration: line-through;
   margin-left: 20px;
 }
+#product .product-container.js-product-container h1.h2{
+  margin-bottom: 3rem;
+}
+#product .product-container.js-product-container h1.h2:has(+.has-discount){
+  margin-bottom: 1rem;
+}
 
 .has-discount .page-content.page-cms ul,
 .has-discount p,
+.has-discount a,
 .has-discount.product-price,
 .page-content.page-cms .has-discount ul,
 .product-discount.has-discount {
