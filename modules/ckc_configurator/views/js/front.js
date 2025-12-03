@@ -165,12 +165,19 @@ $(document).ready(function () {
         var $selectedOption = $select.find('option:selected');
         var idProductAttribute = $selectedOption.data('id-product-attribute');
         var priceFormatted = $selectedOption.data('price-formatted');
+        var imageUrl = $selectedOption.data('image-url');
         var $priceContainer = $select.closest('.portillon-jardin-action').find('.portillon-jardin-price-action .portillon-jardin-price');
         var $action = $select.closest('.portillon-jardin-action');
+        var $imageContainer = $action.find('.portillon-jardin-image img');
         
         if (selectedValue) {
             // Mettre à jour le champ hidden
             $('input[name="portillon_id"]').val(productId);
+            
+            // Mettre à jour l'image si disponible
+            if (imageUrl && $imageContainer.length > 0) {
+                $imageContainer.attr('src', imageUrl);
+            }
             
             // Afficher et mettre à jour le prix
             if (priceFormatted) {
@@ -653,7 +660,8 @@ $(document).ready(function () {
                 var isSelectedOption = variation.id_product_attribute == selectedVariationId || (selectedVariationId == '' && index === 0);
                 // Utiliser name_without_title si disponible, sinon name
                 var variationName = variation.name_without_title || variation.name;
-                html += '<option value="' + variation.id_product_attribute + '" data-id-product-attribute="' + variation.id_product_attribute + '" data-price="' + variation.price + '" data-price-formatted="' + variation.price_formatted + '"' + (isSelectedOption ? ' selected' : '') + '>' + variationName + '</option>';
+                var imageUrlAttr = variation.image_url ? ' data-image-url="' + variation.image_url + '"' : '';
+                html += '<option value="' + variation.id_product_attribute + '" data-id-product-attribute="' + variation.id_product_attribute + '" data-price="' + variation.price + '" data-price-formatted="' + variation.price_formatted + '"' + imageUrlAttr + (isSelectedOption ? ' selected' : '') + '>' + variationName + '</option>';
             });
             html += '</select>';
             html += '</div>';

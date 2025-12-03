@@ -92,6 +92,9 @@ class Portillon extends ProductFactory
                             $name_without_title = substr($product_name, $colon_pos + 3);
                         }
                         
+                        // Récupérer l'image de la déclinaison
+                        $variation_image = self::getImageUrl(\Product::getCombinationImageById($id_product_attribute, $language_id));
+                        
                         $variations_by_height[$id_product_attribute] = [
                             "id_product_attribute" => $id_product_attribute,
                             "name"                 => $product_name,
@@ -99,6 +102,7 @@ class Portillon extends ProductFactory
                             "height"               => $current_height,
                             "price"                => $price['total_price'],
                             "price_formatted"      => \Tools::displayPrice($price['total_price']),
+                            "image_url"            => $variation_image,
                         ];
                     }
                 }

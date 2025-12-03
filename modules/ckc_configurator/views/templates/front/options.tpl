@@ -136,6 +136,7 @@
                                                                         data-id-product-attribute="{$variation.id_product_attribute}"
                                                                         data-price="{$variation.price}"
                                                                         data-price-formatted="{$variation.price_formatted}"
+                                                                        {if isset($variation.image_url)}data-image-url="{$variation.image_url}"{/if}
                                                                         {if $smarty.foreach.variationLoop.first}selected{/if}>
                                                                     {if isset($variation.name_without_title)}{$variation.name_without_title}{else}{$variation.name}{/if}
                                                                 </option>

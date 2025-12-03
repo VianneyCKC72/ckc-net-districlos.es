@@ -1548,7 +1548,7 @@ a[data-action] {
 
 .portillon-jardin-select {
   background: transparent !important;
-  border: 1px solid;
+  border: 2px solid #F6F2EB;
   padding: 5px !important;
   color: inherit !important;
   cursor: pointer;
@@ -1559,6 +1559,7 @@ a[data-action] {
 .portillon-jardin-select:focus {
   outline: none !important;
   box-shadow: none !important;
+  border: 2px solid #F6F2EB !important;
 }
 
 .portillon-jardin-image {
