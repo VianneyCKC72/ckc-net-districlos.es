@@ -29,6 +29,29 @@
       <span class="label">{$cart.totals.total.label}&nbsp;{if $pro.env}HT{else}{$cart.labels.tax_short}{/if}</span>
       <span class="value">{$cart.totals.total.value}</span>
     </div>
+
+    {if $pro.env == 1 && isset($cart.totals.total_including_tax.value) && isset($cart.totals.total.value)}
+
+      {* Nettoyage des valeurs TTC & HT pour les convertir en float *}
+      {assign var="ttc_clean" value=$cart.totals.total_including_tax.value|replace:'€':''|replace:' ':' '|replace:',':'.'|regex_replace:"/[^\d\.]/":""}
+      {assign var="ht_clean"  value=$cart.totals.total.value|replace:'€':''|replace:' ':' '|replace:',':'.'|regex_replace:"/[^\d\.]/":""}
+
+      {* Conversion en float *}
+      {assign var="totalTTC" value=$ttc_clean+0}
+      {assign var="totalHT" value=$ht_clean+0}
+
+      {* Calcul TVA *}
+      {assign var="tva_calc" value=$totalTTC - $totalHT}
+
+      <div class="cart-summary-line cart-summary-tva">
+        <span class="label">Montant TVA (20%)</span>
+        <span class="value">
+                                    {$tva_calc|number_format:2:',':' '} €
+                                </span>
+      </div>
+
+    {/if}
+
     <div class="cart-summary-line cart-total">
       <span class="label">{$cart.totals.total_including_tax.label}</span>
       <span class="value">{$cart.totals.total_including_tax.value}</span>

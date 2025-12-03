@@ -80,8 +80,21 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
   }
   #blockcart-modal.cart-pro-modal {
 
-    /* ---------- STRUCTURE MODAL ---------- */
+    .cart-summary-tva {
+      border-top: 1px dashed #e0e0e0;
+      margin-top: 6px;
+      padding-top: 10px;
+    }
 
+    .cart-summary-tva .label {
+      font-weight: 500;
+      color: #555;
+    }
+
+    .cart-summary-tva .value {
+      font-weight: 600;
+      color: #000;
+    }
     #myModalLabel{
       display: flex;
       align-items: center;

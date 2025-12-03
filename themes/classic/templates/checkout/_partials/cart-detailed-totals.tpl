@@ -44,11 +44,7 @@
                                     {$subtotal.value} {if $subtotal.type != "shipping" && $pro.env == 1}HT{/if}
                                 {/if}
                             </span>
-{*                            {if $pro.env == 1 && $subtotal.type === 'shipping'}*}
-{*                                <div>*}
-{*                                    <small class="value">{hook h='displayCheckoutSubtotalDetails' subtotal=$subtotal}</small>*}
-{*                                </div>*}
-{*                            {/if}*}
+                            {* --- TVA uniquement pour PRO --- *}
                         </div>
                     {/if}
                 {/foreach}
