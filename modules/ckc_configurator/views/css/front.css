@@ -71,6 +71,15 @@ body#configurator {
       background-color: #7CBA49;
       color: white;
     }
+    /* Désactiver le hover pour les portillons jardin */
+    .portillon-jardin-action:hover .title-img {
+      background-color: transparent !important;
+      color: inherit;
+    }
+    .portillon-jardin-action.selected:hover .title-img {
+      background-color: #7CBA49;
+      color: white;
+    }
   }
 
   .selected .title-img .icon-not-selected {
@@ -1521,3 +1530,125 @@ a[data-action] {
 .step.fourth form [data-name=service_id] li{
   list-style-position: inside;
 }
+
+/* Styles spécifiques pour les portillons jardin */
+
+.portillon-jardin-action{
+  border-bottom: 2px solid #F6F2EB;
+  padding: 20px;
+}
+.portillon-jardin-action .title-img {
+  background-color: transparent !important;
+}
+
+.portillon-jardin-action.selected .title-img {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+.portillon-jardin-select {
+  background: transparent !important;
+  border: 1px solid;
+  padding: 5px !important;
+  color: inherit !important;
+  cursor: pointer;
+  border-radius: initial;
+  height: auto !important;
+}
+
+.portillon-jardin-select:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.portillon-jardin-image {
+  border: 2px solid #F6F2EB;
+  border-radius: 0;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+} 
+
+.portillon-jardin-content {
+  margin-left: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.portillon-jardin-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.portillon-jardin-price-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  font-weight: 400;
+}
+
+/* Gestion de l'affichage des icônes pour les portillons jardin */
+.portillon-jardin-action .portillon-jardin-price-action .icon-not-selected {
+  display: block !important;
+}
+
+.portillon-jardin-action .portillon-jardin-price-action .icon-selected {
+  display: none !important;
+}
+
+.portillon-jardin-action.selected .portillon-jardin-price-action .icon-not-selected {
+  display: none !important;
+}
+
+.portillon-jardin-action.selected .portillon-jardin-price-action .icon-selected {
+  display: block !important;
+}
+
+/* Styles pour l'icône info et la tooltip */
+.portillon-jardin-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.portillon-info-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+  color: #0B798A;
+}
+
+.portillon-info-tooltip {
+  position: absolute;
+  top: 25px;
+  background-color: white;
+  color: black;
+  font-size: 13px;
+  width: 500px;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  border: 1px solid;
+}
+
+.portillon-info-tooltip .data-sheet {
+  margin: 0;
+  padding: 0;
+}
+
+.portillon-info-icon:hover .portillon-info-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+

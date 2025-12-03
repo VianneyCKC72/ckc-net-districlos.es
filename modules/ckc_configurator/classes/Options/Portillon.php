@@ -85,9 +85,17 @@ class Portillon extends ProductFactory
                         $product_name = \Product::getProductName($product['id_product'], $id_product_attribute, $language_id);
                         $price = Helper::getPrice($product['id_product'], $id_product_attribute, 1);
                         
+                        // Retirer le titre du produit du nom (partie avant le premier " : ")
+                        $name_without_title = $product_name;
+                        $colon_pos = strpos($product_name, ' : ');
+                        if ($colon_pos !== false) {
+                            $name_without_title = substr($product_name, $colon_pos + 3);
+                        }
+                        
                         $variations_by_height[$id_product_attribute] = [
                             "id_product_attribute" => $id_product_attribute,
                             "name"                 => $product_name,
+                            "name_without_title"   => $name_without_title,
                             "height"               => $current_height,
                             "price"                => $price['total_price'],
                             "price_formatted"      => \Tools::displayPrice($price['total_price']),
@@ -103,11 +111,10 @@ class Portillon extends ProductFactory
             $variations = array_values($variations_by_height);
             $first_variation = $variations[0];
             $short_name = explode(' : ', $first_variation['name'])[0];
-            $description = str_replace($short_name, '', $first_variation['name']);
-            $description = str_replace(' :', '', $description);
-            $description = explode(' ,', $description);
-            $description = implode('<br>', $description);
             $first_image = self::getImageUrl(\Product::getCombinationImageById($first_variation['id_product_attribute'], $language_id));
+            
+            // Récupérer les détails du produit pour la tooltip
+            $product_details = self::getProductDetails($product['id_product'], $first_variation['id_product_attribute'], $language_id);
             
             // Si plusieurs déclinaisons OU produit à regrouper, créer un item avec select
             if (count($variations) > 1 || in_array($product['id_product'], $grouped_product_ids)) {
@@ -116,12 +123,17 @@ class Portillon extends ProductFactory
                     "image_url"            => $first_image,
                     "name"                 => $short_name,
                     "short_name"           => $short_name,
-                    "description"          => $description,
                     "variations"           => $variations,
-                    "has_select"           => true, // Flag pour afficher un select
+                    "has_select"           => true,
+                    "product_details"      => $product_details,
                 ];
             } else {
-                // Une seule déclinaison, comportement normal
+                // Une seule déclinaison, comportement normal - générer la description pour l'affichage
+                $description = str_replace($short_name, '', $first_variation['name']);
+                $description = str_replace(' :', '', $description);
+                $description = explode(' ,', $description);
+                $description = implode('<br>', $description);
+                
                 $items[] = [
                     "id"                   => $product['id_product'],
                     "image_url"            => $first_image,
@@ -129,6 +141,7 @@ class Portillon extends ProductFactory
                     "id_product_attribute" => $first_variation['id_product_attribute'],
                     "short_name"           => $short_name,
                     "description"          => $description,
+                    "product_details"      => $product_details,
                 ];
             }
         }
@@ -198,5 +211,34 @@ class Portillon extends ProductFactory
             }
         }
         return $closest;
+    }
+
+    /**
+     * Récupère les caractéristiques du produit pour affichage dans la tooltip
+     */
+    static public function getProductDetails($id_product, $id_product_attribute, $language_id)
+    {
+        $product_obj = new \Product($id_product, false, $language_id);
+        
+        if (!\Validate::isLoadedObject($product_obj)) {
+            return [];
+        }
+
+        $details = [];
+        
+        // Caractéristiques (features)
+        $features = $product_obj->getFrontFeatures($language_id);
+        if (!empty($features)) {
+            $grouped_features = [];
+            foreach ($features as $feature) {
+                $grouped_features[] = [
+                    'name' => $feature['name'],
+                    'value' => $feature['value']
+                ];
+            }
+            $details['grouped_features'] = $grouped_features;
+        }
+        
+        return $details;
     }
 }
