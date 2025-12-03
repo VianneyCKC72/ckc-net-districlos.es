@@ -180,9 +180,9 @@
                             <span class="gift">{l s='Gift' d='Shop.Theme.Checkout'}</span>
                            {else}
                              {if $product.has_discount}
-                                    <strong>{$product.total}</strong>
+                                    <strong>{$product.total} {if $pro.env == 1}HT{/if}</strong>
                               {else}
-                                <strong>{$product.total}</strong>
+                                <strong>{$product.total} {if $pro.env == 1}HT{/if}</strong>
                             {/if}
                         {/if}
                     </span>

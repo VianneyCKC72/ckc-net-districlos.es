@@ -41,14 +41,14 @@
                                     à définir
                                 {else}
                                     {if 'discount' == $subtotal.type}-&nbsp;{/if}
-                                    {$subtotal.value}
+                                    {$subtotal.value} {if $subtotal.type != "shipping" && $pro.env == 1}HT{/if}
                                 {/if}
                             </span>
-                            {*                            {if $subtotal.type === 'shipping'}*}
-                            {*                                <div>*}
-                            {*                                    <small class="value">{hook h='displayCheckoutSubtotalDetails' subtotal=$subtotal}</small>*}
-                            {*                                </div>*}
-                            {*                            {/if}*}
+{*                            {if $pro.env == 1 && $subtotal.type === 'shipping'}*}
+{*                                <div>*}
+{*                                    <small class="value">{hook h='displayCheckoutSubtotalDetails' subtotal=$subtotal}</small>*}
+{*                                </div>*}
+{*                            {/if}*}
                         </div>
                     {/if}
                 {/foreach}
