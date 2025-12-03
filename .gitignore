@@ -437,6 +437,8 @@ $RECYCLE.BIN/
 /.thumbs
 var/
 
+*.sql.gz
+
 modules/ckcadcampaignconfigurator/uploads/menus/
 error_log.txt.gz
 /modules/creativeelements/views/css/
