@@ -471,7 +471,13 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
   .text-secondary {
     color: #ffa800 !important;
   }
-
+  .product-information{
+    .align-items-center{
+      .small.text-secondary{
+        color: #79C046 !important;
+      }
+    }
+  }
   .star-svg path {
     fill: #ffa800 !important;
   }
