@@ -1,17 +1,23 @@
- 
-
-{shop_url}
-
 Bonjour {firstname} {lastname},
+Un grand merci pour votre achat sur {shop_name} !
+Nous vous confirmons que le paiement de votre commande {order_name} a bien été reçu. Notre équipe prépare déjà votre colis avec le plus grand soin.
 
-Merci d'avoir effectué vos achats sur {shop_name}!
+Pour suivre l’avancement de votre commande et télécharger votre facture, rendez-vous dans votre espace client, rubrique “Historique et détails de mes commandes”.
 
-Le paiement pour votre commande ayant pour référence {order_name} a bien été effectué.
+Si vous avez passé votre commande en tant qu’invité, vous pouvez suivre son statut via la section “Suivi de commande” directement sur notre boutique.
 
-Suivez votre commande et téléchargez votre facture sur notre boutique, rendez-vous dans la section [Historique et détails de mes commandes]({history_url}) de votre compte client.
+Nous vous remercions pour votre confiance et restons à votre disposition si vous avez la moindre question.
 
-Si vous avez un compte invité, vous pouvez suivre votre commande via la section [Suivi de commande]({guest_tracking_url}) sur notre boutique.
+À très bientôt,
+L'équipe {shop_name}
 
-[{shop_name}]({shop_url})
+---
+Fabrication européenne
+Garantie 10 ans anti-corrosion
+Paiement 100 % sécurisé
+Livraison à domicile ou retrait en magasin
 
+17 magasins en France pour vous conseiller et vous accompagner dans vos projets de jardin.
 
+Contactez notre service client du lundi au vendredi de 08h00 à 18h00 non stop.
+Téléphone : 04 22 53 10 34 (prix d’un appel local)
