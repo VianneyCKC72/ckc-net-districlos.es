@@ -208,8 +208,8 @@ $shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
 
 
   .sticky-summary {
-    .cart-summary-line {
-      flex-direction: row;
+    .cart-summary-line:not(.cart-total) {
+      flex-direction: row !important;
     }
     .cart-summary-tva {
       flex-direction: row;
