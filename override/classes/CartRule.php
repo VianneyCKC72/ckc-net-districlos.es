@@ -70,4 +70,51 @@ class CartRule extends CartRuleCore
         }
         return $r;
     }
+
+    /**
+     * Override pour retirer automatiquement les promos expirées des paniers
+     * 
+     * Cette méthode ajoute une vérification de l'expiration avant les autres contrôles
+     * pour s'assurer que les promos expirées sont retirées du panier.
+     * 
+     * @param Context|null $context Contexte PrestaShop
+     * @param bool $useOrderPrice Utiliser les prix de commande
+     * 
+     * @return array Messages d'erreur
+     */
+    public static function autoRemoveFromCart(Context $context = null, bool $useOrderPrice = false)
+    {
+        if (!$context) {
+            $context = Context::getContext();
+        }
+        
+        if (!CartRule::isFeatureActive() || !Validate::isLoadedObject($context->cart)) {
+            return [];
+        }
+
+        $errors = [];
+        $currentTime = time();
+        
+        // Vérification spécifique pour les promos expirées
+        // On parcourt toutes les règles du panier
+        foreach ($context->cart->getCartRules(CartRule::FILTER_ACTION_ALL, true, $useOrderPrice) as $cart_rule) {
+            $cartRuleObj = $cart_rule['obj'];
+            
+            // Vérifier si la promo est expirée
+            if ($cartRuleObj->date_to && strtotime($cartRuleObj->date_to) < $currentTime) {
+                // Retirer la promo expirée du panier
+                $context->cart->removeCartRule($cartRuleObj->id, $useOrderPrice);
+                $context->cart->update();
+                // Ajouter le message d'erreur
+                $errors[] = $cartRuleObj->trans('This voucher has expired', [], 'Shop.Notifications.Error');
+            }
+        }
+        
+        // Appeler la méthode parent pour les autres vérifications
+        // (montant minimum, transporteur, quantité, etc.)
+        $parentErrors = parent::autoRemoveFromCart($context, $useOrderPrice);
+        
+        // Fusionner les erreurs
+        return array_merge($errors, $parentErrors);
+    }
 }
