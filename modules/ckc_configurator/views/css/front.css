@@ -1535,6 +1535,7 @@ a[data-action] {
 
 .portillon-jardin-action,
 .occultation-action {
+  justify-content: space-between;
   border-bottom: 2px solid #F6F2EB;
   padding: 20px;
 }
@@ -1556,7 +1557,7 @@ a[data-action] {
   cursor: pointer;
   border-radius: initial;
   height: auto !important;
-  width: 300px;
+  width: 100%;
 }
 
 .portillon-jardin-select:focus,
@@ -1598,6 +1599,7 @@ a[data-action] {
 
 .portillon-jardin-price-action,
 .occultation-price-action {
+  margin-left: 15px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
