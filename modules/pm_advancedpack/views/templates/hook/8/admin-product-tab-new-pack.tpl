@@ -169,7 +169,8 @@
 						<ul>
 							<li>[QUANTITY] : Quantité originale du produit (back)</li>
 							<li>[ML] : Nombre de mètres linéaire (front)</li>
-						</ul>
+                            <li>PLAFOND() : Arrondià l'entier supérieur l'élément entre parenthèses</li>
+                        </ul>
 					</div>
 					<table id="ap5-pack-content-table" class="table configuration">
 						<thead>
