@@ -256,6 +256,7 @@ app/config/config.php
 modules/*
 !modules/ckc*/
 !modules/pm_advancedpack/
+!modules/ps_shoppingcart/
 modules/ckcstorespresentation/uploads/*
 !modules/creativeelements
 !modules/everpspopup
