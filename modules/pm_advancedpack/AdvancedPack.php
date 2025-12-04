@@ -3729,20 +3729,22 @@ class AdvancedPack extends Product
 
     public static function evaluateMathExpression($formula)
     {
-        $formula = preg_replace('/\s+/', '', $formula);
+        $formula = preg_replace('/PLAFOND\s*\(/i', 'ceil(', $formula);
 
-        if (!preg_match('/^[0-9+\-*\/().]+$/', $formula)) {
+        $formula = preg_replace('/\s+/', '', $formula);
+        if (!preg_match('/^[0-9+\-*\/().ceil]+$/', $formula)) {
             throw new InvalidArgumentException('Invalid characters in formula');
         }
 
         try {
-
-            $result = @eval("return ceil($formula);");
+            $result = @eval("return $formula;");
             if ($result === false) {
                 throw new RuntimeException('Error evaluating formula');
             }
-            return $result;
-        } catch (ParseError $e) {
+
+            return ceil($result);
+
+        } catch (\ParseError $e) {
             throw new RuntimeException('Error evaluating formula: ' . $e->getMessage());
         }
     }
