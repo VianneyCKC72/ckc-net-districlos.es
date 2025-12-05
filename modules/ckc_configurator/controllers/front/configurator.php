@@ -813,11 +813,19 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
 
         // Soubassement
         if (isset($sousbassement['active']) && $sousbassement['active'] == 'true' && !empty($sousbassement['color']) && !empty($sousbassement['height'])) {
-            // Si color est directement un id_product_attribute, l'utiliser
+            // Si color est directement un id_product_attribute, vérifier qu'il correspond au type de poteau
             // Sinon, utiliser getType() pour déterminer selon le type de poteau (rétrocompatibilité)
-            $id_product_attribute = is_numeric($sousbassement['color']) 
-                ? $sousbassement['color'] 
-                : Soubassement::getType($sousbassement['height'], $this->session, $this->language_id);
+            if (is_numeric($sousbassement['color'])) {
+                // Vérifier que la déclinaison sélectionnée correspond au type de poteau
+                $id_product_attribute_from_type = Soubassement::getType($sousbassement['height'], $this->session, $this->language_id);
+                // Si getType() retourne une valeur différente, l'utiliser (correction automatique)
+                // Sinon, utiliser celle sélectionnée (elle correspond déjà au bon type)
+                $id_product_attribute = ($id_product_attribute_from_type && $id_product_attribute_from_type != $sousbassement['color']) 
+                    ? $id_product_attribute_from_type 
+                    : $sousbassement['color'];
+            } else {
+                $id_product_attribute = Soubassement::getType($sousbassement['height'], $this->session, $this->language_id);
+            }
             
             if ($id_product_attribute) {
                 $this->session->insertEntry([

@@ -282,6 +282,20 @@ $(document).ready(function () {
         } else if (name === 'occultation_id') {
             $('#checkbox_occultation').addClass('selected');
         }
+        
+        // Si on change de poteaux (encoches/clips), réinitialiser les soubassements sélectionnés
+        if (name === 'poteaux') {
+            // Désélectionner tous les soubassements
+            $('.configurator-action[data-name="soubassement_id"]').removeClass('selected');
+            $('#checkbox_soubassement').removeClass('selected');
+            // Remettre la première déclinaison par défaut pour tous les selects de soubassement
+            $('.soubassement-select').each(function() {
+                if ($(this).find('option').length > 0) {
+                    $(this).find('option:first').prop('selected', true);
+                }
+            });
+            $('input[name="soubassement_id"]').val('');
+        }
 
         if (name == 'type') {
             viewEspacement();
@@ -971,6 +985,23 @@ $(document).ready(function () {
                         response.sousbassement.forEach(function (product, index) {
                             var selectedVariation = response.selected_soubassement_id_product_attribute || '';
                             var isSelected = response.selected_soubassement_id == product.id;
+                            
+                            // Vérifier si la déclinaison sélectionnée existe toujours dans les variations filtrées
+                            // Si elle n'existe plus (car filtrée selon le type de poteau), réinitialiser
+                            if (selectedVariation && product.variations) {
+                                var variationExists = product.variations.some(function(variation) {
+                                    return variation.id_product_attribute == selectedVariation;
+                                });
+                                if (!variationExists) {
+                                    selectedVariation = '';
+                                    isSelected = false;
+                                    // Désélectionner le soubassement si la déclinaison n'existe plus
+                                    $('.configurator-action[data-name="soubassement_id"]').removeClass('selected');
+                                    $('#checkbox_soubassement').removeClass('selected');
+                                    $('input[name="soubassement_id"]').val('');
+                                }
+                            }
+                            
                             $(".soubassement.hide-row .row").html($(".soubassement.hide-row .row").html() + HtmlGenerator.soubassement(product, selectedVariation, isSelected));
                         });
                         // Pour les soubassements avec select, la sélection est déjà gérée par l'attribut "selected" dans le select
