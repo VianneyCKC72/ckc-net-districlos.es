@@ -50,7 +50,7 @@
               <tr>
                 <th>{l s='Order reference' d='Shop.Theme.Checkout'}</th>
                 <th>{l s='Date' d='Shop.Theme.Checkout'}</th>
-                <th>{l s='Total price' d='Shop.Theme.Checkout'}{if $pro.env == 1} HT{/if}</th>
+                <th>{l s='Total price' d='Shop.Theme.Checkout'}</th>
                 <th class="hidden-md-down">{l s='Payment' d='Shop.Theme.Checkout'}</th>
                 <th class="hidden-md-down">{l s='Status' d='Shop.Theme.Checkout'}</th>
                 <th>&nbsp;</th>

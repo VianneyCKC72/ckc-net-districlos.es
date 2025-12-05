@@ -25,7 +25,7 @@
                         <li class="cart-summary-line">
                             <span class="label">{$voucher.name|escape:'html':'UTF-8'}</span>
                             <div class="float-xs-right">
-                                <span>{$voucher.reduction_formatted|escape:'html':'UTF-8'} {if $pro.env == 1}HT{/if}</span>
+                                <span>{$voucher.reduction_formatted|escape:'html':'UTF-8'}</span>
                                 {if isset($voucher.code) && $voucher.code !== ''}
                                     <a href="{$voucher.delete_url|escape:'html':'UTF-8'}" data-link-action="remove-voucher">
                                         <i class="material-icons">&#xE872;</i>

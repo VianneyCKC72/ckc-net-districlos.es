@@ -1,24 +1,17 @@
+ 
+
+{shop_url}
+
 Bonjour {firstname} {lastname},
-Nous souhaitons vous informer que votre commande {order_name} sur {shop_name} a malheureusement été annulée.
-Nous sommes désolés pour ce contretemps et restons à votre disposition pour répondre à vos questions, ou vous accompagner dans une nouvelle commande.
 
-Pour consulter les détails de cette annulation, vous pouvez vous rendre dans votre espace client.
+Identifiant de commande {order_name} - Commande annulée
 
-Si vous aviez passé votre commande en tant qu’invité, vous pouvez accéder aux informations via la section “Suivi de commande” de notre boutique.
+Votre commande ayant pour référence {order_name} sur {shop_name} a été annulée par le marchand.
 
-✨ Envie de poursuivre votre shopping ?
-Découvrez nos nouveautés et nos meilleures offres directement sur notre site : {shop_url}
+Pour en savoir plus, rendez-vous sur votre compte client.
 
-À très bientôt,
-L'équipe {shop_name}
+Si vous avez un compte invité, vous pouvez suivre votre commande via la section [Suivi de commande]({guest_tracking_url}) sur notre boutique.
 
----
-Fabrication européenne
-Garantie 10 ans anti-corrosion
-Paiement 100 % sécurisé
-Livraison à domicile ou retrait en magasin
+[{shop_name}]({shop_url})
 
-17 magasins en France pour vous conseiller et vous accompagner dans vos projets de jardin.
 
-Contactez notre service client du lundi au vendredi de 08h00 à 18h00 non stop.
-Téléphone : 04 22 53 10 34 (prix d’un appel local)

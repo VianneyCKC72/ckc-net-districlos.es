@@ -598,7 +598,7 @@ class Ckcadcampaignconfigurator extends Module
             'PRODUCT_ID' => $PRODUCT_ID,
             'PRODUCT_ACTIVE' => $PRODUCT_ACTIVE,
             'PRODUCT_SHOW_ALL' => $PRODUCT_SHOW_ALL,
-            'PRODUCT_TEXT' => htmlentities(str_replace("'", "\'", Tools::getValue('PRODUCT_TEXT'))),
+            'PRODUCT_TEXT' => htmlentities(Tools::getValue('PRODUCT_TEXT')),
             'PRODUCT_SELECTION' => Tools::getValue('PRODUCT_SELECTION')
         );
 
@@ -617,7 +617,7 @@ class Ckcadcampaignconfigurator extends Module
             'CATEGORY_ID' => $CATEGORY_ID,
             'CATEGORY_ACTIVE' => $CATEGORY_ACTIVE,
             'CATEGORY_SHOW_ALL' => $CATEGORY_SHOW_ALL,
-            'CATEGORY_TEXT' => htmlentities(str_replace("'", "\'", Tools::getValue('CATEGORY_TEXT'))),
+            'CATEGORY_TEXT' => htmlentities(Tools::getValue('CATEGORY_TEXT')),
             'CATEGORY_LIST' => Tools::getValue('CATEGORY_LIST'),
             'CATEGORY_BACKGROUND_COLOR' => Tools::getValue('CATEGORY_BACKGROUND_COLOR'),
         );

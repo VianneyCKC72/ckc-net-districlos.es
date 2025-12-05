@@ -206,16 +206,6 @@ class AdminEverPsPopupController extends ModuleAdminController
             null,
             Carrier::ALL_CARRIERS
         );
-        $shopSelection0 = Shop::getShops(true);
-        $shopSelection = [];
-        foreach ($shopSelection0 as $shop){
-            $shopSelection[] = [
-                'id_option' => $shop['id_shop'],
-                'name' => $shop['name'],
-                'value' => $shop['id_shop'],
-            ];
-        }
-
         // Building the Add/Edit form
         $this->fields_form = array(
             'tinymce' => true,
@@ -250,18 +240,6 @@ class AdminEverPsPopupController extends ModuleAdminController
                     'values' => Group::getGroups(Context::getContext()->language->id),
                     'desc' => $this->l('Popup will be shown to these groups'),
                     'hint' => $this->l('Please select at least one customer group'),
-                ),
-                array(
-                    'type' => 'checkbox',
-                    'label' => $this->l('Sélectionner la(les) boutique(s) où afficher le popup'),
-                    'name' => 'id_shop',
-                    'desc' => $this->l('Les popups seront affichées pour ces boutiques'),
-                    'hint' => $this->l('Sélectionner la(les) boutique(s) où afficher le popup'),
-                    'values' => array(
-                        'query' => $shopSelection,
-                        'id' => 'id_option',
-                        'name' => 'name'
-                    )
                 ),
                 array(
                     'type' => 'select',
@@ -422,17 +400,9 @@ class AdminEverPsPopupController extends ModuleAdminController
         );
         $groups = Group::getGroups($this->context->language->id);
         $category_groups_ids = (array)json_decode($everpopup->groups);
-
         foreach ($groups as $group) {
             $this->fields_value['groupBox_'.$group['id_group']] = Tools::getValue('groupBox_'.$group['id_group'], (in_array($group['id_group'], $category_groups_ids)));
         }
-
-        $selectedShops = (array)json_decode($everpopup->id_shop);
-
-        foreach ($shopSelection as $shop){
-            $this->fields_value['id_shop_'.$shop['id_option']] = Tools::getValue('id_shop_'.$shop['id_option'], (in_array($shop['id_option'], $selectedShops)));
-        }
-
         $lists = parent::renderForm();
 
         $this->html .= $this->context->smarty->fetch(
@@ -489,14 +459,7 @@ class AdminEverPsPopupController extends ModuleAdminController
             } else {
                 $everpopup = new EverPsPopupClass();
             }
-
-            $shopSelection = Shop::getShops(true);
-            $selected_shops = [];
-            foreach ($shopSelection as $shop) {
-                if (Tools::getValue('id_shop_'.$shop['id_shop']))
-                    $selected_shops[] = $shop['id_shop'];
-            }
-            $everpopup->id_shop = json_encode($selected_shops);
+            $everpopup->id_shop = (int)Context::getContext()->shop->id;
             if (isset($group_condition)) {
                 $everpopup->groups = json_encode($group_condition);
             } else {
@@ -522,6 +485,7 @@ class AdminEverPsPopupController extends ModuleAdminController
                 }
             }
 
+
             if ($this->isSeven) {
                 $saved = $everpopup->save();
             } else {
@@ -534,7 +498,7 @@ class AdminEverPsPopupController extends ModuleAdminController
                         $this->table,
                         array(
                             'active' => (int)Tools::getValue('active'),
-                            'id_shop' => json_encode($selected_shops),
+                            'id_shop' => (int)$this->context->shop->id,
                             'groups' => json_encode(Tools::getValue('groupBox')),
                             'newsletter' => (int)Tools::getValue('newsletter'),
                             'bgcolor' => Tools::getValue('bgcolor'),

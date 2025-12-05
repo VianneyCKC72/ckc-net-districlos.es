@@ -168,7 +168,7 @@ $totalUpdates = 0;
 $totalSkipped = 0;
 
 echo "[INFO] Dossier CSV: $priceDir\n";
-echo "[INFO] Groupes à traiter: " . implode(',', array_map(fn($value) => $value['id'], $groupIds)) . "\n";
+echo "[INFO] Groupes à traiter: " . implode(',', array_map(fn($value): int => $value['id'], $groupIds)) . "\n";
 
 $db->execute('START TRANSACTION');
 

@@ -149,7 +149,6 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
     {
         $data = $this->getPresentedCart();
         $product = null;
-        
         if ($isPack) {
             $id_lang = 1;
             $product = new Product($id_product, false, $id_lang, $id_shop);
@@ -198,7 +197,7 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
                 }
             }
         }
-        
+
         $this->smarty->assign([
             'product' => $product,
             'cart' => $data,

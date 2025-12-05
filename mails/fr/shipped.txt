@@ -1,23 +1,17 @@
+ 
+
+{shop_url}
+
 Bonjour {firstname} {lastname},
-Bonne nouvelle ! Votre commande {order_name} vient tout juste d'être expédiée.
-Merci encore d’avoir choisi {shop_name} pour vos achats. Votre colis est maintenant en route et vous le recevrez très bientôt.
 
-Pour suivre son acheminement en temps réel et télécharger votre facture, rendez-vous dans votre espace client, rubrique “Historique et détails de mes commandes”.
+Merci d'avoir effectué vos achats sur {shop_name}!
 
-Si vous avez passé votre commande en tant qu’invité, vous pouvez consulter son suivi via la section “Suivi de commande” disponible sur notre boutique.
+Votre commande ayant pour référence {order_name} a été expédiée.
 
-Nous restons à votre disposition si vous avez la moindre question.
+Suivez votre commande et téléchargez votre facture sur notre boutique, rendez-vous dans la section [Historique et détails de mes commandes]({history_url}) de votre compte client.
 
-À très bientôt,
-L'équipe {shop_name}
+Si vous avez un compte invité, vous pouvez suivre votre commande via la section [Suivi de commande]({guest_tracking_url}) sur notre boutique.
 
----
-Fabrication européenne
-Garantie 10 ans anti-corrosion
-Paiement 100 % sécurisé
-Livraison à domicile ou retrait en magasin
+[{shop_name}]({shop_url})
 
-17 magasins en France pour vous conseiller et vous accompagner dans vos projets de jardin.
 
-Contactez notre service client du lundi au vendredi de 08h00 à 18h00 non stop.
-Téléphone : 04 22 53 10 34 (prix d’un appel local)

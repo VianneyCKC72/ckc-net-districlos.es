@@ -66,7 +66,7 @@
                 <div class="cart-summary">
                     <div class="container cart-summary-inside">
                         <div>
-                            <p class="h3 mb-4">Récapitulatif</p>
+                            <p class="h3">Récapitulatif</p>
 
                                 {include file='checkout/_partials/cart-summary-top.tpl' cart=$cart}
 

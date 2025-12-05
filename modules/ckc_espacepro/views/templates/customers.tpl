@@ -68,6 +68,7 @@
             <tr>
                 <th>{l s='ID'}</th>
                 <th>Client</th>
+                <th>Date de création</th>
                 <th>Type de compte</th>
                 <th>KBIS</th>
                 <th>RIB</th>
@@ -121,6 +122,8 @@
                             <div class="small-muted"><strong>Code NAF :</strong> {$customer.naf|escape:'html'}</div>
                         {/if}
                     </td>
+
+                    <td>{$customer.date_add|date_format:"%d/%m/%Y %H:%M:%S"}</td>
 
                     <td>
                         <div class="account-type">

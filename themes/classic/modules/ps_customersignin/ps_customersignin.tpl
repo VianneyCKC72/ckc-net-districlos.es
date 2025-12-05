@@ -7,11 +7,10 @@
         </svg>
         <span class="text">Particuliers</span>
     </a>
-{*    Todo : En attente du client !*}
-{*    <a href="/guides-et-fiches-techniques-produits" class="ico btn-espace-pro" rel="nofollow">*}
-{*        <img src="/themes/classic/assets/img/ico-espace-pro.svg" alt="Espace pro" width="20" height="19">*}
-{*        <span class="text">Documents</span>*}
-{*    </a>*}
+    <a href="/guides-et-fiches-techniques-produits" class="ico btn-espace-pro" rel="nofollow">
+        <img src="/themes/classic/assets/img/ico-espace-pro.svg" alt="Espace pro" width="20" height="19">
+        <span class="text">Documents</span>
+    </a>
 {elseif !$logged}
     <a href="{$pro.url_domain}" class="ico btn-espace-pro" rel="nofollow">
         <img src="/themes/classic/assets/img/ico-espace-pro.svg" alt="Espace pro" width="20" height="19">

@@ -47,9 +47,8 @@ class EverPsPopupClass extends ObjectModel
         'multilang' => true,
         'fields' => array(
             'id_shop' => array(
-                'type' => self::TYPE_STRING,
-                'lang' => false,
-                'validate' => 'isAnything',
+                'type' => self::TYPE_INT,
+                'validate' => 'isUnsignedInt',
                 'required' => false
             ),
             'groups' => array(
@@ -178,7 +177,6 @@ class EverPsPopupClass extends ObjectModel
             'ep.id_everpspopup = epl.id_everpspopup'
         );
         $sql->where('ep.active = 1');
-        $sql->where('ep.id_shop LIKE "%'.$id_shop.'%"');
         $sql->where('epl.id_lang = '.(int)$id_lang);
 
         return Db::getInstance()->executeS($sql);
@@ -246,6 +244,7 @@ class EverPsPopupClass extends ObjectModel
             if (!is_array($allowed_groups)
                 || count($allowed_groups) <= 0
                 || !array_intersect($allowed_groups, $customer_groups)
+                || (in_array(10, $customer_groups) && !in_array(10, $allowed_groups))
             ) {
                 continue;
             }

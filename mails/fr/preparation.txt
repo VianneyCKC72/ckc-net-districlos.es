@@ -1,26 +1,17 @@
+ 
+
+{shop_url}
+
 Bonjour {firstname} {lastname},
 
-Votre commande {order_name} est bien en cours de traitement !
+Identifiant de commande {order_name} - Commande en cours de traitement
 
-Nous sommes ravis de vous confirmer que votre commande passée sur {shop_name} est actuellement entre les mains de notre équipe.
+Nous traitons actuellement votre commande ayant pour référence {order_name} de {shop_name}.
 
-Vous pouvez à tout moment suivre son avancement et télécharger votre facture depuis votre espace client, dans la rubrique
-“Historique et détails de mes commandes”.
+Suivez votre commande et téléchargez votre facture sur notre boutique, rendez-vous dans la section [Historique et détails de mes commandes]({history_url}) de votre compte client.
 
-Si vous avez passé votre achat en tant qu'invité, aucun souci : il vous suffit d'utiliser la section "Suivi de commande" disponible sur notre boutique.
+Si vous avez un compte invité, vous pouvez suivre votre commande via la section [Suivi de commande]({guest_tracking_url}) sur notre boutique.
 
-Nous restons à votre disposition si vous avez la moindre question.
-À très bientôt,
-L'équipe {shop_name}
+[{shop_name}]({shop_url})
 
----
-Fabrication européenne
-Garantie 10 ans anti-corrosion
-Paiement 100 % sécurisé
-Livraison à domicile ou retrait en magasin
-
-17 magasins en France pour vous conseiller et vous accompagner dans vos projets de jardin.
-
-Contactez notre service client du lundi au vendredi de 08h00 à 18h00 non stop.
-Téléphone : 04 22 53 10 34 (prix d’un appel local)
 

@@ -41,7 +41,7 @@ class Ps_ShoppingcartAjaxModuleFrontController extends ModuleFrontController
             $isPack = true;
             $packContent = Tools::getValue('id_product_attribute')['block_cart'];
         }
-
+        
         if (Tools::getValue('action') === 'add-to-cart') {
             $modal = $this->module->renderModal(
                 (int) Tools::getValue('id_product'),
