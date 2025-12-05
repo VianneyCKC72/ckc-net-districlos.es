@@ -29,7 +29,7 @@
             <img src="/themes/classic/assets/img/ico-panier.svg" alt="Panier">
             <span class="hidden-sm-down">{l s='Cart' d='Shop.Theme.Checkout'}</span>
         </a>
-        {if $show_emptycart == true}
+        {if isset($show_emptycart) && $show_emptycart == true}
             <div class="empty-cart">
                 <a rel="nofollow" href="{url entity='cart' params=['deleteAll' => '1']}" class="viewcart">
                     {l s='Vider' d='Shop.Theme.Actions'}

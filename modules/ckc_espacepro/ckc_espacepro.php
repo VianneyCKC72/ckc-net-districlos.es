@@ -2,6 +2,8 @@
 if (!class_exists('HelperEspacePro', false) && file_exists(__DIR__.'/classes/HelperEspacePro.php')) {
     require_once __DIR__.'/classes/HelperEspacePro.php';
 }
+use PrestaShop\PrestaShop\Adapter\Product\PriceFormatter;
+
 class ckc_espacepro extends Module
 {
     protected $redirect_after = '/';
@@ -64,6 +66,7 @@ class ckc_espacepro extends Module
             $this->registerHook('displayCustomerAccountForm') &&
             $this->registerHook('actionCustomerAccountAdd') &&
             $this->registerHook('actionSubmitAccountBefore') &&
+            $this->registerHook('actionPresentCart') &&
 
             $this->registerHook('actionCustomerLogoutAfter') &&
             $this->registerHook('actionFrontControllerSetMedia') &&
@@ -1233,6 +1236,48 @@ class ckc_espacepro extends Module
             'pro_base'  => 'https://' . $host . '/pro/',
             'part_base' => 'https://' . $host . '/',
         ];
+    }
+
+    public function hookActionPresentCart(&$params){
+        if(Context::getContext()->shop->id == 2 && Context::getContext()->controller->page_name != 'checkout'){
+
+            $total_excluding_tax = $this->context->cart->getOrderTotal(false);
+            $total_including_tax = $this->context->cart->getOrderTotal(true);
+            $total_excluding_tax_cart = $this->context->cart->getOrderTotal(false, Cart::BOTH_WITHOUT_SHIPPING);
+            $total_including_tax_cart = $this->context->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING);
+
+            $translator = $this->context->getTranslator();
+            $priceFormatter = new PriceFormatter();
+
+            $newParams = [
+                'total_for_cart' => [
+                    'type' => 'total',
+                    'label' => $params['presentedCart']->totals['total_for_cart']['label'],
+                    'amount' => $params['presentedCart']->totals['total_for_cart']['amount'],
+                    'value' => $params['presentedCart']->totals['total_for_cart']['value']
+                ],
+                'total' => [
+                    'type' => 'total',
+                    'label' => $params['presentedCart']->totals['total']['label'],
+                    'amount' => $params['presentedCart']->totals['total_for_cart']['amount'],
+                    'value' => $params['presentedCart']->totals['total_for_cart']['value'],
+                ],
+                'total_including_tax' => [
+                    'type' => 'total',
+                    'label' => $params['presentedCart']->totals['total_including_tax']['label'],
+                    'amount' => $total_including_tax_cart,
+                    'value' => $priceFormatter->format($total_including_tax_cart),
+                ],
+                'total_excluding_tax' => [
+                    'type' => 'total',
+                    'label' => $params['presentedCart']->totals['total_excluding_tax']['label'],
+                    'amount' => $params['presentedCart']->totals['total_for_cart']['amount'],
+                    'value' => $params['presentedCart']->totals['total_for_cart']['value'],
+                ],
+            ];
+            $params['presentedCart']->totals = $newParams;
+        }
+        return json_encode($params);
     }
 
     public function getProHome(): string { return $this->getEnvBases()['pro_base']; }

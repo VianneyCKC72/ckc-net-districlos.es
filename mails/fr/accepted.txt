@@ -1,28 +1,42 @@
-[{shop_url}] 
+Bonjour {firstname} {lastname},
+Bonne nouvelle ! Votre commande {order_name} a bien été prise en compte.
 
-Bonjour {firstname} {lastname}, 
+Nous vous remercions sincèrement pour votre confiance envers {shop_name}.
 
-Votre commande sur {shop_name} ayant pour référence {order_name} a été acceptée et sera traitée rapidement. Vous recevrez un email lorsqu’elle sera en préparation. 
+Informations importantes concernant la livraison :
+Pour garantir la bonne réception de vos produits, merci de suivre attentivement les étapes ci-dessous :
 
-IMPORTANT 
-Avant de signer votre bon de livraison, vous devez déballer et contrôler vos produits en présence du livreur, même si l'emballage vous semble intact. Ne signez pas sous la pression du livreur, si l'emballage est abimé.
-					
-Dans le cas où un dommage est révélé, veuillez obligatoirement noter les RESERVES en décrivant précisément le dégat constaté sur le bon de livraison et en informer notre service clients dans les trois jours ouvrables au plus tard en joignant des photos des produits défectueux et la copie du bon de livraison. 
+1. Avant de signer le bon de livraison
+Déballez et vérifiez impérativement vos produits en présence du livreur, même si l’emballage semble intact.
+Ne vous laissez pas presser : vous avez le droit de contrôler votre marchandise.
 
-Seules les RESERVES sur le bon de livraison vous donne un droit à échanges possibles. Veuillez noter que nous ne pourront traiter aucune réclamations sans un bon de livraison, indiquant des réserves, recu par notre service client dans les 3 jours ouvrables suivant la réception de la commande.
+2. En cas d’anomalie
+Notez des réserves précises et détaillées sur le bon de livraison (description du dommage constaté).
+Informez ensuite notre service clients dans un délai de 3 jours ouvrables, en joignant :
+des photos des produits endommagés,
+une copie du bon de livraison mentionnant les réserves.
 
+⚠️ Seules les réserves inscrites sur le bon de livraison permettent d’ouvrir un dossier d’échange.
+Sans cela, nous ne pourrons malheureusement pas traiter de réclamation.
 
-Vous pouvez accéder à tout moment au suivi de votre commande et
-télécharger votre facture dans "Historique des commandes"
-[{history_url}] de la rubrique "Mon compte"
-[{my_account_url}] sur notre site. 
+📦 Suivi de votre commande :
+Vous pouvez consulter à tout moment l’avancement de votre commande et télécharger votre facture depuis la rubrique “Mon compte” → “Historique des commandes” sur notre site.
 
-Si vous avez un compte invité, vous pouvez suivre votre commande
-dans la section "Suivi invité"
-[{guest_tracking_url}?id_order={order_name}] de notre
-site. 
+Merci encore d’avoir choisi {shop_name} !
+Pour toute demande, nous vous invitons à utiliser la page “Contact” de notre site.
+Ce message étant automatique, merci de ne pas y répondre directement.
 
-Merci de ne pas répondre directement à ce courriel en cliquant sur "Répondre", votre message ne serait pas pris en compte. Pour nous contacter, merci d'utiliser la page "contact" [{shop_url}contactez-nous] de notre site.
+Nous restons à votre disposition si vous avez la moindre question.
+À très bientôt,
+L'équipe {shop_name}
 
-{shop_name} [{shop_url}] 
+---
+Fabrication européenne
+Garantie 10 ans anti-corrosion
+Paiement 100 % sécurisé
+Livraison à domicile ou retrait en magasin
 
+17 magasins en France pour vous conseiller et vous accompagner dans vos projets de jardin.
+
+Contactez notre service client du lundi au vendredi de 08h00 à 18h00 non stop.
+Téléphone : 04 22 53 10 34 (prix d’un appel local)

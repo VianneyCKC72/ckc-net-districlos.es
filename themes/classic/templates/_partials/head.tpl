@@ -39,6 +39,15 @@
   {block name='hook_after_title_tag'}
     {hook h='displayAfterTitleTag'}
   {/block}
+
+  {if $pro.env == 1}
+    <meta name="robots" content="noindex, nofollow">
+
+  {if $smarty.server.HTTP_HOST|lower == 'pro.cloture-discount.fr'}
+    <link rel="canonical" href="https://www.cloture-discount.fr{$smarty.server.REQUEST_URI|escape:'html':'UTF-8'}" />
+  {/if}
+
+  {/if}
   <meta name="description" content="{block name='head_seo_description'}{$page.meta.description}{/block}">
   <meta name="keywords" content="{block name='head_seo_keywords'}{$page.meta.keywords}{/block}">
   <link rel="preconnect" href="https://f.vimeocdn.com">

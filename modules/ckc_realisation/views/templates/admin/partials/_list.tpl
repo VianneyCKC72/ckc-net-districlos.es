@@ -46,7 +46,7 @@
                     <td>{$r.customer_name|escape:'html'}</td>
 
                     <td>
-                        type = {*{$r.customer_type}*}
+                        type = {$r.customer_type}
                         {if $r.customer_type=='pro'}{l s='Professionnel' mod=$module_name}
                         {elseif $r.customer_type=='proticulier'}{l s='Proticulier' mod=$module_name}
                         {else}-{/if}

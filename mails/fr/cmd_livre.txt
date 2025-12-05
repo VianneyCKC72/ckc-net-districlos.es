@@ -1,19 +1,24 @@
-[/{shop_url}] 
-
 Bonjour {firstname} {lastname},
+Nous sommes ravis de vous informer que votre commande {order_name} a bien été livrée ! 🎉
+Nous espérons que vos produits vous apporteront entière satisfaction.
 
-Votre commande a été livrée 
+Pour vous accompagner au mieux, nous mettons à votre disposition une série de tutoriels pratiques pour vous aider dans l’installation :
+https://www.cloture-discount.fr/content/26-documents-et-tutoriels-sur-nos-grillages-et-clotures
 
-Votre commande ayant la référence {order_name} vient d'être
-livrée.
+Si vous avez passé votre commande en tant qu’invité, vous pouvez consulter son suivi via la section “Suivi de commande” disponible sur notre boutique.
 
-Dans le cadre de notre démarche qualité, nous mettons à votre disposition un manuel de montage pour vous aider dans l'installation de vos produits : 
+Nous restons à votre disposition si vous avez la moindre question.
 
- https://www.cloture-discount.fr/41-manuel-de-montage
+À très bientôt,
+L'équipe {shop_name}
 
+---
+Fabrication européenne
+Garantie 10 ans anti-corrosion
+Paiement 100 % sécurisé
+Livraison à domicile ou retrait en magasin
 
-Merci d'avoir effectué vos achats sur {shop_name}!
+17 magasins en France pour vous conseiller et vous accompagner dans vos projets de jardin.
 
-{shop_name} [/{shop_url}] réalisé avec PrestaShop(tm)
-[http://www.prestashop.com/] 
-
+Contactez notre service client du lundi au vendredi de 08h00 à 18h00 non stop.
+Téléphone : 04 22 53 10 34 (prix d’un appel local)
