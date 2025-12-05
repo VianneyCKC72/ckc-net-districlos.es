@@ -3,6 +3,8 @@ if (!class_exists('HelperEspacePro', false) && file_exists(__DIR__.'/classes/Hel
     require_once __DIR__.'/classes/HelperEspacePro.php';
 }
 use PrestaShop\PrestaShop\Adapter\Product\PriceFormatter;
+use PrestaShopBundle\Form\Admin\Type\CustomContentType;
+use Symfony\Component\Form\FormBuilderInterface;
 
 class ckc_espacepro extends Module
 {
@@ -67,6 +69,7 @@ class ckc_espacepro extends Module
             $this->registerHook('actionCustomerAccountAdd') &&
             $this->registerHook('actionSubmitAccountBefore') &&
             $this->registerHook('actionPresentCart') &&
+            $this->registerHook('actionCustomerFormBuilderModifier') &&
 
             $this->registerHook('actionCustomerLogoutAfter') &&
             $this->registerHook('actionFrontControllerSetMedia') &&
@@ -1278,6 +1281,28 @@ class ckc_espacepro extends Module
             $params['presentedCart']->totals = $newParams;
         }
         return json_encode($params);
+    }
+
+    public function hookActionCustomerFormBuilderModifier(array $params)
+    {
+        /** @var FormBuilderInterface $formBuilder */
+        $formBuilder = $params['form_builder'];
+
+        $customer_shop = Db::getInstance()->executeS('SELECT id_shop FROM '._DB_PREFIX_.'customer WHERE id_customer = '.$params['id']);
+        //       add custom template on category page
+        $formBuilder->add('categoryFieldContentCustom', CustomContentType::class, [
+            'required' => false,
+            'label' => 'Multiboutique',
+            'mapped' => false,
+            'template' => '@Modules/ckc_espacepro/views/templates/admin/change_shop.html.twig',
+            'data' => [
+                'customerId' => $params['id'],
+                'id_shop' => $customer_shop[0]['id_shop'],
+                'change_shop_url' => Context::getContext()->link->getAdminLink('AdminEspacePro', true, [], ['action' => 'ChangeShop', 'ajax' => 1]),
+            ]
+        ]);
+
+        $formBuilder->setData($params['data']);
     }
 
     public function getProHome(): string { return $this->getEnvBases()['pro_base']; }

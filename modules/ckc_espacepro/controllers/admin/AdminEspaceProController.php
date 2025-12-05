@@ -76,6 +76,41 @@ class AdminEspaceProController extends ModuleAdminController
         exit();
     }
 
+    public function ajaxProcessChangeShop()
+    {
+        $customerId = Tools::getValue('customerId');
+
+        $customer = new Customer((int)$customerId);
+        $old_default_group = $customer->id_default_group;
+
+        $checkInAnotherShop = Db::getInstance()->executeS('SELECT id_customer FROM '._DB_PREFIX_.'customer 
+        WHERE email LIKE "'.$customer->email.'" AND id_shop != '.$customer->id_shop);
+
+        if(empty($checkInAnotherShop[0]['id_customer'])){
+            if($customer->id_shop == 1){
+                $customer->id_shop = 2;
+                $customer->id_default_group = 10;
+            } else if ($customer->id_shop == 2){
+                $customer->id_shop = 1;
+                $customer->id_default_group = 3;
+            }
+
+            $groups = $customer->getGroups();
+            $newGroupList = array_filter($groups, function ($group) use ($old_default_group) { return $group != $old_default_group; });
+
+            $newGroupList[] = $customer->id_default_group;
+            $newGroupList[] = 3;
+            $customer->updateGroup(array_unique($newGroupList));
+
+            $customer->update();
+
+            echo 'success';
+        } else {
+            echo 'fail';
+        }
+        exit();
+    }
+
     public function postProcessFile($key)
     {
         $row          = [];
