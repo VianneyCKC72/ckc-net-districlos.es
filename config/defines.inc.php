@@ -36,11 +36,11 @@ if(!empty($_SERVER['REMOTE_ADDR'])) {
 /* Debug only */
 if (in_array($remote_addr, $authorizedDebugIps)) {
     if (!defined('_PS_MODE_DEV_')) {
-        define('_PS_MODE_DEV_', true);
+        define('_PS_MODE_DEV_', false);
     }
 } else {
     if (!defined('_PS_MODE_DEV_')) {
-        define('_PS_MODE_DEV_', true);
+        define('_PS_MODE_DEV_', false);
     }
 }
 
