@@ -6,62 +6,81 @@ use CkcConfigurator\Configurator\Helper;
 
 class Soubassement extends ProductFactory {
 
-    // Get all heights existing for Soubassement
-    // Getting colors of the first product selected by default
+    // Get all soubassement products with their color variations
     static public function get($language_id, $session)
     {
         $category = new \Category(self::SOUBASSEMENTS_ID);
         $products = $category->getProducts($language_id, 1, 1000000, null, null, false, true, false, 1, false);
-        $heights = [];
-        $colors = [];
-        $types = [];
+        $items = [];
+        $processed_products = [];
 
         if(count($products) > 0) {
             foreach ($products as $key => $product) {
                 if ($session->id_type != 177 && $product['id_product'] == 1257) {
                     continue;
                 }
-                $combinations = static::getAttributesInformationsByProduct($product['id_product']);
-                // Get Types
-                foreach ($combinations as $combination) {
-                    $combination['attribute'] = str_replace(' ', '-', strtolower($combination['attribute']));
-                    if(strtolower($combination['group']) == 'hauteur') {
-                        $height = explode('-', $combination['attribute']);
-                        $height = array_key_exists(1, $height) ? $height[1] : $height[0];
-                        if(Helper::valueExists($product['id_product'], $heights, "value") == false) {
-                            $heights[] = [
-                                "value" => $product['id_product'],
-                                "name" => $product['name'],
-                                "id_product_attribute" => $combination['id_product_attribute']
-                            ];
-                        }
-                    }
-                    if($key == 0 && strtolower($combination['group']) == 'couleur') {
-                        $color = str_replace('-', ' ', $combination['attribute']);
-                        if(Helper::valueExists($combination['attribute'], $colors, "value") == false) {
-                            $colors[] = [
-                                "value" => $combination['attribute'],
-                                "name" => $color,
-                                "image_url" => self::getImageUrl(\Product::getCombinationImageById($combination['id_product_attribute'], $language_id)),
-                                "id_product_attribute" => $combination['id_product_attribute']
-                            ];
-                        }
-                    }
-                    if($key == 0 && strtolower($combination['group']) == 'type de poteau') {
-                        $type = str_replace('-', ' ', $combination['attribute']);
-                        if(Helper::valueExists($combination['attribute'], $colors, "value") == false) {
-                            $types[] = [
-                                "value" => $combination['attribute'],
-                                "name" => $type,
-                                "id_product_attribute" => $combination['id_product_attribute']
-                            ];
-                        }
-                    }
+                
+                // Éviter les doublons
+                if (in_array($product['id_product'], $processed_products)) {
+                    continue;
                 }
+                $processed_products[] = $product['id_product'];
+                
+                // Récupérer toutes les couleurs (variations) pour ce produit
+                $colors_data = self::getColors($product['id_product'], $language_id);
+                $variations = [];
+                
+                foreach ($colors_data['colors'] as $color) {
+                    // Récupérer le prix pour cette déclinaison
+                    $price = Helper::getPrice($product['id_product'], $color['id_product_attribute'], 1);
+                    
+                    // Retirer le titre du produit du nom si nécessaire
+                    $product_name = \Product::getProductName($product['id_product'], $color['id_product_attribute'], $language_id);
+                    $name_without_title = $product_name;
+                    $colon_pos = strpos($product_name, ' : ');
+                    if ($colon_pos !== false) {
+                        $name_without_title = substr($product_name, $colon_pos + 3);
+                    }
+                    
+                    $variations[] = [
+                        "id_product_attribute" => $color['id_product_attribute'],
+                        "name"                 => $product_name,
+                        "name_without_title"   => $name_without_title,
+                        "price"                => $price['total_price'],
+                        "price_formatted"      => \Tools::displayPrice($price['total_price']),
+                        "image_url"            => $color['image_url'],
+                    ];
+                }
+                
+                if (empty($variations)) {
+                    continue; // Pas de couleurs, on skip
+                }
+                
+                // Récupérer l'image et le nom du produit principal
+                $first_variation = $variations[0];
+                $short_name = explode(' : ', $first_variation['name'])[0];
+                if (empty($short_name)) {
+                    $short_name = $product['name'];
+                }
+                $first_image = $first_variation['image_url'];
+                
+                // Récupérer les détails du produit pour la tooltip
+                $product_details = self::getProductDetails($product['id_product'], $first_variation['id_product_attribute'], $language_id);
+                
+                // Toujours créer un item avec select pour un rendu uniforme
+                $items[] = [
+                    "id"                   => $product['id_product'],
+                    "image_url"            => $first_image,
+                    "name"                 => $short_name,
+                    "short_name"           => $short_name,
+                    "variations"           => $variations,
+                    "has_select"           => true,
+                    "product_details"      => $product_details,
+                ];
             }
         }
-        // Add Types
-        return ["heights" => $heights, "colors" => $colors, 'types' => $types];
+        
+        return $items;
     }
 
     public static function getAttributesInformationsByProduct($id_product)
@@ -136,5 +155,34 @@ class Soubassement extends ProductFactory {
         }
 
         return '';
+    }
+
+    /**
+     * Récupère les caractéristiques du produit pour affichage dans la tooltip
+     */
+    static public function getProductDetails($id_product, $id_product_attribute, $language_id)
+    {
+        $product_obj = new \Product($id_product, false, $language_id);
+
+        if (!\Validate::isLoadedObject($product_obj)) {
+            return [];
+        }
+
+        $details = [];
+
+        // Caractéristiques (features)
+        $features = $product_obj->getFrontFeatures($language_id);
+        if (!empty($features)) {
+            $grouped_features = [];
+            foreach ($features as $feature) {
+                $grouped_features[] = [
+                    'name' => $feature['name'],
+                    'value' => $feature['value']
+                ];
+            }
+            $details['grouped_features'] = $grouped_features;
+        }
+
+        return $details;
     }
 }

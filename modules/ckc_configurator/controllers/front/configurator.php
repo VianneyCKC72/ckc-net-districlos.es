@@ -151,6 +151,14 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                 }
 
                 $sousbassement_id = $this->session->has('soubassement') ? $this->session->soubassement()['id_product'] : false;
+                $selected_soubassement_id = '';
+                $selected_soubassement_id_product_attribute = '';
+                
+                $soubassement_session = $this->session->soubassement();
+                if ($soubassement_session) {
+                    $selected_soubassement_id = $soubassement_session['id_product'];
+                    $selected_soubassement_id_product_attribute = $soubassement_session['id_product_attribute'];
+                }
                 $selected_portillon_id_product_attribute   = '';
                 $selected_portillon_id = '';
                 $selected_occultation_id_product_attribute = '';
@@ -266,8 +274,11 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     "colors"                                    => $this->data['colors'] ?? [],
                     "poteaux"                                   => $this->data['poteaux'] ?? [],
                     "sousbassement_id"                          => $sousbassement_id ? (int)$sousbassement_id : null,
+                    "sousbassement"                             => Soubassement::get($this->language_id, $this->session),
                     "occultations"                              => Occultation::get($this->language_id, $this->session->id_product_attribute, $this->session->isSouple()),
                     "panneaux_deco"                             => PanneauDeco::get($this->language_id, $this->session->isAluminium(), $this->session),
+                    "selected_soubassement_id_product_attribute" => $selected_soubassement_id_product_attribute,
+                    "selected_soubassement_id"                   => $selected_soubassement_id,
                     "selected_occultation_id_product_attribute" => $selected_occultation_id_product_attribute,
                     "selected_occultation_id"                   => $selected_occultation_id,
                     "portillons"                                => Portillon::get($this->language_id, $this->session->id_product_attribute, $sousbassement_id, $this->session->isSouple(), $this->session->isAluminium()),
@@ -277,7 +288,8 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     "session"                                   => $this->session,
                     "products"                                  => $products,
                     "price"                                     => $price,
-                    "preview"                                   => Preview::preview($this->language_id, $this->session),
+                    // "preview"                                   => Preview::preview($this->language_id, $this->session),
+                    "preview"                                   => false,
                     "hasError"                                  => (bool)$this->errors,
                     "errors"                                    => $this->errors,
                     "success"                                   => $this->success,
@@ -801,13 +813,21 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
 
         // Soubassement
         if (isset($sousbassement['active']) && $sousbassement['active'] == 'true' && !empty($sousbassement['color']) && !empty($sousbassement['height'])) {
-            $this->session->insertEntry([
-                'id_configurator_session' => $this->session->id,
-                'id_product'              => $sousbassement['height'],
-                'id_product_attribute'    => Soubassement::getType($sousbassement['height'], $this->session, $this->language_id),
-                'quantity'                => $nbGrillage,
-                'type'                    => 'soubassement'
-            ]);
+            // Si color est directement un id_product_attribute, l'utiliser
+            // Sinon, utiliser getType() pour déterminer selon le type de poteau (rétrocompatibilité)
+            $id_product_attribute = is_numeric($sousbassement['color']) 
+                ? $sousbassement['color'] 
+                : Soubassement::getType($sousbassement['height'], $this->session, $this->language_id);
+            
+            if ($id_product_attribute) {
+                $this->session->insertEntry([
+                    'id_configurator_session' => $this->session->id,
+                    'id_product'              => $sousbassement['height'],
+                    'id_product_attribute'    => $id_product_attribute,
+                    'quantity'                => $nbGrillage,
+                    'type'                    => 'soubassement'
+                ]);
+            }
         }
 
         // Kit de montage
