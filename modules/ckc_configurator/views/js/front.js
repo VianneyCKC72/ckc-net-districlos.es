@@ -284,17 +284,13 @@ $(document).ready(function () {
         }
         
         // Si on change de poteaux (encoches/clips), réinitialiser les soubassements sélectionnés
+        // Les soubassements seront rechargés avec les nouvelles variations filtrées dans refreshPrice()
         if (name === 'poteaux') {
             // Désélectionner tous les soubassements
             $('.configurator-action[data-name="soubassement_id"]').removeClass('selected');
             $('#checkbox_soubassement').removeClass('selected');
-            // Remettre la première déclinaison par défaut pour tous les selects de soubassement
-            $('.soubassement-select').each(function() {
-                if ($(this).find('option').length > 0) {
-                    $(this).find('option:first').prop('selected', true);
-                }
-            });
             $('input[name="soubassement_id"]').val('');
+            // Note: Les selects seront régénérés avec les nouvelles variations filtrées dans refreshPrice()
         }
 
         if (name == 'type') {
@@ -404,6 +400,9 @@ $(document).ready(function () {
                 if ($(this).hasClass('portillon-jardin-action') || $(this).hasClass('occultation-action')) {
                     return;
                 }
+                var change = true;
+            } else if (name === 'poteaux') {
+                // Quand on change de poteaux, forcer le rechargement des soubassements avec les nouvelles variations filtrées
                 var change = true;
             } else {
                 var change = false;
@@ -853,9 +852,14 @@ $(document).ready(function () {
         var soubassementSelect = null;
         $('.soubassement-select').each(function() {
             var $action = $(this).closest('.soubassement-action');
-            if ($(this).val() != '' && $action.hasClass('selected')) {
+            // Retourner le select si le soubassement est sélectionné, même si le select n'a pas encore de valeur
+            if ($action.hasClass('selected')) {
                 soubassementSelected = true;
                 soubassementSelect = $(this);
+                // Si le select n'a pas de valeur, sélectionner la première option
+                if (!$(this).val() && $(this).find('option').length > 0) {
+                    $(this).find('option:first').prop('selected', true);
+                }
                 return false;
             }
         });
@@ -901,18 +905,54 @@ $(document).ready(function () {
 
         $.ajax({
             url: window.location.href, method: "post", data: {
-                ajax: true, updateprice: true, grillage: grillage, sousbassement: {
+                ajax: true, updateprice: true, grillage: grillage,                 sousbassement: {
                     active: sousbassement,
-                    height: soubassementSelect.select && soubassementSelect.select.val() && soubassementSelect.select.closest('.soubassement-action').hasClass('selected')
-                        ? soubassementSelect.select.data('id')
-                        : ($('.configurator-action.selected[data-name="soubassement_id"]').length > 0
-                            ? $('.configurator-action.selected[data-name="soubassement_id"]').data('id')
-                            : ''),
-                    color: soubassementSelect.select && soubassementSelect.select.val() && soubassementSelect.select.closest('.soubassement-action').hasClass('selected')
-                        ? soubassementSelect.select.val()
-                        : ($('.configurator-action.selected[data-name="soubassement_id"]').length > 0
-                            ? $('.configurator-action.selected[data-name="soubassement_id"]').data('id-product-attribute')
-                            : ''),
+                    height: (function() {
+                        // Si un soubassement avec select est sélectionné, utiliser son ID
+                        if (soubassementSelect.select && soubassementSelect.select.closest('.soubassement-action').hasClass('selected')) {
+                            return soubassementSelect.select.data('id');
+                        }
+                        // Sinon, chercher un soubassement sélectionné (normal ou avec select)
+                        var $selectedSoubassement = $('.configurator-action.selected[data-name="soubassement_id"]');
+                        if ($selectedSoubassement.length > 0) {
+                            // Si c'est un soubassement avec select, utiliser l'ID du select
+                            var $select = $selectedSoubassement.find('.soubassement-select');
+                            if ($select.length > 0) {
+                                return $select.data('id');
+                            }
+                            // Sinon, utiliser l'ID de l'élément
+                            return $selectedSoubassement.data('id');
+                        }
+                        return '';
+                    })(),
+                    color: (function() {
+                        // Si un soubassement avec select est sélectionné, utiliser la valeur du select
+                        if (soubassementSelect.select && soubassementSelect.select.closest('.soubassement-action').hasClass('selected')) {
+                            var selectValue = soubassementSelect.select.val();
+                            // Si le select n'a pas de valeur, prendre la première option
+                            if (!selectValue && soubassementSelect.select.find('option').length > 0) {
+                                selectValue = soubassementSelect.select.find('option:first').val();
+                            }
+                            return selectValue;
+                        }
+                        // Sinon, chercher un soubassement sélectionné (normal ou avec select)
+                        var $selectedSoubassement = $('.configurator-action.selected[data-name="soubassement_id"]');
+                        if ($selectedSoubassement.length > 0) {
+                            // Si c'est un soubassement avec select, utiliser la valeur du select
+                            var $select = $selectedSoubassement.find('.soubassement-select');
+                            if ($select.length > 0) {
+                                var selectValue = $select.val();
+                                // Si le select n'a pas de valeur, prendre la première option
+                                if (!selectValue && $select.find('option').length > 0) {
+                                    selectValue = $select.find('option:first').val();
+                                }
+                                return selectValue;
+                            }
+                            // Sinon, utiliser l'attribut data-id-product-attribute (pour les soubassements normaux)
+                            return $selectedSoubassement.data('id-product-attribute') || '';
+                        }
+                        return '';
+                    })(),
                 }, occultation: {
                     active: occultation,
                     id: occultationSelect.select && occultationSelect.select.val() && occultationSelect.select.closest('.occultation-action').hasClass('selected')
@@ -1061,6 +1101,57 @@ $(document).ready(function () {
                         }
                         // Pour les occultations avec select, la sélection est déjà gérée par l'attribut "selected" dans le select
                     }
+                }
+                
+                // Recharger les soubassements quand on change de poteaux pour mettre à jour les variations filtrées
+                // Vérifier si on vient de changer de poteaux en regardant si un soubassement était sélectionné mais n'est plus compatible
+                var poteauxChanged = false;
+                if (change && response.sousbassement && response.sousbassement.length > 0) {
+                    // Vérifier si la déclinaison sélectionnée existe toujours dans les variations filtrées
+                    var selectedVariationExists = false;
+                    if (response.selected_soubassement_id_product_attribute) {
+                        response.sousbassement.forEach(function(product) {
+                            if (product.variations) {
+                                var exists = product.variations.some(function(variation) {
+                                    return variation.id_product_attribute == response.selected_soubassement_id_product_attribute;
+                                });
+                                if (exists) {
+                                    selectedVariationExists = true;
+                                }
+                            }
+                        });
+                    }
+                    
+                    // Si la déclinaison sélectionnée n'existe plus, c'est qu'on a changé de poteaux
+                    if (response.selected_soubassement_id_product_attribute && !selectedVariationExists) {
+                        poteauxChanged = true;
+                    }
+                    
+                    $(".soubassement.hide-row .row").html('');
+                    response.sousbassement.forEach(function (product, index) {
+                        var selectedVariation = response.selected_soubassement_id_product_attribute || '';
+                        var isSelected = response.selected_soubassement_id == product.id;
+                        
+                        // Si on a changé de poteaux, forcer la réinitialisation pour utiliser la première variation compatible
+                        if (poteauxChanged) {
+                            selectedVariation = '';
+                            isSelected = false;
+                        } else if (selectedVariation && product.variations) {
+                            // Vérifier si la déclinaison sélectionnée existe toujours dans les variations filtrées
+                            var variationExists = product.variations.some(function(variation) {
+                                return variation.id_product_attribute == selectedVariation;
+                            });
+                            if (!variationExists) {
+                                // La déclinaison n'existe plus, utiliser la première variation compatible (filtrée)
+                                selectedVariation = '';
+                                isSelected = false;
+                            }
+                        }
+                        
+                        // Régénérer le HTML avec les nouvelles variations filtrées
+                        // Si selectedVariation est vide, la première variation compatible sera sélectionnée par défaut
+                        $(".soubassement.hide-row .row").html($(".soubassement.hide-row .row").html() + HtmlGenerator.soubassement(product, selectedVariation, isSelected));
+                    });
                 }
 
                 let serviceTitles = $('#servicesPrev').text()
