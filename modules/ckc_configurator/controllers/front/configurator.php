@@ -812,17 +812,24 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
 
 
         // Soubassement
+        // Vérifier d'abord si l'entrée soubassement existante est encore compatible avec le type de poteau actuel
+        $existing_soubassement = $this->session->soubassement();
+        if ($existing_soubassement) {
+            // Vérifier si la déclinaison existante correspond au type de poteau actuel
+            $clips = isset($this->session->clips) ? (int)$this->session->clips : null;
+            if ($clips !== null && !Soubassement::matchesPoleType($existing_soubassement['id_product'], $existing_soubassement['id_product_attribute'], $clips, $this->language_id)) {
+                // La déclinaison existante n'est plus compatible, la supprimer
+                $this->session->deleteEntryByType('soubassement');
+            }
+        }
+        
         if (isset($sousbassement['active']) && $sousbassement['active'] == 'true' && !empty($sousbassement['color']) && !empty($sousbassement['height'])) {
-            // Si color est directement un id_product_attribute, vérifier qu'il correspond au type de poteau
+            // Si color est directement un id_product_attribute, l'utiliser directement
+            // Les variations sont déjà filtrées selon le type de poteau dans Soubassement::get()
             // Sinon, utiliser getType() pour déterminer selon le type de poteau (rétrocompatibilité)
             if (is_numeric($sousbassement['color'])) {
-                // Vérifier que la déclinaison sélectionnée correspond au type de poteau
-                $id_product_attribute_from_type = Soubassement::getType($sousbassement['height'], $this->session, $this->language_id);
-                // Si getType() retourne une valeur différente, l'utiliser (correction automatique)
-                // Sinon, utiliser celle sélectionnée (elle correspond déjà au bon type)
-                $id_product_attribute = ($id_product_attribute_from_type && $id_product_attribute_from_type != $sousbassement['color']) 
-                    ? $id_product_attribute_from_type 
-                    : $sousbassement['color'];
+                // Utiliser directement la déclinaison sélectionnée car elle est déjà filtrée selon le type de poteau
+                $id_product_attribute = $sousbassement['color'];
             } else {
                 $id_product_attribute = Soubassement::getType($sousbassement['height'], $this->session, $this->language_id);
             }
@@ -836,6 +843,9 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     'type'                    => 'soubassement'
                 ]);
             }
+        } else if (isset($sousbassement['active']) && $sousbassement['active'] == 'false') {
+            // Si le soubassement est explicitement désactivé, le supprimer de la session
+            $this->session->deleteEntryByType('soubassement');
         }
 
         // Kit de montage

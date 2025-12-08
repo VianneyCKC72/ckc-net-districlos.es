@@ -30,7 +30,16 @@ class Soubassement extends ProductFactory {
                 $colors_data = self::getColors($product['id_product'], $language_id);
                 $variations = [];
                 
+                // Récupérer le type de poteau sélectionné (clips ou encoches)
+                $clips = isset($session->clips) ? (int)$session->clips : null;
+                
                 foreach ($colors_data['colors'] as $color) {
+                    // Filtrer les variations selon le type de poteau sélectionné
+                    // Si clips est défini, ne garder que les déclinaisons correspondantes
+                    if ($clips !== null && !self::matchesPoleType($product['id_product'], $color['id_product_attribute'], $clips, $language_id)) {
+                        continue;
+                    }
+                    
                     // Récupérer le prix pour cette déclinaison
                     $price = Helper::getPrice($product['id_product'], $color['id_product_attribute'], 1);
                     
@@ -62,7 +71,10 @@ class Soubassement extends ProductFactory {
                 if (empty($short_name)) {
                     $short_name = $product['name'];
                 }
-                $first_image = $first_variation['image_url'];
+                
+                // Récupérer l'image de couverture du produit principal, avec fallback vers l'image de la première variation
+                $cover_image = \Product::getCover($product['id_product']);
+                $first_image = $cover_image ? self::getImageUrl($cover_image) : $first_variation['image_url'];
                 
                 // Récupérer les détails du produit pour la tooltip
                 $product_details = self::getProductDetails($product['id_product'], $first_variation['id_product_attribute'], $language_id);
@@ -145,6 +157,36 @@ class Soubassement extends ProductFactory {
         }
 
         return null;
+    }
+
+    /**
+     * Vérifie si une déclinaison correspond au type de poteau sélectionné (clips ou encoches)
+     * Utilise la même logique que getType() mais pour vérifier une déclinaison spécifique
+     * @param int $id_product L'ID du produit
+     * @param int $id_product_attribute L'ID de la déclinaison à vérifier
+     * @param int $clips 1 pour clips, 0 pour encoches
+     * @param int $language_id L'ID de la langue
+     * @return bool
+     */
+    static public function matchesPoleType($id_product, $id_product_attribute, $clips, $language_id)
+    {
+        $combinations = static::getAttributesInformationsByProduct($id_product);
+        
+        foreach ($combinations as $combination) {
+            // Vérifier si cette combinaison appartient à la déclinaison recherchée
+            if ($combination['id_product_attribute'] == $id_product_attribute) {
+                if (strtolower($combination['group']) == 'type de poteau') {
+                    $type = str_replace('-', ' ', strtolower($combination['attribute']));
+                    if ($clips == 1 && strpos($type, 'clip') !== false) {
+                        return true;
+                    } else if ($clips == 0 && strpos($type, 'encoche') !== false) {
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        return false;
     }
 
     static public function getImageUrl($image)
