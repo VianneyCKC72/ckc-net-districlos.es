@@ -10,6 +10,9 @@
 {if !empty($editrib)}
     <div class="panel">{$editrib}</div>
 {/if}
+{if !empty($editcompanyreference)}
+    <div class="panel">{$editcompanyreference}</div>
+{/if}
 
 <div class="panel kpi-container">
     <div class="row">
@@ -218,6 +221,7 @@
     window.PROTI_GROUP_ID = {$id_group_proticulier|intval};
     var ajax_change_group_url = '{$ajax_change_group_url|escape:'javascript'}';
     var ajax_download_file_url = '{$downloadFileUrl|escape:'javascript'}';
+    var ajax_find_reference_company_url = '{$findReferenceCompany|escape:'javascript'}';
 </script>
 
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
