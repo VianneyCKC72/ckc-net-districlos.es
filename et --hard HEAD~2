@@ -1,0 +1,1691 @@
+[33mafe63568[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m Clean SQL dump from merge (remove large blob)
+[33m5926b728[m Merge dev into main (take theirs: origin/dev priority)
+[33m01733967[m[33m ([m[1;31morigin/dev[m[33m)[m Merge branch 'dev' of https://gitlab.com/ckcnet/new-districlos into dev
+[33m29610fb1[m merging, je recupere le dev en prio
+[33me91c3d53[m Modif de liana
+[33m052493f4[m[33m ([m[1;31morigin/main[m[33m)[m Merge remote-tracking branch 'origin/dev'
+[33md394ceed[m ckc - modification de liana pour la demande de kevin sur la societe mere
+[33m1170c67e[m DTC - correction mails
+[33me177eb75[m CKC - Espace Pro - ajout du formulaire de sélection d'une société de référence sur page Professionnels dans le BO
+[33m2e271538[m Merge remote-tracking branch 'origin/dev' into dev
+[33m56559fdf[m CKC - Pack - Correction eval
+[33mc26ddc02[m DTC mails-refonte
+[33me8e83737[m[33m ([m[1;31morigin/dev-yan[m[33m)[m CKC - Espace Pro - Ajout fonctionnalité de modification d'une boutique d'un client sur la page client dans le BO
+[33mb5fcaff1[m Merge branch 'dev-yan' into 'dev'
+[33mc3b6b47d[m MEP
+[33m7bdf99af[m gitignore a jour avec les images de realisation et imageupload (module ckc)
+[33mcac95141[m Merge remote-tracking branch 'origin/dev'
+[33mf72f2fed[m Force sync main with dev
+[33m0d2dedbb[m gitignore mise a jour
+[33mfb05d388[m CKC - Espace Pro - Correction Erreur valeur inconnue dans le header après ajout d'un pack dans le panier
+[33m03153b25[m fichier modifier en prod
+[33m7c049c73[m CKC - PS Shopping Cart - Ajout du module sur GIT
+[33m1e9b6a38[m CKC - Pack - Ajout du shortcode PLAFOND
+[33mf5592f8e[m CKC - Pack - Ajout du shortcode PLAFOND
+[33m16cee27d[m CKC - Espace pro - Ajout HT pour les composants des packs page produit, styles pour En stock sur pahe produit
+[33m63766199[m CKc - Amélioration HT suite a recettage
+[33mbe0c98e2[m Merge branch 'dev' of gitlab.com:ckcnet/new-districlos into dev
+[33m874dfa57[m CKC - Panier Pro Page de confirmation refait avec les HT, TVA et mise en page
+[33m6b68674e[m CKC - Espace Pro - Correction l'affichage des prix des packs et des prix des produits sans livraison
+[33mc71a6068[m DISTRICLOS - Correction CartRule pour expiration des promos
+[33mcc2f8cea[m Merge branch 'dev' into dev-yan
+[33m596a3d9f[m CKC - MAINT - Correction erreur Php Parse Error dans le fichier MAJ_prices_pro.php
+[33m21a982a6[m CKC - MAINT - Module de campagne > Configuration du contenu de la catégorie
+[33m79bf4d1d[m Merge branch 'dev' of gitlab.com:ckcnet/new-districlos into dev
+[33m5fd4c68b[m CKC - Panier Pro Information Montant TVA sur panier
+[33md12c55e0[m CKC - Maint - Affichage des popups du module Ever Popup -> ajout fonctionnalité de sélection d'une boutique dans la config d'un popup
+[33m6e7f2bec[m Merge branch 'dev' of gitlab.com:ckcnet/new-districlos into dev
+[33m0d32aea5[m CKC - Panier Pro Amélioration des informations HT et TVA
+[33m0a13192c[m CKC - MAINT - Correction Problème de code sur le CTA Découvrir dans module de campagne
+[33maf8f6386[m CKC - Modal et information fiche produit et miniature sur le HT et TTC
+[33m71588d6e[m CKC - MAINT - Correction Problème de code sur le CTA Découvrir dans module de campagne
+[33m87fe255b[m CKC - regle SEO pour prendre aucun risuqe sur les impacts d'un espace pro
+[33mbcecc2e6[m chore(git): untrack fichiers maintenant ignorés
+[33md5435818[m chore(git): untrack fichiers maintenant ignorés
+[33mb0d10e40[m Mise a jour gitignore
+[33me5f7ea0b[m Merge branch 'mail-refonte' into 'dev'
+[33m60c9abf2[m DTC - promo retiré
+[33m8008016e[m MAINT - Correction affichage date_add Clients Pro BO
+[33m7d6112de[m MAIN - Ajout date_add dans client pro
+[33m51d76dee[m Fix conflits du merge
+[33md8455147[m Espace pro - correction bug tarifs HT/TTC sur la page de confirmation de commande
+[33md7848da9[m MAINT - module configurateur des campagnes - correction bug le changement de texte ne s'enregistre pas
+[33m4749e140[m espace pro : fix probleme requete extension pdf
+[33m04f069c8[m Merge branch 'dev' into dev-yan
+[33meb0b9142[m css provisoire pour éviter les bugs sur la page "Mes avantages"
+[33m4a1e11e8[m Espace pro - affichage des blocs Documents dans le menu
+[33mc511b0fb[m Merge branch 'dev' of gitlab.com:ckcnet/new-districlos into dev
+[33m81e77663[m nouveau texte pour la page Avantages
+[33m50140f2f[m Espace pro - correction affichage des proticuliers sur la page Professionnels de BO, correction affichage des listes catégories dans Guides & Fiches de BO
+[33m73a5c749[m Espace pro - correction affichage des proticuliers sur la page Professionnels de BO, correction affichage des listes catégories dans Guides & Fiches de BO
+[33m8b26ac42[m Espace pro - correction affichage fichiers Kbis & Rib - page Professionnels de BO
+[33m8f30b927[m Espace pro - correction affichage fichiers Kbis & Rib - page Professionnels de BO
+[33m46a8653f[m Espace pro - correction bug téléchargement des fichiers kbis & rib sur la page Professionnels BO
+[33mc3b6f207[m Espace pro - correction bug du téléchargement des fichiers kbis & rib
+[33m9b772633[m DTC mails-refonte
+[33mc5dbf105[m Espace pro - Promos ne sont pas visibles sur la page Promotions
+[33m50392bc8[m Espace pro - Promos ne sont pas visibles sur la page Promotions
+[33m23731854[m Espace pro - correction valeurs colonne sur la page BO du module Ckc réalisations
+[33m68976a1a[m Espace pro - correction livraison à définir sur la page panier
+[33medb17e7d[m Espace pro - correction livraison à définir sur la page panier
+[33mdc931509[m Gitignore pour le dossier modules/ckc_realisation/uploads/2/
+[33m19b31e32[m Gitignore pour le dossier modules/ckc_realisation/uploads/2/
+[33m1b5e4b89[m Espace pro - correction styles page vos réalisations
+[33mbeb2a3bd[m Espace pro - correction styles page vos réalisations
+[33md65a61bd[m Merge branch 'dtc-popuppanier' into 'dev'
+[33m0d3eaf6c[m Merge branch 'dev' into 'dtc-popuppanier'
+[33m0f8b47f2[m Merge branch 'dev' of gitlab.com:ckcnet/new-districlos into dev
+[33m04adce1e[m Correction du template de product (div en trop, formatage, et balise meta
+[33m0f53e5f8[m Espace pro - correction lien Les offres au volume dans le menu
+[33m9992376b[m Espace pro - correction liens Les offres au volume dans le menu
+[33mfed36156[m DTC - hook mis en place pour compte à rebours
+[33m08988d6e[m CKC - Categories - Price
+[33m664c250e[m Merge remote-tracking branch 'origin/main'
+[33m8a5ae289[m CKC - Categories - Price
+[33md2f30361[m Merge remote-tracking branch 'origin/dev' into dev
+[33ma5223ac1[m CKC - Categories - Price
+[33ma6aa51cd[m Modification de yan sur la branche de prod
+[33m19689219[m Modification de yan sur la branche de prod attention CSS a revoir au milieu d'un template
+[33m8c0787ea[m Espace prod - correction styles page catégorie format tablette 768
+[33m5522daff[m Espace pro - correction style icônes filtres - page catégorie
+[33mf1a85488[m Espace pro - correction erreur js sur la page catégorie
+[33m9f35a022[m Espace pro - correction des styles des descriptions des produits - page produit
+[33m88852c6a[m Espace pro - masquage promo livraison sur la page panier
+[33m79819060[m Espace pro - correction css styles pro - page commande
+[33m8b19e843[m DTC - boutique remonté dans une fiche client pour SC
+[33mb22fb5ad[m Espace pro - correction icone menu ne marche pas - page Mon compte
+[33m16fabc4d[m Remove cached .htaccess
+[33mc20441a6[m Merge branch 'dev' of gitlab.com:ckcnet/new-districlos into dev
+[33m4ad9c756[m Espace pro - Plus de fichier de cache de git
+[33m8ed73173[m Espace pro - correction fichier manquant module configurateur
+[33m508158ac[m Espace pro - correction affichage filtres & bloc nos meilleures ventes page catégorie
+[33me1d7847c[m Espace pro - Homepage
+[33m4bf08d18[m Merge branch 'dev' of gitlab.com:ckcnet/new-districlos into dev
+[33m2ab118c8[m pas de csv price dans le git !
+[33mb6e2c600[m Retour SCSS pour tablette + Masquer bouton documents
+[33m4fbb01dd[m DTC - popup panier
+[33m3ddb1ae2[m Espace pro - correction des logos pour les formats mobile & tablette
+[33m8d90a10e[m CKC - Recaptcha - Hide
+[33m62a2f941[m CKC - Recaptcha - Hide
+[33mcc7f8088[m Espace pro - module Ckc réalisations - correction retour ajax
+[33mf2647ec6[m Espace pro - correction lien Les offres au volume pour le menu mobile
+[33m7fb6dc71[m Espace pro - ajout espacement entre blocs livraison & tabs format tablette page produit
+[33m3b9ec805[m Espace pro - correction texte affiché après la création d'un compte pro
+[33m57e49798[m Espace pro - correction affichage hook du module Everadvancepayment sur la page panier
+[33m9e29174f[m Espace pro - correction styles bouton active & focus
+[33m610deb9f[m DTC - mails-refonte
+[33m5152b202[m Merge remote-tracking branch 'origin/dev' into dev
+[33m81e852d2[m CKC - SEO - Ajout avis
+[33m2c5f0a71[m Espace pro - affichage du stock dans détails produit - page produit
+[33mad492fe5[m Merge branch 'dev' of gitlab.com:ckcnet/new-districlos into dev
+[33ma1b132b4[m Intégration fiche produit Intégration mon compte
+[33m8001ae09[m Espace prod - module Ckc Réalisations : ajout icône + lien dans le menu BO, ajout traductions des status, ajout d'une alerte page config BO sur la boutique particulier
+[33m54afa6ec[m Merge branch 'dev' of gitlab.com:ckcnet/new-districlos into dev
+[33m0364c1f2[m Correction bug liste de groupe quand on est sur le site particulier
+[33m3296a410[m Espace pro - correction récup du magasin favoris sur la page Mon compte
+[33mff9ccba9[m Merge branch 'faq-responsive' into 'main'
+[33m168b7d66[m Espace pro - correction formulaire - page Mon compte
+[33m8da109b1[m[33m ([m[1;31morigin/seo[m[33m, [m[1;32mseo[m[33m)[m CKC - SEO - Ajout avis
+[33m480ea8ac[m CKC - SEO - Ajout avis
+[33m6c70787b[m CKC - SEO - Ajout avis
+[33m4c11d814[m CKC - SEO - Ajout avis
+[33m4d9c84be[m CKC - SEO - Correction catégories
+[33m3e7b7d1b[m CKC - Configurateur - Correction demi-poteaux
+[33m9e707356[m CKC - Configurateur - Correction demi-poteaux
+[33m441b215c[m Espace pro - masquage logo mobile dans header pro pour format tablette
+[33m3878603a[m Espace pro - mise en forme responsive du bloc formulaire sur la homepage
+[33m96e802a6[m[33m ([m[1;31morigin/faq-responsive[m[33m)[m DTC - faq responsive
+[33m690efaac[m Espace pro - mise en forme flèches pour Accessoires compatibles - page catégorie
+[33m21018766[m Espace pro : ajout styles des positions des flèches pour le bloc Accessoires compatibles page catégorie
+[33mbe779ae5[m Correction image suite a mise en prod
+[33m3343a20d[m Merge branch 'dev' of gitlab.com:ckcnet/new-districlos into dev
+[33m2adb59ff[m Correction homepage
+[33m47efdb3b[m Espace pro - ajout styles pour le lien Lire d'avantage sur la page produit
+[33m06daea44[m Espace pro - ajout du bloc Nos recommandations sur la page produit
+[33m69d19e9d[m Espace pro - correction - Manque CTA - ajout bouton Voir le produit pour les pages produit & catégorie
+[33mb759f007[m Espace pro - Ajout des blocs Accessoires compatibles & Nos clients ont également acheté sur la page catégorie
+[33m6d06a767[m Espace pro - correction erreur js, ajout bloc newsletter + notre sélection sur la page catégorie pro
+[33m0fb6c769[m Espace pro - Mettre label Télécharger la fiche technique pour la fiche technique, Espacer un peu entre les docs a télécharger et les onglets
+[33mb03c2ef7[m Merge branch 'dev' of gitlab.com:ckcnet/new-districlos into dev
+[33m968c7063[m Titre homepage bloc temoignage
+[33me8b0c758[m Espace prod : changement couleur bouton dans le bloc Newsletter
+[33md4756004[m Espace pro : changement couleur icone show_grid sur la page catégorie
+[33m127af0bf[m Espace pro - suppression les champs pour les fichiers dans le formulaire page Mon compte
+[33m7cce27d0[m Espace pro : correction formulaire sur la page Mon Compte
+[33m741237c5[m espace pro - correction bug de chargement du formulaire sur la page Mon compte
+[33mbc69079a[m Merge branch 'guide' into 'main'
+[33mcd590dc2[m Merge branch 'menuProduct&imgMenu' into 'main'
+[33m3b351fd4[m espace pro - correction style texte dans les filtres catégories
+[33m1875fbf4[m DISTRICLOS - hook déplacé pour faire focntionné le module de guide
+[33mcaa4b7e9[m email inscription pro
+[33m69dac2ff[m Je retire la coquille ² que theo a vue sur la homepage pro
+[33m9b21c139[m espace pro - ajout bouton Mes avantages dans le menu mobile pro
+[33m167c38e7[m espace pro - ckc realisations - correction ajax d'ajoout d'une photo sur la page mon compte pro
+[33mc5069cf1[m ajout gitignore pour htaccess
+[33m17e2f085[m git ignore
+[33m03c1560d[m Merge branch 'dev' of gitlab.com:ckcnet/new-districlos into dev
+[33m7aaa3bde[m modif espace pro homepage integration et module obs delete
+[33m74a9b0c4[m espace pro correction téléchargement des fichiers lors de création compte pro
+[33m49aaad16[m modif id section page avantage pro
+[33m6c63dddb[m Merge remote-tracking branch 'origin/dev' into dev
+[33m8ff1eb70[m modif espace pro
+[33m28ad75f9[m  modif lien les offres au volume site pro
+[33m5c176d46[m fix requete SQL qui allait chercher des produits où prix spé étaient supprimés
+[33m65ba6b2d[m DTC - imgMenu
+[33ma4f85d48[m DTC - menuProduct
+[33m4e8e4831[m Espace pro - ajout lien vers le site particuliers dans header pro
+[33m06395c24[m modif espace pro slug document
+[33mfed5afaa[m Espace pro : suppression logo Partenaire pour le header pro, ajout lien pour Les offres au volume dans header pro
+[33m23d933b3[m correction erreurs : undefined array key dans les miniatures produit & doublon du prix total dans le panier
+[33mb27b8958[m espace pro - correction lien de connexion
+[33m2b453099[m Merge branch 'black2weeks' into 'main'
+[33m6d55e5b0[m[33m ([m[1;31morigin/black2weeks[m[33m)[m DTC - black2weeks
+[33m91b102bc[m espace pro - correction styles css & lien icone espace pro
+[33m3525f739[m mise à jour du module espacepro & script MaJ_prices_pro
+[33md6934bec[m Espace Pro : masquage des prix des accessoires quand non connecté sur page produit
+[33mb5dda1da[m Espace Pro : correction : réseau social qui apparait et disparait quand on fait connexion
+[33m715bc38b[m Espace pro : correction affichage styles pour les boutons Envoyer un fichier sur la page d'inscription pro
+[33mf1ca4820[m[33m ([m[1;31morigin/pro[m[33m)[m Espace Pro : masquage des prix des accessoires quand non connecté sur page produit
+[33m5c1f5a9e[m DTC - MAJ branch
+[33me49fd0db[m Merge branch 'dev' into dev-yan
+[33m33197bfd[m DISTRICLOS - supp import_bdd.sh
+[33m27e12302[m Espace Pro : correction : réseau social qui apparait et disparait quand on fait connexion
+[33m46d95a11[m Espace pro : correction affichage styles pour les boutons Envoyer un fichier sur la page d'inscription pro
+[33m73dc31eb[m MAINT - correction : image menu mobile dans module des campagnes
+[33mc2e78c89[m MAINT - correction fonctionnalité suppression de campagne module Campagnes publicitaires
+[33md8f7608a[m Merge de Pro vers DEV
+[33mc04daae1[m[33m ([m[1;31morigin/dealt[m[33m)[m Merge de Dealt vers DEV
+[33mda871f4a[m correction requête sql pour le fichier cron_customers_updated.php
+[33m82cb5ef3[m Merge branch 'dev' into dev-yan
+[33m30178d9a[m Merge branch 'dev' into 'main'
+[33m9f2bec8f[m CKC - Livraison - Correction livraison
+[33m03d94640[m CKC - Livraison - Correction livraison
+[33mf6ca6116[m CKC - Panier - Correction livraison
+[33m3712e94d[m CKC - Pack - Correction création pack
+[33m3bf57468[m Merge remote-tracking branch 'origin/dev' into dev
+[33m6aebcd0c[m CKC - Cart Rule - Fix
+[33meb4f02e8[m DISTRICLOS - Correction liens images
+[33mefb52339[m Merge branch 'dev' into 'main'
+[33m49ce8f4f[m Merge branch 'dev-yan' into 'dev'
+[33me2d28d18[m Merge branch 'perf-stats' into 'dev'
+[33m244fca8e[m Merge branch 'codeIso-mulitboutique' into 'dev'
+[33maa9ff570[m DISTRICLOS - optimisation stats
+[33m7b63e661[m Merge branch 'dev' into dev-yan
+[33m4e3c4122[m Merge branch 'dev' into codeIso-mulitboutique
+[33m805b88e1[m DISTRICLOS - img adapté au menu
+[33m62e25ceb[m DISTRICLOS - img adapté au menu
+[33mc83a4812[m Merge branch 'dev-yan' into 'dev'
+[33mafa7c465[m Merge branch 'dev' into dev-yan
+[33m3352b192[m DISTRICLOS - img adapté au menu
+[33m20c43993[m DISTRICLOS - gestion des autres pays pour l'attribution du bon magasin à la commande
+[33m9f1aa585[m Merge branch 'dev-yan' into 'dev'
+[33m96f1bf13[m Merge branch 'dev-stockBrut' into 'dev'
+[33m4935fe82[m DISTRICLOS - gestion des autres pays pour l'attribution du bon magasin à la commande
+[33m4fdee0b3[m DISTRICLOS - rollback hook déplacé
+[33m6c246c14[m DISTRICLOS - hook déplacé pour le module de guide
+[33m864337e9[m Merge branch 'dev' into dev-yan
+[33m0558c277[m DISTRICLOS - rollback file for merge
+[33me2e8efc0[m DISTRICLOS - delete file
+[33mfb2494ef[m DISTRICLOS - img menu
+[33m75b0e220[m DISTRICLOS - img menu
+[33mc2182b03[m DISTRICLOS - correction duplication de data
+[33ma1f734f1[m ajout templates pour les connectés & non connectés dans le layout-header-footer de creativelements
+[33m2a8e5b74[m DISTRICLOS - images test
+[33m5387c8fe[m DISTRICLOS - Clean menu & images
+[33m926878e2[m DISTRICLOS - Correction stock BRUT
+[33m7017d35a[m correction lien pour Espace pro dans le menu mobile
+[33ma525144a[m correction liens dans le menu mobile pour le sites pro & particulier (erreur variable inconnu 'env_particulier')
+[33m1f301fb8[m correction affichage des prix réduits dans miniatures produit sur site pro
+[33mf4aef318[m DISTRICLOS - menu JS / CSS
+[33mc7a3c9c1[m CKC - Stock - Synchronisation
+[33m121d5258[m Merge remote-tracking branch 'origin/dev' into dev
+[33mc29b5397[m Merge branch 'main' into dev
+[33me635e0c5[m Merge branch 'DTC-divalto-LAD' into 'dev'
+[33me55ecc30[m Merge branch 'dtc-stockMapping' into 'dev'
+[33mfc4afc6c[m DISTRICLOS - stock brut platforme
+[33m33e18a6d[m fichier cron_customers_updated renommé
+[33m0afb6c26[m DISTRICLOS - megamenu js
+[33m406d06e4[m CKC - Stock - Synchronisation
+[33mc39fa032[m CKC - Stock - Synchronisation
+[33m77a418bd[m CKC - Pack - Prix qui saute
+[33m4f4747e9[m CKC - Pack - Prix qui saute
+[33md14dddab[m CKC - Pack - Prix qui saute
+[33mad6c5f3f[m CKC - Pack - Prix qui saute
+[33m04536b87[m CKC - Pack - Prix qui saute
+[33m797ff2fd[m création script CRON pour générer le fichier csv avec infos clients mis à jour, ajout texte sur les infos des factures dans Mes Commandes de l'espace pro
+[33m6cec2120[m DISTRICLOS - add divaltoOrderCtl et modif LAD
+[33m634b5d0b[m ajout des templates de homepage pro pour les connectés et non connectés
+[33maba562a0[m Ajout lien pour le bouton Mes avantages dans le header pro
+[33mdd6e5d07[m correction affichage logo des campagnes publicitaires
+[33ma5eaf5cd[m DISTRICLOS - Correction typo champs dynamic product
+[33m89b82906[m DISTRICLOS - Correction thumbnail hover & select color
+[33m7e256d49[m DISTRICLOS - Correction stats add Thibaut
+[33m98618b6d[m DISTRICLOS - Correction typo champs dynamic product
+[33ma5ef59ac[m correction masquage de prix dans leftColumn page catégorie pro quand non connecté
+[33m21a08e17[m Merge branch 'dev-maint-yan' into 'dev'
+[33m696bbcde[m DISTRICLOS - Correction typo champs dynamic product
+[33m88ecac7e[m correction styles css bouton de connexion sur le site pro
+[33me0d6e03e[m Merge branch 'dev-maint-yan' into 'dev'
+[33mb969aa8f[m correction erreurs fichier _base.scss
+[33m04e92f82[m correction application logo pour les campagnes publicitaires
+[33m0f70ad34[m DISTRICLOS - Correction thumbnail hover & select color
+[33m3ea5ca61[m ajout styles dans header pour icone du tab Fiches et Guides du module ckc_espacepro
+[33m48e38324[m ajout des logos pour les modules ckc_espacepro, ckc_realisation, ajout icone pour le tab Fiches et Guides du module ckc_espacepro
+[33mc7952cca[m Merge branch 'main' into pro
+[33m74641a05[m DISTRICLOS - Correction stats add Thibaut
+[33m16835a08[m DISTRICLOS - Correction typo champs dynamic product
+[33m9ce03aca[m ckc - Module ABTESTING
+[33m641d93a5[m ajout création de la page vosRealisations pour le module Ckc_Realisation, correction override getPackageShippingCost si TVA 10% est appliqué
+[33m19954b91[m Merge branch 'pro' of https://gitlab.com/ckcnet/new-districlos into pro
+[33mf9143f70[m ckc - espace pro Formulaire d'inscrption
+[33m46ae5c2c[m CKC - SAV - Ajout de la nouvelle boutique
+[33md1818f3f[m CKC - SAV - Ajout de la nouvelle boutique
+[33m86ea0dea[m CKC - SAV - Ajout de la nouvelle boutique
+[33m86c4b315[m CKC - SAV - Ajout de la nouvelle boutique
+[33mf1567888[m CKC - SAV - Ajout de la nouvelle boutique
+[33m6c80f5a4[m CKC - SAV - Ajout de la nouvelle boutique
+[33m54690416[m CKC - SAV - Ajout de la nouvelle boutique
+[33m09fe347a[m CKC - SAV - Ajout de la nouvelle boutique
+[33m58e557eb[m CKC - SAV - Ajout de la nouvelle boutique
+[33m94dd9569[m CKC - Produit - Correction personnalisations
+[33m08eaa655[m CKC - Produit - Correction personnalisations
+[33md575c5f7[m CKC - Produit - Correction personnalisations
+[33m7962a4a0[m CKC - Produit - Correction personnalisations
+[33m86439229[m CKC - Produit - Correction personnalisations
+[33me054849d[m CKC - Inscription - Correction nom et prénom client
+[33m4a65ee0d[m CKC - Inscription - Correction nom et prénom client
+[33mc20eca32[m CKC - Stock - Correction synchro
+[33m78ad852f[m CKC - Stock - Correction
+[33mbdd8fbcd[m ajout ligne HT pour le panier avec l'attestation TVA 10% appliquée
+[33mf582b31c[m Correction des fonctions pour l'override TaxManagerFactory pour l'application de 10% TVA pour dealt
+[33m8453b7c5[m correction hover pour les icones raccourcis sur compte pro, correction position texte Aucun magasin favouri
+[33mb37c76d0[m CKC - Pack - Correction
+[33m297b9d6d[m Merge branch 'pro' of https://gitlab.com/ckcnet/new-districlos into pro
+[33m3c6685bf[m ckc - espace pro Formulaire d'inscrption
+[33m03193f5b[m Correction texte Magasins centré page mon compte pro
+[33m495103ee[m correction des styles css pour les boutons primary pro
+[33m94f53ee0[m ckc - espace pro Rib et Kbis
+[33mde0c08eb[m Correction styles des prix dans les listes des produits boutique pro
+[33mb5e85b18[m Correction page de connexion pro : template + styles
+[33m02322eb0[m Merge branch 'pro' of https://gitlab.com/ckcnet/new-districlos into pro
+[33m32a9b277[m ckc - espace pro Correction des erreurs dans le scss de l'espace pro, formulaire pro V1 avec kbis, naf, adresse pro
+[33m3611f50b[m correction Bug d'affichage du picto Magasin
+[33m8635ad0c[m correction lien Documents dans le header pro
+[33m8ab4f14a[m ajout lien vers le site pro dans le header de la boutique particulier pour les non connectés
+[33m636d49dc[m DISTRICLOS - correction personnalisation dans la partie accessoires
+[33me294b7cd[m Correction : liens images module ckccustomfilterselector
+[33ma0b22e99[m DISTRICLOS - correction personnalisation dans la partie accessoires
+[33m78e37272[m ajout logo pro pour le format mobile dans footer
+[33m9e43a3e7[m Merge branch 'pro' of https://gitlab.com/ckcnet/new-districlos into pro
+[33maf200b6a[m CKC - Recaptcha - ADD
+[33mf4d185ba[m CKC - Recaptcha - ADD
+[33m95670119[m CKC - Pack - correction
+[33m863adc57[m CKC - Pack - correction
+[33mb51b0dbf[m CKC - Pack - correction
+[33m553f7d5b[m CKC - Pack - correction
+[33mf86d897a[m CKC - Pack - correction
+[33m7962293f[m CKC - Pack - correction
+[33md9099f9d[m correction affichage du bon template du theme avec les conditions pro pour layout elementor utilisé pour la boutique pro
+[33m6a32c621[m CKC - Pack - correction
+[33m9dcc039a[m CKC - Pack - correction
+[33m74003667[m CKC - Pack - correction
+[33m8e4e98b8[m CKC - Pack - correction
+[33mf1192623[m CKC - Pack - correction
+[33m7f62bfcf[m CKC - Pack - correction
+[33mc9f06b12[m CKC - Pack - correction
+[33m962f67ab[m Merge branch 'pro' of https://gitlab.com/ckcnet/new-districlos into pro
+[33m553d9d3a[m ckc - espace pro correction diverse
+[33m448c5340[m ajout lien pour Documents dans le menu pro
+[33mf1f069c3[m masquage services dealt dans configurateur pour boutique pro + masquage des prix pour non connectés sur boutique pro
+[33m95590aae[m Correction => Ajustement pour l'espace pro : Modifier le bloc newsletter par le bloc Nos réalisations
+[33m1f9c94b0[m Ajustement pour l'espace pro : Modifier le bloc newsletter par le bloc Nos réalisations
+[33m0e738ab3[m CKC - Pack - correction
+[33m9c82a7aa[m CKC - Pack - correction
+[33m24b6a2c7[m CKC - Pack - correction
+[33md6289ce8[m CKC - Stock - ajout shop
+[33m81113a25[m ckc - espace pro bouton de deconnexion
+[33mbd6b0139[m Merge branch 'nouveaux-pack' into 'dev'
+[33m8297415a[m[33m ([m[1;31morigin/nouveaux-pack[m[33m)[m CKC - Packs - Correction prix
+[33m1d0cc77a[m Merge branch 'nouveaux-pack' into 'dev'
+[33mc74eb0ef[m CKC - Packs - Choix des déclinaisons piloté
+[33mabdc9a26[m DISTRICLOS - megamenu : injection JS pour empêcher les redirections inutile des catégories
+[33mad969e1b[m DISTRICLOS - megamenu : injection JS pour empêcher les redirections inutile des catégories
+[33m43fcfc2b[m DISTRICLOS - modif StockSync.php -> condition produit désactivé
+[33mc6a92ef9[m Merge branch 'dev-yan' into 'dev'
+[33mc51b0cf8[m Merge branch 'dev' into dev-yan
+[33md798d936[m DISTRICLOS - modif StockSync.php -> condition produit désactivé
+[33m02ed815f[m modification dealt pour configurateur, dealt pour les pages panier & produit, ajout template pour les filtres pro, correction merge de product.tpl
+[33m6e7b5812[m recuperation des modifications de la branch pro
+[33mc1afa2c8[m Merge branch 'nouveaux-pack' into 'dev'
+[33m19840697[m CKC - Packs - Application formule lors de l'ajout au panier
+[33md1e31650[m CKC - Packs - Application formule lors de l'ajout au panier
+[33m87009819[m Merge branch 'nouveaux-pack' into 'dev'
+[33mec200ab4[m CKC - Packs - Application formule lors de l'ajout au panier
+[33m60cf1051[m CKC - Packs - Application formule lors de l'ajout au panier
+[33m05eea72c[m Merge branch 'dev' into 'main'
+[33m4620a29a[m Merge branch 'dev-yan' into 'dev'
+[33m73f2f012[m Correction comportement croix menu
+[33m823e0102[m Espace pro Module realisation
+[33m2c5ee4ce[m Merge branch 'dev-yan' into 'dev'
+[33m6d550cb6[m Style mail devis & infos en plus
+[33mdf8de5de[m Merge branch 'dev-module-FDV' into 'dev'
+[33mae2caa03[m[33m ([m[1;32mdev-module-FDV[m[33m)[m Merge branch 'dev-yan' into 'dev-module-FDV'
+[33me626c3cb[m Module FDV
+[33m4edbcf77[m Module FDV
+[33m2109142a[m Merge branch 'dev-faq' into 'dev'
+[33me3c5b1bb[m Module FAQ
+[33m5b8339be[m DISTRICLOS - modif modal panier stock et changement dynamique produit fin de vie ( stocks )
+[33m4ebf77e0[m[33m ([m[1;32mnouveaux-pack[m[33m)[m CKC - Packs - Application formule lors de l'ajout au panier
+[33m6bd2e1b0[m CKC - Packs - Application formule lors de l'ajout au panier
+[33m91c74c30[m CKC - Packs - Application formule lors de l'ajout au panier
+[33m8e22d691[m CKC - Packs - Application formule lors de l'ajout au panier
+[33mefee5bce[m CKC - Packs - Application formule lors de l'ajout au panier
+[33m11cbf5ca[m CKC - Packs - Application formule lors de l'ajout au panier
+[33mc34c48de[m CKC - Packs - Application formule lors de l'ajout au panier
+[33m1dae0194[m CKC - Packs - Application formule lors de l'ajout au panier
+[33m6f0a30b4[m CKC - Packs - Application formule lors de l'ajout au panier
+[33mf32df037[m CKC - Packs - Application formule lors de l'ajout au panier
+[33ma40d5578[m CKC - Packs - Application formule lors de l'ajout au panier
+[33mdd56a75f[m CKC - Packs - Application formule lors de l'ajout au panier
+[33m55ef4b51[m CKC - Packs - Ajout champ formule
+[33md8d1bea8[m CKC - Packs - Ajout champ formule
+[33m74125403[m CKC - Packs - Ajout champ formule
+[33m73d1fc39[m CKC - Packs - Ajout champ formule
+[33m12d000b0[m CKC - Packs - Ajout champ formule
+[33mbc05dc2c[m DISTRICLOS - modif modal panier stock et changement dynamique produit fin de vie ( stocks )
+[33mdd204fa9[m DISTRICLOS - modif modal panier stock et changement dynamique produit fin de vie ( stocks )
+[33m78147e87[m DISTRICLOS - modif modal panier stock et changement dynamique produit fin de vie ( stocks )
+[33m54587f6f[m CKC - Packs - Ajout du module sur GIT
+[33me20c3bd2[m CKC - Packs - Ajout dans GIT
+[33mfd0d9294[m Merge branch 'main' into 'dev'
+[33m9a930f4b[m DISTRICLOS - modif modal stock pour la plateforme
+[33meb73996b[m Merge remote-tracking branch 'origin/dev-yan' into dev-yan
+[33mb6a77474[m Merge branch 'main' into dev-yan
+[33m0286d004[m DISTRICLOS - add store CENTRE & PLATFORME
+[33m42b0cf8d[m Merge branch 'pro' of gitlab.com:ckcnet/new-districlos into pro
+[33mab0bc02c[m Espace pro Mon compte - Bon lien dans le header
+[33mb07c87a2[m modif header pro
+[33m1e7ae883[m modif header pro
+[33mffe9a33c[m ajout des filtres pro sur la page catégorie
+[33mf8e198de[m Merge branch 'pro' of gitlab.com:ckcnet/new-districlos into pro
+[33mf451d3cb[m Merge origin/main into pro
+[33ma666f0f0[m theme css
+[33md760e2ae[m Merge branch 'pro' of gitlab.com:ckcnet/new-districlos into pro
+[33mf32f5a96[m Espace pro Module réalisation + redirection a l'authentification
+[33m951e1c27[m Merge branch 'main' into dev-yan
+[33mdb05399b[m DISTRICLOS - Modification du module ckc_stores_stock afin qu'il fonctionne avec le module dtc_productendoflife
+[33m25ded50b[m CKC - Mon compte - Correction
+[33m6330be52[m Merge remote-tracking branch 'origin/main'
+[33m56282054[m CKC - Confirmation de commande - Correction
+[33m0983ea35[m Merge branch 'dev-yan' into 'main'
+[33m1b555029[m CKC - Livraison - Correction
+[33m0297ba1a[m Merge remote-tracking branch 'origin/main'
+[33mca75b056[m CKC - Tags - Correction conseiller
+[33m712d3a0f[m DISTRICLOS - Modification du module ckc_stores_stock afin qu'il fonctionne avec le module dtc_productendoflife
+[33ma8dfdff0[m Merge branch 'main' into dev-yan
+[33m7db9fc90[m DISTRICLOS - Modification du module ckc_stores_stock afin qu'il fonctionne avec le module dtc_productendoflife
+[33mc8d9d650[m Merge branch 'dev-yan' into 'main'
+[33m94069009[m css page produit pro
+[33m7d149c2b[m fix affichage discount page produit
+[33m70e88642[m fiche produit version pro
+[33mb545213a[m CKC - Retrait - Ajout pour le module de Yan
+[33m67850ce0[m Revert "Merge: resolve conflict in productfaq.php (keep ours)"
+[33m6e51f8a5[m Revert "fix: update templates category-header & product"
+[33ma0eb3f0c[m DISTRICLOS - fix button Divalto
+[33m4a54b15b[m DISTRICLOS - override classe Notification pour filtrage employe -> id_store
+[33ma36f7387[m Merge branch 'main' into dev-yan
+[33mdf6cba5b[m DISTRICLOS - override classe Notification pour filtrage employe -> id_store
+[33m763f04b8[m fix: update templates category-header & product
+[33m26b54953[m Merge: resolve conflict in productfaq.php (keep ours)
+[33m57364dfe[m Merge branch 'dev-yan' into 'main'
+[33m022c48be[m DISTRICLOS - module productfaq ignore
+[33m5421e7f6[m Merge branch 'main' into dev-yan
+[33m113b0b8b[m CKC - BO Produits - Correction
+[33m92733e8d[m DISTRICLOS - module productfaq ignore
+[33m218dfbcd[m Merge branch 'main' into dev-yan
+[33maf4a3ca3[m CKC - Template mail retrait - FIX
+[33m103b9553[m CKC - GIT - FIX
+[33mb28a0360[m CKC - Form - FIX
+[33mb5a28308[m Revert "CKC - Paginator - FIX enter"
+[33m3482fc29[m Revert "CKC - Paginator - FIX enter"
+[33mb6988f7f[m CKC - Paginator - FIX enter
+[33mafeb749c[m CKC - Paginator - FIX enter
+[33m3c74ed21[m CKC - Multistore - ADD employees stores
+[33m7ae4a879[m DISTRICLOS - module productfaq ignore
+[33m5dcc4f9e[m DISTRICLOS - Injection de JS pour éviter le resize quand on sélectionne une déclinaison & --product-img-width: auto supprimé
+[33ma85dc56b[m CKC - Multistore - ADD employees stores
+[33md259dbcb[m CKC - Multistore - ADD employees stores
+[33m12c67506[m CKC - Multistore - ADD employees stores
+[33m87d34d52[m CKC - Multistore - ADD employees stores
+[33md79b603c[m CKC - Multistore - ADD employees stores
+[33m0e42efc3[m CKC - Multistore - ADD employees stores
+[33m289da3de[m CKC - Multistore - ADD employees stores
+[33m62dd27f3[m CKC - Multistore - ADD employees stores
+[33m2ea23ebe[m CKC - Multistore - ADD employees stores
+[33mb8e0a75b[m DISTRICLOS - revert merge yan
+[33mf6303c45[m Merge branch 'revert-ca99f484' into 'main'
+[33m37fabc52[m Revert "Merge branch 'dev-yan' into 'main'"
+[33mca99f484[m Merge branch 'dev-yan' into 'main'
+[33m45cee1f5[m Espace pro CSS
+[33md190cdea[m Merge branch 'pro' of gitlab.com:ckcnet/new-districlos into pro
+[33m97a5691d[m Espace pro CSS
+[33me19ea7cb[m Merge branch 'main' into dev-yan
+[33m3266ab5b[m FIX RGPD - Données personnelles
+[33m2ca8c2e9[m FIX order history
+[33m87b0de5e[m Merge remote-tracking branch 'origin/main'
+[33md9702682[m FIX translate in mails
+[33m6680c8da[m DISTRICLOS - Changement du titre de l'option soubassement
+[33mce60c63d[m Merge branch 'main' into dev-yan
+[33m0b44c045[m DISTRICLOS - Nouveau commercial Thibaut et taux de marque ajouté
+[33mab274818[m restauration du hook displayPromoProductDescription dans template produit pour les campagnes publicitaires
+[33md691aa8f[m FIX cart controller
+[33m97559475[m FIX product.js
+[33mbf9b56da[m FIX product.js
+[33m0ad1945c[m FIX product.js
+[33m72dda999[m Merge remote-tracking branch 'origin/main'
+[33m80711bc8[m DEBUG quotes
+[33m2a01b66b[m DISTRICLOS - Schéma disparu pour les sur mesures battant
+[33m492e04f8[m Merge branch 'main' into dev-yan
+[33m5ea469f0[m DISTRICLOS - Ajout du module Product FAQ
+[33m64d5f200[m divers correction suite a mise en production
+[33mad8233df[m FIX powered by
+[33mc22ae0aa[m FIX prices
+[33m9f29d761[m FIX prices
+[33m4f9fca19[m FIX prices
+[33m21d7ff64[m FIX cron lengow
+[33mec544a94[m FIX export products
+[33mf2693671[m FIX refresh url
+[33mca742332[m FIX htaccess
+[33m24540818[m modification page fiche /  guides suite réunion avec kevin, création d'un espace de saisi en B.O + regroupement des 2 pages + dl d'un zip
+[33m2f947378[m FIX cart
+[33m18456cb1[m FIX cart
+[33mabc0c147[m FIX cart
+[33m8ffac17c[m Merge remote-tracking branch 'origin/main'
+[33m4b03b0af[m FIX configurateur - add 422
+[33mfc9267ce[m mon masque pour le moment le bloc nos recommandations sur les fiches produits
+[33m5042e860[m ckc - espace pro invicible module pour rester en mode ninja sur le site en prod
+[33m0c97a6c2[m ckc - espace pro template inscription pro
+[33m90c607fa[m ckc - espace pro systeme de validation proticulier et particulier en BO
+[33m65194543[m ckc - espace pro systeme de validation proticulier et particulier en BO
+[33m8a688cc6[m recuperation des derniere evolutions sur la branche main
+[33m5282a898[m ckc - espace pro
+[33m05763e2c[m amelioration sur mobile
+[33mced5c575[m ckc - dump qui n'a rien a faire la
+[33m67c8d7e3[m je recupere les fichiers modifiers en prod
+[33me01b70d9[m gestion mon magasin favori compte pro => hook custom
+[33mcd6b63f6[m gestion mon magasin favori compte pro => hook custom
+[33mcacf91d8[m FIX configurateur
+[33m92c266ae[m Merge remote-tracking branch 'origin/main'
+[33mbbd52228[m FIX configurateur
+[33mfc59f1fb[m Merge branch 'pro' of gitlab.com:ckcnet/new-districlos into pro
+[33m3eaf99e6[m Espace pro connexion
+[33m4895ea5b[m correction étapes sur la page checkout espace pro
+[33mb89a47c0[m vu + responsive de toutes les sous pages liées à mon compte pro (reste qq liens àà faire)
+[33m8d1160c6[m Espace pro Variables manquantes
+[33mef4e9906[m test
+[33mb91f2558[m Merge branch 'pro' of gitlab.com:ckcnet/new-districlos into pro
+[33mfec85261[m Espace pro Variables manquantes
+[33m7c1303ad[m intégration maquette page mon compte spécifique pro
+[33ma7245800[m Espace pro Les fichiers modifiés sur main (pour le mobile fiche pro)
+[33m04592475[m ajout recherche sur documents page guide / fiche
+[33m4d3cb623[m pages pdf guides et fiches techniques
+[33mdac557c8[m Espace pro Les fichiers modifiés sur main (pour le mobile fiche pro)
+[33me0f363f3[m responsive de la fiche produit
+[33m6875ebe9[m Espace pro Controle d'erreur sur la connexion du formulaire PRO
+[33mef05a5cb[m FIX configurateur
+[33m55f56203[m Merge branch 'pro' of gitlab.com:ckcnet/new-districlos into pro
+[33mebc608b6[m Espace pro Ajout du block de connecxion sur l'espace pro + vérif espace pro et espace particulier en fonction de l'utilisateur connecté
+[33ma03a417b[m page avantages dans module ckc espace pro
+[33m487031b2[m Espace pro Redirection vers pro quand un pro se connecte ou navigue sur le site particulier
+[33m8168c2d8[m Espace pro Style particulier connexion
+[33me44392ae[m Espace pro Correction notice et ajax
+[33m5cc3f48f[m Merge branch 'pro' of gitlab.com:ckcnet/new-districlos into pro
+[33m04abe911[m Espace pro Correction des variables
+[33me2e7f2cf[m front
+[33me43f1a25[m pro.pro.env
+[33m64c6157c[m front
+[33mc53241d6[m miniature product
+[33m7da66442[m modif env_pro => pro.pro module ps_customersignin
+[33m231e9766[m modif env_pro => pro.pro module ps_customersignin
+[33m9d239e40[m suppression env_pro du themes/classic/
+[33ma500e3f8[m modif creative elements requete pour produit promotion par quantité sur slider de produit
+[33mbc6aca3e[m Merge branch 'pro' of gitlab.com:ckcnet/new-districlos into pro
+[33mf52a1c8b[m modif front
+[33m642d7f21[m Espace pro Module espace pro remanier pour nouveau projet
+[33m634d7812[m affichage logo pro
+[33m775eb03d[m Espace pro Module espace pro - page de configuration
+[33m51a86f2b[m FIX configurateur
+[33md9908951[m FIX configurateur
+[33m78add877[m FIX configurateur
+[33m78823d85[m FIX configurateur
+[33m4f3448ec[m FIX configurateur
+[33m58d077d0[m FIX configurateur
+[33m08eca40e[m FIX configurateur
+[33mf385232c[m FIX configurateur
+[33m5ccc1ea8[m FIX configurateur
+[33md88c789b[m FIX configurateur
+[33mc12c435c[m FIX configurateur
+[33m6f230c4b[m FIX configurateur
+[33mdbc1220a[m Dealt - DEV EN COURS
+[33mba4e4df8[m FIX configurateur
+[33ma4b3ef49[m FIX configurateur
+[33meb55b311[m FIX configurateur
+[33mb2e92c3e[m front controller override
+[33mf4e60f18[m scss pro + var global front controller pro + header pro + début page home pro"
+[33m219a30b6[m ADD soubassement
+[33mebe2cfe3[m ADD soubassement
+[33m43b9f762[m FIX configurator add brico +
+[33ma89a02bc[m FIX configurator
+[33m7fc13b63[m FIX configurator
+[33m278e8e1e[m FIX configurator
+[33m5933c7fd[m FIX configurator
+[33m3c5d6dc1[m FIX configurator
+[33m9bb30664[m FIX layout-both-columns.tpl
+[33mc2fef632[m FIX layout-both-columns.tpl
+[33m49cfd99e[m FIX tags
+[33m17e0d906[m FIX tags
+[33mff2f4574[m FIX tags
+[33m14d2195c[m FIX tags
+[33m246cd826[m exclue les employes du GTM et l'abtest analyse
+[33m32188f90[m ADD carrier to ckc multistore
+[33md9e18f1a[m ADD carrier to ckc multistore
+[33mc1afc7f3[m ADD carrier to ckc multistore
+[33mb0c4972c[m ADD carrier to ckc multistore
+[33m43708f93[m ADD carrier to ckc multistore
+[33m5f75d421[m FIX swiper
+[33md171ee75[m FIX swiper
+[33m41e37e25[m FIX swiper
+[33m513ae918[m FIX swiper
+[33m4df61c4c[m FIX swiper
+[33mbf5c9d18[m FIX swiper
+[33mb75ffbc2[m FIX swiper
+[33m68debb6e[m FIX swiper
+[33md3bbc9f1[m FIX thumb
+[33m0911b82f[m FIX thumb
+[33mceb3e67c[m DEBUG thumb
+[33mc0e289ba[m DEBUG thumb
+[33m6c6764cf[m DEBUG thumb
+[33m774d9809[m FIX swiper
+[33m093606f8[m FIX swiper
+[33m3cefdf92[m Add script update quotes
+[33mc098b4fb[m Add script update quotes
+[33me71bf5d0[m Add script update quotes
+[33m308c07e3[m Add script update quotes
+[33me6144c91[m Add script update quotes
+[33m378a4826[m Add script update quotes
+[33m5a791e9e[m Fix prices v2
+[33m594eb050[m Fix prices v2
+[33m26c81c2f[m Fix prices v2
+[33m33f479e4[m Fix prices v2
+[33mdea0241d[m Fix prices v2
+[33mb995266b[m Fix header
+[33m2183794c[m Fix header
+[33m00543a58[m Merge remote-tracking branch 'origin/main'
+[33m4a199d7c[m Fix header
+[33mf05e295d[m Abtest - Goal
+[33m9814e667[m Legere correection css du header
+[33mee82b77d[m suppression du fichier sql, revert de deux modifs faite en ftp
+[33ma545cbfc[m Remove large file and ignore it
+[33m972293fa[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m0527161a[m Fix scroll vers product-tabs et modifs FTP
+[33m980f8d06[m Maint - Changer promos par premiers prix dans le menu
+[33mbc4ca50c[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m35e4f3a3[m ABTEST
+[33ma715cded[m Fix header
+[33m9d9e8218[m Fix quote
+[33m75779e2e[m Fix configurator
+[33m80b2904a[m Fix configurator
+[33m1f1e5540[m Fix configurator
+[33m9eec5c0a[m Fix configurator
+[33md39419e8[m Fix configurator
+[33mb9ce6aeb[m Debug tags.js
+[33m35ac59f8[m Debug tags.js
+[33mdfb2070e[m Debug tags.js
+[33m518395c9[m Debug tags.js
+[33mfaad5ede[m Debug tags.js
+[33ma9b7beb6[m Debug tags.js
+[33m99413585[m Debug tags.js
+[33m97fb9e5a[m Debug tags.js
+[33m42b7e09e[m Debug tags.js
+[33md4f46adf[m Debug tags.js
+[33m5216981f[m Debug tags.js
+[33m84cd9344[m Debug tags.js
+[33m40f9be3f[m Debug tags.js
+[33m4a270fdd[m Debug tags.js
+[33m2354c04e[m CKC - Oney - Fix simulation
+[33m7cb6edce[m Merge remote-tracking branch 'origin/main'
+[33m99e4afdd[m FIX oney
+[33mc2287c60[m CKC - SYNCHRO order.synchro = 1
+[33maf682f29[m Ajout fonctionnalité dupliquer étiquette module ckc_label
+[33md394bd42[m correction css slider
+[33ma5d63525[m FIX oney
+[33m0b27ae8c[m FIX oney
+[33m587cc667[m FIX oney
+[33mee132945[m FIX oney
+[33m13216f95[m FIX oney
+[33m1d0c3ac3[m FIX cart
+[33m4b5333a5[m FIX cart
+[33m3159925f[m FIX cart
+[33m5116baf9[m FIX cart
+[33m3cf55a16[m FIX cart
+[33m6136b824[m FIX bankwire email
+[33m1a468f53[m Merge remote-tracking branch 'origin/main'
+[33m55fcd2fc[m FIX script updated_at
+[33m5ae5a69e[m Rajouter icon étoile dans PROMO
+[33m11a7836b[m ajout fonctionnalité dupliquer module des campagnes
+[33mf473c894[m FIX menu
+[33md20f3f6d[m FIX stock
+[33mc57d098c[m FIX stock
+[33m0aa7bfc9[m Merge remote-tracking branch 'origin/main'
+[33ma603efbc[m FIX stock
+[33m66ebb7dc[m Modif titres des champs dans config module Magasins
+[33m46da9753[m Ajout de textes supplémentaires encarts magasins
+[33m411dfe70[m Module de campagne - Rajouter franco dynamique dans popup estimation frais de livraison
+[33m6f2c7205[m correction positions des éléments dans sticky header
+[33m3a67fde7[m ADD migrate_quotes command
+[33m35f8c904[m ADD migrate_quotes command
+[33mce673695[m ADD migrate_quotes command
+[33ma19f8ba9[m ADD migrate_quotes command
+[33m9d31e751[m ADD migrate_quotes command
+[33mbcc16478[m FIX
+[33m66967189[m FIX
+[33mecc6557a[m FIX
+[33mafedc64a[m FIX
+[33m6ca5ce21[m FIX
+[33m2c8c9669[m FIX
+[33mf853b358[m FIX
+[33mff3f7f9f[m FIX
+[33m71960ff2[m FIX
+[33md4adefa1[m FIX
+[33m938a34a1[m FIX
+[33mca7386a7[m FIX
+[33mc290b2f6[m FIX
+[33m15a6f2c7[m FIX
+[33m5dc64cba[m FIX
+[33m76ad8a88[m FIX
+[33mde6365c8[m FIX
+[33md1f76ce3[m FIX
+[33md3734856[m Merge remote-tracking branch 'origin/main'
+[33m87a7bcbb[m ADD maj updated_at
+[33m21567f26[m correction affichage module Paiement par acompte sur facture
+[33m00d584ee[m correction franco pro module campagnes
+[33meff2d703[m ajout champ franco impact Pro pour les campagnes
+[33m31a172a2[m FIX header
+[33m455859f6[m FIX reference
+[33m9d9f2a07[m FIX reference
+[33mb0e842d4[m FIX reference
+[33m81cf5ffc[m FIX reference
+[33mcc28ae59[m FIX ckc stock multistore
+[33ma21086c0[m ajout des images pour les pages Guides de la clotûre
+[33m0988c23c[m correction affichage des images sur la page Vos réalisations
+[33m136ede46[m ajout champ Horaires Samedi dans formulaire module Ckc Magasins, affichage Horaires Samedi Nos Magasins, modif lien Solde ete au lieu Premiers Prix
+[33mbc49ef34[m FIX configurator
+[33m800ba794[m FIX configurator
+[33mc76728a6[m FIX configurator
+[33m46a53cab[m FIX stats synchro
+[33mcf33e054[m FIX pack
+[33m1f83c2e4[m FIX product
+[33m81683fd7[m FIX product colors
+[33m66c3d8d3[m FIX header
+[33mafa2ede4[m FIX css
+[33m99e3027e[m FIX logo
+[33mcf915c69[m FIX logo
+[33m3af79bbe[m FIX logo
+[33ma44343e7[m FIX logo
+[33m81ff5de7[m FIX logo
+[33mbbfb7bc4[m FIX logo
+[33ma98ffc58[m FIX logo
+[33m1ff3ea80[m FIX logo
+[33me5a42443[m FIX logo
+[33m7b398403[m FIX logo
+[33m13011802[m FIX header
+[33mb26c19ac[m FIX Tx
+[33m7ee9a2d2[m FIX
+[33m7251f3a7[m FIX
+[33m3ad10ffc[m Fichier déplacer dans le bon répertoire
+[33mbc5a1bb8[m On retire les modes de payments par virement et devis
+[33mb3a56421[m Plus de synchro des paniers sur le module de synchro sauf en cas de mise a jour de la commande
+[33mc450c45a[m Plus de synchro des paniers sur le module de synchro sauf en cas de mise a jour de la commande
+[33m2e35b026[m FIX
+[33m7476fcc0[m Merge remote-tracking branch 'origin/main'
+[33md9b5158b[m FIX
+[33m13086684[m dynamisation du nombre des avis sur les derniers 12 mois
+[33m5bea448a[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m416a15ae[m CKC - Avis vérifié Module statistique
+[33mf7e2986f[m correction mobile module ckcproductreviews + avis en dur
+[33m5e532bd1[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m56e0a139[m CKC - Avis vérifié Module nouveau logo
+[33medafaadb[m Merge remote-tracking branch 'origin/main'
+[33m425f66ef[m FIX
+[33m77c58831[m CKC - Avis vérifié Module + Mise a jour du panier (bool) quand on est dans le nouveau site
+[33me867e2f3[m CKC - Avis vérifié Module + Mise a jour du panier (bool) quand on est dans le nouveau site
+[33m5c70c923[m Fix Mettre lien vers page de connexion Espace Pro sur l'inscription
+[33ma4613cfc[m Fix bug Mauvaise Image slider affichée espace pro & Mettre lien vers page de connexion Espace Pro sur l'inscription
+[33m2a3cd87e[m FIX cookies
+[33mc8b98b3f[m FIX pro cookies RFC 2965
+[33m96e97e30[m fix bug texte header scindé ckcpromotionbanner
+[33m9f2ad0dd[m FIX tx
+[33m9cf60034[m fix bug Duplication Code promo quand on change la qty des produits
+[33m44ef6c4c[m FIX
+[33m5b288599[m Merge remote-tracking branch 'origin/main'
+[33m89bab117[m FIX
+[33mecae6e52[m CKC - Megamenu - Optimisation + minifier
+[33m7de87ad0[m CKC - Megamenu - Optimisation de la fonction puor l'ajustement de la hauteur
+[33m52cd823f[m CKC - Megamenu - Réduction des répétitions de sélecteurs. Comportement identique, mais encapsulé dans des fonctions
+[33mcc77443a[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mfc024b71[m CKC - Megamenu Amélioration du code de la Gestion de l'ouverture/fermeture
+[33m54ab6fd0[m CKC - Megamenu Suppression du code mort Suppression des consoles.log
+[33m8a32669e[m Merge remote-tracking branch 'origin/main'
+[33m686d527d[m FIX cart rule
+[33m67a07041[m CKC - Optimisation google speed tools - compression de fichier JS
+[33mfd6a010b[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m7a2b0b02[m performance page produit : loading lazy des images Swiper sauf image principal Largest Contentful Paint
+[33m94ad34d9[m fix performance chargement différé bannières sur catégorie Cloture rigide hors écran et Largest Contentful Paint page catégorie
+[33m6773264d[m fix performance différer chargement des images hors écran
+[33m5407d716[m CKC - Amélioration des images du slider en forcant l'affichage des pixels (pour les textes c'est une bonne pratique)
+[33m715b77c6[m FIX
+[33m9ec016ff[m FIX
+[33m05c83c78[m FIX
+[33m4d9f20ba[m ADD lengow
+[33m291bb3ea[m FIX
+[33m80684057[m FIX
+[33m4fa5fd99[m FIX
+[33mf1496d3f[m FIX
+[33m9216a297[m FIX
+[33ma2baba11[m FIX module
+[33mf4e29c3f[m FIX stats
+[33m0129cf2b[m FIX stats
+[33m1256f71f[m FIX stats
+[33m7b4b4074[m FIX stats
+[33m43083e34[m FIX
+[33m741380eb[m FIX
+[33m0751ed14[m DEBUG Css / Js perf
+[33ma14a86c2[m ADD valid order
+[33m3fa25714[m DEBUG Css / Js perf
+[33m14845bff[m ajout fonctionnalité Mettre vidéo qui s'affiche en zoom au clic sur le bouton play de la home
+[33mbfae4393[m suppression fancybox js pour les images produit, déplacement script lite vimeo js au bas de la page
+[33m62117366[m ADD sync paypal
+[33m744cfa13[m FIX order carrier
+[33mdc6235db[m Merge remote-tracking branch 'origin/main'
+[33m0e6b9fe3[m FIX
+[33m295243dd[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mfb15f6ce[m CKC - Ajout des images manquantes + script pour rempalcer auto_store par classic en BDD
+[33mdcd4367b[m FIX
+[33m0262aee4[m CKC - Correction de la logique Smarty pour sélectionner la bonne image secondaire (hover) : on exclut désormais explicitement l'image de couverture en comparant les ID. Cela permet d'afficher correctement la deuxième image du produit.
+[33mcbe2448c[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m12e62bc7[m FIX api rx
+[33mb3937576[m FIX hook
+[33m99b7b966[m FIX hook
+[33m8ccda0e2[m Merge remote-tracking branch 'origin/main'
+[33md65de5d7[m FIX hook
+[33m93831873[m ajout corrections code etiquette produit & css classe btn-rouge-custom
+[33m8d5ed6f0[m ajout classe css pour le bouton rouge promo ajout styles
+[33m1f46321d[m ajout classe css pour le bouton rouge promo
+[33md748b69a[m fix menu flottant sur fiche produit, empiète sur le pied de page
+[33mf9c858a7[m Résolution bug : etiquette produit sur page catégorie mal placée
+[33m0fa0509c[m ajout bloc pour les textes promo header pour l'espace Pro
+[33mef2a25fd[m Add new hook
+[33m0d125c88[m ADD new hook
+[33m069f6909[m Merge remote-tracking branch 'origin/main'
+[33maf15748a[m Add new hook
+[33m5ae4c0f8[m Correction du style du block info bleu dans la page de détails d'un magasin
+[33m614e2f3e[m logo de l'espace pro cliquable
+[33m87c5f9be[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mb043a7c2[m alert'ok' présent dans le code
+[33mf86a4c9a[m Fichier de stats pour la synchro
+[33mf367fdc7[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m017bbd6d[m DEBUG Css / Js perf
+[33m6aea7856[m Merge remote-tracking branch 'origin/main'
+[33m5e887c6a[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mf54b6937[m DEBUG pack
+[33mf006f37b[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m5dee6527[m Correction du theme des attributs sur les packs de produits (corrige par exemple le selecteur de couleur)
+[33mc8233415[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33md3902e7b[m FIX canonical
+[33m60a69cdf[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mfad0647d[m Correction du theme des attributs sur les packs de produits (corrige par exemple le selecteur de couleur)
+[33m280827cc[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m8d9b1d9e[m FIX cookie
+[33m52afdaea[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mdfb65778[m FIX cookie
+[33m6064190a[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m53dd82f2[m DEBUG cookie
+[33mc9c3e139[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mdeb36223[m FIX carrier
+[33m8a693c5b[m DEBUG Carrier
+[33m45920601[m DEBUG TX / RX
+[33m64dd700d[m DEBUG TX RX
+[33m80554cbf[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mfc100bfb[m mode debug pour theo, logo pour environnement pro
+[33m0f2b3616[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mf8e4502d[m Fix pack
+[33m1adf43b2[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m8d95e42a[m Fix pack
+[33m14aee89b[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m955bdb9a[m Fix pack
+[33m689439b5[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m657ffe68[m Fix pack
+[33m19943d0d[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m4e0326d4[m Fix pack
+[33m8045735b[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m599e44a6[m FIX pack
+[33m36188812[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mac0076f0[m hover des images, on prend bien la deuxieme dans l'ordre de l'index
+[33m398b9d6a[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m593e10b1[m FIX pro prices
+[33md9773797[m opti
+[33m0d88255d[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m66c390ea[m DEBUG Css / Js perf
+[33md3061ff0[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m42a2cfb0[m DEBUG Css / Js perf
+[33m2f093f4b[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m9a65ec46[m DEBUG Css / Js perf
+[33m73985c65[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mb919cb93[m DEBUG Css / Js perf
+[33md7ece8bc[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33ma740192d[m FIX CLS
+[33m3b06fdec[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33md9619764[m Revert "DEBUG Css / Js perf"
+[33mf1228c02[m Revert "DEBUG Css / Js perf"
+[33m160c3358[m Revert "DEBUG Css / Js perf"
+[33m7a0d20c0[m Revert "DEBUG Css / Js perf"
+[33m7d11ef0f[m Revert "Revert "DEBUG Css / Js perf""
+[33m0db7233d[m Revert "DEBUG Css / Js perf"
+[33mdf16f62c[m Revert "DEBUG Css / Js perf"
+[33m771e3b20[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mf3a6f411[m DEBUG Css / Js perf
+[33m4d7dae49[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mc11efcd2[m DEBUG Css / Js perf
+[33m010fa08d[m Revert "DEBUG Css / Js perf"
+[33m9114f1a1[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mace0c17d[m DEBUG Css / Js perf
+[33m54936583[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m1bfd1562[m DEBUG Css / Js perf
+[33m51d0b0b1[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m2a0c41bb[m DEBUG Css / Js perf
+[33mc23a0bac[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33ma878d6bb[m DEBUG Css / Js perf
+[33md3157e9b[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m49238b83[m FIX
+[33m7ba4514f[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33me7c35874[m FIX
+[33m9e4020cd[m FIX
+[33m3b1113c8[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m4647b1dd[m FIX
+[33m197b7aed[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m9a784b84[m FIX
+[33m8448f50e[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33md7911376[m FIX
+[33m714eca6f[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m3184ba8d[m FIX
+[33m2e35cb63[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m95e3f731[m FIX
+[33me59f0d00[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m4646c0c5[m FIX
+[33mafcc99cc[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m695253c8[m FIX
+[33m0b071fed[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m4343face[m FIX
+[33m25a73b1d[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m9d05ef92[m Merge remote-tracking branch 'origin/main'
+[33m5922b56a[m FIX
+[33mdd91c37a[m Mise en cache et optimisation de la requete des infos de l'espace pro
+[33m614f2269[m Mise en cache et optimisation de la requete qui récupérer l'adresse par défault d'un utilisateur
+[33m98fef2bf[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m59aa9467[m FIX
+[33m52ca5244[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m9069dafb[m FIX
+[33mdc6b7f1e[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mcc201084[m FIX
+[33m901fc3de[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m6a54b497[m FIX
+[33m0bb1ce92[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33maf4db693[m FIX
+[33m171cb626[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m07fccf2d[m FIX
+[33mcbdaf12a[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m6237d47d[m FIX
+[33mb87e80bc[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mc5942431[m FIX
+[33m921b96f1[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m1824cbc5[m FIX
+[33me2119dee[m FIX
+[33md30eeee8[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mabc8418b[m FIX
+[33m2800bec1[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m8880c84a[m FIX
+[33ma8de1bcd[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mfb23ed5e[m FIX maintenance
+[33m96f3916d[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mb962b98d[m FIX maintenance
+[33maad420f5[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33ma11551e2[m FIX maintenance
+[33m453bbf65[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m970a39b1[m FIX maintenance
+[33m60aab872[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mbccb33fe[m FIX maintenance
+[33m21e562cb[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mf7f80e66[m Merge remote-tracking branch 'origin/main'
+[33m4a00122c[m FIX maintenance
+[33mbeaafec3[m restaration code product.js
+[33md6661f6a[m correction bug des etiquettes multipliées et positionnées l'une sur l'autre
+[33mc645e3ad[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m858fe41b[m Correction du loader
+[33mdb0cc4a5[m augmentation limite varchar sql module campagnes
+[33m19773474[m recorrection redirection lien après sauvegarde + augmentation limite varchar dans install sql module campagnes
+[33m111ce3ec[m correction enregistrement couleur pour devis module campagne
+[33mc25286e6[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33me0a7d23a[m FIX product
+[33m1820f20d[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m6254c6bf[m FIX product
+[33m77da9fc6[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m50aacf4e[m FIX product
+[33m4d96c618[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m74a6e9f9[m FIX product
+[33m4abb1c02[m FIX megamenu
+[33m99d68022[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m438ebeff[m Améliration du module ckc_syncdata - Asynchrone pour la mise a jour de la qty dans le panier
+[33m8ab4f9a7[m FIX product sheet
+[33mdd20eb61[m FIX product sheet
+[33m05314d89[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mbfc3716a[m FIX product sheet
+[33mbc998c70[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m7e19b643[m FIX product sheet
+[33m28c5c74a[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m89dbf905[m FIX modal shipping
+[33mb6e7c1e0[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m035344b1[m FIX GTM
+[33mfeb84d41[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m760d1668[m FIX configurateur
+[33mf05ae04c[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mf16f81d9[m FIX configurateur
+[33mcf73f52e[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33ma7abda3d[m FIX configurateur
+[33mb4b55ab5[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33md6babc7c[m FIX configurateur
+[33me7ebf161[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mb525076b[m FIX configurateur
+[33m5d50decc[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m6accd3ec[m FIX Divalto
+[33m247222ee[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m470cc4db[m FIX Divalto
+[33meef26e4f[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m05919dc5[m FIX Divalto
+[33mb69ad45e[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m0d554480[m FIX Divalto
+[33mef222e32[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m941b4e76[m FIX Divalto
+[33m61e24f22[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33ma7f5b329[m FIX Divalto
+[33m27ef0a4f[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mcecd1912[m FIX Divalto
+[33m85173fb0[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33md01c641f[m FIX Divalto
+[33mfd5ca6cf[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33meb1d7d6f[m FIX Divalto
+[33m845bcf53[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33meaedbf35[m FIX Divalto
+[33mb4e88662[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m0a64f5f1[m FIX Divalto
+[33m7848c402[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m3cd4d0d5[m FIX Divalto
+[33meceee9b0[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m1c3d2a91[m Merge remote-tracking branch 'origin/main'
+[33m0c22941d[m FIX Divalto
+[33m17f80e31[m correction day pour jour module promotion banner
+[33mbce3d5d6[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m68fb0861[m FIX Divalto
+[33m138c66a4[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mc8e3535e[m FIX Divalto
+[33mc49d9d9d[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m71804a73[m FIX Divalto
+[33m04dfb123[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m7aaff0a2[m FIX dynamic products design
+[33m83edcef1[m FIX dynamic products design
+[33mfc57a2f0[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m63952832[m FIX dynamic products design
+[33m35fbeffd[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mf172367b[m FIX select
+[33ma7e7f725[m Merge remote-tracking branch 'origin/main'
+[33m1f8ad284[m FIX customer sync
+[33mf27ae387[m correction ajout fonctionnalité de création de plusieurs promo catégories module campagnes
+[33maa72e4dd[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m3a89c639[m FIX products
+[33m8d2781df[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m8ee1d92a[m DEBUG products
+[33m4777eb44[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m829d9b34[m FIX products
+[33mea14a1f4[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mb1dba2d6[m FIX configurator
+[33mfc7f241e[m Merge remote-tracking branch 'origin/main'
+[33m285fab1b[m FIX configurator
+[33md59c8cdc[m git commit -m "Retire le dossier uploads du suivi Git"
+[33m83d98f03[m Retire le dossier uploads du suivi Git
+[33m2dab734f[m FIX configurator
+[33mec2020fa[m FIX tags
+[33m5d3267ba[m FIX tags categories
+[33m772c14e0[m Merge remote-tracking branch 'origin/main'
+[33mfe46f6a7[m FIX tags
+[33m1c8f77ac[m correction les labelles input module campagne
+[33m31eb5acc[m correction retours des bugs module campagnes
+[33mc999836a[m FIX pack
+[33m5eaf0a96[m FIX pack
+[33mbd52a2b8[m FIX pack
+[33m70bcdbe3[m FIX pack
+[33m501c9d98[m FIX pack
+[33m6b32ded1[m FIX pack
+[33m711f112a[m FIX pack
+[33m0e026030[m FIX pack
+[33md487f6ba[m FIX pack
+[33m27a907b6[m FIX pack
+[33m5c6abbf4[m FIX pack
+[33mfb9bb74a[m FIX pack
+[33m440d4b3d[m FIX pack
+[33m35e85ebb[m Merge remote-tracking branch 'origin/main'
+[33mbbf64d07[m FIX pack
+[33m6f234e14[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m4ee140e7[m Développement d'un moteur de recherche avancé pour nos magasins
+[33m81a06dd4[m ajout des champs latitude longitude dans page config module magasins
+[33m265158d9[m correction bug creation campagne
+[33m8e91b9ac[m correction mise a jour textes promo lors de saisi de quantité page panier
+[33m486661c3[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m01e81fcf[m Module obfuscation
+[33m0605b9d5[m correction module campagnes calcul promo par tranche + ajout lien vers module Countdown setter
+[33m47073c40[m FIX pack
+[33mbacc7cc9[m FIX pack
+[33mee4c5704[m Merge remote-tracking branch 'origin/main'
+[33me9012a01[m FIX product
+[33me61810c8[m correction erreur si pas de texte module bannière promo
+[33m848fc363[m FIX product accessories
+[33m4503a777[m FIX product accessories
+[33m6983ba0e[m Merge remote-tracking branch 'origin/main'
+[33m74a4b2c0[m FIX product link
+[33me0cba04d[m Nouvelle image connexion particulier
+[33m10a9a4be[m Nouvelle image connexion espace pro
+[33m0187554c[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m5707277e[m JS pour les champs obligatoires du formulaire adresse
+[33m50fab471[m ADD hook accessories
+[33m963f71cc[m Alignement des blocs + ckc promo banner
+[33m41c45a4a[m FIX fbConversionGateway.php
+[33m270872f1[m FIX products
+[33mfc99abc5[m Merge remote-tracking branch 'origin/main'
+[33m5c69d78e[m FIX products
+[33mb81c796f[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33md48f1b29[m FIX paginate
+[33m41046e61[m FIX paginate
+[33me6f4e23f[m Merge remote-tracking branch 'origin/main'
+[33m0bb3c42f[m FIX pack color
+[33m1b72cf87[m correction blocs livraison page produit
+[33mda8e6d55[m Retire le focus du champ de recherche de la paga magasin
+[33m89be16f9[m Corretion block connectif block "mes recommandations"
+[33mf360e7a8[m correction module bannière promo
+[33mcf336d5c[m correction css module bannière promo
+[33medb91ec1[m Correction du charngement de cryptoJS
+[33m332a9621[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mdcabd8b7[m JS pour fermer le loader a l'ajout au panier
+[33m1fef23f2[m correction css timer module bannière promo
+[33mc12c7638[m Ajout des modules CKC
+[33m39834fe6[m Ajout d'un loader pour le bouton ajouter au panier
+[33m3f96815b[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m83c32155[m correction place affichage promo sur page promotions
+[33m541f9476[m correction Quand on supprime un produit du panier, ça fait des doublons au niveau des phrases promo
+[33mc2479240[m FIX modal add_to_cart
+[33mf81d3c67[m FIX modal add_to_cart
+[33m06558fba[m FIX modal add_to_cart
+[33m132abf3e[m FIX modal add_to_cart
+[33m27e569cb[m FIX modal add_to_cart
+[33m9dacaa3b[m FIX modal add_to_cart
+[33m468c8396[m FIX pack
+[33me8de7c36[m FIX pack
+[33ma1ca8310[m FIX pack
+[33mff5d2261[m FIX pack
+[33m0c1eb782[m FIX pack
+[33m54342fb7[m Merge remote-tracking branch 'origin/main'
+[33m735614e0[m FIX price
+[33m1ea2b733[m correction contenu statique par le hook pour le template des packs des produits
+[33mdd25c088[m ajout refresh des infos promo sur page panier lors ajax
+[33meae28ca1[m correction template module bannière promo
+[33m13b32630[m add script
+[33m7b3eb433[m add script
+[33m5f0e3b45[m add script
+[33m1ecdf971[m Merge remote-tracking branch 'origin/main'
+[33m50e1b594[m add script
+[33mc7f9d5ff[m Ajout des IP Zentria pour la synchro
+[33meb7e648a[m correction html pour hook displayPromoProductDescription sur page product
+[33m7c1cd0f9[m correction hook pour promo sur page produit
+[33m93cf41cf[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mbd1034b6[m message d'erreur espace pro a 100% et aligner a gauche
+[33m9f1dd933[m ajour de hooks custom pour le module configurateur des campagnes publicitaires
+[33mdaac433b[m Message de confirmation ou d'erreur de la newsletter
+[33ma86744c7[m fonctionnement de la newsletter + gestion des messages d'erreurs
+[33mca062cad[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m2d6512c5[m On remonte au dessus du block description dans le click "lire d'aventage" + animation plus rapide du scroll
+[33me969d5aa[m Fix panier
+[33m1374e74f[m correction bug Quand on ferme la popup, ça envoi vers le bas du site
+[33m99e9c7dc[m ajout icone Premiers prix lien menu mobile, correction valeurs retrait - gratuit recap page commande
+[33m621e11bc[m alignement vertical des icones dans header
+[33m4a189e18[m changement des icones en format svg dans header
+[33m50f5796e[m correction affichage erreur dans le fichier pdf généré du devis
+[33m5553fde4[m ajout scroll de la table pour format responsive page mes devis
+[33md5add85a[m correction css responsive block Notre magasin page magasin
+[33mcd1a1909[m ajout lien Premiers prix dans le menu mobile
+[33m9bf1394b[m correction ordre code js dans thème, largeur du bloque headerBefore sur page produit
+[33mf7acd5a6[m correction icone menu mbile, label optionnel page inscription, titre page carte installateurs
+[33m039ec6df[m modification livraison gratuit par à définir sur la page panier
+[33m906969ed[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m16eb58c3[m Message d'alerte quand on veux quitter le panier et le checkout
+[33m6d5ac278[m ajout css pour la page livraison
+[33mf549de79[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mf281ef9f[m réduction taille de police de la banniere sticky sur la page produit (demande de theo)
+[33mba3427c4[m correction css bouton commander, ajout css pour la page tutoriels
+[33mf71f52fa[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m802d5592[m Modification des informations lors du paiement
+[33m693c41c6[m ajout des images pour la page Tutoriels
+[33md654f510[m correction css alignement prix recap commande, déaplcement bouton commander au dessous moyens paiement pour tous les formats
+[33m8bc3c53d[m correction mise a jour du prix lors de modification de la déclinaison et de la quantité page produit
+[33m43581ffb[m correction css pour les flèches dans le footer menu mobile
+[33m4aedcf6a[m Fix accessories
+[33m68458c50[m Fix accessories
+[33m179832c5[m Fix product price
+[33mca4ab166[m Fix product price
+[33m2b23d3af[m Fix product price
+[33md717089d[m Fix product price
+[33mc4010702[m Fix product price
+[33m59cc38e2[m Fix product price
+[33ma8e27057[m Fix product price
+[33m0c208e4c[m Fix htaccess
+[33m1e53edda[m Merge remote-tracking branch 'origin/main'
+[33m72fc268f[m Fix head
+[33m3306d935[m ajout & css block des avis dans sticky bar format mobile page produit
+[33m39739ebd[m Lien en dur qui n'était plus bon
+[33m8f7a342c[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m2b988a22[m Divers corrections
+[33m36f7e82c[m integration maquette sticky bar avec promotion page produit format mobile
+[33mb26052c8[m modif css couleur prix reduction sur sticky bar + block promotion sticky bar
+[33m56be141d[m correction bug : Manque la sticky bar quand on change un attribut sur page produit
+[33mcc2055f5[m correction css page renew password
+[33m3b85570e[m correction css popup sur toutes les pages
+[33md2c9123b[m correction css taille image catégorie Portail & portillon dans le menu
+[33mae442388[m correction css labelles page réinitialisation mot de passe
+[33m6af80e59[m Merge remote-tracking branch 'origin/main'
+[33m5f1a24f5[m Fix product
+[33m361f50c7[m correction css ckcpromobarre & bug scroll lors de sélection des déclinaisons page produit
+[33m71d30ff8[m Fix product
+[33m037140d9[m Fix product
+[33meb9ff379[m Fix product
+[33m2c3c3072[m Fix product
+[33mae8cb461[m Fix product
+[33m79260a31[m Fix product
+[33m3005b376[m Fix theme
+[33me8553571[m Fix checkout
+[33mf50f4d74[m Fix checkout
+[33mea668fd7[m Fix checkout
+[33m497fe80e[m Fix checkout
+[33mf88789bc[m Merge remote-tracking branch 'origin/main'
+[33m08c03ce7[m Fix checkout
+[33mdadb7d34[m modif images logo en format svg
+[33m461bbc21[m Fix checkout
+[33m4a008b63[m Fix checkout
+[33m46ec4650[m correction css ckcpromobarre
+[33m354c3387[m modification module ckcpromobarre : création fonctionnalité ajout plusieurs textes promo à tourner
+[33mf63b0163[m fix bug Menu qui vient mordre le header
+[33m53fcd2ed[m correction animation menu image
+[33mbf73075e[m fix bug variable inconnu prices dans block Nos meilleures ventes
+[33m6e942215[m ajout modification fabrication européene/française sur la page produit selon sa provenance block reassurance
+[33m2ebd1fb2[m Fix dynamic products
+[33mcd625174[m Fix dynamic products
+[33me8b01ade[m Fix dynamic products
+[33m7b3ede84[m Fix dynamic products
+[33m9760b66c[m Fix dynamic products
+[33mf4310880[m Fix dynamic products
+[33m9ea25d4c[m Fix dynamic products
+[33m338a1c9c[m Fix dynamic products
+[33m6913f63d[m Fix dynamic products
+[33m50a94722[m Fix dynamic products
+[33me2810a0c[m Fix dynamic products
+[33mce5d020a[m Fix packs
+[33maabeebfd[m Fix packs
+[33m75f6d429[m Fix packs
+[33mc1456a98[m Fix packs
+[33mfc67772b[m Fix packs
+[33m5641a6f5[m Merge remote-tracking branch 'origin/main'
+[33md25cb378[m Fix tags
+[33m7781ea0e[m sticky banner sur page produit responsive et correction erreur JS dans la fiche produit
+[33mbb755ecf[m recommit modifs page produit, fix bug décalage image miniature produit sur hover
+[33m0554249c[m correction des images svg et css dans header mobile
+[33m1e09a776[m fix largeur des blocks catégories sur homepage responsive
+[33m926f91a0[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mdffbabd4[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m0f1cc8fd[m correction logo menu mobile, sliders des produits format mobile homepage
+[33m2992c0fd[m Retour Romain
+[33md8a9d8d3[m correction image newsletter, position texte dans newsletter, alignement texte dans produits slider homepage mobile, position titre sous catégorie dans le menu mobile
+[33m688bfb4d[m suppression l'icone recherche sur page checkout mobile, de l'espace en haut de page checkout mobile
+[33me7459c49[m correction css page panier mobile
+[33m74e5ea37[m correction css format mobile page produit
+[33m0c297570[m correction css responsive sliders des produits homepage
+[33mbc0cefcb[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mc159dfde[m hover sur les onglets de sous catégory (demande de manon)
+[33m46925a5c[m correction footer css ajout fermeture media }
+[33m151c8454[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mb4776eb3[m option checkbox en mobile (demande de theo)
+[33m29d8be28[m correction espace menu tablette, correction css flèches page produit
+[33m783e15c4[m correction alignement prix produit tablette
+[33m00f9c4f4[m ajout lien vers home pour logo mobile, suppression cadre blanc & css pour le popup sur page home
+[33m3fc8a584[m correction nouveau override module ets_promotion CartController
+[33m98cedaf8[m correction texte bouton code promo page panier
+[33m540985a0[m ajout des flèches pour les sliders miniuatures produit mobile, correction css footer
+[33m0c7ef081[m Responsive
+[33me44a4ca5[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33md65d89d4[m homepage et megamenu correction
+[33m5f156015[m Fix tags
+[33m88b304c8[m Fix tags
+[33m181b7c8b[m Fix tags
+[33mad84a90a[m Fix tags
+[33m83fe64f4[m Fix tags
+[33mcf05ea62[m Fix tags
+[33ma31ab426[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33me88b6c43[m récupération des tags
+[33m1cef4268[m fix bug cliquer 2 fois pour fermer le zoom de l'image
+[33m3499b222[m ajout fonctionnalité fermeture menu si on clique dehors du menu
+[33m194e94c7[m changement icone avis vérifié, si active texte en blanc
+[33m14ea58c2[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m247c2b1d[m configurateur
+[33mece0be14[m ajout input hidden pour ne pas rediriger vers home après création compte page commande
+[33mf1dc840e[m sticky header correction css + js pour input value=on
+[33m4118733b[m css correction sticky header
+[33m36734426[m fix bug affichage bouton Enregistrer lors chargement page tunnel, intégration header sticky, header sticky responsive
+[33ma9eb3142[m page responsive inscription pro
+[33mb04ec092[m page responsive connexion espace pro
+[33m274b1a37[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m086aa519[m Correction menu et page 404 début d'inté
+[33m4fcd8188[m Merge remote-tracking branch 'origin/main'
+[33mb0493de9[m Fix prices
+[33mbcce08b2[m css mobile footer
+[33m808a11a9[m mise en forme footer en format mobile
+[33mbb1881c5[m fix bug images cassées dans miniuatures produits, 'à définir' au lieu de gratuit sur page commande
+[33m9431472a[m css images fix panier
+[33m36fab466[m mise sur 1 ligne images cartes bleues sur page tunnel mobile
+[33m0ea6e2de[m fix bug ouverture d'un sous menu même s'il y a pas de catégories
+[33mf0c62b4b[m affichage bouton newsletter dans le format mobile
+[33mb9781955[m mise en 2 ligne block reassurance page produit, masquage option liste pour mobule, correction titre catégorie pour mobile
+[33mb0ddf550[m No follow images fancybox
+[33m7191c621[m FIX menu
+[33m32abc664[m FIX menu
+[33m3a45292f[m ADD custom hook
+[33mcc86ee4e[m FIX panier
+[33me21099aa[m titre Alias correction label
+[33md6435453[m modif titre Alias pour Titre de votre adresse, alignemegne texte conditions avec checkbox pour mobile, diminution image panier modal mobile
+[33mb3a88cf7[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m47f67ac9[m Fix Mobile - Page de catégory
+[33mf29027ed[m duplication bouton Commander pour format mobile sur page commande
+[33mc51e73c7[m page confirmation commande produits populaires dans slider
+[33mbff9817a[m font size titre mes infos personnelles mobile, labels 'optionnel'
+[33m92d46627[m alignement éléments des pages mon compte mobile
+[33m8d11e1b1[m déplacement titre page carte installateurs
+[33m5f5f622d[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m12f7cfef[m Fix Mobile - Theme color
+[33mb590efbb[m css page cms catalogue districlos
+[33m444debcf[m correction toggle filtres mobile
+[33m9f37c565[m ajout css responsive page Les offres Districlos, ajout attributs pour le lien Accueil dans fil d'ariane
+[33m04a06f89[m Fix : Page les offres
+[33m35c98662[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m4d164ed8[m Fix : Page les offres
+[33ma07d25f2[m correction couleur pour sticky header, lien vers les prix esssentiels dans menu
+[33ma84b58bd[m modif balisage des pages
+[33mc4053466[m modification balise h3 page catégorie
+[33ma471125b[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m6d4f72dc[m Fix : Page Mes devis sur mon compte
+[33m9f28c9a9[m fix hover quand une seule image dans miniuature produit
+[33mf3675510[m ProductListingFrontController correction
+[33mb38c41c4[m Fix Debug quand usage du filtre page catégorie
+[33m846395c5[m ajout scroll (repsponsive) pour les tableaux hauteurs description produit
+[33mce0e713c[m alignement tabs page produit
+[33m26d45eb7[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m755e5616[m Fix : Responsive page prix juste
+[33me47c47bf[m masquage header mobile sur la page commande
+[33m2773a738[m responsive page addresses - votre compte
+[33m1407533c[m Merge remote-tracking branch 'origin/main'
+[33m9729b5da[m FIX menu
+[33md5cf65bc[m Fix : Responsive page RGPD
+[33ma6634ba5[m Fix : je retire la bordure dans la description catégory
+[33m0b2c7b1e[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33me45b96bd[m Fix : correction du menu
+[33m4bce7b5a[m FIX checkout
+[33mbf564349[m FIX checkout
+[33m8eb3e696[m FIX checkout
+[33m6ee15486[m FIX categories
+[33m6eea3ea4[m Merge remote-tracking branch 'origin/main'
+[33madcf043e[m FIX categories
+[33madbb665f[m Fix : bug du multiaccessoire corrigé
+[33mf7c7b5ac[m Fix : Quand on essaye de descendre en bas de la page panier on est automatiquement remonté en haut de page
+[33m7dbe4253[m fix bug changement Monsieur/Madame sur la page identité mon compte
+[33m9915e848[m correction coche automatique sur la page identité de mon compte, création compte
+[33mb1a2fe9a[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m7fd1f095[m Hover deuxieme images sur produit
+[33m8dda9920[m re correction position erreur authentification
+[33me3726d81[m ajout image inscription, fix style banner quickview
+[33m6e542c2e[m container page produit
+[33mf3db7184[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mdddc1e2f[m Mot de passe oublié
+[33mbe2fe592[m correction icone, label page mot de passe oublié, ajout lien mot de passe oublié connexion pro
+[33m03fc16ce[m correction css page catégorie, ajout block reassurance sur page devis, suppression boutons particulier sur page connexion pro, couleur pro correction
+[33ma4bd8cc1[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mc3f5e4eb[m script sitemap
+[33mbb0128f2[m correction affichage block newsletter & reassurance
+[33m733a5681[m alignement avis, titres miniuatures produit
+[33m73579e58[m ajout icon France si produit fabriqué en France
+[33m76cff2e9[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mc27e45d5[m sticky bar dans le panier et chevron pour le code promo
+[33m975a00e3[m alignement flèches sliders page produit
+[33m766b755f[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m9169e179[m début du sticky banner sur la page panier
+[33m598fa2f9[m alignement prix miniatures produits
+[33m5b3eb964[m correction retours front
+[33m1e3b1ad4[m déplacement bloque assurance page commande
+[33mdcd08dc4[m déplacement bloque assurance page commande
+[33m5d56508e[m correction checkout.js
+[33m79788019[m mise en forme étape Paiement page commande
+[33m2dff1a67[m FIX quotes
+[33mcc1a5ee3[m re correction des bloques adresses sur page commande, responsive bloques page produit
+[33m0f51de54[m Sticky sur le panier
+[33mf49d919c[m lien retour a la boutique et plus de newsletter sur le panier
+[33me2227bd2[m  moyen de paiement paypal ajout du logo  header à masquer
+[33md13e6c77[m FIX shipping
+[33m546ff3a9[m FIX shipping
+[33m7bb1dde0[m FIX product
+[33m49f7be8e[m bouton afficher mot de passe
+[33mf6ee5f7d[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m735396c6[m Couleur du selecteur
+[33m2098bb77[m FIX product
+[33m89d96f64[m FIX product
+[33mac53fd09[m FIX product
+[33m511c3856[m FIX product
+[33me82e6a62[m FIX product
+[33m660f5806[m FIX product
+[33m00566358[m FIX product
+[33md3301db7[m FIX product
+[33me283a49e[m FIX product
+[33mec435377[m FIX product
+[33m3482c09c[m FIX product
+[33ma69c3d6b[m FIX product
+[33mc712dd9e[m FIX product
+[33mf4446547[m FIX product
+[33m26714713[m FIX product
+[33m405fbdf4[m FIX product
+[33m9c8d0f2e[m FIX product
+[33m5bcd4525[m FIX product
+[33ma21dfacf[m FIX product
+[33m305a62f3[m liens dans description Catégorie - css responsive
+[33m7b6b669e[m condition Mon compte et espace pro celon l'environnement
+[33m910c90f8[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m7a351791[m Pas d'affichage du rupture de stock
+[33m5a21eb1f[m Modification avis vérifiés - scroll page produit
+[33ma09404a0[m reponsive miniatures produit page catégorie, correction bloques sur la page catégorie
+[33mfc214a8e[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m2c104def[m Modification avis vérifiés
+[33m353f4727[m FIX product
+[33m8f6a8ddc[m Merge remote-tracking branch 'origin/main'
+[33m4af73469[m FIX product
+[33m8b4f1f2d[m commit ajout icone, css block meilleures ventes
+[33m00f4c1a6[m FIX product
+[33mcd376490[m FIX product
+[33m5f867014[m FIX product
+[33ma328bbe9[m FIX product
+[33mef86c006[m FIX product
+[33m2586ae8c[m FIX product
+[33m7937ccbd[m FIX product
+[33m97663c64[m FIX product
+[33m2f23e32d[m FIX product
+[33mf45e0850[m FIX product
+[33m37490952[m FIX product
+[33m377ae704[m Merge remote-tracking branch 'origin/main'
+[33m996a4aef[m FIX product
+[33mc2f1b628[m Correction des messages d'erreurs dans l'inscription et connexion
+[33mf7157924[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mb4f45ec0[m Correction de l'espace pro + vue liste
+[33m634f265f[m Merge remote-tracking branch 'origin/main'
+[33mf7839eff[m FIX category
+[33m1401c36e[m correction coche automatique sur la page de création de compte après déconnexion
+[33maf799b7c[m correction la coche automatique des checkbox sur la page de création du compte
+[33md60cf67a[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mcad99d18[m Liste view et Liste grid + selecteur couleur
+[33m886a6387[m FIX cart
+[33m1f2b9fe6[m FIX promo code
+[33m0084b89b[m FIX cart
+[33m2a430ab7[m correction bug modification adresses pas défaut, mise en forme bloque adresse sur la page commande
+[33m85a46a96[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m14fe061f[m Ajout de fichiers non suivis
+[33md9ac0db7[m Ajout local du fichier cart-moyen-paiement.tpl
+[33m0f6daffc[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mf78e06ef[m Tunnel de ventes, étape 2
+[33ma3c1e5c9[m Tunnel de ventes, étape 2
+[33mc687d7be[m re ajout du script pour le changement des images lors de sélection des couleurs sur la page produit
+[33m35747fb3[m suppression de la fonction en double updateCart
+[33m23562f6b[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m3e425303[m Tunnel de ventes, étape 2
+[33md7d837b9[m ajout Vider le panier dans header pour les admins, alignement des prix dans les miniuatures des produits
+[33m60f7535b[m mise en forme des bloques adresses sur la page commande
+[33md278eb10[m dynamisation des bloques adresses (sélection de l'adresse par défault) sur la page identité, sélection automatique de l'adresse d'une commande selon l'adresse par défault
+[33mbeb3960e[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m9bbd37ed[m Code promo
+[33m191b318e[m déplacement des éléments dans l'ordre comme sur la page création du compte
+[33mc6c05645[m Merge remote-tracking branch 'origin/main'
+[33maeba5b14[m FIX cart
+[33m22c29717[m detail produit dans cart
+[33m4e9f2357[m Réactivation de l'incrémentation/décrémentation des quantités (+/-), mise à jour automatique du prix total par produit et du bloc détails, ajout du prix unitaire comme sur la maquette, correction du bug de décrémentation qui passait de 2 en 2, et ajout du pourcentage de promo en badge sur la photo comme en production.
+[33m98e4872b[m Réactivation de l'incrémentation/décrémentation des quantités (+/-), mise à jour automatique du prix total par produit et du bloc détails, ajout du prix unitaire comme sur la maquette, correction du bug de décrémentation qui passait de 2 en 2, et ajout du pourcentage de promo en badge sur la photo comme en production.
+[33m8a0211f8[m Swipper et reassurance sur la page cart
+[33me1ec001f[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m77e25bfa[m Swipper et stickbar effect
+[33md59d22ae[m masquage bannière evercontentseo sur la page catégorie
+[33m01fed076[m correction bouton sur la page Identité
+[33mb22f7dc0[m Amélioration tunnel de ventes et miniature
+[33mda3b0e49[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m6a772856[m responsive fiche produit
+[33mfca00362[m mise en forme de la page Confirmation de la commande
+[33m15bb935b[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m0e56e8d2[m AJout des emails dans le git
+[33m97c3c869[m masquage des bloques sur la page Catégorie en format mobile, modif image loginform
+[33m05ab88ce[m AJout des emails dans le git
+[33m21f2774b[m AJout des emails dans le git
+[33mbaf2abc6[m masquage d'icone espace pro dans header quand connecté en tant que particulier, modif des couleurs pour barre de promo et bouton configurateur pour l'espace pro et connexion/création compte pro
+[33mba1d461a[m fix changement des images d'un produit (cover, swiper) avec la sélection d'une couleur du produit correction
+[33m75b9d444[m fix changement des images d'un produit (cover, swiper) avec la sélection d'une couleur du produit
+[33m7f50f9a8[m correction styles pour le formulaire de contact
+[33mec9e4cec[m revert tpl supprimé par erreur
+[33mc3fd34d3[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mb5bc597d[m Formulaire d'inscriptions - retour de theo
+[33m2deb2b9d[m fix bug augmenter la quantité d'un produit
+[33m1a30d9ae[m css responsive page Contacter Nous
+[33m65958414[m Formulaire d'inscriptions - retour de theo
+[33m9c004746[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m9605aa59[m Formulaire d'inscriptions - retour de theo
+[33m31b98733[m mise en forme de la page Contacter Nous
+[33m7fc9b45a[m mise en forme des bloques en bas de la page Catégorie
+[33mdbc182b4[m correction modification des blocks sur la page Catégorie
+[33m70488ce9[m modification des blocks sur la page Categorie
+[33mbf9b8bcd[m rename _tm_bestsellers.scss
+[33mcb9c519d[m ouverture d'un tab avis sur click
+[33m82fb7e91[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m26fd9d46[m correction
+[33m674a8ef7[m ajout d'un tab Avis vérifiés sur la page produit et scroll down vers les avis
+[33maf142ad5[m mise en forme du bloque Meilleures ventes dans leftColumn
+[33mf24ed0e5[m correction condition dans CategoryController
+[33md2a33c90[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mcba8d518[m stickybar.scss
+[33m8d1cef85[m ajout des overrides pour le module TM SideBar Top Sellers
+[33m52c3518c[m ajout d'un formulaire Contact Form Ultimate sur la page Nous Contacter
+[33m51c27fbf[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m2dc1349b[m Recettage theo
+[33mec6d937a[m mise en forme TTC sur les miniatures des produits
+[33ma2c7e72d[m fix mise à jour du prix avec la modification de la quantité d'un produit, fix slider sur la page produit, scrollDown vers les avis sur clique sur les avis Produit, ajout TTC dans les miniatures des produits
+[33me66037cf[m smooth scroll
+[33m39c6de14[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m27713e28[m divers correction
+[33m4d33b8d0[m divers correction
+[33md3312523[m fix slider product
+[33m13d3c790[m fix slider arrow
+[33ma25d9428[m fix crossselling products
+[33mc67855a2[m show banner quick view on scroll
+[33m2c02cc25[m fix banner quick view product page
+[33mc4a3a405[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m6d5cd0ca[m modif swiper sur fiche produit (marge)
+[33m04e85cf9[m accessoire dans les fiches produits par hugo
+[33m9ea3d05e[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33ma2cf9a2e[m Page FAQ
+[33m37f4c7d6[m wip acessories product
+[33me9a43d39[m Page prix_juste
+[33m722d9112[m fix card product
+[33m8931e099[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m6e629daa[m modif pour hugo
+[33md39ce762[m fix social btn
+[33mc6b920a4[m fix card product
+[33m0b8f56a7[m correction homepage
+[33mc307d88b[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33me98bed12[m correction homepage
+[33maf111cfc[m fix bg img
+[33m946c9fb4[m Fix checkout listing products
+[33m55cb0332[m fix login in checkout + style btn social login/register
+[33m10196e12[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m9c3f496f[m Image old
+[33m1000e8a6[m mise en forme des sous catégories niveau 3 dans le menu en format mobile, débug du slider sur la page home en format mobile
+[33mfc735054[m homepage mobile
+[33mddd8cdf6[m connexion corrigé
+[33mcc79f951[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m80f468a7[m Fiche produit + retour theo
+[33m97d235ff[m ADD configurator link
+[33m39231172[m ADD swiper
+[33m5698f8fd[m ADD swiper
+[33mbf1d5948[m ADD semibold
+[33m3e077128[m FIX cart
+[33m2cbc8eaf[m mise en forme des sous catégories dans le menu mobile
+[33m77a82d82[m mise en forme du menu en format mobile, ajout max-width pour les liens sur les pages catégories
+[33m2d7ec586[m Fiche produit : réduction taille de la banniere
+[33m07f20241[m Portail client - Menu mobile de PE + correction variable signin + recettage avec theo petite correection
+[33m0ef603c2[m Portail client - Menu mobile de PE + correction variable signin + recettage avec theo petite correection
+[33md743e64f[m Portail client
+[33m9ca77856[m Tableau de bord - Mes informations
+[33m45e3aad7[m Tableau de bord - Mon compte + Mes adresses
+[33md21dc35d[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m52958b07[m Tableau de bord - Mon compte
+[33m9495b85d[m ADD stock
+[33m5ae500ca[m FIX delivery
+[33m4cd5486f[m FIX delivery
+[33m24e437f2[m Merge remote-tracking branch 'origin/main'
+[33mc0320cb1[m FIX delivery
+[33me2971d6d[m inte auth
+[33m1140d154[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m53a2132a[m Redirection de la page A Propos dans htaccess & Correction du slider de la page d'accueil
+[33mc37698dc[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33me936b507[m modification directement en sftp
+[33m6aad32a7[m Module Nos Magasins + Templates et Liste en front avec Ajax
+[33m70d653b5[m Merge remote-tracking branch 'origin/main'
+[33mebc760d4[m Module Nos Magasins + Templates et Liste en front avec Ajax
+[33m8953c3cf[m inte checkout
+[33m330bc653[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m337deb38[m Module Nos Magasins + Templates et Liste en front avec Ajax
+[33m879f6771[m Merge remote-tracking branch 'origin/main'
+[33mc5d8a34f[m ADD packs
+[33m1e3a8cb1[m Mise en page liste de produit
+[33m97edf3e1[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m9d6e8455[m dynamisation des liens dans les descriptions des catégories
+[33mcad80e41[m responsive filtre a facette
+[33m51ca6fa8[m Correction htaccess qui supprimais tout les liens
+[33m78791900[m Correction JS Menu
+[33m4f80bd43[m Menu et Header
+[33mfd3efe2d[m Intégration Responsive : Adaptation du Header entre 996px et 1920pmx
+[33m78d1a43f[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m3deaca7d[m Intégration Liste des produits + Promo campagne
+[33m028cbf83[m WIP inte checkout
+[33mc3c233a0[m Intégration Liste des produits
+[33m6fd62374[m Intégration et JS pour les Filtres a facettes + réorganisation du webpack et des scripts du themes
+[33m00a495ae[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33m894d09f7[m Filtre a facette
+[33m9853d4ab[m FIX delivery
+[33m9a44d9ce[m Merge remote-tracking branch 'origin/main'
+[33m6a9959e8[m FIX delivery
+[33mdeefb52e[m Fichier manquant du git
+[33m48fab32b[m Merge remote-tracking branch 'origin/main'
+[33mcd81424f[m fichier obligatoire pour la sécurité des modules override
+[33mce050300[m correction des avis vérifié
+[33md736c244[m module installé en preprod
+[33mcf365cef[m correction des fleches dans les miniatures
+[33mc4bda6af[m Merge remote-tracking branch 'origin/main'
+[33m7130bde0[m fullwidth banniere promo
+[33m2b5d1544[m Fix card product slider
+[33m9b8cb251[m FIXS
+[33mab115bab[m FIX delivery
+[33m98ca98e4[m FIX delivery
+[33me332b5ef[m FIX delivery
+[33m35ac23d1[m FIX ?
+[33mfd0c05bf[m Correction de la fiche produit suite a un bug
+[33m9cb57a57[m FIX delivery
+[33mb35fa185[m FIX delivery
+[33m53c6bfa6[m ADD price sync
+[33m32795efd[m FIX shipping
+[33m44ff9e36[m Correction de la fiche produit suite a un bug
+[33m91f2ace2[m ADD redirections
+[33mf95eef0c[m ADD product modal delivery
+[33m9b741d76[m Nouveau footer
+[33md87377ce[m Nouveau footer
+[33me882404f[m Avis vérifié
+[33m33eb7202[m Intégration du nouveau Menu + Homepage
+[33mfdce86af[m Intégration du nouveau Menu + JS
+[33m8dfa08ec[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33me17a3017[m Intégration du Header + Import du menu
+[33m5391346e[m WIP checkout
+[33m5a8bcb41[m Merge branch 'main' of gitlab.com:ckcnet/new-districlos
+[33mda856a90[m Intégration du Header + Import du menu
+[33m6284ad33[m cart + modal cart
+[33m9fb59fd8[m WIP cart
+[33m52281d56[m Module ckc promotion banner
+[33m575eb0a0[m flixslider.css
+[33mc1f2d5b4[m adaptation des reassurances sur la homepage correction d'un bug JS sur la home suite a la gestion de l'incrémentation et décrémentation de districlos dynamisation des newsletters
+[33mbd0ffde5[m adaptation des reassurances sur la homepage correction d'un bug JS sur la home suite a la gestion de l'incrémentation et décrémentation de districlos dynamisation des newsletters
+[33m9b077e64[m surcharge ps_customtext.tpl
+[33m36b9c374[m static inte
+[33m3d062894[m surcharge ps_customtext.tpl
+[33ma63cdd32[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mdb83b7e2[m Ckc Refonte - Formulaire de connexion Particulier
+[33me0ec98d5[m FIX file attachment form
+[33m817b433e[m 🚧 product sheet
+[33m6570262f[m 🚧 WIP product sheet
+[33m609c99c0[m WIP product sheet
+[33m04a513c0[m :construction: pagination products listing
+[33m258414d8[m :construction: filter products listing
+[33m3f1149cc[m :construction: banner slider home + slider related/features products + listing card category mobile
+[33mb82e61f7[m :construction: banner slider home + WIP slider related/features products
+[33m4f3715d4[m Ckc Refonte - Formulaire de connexion Particulier
+[33mf8238916[m Ckc Refonte - Intégration espace pro
+[33md3192d50[m :construction: banner services
+[33m884552fa[m :construction: banner newsletter responsive
+[33m81b839c9[m :construction: banner newsletter + breadcrumb
+[33m06aa5967[m Exclure var/ du suivi Git
+[33m92a91288[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33mb3f1e9db[m Ckc Refonte - Intégration espace pro
+[33m007c440c[m :construction: WIP banner newsletter
+[33m047b51f0[m :wrench: fix
+[33m36144f3d[m :wrench: fix gitignore
+[33m3e753769[m :wrench: fix
+[33mb741f919[m Merge remote-tracking branch 'origin/main'
+[33m7ced798b[m :construction: card product category + card bg image
+[33m69c0cf5c[m Ckc Refonte - Intégration espace pro
+[33medc42836[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m6d62046c[m Ckc Refonte - Intégration espace pro
+[33m310ce5a2[m :construction: card product
+[33m074cca2a[m :construction: WIP card product
+[33m1b872050[m Ckc Refonte - barre de recherche et pictos
+[33mb42b882e[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m34b71b5b[m Ckc Refonte - Ajout des icones du header + bouton espace pro
+[33mf3bd5b8b[m set up front
+[33m637d9bb0[m Ajout du theme qui était dans le gitignore..
+[33mdcf4340d[m Rechargement du .gitignore
+[33m9fdb4ab7[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m4848af3b[m Mise a jour du gitignore
+[33me7ba386c[m :construction: WIP integrations
+[33m3c487372[m ajout themes classic dans gitignore  + mise en place webpack
+[33m2b0aaf41[m ADD gitignore
+[33ma6bec410[m Merge branch 'main' of https://gitlab.com/ckcnet/new-districlos
+[33m59c1479e[m Replace repository with Prestashop files from server
+[33ma2cc34d8[m Update
+[33m79a4ad92[m Initial commit
