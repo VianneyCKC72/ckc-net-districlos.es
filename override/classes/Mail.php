@@ -26,7 +26,7 @@
 
 /**
  * Override de la classe Mail pour ajouter les images embed
- * 
+ *
  * Class Mail.
  */
 class Mail extends MailCore
@@ -339,8 +339,8 @@ class Mail extends MailCore
                 }
 
                 $addrName = ($addrName == null || $addrName == $addr || !Validate::isGenericName($addrName)) ?
-                          '' :
-                          self::mimeEncode($addrName);
+                    '' :
+                    self::mimeEncode($addrName);
                 $message->addTo(self::toPunycode($addr), $addrName);
             }
             $toPlugin = $to[0];
@@ -438,10 +438,10 @@ class Mail extends MailCore
                         )
                     );
                 } elseif (!file_exists($templatePath . $isoTemplate . '.html') &&
-                          (
-                              $configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH ||
-                              $configuration['PS_MAIL_TYPE'] == Mail::TYPE_HTML
-                          )
+                    (
+                        $configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH ||
+                        $configuration['PS_MAIL_TYPE'] == Mail::TYPE_HTML
+                    )
                 ) {
                     PrestaShopLogger::addLog(
                         Context::getContext()->getTranslator()->trans(
@@ -867,8 +867,8 @@ class Mail extends MailCore
 
         if ($idLang === null) {
             $idLang = (!isset($context->language) || !is_object($context->language)) ?
-                    (int) Configuration::get('PS_LANG_DEFAULT') :
-                    (int) $context->language->id;
+                (int) Configuration::get('PS_LANG_DEFAULT') :
+                (int) $context->language->id;
         }
 
         $isoCode = Language::getIsoById((int) $idLang);
