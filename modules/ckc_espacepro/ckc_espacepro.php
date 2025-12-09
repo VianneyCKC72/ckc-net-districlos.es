@@ -1289,6 +1289,9 @@ class ckc_espacepro extends Module
         $formBuilder = $params['form_builder'];
 
         $customer_shop = Db::getInstance()->executeS('SELECT id_shop FROM '._DB_PREFIX_.'customer WHERE id_customer = '.$params['id']);
+        $reference_company = Db::getInstance()->getValue('SELECT CONCAT(c2.firstname, " ", c2.lastname) FROM ' . _DB_PREFIX_ . 'customer c1
+        LEFT JOIN ' . _DB_PREFIX_ . 'customer c2 ON c1.id_reference_company = c2.id_customer
+        WHERE c1.`id_customer` = '.(int)$params['id']);
         //       add custom template on category page
         $formBuilder->add('categoryFieldContentCustom', CustomContentType::class, [
             'required' => false,
@@ -1299,6 +1302,17 @@ class ckc_espacepro extends Module
                 'customerId' => $params['id'],
                 'id_shop' => $customer_shop[0]['id_shop'],
                 'change_shop_url' => Context::getContext()->link->getAdminLink('AdminEspacePro', true, [], ['action' => 'ChangeShop', 'ajax' => 1]),
+                'reference_company' => !empty($reference_company) ? $reference_company : '',
+            ]
+        ]);
+        $formBuilder->add('categoryFieldContentCustom', CustomContentType::class, [
+            'required' => false,
+            'label' => 'Société de référence',
+            'mapped' => false,
+            'template' => '@Modules/ckc_espacepro/views/templates/admin/reference_company.html.twig',
+            'data' => [
+                'change_reference_url' => Context::getContext()->link->getAdminLink('AdminEspacePro', true, [], ['configure' => 'ckc_espacepro', 'module_name' => 'ckc_espacepro']),
+                'reference_company' => !empty($reference_company) ? $reference_company : '',
             ]
         ]);
 

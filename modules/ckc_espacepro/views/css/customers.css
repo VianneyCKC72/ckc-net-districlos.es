@@ -39,3 +39,4 @@
 #customers tbody tr.row-pro td{background:#ffffff;border-left:3px solid #ffa400}
 #customers tbody tr.row-proticulier td{background:#ffffff;border-left:3px solid #008397}
 #customers tbody tr:hover td{background:#F6F2EB}
+#configuration_form_2 .icon-question.custom-help-box.icon-question::before {background-color: #66cee3;color: #fff;padding: 2px 5px 2px 4px;border-radius: 50px;font-weight: 100;}
