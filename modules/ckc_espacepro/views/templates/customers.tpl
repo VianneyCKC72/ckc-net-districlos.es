@@ -124,6 +124,10 @@
                         {if isset($customer.naf) && $customer.naf}
                             <div class="small-muted"><strong>Code NAF :</strong> {$customer.naf|escape:'html'}</div>
                         {/if}
+
+                        {if isset($customer.id_reference_company) && $customer.id_reference_company}
+                            <div class="small-muted" style="color:#FF144E;"><strong>Compte professionnel de référence :</strong> {$customer.reference_company|escape:'html'}</div>
+                        {/if}
                     </td>
 
                     <td>{$customer.date_add|date_format:"%d/%m/%Y %H:%M:%S"}</td>
