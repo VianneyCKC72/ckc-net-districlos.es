@@ -3727,25 +3727,221 @@ class AdvancedPack extends Product
         return true;
     }
 
-    public static function evaluateMathExpression($formula)
+    public static function evaluateMathExpression(string $formula): float
     {
-        $formula = preg_replace('/PLAFOND\s*\(/i', 'ceil(', $formula);
+        $formula = trim($formula);
 
-        $formula = preg_replace('/\s+/', '', $formula);
-        if (!preg_match('/^[0-9+\-*\/().ceil]+$/', $formula)) {
-            throw new InvalidArgumentException('Invalid characters in formula');
+        if ($formula === '') {
+            throw new InvalidArgumentException('La formule est vide.');
         }
 
-        try {
-            $result = @eval("return $formula;");
-            if ($result === false) {
-                throw new RuntimeException('Error evaluating formula');
+        $tokens = self::tokenize($formula);
+
+        $rpn = self::toRPN($tokens);
+
+        $result = self::evaluateRPN($rpn);
+
+        return ceil($result);
+    }
+
+    /***
+     * @return array<int, array{type:string, value:mixed}>
+     */
+    private static function tokenize(string $formula): array
+    {
+        $formula = preg_replace('/\s+/', '', $formula);
+
+        if (!preg_match('/^[0-9+\-*\/().A-Za-z]+$/', $formula)) {
+            throw new InvalidArgumentException('Caractères non autorisés dans la formule.');
+        }
+
+        $pattern = '/
+            (\d+(?:\.\d+)?)
+          | ([+\-*\/])
+          | ([()])
+          | ([A-Za-z]+)
+        /x';
+
+        if (!preg_match_all($pattern, $formula, $matches, PREG_SET_ORDER)) {
+            throw new InvalidArgumentException('Formule invalide.');
+        }
+
+        $tokens = [];
+        foreach ($matches as $m) {
+            if ($m[1] !== '') {
+                $tokens[] = ['type' => 'number', 'value' => (float) $m[1]];
+            } elseif ($m[2] !== '') {
+                $tokens[] = ['type' => 'operator', 'value' => $m[2]];
+            } elseif ($m[3] !== '') {
+                $tokens[] = ['type' => 'paren', 'value' => $m[3]];
+            } elseif ($m[4] !== '') {
+                $func = strtoupper($m[4]);
+                if (!in_array($func, ['PLAFOND'], true)) {
+                    throw new InvalidArgumentException("Fonction non supportée : {$m[4]}");
+                }
+                $tokens[] = ['type' => 'function', 'value' => $func];
+            }
+        }
+
+        return $tokens;
+    }
+
+    /**
+     * @param array<int, array{type:string, value:mixed}> $tokens
+     * @return array<int, array{type:string, value:mixed}>
+     */
+    private static function toRPN(array $tokens): array
+    {
+        $output = [];
+        $stack  = [];
+
+        $precedence = [
+            '+' => 1,
+            '-' => 1,
+            '*' => 2,
+            '/' => 2,
+        ];
+
+        foreach ($tokens as $token) {
+            switch ($token['type']) {
+                case 'number':
+                    $output[] = $token;
+                    break;
+
+                case 'function':
+                    $stack[] = $token;
+                    break;
+
+                case 'operator':
+                    while (!empty($stack)) {
+                        $top = end($stack);
+
+                        if ($top['type'] === 'operator') {
+                            $pTop = $precedence[$top['value']] ?? 0;
+                            $pCur = $precedence[$token['value']] ?? 0;
+
+                            if ($pTop >= $pCur) {
+                                $output[] = array_pop($stack);
+                                continue;
+                            }
+                        }
+
+                        if ($top['type'] === 'function') {
+                            $output[] = array_pop($stack);
+                            continue;
+                        }
+
+                        break;
+                    }
+
+                    $stack[] = $token;
+                    break;
+
+                case 'paren':
+                    if ($token['value'] === '(') {
+                        $stack[] = $token;
+                    } else {
+                        $foundLeftParen = false;
+                        while (!empty($stack)) {
+                            $top = array_pop($stack);
+                            if ($top['type'] === 'paren' && $top['value'] === '(') {
+                                $foundLeftParen = true;
+                                $peek = end($stack);
+                                if ($peek && $peek['type'] === 'function') {
+                                    $output[] = array_pop($stack);
+                                }
+                                break;
+                            } else {
+                                $output[] = $top;
+                            }
+                        }
+
+                        if (!$foundLeftParen) {
+                            throw new InvalidArgumentException('Parenthèses non équilibrées.');
+                        }
+                    }
+                    break;
+            }
+        }
+
+        while (!empty($stack)) {
+            $top = array_pop($stack);
+            if ($top['type'] === 'paren') {
+                throw new InvalidArgumentException('Parenthèses non équilibrées.');
+            }
+            $output[] = $top;
+        }
+
+        return $output;
+    }
+
+    /**
+     * Évalue une expression en notation postfixée (RPN).
+     *
+     * @param array<int, array{type:string, value:mixed}> $rpn
+     */
+    private static function evaluateRPN(array $rpn): float
+    {
+        $stack = [];
+
+        foreach ($rpn as $token) {
+            if ($token['type'] === 'number') {
+                $stack[] = $token['value'];
+                continue;
             }
 
-            return ceil($result);
+            if ($token['type'] === 'operator') {
+                if (count($stack) < 2) {
+                    throw new RuntimeException('Expression invalide (pile insuffisante).');
+                }
+                $b = array_pop($stack);
+                $a = array_pop($stack);
 
-        } catch (\ParseError $e) {
-            throw new RuntimeException('Error evaluating formula: ' . $e->getMessage());
+                switch ($token['value']) {
+                    case '+':
+                        $stack[] = $a + $b;
+                        break;
+                    case '-':
+                        $stack[] = $a - $b;
+                        break;
+                    case '*':
+                        $stack[] = $a * $b;
+                        break;
+                    case '/':
+                        if ($b == 0.0) {
+                            throw new RuntimeException('Division par zéro.');
+                        }
+                        $stack[] = $a / $b;
+                        break;
+                }
+
+                continue;
+            }
+
+            if ($token['type'] === 'function') {
+                if (count($stack) < 1) {
+                    throw new RuntimeException('Expression invalide (argument de fonction manquant).');
+                }
+                $arg = array_pop($stack);
+
+                switch ($token['value']) {
+                    case 'PLAFOND':
+                        $stack[] = ceil($arg);
+                        break;
+                    default:
+                        throw new RuntimeException('Fonction non gérée : ' . $token['value']);
+                }
+
+                continue;
+            }
+
+            throw new RuntimeException('Token inattendu dans la RPN.');
         }
+
+        if (count($stack) !== 1) {
+            throw new RuntimeException('Expression invalide (pile finale incorrecte).');
+        }
+
+        return (float) array_pop($stack);
     }
 }
