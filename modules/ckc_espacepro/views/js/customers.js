@@ -126,4 +126,27 @@ $(document).ready(function () {
         }
     });
 
+    $('#configuration_form_2 select#CKC_CUSTOMER_ID').on('change', function(){
+        let selected = $(this).find('option:selected')
+
+        if(selected.val().length > 0 && selected.val() != 0){
+            $.ajax({
+                type: "POST",
+                url: ajax_find_reference_company_url,
+                data: {
+                    controller : 'AdminEspacePro',
+                    "selectedClient": selected.val(),
+                    action: "FindReferenceCompany",
+                    ajax : true
+                },
+                success: function(responseData){
+                    console.log(responseData)
+                    if(responseData != 'fail'){
+                        $('#configuration_form_2 select#CKC_COMPANY_REFERENCE_ID').val(responseData)
+                    }
+                }
+            })
+        }
+    })
+
 });

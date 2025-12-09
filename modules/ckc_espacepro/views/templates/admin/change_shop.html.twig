@@ -1,0 +1,39 @@
+{% if id_shop == 1 %}
+    <button id="custom_change_shop_button" class="btn btn-primary" style="background-color: #6c868e; border: #6c868e;">Transformer ce client en compte PRO</button>
+{% elseif id_shop == 2 %}
+    <button id="custom_change_shop_button" class="btn btn-primary" style="background-color: #6c868e; border: #6c868e;">Transformer ce client en compte Particulier</button>
+{% endif %}
+<input type="hidden" value="{{ customerId }}" id="custom_customer_id" name="custom_customer_id">
+<input type="hidden" value="{{ change_shop_url }}" id="custom_change_shop_url" name="custom_change_shop_url">
+
+
+<script type="text/javascript">
+
+    let custom_change_shop_url = $("#custom_change_shop_url").val()
+
+    $("#custom_change_shop_button").on('click', function(e){
+
+        e.preventDefault()
+
+        let customerId = $("#custom_customer_id").val()
+
+        $.ajax({
+            type: "POST",
+            url: custom_change_shop_url,
+            data: {
+                controller : 'AdminEspacePro',
+                "customerId": customerId,
+                action: "ChangeShop",
+                ajax : true
+            },
+            success: function(responseData){
+               if(responseData == 'success'){
+                   location.reload();
+               } else if (responseData == 'fail'){
+                   alert('Le compte avec la même adresse email existe déjà dans une autre boutique.')
+               }
+            }
+        })
+    })
+
+</script>

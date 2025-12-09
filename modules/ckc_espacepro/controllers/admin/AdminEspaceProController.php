@@ -76,6 +76,53 @@ class AdminEspaceProController extends ModuleAdminController
         exit();
     }
 
+    public function ajaxProcessChangeShop()
+    {
+        $customerId = Tools::getValue('customerId');
+
+        $customer = new Customer((int)$customerId);
+        $old_default_group = $customer->id_default_group;
+
+        $checkInAnotherShop = Db::getInstance()->executeS('SELECT id_customer FROM '._DB_PREFIX_.'customer 
+        WHERE email LIKE "'.$customer->email.'" AND id_shop != '.$customer->id_shop);
+
+        if(empty($checkInAnotherShop[0]['id_customer'])){
+            if($customer->id_shop == 1){
+                $customer->id_shop = 2;
+                $customer->id_default_group = 10;
+            } else if ($customer->id_shop == 2){
+                $customer->id_shop = 1;
+                $customer->id_default_group = 3;
+            }
+
+            $groups = $customer->getGroups();
+            $newGroupList = array_filter($groups, function ($group) use ($old_default_group) { return $group != $old_default_group; });
+
+            $newGroupList[] = $customer->id_default_group;
+            $newGroupList[] = 3;
+            $customer->updateGroup(array_unique($newGroupList));
+
+            $customer->update();
+
+            echo 'success';
+        } else {
+            echo 'fail';
+        }
+        exit();
+    }
+
+    public function ajaxProcessFindReferenceCompany(){
+        $customerId = (int)Tools::getValue('selectedClient');
+        if(!empty($customerId)){
+            $selectReferenceCompany = Db::getInstance()->executeS('SELECT id_reference_company FROM '._DB_PREFIX_.'customer WHERE id_customer = '.$customerId);
+            echo $selectReferenceCompany[0]['id_reference_company'];
+
+        } else {
+            echo 'fail';
+        }
+        exit();
+    }
+
     public function postProcessFile($key)
     {
         $row          = [];
@@ -294,6 +341,7 @@ class AdminEspaceProController extends ModuleAdminController
     {
         if (Tools::isSubmit('submitKbisCkc_ep')) { $this->postProcessKbis(); }
         if (Tools::isSubmit('submitRibCkc_ep'))  { $this->postProcessRib(); }
+        if (Tools::isSubmit('submitReferenceCompany_ep'))  { $this->postProcessReferenceCompany(); }
         parent::postProcess();
     }
 
@@ -390,7 +438,9 @@ class AdminEspaceProController extends ModuleAdminController
             'nbProticulier'           => $nbProticulier,
             'editkbis'                => (string) $this->createHelperForm('submitKbisCkc_ep', $this->getConfigFormValues(), $this->getEditUserKbisForm()),
             'editrib'                 => (string) $this->createHelperForm('submitRibCkc_ep',  $this->getConfigFormValues(), $this->getEditUserRibForm()),
+            'editcompanyreference'     => (string) $this->createHelperForm('submitReferenceCompany_ep',  $this->getConfigFormValuesReference(), $this->getEditUserReferenceCompanyForm()),
             'downloadFileUrl'         => Context::getContext()->link->getAdminLink('AdminEspacePro', true, [], ['action' => 'DownloadFile', 'ajax' => 1]),
+            'findReferenceCompany'    => Context::getContext()->link->getAdminLink('AdminEspacePro', true, [], ['action' => 'FindReferenceCompany', 'ajax' => 1]),
             'groupsSwitchable'        => $groupsSwitchable,
             'id_group_pro'            => $primaryProId,
             'id_group_proticulier'    => $gidProti,
@@ -618,5 +668,56 @@ class AdminEspaceProController extends ModuleAdminController
                 'submit' => ['title' => 'Enregistrez'],
             ],
         ];
+    }
+    protected function getEditUserReferenceCompanyForm()
+    {
+        $arrSelect = [];
+        $arrSelect[] = ['id' => 0, 'name' => 'Séléctionnez un client'];
+        $customers = $this->getAllCustomersEp();
+
+        if (!empty($customers)) {
+            foreach ($customers as $customer) {
+                $name        = !empty($customer['company']) ? $customer['company'] : ($customer['firstname'].' '.$customer['lastname']);
+                $arrSelect[] = ['id' => (int)$customer['id_customer'], 'name' => $customer['email'].' - '.$name];
+            }
+            if (!empty($arrSelect)) {
+                usort($arrSelect, function ($a, $b) { return strcmp($a['name'], $b['name']); });
+            }
+        }
+
+        return [
+            'form' => [
+                'legend' => ['title' => 'Modifier une société de référence', 'icon'  => 'icon-user'],
+                'input'  => [
+                    [
+                        'type'    => 'select',
+                        'label'   => "Clients professionnels",
+                        'name'    => 'CKC_CUSTOMER_ID',
+                        'options' => ['query' => $arrSelect, 'id' => 'id', 'name' => 'name'],
+                    ],
+                    [
+                        'type'    => 'select',
+                        'label'   => "Compte de Société de référence ",
+                        'name'    => 'CKC_COMPANY_REFERENCE_ID',
+                        'options' => ['query' => $arrSelect, 'id' => 'id', 'name' => 'name'],
+                    ],
+                ],
+                'submit' => ['title' => 'Enregistrez'],
+            ],
+        ];
+    }
+
+    public function getConfigFormValuesReference()
+    {
+        return ['CKC_CUSTOMER_ID' => false, 'CKC_COMPANY_REFERENCE_ID' => false];
+    }
+
+    public function postProcessReferenceCompany(){
+        $clientId = Tools::getValue('CKC_CUSTOMER_ID');
+        $referenceCompany = Tools::getValue('CKC_COMPANY_REFERENCE_ID');
+        if (!empty($clientId) && !empty($referenceCompany)) {
+            $updateReferenceCompany = Db::getInstance()->execute('UPDATE ' . _DB_PREFIX_ . 'customer SET `id_reference_company` = "'.$referenceCompany.'" 
+            WHERE `id_customer` = '.(int)$clientId);
+        }
     }
 }
