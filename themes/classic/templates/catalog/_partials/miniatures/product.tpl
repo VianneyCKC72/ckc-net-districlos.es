@@ -180,7 +180,7 @@
                                             </div>
                                          {else}
                                             <span class="price">
-                                                {$product.price}
+                                                {$product.price} {if $pro.env == 1}<span class="indice-taxe">HT</span>{/if}
                                             </span>
                                          {/if}
                                     </span>
