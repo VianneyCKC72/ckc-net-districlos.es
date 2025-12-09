@@ -33,7 +33,7 @@
                             <li class="cart-summary-line">
                                 <span class="label">{$voucher.name}</span>
                                 <div class="float-xs-right">
-                                    <span>{$voucher.reduction_formatted}</span>
+                                    <span>{$voucher.reduction_formatted}{if $pro.env == 1}HT{/if}</span>
                                     {if isset($voucher.code) && $voucher.code !== ''}
                                         <a href="{$voucher.delete_url}" data-link-action="remove-voucher" class="ml-2">
                                             <svg width="9" height="14" viewBox="0 0 9 14" fill="none"

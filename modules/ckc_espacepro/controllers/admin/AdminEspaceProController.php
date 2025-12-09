@@ -201,8 +201,7 @@ class AdminEspaceProController extends ModuleAdminController
         $sql = 'SELECT c.*,
                    gl.name AS default_group_name,
                    cl.name AS country_name,
-                   ad.vat_number AS vat_number,
-                   c.date_add 
+                   ad.vat_number AS vat_number
             FROM `'._DB_PREFIX_.'customer` c
 
             LEFT JOIN `'._DB_PREFIX_.'group_lang` gl

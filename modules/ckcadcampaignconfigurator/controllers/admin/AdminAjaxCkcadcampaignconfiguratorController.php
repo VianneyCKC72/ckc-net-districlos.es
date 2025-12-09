@@ -283,12 +283,12 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
             WHERE ccd.id_campaign = '.$id);
             if(null != $queryDevis) {
                 $updateDevis = Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckccampaign_config_content_devis` 
-                SET `text`  = \'' . pSQL($devisText) . '\',
+                SET `text`  = \'' . $devisText . '\',
                 `background_color`  = \'' . $devisColor . '\'
                 WHERE  `id_campaign` = ' .(int)$id);
             } else {
                 $createDevis =  Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_devis` (`id`, `id_campaign`, `text`, `background_color`, `date_add`)
-                                VALUES (NULL, '.$id.', \''.pSQL($devisText).'\', \''.$devisColor.'\', CURRENT_TIMESTAMP())');
+                                VALUES (NULL, '.$id.', \''.$devisText.'\', \''.$devisColor.'\', CURRENT_TIMESTAMP())');
             }
         }
 
@@ -297,11 +297,11 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
             WHERE ccpp.id_campaign = '.$id);
             if(null != $queryPromoPage) {
                 $updatePromoPage = Db::getInstance()->execute('UPDATE `' . _DB_PREFIX_ . 'ckccampaign_config_content_promopage` 
-                SET `text`  = \'' . pSQL($promoPageText) . '\'
+                SET `text`  = \'' . $promoPageText . '\'
                 WHERE  `id_campaign` = ' .(int)$id);
             } else {
                 $createPromoPage = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_promopage` (`id`, `id_campaign`, `text`, `date_add`)
-                VALUES (NULL, '.$id.', \''.pSQL($promoPageText).'\', CURRENT_TIMESTAMP())');
+                VALUES (NULL, '.$id.', \''.$promoPageText.'\', CURRENT_TIMESTAMP())');
             }
         }
 
@@ -499,12 +499,12 @@ class AdminAjaxCkcadcampaignconfiguratorController extends ModuleAdminController
 
         if (isset($devisText) && isset($devisColor)){
             $createDevis =  Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_devis` (`id`, `id_campaign`, `text`, `background_color`, `date_add`)
-                                VALUES (NULL, '.$newId.', \''.pSQL($devisText).'\', \''.$devisColor.'\', CURRENT_TIMESTAMP())');
+                                VALUES (NULL, '.$newId.', \''.$devisText.'\', \''.$devisColor.'\', CURRENT_TIMESTAMP())');
         }
 
         if(isset($promoPageText)){
             $createPromoPage = Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_promopage` (`id`, `id_campaign`, `text`, `date_add`)
-                VALUES (NULL, '.$newId.', \''.pSQL($promoPageText).'\', CURRENT_TIMESTAMP())');
+                VALUES (NULL, '.$newId.', \''.$promoPageText.'\', CURRENT_TIMESTAMP())');
         }
 
         $newIdQuery = Db::getInstance()->executeS('SELECT id FROM `' . _DB_PREFIX_ . 'ckccampaign_config_list`

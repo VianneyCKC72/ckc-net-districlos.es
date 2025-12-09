@@ -2,7 +2,6 @@
 if (!class_exists('HelperEspacePro', false) && file_exists(__DIR__.'/classes/HelperEspacePro.php')) {
     require_once __DIR__.'/classes/HelperEspacePro.php';
 }
-
 use PrestaShop\PrestaShop\Adapter\Product\PriceFormatter;
 use PrestaShopBundle\Form\Admin\Type\CustomContentType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -71,6 +70,7 @@ class ckc_espacepro extends Module
             $this->registerHook('actionSubmitAccountBefore') &&
             $this->registerHook('actionPresentCart') &&
             $this->registerHook('actionCustomerFormBuilderModifier') &&
+
             $this->registerHook('actionCustomerLogoutAfter') &&
             $this->registerHook('actionFrontControllerSetMedia') &&
             $this->registerHook('displayBackOfficeHeader') &&
@@ -1241,7 +1241,6 @@ class ckc_espacepro extends Module
         ];
     }
 
-
     public function hookActionPresentCart(&$params){
         if(Context::getContext()->shop->id == 2 && Context::getContext()->controller->page_name != 'checkout'){
 
@@ -1319,7 +1318,7 @@ class ckc_espacepro extends Module
 
         $formBuilder->setData($params['data']);
     }
-    
+
     public function getProHome(): string { return $this->getEnvBases()['pro_base']; }
     public function getPartHome(): string { return $this->getEnvBases()['part_base']; }
 }

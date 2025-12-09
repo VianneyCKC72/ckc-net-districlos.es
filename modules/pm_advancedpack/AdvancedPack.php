@@ -2509,7 +2509,8 @@ class AdvancedPack extends Product
         $sp->id_product = $idPack;
         $sp->id_cart = 0;
         $sp->id_product_attribute = $idProductAttribute;
-        $sp->id_shop = AdvancedPack::getPackIdShop($idPack);
+/*        $sp->id_shop = AdvancedPack::getPackIdShop($idPack);*/
+        $sp->id_shop = Context::getContext()->shop->id;
         $sp->id_shop_group = 0;
         $sp->id_currency = ($idProductAttribute && Validate::isLoadedObject(self::getContext()->currency) ? self::getContext()->currency->id : 0);
         $sp->id_country = 0;
