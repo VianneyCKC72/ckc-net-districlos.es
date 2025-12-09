@@ -129,45 +129,23 @@ $(document).ready(function () {
     $('#configuration_form_2 select#CKC_CUSTOMER_ID').on('change', function(){
         let selected = $(this).find('option:selected')
 
-        let selectedParent = $('#configuration_form_2 select#CKC_COMPANY_REFERENCE_ID').find('option:selected')
-
         if(selected.val().length > 0 && selected.val() != 0){
-            if(selected.val() == selectedParent.val()){
-                alert('Le compte d\'une société de référence et le compte enfant sont identiques. Sélectionnez un compte compte enfant/parent.')
-                $('#configuration_form_2 select#CKC_CUSTOMER_ID').val(0)
-                $('#configuration_form_2 select#CKC_COMPANY_REFERENCE_ID').val(0)
-            } else {
-                $.ajax({
-                    type: "POST",
-                    url: ajax_find_reference_company_url,
-                    data: {
-                        controller : 'AdminEspacePro',
-                        "selectedClient": selected.val(),
-                        action: "FindReferenceCompany",
-                        ajax : true
-                    },
-                    success: function(responseData){
-                        console.log(responseData)
-                        if(responseData != 'fail'){
-                            $('#configuration_form_2 select#CKC_COMPANY_REFERENCE_ID').val(responseData)
-                        }
+            $.ajax({
+                type: "POST",
+                url: ajax_find_reference_company_url,
+                data: {
+                    controller : 'AdminEspacePro',
+                    "selectedClient": selected.val(),
+                    action: "FindReferenceCompany",
+                    ajax : true
+                },
+                success: function(responseData){
+                    console.log(responseData)
+                    if(responseData != 'fail'){
+                        $('#configuration_form_2 select#CKC_COMPANY_REFERENCE_ID').val(responseData)
                     }
-                })
-            }
-        }
-    })
-
-    $('#configuration_form_2 select#CKC_COMPANY_REFERENCE_ID').on('change', function(){
-        let selected = $(this).find('option:selected')
-
-        let selectedChild = $('#configuration_form_2 select#CKC_CUSTOMER_ID').find('option:selected')
-
-        if(selectedChild.val().length > 0 && selectedChild.val() != 0 && selected.val() > 0 && selected.val() != 0){
-            if(selected.val() == selectedChild.val()){
-                alert('Le compte d\'une société de référence et le compte enfant sont identiques. Sélectionnez un autre compte enfant/parent.')
-                $('#configuration_form_2 select#CKC_CUSTOMER_ID').val(0)
-                $('#configuration_form_2 select#CKC_COMPANY_REFERENCE_ID').val(0)
-            }
+                }
+            })
         }
     })
 
