@@ -26,38 +26,88 @@ class Soubassement extends ProductFactory {
                 }
                 $processed_products[] = $product['id_product'];
                 
-                // Récupérer toutes les couleurs (variations) pour ce produit
-                $colors_data = self::getColors($product['id_product'], $language_id);
+                // Récupérer toutes les déclinaisons directement à partir des combinaisons
+                $combinations = static::getAttributesInformationsByProduct($product['id_product']);
                 $variations = [];
                 
                 // Récupérer le type de poteau sélectionné (clips ou encoches)
                 $clips = isset($session->clips) ? (int)$session->clips : null;
                 
-                foreach ($colors_data['colors'] as $color) {
-                    // Filtrer les variations selon le type de poteau sélectionné
-                    // Si clips est défini, ne garder que les déclinaisons correspondantes
-                    if ($clips !== null && !self::matchesPoleType($product['id_product'], $color['id_product_attribute'], $clips, $language_id)) {
-                        continue;
+                // Grouper les combinaisons par id_product_attribute pour obtenir toutes les déclinaisons
+                $attributes_by_combination = [];
+                foreach ($combinations as $combination) {
+                    $id_attr = $combination['id_product_attribute'];
+                    if (!isset($attributes_by_combination[$id_attr])) {
+                        $attributes_by_combination[$id_attr] = [];
+                    }
+                    $attributes_by_combination[$id_attr][] = $combination;
+                }
+                
+                // Parcourir toutes les déclinaisons uniques
+                foreach ($attributes_by_combination as $id_product_attribute => $combo_attrs) {
+                    // Vérifier si cette déclinaison a un attribut "type de poteau"
+                    $has_pole_type = false;
+                    $pole_type_matches = false;
+                    
+                    foreach ($combo_attrs as $combo_attr) {
+                        if (strtolower($combo_attr['group']) == 'type de poteau') {
+                            $has_pole_type = true;
+                            $type = str_replace('-', ' ', strtolower($combo_attr['attribute']));
+                            if ($clips === null) {
+                                // Si clips n'est pas défini, accepter toutes les déclinaisons
+                                $pole_type_matches = true;
+                            } else if ($clips == 1 && strpos($type, 'clip') !== false) {
+                                $pole_type_matches = true;
+                            } else if ($clips == 0 && (strpos($type, 'encoche') !== false || strpos($type, 'encoches') !== false)) {
+                                $pole_type_matches = true;
+                            }
+                            break;
+                        }
                     }
                     
-                    // Récupérer le prix pour cette déclinaison
-                    $price = Helper::getPrice($product['id_product'], $color['id_product_attribute'], 1);
+                    // Filtrer selon le type de poteau si clips est défini
+                    if ($clips !== null) {
+                        if (!$has_pole_type || !$pole_type_matches) {
+                            continue;
+                        }
+                    }
                     
-                    // Retirer le titre du produit du nom si nécessaire
-                    $product_name = \Product::getProductName($product['id_product'], $color['id_product_attribute'], $language_id);
+                    // Récupérer les informations de la déclinaison
+                    $price = Helper::getPrice($product['id_product'], $id_product_attribute, 1);
+                    $product_name = \Product::getProductName($product['id_product'], $id_product_attribute, $language_id);
                     $name_without_title = $product_name;
                     $colon_pos = strpos($product_name, ' : ');
                     if ($colon_pos !== false) {
                         $name_without_title = substr($product_name, $colon_pos + 3);
                     }
                     
+                    // Récupérer l'image de la déclinaison (chercher l'attribut couleur)
+                    $image_url = null;
+                    foreach ($combo_attrs as $combo_attr) {
+                        if (strtolower($combo_attr['group']) == 'couleur') {
+                            $colorCode = explode(' ', $combo_attr['attribute'])[1] ?? '';
+                            $root_path = '/modules/ckc_configurator/';
+                            if ($product['id_product'] != 1257) {
+                                $image_url = self::getImageUrl(\Product::getCombinationImageById($id_product_attribute, $language_id));
+                            } else {
+                                $image_url = $root_path . 'views/images/couleurs/' . $colorCode . '.png';
+                            }
+                            break;
+                        }
+                    }
+                    
+                    // Si pas d'image trouvée, utiliser l'image par défaut
+                    if (!$image_url) {
+                        $image_url = self::getImageUrl(\Product::getCombinationImageById($id_product_attribute, $language_id));
+                    }
+                    
                     $variations[] = [
-                        "id_product_attribute" => $color['id_product_attribute'],
+                        "id_product_attribute" => $id_product_attribute,
                         "name"                 => $product_name,
                         "name_without_title"   => $name_without_title,
                         "price"                => $price['total_price'],
                         "price_formatted"      => \Tools::displayPrice($price['total_price']),
-                        "image_url"            => $color['image_url'],
+                        "image_url"            => $image_url,
                     ];
                 }
                 
