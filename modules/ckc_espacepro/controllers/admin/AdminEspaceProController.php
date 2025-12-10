@@ -111,6 +111,18 @@ class AdminEspaceProController extends ModuleAdminController
         exit();
     }
 
+    public function ajaxProcessFindReferenceCompany(){
+        $customerId = (int)Tools::getValue('selectedClient');
+        if(!empty($customerId)){
+            $selectReferenceCompany = Db::getInstance()->executeS('SELECT id_reference_company FROM '._DB_PREFIX_.'customer WHERE id_customer = '.$customerId);
+            echo $selectReferenceCompany[0]['id_reference_company'];
+
+        } else {
+            echo 'fail';
+        }
+        exit();
+    }
+
     public function postProcessFile($key)
     {
         $row          = [];
@@ -189,7 +201,9 @@ class AdminEspaceProController extends ModuleAdminController
         $sql = 'SELECT c.*,
                    gl.name AS default_group_name,
                    cl.name AS country_name,
-                   ad.vat_number AS vat_number
+                   ad.vat_number AS vat_number,
+                   c.id_reference_company,
+                   c.date_add 
             FROM `'._DB_PREFIX_.'customer` c
 
             LEFT JOIN `'._DB_PREFIX_.'group_lang` gl
@@ -222,6 +236,7 @@ class AdminEspaceProController extends ModuleAdminController
         foreach ($customers as &$customer) {
             $customer["ribFileExtension"]  = !empty($customer["rib"]) ? strtolower(pathinfo($customer["rib"], PATHINFO_EXTENSION)) : "";
             $customer["fileExtension"]     = !empty($customer["fileUpload"]) ? strtolower(pathinfo($customer["fileUpload"], PATHINFO_EXTENSION)) : "";
+            $customer["reference_company"] = !empty($customer["id_reference_company"]) ? Db::getInstance()->getValue('SELECT CONCAT(firstname, " ", lastname, ", ", email) FROM `'._DB_PREFIX_.'customer` WHERE id_customer = '.$customer["id_reference_company"]) : "";
         }
 
         return $customers;
@@ -328,6 +343,8 @@ class AdminEspaceProController extends ModuleAdminController
     {
         if (Tools::isSubmit('submitKbisCkc_ep')) { $this->postProcessKbis(); }
         if (Tools::isSubmit('submitRibCkc_ep'))  { $this->postProcessRib(); }
+        if (Tools::isSubmit('submitReferenceCompany_ep') && !Tools::isSubmit('DeleteCompanyReference'))  { $this->postProcessReferenceCompany(); }
+        if (Tools::isSubmit('DeleteCompanyReference'))  { $this->postProcessDeleteCompanyReference(); }
         parent::postProcess();
     }
 
@@ -424,7 +441,9 @@ class AdminEspaceProController extends ModuleAdminController
             'nbProticulier'           => $nbProticulier,
             'editkbis'                => (string) $this->createHelperForm('submitKbisCkc_ep', $this->getConfigFormValues(), $this->getEditUserKbisForm()),
             'editrib'                 => (string) $this->createHelperForm('submitRibCkc_ep',  $this->getConfigFormValues(), $this->getEditUserRibForm()),
+            'editcompanyreference'     => (string) $this->createHelperForm('submitReferenceCompany_ep',  $this->getConfigFormValuesReference(), $this->getEditUserReferenceCompanyForm()),
             'downloadFileUrl'         => Context::getContext()->link->getAdminLink('AdminEspacePro', true, [], ['action' => 'DownloadFile', 'ajax' => 1]),
+            'findReferenceCompany'    => Context::getContext()->link->getAdminLink('AdminEspacePro', true, [], ['action' => 'FindReferenceCompany', 'ajax' => 1]),
             'groupsSwitchable'        => $groupsSwitchable,
             'id_group_pro'            => $primaryProId,
             'id_group_proticulier'    => $gidProti,
@@ -652,5 +671,99 @@ class AdminEspaceProController extends ModuleAdminController
                 'submit' => ['title' => 'Enregistrez'],
             ],
         ];
+    }
+    protected function getEditUserReferenceCompanyForm()
+    {
+        $arrSelect = [];
+        $arrSelect[] = ['id' => 0, 'name' => 'Séléctionnez un client'];
+        $customers = $this->getAllCustomersEp();
+
+        if (!empty($customers)) {
+            foreach ($customers as $customer) {
+                $name        = !empty($customer['company']) ? $customer['company'] : ($customer['firstname'].' '.$customer['lastname']);
+                $arrSelect[] = ['id' => (int)$customer['id_customer'], 'name' => $customer['email'].' - '.$name];
+            }
+            if (!empty($arrSelect)) {
+                usort($arrSelect, function ($a, $b) { return strcmp($a['name'], $b['name']); });
+            }
+        }
+
+        return [
+            'form' => [
+                'legend' => ['title' => 'Définir un compte professionnel de référence', 'icon'  => 'icon-user'],
+                'description' => 'Cette section vous permet de rattacher plusieurs comptes professionnels (clients secondaires) à un compte principal appelé “Société de référence”.</br>Le compte principal devient alors le compte parent.</br><i>Exemple : La société A peut être définie comme société de référence pour les comptes B, C, D…</i>',
+                'buttons' => [
+                    'Supprimer'=> [
+                        'type' => 'submit',
+                        'name' => 'DeleteCompanyReference',
+                        'title' => $this->l('Supprimer ce compte de société de référence pour le compte enfant sélectionné'),
+                        'class' => 'btn btn-default pull-left',
+                        'id'   => 'mybutton',
+                        'icon' => 'icon-foo',
+                    ],
+                ],
+                'input'  => [
+                    [
+                        'type'    => 'select',
+                        'label'   => 'Clients professionnels <i class="icon icon-question custom-help-box"></i>',
+                        'name'    => 'CKC_CUSTOMER_ID',
+                        'desc'    => 'Compte enfant : sélectionnez le client à rattacher',
+                        'hint'    => 'Sélectionnez ici le compte que vous souhaitez rattacher à une société de référence.</br>Ce compte deviendra un compte enfant.',
+                        'options' => ['query' => $arrSelect, 'id' => 'id', 'name' => 'name'],
+                    ],
+                    [
+                        'type'    => 'select',
+                        'label'   => 'Compte de Société de référence <i class="icon icon-question custom-help-box"></i>',
+                        'name'    => 'CKC_COMPANY_REFERENCE_ID',
+                        'desc'    => 'Compte parent : sélectionnez la société de référence',
+                        'hint'    => 'Choisissez ici le compte principal (parent) auquel rattacher le client sélectionné.</br>Ce compte sera considéré comme la société de référence.',
+                        'options' => ['query' => $arrSelect, 'id' => 'id', 'name' => 'name'],
+                    ],
+                ],
+                'submit' => ['title' => 'Enregistrez'],
+            ],
+        ];
+    }
+
+    public function getConfigFormValuesReference()
+    {
+        return ['CKC_CUSTOMER_ID' => false, 'CKC_COMPANY_REFERENCE_ID' => false];
+    }
+
+    public function postProcessReferenceCompany(){
+        $clientId = Tools::getValue('CKC_CUSTOMER_ID');
+        $referenceCompany = Tools::getValue('CKC_COMPANY_REFERENCE_ID');
+        $checkReferenceCompany = Db::getInstance()->executeS('SELECT id_reference_company FROM ' . _DB_PREFIX_ . 'customer WHERE `id_customer` = '.(int)$referenceCompany);
+        if(!empty($checkReferenceCompany[0]['id_reference_company'])){
+            $this->errors[] = "Ce compte de référence est déjà un compte enfant et possède une société de référence";
+        } else {
+            if (!empty($clientId) && !empty($referenceCompany)) {
+                $updateReferenceCompany = Db::getInstance()->execute('UPDATE ' . _DB_PREFIX_ . 'customer SET `id_reference_company` = "'.$referenceCompany.'" 
+            WHERE `id_customer` = '.(int)$clientId);
+                if ($updateReferenceCompany) {
+                    $clientChild = Db::getInstance()->getValue('SELECT CONCAT(firstname, " ", lastname) FROM ' . _DB_PREFIX_ . 'customer WHERE `id_customer` = '.(int)$clientId);
+                    $clientParent = Db::getInstance()->getValue('SELECT CONCAT(firstname, " ", lastname) FROM ' . _DB_PREFIX_ . 'customer WHERE `id_customer` = '.(int)$referenceCompany);
+                    $this->confirmations[] = 'Le client <strong>'.$clientChild.'</strong> est maintenant rattaché à la société de référence <strong>'.$clientParent.'</strong>.';
+                } else {
+                    $this->errors[] = "Erreur lors d'enregistrement d'une société de référence.";
+                }
+            }
+        }
+    }
+
+    public function postProcessDeleteCompanyReference(){
+        $clientId = Tools::getValue('CKC_CUSTOMER_ID');
+        $referenceCompany = Tools::getValue('CKC_COMPANY_REFERENCE_ID');
+        if(!empty($clientId) && !empty($referenceCompany)){
+            $deleteReferenceCompany = Db::getInstance()->execute('UPDATE ' . _DB_PREFIX_ . 'customer SET `id_reference_company` = null 
+            WHERE `id_customer` = '.(int)$clientId);
+            if($deleteReferenceCompany){
+                $clientChild = Db::getInstance()->getValue('SELECT CONCAT(firstname, " ", lastname) FROM ' . _DB_PREFIX_ . 'customer WHERE `id_customer` = '.(int)$clientId);
+                $clientParent = Db::getInstance()->getValue('SELECT CONCAT(firstname, " ", lastname) FROM ' . _DB_PREFIX_ . 'customer WHERE `id_customer` = '.(int)$referenceCompany);
+                $this->confirmations[] = 'Le compte de référence <strong>'.$clientParent.'</strong> est maintenant supprimé pour le client <strong>'.$clientChild.'</strong>.';
+            } else {
+                $this->errors[] = "Erreur lors de suppression d'une société de référence.";
+            }
+        }
     }
 }
