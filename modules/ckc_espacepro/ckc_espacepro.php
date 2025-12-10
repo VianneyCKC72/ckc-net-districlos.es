@@ -1307,7 +1307,7 @@ class ckc_espacepro extends Module
         ]);
         $formBuilder->add('categoryFieldContentCustom', CustomContentType::class, [
             'required' => false,
-            'label' => 'Société de référence',
+            'label' => 'Compte Société de Référence',
             'mapped' => false,
             'template' => '@Modules/ckc_espacepro/views/templates/admin/reference_company.html.twig',
             'data' => [
