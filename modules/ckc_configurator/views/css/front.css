@@ -1672,9 +1672,15 @@ a[data-action] {
   opacity: 0 !important;
   visibility: hidden !important;
   border: 1px solid #F6F2EB;
-  padding: 15px;
-  pointer-events: none;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .portillon-jardin-info-tooltip,
+  .occultation-info-tooltip,
+  .soubassement-info-tooltip {
+    width: calc(100vw - 40px);
+    transform: translateX(-70%);
+  }
 }
 
 .portillon-jardin-info-tooltip .data-sheet,
