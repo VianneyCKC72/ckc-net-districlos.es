@@ -40,6 +40,9 @@ use CkcConfigurator\Product\Accessory;
 
 require __DIR__ . '/../../vendor/autoload.php';
 include_once _PS_MODULE_DIR_.'dealt/src/DealtHookHelper.php';
+if (file_exists(_PS_MODULE_DIR_.'dealt/src/DealtHookHelper.php')) {
+    include_once _PS_MODULE_DIR_.'dealt/src/DealtHookHelper.php';
+}
 
 class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontController implements Config
 {
@@ -86,6 +89,10 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
     {
         if ($this->module->isLive()) {
             if ($this->ajax) {
+                // S'assurer que la session est initialisée
+                if (!$this->session) {
+                    $this->session = Session::init($this->userKey(), $this->language_id);
+                }
 
                 // Clique sur l'une des 3 principales catégories
                 if (Tools::getValue('id_category', false)) {
@@ -138,9 +145,24 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     }
                 }
 
+                // S'assurer que $this->data est initialisé
+                if (!isset($this->data)) {
+                    $this->data = [];
+                }
+
                 $sousbassement_id = $this->session->has('soubassement') ? $this->session->soubassement()['id_product'] : false;
+                $selected_soubassement_id = '';
+                $selected_soubassement_id_product_attribute = '';
+                
+                $soubassement_session = $this->session->soubassement();
+                if ($soubassement_session) {
+                    $selected_soubassement_id = $soubassement_session['id_product'];
+                    $selected_soubassement_id_product_attribute = $soubassement_session['id_product_attribute'];
+                }
                 $selected_portillon_id_product_attribute   = '';
+                $selected_portillon_id = '';
                 $selected_occultation_id_product_attribute = '';
+                $selected_occultation_id = '';
                 $selected_panneau_deco_id_product_attribute = '';
 
                 if (!empty(Tools::getValue('panneau_deco')['id_product_attribute'])) {
@@ -175,18 +197,29 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                 }
                 $products = $this->session->getProducts($this->language_id, $this->session);
 
-                if (!empty(Tools::getValue('portillon')['id_product_attribute'])) {
+                // Récupérer les portillons et occultations sélectionnés depuis la session ou la requête
+                $portillon_session = $this->session->portillon();
+                if ($portillon_session) {
+                    $selected_portillon_id_product_attribute = $portillon_session['id_product_attribute'];
+                    $selected_portillon_id = $portillon_session['id_product'];
+                } elseif (!empty(Tools::getValue('portillon')['id_product_attribute'])) {
                     foreach ($products as $product) {
                         if (strpos($product['name'], 'Portillon') !== false) {
                             $selected_portillon_id_product_attribute = Tools::getValue('portillon')['id_product_attribute'];
+                            $selected_portillon_id = Tools::getValue('portillon')['id'];
                         }
                     }
                 }
 
-                if (!empty(Tools::getValue('occultation')['id_product_attribute'])) {
+                $occultation_session = $this->session->occultation();
+                if ($occultation_session) {
+                    $selected_occultation_id_product_attribute = $occultation_session['id_product_attribute'];
+                    $selected_occultation_id = $occultation_session['id_product'];
+                } elseif (!empty(Tools::getValue('occultation')['id_product_attribute'])) {
                     foreach ($products as $product) {
                         if (strpos($product['name'], 'Occultation') !== false || strpos($product['name'], 'Brise vue') !== false) {
                             $selected_occultation_id_product_attribute = Tools::getValue('occultation')['id_product_attribute'];
+                            $selected_occultation_id = Tools::getValue('occultation')['id'];
                         }
                     }
                 }
@@ -213,7 +246,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
 
                 // complet !
                 //                dump($this->data['colors']);
-                if(!empty($products[0]["id"]) && !empty($this->session->length)){
+                if(!empty($products[0]["id"]) && !empty($this->session->length) && class_exists('\Dealt\DealtHookHelper')){
                     $serviceTitles = [];
                     $services = \Dealt\DealtHookHelper::buildProductAdditionalInfoData($this->context, (int)$products[0]["id"], (int)$this->session->length);
                     if(count($services)){
@@ -241,16 +274,22 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     "colors"                                    => $this->data['colors'] ?? [],
                     "poteaux"                                   => $this->data['poteaux'] ?? [],
                     "sousbassement_id"                          => $sousbassement_id ? (int)$sousbassement_id : null,
+                    "sousbassement"                             => Soubassement::get($this->language_id, $this->session),
                     "occultations"                              => Occultation::get($this->language_id, $this->session->id_product_attribute, $this->session->isSouple()),
                     "panneaux_deco"                             => PanneauDeco::get($this->language_id, $this->session->isAluminium(), $this->session),
+                    "selected_soubassement_id_product_attribute" => $selected_soubassement_id_product_attribute,
+                    "selected_soubassement_id"                   => $selected_soubassement_id,
                     "selected_occultation_id_product_attribute" => $selected_occultation_id_product_attribute,
+                    "selected_occultation_id"                   => $selected_occultation_id,
                     "portillons"                                => Portillon::get($this->language_id, $this->session->id_product_attribute, $sousbassement_id, $this->session->isSouple(), $this->session->isAluminium()),
                     "selected_portillon_id_product_attribute"   => $selected_portillon_id_product_attribute,
+                    "selected_portillon_id"                     => $selected_portillon_id,
                     "selected_panneau_deco_id_product_attribute" => $selected_panneau_deco_id_product_attribute,
                     "session"                                   => $this->session,
                     "products"                                  => $products,
                     "price"                                     => $price,
-                    "preview"                                   => Preview::preview($this->language_id, $this->session),
+                    // "preview"                                   => Preview::preview($this->language_id, $this->session),
+                    "preview"                                   => false,
                     "hasError"                                  => (bool)$this->errors,
                     "errors"                                    => $this->errors,
                     "success"                                   => $this->success,
@@ -288,6 +327,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         }
 
         $data = $this->getAttributes($products);
+        $this->data = $data;
 
         $installations = self::INSTALLATIONS;
 
@@ -334,7 +374,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
 
         $products = $this->session->getProducts($this->language_id, $this->session);
 
-        if(!empty($products[0]["id"]) && !empty($this->session->length)){
+        if(!empty($products[0]["id"]) && !empty($this->session->length) && class_exists('\Dealt\DealtHookHelper')){
 
             $services = \Dealt\DealtHookHelper::buildProductAdditionalInfoData($this->context, (int)$products[0]["id"], (int)$this->session->length);
             $serviceTitles = [];
@@ -543,7 +583,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         $accessories  = Accessory::get($this->session, $this->language_id, $soubassement);
 
         foreach ($accessories as $accessory) {
-            if ($heightChanged && $accessory['id'] == 1182) {
+            if ($heightChanged && ($accessory['id'] == 1182 || $accessory['id'] == 1213)) {
 
             }else{
                 $this->session->insertEntry([
@@ -558,7 +598,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
 
         $productsAll = $this->session->getProducts($this->language_id, $this->session);
 
-        if(!empty($productsAll[0]["id"]) && !empty($this->session->length)){
+        if(!empty($productsAll[0]["id"]) && !empty($this->session->length) && class_exists('\Dealt\DealtHookHelper')){
             $this->session->deleteEntryByType('service');
             $service = \Dealt\DealtHookHelper::buildProductAdditionalInfoData($this->context, (int)$productsAll[0]["id"], (int)($this->session->length));
 
@@ -772,14 +812,40 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
 
 
         // Soubassement
+        // Vérifier d'abord si l'entrée soubassement existante est encore compatible avec le type de poteau actuel
+        $existing_soubassement = $this->session->soubassement();
+        if ($existing_soubassement) {
+            // Vérifier si la déclinaison existante correspond au type de poteau actuel
+            $clips = isset($this->session->clips) ? (int)$this->session->clips : null;
+            if ($clips !== null && !Soubassement::matchesPoleType($existing_soubassement['id_product'], $existing_soubassement['id_product_attribute'], $clips, $this->language_id)) {
+                // La déclinaison existante n'est plus compatible, la supprimer
+                $this->session->deleteEntryByType('soubassement');
+            }
+        }
+        
         if (isset($sousbassement['active']) && $sousbassement['active'] == 'true' && !empty($sousbassement['color']) && !empty($sousbassement['height'])) {
-            $this->session->insertEntry([
-                'id_configurator_session' => $this->session->id,
-                'id_product'              => $sousbassement['height'],
-                'id_product_attribute'    => Soubassement::getType($sousbassement['height'], $this->session, $this->language_id),
-                'quantity'                => $nbGrillage,
-                'type'                    => 'soubassement'
-            ]);
+            // Si color est directement un id_product_attribute, l'utiliser directement
+            // Les variations sont déjà filtrées selon le type de poteau dans Soubassement::get()
+            // Sinon, utiliser getType() pour déterminer selon le type de poteau (rétrocompatibilité)
+            if (is_numeric($sousbassement['color'])) {
+                // Utiliser directement la déclinaison sélectionnée car elle est déjà filtrée selon le type de poteau
+                $id_product_attribute = $sousbassement['color'];
+            } else {
+                $id_product_attribute = Soubassement::getType($sousbassement['height'], $this->session, $this->language_id);
+            }
+            
+            if ($id_product_attribute) {
+                $this->session->insertEntry([
+                    'id_configurator_session' => $this->session->id,
+                    'id_product'              => $sousbassement['height'],
+                    'id_product_attribute'    => $id_product_attribute,
+                    'quantity'                => $nbGrillage,
+                    'type'                    => 'soubassement'
+                ]);
+            }
+        } else if (isset($sousbassement['active']) && $sousbassement['active'] == 'false') {
+            // Si le soubassement est explicitement désactivé, le supprimer de la session
+            $this->session->deleteEntryByType('soubassement');
         }
 
         // Kit de montage
@@ -831,7 +897,9 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         }
 
         // Portillons
-        if (isset($portillon['active']) && $portillon['active'] == 'true' && !empty($portillon['id']) && !empty($portillon['id_product_attribute']) && !$heightChanged) {
+        $portillon_active = isset($portillon['active']) && ($portillon['active'] == 'true' || $portillon['active'] === true || $portillon['active'] == 1);
+        if ($portillon_active && !empty($portillon['id']) && !empty($portillon['id_product_attribute']) && !$heightChanged) {
+            $this->session->deleteEntryByType('portillon');
             $this->session->insertEntry([
                 'id_configurator_session' => $this->session->id,
                 'id_product'              => $portillon['id'],
@@ -839,6 +907,8 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                 'quantity'                => 1,
                 'type'                    => 'portillon'
             ]);
+        } else if (!$portillon_active && $this->session->portillon()) {
+            $this->session->deleteEntryByType('portillon');
         }
     }
 

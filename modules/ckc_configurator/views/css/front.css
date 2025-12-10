@@ -71,6 +71,15 @@ body#configurator {
       background-color: #7CBA49;
       color: white;
     }
+    /* Désactiver le hover pour les portillons jardin */
+    .portillon-jardin-action:hover .title-img {
+      background-color: transparent !important;
+      color: inherit;
+    }
+    .portillon-jardin-action.selected:hover .title-img {
+      background-color: #7CBA49;
+      color: white;
+    }
   }
 
   .selected .title-img .icon-not-selected {
@@ -365,8 +374,9 @@ body#configurator {
   }
 
   .configurator-preview {
-    background-color: #fff;
-    border-radius: 4px;
+    display: none !important;
+    /* background-color: #fff;
+    border-radius: 4px; */
   }
 
   .infos-top {
@@ -1521,3 +1531,172 @@ a[data-action] {
 .step.fourth form [data-name=service_id] li{
   list-style-position: inside;
 }
+
+/* Styles spécifiques pour les portillons jardin et occultations avec select */
+
+.portillon-jardin-action,
+.occultation-action,
+.soubassement-action {
+  justify-content: space-between;
+  border-bottom: 2px solid #F6F2EB;
+  padding: 20px;
+}
+.portillon-jardin-action .title-img {
+  background-color: transparent !important;
+}
+
+.portillon-jardin-action.selected .title-img {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+.portillon-jardin-select,
+.occultation-select,
+.soubassement-select {
+  background: transparent !important;
+  border: 2px solid #F6F2EB;
+  padding: 5px !important;
+  color: inherit !important;
+  cursor: pointer;
+  border-radius: initial;
+  height: auto !important;
+  width: 100%;
+}
+
+.portillon-jardin-select:focus,
+.occultation-select:focus,
+.soubassement-select:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 2px solid #F6F2EB !important;
+}
+
+.portillon-jardin-image,
+.occultation-image,
+.soubassement-image {
+  border: 2px solid #F6F2EB;
+  border-radius: 0;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+} 
+
+.portillon-jardin-content,
+.occultation-content,
+.soubassement-content {
+  margin-left: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+}
+
+.portillon-jardin-image img,
+.occultation-image img,
+.soubassement-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.portillon-jardin-price-action,
+.occultation-price-action,
+.soubassement-price-action {
+  margin-left: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  font-weight: 400;
+}
+
+/* Gestion de l'affichage des icônes pour les portillons jardin, occultations et soubassements */
+.portillon-jardin-action .portillon-jardin-price-action .icon-not-selected,
+.occultation-action .occultation-price-action .icon-not-selected,
+.soubassement-action .soubassement-price-action .icon-not-selected {
+  display: block !important;
+}
+
+.portillon-jardin-action .portillon-jardin-price-action .icon-selected,
+.occultation-action .occultation-price-action .icon-selected,
+.soubassement-action .soubassement-price-action .icon-selected {
+  display: none !important;
+}
+
+.portillon-jardin-action.selected .portillon-jardin-price-action .icon-not-selected,
+.occultation-action.selected .occultation-price-action .icon-not-selected,
+.soubassement-action.selected .soubassement-price-action .icon-not-selected {
+  display: none !important;
+}
+
+.portillon-jardin-action.selected .portillon-jardin-price-action .icon-selected,
+.occultation-action.selected .occultation-price-action .icon-selected,
+.soubassement-action.selected .soubassement-price-action .icon-selected {
+  display: block !important;
+}
+
+/* Styles pour l'icône info et la tooltip */
+.portillon-jardin-title,
+.occultation-title,
+.soubassement-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.portillon-jardin-info-icon,
+.occultation-info-icon,
+.soubassement-info-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+  color: #0B798A;
+}
+
+.portillon-jardin-info-icon .portillon-jardin-info-tooltip,
+.occultation-info-icon .occultation-info-tooltip,
+.soubassement-info-icon .soubassement-info-tooltip {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+.portillon-jardin-info-tooltip,
+.occultation-info-tooltip,
+.soubassement-info-tooltip {
+  position: absolute;
+  top: 25px;
+  left: 0;
+  background-color: white;
+  color: black;
+  font-size: 13px;
+  width: 500px;
+  z-index: 1000;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  border: 1px solid #F6F2EB;
+  padding: 15px;
+  pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.portillon-jardin-info-tooltip .data-sheet,
+.occultation-info-tooltip .data-sheet,
+.soubassement-info-tooltip .data-sheet {
+  margin: 0;
+  padding: 0;
+}
+
+.portillon-jardin-info-icon:hover .portillon-jardin-info-tooltip,
+.occultation-info-icon:hover .occultation-info-tooltip,
+.soubassement-info-icon:hover .soubassement-info-tooltip {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
