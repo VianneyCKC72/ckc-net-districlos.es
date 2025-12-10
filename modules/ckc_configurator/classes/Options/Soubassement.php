@@ -147,10 +147,10 @@ class Soubassement extends ProductFactory {
 
         foreach ($combinations as $combination) {
             if (strtolower($combination['group']) == 'type de poteau') {
-                $type = str_replace('-', ' ', $combination['attribute']);
+                $type = str_replace('-', ' ', strtolower($combination['attribute']));
                 if ($session->clips == 1 && strpos($type, 'clip') !== false) {
                     return $combination['id_product_attribute'];
-                }else if ($session->clips == 0 && strpos($type, 'encoche') !== false) {
+                } else if ($session->clips == 0 && (strpos($type, 'encoche') !== false || strpos($type, 'encoches') !== false)) {
                     return $combination['id_product_attribute'];
                 }
             }
@@ -179,7 +179,7 @@ class Soubassement extends ProductFactory {
                     $type = str_replace('-', ' ', strtolower($combination['attribute']));
                     if ($clips == 1 && strpos($type, 'clip') !== false) {
                         return true;
-                    } else if ($clips == 0 && strpos($type, 'encoche') !== false) {
+                    } else if ($clips == 0 && (strpos($type, 'encoche') !== false || strpos($type, 'encoches') !== false)) {
                         return true;
                     }
                 }
