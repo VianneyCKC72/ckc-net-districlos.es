@@ -200,8 +200,8 @@ class Accessory extends ProductFactory
 //            }
             if (self::$session->id_type == self::LAMES_PLEINES_ID) {
                 $accessories[] = 'profil-finition';
-            }else if(self::$session->height == '1m129'){
-                $accessories = array_merge($accessories, $platines);
+            // }else if(self::$session->height == '1m129'){
+            //     $accessories = array_merge($accessories, $platines);
             }
             if (self::$session->depart_mur > 0 || self::$session->nombre_angle) {
                 $accessories[] = 'demi-poteaux';
@@ -393,7 +393,9 @@ class Accessory extends ProductFactory
         $height_selected = intval($heightFloat * 100);
 
         if ($id_product == 1331 && self::$session->isAluminium()) {
-            if ((($heightFloat == 0.515 || $heightFloat == 0.96 || $heightFloat == 0.403 || $heightFloat == 0.766 || $heightFloat == 1.129) && self::$session->installation == 'scellement-sur-muret') || (($heightFloat == 1.41 || $heightFloat == 1.129) && self::$session->installation == 'scellement-sur-platine')) {
+            if ((($heightFloat == 0.515 || $heightFloat == 0.96 || $heightFloat == 0.403 || $heightFloat == 0.766 || $heightFloat == 1.129) && self::$session->installation == 'scellement-sur-muret')) {
+                // || ($heightFloat == 1.129 && self::$session->installation == 'scellement-sur-platine')) {
+                // || (($heightFloat == 1.41 || $heightFloat == 1.129) && self::$session->installation == 'scellement-sur-platine')) {
                 return 11780051;
             }else if (self::$session->installation == 'scellement-sur-platine') {
                 return 11780053;

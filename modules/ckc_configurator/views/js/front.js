@@ -73,7 +73,6 @@ $(document).ready(function () {
             var productActions = document.querySelector('.step.second');
             var mobileSession = document.querySelector('.mobil_session');
 
-            // Vérifie que les éléments existent avant de continuer
             if (!addToCartBottom || !productActions || !mobileSession) {
                 return;
             }
@@ -109,7 +108,6 @@ $(document).ready(function () {
     $products = $(".configurator-products-list div.list");
     $loader = $("#configurator-loader");
 
-    // SELECTING FIRST MAIN CATEGORY
     $first.on('click', '.configurator-action', function (event) {
         event.preventDefault();
 
@@ -132,9 +130,6 @@ $(document).ready(function () {
                 $third.removeClass('disabled');
                 $fourth.removeClass('disabled');
                 $preview.removeClass('disabled');
-
-                Preview.render(response.preview);
-
                 $session.show();
                 Session.render(response);
 
@@ -143,8 +138,114 @@ $(document).ready(function () {
         });
     });
 
-    // GETTING HEIGHTS AND COLORS DEPENDING ON TYPE CHOOSE
+    $("body").on('click', '.portillon-jardin-action, .occultation-action, .soubassement-action', function (event) {
+        if ($(event.target).is('select') || $(event.target).closest('select').length > 0) {
+            return;
+        }
+        if (!$(event.target).closest('svg').length) {
+            event.preventDefault();
+        }
+    });
+
+    $("body").on('change', '.portillon-jardin-select, .occultation-select, .soubassement-select', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var $select = $(this);
+        var selectedValue = $select.val();
+        var productId = $select.data('id');
+        var dataName = $select.data('name');
+        var $selectedOption = $select.find('option:selected');
+        var idProductAttribute = $selectedOption.data('id-product-attribute');
+        var priceFormatted = $selectedOption.data('price-formatted');
+        var imageUrl = $selectedOption.data('image-url');
+        var $action = $select.closest('.portillon-jardin-action, .occultation-action, .soubassement-action');
+        var $priceContainer = $action.find('.portillon-jardin-price-action .portillon-jardin-price, .occultation-price-action .occultation-price, .soubassement-price-action .soubassement-price');
+        var $imageContainer = $action.find('.portillon-jardin-image img, .occultation-image img, .soubassement-image img');
+        var hiddenInputName = dataName;
+        var isPortillon = dataName === 'portillon_id';
+        var isOccultation = dataName === 'occultation_id';
+        var isSoubassement = dataName === 'soubassement_id';
+        var checkboxSelector = isPortillon ? '#checkbox_portillon' : (isOccultation ? '#checkbox_occultation' : '#checkbox_soubassement');
+        
+        if (selectedValue) {
+            // Mettre à jour le champ hidden
+            $('input[name="' + hiddenInputName + '"]').val(productId);
+            
+            // Mettre à jour l'image si disponible
+            if (imageUrl && $imageContainer.length > 0) {
+                $imageContainer.attr('src', imageUrl);
+            }
+            
+            // Afficher et mettre à jour le prix
+            if (priceFormatted) {
+                $priceContainer.find('.price-value').text(priceFormatted);
+                $priceContainer.show();
+            }
+            
+            // Si le produit est déjà sélectionné, mettre à jour la configuration (changement de déclinaison)
+            if ($action.hasClass('selected')) {
+                throttle(function () {
+                    refreshPrice(true);
+                }, interval);
+            } else {
+                // Si le produit n'est pas encore sélectionné, le sélectionner automatiquement
+                // Désélectionner tous les autres produits du même type
+                $('.configurator-action[data-name="' + dataName + '"]').removeClass('selected');
+                $action.addClass('selected');
+                $(checkboxSelector).addClass('selected');
+                
+                // Ajouter à la configuration
+                throttle(function () {
+                    refreshPrice(true);
+                }, interval);
+            }
+        }
+    });
+
     $("body").on('click', '.configurator-action[data-name]', function (event) {
+        if ($(this).hasClass('portillon-jardin-action') || $(this).hasClass('occultation-action') || $(this).hasClass('soubassement-action')) {
+            if ($(event.target).closest('svg').length) {
+                event.preventDefault();
+                var $action = $(this);
+                var name = $action.data('name');
+                var isPortillon = name === 'portillon_id';
+                var isOccultation = name === 'occultation_id';
+                var isSoubassement = name === 'soubassement_id';
+                var checkboxSelector = isPortillon ? '#checkbox_portillon' : (isOccultation ? '#checkbox_occultation' : '#checkbox_soubassement');
+                var selectClass = isPortillon ? '.portillon-jardin-select' : (isOccultation ? '.occultation-select' : '.soubassement-select');
+                var otherProductsSelector = '.configurator-action[data-name="' + name + '"]';
+                
+                if (!$action.hasClass('selected')) {
+                    $(otherProductsSelector).removeClass('selected');
+                    $action.addClass('selected');
+                    $(checkboxSelector).addClass('selected');
+                    $('input[name="' + name + '"]').val($action.data('id'));
+                    
+                    var $select = $action.find(selectClass);
+                    if (!$select.val() && $select.find('option').length > 0) {
+                        $select.find('option:first').prop('selected', true);
+                        $select.trigger('change');
+                    } else if ($select.val()) {
+                        throttle(function () {
+                            refreshPrice(true);
+                        }, interval);
+                    }
+                } else {
+                    $action.removeClass('selected');
+                    $(checkboxSelector).removeClass('selected');
+                    $('input[name="' + name + '"]').val('');
+                    var $select = $action.find(selectClass);
+                    if ($select.find('option').length > 0) {
+                        $select.find('option:first').prop('selected', true);
+                    }
+                    
+                    throttle(function () {
+                        refreshPrice(true);
+                    }, interval);
+                }
+            }
+            return;
+        }
 
         event.preventDefault();
 
@@ -152,6 +253,18 @@ $(document).ready(function () {
         $('input[name="' + name + '"]').val($(this).data('id'));
         $('.configurator-action[data-name="' + name + '"]').removeClass('selected');
         $(this).addClass('selected');
+        
+        if (name === 'portillon_id') {
+            $('#checkbox_portillon').addClass('selected');
+        } else if (name === 'occultation_id') {
+            $('#checkbox_occultation').addClass('selected');
+        }
+        
+        if (name === 'poteaux') {
+            $('.configurator-action[data-name="soubassement_id"]').removeClass('selected');
+            $('#checkbox_soubassement').removeClass('selected');
+            $('input[name="soubassement_id"]').val('');
+        }
 
         if (name == 'type') {
             viewEspacement();
@@ -240,7 +353,6 @@ $(document).ready(function () {
                         }
 
 
-                        Preview.render(response.preview);
                         Session.render(response);
                     }
                 }
@@ -256,24 +368,26 @@ $(document).ready(function () {
             }
 
             if (name == 'portillon_id' || name == 'occultation_id') {
+                if ($(this).hasClass('portillon-jardin-action') || $(this).hasClass('occultation-action')) {
+                    return;
+                }
+                var change = true;
+            } else if (name === 'poteaux') {
                 var change = true;
             } else {
                 var change = false;
             }
             throttle(function () {
                 refreshPrice(change);
-                // Exécutez votre script Ajax ici
             }, interval);
 
         }
     });
 
     function ObjectToArray(data){
-        // Vérifie si c'est un Array
         if (Array.isArray(data)) {
             return data;
         } else if (typeof data === 'object') {
-            // Si ce n'est pas un Array, mais un objet, transforme-le en Array
             return Object.values(data);
         }
         return data;
@@ -337,7 +451,7 @@ $(document).ready(function () {
                 }
 
                 $(".error-bg").hide();
-                Preview.render(response.preview);
+                // Preview.render(response.preview);
                 Session.render(response);
             }
         });
@@ -450,11 +564,7 @@ $(document).ready(function () {
         }, interval);
     });
 
-    $all.on('click', '#sousbassement_hauteur', function (event) {
-        refreshPrice(true);
-    });
-
-    $all.on('click', '#sousbassement_hauteur, input[name="sousbassement_couleur"], #checkbox_occultation, #checkbox_service, #checkbox_panneau_deco, #checkbox_portillon, #checkbox_soubassement', function (event) {
+    $all.on('click', 'input[name="sousbassement_couleur"], #checkbox_occultation, #checkbox_service, #checkbox_panneau_deco, #checkbox_portillon, #checkbox_soubassement', function (event) {
         event.preventDefault();
 
         // if id is not checkbox_soubassement
@@ -478,11 +588,246 @@ $(document).ready(function () {
             if ($item.next().hasClass('hide-row')) {
                 $item.next().hide();
             }
+            // Si on désélectionne le checkbox portillon ou occultation, désélectionner tous les produits et retirer de la configuration
+            if ($(this).attr('id') === 'checkbox_portillon') {
+                // Désélectionner tous les portillons (normaux et avec select)
+                $('.configurator-action[data-name="portillon_id"]').removeClass('selected');
+                // Remettre la première déclinaison par défaut pour les selects
+                $('.portillon-jardin-select').each(function() {
+                    if ($(this).find('option').length > 0) {
+                        $(this).find('option:first').prop('selected', true);
+                    }
+                });
+                $('input[name="portillon_id"]').val('');
+            }
+            // Si on désélectionne le checkbox occultation, désélectionner toutes les occultations et retirer de la configuration
+            if ($(this).attr('id') === 'checkbox_occultation') {
+                // Désélectionner toutes les occultations (normales et avec select)
+                $('.configurator-action[data-name="occultation_id"]').removeClass('selected');
+                // Remettre la première déclinaison par défaut pour les selects
+                $('.occultation-select').each(function() {
+                    if ($(this).find('option').length > 0) {
+                        $(this).find('option:first').prop('selected', true);
+                    }
+                });
+                $('input[name="occultation_id"]').val('');
+            }
+            // Si on désélectionne le checkbox soubassement, désélectionner tous les soubassements et retirer de la configuration
+            if ($(this).attr('id') === 'checkbox_soubassement') {
+                // Désélectionner tous les soubassements (avec select)
+                $('.configurator-action[data-name="soubassement_id"]').removeClass('selected');
+                // Remettre la première déclinaison par défaut pour les selects
+                $('.soubassement-select').each(function() {
+                    if ($(this).find('option').length > 0) {
+                        $(this).find('option:first').prop('selected', true);
+                    }
+                });
+                $('input[name="soubassement_id"]').val('');
+            }
         }
 
         $('.soubassement.hide-row').removeClass('selected')
         refreshPrice(true);
     });
+
+    // Fonctions utilitaires pour générer le HTML réutilisable
+    var HtmlGenerator = {
+        // SVG icons réutilisables
+        svgIconNotSelected: '<svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected"><rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/><path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/></svg>',
+        svgIconSelected: '<svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-selected"><rect y="0.5" width="38" height="38" rx="10" fill="white"/><path d="M25.5761 12.5007L25.576 12.5007C25.1976 12.5135 24.8533 12.6922 24.61 12.9746L15.9182 22.832L13.3948 19.9703C13.2719 19.8262 13.1217 19.7071 12.9508 19.6234C12.778 19.5387 12.5891 19.4926 12.3959 19.4904C12.2026 19.4882 12.0127 19.5298 11.838 19.6107C11.6636 19.6915 11.5096 19.8089 11.3831 19.9523C11.2567 20.0957 11.1596 20.2628 11.0949 20.4426C11.0302 20.6223 10.9984 20.8131 11.0001 21.0043C11.0018 21.1955 11.0371 21.3857 11.1051 21.5642C11.1725 21.741 11.2714 21.9047 11.3989 22.0446L14.9202 26.0381L14.9203 26.0382C15.173 26.3247 15.5302 26.5 15.9182 26.5C16.3061 26.5 16.6633 26.3247 16.9161 26.0382L16.9162 26.0381L26.606 15.049C26.7987 14.8354 26.9242 14.5683 26.9747 14.2853C27.0254 14.001 26.9997 13.7054 26.8988 13.435C26.7978 13.1645 26.6234 12.9246 26.3889 12.754C26.1533 12.5825 25.8698 12.4909 25.5761 12.5007Z" fill="#7CBA49" stroke="#7CBA49"/></svg>',
+        
+        // Extraire le nom court et la description d'un produit
+        parseProductName: function(productName) {
+            var newName = productName.split(' : ')[0];
+            var description = productName.replace(newName, '').replace(' :', '').split(', ').join('<br>');
+            return { name: newName, description: description };
+        },
+        
+        // Générer le HTML d'un produit avec select (générique pour portillon, occultation et soubassement)
+        productWithSelect: function(product, selectedVariationId, isSelected, type) {
+            type = type || 'portillon'; // 'portillon', 'occultation' ou 'soubassement'
+            var prefix = type === 'portillon' ? 'portillon-jardin' : (type === 'occultation' ? 'occultation' : 'soubassement');
+            var dataName = type === 'portillon' ? 'portillon_id' : (type === 'occultation' ? 'occultation_id' : 'soubassement_id');
+            var selectName = type === 'portillon' ? 'portillon_jardin_variation' : (type === 'occultation' ? 'occultation_variation' : 'soubassement_variation');
+            var actionClass = type === 'portillon' ? 'portillon-jardin-action' : (type === 'occultation' ? 'occultation-action' : 'soubassement-action');
+            
+            var selectedVariationData = null;
+            product.variations.forEach(function(variation) {
+                if (variation.id_product_attribute == selectedVariationId) {
+                    selectedVariationData = variation;
+                }
+            });
+            var defaultVariation = selectedVariationData || (product.variations.length > 0 ? product.variations[0] : null);
+            
+            var html = '<div class="col-md-12">';
+            html += '<a href="#" data-id="' + product.id + '" data-name="' + dataName + '" class="configurator-action ' + actionClass + ' d-flex mb-4' + (isSelected ? ' selected' : '') + '">';
+            
+            // Div 1 : Image
+            html += '<div class="' + prefix + '-image">';
+            html += '<img style="width: 100px;" src="' + product.image_url + '" class="img-responsive" alt="' + product.name + '" />';
+            html += '</div>';
+            
+            // Div 2 : Titre produit et select
+            html += '<div class="' + prefix + '-content">';
+            html += '<div class="' + prefix + '-title">';
+            html += '<span class="name font-weight-bold">' + product.short_name + '</span>';
+            if (product.product_details) {
+                html += '<span class="' + prefix + '-info-icon">';
+                html += '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
+                html += '<circle cx="12" cy="12" r="10"></circle>';
+                html += '<line x1="12" y1="16" x2="12" y2="12"></line>';
+                html += '<line x1="12" y1="8" x2="12.01" y2="8"></line>';
+                html += '</svg>';
+                html += '<span class="' + prefix + '-info-tooltip">';
+                
+                // Caractéristiques
+                if (product.product_details.grouped_features && product.product_details.grouped_features.length > 0) {
+                    html += '<section class="product-features">';
+                    html += '<dl class="data-sheet">';
+                    product.product_details.grouped_features.forEach(function(feature) {
+                        html += '<dt class="name">' + feature.name + '</dt>';
+                        html += '<dd class="value">' + feature.value.replace(/\n/g, '<br>') + '</dd>';
+                    });
+                    html += '</dl>';
+                    html += '</section>';
+                }
+                
+                html += '</span>';
+                html += '</span>';
+            }
+            html += '</div>';
+            html += '<select name="' + selectName + '" data-id="' + product.id + '" data-name="' + dataName + '" class="form-control ' + prefix + '-select">';
+            var self = this;
+            product.variations.forEach(function(variation, index) {
+                var isSelectedOption = variation.id_product_attribute == selectedVariationId || (selectedVariationId == '' && index === 0);
+                // Utiliser name_without_title si disponible, sinon name
+                var variationName = variation.name_without_title || variation.name;
+                var imageUrlAttr = variation.image_url ? ' data-image-url="' + variation.image_url + '"' : '';
+                html += '<option value="' + variation.id_product_attribute + '" data-id-product-attribute="' + variation.id_product_attribute + '" data-price="' + variation.price + '" data-price-formatted="' + variation.price_formatted + '"' + imageUrlAttr + (isSelectedOption ? ' selected' : '') + '>' + variationName + '</option>';
+            });
+            html += '</select>';
+            html += '</div>';
+            
+            // Div 3 : Prix et "+"
+            html += '<div class="' + prefix + '-price-action">';
+            if (defaultVariation && defaultVariation.price_formatted) {
+                html += '<div class="' + prefix + '-price" style="font-size: 16px;"><span class="price-value">' + defaultVariation.price_formatted + '</span></div>';
+            } else {
+                html += '<div class="' + prefix + '-price" style="font-size: 16px; display: none;"><span class="price-value"></span></div>';
+            }
+            html += '<div>';
+            html += this.svgIconNotSelected;
+            // SVG sélectionné (fond vert pour portillon et occultation)
+            html += '<svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-selected"><rect y="0.5" width="38" height="38" rx="10" fill="#79C046"/><path d="M25.5761 12.5007L25.576 12.5007C25.1976 12.5135 24.8533 12.6922 24.61 12.9746L15.9182 22.832L13.3948 19.9703C13.2719 19.8262 13.1217 19.7071 12.9508 19.6234C12.778 19.5387 12.5891 19.4926 12.3959 19.4904C12.2026 19.4882 12.0127 19.5298 11.838 19.6107C11.6636 19.6915 11.5096 19.8089 11.3831 19.9523C11.2567 20.0957 11.1596 20.2628 11.0949 20.4426C11.0302 20.6223 10.9984 20.8131 11.0001 21.0043C11.0018 21.1955 11.0371 21.3857 11.1051 21.5642C11.1725 21.741 11.2714 21.9047 11.3989 22.0446L14.9202 26.0381L14.9203 26.0382C15.173 26.3247 15.5302 26.5 15.9182 26.5C16.3061 26.5 16.6633 26.3247 16.9161 26.0382L16.9162 26.0381L26.606 15.049C26.7987 14.8354 26.9242 14.5683 26.9747 14.2853C27.0254 14.001 26.9997 13.7054 26.8988 13.435C26.7978 13.1645 26.6234 12.9246 26.3889 12.754C26.1533 12.5825 25.8698 12.4909 25.5761 12.5007Z" fill="white" stroke="white"/></svg>';
+            html += '</div>';
+            html += '</div>';
+            
+            html += '</a>';
+            html += '</div>';
+            return html;
+        },
+        
+        // Générer le HTML d'un portillon avec select (alias pour compatibilité)
+        portillonWithSelect: function(product, selectedVariationId, isSelected) {
+            return this.productWithSelect(product, selectedVariationId, isSelected, 'portillon');
+        },
+        
+        // Générer le HTML d'un portillon normal
+        portillonNormal: function(product) {
+            var parsed = this.parseProductName(product.name);
+            var html = '<div class="col-md-12">';
+            html += '<a href="#" data-id="' + product.id + '" data-id-product-attribute="' + product.id_product_attribute + '" data-name="portillon_id" class="configurator-action d-flex mb-4">';
+            html += '<img style="padding:unset;margin:0;" src="' + product.image_url + '" class="img-responsive" alt="' + product.name + '" />';
+            html += '<div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;"><div class="infos-top"><span class="name">' + parsed.name + '</span>' + this.svgIconNotSelected + this.svgIconSelected + '</div><span style="font-size: 13px;line-height: 16px;">' + parsed.description + '</span></span></div>';
+            html += '</a>';
+            html += '</div>';
+            return html;
+        },
+        
+        // Générer le HTML d'une occultation (avec ou sans select)
+        occultation: function(product, selectedVariationId, isSelected) {
+            selectedVariationId = selectedVariationId || '';
+            isSelected = isSelected || false;
+            
+            // Si le produit a un select, utiliser la fonction générique
+            if (product.has_select) {
+                return this.productWithSelect(product, selectedVariationId, isSelected, 'occultation');
+            }
+            
+            // Sinon, comportement normal
+            var parsed = this.parseProductName(product.name);
+            var html = '<div class="col-md-12">';
+            html += '<a href="#" data-id="' + product.id + '" data-id-product-attribute="' + product.id_product_attribute + '" data-name="occultation_id" class="configurator-action d-flex mb-4">';
+            html += '<img style="padding:unset;margin:0;" src="' + product.image_url + '" class="img-responsive" alt="' + product.name + '" />';
+            html += '<div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;width: 100%;"><div class="infos-top"><span class="name">' + parsed.name + '</span>' + this.svgIconNotSelected + this.svgIconSelected + '</div><span style="font-size: 13px;line-height: 16px;width: 100%;">' + parsed.description + '</span></span></div>';
+            html += '</a>';
+            html += '</div>';
+            return html;
+        },
+        
+        soubassement: function(product, selectedVariationId, isSelected) {
+            selectedVariationId = selectedVariationId || '';
+            isSelected = isSelected || false;
+            
+            // Si le produit a un select, utiliser la fonction générique
+            if (product.has_select) {
+                return this.productWithSelect(product, selectedVariationId, isSelected, 'soubassement');
+            }
+            
+            // Sinon, comportement normal (ne devrait pas arriver pour les soubassements)
+            return '';
+        }
+    };
+    
+    // Fonction pour détecter le portillon sélectionné avec select
+    function getSelectedPortillonJardin() {
+        var portillonJardinSelected = false;
+        var portillonJardinSelect = null;
+        $('.portillon-jardin-select').each(function() {
+            var $action = $(this).closest('.portillon-jardin-action');
+            if ($(this).val() != '' && $action.hasClass('selected')) {
+                portillonJardinSelected = true;
+                portillonJardinSelect = $(this);
+                return false;
+            }
+        });
+        return { selected: portillonJardinSelected, select: portillonJardinSelect };
+    }
+
+    // Fonction pour détecter l'occultation sélectionnée avec select
+    function getSelectedOccultation() {
+        var occultationSelected = false;
+        var occultationSelect = null;
+        $('.occultation-select').each(function() {
+            var $action = $(this).closest('.occultation-action');
+            if ($(this).val() != '' && $action.hasClass('selected')) {
+                occultationSelected = true;
+                occultationSelect = $(this);
+                return false;
+            }
+        });
+        return { selected: occultationSelected, select: occultationSelect };
+    }
+
+    // Fonction pour détecter le soubassement sélectionné avec select
+    function getSelectedSoubassement() {
+        var soubassementSelected = false;
+        var soubassementSelect = null;
+        $('.soubassement-select').each(function() {
+            var $action = $(this).closest('.soubassement-action');
+            // Retourner le select si le soubassement est sélectionné, même si le select n'a pas encore de valeur
+            if ($action.hasClass('selected')) {
+                soubassementSelected = true;
+                soubassementSelect = $(this);
+                // Si le select n'a pas de valeur, sélectionner la première option
+                if (!$(this).val() && $(this).find('option').length > 0) {
+                    $(this).find('option:first').prop('selected', true);
+                }
+                return false;
+            }
+        });
+        return { selected: soubassementSelected, select: soubassementSelect };
+    }
 
     function refreshPrice(change) {
 
@@ -498,8 +843,17 @@ $(document).ready(function () {
             poteaux: $(".configurator-form input[name='poteaux']").length > 0 ? $(".configurator-form input[name='poteaux']").val() : null,
         };
 
-        var sousbassement = $(".configurator-form.options-form .soubassement.form-title").hasClass('selected');
-        var portillon = $(".configurator-form.options-form .portillon.form-title").hasClass('selected');
+        var sousbassementCheckbox = $(".configurator-form.options-form .soubassement.form-title").hasClass('selected');
+        // Vérifier si un soubassement avec select est explicitement sélectionné (classe 'selected')
+        var soubassementSelect = getSelectedSoubassement();
+        var sousbassement = soubassementSelect.selected || sousbassementCheckbox;
+        
+        // Vérifier si un portillon avec select est explicitement sélectionné (classe 'selected')
+        var portillonJardin = getSelectedPortillonJardin();
+        // Un portillon est actif seulement si un portillon est explicitement sélectionné (normal ou avec select)
+        var portillon = $('.configurator-action.selected[data-name="portillon_id"]').length > 0 || portillonJardin.selected;
+        // Vérifier si une occultation avec select est explicitement sélectionnée (classe 'selected')
+        var occultationSelect = getSelectedOccultation();
         var occultation = $(".configurator-form.options-form .occultation.form-title").hasClass('selected');
         var panneau_deco = $("#checkbox_panneau_deco").hasClass('selected');
         var service = $('[data-name="service_id"]').hasClass('selected');
@@ -508,20 +862,72 @@ $(document).ready(function () {
             grillage.espacement = 1;
         }
 
-        if (portillon || occultation || panneau_deco || service) {
+        if (portillon || occultation || panneau_deco || service || sousbassement) {
             change = true;
         }
 
         $.ajax({
             url: window.location.href, method: "post", data: {
-                ajax: true, updateprice: true, grillage: grillage, sousbassement: {
+                ajax: true, updateprice: true, grillage: grillage,                 sousbassement: {
                     active: sousbassement,
-                    height: $('#sousbassement_hauteur').val(),
-                    color: $('input[name="sousbassement_couleur"]').val(),
+                    height: (function() {
+                        // Si un soubassement avec select est sélectionné, utiliser son ID
+                        if (soubassementSelect.select && soubassementSelect.select.closest('.soubassement-action').hasClass('selected')) {
+                            return soubassementSelect.select.data('id');
+                        }
+                        // Sinon, chercher un soubassement sélectionné (normal ou avec select)
+                        var $selectedSoubassement = $('.configurator-action.selected[data-name="soubassement_id"]');
+                        if ($selectedSoubassement.length > 0) {
+                            // Si c'est un soubassement avec select, utiliser l'ID du select
+                            var $select = $selectedSoubassement.find('.soubassement-select');
+                            if ($select.length > 0) {
+                                return $select.data('id');
+                            }
+                            // Sinon, utiliser l'ID de l'élément
+                            return $selectedSoubassement.data('id');
+                        }
+                        return '';
+                    })(),
+                    color: (function() {
+                        // Si un soubassement avec select est sélectionné, utiliser la valeur du select
+                        if (soubassementSelect.select && soubassementSelect.select.closest('.soubassement-action').hasClass('selected')) {
+                            var selectValue = soubassementSelect.select.val();
+                            // Si le select n'a pas de valeur, prendre la première option
+                            if (!selectValue && soubassementSelect.select.find('option').length > 0) {
+                                selectValue = soubassementSelect.select.find('option:first').val();
+                            }
+                            return selectValue;
+                        }
+                        // Sinon, chercher un soubassement sélectionné (normal ou avec select)
+                        var $selectedSoubassement = $('.configurator-action.selected[data-name="soubassement_id"]');
+                        if ($selectedSoubassement.length > 0) {
+                            // Si c'est un soubassement avec select, utiliser la valeur du select
+                            var $select = $selectedSoubassement.find('.soubassement-select');
+                            if ($select.length > 0) {
+                                var selectValue = $select.val();
+                                // Si le select n'a pas de valeur, prendre la première option
+                                if (!selectValue && $select.find('option').length > 0) {
+                                    selectValue = $select.find('option:first').val();
+                                }
+                                return selectValue;
+                            }
+                            // Sinon, utiliser l'attribut data-id-product-attribute (pour les soubassements normaux)
+                            return $selectedSoubassement.data('id-product-attribute') || '';
+                        }
+                        return '';
+                    })(),
                 }, occultation: {
                     active: occultation,
-                    id: $('input[name="occultation_id"]').val(),
-                    id_product_attribute: $('.configurator-action.selected[data-name="occultation_id"]').data('id-product-attribute'),
+                    id: occultationSelect.select && occultationSelect.select.val() && occultationSelect.select.closest('.occultation-action').hasClass('selected')
+                        ? occultationSelect.select.data('id') 
+                        : ($('.configurator-action.selected[data-name="occultation_id"]').length > 0 
+                            ? $('.configurator-action.selected[data-name="occultation_id"]').data('id') 
+                            : $('input[name="occultation_id"]').val()),
+                    id_product_attribute: occultationSelect.select && occultationSelect.select.val() && occultationSelect.select.closest('.occultation-action').hasClass('selected')
+                        ? occultationSelect.select.val()
+                        : ($('.configurator-action.selected[data-name="occultation_id"]').length > 0
+                            ? $('.configurator-action.selected[data-name="occultation_id"]').data('id-product-attribute')
+                            : ''),
                 },
                 panneau_deco: {
                     active: panneau_deco,
@@ -530,8 +936,12 @@ $(document).ready(function () {
                 },
                 portillon: {
                     active: portillon,
-                    id: $('.configurator-action.selected[data-name="portillon_id"]').data('id'),
-                    id_product_attribute: $('.configurator-action.selected[data-name="portillon_id"]').data('id-product-attribute'),
+                    id: portillonJardin.select && portillonJardin.select.val() && portillonJardin.select.closest('.portillon-jardin-action').hasClass('selected')
+                        ? portillonJardin.select.data('id') 
+                        : $('.configurator-action.selected[data-name="portillon_id"]').data('id'),
+                    id_product_attribute: portillonJardin.select && portillonJardin.select.val() && portillonJardin.select.closest('.portillon-jardin-action').hasClass('selected')
+                        ? portillonJardin.select.val()
+                        : $('.configurator-action.selected[data-name="portillon_id"]').data('id-product-attribute'),
                 },
                 service : {
                     active: service,
@@ -542,40 +952,62 @@ $(document).ready(function () {
                     if (response.portillons.length > 0) {
                         $(".portillon .row").html('');
                         response.portillons.forEach(function (product, index) {
-                            let newName = (product.name).split(' : ')[0]
-                            let description = (product.name).replace(newName, '').replace(' :', '').split(', ').join('<br>');
-                            html = '<div class="col-md-12">';
-                            html += '<a href="#" data-id="' + product.id + '" data-id-product-attribute="' + product.id_product_attribute + '" data-name="portillon_id" class="configurator-action d-flex mb-4">';
-                            html += '<img style="padding:unset;margin:0;" src="' + product.image_url + '" class="img-responsive" alt="' + product.name + '" />';
-                            html += '<div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;"><div class="infos-top"><span class="name">' + newName + '</span><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected"><rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/><path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/></svg><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-selected"><rect y="0.5" width="38" height="38" rx="10" fill="white"/><path d="M25.5761 12.5007L25.576 12.5007C25.1976 12.5135 24.8533 12.6922 24.61 12.9746L15.9182 22.832L13.3948 19.9703C13.2719 19.8262 13.1217 19.7071 12.9508 19.6234C12.778 19.5387 12.5891 19.4926 12.3959 19.4904C12.2026 19.4882 12.0127 19.5298 11.838 19.6107C11.6636 19.6915 11.5096 19.8089 11.3831 19.9523C11.2567 20.0957 11.1596 20.2628 11.0949 20.4426C11.0302 20.6223 10.9984 20.8131 11.0001 21.0043C11.0018 21.1955 11.0371 21.3857 11.1051 21.5642C11.1725 21.741 11.2714 21.9047 11.3989 22.0446L14.9202 26.0381L14.9203 26.0382C15.173 26.3247 15.5302 26.5 15.9182 26.5C16.3061 26.5 16.6633 26.3247 16.9161 26.0382L16.9162 26.0381L26.606 15.049C26.7987 14.8354 26.9242 14.5683 26.9747 14.2853C27.0254 14.001 26.9997 13.7054 26.8988 13.435C26.7978 13.1645 26.6234 12.9246 26.3889 12.754C26.1533 12.5825 25.8698 12.4909 25.5761 12.5007Z" fill="#7CBA49" stroke="#7CBA49"/></svg></div><span style="font-size: 13px;line-height: 16px;">'+description+'</span></span></div>';
-                            html += '</a>';
-                            html += '</div>';
+                            var html = '';
+                            if (product.has_select && product.variations) {
+                                var selectedVariation = response.selected_portillon_id_product_attribute || '';
+                                var isSelected = response.selected_portillon_id == product.id;
+                                html = HtmlGenerator.portillonWithSelect(product, selectedVariation, isSelected);
+                            } else {
+                                html = HtmlGenerator.portillonNormal(product);
+                            }
                             $(".portillon .row").html($(".portillon .row").html() + html);
                         });
 
+                        // Sélection automatique pour les portillons normaux
                         if ($('*[data-name="portillon_id"][data-id-product-attribute="' + response.selected_portillon_id_product_attribute + '"]').length > 0) {
                             $('*[data-name="portillon_id"][data-id-product-attribute="' + response.selected_portillon_id_product_attribute + '"]').trigger('click');
                         }
+                        // Pour le portillon jardin, la sélection est déjà gérée par l'attribut "selected" dans le select
                     }
 
                     if (response.occultations.length > 0) {
                         $(".occultation .row").html('');
                         response.occultations.forEach(function (product, index) {
-                            let newName = (product.name).split(' : ')[0]
-                            let description = (product.name).replace(newName, '').replace(' :', '').split(', ').join('<br>');
-                            html = '<div class="col-md-12">';
-                            html += '<a href="#" data-id="' + product.id + '" data-id-product-attribute="' + product.id_product_attribute + '" data-name="occultation_id" class="configurator-action d-flex mb-4">';
-                            html += '<img style="padding:unset;margin:0;" src="' + product.image_url + '" class="img-responsive" alt="' + product.name + '" />';
-                            html += '<div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;width: 100%;"><div class="infos-top"><span class="name">' + newName + '</span><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected"><rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/><path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/></svg><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-selected"><rect y="0.5" width="38" height="38" rx="10" fill="white"/><path d="M25.5761 12.5007L25.576 12.5007C25.1976 12.5135 24.8533 12.6922 24.61 12.9746L15.9182 22.832L13.3948 19.9703C13.2719 19.8262 13.1217 19.7071 12.9508 19.6234C12.778 19.5387 12.5891 19.4926 12.3959 19.4904C12.2026 19.4882 12.0127 19.5298 11.838 19.6107C11.6636 19.6915 11.5096 19.8089 11.3831 19.9523C11.2567 20.0957 11.1596 20.2628 11.0949 20.4426C11.0302 20.6223 10.9984 20.8131 11.0001 21.0043C11.0018 21.1955 11.0371 21.3857 11.1051 21.5642C11.1725 21.741 11.2714 21.9047 11.3989 22.0446L14.9202 26.0381L14.9203 26.0382C15.173 26.3247 15.5302 26.5 15.9182 26.5C16.3061 26.5 16.6633 26.3247 16.9161 26.0382L16.9162 26.0381L26.606 15.049C26.7987 14.8354 26.9242 14.5683 26.9747 14.2853C27.0254 14.001 26.9997 13.7054 26.8988 13.435C26.7978 13.1645 26.6234 12.9246 26.3889 12.754C26.1533 12.5825 25.8698 12.4909 25.5761 12.5007Z" fill="#7CBA49" stroke="#7CBA49"/></svg></div><span style="font-size: 13px;line-height: 16px;width: 100%;">'+description+'</span></span></div>';
-                            html += '</a>';
-                            html += '</div>';
-
-                            $(".occultation .row").html($(".occultation .row").html() + html);
+                            var selectedVariation = response.selected_occultation_id_product_attribute || '';
+                            var isSelected = response.selected_occultation_id == product.id;
+                            $(".occultation .row").html($(".occultation .row").html() + HtmlGenerator.occultation(product, selectedVariation, isSelected));
                         });
-
+                        // Sélection automatique pour les occultations normales
                         if ($('*[data-name="occultation_id"][data-id-product-attribute="' + response.selected_occultation_id_product_attribute + '"]').length > 0) {
                             $('*[data-name="occultation_id"][data-id-product-attribute="' + response.selected_occultation_id_product_attribute + '"]').trigger('click');
                         }
+                        // Pour les occultations avec select, la sélection est déjà gérée par l'attribut "selected" dans le select
+                    }
+                    if (response.sousbassement && response.sousbassement.length > 0) {
+                        $(".soubassement.hide-row .row").html('');
+                        response.sousbassement.forEach(function (product, index) {
+                            var selectedVariation = response.selected_soubassement_id_product_attribute || '';
+                            var isSelected = response.selected_soubassement_id == product.id;
+                            
+                            // Vérifier si la déclinaison sélectionnée existe toujours dans les variations filtrées
+                            // Si elle n'existe plus (car filtrée selon le type de poteau), réinitialiser
+                            if (selectedVariation && product.variations) {
+                                var variationExists = product.variations.some(function(variation) {
+                                    return variation.id_product_attribute == selectedVariation;
+                                });
+                                if (!variationExists) {
+                                    selectedVariation = '';
+                                    isSelected = false;
+                                    // Désélectionner le soubassement si la déclinaison n'existe plus
+                                    $('.configurator-action[data-name="soubassement_id"]').removeClass('selected');
+                                    $('#checkbox_soubassement').removeClass('selected');
+                                    $('input[name="soubassement_id"]').val('');
+                                }
+                            }
+                            
+                            $(".soubassement.hide-row .row").html($(".soubassement.hide-row .row").html() + HtmlGenerator.soubassement(product, selectedVariation, isSelected));
+                        });
+                        // Pour les soubassements avec select, la sélection est déjà gérée par l'attribut "selected" dans le select
                     }
                     if (response.panneaux_deco.length > 0) {
                         $(".panneau_deco .row").html('');
@@ -599,20 +1031,22 @@ $(document).ready(function () {
                     if (response.portillons.length > 0) {
                         $(".portillon .row").html('');
                         response.portillons.forEach(function (product, index) {
-                            let newName = (product.name).split(' : ')[0]
-                            let description = (product.name).replace(newName, '').replace(' :', '').split(', ').join('<br>');
-                            html = '<div class="col-md-12">';
-                            html += '<a href="#" data-id="' + product.id + '" data-id-product-attribute="' + product.id_product_attribute + '" data-name="portillon_id" class="configurator-action d-flex mb-4">';
-                            html += '<img style="padding:unset;margin:0;" src="' + product.image_url + '" class="img-responsive" alt="' + product.name + '" />';
-                            html += '<div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;"><div class="infos-top"><span class="name">' + newName + '</span><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected"><rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/><path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/></svg><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-selected"><rect y="0.5" width="38" height="38" rx="10" fill="white"/><path d="M25.5761 12.5007L25.576 12.5007C25.1976 12.5135 24.8533 12.6922 24.61 12.9746L15.9182 22.832L13.3948 19.9703C13.2719 19.8262 13.1217 19.7071 12.9508 19.6234C12.778 19.5387 12.5891 19.4926 12.3959 19.4904C12.2026 19.4882 12.0127 19.5298 11.838 19.6107C11.6636 19.6915 11.5096 19.8089 11.3831 19.9523C11.2567 20.0957 11.1596 20.2628 11.0949 20.4426C11.0302 20.6223 10.9984 20.8131 11.0001 21.0043C11.0018 21.1955 11.0371 21.3857 11.1051 21.5642C11.1725 21.741 11.2714 21.9047 11.3989 22.0446L14.9202 26.0381L14.9203 26.0382C15.173 26.3247 15.5302 26.5 15.9182 26.5C16.3061 26.5 16.6633 26.3247 16.9161 26.0382L16.9162 26.0381L26.606 15.049C26.7987 14.8354 26.9242 14.5683 26.9747 14.2853C27.0254 14.001 26.9997 13.7054 26.8988 13.435C26.7978 13.1645 26.6234 12.9246 26.3889 12.754C26.1533 12.5825 25.8698 12.4909 25.5761 12.5007Z" fill="#7CBA49" stroke="#7CBA49"/></svg></div><span style="font-size: 13px;line-height: 16px;">'+description+'</span></span></div>';
-                            html += '</a>';
-                            html += '</div>';
+                            var html = '';
+                            if (product.has_select && product.variations) {
+                                var selectedVariation = response.selected_portillon_id_product_attribute || '';
+                                var isSelected = response.selected_portillon_id == product.id;
+                                html = HtmlGenerator.portillonWithSelect(product, selectedVariation, isSelected);
+                            } else {
+                                html = HtmlGenerator.portillonNormal(product);
+                            }
                             $(".portillon .row").html($(".portillon .row").html() + html);
                         });
 
+                        // Sélection automatique pour les portillons normaux
                         if ($('*[data-name="portillon_id"][data-id-product-attribute="' + response.selected_portillon_id_product_attribute + '"]').length > 0) {
                             $('*[data-name="portillon_id"][data-id-product-attribute="' + response.selected_portillon_id_product_attribute + '"]').trigger('click');
                         }
+                        // Pour le portillon jardin, la sélection est déjà gérée par l'attribut "selected" dans le select
                     }
                 }
 
@@ -620,22 +1054,67 @@ $(document).ready(function () {
                     if (response.occultations.length > 0) {
                         $(".occultation .row").html('');
                         response.occultations.forEach(function (product, index) {
-                            let newName = (product.name).split(' : ')[0]
-                            let description = (product.name).replace(newName, '').replace(' :', '').split(', ').join('<br>');
-                            html = '<div class="col-md-12">';
-                            html += '<a href="#" data-id="' + product.id + '" data-id-product-attribute="' + product.id_product_attribute + '" data-name="occultation_id" class="configurator-action d-flex mb-4">';
-                            html += '<img style="padding:unset;margin:0;" src="' + product.image_url + '" class="img-responsive" alt="' + product.name + '" />';
-                            html += '<div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;width: 100%;"><div class="infos-top"><span class="name">' + newName + '</span><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected"><rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/><path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/></svg><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-selected"><rect y="0.5" width="38" height="38" rx="10" fill="white"/><path d="M25.5761 12.5007L25.576 12.5007C25.1976 12.5135 24.8533 12.6922 24.61 12.9746L15.9182 22.832L13.3948 19.9703C13.2719 19.8262 13.1217 19.7071 12.9508 19.6234C12.778 19.5387 12.5891 19.4926 12.3959 19.4904C12.2026 19.4882 12.0127 19.5298 11.838 19.6107C11.6636 19.6915 11.5096 19.8089 11.3831 19.9523C11.2567 20.0957 11.1596 20.2628 11.0949 20.4426C11.0302 20.6223 10.9984 20.8131 11.0001 21.0043C11.0018 21.1955 11.0371 21.3857 11.1051 21.5642C11.1725 21.741 11.2714 21.9047 11.3989 22.0446L14.9202 26.0381L14.9203 26.0382C15.173 26.3247 15.5302 26.5 15.9182 26.5C16.3061 26.5 16.6633 26.3247 16.9161 26.0382L16.9162 26.0381L26.606 15.049C26.7987 14.8354 26.9242 14.5683 26.9747 14.2853C27.0254 14.001 26.9997 13.7054 26.8988 13.435C26.7978 13.1645 26.6234 12.9246 26.3889 12.754C26.1533 12.5825 25.8698 12.4909 25.5761 12.5007Z" fill="#7CBA49" stroke="#7CBA49"/></svg></div><span style="font-size: 13px;line-height: 16px;width: 100%;">'+description+'</span></span></div>';
-                            html += '</a>';
-                            html += '</div>';
-
-                            $(".occultation .row").html($(".occultation .row").html() + html);
+                            var selectedVariation = response.selected_occultation_id_product_attribute || '';
+                            var isSelected = response.selected_occultation_id == product.id;
+                            $(".occultation .row").html($(".occultation .row").html() + HtmlGenerator.occultation(product, selectedVariation, isSelected));
                         });
-
+                        // Sélection automatique pour les occultations normales
                         if ($('*[data-name="occultation_id"][data-id-product-attribute="' + response.selected_occultation_id_product_attribute + '"]').length > 0) {
                             $('*[data-name="occultation_id"][data-id-product-attribute="' + response.selected_occultation_id_product_attribute + '"]').trigger('click');
                         }
+                        // Pour les occultations avec select, la sélection est déjà gérée par l'attribut "selected" dans le select
                     }
+                }
+                
+                // Recharger les soubassements quand on change de poteaux pour mettre à jour les variations filtrées
+                // Vérifier si on vient de changer de poteaux en regardant si un soubassement était sélectionné mais n'est plus compatible
+                var poteauxChanged = false;
+                if (change && response.sousbassement && response.sousbassement.length > 0) {
+                    // Vérifier si la déclinaison sélectionnée existe toujours dans les variations filtrées
+                    var selectedVariationExists = false;
+                    if (response.selected_soubassement_id_product_attribute) {
+                        response.sousbassement.forEach(function(product) {
+                            if (product.variations) {
+                                var exists = product.variations.some(function(variation) {
+                                    return variation.id_product_attribute == response.selected_soubassement_id_product_attribute;
+                                });
+                                if (exists) {
+                                    selectedVariationExists = true;
+                                }
+                            }
+                        });
+                    }
+                    
+                    // Si la déclinaison sélectionnée n'existe plus, c'est qu'on a changé de poteaux
+                    if (response.selected_soubassement_id_product_attribute && !selectedVariationExists) {
+                        poteauxChanged = true;
+                    }
+                    
+                    $(".soubassement.hide-row .row").html('');
+                    response.sousbassement.forEach(function (product, index) {
+                        var selectedVariation = response.selected_soubassement_id_product_attribute || '';
+                        var isSelected = response.selected_soubassement_id == product.id;
+                        
+                        // Si on a changé de poteaux, forcer la réinitialisation pour utiliser la première variation compatible
+                        if (poteauxChanged) {
+                            selectedVariation = '';
+                            isSelected = false;
+                        } else if (selectedVariation && product.variations) {
+                            // Vérifier si la déclinaison sélectionnée existe toujours dans les variations filtrées
+                            var variationExists = product.variations.some(function(variation) {
+                                return variation.id_product_attribute == selectedVariation;
+                            });
+                            if (!variationExists) {
+                                // La déclinaison n'existe plus, utiliser la première variation compatible (filtrée)
+                                selectedVariation = '';
+                                isSelected = false;
+                            }
+                        }
+                        
+                        // Régénérer le HTML avec les nouvelles variations filtrées
+                        // Si selectedVariation est vide, la première variation compatible sera sélectionnée par défaut
+                        $(".soubassement.hide-row .row").html($(".soubassement.hide-row .row").html() + HtmlGenerator.soubassement(product, selectedVariation, isSelected));
+                    });
                 }
 
                 let serviceTitles = $('#servicesPrev').text()
@@ -686,7 +1165,7 @@ $(document).ready(function () {
                 }
 
                 viewInformationAlum();
-                Preview.render(response.preview);
+                // Preview.render(response.preview);
                 Session.render(response);
 
                 if (response.sousbassement_id == 416) {
@@ -746,37 +1225,6 @@ $(document).ready(function () {
         }
     }
 
-
-// GETTING SOUBASSEMENT COLORS
-    $("body").on('change', '#sousbassement_hauteur', function () {
-        $.ajax({
-            url: window.location.href, method: "post", data: {
-                ajax: true, soubassement: true, height: $('#sousbassement_hauteur').val()
-            }, dataType: 'json', success: function (response) {
-                $("#sousbassement_couleur_row").html('');
-                response.colors.forEach(function (color, index) {
-                    html = '<div class="col-xs-6">';
-                    html += '<a href="#" data-id="' + color.id_product_attribute + '" data-name="sousbassement_couleur" class="configurator-action">';
-                    html += '<img src="' + color.image_url + '" class="img-responsive" alt="' + color.name + '" />';
-                    html += '<div class="title-img">' + color.name + '<svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected"><rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/><path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/></svg><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-selected"><rect y="0.5" width="38" height="38" rx="10" fill="white"/><path d="M25.5761 12.5007L25.576 12.5007C25.1976 12.5135 24.8533 12.6922 24.61 12.9746L15.9182 22.832L13.3948 19.9703C13.2719 19.8262 13.1217 19.7071 12.9508 19.6234C12.778 19.5387 12.5891 19.4926 12.3959 19.4904C12.2026 19.4882 12.0127 19.5298 11.838 19.6107C11.6636 19.6915 11.5096 19.8089 11.3831 19.9523C11.2567 20.0957 11.1596 20.2628 11.0949 20.4426C11.0302 20.6223 10.9984 20.8131 11.0001 21.0043C11.0018 21.1955 11.0371 21.3857 11.1051 21.5642C11.1725 21.741 11.2714 21.9047 11.3989 22.0446L14.9202 26.0381L14.9203 26.0382C15.173 26.3247 15.5302 26.5 15.9182 26.5C16.3061 26.5 16.6633 26.3247 16.9161 26.0382L16.9162 26.0381L26.606 15.049C26.7987 14.8354 26.9242 14.5683 26.9747 14.2853C27.0254 14.001 26.9997 13.7054 26.8988 13.435C26.7978 13.1645 26.6234 12.9246 26.3889 12.754C26.1533 12.5825 25.8698 12.4909 25.5761 12.5007Z" fill="#7CBA49" stroke="#7CBA49"/></svg></div>';
-                    html += '</a>';
-                    html += '</div>';
-                    $("#sousbassement_couleur_row").html($("#sousbassement_couleur_row").html() + html);
-                    if (index == 0) {
-                        $("input[name='sousbassement_couleur']").val(color.id_product_attribute)
-                    }
-                });
-
-
-                throttle(function () {
-                    refreshPrice();
-                    // Exécutez votre script Ajax ici
-                }, interval);
-
-            }
-        });
-    });
-
     let isWaiting = false;
 
     function throttle(func, interval) {
@@ -820,7 +1268,7 @@ $(document).ready(function () {
             url: window.location.href, method: "post", data: {
                 ajax: true, updateQuantity: true, action: action, id: id,
             }, dataType: 'json', success: function (response) {
-                Preview.render(response.preview);
+                // Preview.render(response.preview);
                 Session.render(response);
             }
         });
@@ -832,29 +1280,29 @@ $(document).ready(function () {
         end_img: '" />',
         render: function (preview) {
 
-            if (preview !== false) {
-                $(".configurator-preview-base").html(this.base_img + preview.base + this.end_img);
-                $(".configurator-preview-panneau").html(this.base_img + preview.panneau + this.end_img);
-                $(".configurator-preview-poteau").html(this.base_img + preview.poteau + this.end_img);
-
-                if (preview.jambe !== "jdf/") {
-                    $(".configurator-preview-jambe").html(this.base_img + preview.jambe + this.end_img);
-                }else{
-                    $(".configurator-preview-jambe").html("")
-                }
-
-                if (preview.occultation.length > 0) {
-                    $(".configurator-preview-occultation").html(this.base_img + preview.occultation + this.end_img);
-                } else {
-                    $(".configurator-preview-occultation").html('');
-                }
-
-                if (preview.portillon.length > 0) {
-                    $(".configurator-preview-portillon").html(this.base_img + preview.portillon + this.end_img);
-                } else {
-                    $(".configurator-preview-portillon").html('');
-                }
-            }
+            // if (preview !== false) {
+            //     $(".configurator-preview-base").html(this.base_img + preview.base + this.end_img);
+            //     $(".configurator-preview-panneau").html(this.base_img + preview.panneau + this.end_img);
+            //     $(".configurator-preview-poteau").html(this.base_img + preview.poteau + this.end_img);
+            //
+            //     if (preview.jambe !== "jdf/") {
+            //         $(".configurator-preview-jambe").html(this.base_img + preview.jambe + this.end_img);
+            //     }else{
+            //         $(".configurator-preview-jambe").html("")
+            //     }
+            //
+            //     if (preview.occultation.length > 0) {
+            //         $(".configurator-preview-occultation").html(this.base_img + preview.occultation + this.end_img);
+            //     } else {
+            //         $(".configurator-preview-occultation").html('');
+            //     }
+            //
+            //     if (preview.portillon.length > 0) {
+            //         $(".configurator-preview-portillon").html(this.base_img + preview.portillon + this.end_img);
+            //     } else {
+            //         $(".configurator-preview-portillon").html('');
+            //     }
+            // }
         }
     };
 
