@@ -221,7 +221,7 @@ function disableAddToCartButton() {
     $('.add-to-cart, .product-add-to-cart button[type="submit"]').prop('disabled', true).addClass('disabled');
 }
 
-function enableAddToCartButton() {
+function enableAddToCartButton() { test
     $('.add-to-cart, .product-add-to-cart button[type="submit"]').prop('disabled', false).removeClass('disabled');
 }
 
