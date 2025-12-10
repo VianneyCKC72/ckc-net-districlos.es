@@ -486,14 +486,8 @@ body#configurator {
     .options-form a.optionnal .title-img {
       height: 100%;
     }
-    #sousbassement_couleur_row {
-      margin-bottom: 15px !important;
-    }
   }
   @media screen and (max-width: 520px) {
-    #sousbassement_couleur_row {
-      margin-bottom: 15px !important;
-    }
     .input-group-configurator-text {
       width: 100%;
     }
@@ -1069,9 +1063,6 @@ a[data-action] {
 }
 .soubassement_type_contain {
   display: none;
-}
-#sousbassement_hauteur {
-  -webkit-appearance: none;
 }
 @media screen and (min-width: 520px) and (max-width: 1080px) {
   .title-img {

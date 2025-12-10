@@ -73,7 +73,6 @@ $(document).ready(function () {
             var productActions = document.querySelector('.step.second');
             var mobileSession = document.querySelector('.mobil_session');
 
-            // Vérifie que les éléments existent avant de continuer
             if (!addToCartBottom || !productActions || !mobileSession) {
                 return;
             }
@@ -109,7 +108,6 @@ $(document).ready(function () {
     $products = $(".configurator-products-list div.list");
     $loader = $("#configurator-loader");
 
-    // SELECTING FIRST MAIN CATEGORY
     $first.on('click', '.configurator-action', function (event) {
         event.preventDefault();
 
@@ -132,9 +130,6 @@ $(document).ready(function () {
                 $third.removeClass('disabled');
                 $fourth.removeClass('disabled');
                 $preview.removeClass('disabled');
-
-                // Preview.render(response.preview);
-
                 $session.show();
                 Session.render(response);
 
@@ -143,19 +138,15 @@ $(document).ready(function () {
         });
     });
 
-    // Empêcher le clic sur les liens avec select de déclencher l'action normale (générique)
     $("body").on('click', '.portillon-jardin-action, .occultation-action, .soubassement-action', function (event) {
-        // Si on clique sur le select, ne pas empêcher
         if ($(event.target).is('select') || $(event.target).closest('select').length > 0) {
             return;
         }
-        // Si on clique sur le lien mais pas sur les SVG, empêcher le comportement par défaut
         if (!$(event.target).closest('svg').length) {
             event.preventDefault();
         }
     });
 
-    // Gestion du select pour les produits avec déclinaisons (générique)
     $("body").on('change', '.portillon-jardin-select, .occultation-select, .soubassement-select', function (event) {
         event.preventDefault();
         event.stopPropagation();
@@ -211,11 +202,8 @@ $(document).ready(function () {
         }
     });
 
-    // GETTING HEIGHTS AND COLORS DEPENDING ON TYPE CHOOSE
     $("body").on('click', '.configurator-action[data-name]', function (event) {
-        // Ne pas traiter les produits avec select ici (gérés séparément)
         if ($(this).hasClass('portillon-jardin-action') || $(this).hasClass('occultation-action') || $(this).hasClass('soubassement-action')) {
-            // Si on clique sur les SVG, gérer la sélection
             if ($(event.target).closest('svg').length) {
                 event.preventDefault();
                 var $action = $(this);
@@ -223,44 +211,34 @@ $(document).ready(function () {
                 var isPortillon = name === 'portillon_id';
                 var isOccultation = name === 'occultation_id';
                 var isSoubassement = name === 'soubassement_id';
-                
-                // Déterminer les sélecteurs selon le type
                 var checkboxSelector = isPortillon ? '#checkbox_portillon' : (isOccultation ? '#checkbox_occultation' : '#checkbox_soubassement');
                 var selectClass = isPortillon ? '.portillon-jardin-select' : (isOccultation ? '.occultation-select' : '.soubassement-select');
                 var otherProductsSelector = '.configurator-action[data-name="' + name + '"]';
                 
                 if (!$action.hasClass('selected')) {
-                    // Désélectionner tous les autres produits du même type (normaux et avec select)
                     $(otherProductsSelector).removeClass('selected');
-                    
-                    // Sélectionner le nouveau produit
                     $action.addClass('selected');
                     $(checkboxSelector).addClass('selected');
                     $('input[name="' + name + '"]').val($action.data('id'));
                     
-                    // S'assurer qu'une déclinaison est sélectionnée (première par défaut)
                     var $select = $action.find(selectClass);
                     if (!$select.val() && $select.find('option').length > 0) {
                         $select.find('option:first').prop('selected', true);
                         $select.trigger('change');
                     } else if ($select.val()) {
-                        // Si une déclinaison est déjà sélectionnée, déclencher refreshPrice pour ajouter à la configuration
                         throttle(function () {
                             refreshPrice(true);
                         }, interval);
                     }
                 } else {
-                    // Désélectionner le produit
                     $action.removeClass('selected');
                     $(checkboxSelector).removeClass('selected');
                     $('input[name="' + name + '"]').val('');
-                    // Remettre la première déclinaison par défaut
                     var $select = $action.find(selectClass);
                     if ($select.find('option').length > 0) {
                         $select.find('option:first').prop('selected', true);
                     }
                     
-                    // Retirer le produit de la configuration
                     throttle(function () {
                         refreshPrice(true);
                     }, interval);
@@ -276,21 +254,16 @@ $(document).ready(function () {
         $('.configurator-action[data-name="' + name + '"]').removeClass('selected');
         $(this).addClass('selected');
         
-        // Cocher le checkbox correspondant pour portillon et occultation
         if (name === 'portillon_id') {
             $('#checkbox_portillon').addClass('selected');
         } else if (name === 'occultation_id') {
             $('#checkbox_occultation').addClass('selected');
         }
         
-        // Si on change de poteaux (encoches/clips), réinitialiser les soubassements sélectionnés
-        // Les soubassements seront rechargés avec les nouvelles variations filtrées dans refreshPrice()
         if (name === 'poteaux') {
-            // Désélectionner tous les soubassements
             $('.configurator-action[data-name="soubassement_id"]').removeClass('selected');
             $('#checkbox_soubassement').removeClass('selected');
             $('input[name="soubassement_id"]').val('');
-            // Note: Les selects seront régénérés avec les nouvelles variations filtrées dans refreshPrice()
         }
 
         if (name == 'type') {
@@ -380,7 +353,6 @@ $(document).ready(function () {
                         }
 
 
-                        // Preview.render(response.preview);
                         Session.render(response);
                     }
                 }
@@ -396,31 +368,26 @@ $(document).ready(function () {
             }
 
             if (name == 'portillon_id' || name == 'occultation_id') {
-                // Ne pas traiter les produits avec select ici (gérés séparément)
                 if ($(this).hasClass('portillon-jardin-action') || $(this).hasClass('occultation-action')) {
                     return;
                 }
                 var change = true;
             } else if (name === 'poteaux') {
-                // Quand on change de poteaux, forcer le rechargement des soubassements avec les nouvelles variations filtrées
                 var change = true;
             } else {
                 var change = false;
             }
             throttle(function () {
                 refreshPrice(change);
-                // Exécutez votre script Ajax ici
             }, interval);
 
         }
     });
 
     function ObjectToArray(data){
-        // Vérifie si c'est un Array
         if (Array.isArray(data)) {
             return data;
         } else if (typeof data === 'object') {
-            // Si ce n'est pas un Array, mais un objet, transforme-le en Array
             return Object.values(data);
         }
         return data;
@@ -597,11 +564,7 @@ $(document).ready(function () {
         }, interval);
     });
 
-    $all.on('click', '#sousbassement_hauteur', function (event) {
-        refreshPrice(true);
-    });
-
-    $all.on('click', '#sousbassement_hauteur, input[name="sousbassement_couleur"], #checkbox_occultation, #checkbox_service, #checkbox_panneau_deco, #checkbox_portillon, #checkbox_soubassement', function (event) {
+    $all.on('click', 'input[name="sousbassement_couleur"], #checkbox_occultation, #checkbox_service, #checkbox_panneau_deco, #checkbox_portillon, #checkbox_soubassement', function (event) {
         event.preventDefault();
 
         // if id is not checkbox_soubassement
@@ -1261,37 +1224,6 @@ $(document).ready(function () {
             $('.viewNombreAngle').show();
         }
     }
-
-
-// GETTING SOUBASSEMENT COLORS
-    $("body").on('change', '#sousbassement_hauteur', function () {
-        $.ajax({
-            url: window.location.href, method: "post", data: {
-                ajax: true, soubassement: true, height: $('#sousbassement_hauteur').val()
-            }, dataType: 'json', success: function (response) {
-                $("#sousbassement_couleur_row").html('');
-                response.colors.forEach(function (color, index) {
-                    html = '<div class="col-xs-6">';
-                    html += '<a href="#" data-id="' + color.id_product_attribute + '" data-name="sousbassement_couleur" class="configurator-action">';
-                    html += '<img src="' + color.image_url + '" class="img-responsive" alt="' + color.name + '" />';
-                    html += '<div class="title-img">' + color.name + '<svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected"><rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/><path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/></svg><svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-selected"><rect y="0.5" width="38" height="38" rx="10" fill="white"/><path d="M25.5761 12.5007L25.576 12.5007C25.1976 12.5135 24.8533 12.6922 24.61 12.9746L15.9182 22.832L13.3948 19.9703C13.2719 19.8262 13.1217 19.7071 12.9508 19.6234C12.778 19.5387 12.5891 19.4926 12.3959 19.4904C12.2026 19.4882 12.0127 19.5298 11.838 19.6107C11.6636 19.6915 11.5096 19.8089 11.3831 19.9523C11.2567 20.0957 11.1596 20.2628 11.0949 20.4426C11.0302 20.6223 10.9984 20.8131 11.0001 21.0043C11.0018 21.1955 11.0371 21.3857 11.1051 21.5642C11.1725 21.741 11.2714 21.9047 11.3989 22.0446L14.9202 26.0381L14.9203 26.0382C15.173 26.3247 15.5302 26.5 15.9182 26.5C16.3061 26.5 16.6633 26.3247 16.9161 26.0382L16.9162 26.0381L26.606 15.049C26.7987 14.8354 26.9242 14.5683 26.9747 14.2853C27.0254 14.001 26.9997 13.7054 26.8988 13.435C26.7978 13.1645 26.6234 12.9246 26.3889 12.754C26.1533 12.5825 25.8698 12.4909 25.5761 12.5007Z" fill="#7CBA49" stroke="#7CBA49"/></svg></div>';
-                    html += '</a>';
-                    html += '</div>';
-                    $("#sousbassement_couleur_row").html($("#sousbassement_couleur_row").html() + html);
-                    if (index == 0) {
-                        $("input[name='sousbassement_couleur']").val(color.id_product_attribute)
-                    }
-                });
-
-
-                throttle(function () {
-                    refreshPrice();
-                    // Exécutez votre script Ajax ici
-                }, interval);
-
-            }
-        });
-    });
 
     let isWaiting = false;
 
