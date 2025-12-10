@@ -330,7 +330,7 @@
                     </div>
                 </a>
             {else}
-                <a href="/configurateur" class="btn-configurateur-mobile">
+                <a href="{$link->getModuleLink('ckc_configurator', 'configurator')|escape:'htmlall':'UTF-8'}" class="btn-configurateur-mobile">
                     <div class="text-btn">
                                 <span class="small-text">
                                     Configurez<br>
