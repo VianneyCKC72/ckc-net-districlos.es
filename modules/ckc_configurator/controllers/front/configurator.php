@@ -89,36 +89,22 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
     {
         if ($this->module->isLive()) {
             if ($this->ajax) {
-                // S'assurer que la session est initialisée
                 if (!$this->session) {
                     $this->session = Session::init($this->userKey(), $this->language_id);
                 }
 
-                // Clique sur l'une des 3 principales catégories
                 if (Tools::getValue('id_category', false)) {
                     $this->processSubmitAjaxMainCategory();
                 }
-
-                // Récupération des couleurs & hauteurs d'un type au changement
                 elseif (Tools::isSubmit('changeType')) {
                     $this->processSubmitChangeType();
                 }
-                // Mise à jour du prix en cliquant sur une option ou en changeant une valeur
                 elseif (Tools::isSubmit('updateprice') || Tools::isSubmit('changeEspacement')) {
                     $this->processSubmitUpdatePrice();
                 }
-
-                // Mise à jour de la quantité d'un produit
                 elseif (Tools::isSubmit('updateQuantity')) {
                     $this->processSubmitUpdateQuantity();
                 }
-
-                // Récupération des couleurs soubassement au changement de hauteur
-                elseif (Tools::isSubmit('soubassement')) {
-                    return $this->processSubmitSoubassement();
-                }
-
-                // Ajout au panier demandé
                 elseif (Tools::isSubmit('addToCart')) {
                     if ($this->processSubmit()) {
                         Session::destroy($this->userKey());
@@ -196,8 +182,6 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     }
                 }
                 $products = $this->session->getProducts($this->language_id, $this->session);
-
-                // Récupérer les portillons et occultations sélectionnés depuis la session ou la requête
                 $portillon_session = $this->session->portillon();
                 if ($portillon_session) {
                     $selected_portillon_id_product_attribute = $portillon_session['id_product_attribute'];
@@ -304,8 +288,6 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         }
     }
 
-    // First choice with 3 categories
-    // News : Nouvelle catégorie : 306 Alu
     public function processSubmitAjaxMainCategory()
     {
         $this->session = Session::init($this->userKey(), $this->language_id);
@@ -316,12 +298,9 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
 
         $category = $this->session->category($this->language_id);
         $types = $category->getSubCategories($this->language_id, true);
-
-        // On prend la première catégorie qui équivaut à la première gamme de grillage
         $type     = new Category($types[0]["id_category"], $this->language_id);
         $products = $type->getProducts($this->language_id, 1, 100, null, null, false, false);
 
-        // Si on change de type de grillage, on récupère les données par défaut pour ce type
         if ($default) {
             $this->session->default($this->language_id, $this, $products);
         }
@@ -559,8 +538,6 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         $panneau_deco   = Tools::getValue('panneau_deco');
 
         $grillage = Grillage::get($this->session, $this->language_id);
-
-        // Add options
         $this->addOptions($sousbassement, $occultation, $kitmontage, $portillon, $panneau_deco, $grillage['quantity'], $heightChanged);
 
         $grillage = Grillage::get($this->session, $this->language_id);
@@ -641,7 +618,6 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         }
     }
 
-    // Update quantity
     public function processSubmitUpdateQuantity()
     {
         $action     = Tools::getValue('action');
@@ -651,26 +627,12 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         return true;
     }
 
-    // Get soubassement colors depending on height
-    public function processSubmitSoubassement()
-    {
-        $height = Tools::getValue('height');
-        $color = Tools::getValue('color');
-        $colors = Soubassement::getColors($height, $this->language_id);
-        $this->ajaxRender(json_encode($colors));
-    }
-
-    // Querying add to cart
     public function processSubmit()
     {
         $Submit = new Submit($this->userKey());
         return $Submit->submit();
     }
 
-    /**
-     * METHODS
-     */
-    // Get heights and colors of product formatted for front
     public function getAttributes($products)
     {
 
@@ -815,20 +777,14 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         // Vérifier d'abord si l'entrée soubassement existante est encore compatible avec le type de poteau actuel
         $existing_soubassement = $this->session->soubassement();
         if ($existing_soubassement) {
-            // Vérifier si la déclinaison existante correspond au type de poteau actuel
             $clips = isset($this->session->clips) ? (int)$this->session->clips : null;
             if ($clips !== null && !Soubassement::matchesPoleType($existing_soubassement['id_product'], $existing_soubassement['id_product_attribute'], $clips, $this->language_id)) {
-                // La déclinaison existante n'est plus compatible, la supprimer
                 $this->session->deleteEntryByType('soubassement');
             }
         }
         
         if (isset($sousbassement['active']) && $sousbassement['active'] == 'true' && !empty($sousbassement['color']) && !empty($sousbassement['height'])) {
-            // Si color est directement un id_product_attribute, l'utiliser directement
-            // Les variations sont déjà filtrées selon le type de poteau dans Soubassement::get()
-            // Sinon, utiliser getType() pour déterminer selon le type de poteau (rétrocompatibilité)
             if (is_numeric($sousbassement['color'])) {
-                // Utiliser directement la déclinaison sélectionnée car elle est déjà filtrée selon le type de poteau
                 $id_product_attribute = $sousbassement['color'];
             } else {
                 $id_product_attribute = Soubassement::getType($sousbassement['height'], $this->session, $this->language_id);
@@ -844,11 +800,9 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                 ]);
             }
         } else if (isset($sousbassement['active']) && $sousbassement['active'] == 'false') {
-            // Si le soubassement est explicitement désactivé, le supprimer de la session
             $this->session->deleteEntryByType('soubassement');
         }
 
-        // Kit de montage
         if ($kitmontage && $kitmontage == 'true') {
             $kit = KitMontage::getIdKit($this->language_id, $this->session->installation);
             $this->session->insertEntry([
@@ -896,7 +850,6 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             $this->session->deleteEntryByType('panneau_deco');
         }
 
-        // Portillons
         $portillon_active = isset($portillon['active']) && ($portillon['active'] == 'true' || $portillon['active'] === true || $portillon['active'] == 1);
         if ($portillon_active && !empty($portillon['id']) && !empty($portillon['id_product_attribute']) && !$heightChanged) {
             $this->session->deleteEntryByType('portillon');
@@ -912,7 +865,6 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         }
     }
 
-    // Retriveing userKey (md5 of ip)
     private function userKey()
     {
         return md5($_SERVER['REMOTE_ADDR']);

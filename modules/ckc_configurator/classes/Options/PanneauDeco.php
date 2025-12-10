@@ -21,7 +21,7 @@ class PanneauDeco extends ProductFactory {
         foreach ($products as $product) {
             $items[] = [
                 "id" => $product['id_product'],
-                "image_url" => self::getImageUrl(\Product::getCombinationImageById($product['id_product_attribute'], $language_id)),
+                "image_url" => static::getImageUrl(\Product::getCombinationImageById($product['id_product_attribute'], $language_id)),
                 "name" => \Product::getProductName($product['id_product'], $product['id_product_attribute'], $language_id),
                 "id_product_attribute" => $product['id_product_attribute']
             ];
@@ -30,13 +30,4 @@ class PanneauDeco extends ProductFactory {
         return $items;
     }
 
-    static public function getImageUrl($image)
-    {
-        if(isset($image['id_image'])) {
-            $image = new \Image($image['id_image']);
-            return _PS_BASE_URL_._THEME_PROD_DIR_.$image->getExistingImgPath().".jpg";
-        }
-
-        return '';
-    }
 }
