@@ -941,7 +941,7 @@ class Ckcadcampaignconfigurator extends Module
                 'description' => '<strong>Informations pour les promotions par tranches :</strong> </br></br> Il y a 3 types des promotions par tranche : </br></br> - <strong>1 tranche</strong> : il est nécessaire de saisir 1 prix et il est possible à afficher une remise (Réduction minimum) pour un total entre 0€ et ce prix (1er prix) ;</br></br>
                 - <strong>2 tranches</strong> : il est nécessaire de saisir 2 prix et les valeurs de remise : "Réduction minimum" est affichée entre 0€ et le 1er prix saisi, "Réduction 2ème tranche" est affichée entre le 1er prix et le prix maximal saisi ;</br></br>
                 - <strong>3 tranches</strong> : il est nécessaire de saisir 3 prix et les valeurs de remise : "Réduction minimum" est affichée entre 0€ et le 1er prix saisi, "Réduction 2ème tranche" est affichée entre le 1er prix et le 2ème prix saisi, "Réduction 3ème tranche" est affichée entre le 2ème prix et le prix maximal. </br></br>
-                Si les remises pour un total inférieur au 1er prix ne sont pas prévues (pour les types "2 tranches" & "3 tranches"), il est possible de mettre 0 pour "Réduction minimum".
+                Si les remises pour un total inférieur au 1er prix ne sont pas prévues pour l\'affichage (pour les types "2 tranches" & "3 tranches"), il est possible de mettre 0 pour "Réduction minimum".
                 ',
                 'buttons' => array(
                     'Return'=> array(
