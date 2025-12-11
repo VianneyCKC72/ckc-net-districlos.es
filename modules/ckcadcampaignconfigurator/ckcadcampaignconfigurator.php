@@ -1,4 +1,4 @@
-bbb<?php
+<?php
 /**
  * 2007-2025 PrestaShop
  *
