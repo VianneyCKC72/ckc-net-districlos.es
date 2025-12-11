@@ -158,8 +158,11 @@ class CampaignModel extends ObjectModel
                 `discount_fixed` = ' . $data['CART_FIXED_DISCOUNT'] . ',
                 `price_fixed` = ' . $data['CART_FIXED_PRICE'] . ',
                 `discount_range` = ' . $data['CART_RANGED_DISCOUNT'] . ',
+                `discount_range_second` = ' . $data['CART_RANGED_DISCOUNT_SECOND'] . ',
+                `discount_range_third` = ' . $data['CART_RANGED_DISCOUNT_THIRD'] . ',
                 `discount_range_max` = ' . $data['CART_RANGED_DISCOUNT_MAX'] . ',
                 `price_range_min` = ' . $data['CART_RANGED_PRICE_MIN'] . ',
+                `price_range_second` = ' . $data['CART_RANGED_PRICE_SECOND'] . ',
                 `price_range_max` = ' . $data['CART_RANGED_PRICE_MAX'] . ',
                 `text` = "' . $data['CART_TEXT'] . '",
                 `text_color` = "' . $data['CART_TEXT_COLOR'] . '",
@@ -171,10 +174,11 @@ class CampaignModel extends ObjectModel
         } elseif (isset($data["ID"])) {
             $createCartPromo = Db::getInstance()->execute(
                 'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_cart` 
-                                    (`id`, `id_campaign`, `is_fixed`, `discount_fixed`, `price_fixed`, `discount_range`, `discount_range_max`, `price_range_min`, `price_range_max`, `text`, `text_color`,`active`, `date_add`)
+                                    (`id`, `id_campaign`, `is_fixed`, `discount_fixed`, `price_fixed`, `discount_range`,`discount_range_second`,`discount_range_third`, `discount_range_max`, `price_range_min`,`price_range_second`, `price_range_max`, `text`, `text_color`,`active`, `date_add`)
                             VALUES (NULL, '.$data['ID'].', '.$data['CART_TYPE'].', NULLIF('.$data['CART_FIXED_DISCOUNT'].', 0), NULLIF('.$data['CART_FIXED_PRICE'].', 0),
-                            NULLIF('.$data['CART_RANGED_DISCOUNT'].', 0),NULLIF('.$data['CART_RANGED_DISCOUNT_MAX'].', 0),NULLIF('.$data['CART_RANGED_PRICE_MIN'].', 0), NULLIF('.$data['CART_RANGED_PRICE_MAX'].', 0),\''.$data['CART_TEXT'].'\', 
-                            NULLIF(\''.$data['CART_TEXT_COLOR'].'\', ""), '.$data['CART_ACTIVE'].' ,CURRENT_TIMESTAMP())'
+                            NULLIF('.$data['CART_RANGED_DISCOUNT'].', 0), NULLIF('.$data['CART_RANGED_DISCOUNT_SECOND'].', 0),NULLIF('.$data['CART_RANGED_DISCOUNT_THIRD'].', 0),
+                            NULLIF('.$data['CART_RANGED_DISCOUNT_MAX'].', 0),NULLIF('.$data['CART_RANGED_PRICE_MIN'].', 0),NULLIF('.$data['CART_RANGED_PRICE_SECOND'].', 0), NULLIF('.$data['CART_RANGED_PRICE_MAX'].', 0),
+                            \''.$data['CART_TEXT'].'\', NULLIF(\''.$data['CART_TEXT_COLOR'].'\', ""), '.$data['CART_ACTIVE'].' ,CURRENT_TIMESTAMP())'
             );
 
             $findCreatedId = Db::getInstance()->executeS('SELECT `id` FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_cart`

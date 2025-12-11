@@ -72,7 +72,7 @@
                             <td class="text-left">{$cartPromo.id}</td>
                             <td class="text-left">{$cartPromo.text}</td>
                             <td>
-                                {if $cartPromo.is_fixed}
+                                {if $cartPromo.is_fixed == 1}
                                     Fixed
                                 {else}
                                     Range

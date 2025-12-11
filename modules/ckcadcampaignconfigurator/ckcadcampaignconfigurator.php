@@ -1,4 +1,4 @@
-<?php
+bbb<?php
 /**
  * 2007-2025 PrestaShop
  *
@@ -505,15 +505,16 @@ class Ckcadcampaignconfigurator extends Module
                         'Modules.ckcadcampaignconfigurator.Admin'
                     );
                 }
-            } elseif (Tools::getValue('CART_RANGED_DISCOUNT_MAX') !== "" && !is_numeric(Tools::getValue('CART_RANGED_DISCOUNT_MAX'))) {
-                if(Tools::getValue('CART_RANGED_DISCOUNT_MAX') !== "0.00") {
-                    $this->_postErrors[] = $this->trans(
-                        'Discount price CART_RANGED_DISCOUNT_MAX must be a number.',
-                        [],
-                        'Modules.ckcadcampaignconfigurator.Admin'
-                    );
-                }
             }
+            // elseif (Tools::getValue('CART_RANGED_DISCOUNT_MAX') !== "" && !is_numeric(Tools::getValue('CART_RANGED_DISCOUNT_MAX'))) {
+            //     if(Tools::getValue('CART_RANGED_DISCOUNT_MAX') !== "0.00") {
+            //         $this->_postErrors[] = $this->trans(
+            //             'Discount price CART_RANGED_DISCOUNT_MAX must be a number.',
+            //             [],
+            //             'Modules.ckcadcampaignconfigurator.Admin'
+            //         );
+            //     }
+            // }
             if (Tools::getValue('CART_RANGED_PRICE_MIN') !== "" && !is_numeric(Tools::getValue('CART_RANGED_PRICE_MIN'))) {
                 if(Tools::getValue('CART_RANGED_PRICE_MIN') !== "0.00") {
                     $this->_postErrors[] = $this->trans(
@@ -556,14 +557,17 @@ class Ckcadcampaignconfigurator extends Module
 
     protected function postProcessSaveCampaignCart(){
 
-        $type = Tools::getValue('CART_TYPE') == "" ? 0 : 1;
+        $type = (int)Tools::getValue('CART_TYPE');
         $cartId = Tools::getValue('CART_ID') == "" ? null : Tools::getValue('CART_ID');
         $CART_ACTIVE = Tools::getValue('CART_ACTIVE') == "" ? 0 : 1;
         $CART_FIXED_DISCOUNT = Tools::getValue('CART_FIXED_DISCOUNT') == "" ? 0 : Tools::getValue('CART_FIXED_DISCOUNT');
         $CART_FIXED_PRICE = Tools::getValue('CART_FIXED_PRICE') == "" ? 0 : Tools::getValue('CART_FIXED_PRICE');
         $CART_RANGED_DISCOUNT = Tools::getValue('CART_RANGED_DISCOUNT') == "" ? 0 : Tools::getValue('CART_RANGED_DISCOUNT');
+        $CART_RANGED_DISCOUNT_SECOND = Tools::getValue('CART_RANGED_DISCOUNT_SECOND') == "" ? 0 : Tools::getValue('CART_RANGED_DISCOUNT_SECOND');
+        $CART_RANGED_DISCOUNT_THIRD = Tools::getValue('CART_RANGED_DISCOUNT_THIRD') == "" ? 0 : Tools::getValue('CART_RANGED_DISCOUNT_THIRD');
         $CART_RANGED_DISCOUNT_MAX = Tools::getValue('CART_RANGED_DISCOUNT_MAX') == "" ? 0 : Tools::getValue('CART_RANGED_DISCOUNT_MAX');
         $CART_RANGED_PRICE_MIN = Tools::getValue('CART_RANGED_PRICE_MIN') == "" ? 0 : Tools::getValue('CART_RANGED_PRICE_MIN');
+        $CART_RANGED_PRICE_SECOND = Tools::getValue('CART_RANGED_PRICE_SECOND') == "" ? 0 : Tools::getValue('CART_RANGED_PRICE_SECOND');
         $CART_RANGED_PRICE_MAX = Tools::getValue('CART_RANGED_PRICE_MAX') == "" ? 0 : Tools::getValue('CART_RANGED_PRICE_MAX');
         $CART_TEXT_COLOR = Tools::getValue('CART_TEXT_COLOR') == "" ? "" : Tools::getValue('CART_TEXT_COLOR');
         $CART_TEXT = Tools::getValue('CART_TEXT') == "" ? null : htmlentities(Tools::getValue('CART_TEXT'));
@@ -576,8 +580,11 @@ class Ckcadcampaignconfigurator extends Module
             'CART_FIXED_DISCOUNT' => $CART_FIXED_DISCOUNT,
             'CART_FIXED_PRICE' => $CART_FIXED_PRICE,
             'CART_RANGED_DISCOUNT' => $CART_RANGED_DISCOUNT,
+            'CART_RANGED_DISCOUNT_SECOND' => $CART_RANGED_DISCOUNT_SECOND,
+            'CART_RANGED_DISCOUNT_THIRD' => $CART_RANGED_DISCOUNT_THIRD,
             'CART_RANGED_DISCOUNT_MAX' => $CART_RANGED_DISCOUNT_MAX,
             'CART_RANGED_PRICE_MIN' => $CART_RANGED_PRICE_MIN,
+            'CART_RANGED_PRICE_SECOND' => $CART_RANGED_PRICE_SECOND,
             'CART_RANGED_PRICE_MAX' => $CART_RANGED_PRICE_MAX,
             "CART_TEXT_COLOR" => $CART_TEXT_COLOR,
             'CART_TEXT' => $CART_TEXT,
@@ -702,7 +709,7 @@ class Ckcadcampaignconfigurator extends Module
     protected function getConfigFormMain($id = null)
     {
 
-        $clientGroupSelect = \Db::getInstance()->ExecuteS('SELECT `id_group`, `name` FROM `' . _DB_PREFIX_ . 'group_lang`');
+        $clientGroupSelect = \Db::getInstance()->ExecuteS('SELECT `id_group`, `name` FROM `' . _DB_PREFIX_ . 'group_lang` WHERE id_lang = '.Context::getContext()->language->id);
 
         if(isset($id)) {
             $background_image = Db::getInstance()->executeS('SELECT logo_path FROM ' . _DB_PREFIX_ . 'ckccampaign_config_list WHERE id = '.$id);
@@ -931,6 +938,11 @@ class Ckcadcampaignconfigurator extends Module
                     'title' => $this->l('Cart Content Configuration'),
                     'icon' => 'icon-cogs',
                 ),
+                'description' => '<strong>Informations pour les promotions par tranches :</strong> </br></br> Il y a 3 types des promotions par tranche : </br></br> - <strong>1 tranche</strong> : il est nécessaire de saisir 1 prix et il est possible à appiquer une remise (Réduction minimum) pour un total supérieur à ce prix (1er prix) ;</br></br>
+                - <strong>2 tranches</strong> : il est nécessaire de saisir 2 prix et les valeurs de remise : "Réduction minimum" est affichée entre 0€ et le 1er prix saisi, "Réduction 2ème tranche" est affichée entre le 1er prix et le prix maximal saisi ;</br></br>
+                - <strong>3 tranches</strong> : il est nécessaire de saisir 3 prix et les valeurs de remise : "Réduction minimum" est affichée entre 0€ et le 1er prix saisi, "Réduction 2ème tranche" est affichée entre le 1er prix et le 2ème prix saisi, "Réduction 3ème tranche" est affichée entre le 2ème prix et le prix maximal. </br></br>
+                Si les remises pour un total inférieur au 1er prix ne sont pas prévues (pour les types "2 tranches" & "3 tranches"), il est possible de mettre 0 pour "Réduction minimum".
+                ',
                 'buttons' => array(
                     'Return'=> array(
                         'type' => 'submit',
@@ -962,22 +974,32 @@ class Ckcadcampaignconfigurator extends Module
                         ),
                     ),
                     array(
-                        'type' => 'switch',
+                        'type' => 'select',
                         'label' => $this->l('Promo type'),
                         'name' => 'CART_TYPE',
-                        'is_bool' => true,
+                        'required' => true,
                         'desc' => $this->l('Choose type of promo'),
-                        'values' => array(
-                            array(
-                                'id' => 'active_on',
-                                'value' => true,
-                                'label' => $this->l('Fixed')
-                            ),
-                            array(
-                                'id' => 'active_off',
-                                'value' => false,
-                                'label' => $this->l('Range')
-                            )
+                        'options' => array(
+                            'query' => [
+                                array(
+                                    'id_option' => 1,
+                                    'label' => $this->l('Fixed')
+                                ),
+                                array(
+                                    'id_option' => 0,
+                                    'label' => $this->l('1 tranche')
+                                ),
+                                array(
+                                    'id_option' => 2,
+                                    'label' => $this->l('2 tranches')
+                                ),
+                                array(
+                                    'id_option' => 3,
+                                    'label' => $this->l('3 tranches')
+                                )
+                            ],
+                            'id' => 'id_option',
+                            'name' => 'label'
                         ),
                     ),
                     array(
@@ -997,30 +1019,51 @@ class Ckcadcampaignconfigurator extends Module
                     array(
                         'col' => 3,
                         'type' => 'text',
-                        'desc' => $this->l('Enter a discount amount for a ranged promo'),
+                        'desc' => $this->l('Saisissez un montant de remise maximum pour un total inférieur au 1er prix (mettez 0 si nécessaire)'),
                         'name' => 'CART_RANGED_DISCOUNT',
-                        'label' => $this->l('Discount amount for ranged promo'),
+                        'label' => $this->l('Réduction minimum 1ère tranche (de 0€ jusqu\'au 1er prix)'),
                     ),
                     array(
                         'col' => 3,
                         'type' => 'text',
-                        'desc' => $this->l('Enter a maximum discount amount for a ranged promo'),
-                        'name' => 'CART_RANGED_DISCOUNT_MAX',
-                        'label' => $this->l('Maximum discount amount for ranged promo'),
+                        'desc' => $this->l('Enter a discount amount for a ranged promo'),
+                        'name' => 'CART_RANGED_DISCOUNT_SECOND',
+                        'label' => $this->l('Réduction 2ème tranche (du 1er prix au 2ème prix)'),
+                    ),
+                    array(
+                        'col' => 3,
+                        'type' => 'text',
+                        'desc' => $this->l('Enter a discount amount for a ranged promo'),
+                        'name' => 'CART_RANGED_DISCOUNT_THIRD',
+                        'label' => $this->l('Réduction 3ème tranche (du 2ème prix au prix maximal)'),
+                    ),
+                    // array(
+                    //     'col' => 3,
+                    //     'type' => 'text',
+                    //     'desc' => $this->l('Saisissez un montant de remise maximum pour un total supérieur au prix maximal (mettez 0 si nécessaire)'),
+                    //     'name' => 'CART_RANGED_DISCOUNT_MAX',
+                    //     'label' => $this->l('Réduction maximum (supérieur au prix maximal)'),
+                    // ),
+                    array(
+                        'col' => 3,
+                        'type' => 'text',
+                        'desc' => $this->l('Saisissez une valeur de prix total lorsque la remise pour la 1ère tranche est appliquée'),
+                        'name' => 'CART_RANGED_PRICE_MIN',
+                        'label' => $this->l('Total 1er prix (prix maximal si le type est "1 tranche")'),
                     ),
                     array(
                         'col' => 3,
                         'type' => 'text',
                         'desc' => $this->l('Enter a minimal total price value when ranged discount is applied'),
-                        'name' => 'CART_RANGED_PRICE_MIN',
-                        'label' => $this->l('Minimal total price for ranged promo'),
+                        'name' => 'CART_RANGED_PRICE_SECOND',
+                        'label' => $this->l('Total 2ème prix'),
                     ),
                     array(
                         'col' => 3,
                         'type' => 'text',
                         'desc' => $this->l('Enter a maximum total price value when ranged discount is applied'),
                         'name' => 'CART_RANGED_PRICE_MAX',
-                        'label' => $this->l('Maximum total price for ranged promo'),
+                        'label' => $this->l('Total prix maximal'),
                     ),
                     array(
                         'type' => 'textarea',
@@ -1389,8 +1432,11 @@ class Ckcadcampaignconfigurator extends Module
                 'CART_FIXED_DISCOUNT' => '',
                 'CART_FIXED_PRICE' => '',
                 'CART_RANGED_DISCOUNT' => '',
+                'CART_RANGED_DISCOUNT_SECOND' => '',
+                'CART_RANGED_DISCOUNT_THIRD' => '',
                 'CART_RANGED_DISCOUNT_MAX' => '',
                 'CART_RANGED_PRICE_MIN' => '',
+                'CART_RANGED_PRICE_SECOND' => '',
                 'CART_RANGED_PRICE_MAX' => '',
                 "CART_TEXT_COLOR" => '',
                 'CART_TEXT' => '',
@@ -1409,8 +1455,11 @@ class Ckcadcampaignconfigurator extends Module
                 'CART_FIXED_DISCOUNT' => isset($campaignPromoInfo['discount_fixed']) ? number_format($campaignPromoInfo['discount_fixed'], 2, '.', '') : 0,
                 'CART_FIXED_PRICE' => isset($campaignPromoInfo['price_fixed']) ? number_format($campaignPromoInfo['price_fixed'], 2, '.', '') : 0,
                 'CART_RANGED_DISCOUNT' => isset($campaignPromoInfo['discount_range']) ? number_format($campaignPromoInfo['discount_range'], 2, '.', '') : 0,
+                'CART_RANGED_DISCOUNT_SECOND' => isset($campaignPromoInfo['discount_range_second']) ? number_format($campaignPromoInfo['discount_range_second'], 2, '.', '') : 0,
+                'CART_RANGED_DISCOUNT_THIRD' => isset($campaignPromoInfo['discount_range_third']) ? number_format($campaignPromoInfo['discount_range_third'], 2, '.', '') : 0,
                 'CART_RANGED_DISCOUNT_MAX' => isset($campaignPromoInfo['discount_range_max']) ? number_format($campaignPromoInfo['discount_range_max'], 2, '.', '') : 0,
                 'CART_RANGED_PRICE_MIN' => isset($campaignPromoInfo['price_range_min']) ? number_format($campaignPromoInfo['price_range_min'], 2, '.', '') : 0,
+                'CART_RANGED_PRICE_SECOND' => isset($campaignPromoInfo['price_range_second']) ? number_format($campaignPromoInfo['price_range_second'], 2, '.', '') : 0,
                 'CART_RANGED_PRICE_MAX' => isset($campaignPromoInfo['price_range_max']) ? number_format($campaignPromoInfo['price_range_max'], 2, '.', '') : 0,
                 "CART_TEXT_COLOR" => $campaignPromoInfo['text_color'],
                 'CART_TEXT' => html_entity_decode($campaignPromoInfo['text']),
@@ -1661,7 +1710,7 @@ class Ckcadcampaignconfigurator extends Module
                 if($cartPromo['active'] && in_array($customerGroupId, explode(',',$cartPromo['id_client_group'])) && $dateCheck){
                     $promoText = $cartPromo['text'];
 
-                    if($cartPromo['is_fixed']){
+                    if($cartPromo['is_fixed'] == 1){
                         $ttlPricePos = strpos($promoText, '[total_price]');
                         $discountPos = strpos($promoText, '[discount_fixed]');
 
@@ -1689,49 +1738,23 @@ class Ckcadcampaignconfigurator extends Module
                                 }
                             }
                         }
-                    } else {
+                    } else if ($cartPromo['is_fixed'] == 0) {
 
                         $ttlPricePos = strpos($promoText, '[total_price]');
                         $discountPos = strpos($promoText, '[discount_ranged]');
 
                         if($ttlPricePos !== false && $discountPos !== false) {
 
-                            $promotion_threshold = $cartPromo['price_range_min'];
-                            $discount_below_3000 = $cartPromo['discount_range'];
-                            $discount_above_3000 = $cartPromo['discount_range_max'];
-
                             $total_product = Context::getContext()->cart->getOrderTotal(true, Cart::ONLY_PRODUCTS);
-                            $decimal = fmod($total_product, $promotion_threshold);
-                            $modulo = $total_product % $promotion_threshold;
 
-                            if($decimal == 0 && $modulo == 0){
-                                $is_round = 1;
-                            } else {
-                                $is_round = 0;
+                            if ($total_product <= $cartPromo['price_range_min'] && $cartPromo['discount_range'] != 0) {
+                                $calculatePromo = $this->calculateRangePromotion($total_product, $cartPromo['price_range_min'], $cartPromo['discount_range']);
+                                $next_promotion_discount = $calculatePromo['next_promotion_discount'];
+                                $amount_left_for_next_promotion = $calculatePromo['amount_left_for_next_promotion'];
+                            } else if ($total_product > $cartPromo['price_range_min']) {
+                                $next_promotion_discount = null;
+                                $amount_left_for_next_promotion = null;
                             }
-
-                            $next_promotion_target = (ceil($total_product / $promotion_threshold) + ($is_round ? 1 : 0)) * $promotion_threshold;
-                            $amount_left_for_next_promotion = $next_promotion_target - $total_product;
-
-                            $coef1000 = ceil($total_product / $promotion_threshold);
-                            $coef3000 = 1;
-
-                            if ($total_product <= $cartPromo['price_range_max']) {
-                                $promotion_discount = floor($total_product / $promotion_threshold) * $discount_below_3000;
-
-                                $calcul_next_promotion_discount = $discount_below_3000 * ($coef1000 + ($is_round ? 1 : 0));
-                                if($calcul_next_promotion_discount <= $cartPromo['discount_range_max']) {
-                                    $next_promotion_discount = $calcul_next_promotion_discount;
-                                } else {
-                                    $next_promotion_discount = $cartPromo['discount_range_max'];
-                                }
-                            }
-                            /*                            else {
-                                                            $coef1000 = 2;
-                                                            $coef3000 = ceil($total_product / $promotion_threshold) - $coef1000;
-                                                            $promotion_discount = floor($total_product / $promotion_threshold) * $discount_above_3000;
-                                                            $next_promotion_discount = ($discount_above_3000 * ($coef3000 + ($is_round ? 1 : 0))) + ($discount_below_3000 * $coef1000);
-                                                        }*/
 
                             if (isset($next_promotion_discount) && isset($amount_left_for_next_promotion)){
                                 $next_promotion_winter = round($amount_left_for_next_promotion, 2);
@@ -1743,6 +1766,82 @@ class Ckcadcampaignconfigurator extends Module
                             }
                         }
 
+                    } else if ($cartPromo['is_fixed'] == 2) {
+                        $ttlPricePos = strpos($promoText, '[total_price]');
+                        $discountPos = strpos($promoText, '[discount_ranged]');
+
+                        if($ttlPricePos !== false && $discountPos !== false) {
+
+                            $total_product = Context::getContext()->cart->getOrderTotal(true, Cart::ONLY_PRODUCTS);
+
+                            if ($total_product <= $cartPromo['price_range_min'] && $cartPromo['discount_range'] != 0) {
+
+                                $calculatePromo = $this->calculateRangePromotion($total_product, $cartPromo['price_range_min'], $cartPromo['discount_range']);
+                                $next_promotion_discount = $calculatePromo['next_promotion_discount'];
+                                $amount_left_for_next_promotion = $calculatePromo['amount_left_for_next_promotion'];
+
+                            } else if ($total_product > $cartPromo['price_range_min'] && $total_product <= $cartPromo['price_range_max'] && $cartPromo['discount_range_second'] != 0) {
+
+                                $calculatePromo = $this->calculateRangePromotion($total_product, $cartPromo['price_range_max'], $cartPromo['discount_range_second']);
+                                $next_promotion_discount = $calculatePromo['next_promotion_discount'];
+                                $amount_left_for_next_promotion = $calculatePromo['amount_left_for_next_promotion'];
+
+                            } else if ($total_product > $cartPromo['price_range_max']) {
+                                $next_promotion_discount = null;
+                                $amount_left_for_next_promotion = null;
+                            }
+
+                            if (isset($next_promotion_discount) && isset($amount_left_for_next_promotion)){
+                                $next_promotion_winter = round($amount_left_for_next_promotion, 2);
+                                $next_promotion_winter_discount = $next_promotion_discount;
+
+                                $str1 = str_replace('[total_price]', $next_promotion_winter, $promoText);
+                                $str2 = str_replace('[discount_ranged]', number_format($next_promotion_winter_discount, 0), $str1);
+                                $cartPromo['textFinal'] = $str2;
+                            }
+                        }
+
+                    } else if ($cartPromo['is_fixed'] == 3) {
+
+                        $ttlPricePos = strpos($promoText, '[total_price]');
+                        $discountPos = strpos($promoText, '[discount_ranged]');
+
+                        if($ttlPricePos !== false && $discountPos !== false) {
+
+                            $total_product = Context::getContext()->cart->getOrderTotal(true, Cart::ONLY_PRODUCTS);
+
+                            if ($total_product <= $cartPromo['price_range_min'] && $cartPromo['discount_range'] != 0) {
+
+                                $calculatePromo = $this->calculateRangePromotion($total_product, $cartPromo['price_range_min'], $cartPromo['discount_range']);
+                                $next_promotion_discount = $calculatePromo['next_promotion_discount'];
+                                $amount_left_for_next_promotion = $calculatePromo['amount_left_for_next_promotion'];
+
+                            } else if ($total_product > $cartPromo['price_range_min'] && $total_product <= $cartPromo['price_range_second'] && $cartPromo['discount_range_second'] != 0) {
+
+                                $calculatePromo = $this->calculateRangePromotion($total_product, $cartPromo['price_range_second'], $cartPromo['discount_range_second']);
+                                $next_promotion_discount = $calculatePromo['next_promotion_discount'];
+                                $amount_left_for_next_promotion = $calculatePromo['amount_left_for_next_promotion'];
+
+                            } else if ($total_product > $cartPromo['price_range_second'] && $total_product <= $cartPromo['price_range_max'] && $cartPromo['discount_range_third'] != 0) {
+
+                                $calculatePromo = $this->calculateRangePromotion($total_product, $cartPromo['price_range_max'], $cartPromo['discount_range_third']);
+                                $next_promotion_discount = $calculatePromo['next_promotion_discount'];
+                                $amount_left_for_next_promotion = $calculatePromo['amount_left_for_next_promotion'];
+
+                            } else if ($total_product > $cartPromo['price_range_max']) {
+                                $next_promotion_discount = null;
+                                $amount_left_for_next_promotion = null;
+                            }
+
+                            if (isset($next_promotion_discount) && isset($amount_left_for_next_promotion)){
+                                $next_promotion_winter = round($amount_left_for_next_promotion, 2);
+                                $next_promotion_winter_discount = $next_promotion_discount;
+
+                                $str1 = str_replace('[total_price]', $next_promotion_winter, $promoText);
+                                $str2 = str_replace('[discount_ranged]', number_format($next_promotion_winter_discount, 0), $str1);
+                                $cartPromo['textFinal'] = $str2;
+                            }
+                        }
                     }
 
                     $cartPromos[] = $cartPromo;
@@ -1757,6 +1856,33 @@ class Ckcadcampaignconfigurator extends Module
         // Retourner le template avec le lien à afficher
         return $this->display(__FILE__, 'views/templates/front/hook/promo_content_cart.tpl');
 
+    }
+
+    public function calculateRangePromotion($total_product, $promotion_threshold, $discount_range){
+        $decimal = fmod($total_product, $promotion_threshold);
+        $modulo = $total_product % $promotion_threshold;
+
+        if($decimal == 0 && $modulo == 0){
+            $is_round = 1;
+        } else {
+            $is_round = 0;
+        }
+        $coef1000 = ceil($total_product / $promotion_threshold);
+        $next_promotion_target = (ceil($total_product / $promotion_threshold) + ($is_round ? 1 : 0)) * $promotion_threshold;
+        $amount_left_for_next_promotion = $next_promotion_target - $total_product;
+        $promotion_discount = floor($total_product / $promotion_threshold) * $discount_range;
+
+        $calcul_next_promotion_discount = $discount_range * ($coef1000 + ($is_round ? 1 : 0));
+        if($calcul_next_promotion_discount <= $discount_range) {
+            $next_promotion_discount = $calcul_next_promotion_discount;
+        } else {
+            $next_promotion_discount = $discount_range;
+        }
+
+        return [
+            'next_promotion_discount' => $next_promotion_discount,
+            'amount_left_for_next_promotion' => $amount_left_for_next_promotion
+        ];
     }
 
     public function hookDisplayPromoProductDescription()

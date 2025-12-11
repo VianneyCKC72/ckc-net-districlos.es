@@ -63,4 +63,118 @@ $(window).ready(function() {
             }
         })
     }
+
+    if(typeof $("select#CART_TYPE") !== 'undefined'){
+
+
+        let selected = $("select#CART_TYPE").find('option:selected')
+
+        if (selected.val() == 1){
+            $("input#CART_FIXED_DISCOUNT").parent().parent().show()
+            $("input#CART_FIXED_PRICE").parent().parent().show()
+
+            $("input#CART_RANGED_DISCOUNT").parent().parent().hide()
+            $("input#CART_RANGED_DISCOUNT_SECOND").parent().parent().hide()
+            $("input#CART_RANGED_DISCOUNT_THIRD").parent().parent().hide()
+            $("input#CART_RANGED_DISCOUNT_MAX").parent().parent().hide()
+            $("input#CART_RANGED_PRICE_MIN").parent().parent().hide()
+            $("input#CART_RANGED_PRICE_SECOND").parent().parent().hide()
+            $("input#CART_RANGED_PRICE_MAX").parent().parent().hide()
+        } else if (selected.val() == 0){
+            $("input#CART_RANGED_DISCOUNT").parent().parent().show()
+            $("input#CART_RANGED_DISCOUNT_MAX").parent().parent().show()
+            $("input#CART_RANGED_PRICE_MIN").parent().parent().show()
+
+            $("input#CART_FIXED_DISCOUNT").parent().parent().hide()
+            $("input#CART_FIXED_PRICE").parent().parent().hide()
+            $("input#CART_RANGED_DISCOUNT_SECOND").parent().parent().hide()
+            $("input#CART_RANGED_PRICE_SECOND").parent().parent().hide()
+            $("input#CART_RANGED_PRICE_MAX").parent().parent().hide()
+            $("input#CART_RANGED_DISCOUNT_THIRD").parent().parent().hide()
+        } else if (selected.val() == 2){
+            $("input#CART_RANGED_DISCOUNT").parent().parent().show()
+            $("input#CART_RANGED_DISCOUNT_MAX").parent().parent().show()
+            $("input#CART_RANGED_PRICE_MIN").parent().parent().show()
+            $("input#CART_RANGED_PRICE_MAX").parent().parent().show()
+            $("input#CART_RANGED_DISCOUNT_SECOND").parent().parent().show()
+
+
+            $("input#CART_FIXED_DISCOUNT").parent().parent().hide()
+            $("input#CART_FIXED_PRICE").parent().parent().hide()
+            $("input#CART_RANGED_PRICE_SECOND").parent().parent().hide()
+            $("input#CART_RANGED_DISCOUNT_THIRD").parent().parent().hide()
+
+        } else if (selected.val() == 3){
+            $("input#CART_RANGED_DISCOUNT").parent().parent().show()
+            $("input#CART_RANGED_DISCOUNT_MAX").parent().parent().show()
+            $("input#CART_RANGED_PRICE_MIN").parent().parent().show()
+            $("input#CART_RANGED_PRICE_MAX").parent().parent().show()
+            $("input#CART_RANGED_DISCOUNT_SECOND").parent().parent().show()
+            $("input#CART_RANGED_DISCOUNT_THIRD").parent().parent().show()
+            $("input#CART_RANGED_PRICE_SECOND").parent().parent().show()
+
+            $("input#CART_FIXED_DISCOUNT").parent().parent().hide()
+            $("input#CART_FIXED_PRICE").parent().parent().hide()
+
+        }
+
+
+        $("select#CART_TYPE").on('change', function(){
+            let selectedOption = $(this).find('option:selected')
+
+            if (selectedOption.val() == 1){
+                $("input#CART_FIXED_DISCOUNT").parent().parent().show()
+                $("input#CART_FIXED_PRICE").parent().parent().show()
+
+                $("input#CART_RANGED_DISCOUNT").parent().parent().hide()
+                $("input#CART_RANGED_DISCOUNT_SECOND").parent().parent().hide()
+                $("input#CART_RANGED_DISCOUNT_THIRD").parent().parent().hide()
+                $("input#CART_RANGED_DISCOUNT_MAX").parent().parent().hide()
+                $("input#CART_RANGED_PRICE_MIN").parent().parent().hide()
+                $("input#CART_RANGED_PRICE_SECOND").parent().parent().hide()
+                $("input#CART_RANGED_PRICE_MAX").parent().parent().hide()
+            } else if (selectedOption.val() == 0){
+                $("input#CART_RANGED_DISCOUNT").parent().parent().show()
+                $("input#CART_RANGED_DISCOUNT_MAX").parent().parent().show()
+                $("input#CART_RANGED_PRICE_MIN").parent().parent().show()
+
+                $("input#CART_FIXED_DISCOUNT").parent().parent().hide()
+                $("input#CART_FIXED_PRICE").parent().parent().hide()
+                $("input#CART_RANGED_DISCOUNT_SECOND").parent().parent().hide()
+                $("input#CART_RANGED_PRICE_SECOND").parent().parent().hide()
+                $("input#CART_RANGED_PRICE_MAX").parent().parent().hide()
+                $("input#CART_RANGED_DISCOUNT_THIRD").parent().parent().hide()
+            } else if (selectedOption.val() == 2){
+                $("input#CART_RANGED_DISCOUNT").parent().parent().show()
+                $("input#CART_RANGED_DISCOUNT_MAX").parent().parent().show()
+                $("input#CART_RANGED_PRICE_MIN").parent().parent().show()
+                $("input#CART_RANGED_PRICE_MAX").parent().parent().show()
+                $("input#CART_RANGED_DISCOUNT_SECOND").parent().parent().show()
+
+
+                $("input#CART_FIXED_DISCOUNT").parent().parent().hide()
+                $("input#CART_FIXED_PRICE").parent().parent().hide()
+                $("input#CART_RANGED_PRICE_SECOND").parent().parent().hide()
+                $("input#CART_RANGED_DISCOUNT_THIRD").parent().parent().hide()
+
+            } else if (selectedOption.val() == 3){
+                $("input#CART_RANGED_DISCOUNT").parent().parent().show()
+                $("input#CART_RANGED_DISCOUNT_MAX").parent().parent().show()
+                $("input#CART_RANGED_PRICE_MIN").parent().parent().show()
+                $("input#CART_RANGED_PRICE_MAX").parent().parent().show()
+                $("input#CART_RANGED_DISCOUNT_SECOND").parent().parent().show()
+                $("input#CART_RANGED_DISCOUNT_THIRD").parent().parent().show()
+                $("input#CART_RANGED_PRICE_SECOND").parent().parent().show()
+
+                $("input#CART_FIXED_DISCOUNT").parent().parent().hide()
+                $("input#CART_FIXED_PRICE").parent().parent().hide()
+
+            }
+
+        })
+
+        // $("select#CART_TYPE").val(selected)
+
+
+    }
 });

@@ -98,7 +98,15 @@ $(document).ready(function () {
     $('body').on('keyup', '.js-product-quantity', function (event) {
         $('.js-product-quantity').trigger('change');
     });
-
+    
+    // Bloque la touche Entrée sur la quantité des produits, accessoires et autres champs
+    $('body').on('keydown', '.js-product-quantity, .custom_quantity, .form-control-select, .product-combination', function (event) {
+        if (event.keyCode === 13 || event.key === 'Enter') {
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        }
+    });
 
     function getFormData(cart = false, object = null, direction = null, differential = null) {
         if (!cart) {
