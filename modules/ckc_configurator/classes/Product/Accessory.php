@@ -211,11 +211,22 @@ class Accessory extends ProductFactory
 
         // Platines
         if (self::$session->installation == 'scellement-sur-platine') {
-            if (self::$session->isRigide()) {
-                unset($platines[1]);
-                $platines[] = 'caches_goujons';
+            // Pour aluminium lames persiennées, exclure les platines pour les hauteurs 0m403 et 0m766
+            $shouldAddPlatines = true;
+            if (self::$session->isAluminium() && self::$session->id_type == self::LAMES_AJOUREES_ID) {
+                $heightFloat = (float)str_replace('m', '.', self::$session->height);
+                if ($heightFloat == 0.403 || $heightFloat == 0.766) {
+                    $shouldAddPlatines = false;
+                }
             }
-            $accessories = array_merge($accessories, $platines);
+            
+            if ($shouldAddPlatines) {
+                if (self::$session->isRigide()) {
+                    unset($platines[1]);
+                    $platines[] = 'caches_goujons';
+                }
+                $accessories = array_merge($accessories, $platines);
+            }
         }
 
         return array_unique($accessories);
@@ -393,9 +404,9 @@ class Accessory extends ProductFactory
         $height_selected = intval($heightFloat * 100);
 
         if ($id_product == 1331 && self::$session->isAluminium()) {
-            if ((($heightFloat == 0.515 || $heightFloat == 0.96 || $heightFloat == 0.403 || $heightFloat == 0.766 || $heightFloat == 1.129) && self::$session->installation == 'scellement-sur-muret')) {
-                // || ($heightFloat == 1.129 && self::$session->installation == 'scellement-sur-platine')) {
-                // || (($heightFloat == 1.41 || $heightFloat == 1.129) && self::$session->installation == 'scellement-sur-platine')) {
+            if ((($heightFloat == 0.515 || $heightFloat == 0.96 || $heightFloat == 0.403 || $heightFloat == 0.766 || $heightFloat == 1.129) && self::$session->installation == 'scellement-sur-muret')
+                || ($heightFloat == 1.129 && self::$session->installation == 'scellement-sur-platine')
+                || (($heightFloat == 1.41 || $heightFloat == 1.129) && self::$session->installation == 'scellement-sur-platine')) {
                 return 11780051;
             }else if (self::$session->installation == 'scellement-sur-platine') {
                 return 11780053;

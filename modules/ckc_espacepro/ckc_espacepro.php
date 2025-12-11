@@ -1305,7 +1305,7 @@ class ckc_espacepro extends Module
                 'reference_company' => !empty($reference_company) ? $reference_company : '',
             ]
         ]);
-        $formBuilder->add('categoryFieldContentCustom', CustomContentType::class, [
+        $formBuilder->add('customerFieldContentCustom', CustomContentType::class, [
             'required' => false,
             'label' => 'Compte Société de Référence',
             'mapped' => false,

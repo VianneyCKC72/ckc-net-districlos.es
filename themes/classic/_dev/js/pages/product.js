@@ -98,7 +98,15 @@ $(document).ready(function () {
     $('body').on('keyup', '.js-product-quantity', function (event) {
         $('.js-product-quantity').trigger('change');
     });
-
+    
+    // Bloque la touche Entrée sur la quantité des produits, accessoires et autres champs
+    $('body').on('keydown', '.js-product-quantity, .custom_quantity, .form-control-select, .product-combination', function (event) {
+        if (event.keyCode === 13 || event.key === 'Enter') {
+            event.preventDefault();
+            event.stopPropagation();
+            return false;
+        }
+    });
 
     function getFormData(cart = false, object = null, direction = null, differential = null) {
         if (!cart) {
@@ -660,11 +668,23 @@ $(document).ready(function () {
                 // Ajouter la classe active à l'onglet cliqué
                 this.classList.add('active');
 
+                // Scroller vers le début de la section col-12
+                const col12Section = document.getElementById('product-tabs-section');
+                if (col12Section) {
+                    const offset = col12Section.offsetTop - 100; // Offset pour tenir compte du header
+                    $('html, body').animate({
+                        scrollTop: offset
+                    }, 300);
+                }
+
                 // Déclencher le clic sur l'onglet original correspondant
                 const targetId = this.getAttribute('href');
                 const originalLink = productTabs.querySelector('a[href="' + targetId + '"]');
                 if (originalLink) {
-                    originalLink.click();
+                    // Petit délai pour laisser le scroll se faire avant de changer d'onglet
+                    setTimeout(function() {
+                        originalLink.click();
+                    }, 100);
                 }
             });
         });

@@ -235,13 +235,55 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-12">
+                <div class="col-12" id="product-tabs-section">
                     {block name='hook_display_reassurance'}
                         {hook h='displayReassurance'}
                     {/block}
 
+                    {* Barre de navigation fixe mobile *}
+                    <div class="mobile-product-nav-fixed d-md-none" id="mobile-product-nav">
+                        <div class="mobile-nav-container">
+                            <ul class="mobile-nav-tabs" role="tablist">
+                                <li class="mobile-nav-item">
+                                    <a class="mobile-nav-link active js-product-nav-active" data-toggle="tab" href="#kit_content" role="tab" aria-controls="kit_content" aria-selected="true">
+                                        Contenu du kit
+                                    </a>
+                                </li>
+                                {if $product.description}
+                                    <li class="mobile-nav-item">
+                                        <a class="mobile-nav-link" data-toggle="tab" href="#description" role="tab" aria-controls="description">
+                                            {l s='Description' d='Shop.Theme.Catalog'}
+                                        </a>
+                                    </li>
+                                {/if}
+                                <li class="mobile-nav-item">
+                                    <a class="mobile-nav-link" data-toggle="tab" href="#product-details" role="tab" aria-controls="product-details">
+                                        {l s='Product Details' d='Shop.Theme.Catalog'}
+                                    </a>
+                                </li>
+
+                                {if $product.attachments}
+                                    <li class="mobile-nav-item">
+                                        <a class="mobile-nav-link" data-toggle="tab" href="#attachments" role="tab" aria-controls="attachments">
+                                            {l s='Attachments' d='Shop.Theme.Catalog'}
+                                        </a>
+                                    </li>
+                                {/if}
+
+                                {* Onglet FAQ *}
+                                {assign var="faq_module" value=Module::getInstanceByName('productfaq')}
+                                {assign var="faq_has_content" value=$faq_module && $faq_module->getFaqsByProduct($product.id, true)}
+                                {if $faq_has_content}
+                                    <li class="mobile-nav-item">
+                                        <a class="mobile-nav-link" data-toggle="tab" href="#product-faq" role="tab" aria-controls="product-faq">FAQ</a>
+                                    </li>
+                                {/if}
+                            </ul>
+                        </div>
+                    </div>
+
                     {block name='product_tabs'}
-                        <div class="tabs product-tabs">
+                        <div class="tabs product-tabs" id="block-description-long">
                             <ul class="nav nav-tabs" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active js-product-nav-active" href="#kit_content"
