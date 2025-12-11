@@ -406,7 +406,12 @@ if ($('.delivery-option input').length > 0) {
                 // Afficher la section normale pour les produits normaux
                 if (resp.data.stock.isClickAndCollect) {
                     $('#stock-summary-content .card-header').html('Click & Collect');
-                    if (resp.data.stock.stock_ok) {
+                    
+                    // Message spécial pour le store Essonne (19)
+                    if (resp.data.stock.store_id == 19) {
+                        $('#stock-summary-content .productLimit').html('Disponibilité sous 5 jours ouvrés en magasin, selon stock.');
+                        $('#stock-summary-content .text').html('<p>Le magasin vous contactera dès que votre commande sera prête.</p>');
+                    } else if (resp.data.stock.stock_ok) {
                         $('#stock-summary-content .productLimit').html('Super ! Un ou plusieurs produits sont en stock ( hors plateforme )');
                         $('#stock-summary-content .text').html('<p>Vous pouvez venir récupérer les produits en stock dans votre magasin 2h après votre commande.</p>')
                     } else {
