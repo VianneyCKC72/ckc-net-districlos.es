@@ -668,11 +668,23 @@ $(document).ready(function () {
                 // Ajouter la classe active à l'onglet cliqué
                 this.classList.add('active');
 
+                // Scroller vers le début de la section col-12
+                const col12Section = document.getElementById('product-tabs-section');
+                if (col12Section) {
+                    const offset = col12Section.offsetTop - 100; // Offset pour tenir compte du header
+                    $('html, body').animate({
+                        scrollTop: offset
+                    }, 300);
+                }
+
                 // Déclencher le clic sur l'onglet original correspondant
                 const targetId = this.getAttribute('href');
                 const originalLink = productTabs.querySelector('a[href="' + targetId + '"]');
                 if (originalLink) {
-                    originalLink.click();
+                    // Petit délai pour laisser le scroll se faire avant de changer d'onglet
+                    setTimeout(function() {
+                        originalLink.click();
+                    }, 100);
                 }
             });
         });
