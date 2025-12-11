@@ -26,8 +26,10 @@
                                         <div class="h3 card-title" style="font-size: 14px;text-align: left;text-decoration: underline;margin-bottom: 5px">{$store.name}</div>
                                         {if $store.id == 18}
                                             <p style="font-size: 14px;">Ce produit est disponible sur notre plateforme logistique, pour une meilleure disponibilité.</p>
+                                        {elseif $store.id == 19}
+                                            <p style="font-size: 14px;">Point relais à Avrainville.</br>Retrait possible en moyenne en 5 jours ouvrés.</p>
                                         {else}
-                                            <p style="font-size: 14px;">Retrait disponible</p>
+                                            <p style="font-size: 14px;">Retrait disponible{if $store.ville} à {$store.ville}{/if}</p>
                                         {/if}
                                         <p style="color:#79c046;display: flex;font-weight: 200;font-family: Roboto Thin,sans-serif;" id="modalProductStock-{$store.id}"><svg fill="#79c046" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width: 20px;margin-right: 1rem;"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg> {if $store.stock > 0 && $store.seuil && !$isKit}{$store.stock} en stock{elseif $store.stock <= 0 || !$store.seuil}Arrivage en cours{else}En stock{/if}</p>
                                         <address style="font-size: 14px;margin-bottom: 0;display: none;" id="address{$store.id}">

@@ -51,7 +51,9 @@ class StockManager extends Module
         }
         
         $product = new Product($id_product);
-        $quantity_by_store = Db::getInstance()->getValue('SELECT quantity FROM ' . _DB_PREFIX_ . 'ckcstockstores_stocks WHERE id_product = ' . (int)$stock_id_product . ' AND id_product_attribute = ' . (int)$stock_id_product_attribute . ' AND id_store = ' . (int)$id_store);
+        // Mapping spécial : Store Essonne (19) utilise le stock du Store Seine et Marne (14)
+        $store_id_for_stock = ($id_store == 19) ? 14 : $id_store;
+        $quantity_by_store = Db::getInstance()->getValue('SELECT quantity FROM ' . _DB_PREFIX_ . 'ckcstockstores_stocks WHERE id_product = ' . (int)$stock_id_product . ' AND id_product_attribute = ' . (int)$stock_id_product_attribute . ' AND id_store = ' . (int)$store_id_for_stock);
         $quantity = Db::getInstance()->getValue('SELECT SUM(quantity) FROM ' . _DB_PREFIX_ . 'ckcstockstores_stocks WHERE id_product = ' . (int)$stock_id_product . ' AND id_product_attribute = ' . (int)$stock_id_product_attribute);
         
         // Gérer les valeurs null/false
@@ -128,7 +130,9 @@ class StockManager extends Module
         $stores = [];
 
         foreach ($shops as $shop) {
-            $quantity_by_store = Db::getInstance()->getValue('SELECT quantity FROM ' . _DB_PREFIX_ . 'ckcstockstores_stocks WHERE id_product = ' . (int)$id_product . ' AND id_product_attribute = ' . (int)$id_product_attribute . ' AND id_store = ' . (int)$shop['id_store']);
+            // Mapping spécial : Store Essonne (19) utilise le stock du Store Seine et Marne (14) pour l'affichage dans la modal
+            $store_id_for_stock = ($shop['id_store'] == 19) ? 14 : $shop['id_store'];
+            $quantity_by_store = Db::getInstance()->getValue('SELECT quantity FROM ' . _DB_PREFIX_ . 'ckcstockstores_stocks WHERE id_product = ' . (int)$id_product . ' AND id_product_attribute = ' . (int)$id_product_attribute . ' AND id_store = ' . (int)$store_id_for_stock);
             // Gérer les valeurs null/false
             $quantity_by_store = ($quantity_by_store !== false && $quantity_by_store !== null) ? (int)$quantity_by_store : 0;
 
@@ -146,11 +150,13 @@ class StockManager extends Module
 
             $address = '';
             $zip_code = '';
+            $ville = '';
             $result = Db::getInstance()->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . 'ckcstorespresentation"');
             if (count($result) > 0) {
                 $storePresentation = Db::getInstance()->getRow('SELECT * FROM ' . _DB_PREFIX_ . 'ckcstorespresentation WHERE id_multiboutique = ' . (int)$shop['id_store']);
                 if ($storePresentation) {
                     $address = $storePresentation['adresse'].'<br>'.$storePresentation['code_postal'].' '.$storePresentation['ville'];
+                    $ville = $storePresentation['ville'];
                 }
             }
 
@@ -165,6 +171,7 @@ class StockManager extends Module
                 'code' => preg_replace('/[^A-Za-z0-9-]+/', '-', strtolower($shop['name'])),
                 'address' => $address,
                 'zip_codes' => $zip_code,
+                'ville' => $ville,
             ];
         }
 
