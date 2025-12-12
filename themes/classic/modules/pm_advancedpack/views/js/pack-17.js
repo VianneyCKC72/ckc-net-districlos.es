@@ -166,7 +166,12 @@ var ap5Plugin = {
                 customQties = '';
             }
 
-            ml = $('#quantity_ml').length ? $('#quantity_ml').val() : 0;
+            if ($('#quantity_ml').length) {
+                var mlValue = parseInt($('#quantity_ml').val());
+                ml = (isNaN(mlValue) || mlValue <= 0) ? 1 : mlValue;
+            } else {
+                ml = 0;
+            }
 
             $.ajax({
                 type: 'POST',
@@ -454,7 +459,12 @@ var ap5Plugin = {
             productPackQuantity = { idProductPack: id_product_pack, quantity: $(this).val() };
             productPackQuantityList.push(productPackQuantity);
         });
-        ml = $('#quantity_ml').length ? $('#quantity_ml').val() : 0;
+        if ($('#quantity_ml').length) {
+            var mlValue = parseInt($('#quantity_ml').val());
+            ml = (isNaN(mlValue) || mlValue <= 0) ? 1 : mlValue;
+        } else {
+            ml = 0;
+        }
 
         var pmAjaxSpinnerInstance = ap5Plugin.addLayerLoading($('#ap5-product-list'));
         $.ajax({
@@ -658,13 +668,16 @@ $(document).on('ap5-CombinationUpdate', function(e){
     ap5Plugin.log('[ap5_Event] Combination update');
     ap5Plugin.updatePackTable();
 });
-$(document).on('change', '#quantity_ml', function(e){
+$(document).on('change blur', '#quantity_ml', function(e){
     e.preventDefault();
 
-    if (isNaN($(this).val()) || $(this).val() <= 0) {
+    var currentVal = $(this).val();
+    // Si le champ est vide, NaN, ou <= 0, mettre à 1
+    if (currentVal === '' || isNaN(currentVal) || parseFloat(currentVal) <= 0) {
         $(this).val(1);
+    } else {
+        $(this).val(Math.round(parseFloat(currentVal)));
     }
-    $(this).val(Math.round(parseFloat($(this).val())));
     ap5Plugin.updatePackTable();
 });
 // Quantity increment
@@ -751,6 +764,17 @@ $(document).on('submit', '.ap5-customization-form', function(e){
 });
 
 $(document).ready(function() {
+    // Initialize quantity_ml field if empty - trigger update to use default value of 1
+    if ($('#quantity_ml').length) {
+        var mlValue = $('#quantity_ml').val();
+        if (mlValue === '' || isNaN(mlValue) || parseFloat(mlValue) <= 0) {
+            // Trigger update to ensure pack is calculated with default value of 1
+            // The field stays empty for placeholder display, but value 1 is used in calculations
+            setTimeout(function() {
+                ap5Plugin.updatePackTable();
+            }, 100);
+        }
+    }
     // Detect pack hash on page load
     if (typeof (window.location.hash) == 'string' && window.location.hash.length > 0) {
         ap5Plugin.log('[ap5_Event] Combination update from anchor');
