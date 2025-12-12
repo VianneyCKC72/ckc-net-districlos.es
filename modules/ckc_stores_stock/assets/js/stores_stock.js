@@ -408,10 +408,20 @@ if ($('.delivery-option input').length > 0) {
                     $('#stock-summary-content .card-header').html('Click & Collect');
                     if (resp.data.stock.stock_ok) {
                         $('#stock-summary-content .productLimit').html('Super ! Un ou plusieurs produits sont en stock ( hors plateforme )');
-                        $('#stock-summary-content .text').html('<p>Vous pouvez venir récupérer les produits en stock dans votre magasin 2h après votre commande.</p>')
+                        // Message spécial pour le store Essonne (19)
+                        if (resp.data.stock.store_id == 19) {
+                            $('#stock-summary-content .text').html('<p>Disponibilité sous 5 jours ouvrés en magasin, selon stock. Le magasin vous contactera dès que votre commande sera prête.</p>');
+                        } else {
+                            $('#stock-summary-content .text').html('<p>Vous pouvez venir récupérer les produits en stock dans votre magasin 2h après votre commande.</p>')
+                        }
                     } else {
                         $('#stock-summary-content .productLimit').html('Un ou des produits sont en cours de réapprovisionnement ( hors plateforme )');
-                        $('#stock-summary-content .text').html('<p>Vous pouvez venir récupérer les produits en stock dans votre magasin.</p> <p>Pour les produits en cours de réapprovisionnement, nous vous appellerons aussitôt ces derniers disponibles.</p>')
+                        // Message spécial pour le store Essonne (19)
+                        if (resp.data.stock.store_id == 19) {
+                            $('#stock-summary-content .text').html('<p>Disponibilité sous 5 jours ouvrés en magasin, selon stock. Le magasin vous contactera dès que votre commande sera prête.</p>');
+                        } else {
+                            $('#stock-summary-content .text').html('<p>Vous pouvez venir récupérer les produits en stock dans votre magasin.</p> <p>Pour les produits en cours de réapprovisionnement, nous vous appellerons aussitôt ces derniers disponibles.</p>')
+                        }
                     }
                 } else {
                     $('#stock-summary-content .card-header').html('Livraison');

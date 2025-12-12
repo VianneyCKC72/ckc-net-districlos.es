@@ -117,6 +117,26 @@
                             </div>
                         {/block}
 
+                        {if isset($packMlChoose) && $packMlChoose}
+                            <style>
+                                #quantity_ml::placeholder {
+                                    color: #666 !important;
+                                    opacity: 1;
+                                }
+                            </style>
+                            <div class="ap5-attributes" style="margin-bottom: 1rem;">
+                                <div class="clearfix hiddenlabel">
+                                    <p class="font-weight-bold group-name">Choisissez la longueur en mètres linéaires</p>
+                                    <div class="select_wrap">
+                                        <div class="clearfix dis_flex">
+                                                    <span class="input-group-btn-vertical dis_flex">
+                                                        <input type="number" id="quantity_ml" value="" class="form-control" min="1" step="1" style="display: block;" placeholder="Renseignez votre longueur (en m)">
+                                                    </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {/if}
 
                         {if $product.is_customizable && count($product.customizations.fields)}
 
@@ -180,21 +200,6 @@
                                     {block name='hook_display_accessories'}
                                         {hook h='displayMultiAccessoriesProduct'}
                                     {/block}
-
-                                    {if isset($packMlChoose) && $packMlChoose}
-                                        <div class="ap5-attributes">
-                                            <div class="clearfix hiddenlabel">
-                                                <p class="font-weight-bold group-name">Choisissez la longueur en mètres linéaires</p>
-                                                <div class="select_wrap">
-                                                    <div class="clearfix dis_flex">
-                                                    <span class="input-group-btn-vertical dis_flex">
-                                                        <input type="number" id="quantity_ml" value="1" class="form-control" min="1" step="1" style="display: block;">
-                                                    </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {/if}
 
                                     {block name='product_discounts'}
 

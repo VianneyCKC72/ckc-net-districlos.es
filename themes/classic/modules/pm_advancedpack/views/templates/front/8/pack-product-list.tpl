@@ -1,7 +1,7 @@
 <div id="ap5-product-list">
     {foreach from=$productsPack item=productPack}
         {if !empty($productPack.attributes.groups)}
-            <span class="font-weight-bold">{$productPack.presentation.name}</span>
+            <span class="font-weight-bold">{$productPack.presentation.name}{if $productPack.quantity} <span style="padding: 1px 15px;background-color: #79C144;color: #fff;font-weight: 600;font-size: 16px;margin-left: 10px;">x{$productPack.quantity}</span>{/if}</span>
             <!-- attributes -->
             <div class="product-variants ap5-attributes" data-id-product-pack="{$productPack.id_product_pack|intval}">
                 {foreach from=$productPack.attributes.groups key=id_attribute_group item=group}
@@ -17,11 +17,12 @@
                         {/foreach}
 
                         {if !empty($group.attributes) && in_array($group.group_type, ['select', 'color', 'radio'])}
+                            {assign var=attributesCount value=$group.attributes|@count}
                             <div class="clearfix product-variants-item ap5-attribute-fieldset">
                                 <span class="control-label">{$group.name}</span>
                                 <div class="attribute_list ap5-attribute-list">
                                     {if ($group.group_type == 'select') || ($group.group_type == 'color')}
-                                        <select name="{$groupName}" id="group_{$id_attribute_group|intval}" class="ap5-attribute-select no-print form-control form-control-select"{if in_array($productPack.id_product_pack, $packExcludeList)} disabled="disabled"{/if}>
+                                        <select name="{$groupName}" id="group_{$id_attribute_group|intval}" class="ap5-attribute-select no-print form-control form-control-select"{if $attributesCount == 1} style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: none; padding-right: 12px; pointer-events: none; cursor: default;"{/if}{if in_array($productPack.id_product_pack, $packExcludeList)} disabled="disabled"{/if}>
                                             {foreach from=$group.attributes key=id_attribute item=group_attribute}
                                                 {assign var=ap5_isCurrentSelectedIdAttribute value=((isset($productsPackErrors[$productPack.id_product_pack]) && isset($packCompleteAttributesList[$productPack.id_product_pack]) && in_array($id_attribute, $packCompleteAttributesList[$productPack.id_product_pack])) || $group.default == $id_attribute)}
                                                 <option value="{$id_attribute|intval}" {if $ap5_isCurrentSelectedIdAttribute} selected="selected"{/if} title="{$group_attribute.name}">{$group_attribute.name}</option>
