@@ -31,6 +31,7 @@
 
   {foreach from=$groups key=id_attribute_group item=group}
     {if !empty($group.attributes)}
+      {assign var=attributesCount value=$group.attributes|@count}
       <div class="clearfix product-variants-item">
         <span class="control-label">{$group.name}{l s=': ' d='Shop.Theme.Catalog'}
           {foreach from=$group.attributes key=id_attribute item=group_attribute}
@@ -39,7 +40,7 @@
         </span>
         {if $group.group_type == 'select'}
           <select class="form-control form-control-select" id="group_{$id_attribute_group}" aria-label="{$group.name}"
-            data-product-attribute="{$id_attribute_group}" name="group[{$id_attribute_group}]">
+            data-product-attribute="{$id_attribute_group}" name="group[{$id_attribute_group}]"{if $attributesCount == 1} style="appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: none; padding-right: 12px; pointer-events: none; cursor: default;"{/if}>
             {foreach from=$group.attributes key=id_attribute item=group_attribute}
               <option value="{$id_attribute}" title="{$group_attribute.name}" {if $group_attribute.selected} selected="selected"
                 {/if}>{$group_attribute.name}</option>

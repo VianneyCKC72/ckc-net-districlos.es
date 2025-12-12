@@ -36,11 +36,12 @@ function initCustomColorSelect() {
     $customSelect.append($selectedOption).append($optionsList);
     $colorGroup.css('display', 'none').after($customSelect);
 
-    // Si une seule option, désactiver le clic
+    // Si une seule option, désactiver le clic et masquer la flèche
     if ($radioButtons.length === 1) {
         $customSelect.css({
             'pointer-events': 'none',
-            'cursor': 'default'
+            'cursor': 'default',
+            'background-image': 'none'
         });
         $selectedOption.css({
             'pointer-events': 'none',
