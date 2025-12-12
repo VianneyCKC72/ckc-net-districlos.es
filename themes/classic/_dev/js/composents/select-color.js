@@ -36,26 +36,39 @@ function initCustomColorSelect() {
     $customSelect.append($selectedOption).append($optionsList);
     $colorGroup.css('display', 'none').after($customSelect);
 
-    $selectedOption.on('click', function (e) {
-        e.stopPropagation();
-        $(".options-list").not($optionsList).removeClass("open");
-        $optionsList.toggleClass("open");
-    });
+    // Si une seule option, désactiver le clic
+    if ($radioButtons.length === 1) {
+        $customSelect.css({
+            'pointer-events': 'none',
+            'cursor': 'default'
+        });
+        $selectedOption.css({
+            'pointer-events': 'none',
+            'cursor': 'default'
+        });
+        $optionsList.css('display', 'none');
+    } else {
+        $selectedOption.on('click', function (e) {
+            e.stopPropagation();
+            $(".options-list").not($optionsList).removeClass("open");
+            $optionsList.toggleClass("open");
+        });
 
-    $optionsList.on('click', '.option', function (e) {
-        e.stopPropagation();
-        const selectedText = $(this).text();
-        const selectedColor = $(this).find('.color-dot').css('background-color');
-        const selectedValue = $(this).data('value');
+        $optionsList.on('click', '.option', function (e) {
+            e.stopPropagation();
+            const selectedText = $(this).text();
+            const selectedColor = $(this).find('.color-dot').css('background-color');
+            const selectedValue = $(this).data('value');
 
-        $selectedOption.html(`<span class="color-dot" style="background-color: ${selectedColor};"></span> ${selectedText}`);
-        $optionsList.removeClass('open');
+            $selectedOption.html(`<span class="color-dot" style="background-color: ${selectedColor};"></span> ${selectedText}`);
+            $optionsList.removeClass('open');
 
-        const $relatedRadio = $radioButtons.filter(`[value="${selectedValue}"]`);
-        if ($relatedRadio.length) {
-            $relatedRadio.prop('checked', true).trigger('click').trigger('change');
-        }
-    });
+            const $relatedRadio = $radioButtons.filter(`[value="${selectedValue}"]`);
+            if ($relatedRadio.length) {
+                $relatedRadio.prop('checked', true).trigger('click').trigger('change');
+            }
+        });
+    }
 
     $(document).on('click', function () {
         $(".options-list").removeClass("open");
