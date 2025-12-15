@@ -668,10 +668,16 @@ $(document).ready(function () {
                 // Ajouter la classe active à l'onglet cliqué
                 this.classList.add('active');
 
-                // Scroller vers le début de la section col-12
+                // Scroller vers le haut de la section col-12 puis descendre légèrement
                 const col12Section = document.getElementById('product-tabs-section');
                 if (col12Section) {
-                    const offset = col12Section.offsetTop - 100; // Offset pour tenir compte du header
+                    // Détecter si on est sur une page pack
+                    // On vérifie d'abord l'input is_pack puis la classe ap5-buy-block
+                    const isPack = (document.getElementById('is_pack')?.value === '1') || 
+                                   document.querySelector('.ap5-buy-block') !== null;
+                    
+                    const offset = col12Section.offsetTop + (isPack ? 350 : 400); // Première valeur : Pack, Deuxième valeur : Produit
+                    
                     $('html, body').animate({
                         scrollTop: offset
                     }, 300);
