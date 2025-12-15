@@ -90,7 +90,35 @@ $(document).ready(function () {
                 
                 $submenu.find('.ets_mm_block .h4 > a, .ets_mm_block_content a').each(function() {
                     var $link = $(this);
-                    var imageUrl = $link.attr('data-image');
+                    var imageUrl = null;
+                    
+                    // Priorité 1 : Extraire depuis la balise <picture>
+                    var $picture = $link.find('picture').first();
+                    if ($picture.length) {
+                        var $source = $picture.find('source[type="image/webp"]').first();
+                        var $img = $picture.find('img').first();
+                        
+                        // Vérifier si WebP est supporté
+                        var supportsWebP = false;
+                        var canvas = document.createElement('canvas');
+                        if (canvas.getContext && canvas.getContext('2d')) {
+                            supportsWebP = canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+                        }
+                        
+                        if (supportsWebP && $source.length) {
+                            imageUrl = $source.attr('srcset');
+                        } else if ($img.length) {
+                            imageUrl = $img.attr('src');
+                        }
+                    }
+                    
+                    // Priorité 2 : Extraire depuis <img> directement (si pas de picture)
+                    if (!imageUrl) {
+                        var $img = $link.find('img').first();
+                        if ($img.length) {
+                            imageUrl = $img.attr('src');
+                        }
+                    }
                     
                     if (imageUrl) {
                         new Image().src = imageUrl; // Préchargement
