@@ -115,12 +115,12 @@
         <aside class="pro-auth__visual">
             <figure class="pro-figure">
                 <picture>
-                    <source srcset="/img/cms/auth/img-espace-pro2.webp" type="image/webp">
-                    <img src="/img/cms/auth/img-espace-pro2.jpeg" alt="Districlos sur salon professionnel"
+                    <source srcset="/img/cms/auth/img-espace-pro3.webp" type="image/webp">
+                    <img src="/img/cms/auth/img-espace-pro3.jpeg" alt="Districlos sur salon professionnel"
                          loading="lazy">
                 </picture>
 
-                <figcaption class="pro-quote">
+                {*<figcaption class="pro-quote">
                     <p>«&nbsp;Mon expérience avec Districlos a été géniale, et je suis convaincu que toute collaboration
                         sera synonyme de succès et de satisfaction&nbsp;»</p>
                     <small>Thomas — Paysagiste</small>
@@ -129,7 +129,7 @@
                 <div class="pro-ribbon">
                     <strong>100€ offerts dès 1&nbsp;000€ d’achat HT</strong>
                     <span>pour toute première commande en tant que professionnel&nbsp;!</span>
-                </div>
+                </div>*}
             </figure>
         </aside>
     </div>
