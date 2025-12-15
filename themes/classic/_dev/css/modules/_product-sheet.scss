@@ -1845,6 +1845,67 @@
   }
 }
 
+// Style responsive uniquement pour les packs
+.pack-nav {
+  .mobile-nav-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; // Firefox
+    -ms-overflow-style: none; // IE/Edge
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .mobile-nav-tabs {
+    justify-content: flex-start;
+    padding: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; // Firefox
+    -ms-overflow-style: none; // IE/Edge
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    @media (max-width: 480px) {
+      padding: 8px 5px;
+    }
+  }
+
+  .mobile-nav-item {
+    flex: 0 0 auto;
+    margin: 0 4px;
+    min-width: fit-content;
+
+    @media (max-width: 480px) {
+      margin: 0 2px;
+    }
+  }
+
+  .mobile-nav-link {
+    padding: 10px 12px;
+    margin: 8px 0;
+    min-width: fit-content;
+
+    @media (max-width: 480px) {
+      padding: 8px 10px;
+      font-size: 11px;
+      margin: 6px 0;
+    }
+
+    @media (max-width: 360px) {
+      padding: 6px 8px;
+      font-size: 10px;
+      margin: 4px 0;
+    }
+  }
+}
+
 // Masquer les onglets desktop sur mobile
 @media (max-width: 767px) {
   .product-tabs > .nav-tabs {

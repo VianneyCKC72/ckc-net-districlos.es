@@ -246,7 +246,7 @@
                     {/block}
 
                     {* Barre de navigation fixe mobile *}
-                    <div class="mobile-product-nav-fixed d-md-none" id="mobile-product-nav">
+                    <div class="mobile-product-nav-fixed d-md-none pack-nav" id="mobile-product-nav">
                         <div class="mobile-nav-container">
                             <ul class="mobile-nav-tabs" role="tablist">
                                 <li class="mobile-nav-item">
