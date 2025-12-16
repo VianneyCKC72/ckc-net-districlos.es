@@ -676,7 +676,7 @@ $(document).ready(function () {
                     const isPack = (document.getElementById('is_pack')?.value === '1') || 
                                    document.querySelector('.ap5-buy-block') !== null;
                     
-                    const offset = col12Section.offsetTop + (isPack ? 350 : 400); // Première valeur : Pack, Deuxième valeur : Produit
+                    const offset = col12Section.offsetTop + (isPack ? 350 : 370); // Première valeur : Pack, Deuxième valeur : Produit
                     
                     $('html, body').animate({
                         scrollTop: offset
