@@ -159,7 +159,13 @@ $(document).ready(function () {
                 var imageData = { url: fallbackUrl, preloaded: false, useWebP: false };
                 
                 function preload() {
-                    if (imageData.preloaded) return;
+                    if (imageData.preloaded) {
+                        var urlToUse = imageData.useWebP ? webpUrl : imageData.url;
+                        if (urlToUse) {
+                            $imageContainer.css('background-image', 'url("' + urlToUse + '")');
+                        }
+                        return;
+                    }
                     imageData.preloaded = true;
                     
                     if (webpUrl) {
