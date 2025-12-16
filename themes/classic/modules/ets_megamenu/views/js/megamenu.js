@@ -2,6 +2,54 @@ $(function (){$(document).on('mouseup',function (e){const $activeItem=$('.mm_ext
     .on('mouseenter',()=> $menu.addClass('bg_submenu'))
     .on('mouseleave',()=> $menu.removeClass('bg_submenu'));}clickTextShowMenu();$('.toggle_menu').on('click',autoChangeStatus);$(document).on('mouseenter','.mm_menus_li iframe',function (){$(this).closest('.mm_menus_li').addClass('menu_hover');}).on('mouseleave','.mm_menus_li iframe',function (){$(this).closest('.mm_menus_li').removeClass('menu_hover');});$(document).on('click','.arrow-sub-menu-mobile-hide',function (){$(this).toggleClass('arrow-sub-menu-mobile-show');$(this).parent().next().toggleClass('ets_mm_block_content_show');});});
 
+(function() {
+    'use strict';
+    var supportsWebP = (function() {
+        try {
+            var canvas = document.createElement('canvas');
+            return canvas.getContext && canvas.getContext('2d') && 
+                   canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+        } catch(e) {
+            return false;
+        }
+    })();
+    
+    function disablePictureImages() {
+        if (!supportsWebP) return;
+        var imgs = document.querySelectorAll('.ets_mm_block_content picture img, .ets_mm_block .h4 picture img, .mm_blocks_ul picture img, picture img');
+        for (var i = 0, len = imgs.length; i < len; i++) {
+            var img = imgs[i];
+            var picture = img.closest('picture');
+            if (picture && picture.querySelector('source[type="image/webp"]')) {
+                var srcAttr = img.getAttribute('src');
+                if (srcAttr) {
+                    if (!img.hasAttribute('data-src')) {
+                        img.setAttribute('data-src', srcAttr);
+                    }
+                    img.removeAttribute('src');
+                    if (img.src) img.src = '';
+                }
+            }
+        }
+    }
+    
+    disablePictureImages();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', disablePictureImages);
+    }
+    if (window.MutationObserver) {
+        var observer = new MutationObserver(disablePictureImages);
+        var target = document.body || document.documentElement;
+        observer.observe(target, {
+            childList: true,
+            subtree: true,
+            attributes: !!document.body,
+            attributeFilter: document.body ? ['src'] : undefined
+        });
+    }
+    setTimeout(disablePictureImages, 0);
+})();
+
 $(document).ready(function () {
     var isMobile = $(window).width() <= 768;
     
@@ -78,63 +126,76 @@ $(document).ready(function () {
         }
     });
     
-    // Changement d'image au survol (desktop uniquement)
     if (!isMobile) {
+        var supportsWebP = (function() {
+            var canvas = document.createElement('canvas');
+            return canvas.getContext && canvas.getContext('2d') && 
+                   canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+        })();
+        
         $('.mm_columns_contents_ul').each(function() {
             var $submenu = $(this);
             var $imageContainer = $submenu.find('.mm_subcat_img.promoted').first();
+            if (!$imageContainer.length) return;
             
-            if ($imageContainer.length) {
-                var defaultImage = $imageContainer.css('background-image');
-                $imageContainer.data('default-image', defaultImage);
+            var defaultImage = $imageContainer.css('background-image');
+            $imageContainer.data('default-image', defaultImage);
+            
+            $submenu.find('.ets_mm_block .h4 > a, .ets_mm_block_content a').each(function() {
+                var $link = $(this);
+                var $picture = $link.find('picture').first();
+                var $img = $picture.length ? $picture.find('img').first() : $link.find('img').first();
+                if (!$img.length) return;
                 
-                $submenu.find('.ets_mm_block .h4 > a, .ets_mm_block_content a').each(function() {
-                    var $link = $(this);
-                    var imageUrl = null;
-                    
-                    // Priorité 1 : Extraire depuis la balise <picture>
-                    var $picture = $link.find('picture').first();
-                    if ($picture.length) {
-                        var $source = $picture.find('source[type="image/webp"]').first();
-                        var $img = $picture.find('img').first();
-                        
-                        // Vérifier si WebP est supporté
-                        var supportsWebP = false;
-                        var canvas = document.createElement('canvas');
-                        if (canvas.getContext && canvas.getContext('2d')) {
-                            supportsWebP = canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
-                        }
-                        
-                        if (supportsWebP && $source.length) {
-                            imageUrl = $source.attr('srcset');
-                        } else if ($img.length) {
-                            imageUrl = $img.attr('src');
-                        }
-                    }
-                    
-                    // Priorité 2 : Extraire depuis <img> directement (si pas de picture)
-                    if (!imageUrl) {
-                        var $img = $link.find('img').first();
-                        if ($img.length) {
-                            imageUrl = $img.attr('src');
-                        }
-                    }
-                    
-                    if (imageUrl) {
-                        new Image().src = imageUrl; // Préchargement
-                        
-                        $link.on('mouseenter', function() {
-                            $imageContainer.css('background-image', 'url("' + imageUrl + '")');
-                        }).on('mouseleave', function() {
-                            $imageContainer.css('background-image', defaultImage);
-                        });
-                    }
-                });
+                var fallbackUrl = $img.attr('src') || $img.data('src');
+                var webpUrl = supportsWebP && $picture.length ? 
+                              $picture.find('source[type="image/webp"]').first().attr('srcset') : null;
                 
-                $submenu.on('mouseleave', function() {
+                if ($img.attr('src')) {
+                    $img.data('src', $img.attr('src'));
+                    $img.removeAttr('src');
+                }
+                
+                var imageData = { url: fallbackUrl, preloaded: false, useWebP: false };
+                
+                function preload() {
+                    if (imageData.preloaded) return;
+                    imageData.preloaded = true;
+                    
+                    if (webpUrl) {
+                        var test = new Image();
+                        test.onload = function() { 
+                            imageData.useWebP = true;
+                            imageData.url = webpUrl;
+                            $imageContainer.css('background-image', 'url("' + webpUrl + '")');
+                        };
+                        test.onerror = function() { 
+                            imageData.useWebP = false;
+                            imageData.url = fallbackUrl;
+                            var jpgImg = new Image();
+                            jpgImg.onload = function() {
+                                $imageContainer.css('background-image', 'url("' + fallbackUrl + '")');
+                            };
+                            jpgImg.src = fallbackUrl;
+                        };
+                        test.src = webpUrl;
+                    } else {
+                        var jpgImg = new Image();
+                        jpgImg.onload = function() {
+                            $imageContainer.css('background-image', 'url("' + fallbackUrl + '")');
+                        };
+                        jpgImg.src = fallbackUrl;
+                    }
+                }
+                
+                $link.on('mouseenter', preload).on('mouseleave', function() {
                     $imageContainer.css('background-image', defaultImage);
                 });
-            }
+            });
+            
+            $submenu.on('mouseleave', function() {
+                $imageContainer.css('background-image', defaultImage);
+            });
         });
     }
 });
