@@ -17,7 +17,7 @@ class ApiService
         $params = [
             'country' => $country,
             'zipCode' => $zipcode,
-            'city' => 'Paris'
+/*            'city' => 'Paris'*/
         ];
 
         // API actuelle ne prend pas store_id dans cette route
