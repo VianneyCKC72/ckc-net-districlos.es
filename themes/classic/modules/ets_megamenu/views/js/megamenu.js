@@ -2,54 +2,6 @@ $(function (){$(document).on('mouseup',function (e){const $activeItem=$('.mm_ext
     .on('mouseenter',()=> $menu.addClass('bg_submenu'))
     .on('mouseleave',()=> $menu.removeClass('bg_submenu'));}clickTextShowMenu();$('.toggle_menu').on('click',autoChangeStatus);$(document).on('mouseenter','.mm_menus_li iframe',function (){$(this).closest('.mm_menus_li').addClass('menu_hover');}).on('mouseleave','.mm_menus_li iframe',function (){$(this).closest('.mm_menus_li').removeClass('menu_hover');});$(document).on('click','.arrow-sub-menu-mobile-hide',function (){$(this).toggleClass('arrow-sub-menu-mobile-show');$(this).parent().next().toggleClass('ets_mm_block_content_show');});});
 
-(function() {
-    'use strict';
-    var supportsWebP = (function() {
-        try {
-            var canvas = document.createElement('canvas');
-            return canvas.getContext && canvas.getContext('2d') && 
-                   canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0;
-        } catch(e) {
-            return false;
-        }
-    })();
-    
-    function disablePictureImages() {
-        if (!supportsWebP) return;
-        var imgs = document.querySelectorAll('.ets_mm_block_content picture img, .ets_mm_block .h4 picture img, .mm_blocks_ul picture img, picture img');
-        for (var i = 0, len = imgs.length; i < len; i++) {
-            var img = imgs[i];
-            var picture = img.closest('picture');
-            if (picture && picture.querySelector('source[type="image/webp"]')) {
-                var srcAttr = img.getAttribute('src');
-                if (srcAttr) {
-                    if (!img.hasAttribute('data-src')) {
-                        img.setAttribute('data-src', srcAttr);
-                    }
-                    img.removeAttribute('src');
-                    if (img.src) img.src = '';
-                }
-            }
-        }
-    }
-    
-    disablePictureImages();
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', disablePictureImages);
-    }
-    if (window.MutationObserver) {
-        var observer = new MutationObserver(disablePictureImages);
-        var target = document.body || document.documentElement;
-        observer.observe(target, {
-            childList: true,
-            subtree: true,
-            attributes: !!document.body,
-            attributeFilter: document.body ? ['src'] : undefined
-        });
-    }
-    setTimeout(disablePictureImages, 0);
-})();
-
 $(document).ready(function () {
     var isMobile = $(window).width() <= 768;
     
