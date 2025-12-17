@@ -276,30 +276,54 @@ class Dealt extends Module
     public function hookDisplayProductAdditionalInfo($params)
     {
         $dealt_product_length = null;
-        if(!empty($params['product']['width']) && $params['product']['width'] != 0){
-            $dealt_product_length = $params['product']['width']/100;
-        } else {
-            foreach ($params['product']['features'] as $feature){
-                if($feature['name'] == 'Longueur'){
-                    if(preg_match('/mm/', $feature['value']) OR preg_match('/MM/', $feature['value'])){
-                        $lengthInt = (int)$feature['value'];
-                        $dealt_product_length = $lengthInt / 1000;
-                    } else if(preg_match('/m/', $feature['value']) OR preg_match('/M/', $feature['value'])){
-                        $dealt_product_length = floatval(preg_replace('/[mM]/', '.', $feature['value']).'0');
-                    } else if(preg_match('/cm/', $feature['value']) OR preg_match('/CM/', $feature['value'])){
-                        $lengthInt = (int)$feature['value'];
-                        $dealt_product_length = $lengthInt / 100;
+
+        if(!empty($params['product']['id_product_attribute'])){
+            $combinations = $this->getAttributesInformationsByProduct($params['product']['id'], $params['product']['id_product_attribute']);
+
+            foreach($combinations as $combination){
+                if($combination['group'] == 'Longueur du Kit' OR $combination['group'] == 'Longueur' OR $combination['group'] == 'longueur'){
+                    if(preg_match('/cm/', $combination['attribute'])){
+                        $dealt_product_length = floatval(str_replace([' cm', 'cm'], ['', '.'], $combination['attribute'])) / 100;
                     } else {
-                        $dealt_product_length = (int)$feature['value'];
+                        $dealt_product_length = floatval(str_replace([' ml', ' m', 'ml', 'm'], ['', '', '.', '.'], $combination['attribute']));
                     }
+
                     break;
                 }
             }
         }
+
+        if(empty($dealt_product_length)){
+            if(!empty($params['product']['width']) && $params['product']['width'] != 0){
+                $dealt_product_length = $params['product']['width']/100;
+            } else {
+                foreach ($params['product']['features'] as $feature){
+                    if($feature['name'] == 'Longueur'){
+                        if(preg_match('/mm/', $feature['value']) OR preg_match('/MM/', $feature['value'])){
+                            $lengthInt = (int)$feature['value'];
+                            $dealt_product_length = $lengthInt / 1000;
+                        } else if(preg_match('/ml/', $feature['value'])){
+                            $dealt_product_length = floatval(preg_replace('/[ml]/', '.', $feature['value']).'0');
+                        } else if(preg_match('/ML/', $feature['value'])){
+                            $dealt_product_length = floatval(preg_replace('/[ML]/', '.', $feature['value']).'0');
+                        }else if(preg_match('/m/', $feature['value']) OR preg_match('/M/', $feature['value'])){
+                            $dealt_product_length = floatval(preg_replace('/[mM]/', '.', $feature['value']).'0');
+                        } else if(preg_match('/cm/', $feature['value']) OR preg_match('/CM/', $feature['value'])){
+                            $lengthInt = (int)$feature['value'];
+                            $dealt_product_length = $lengthInt / 100;
+                        } else {
+                            $dealt_product_length = (int)$feature['value'];
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
         if (empty($params['product']['quantity_wanted'])){
             $params['product']['quantity_wanted'] = 1;
         }
-        if(gettype($dealt_product_length) == 'string'){
+        if(gettype($dealt_product_length) == 'string' OR $dealt_product_length == 0){
             $dealt_product_length = null;
         }
 
@@ -308,6 +332,8 @@ class Dealt extends Module
             : (int)Tools::getValue('id_product');
 
         if (!$id_product) return '';
+
+        $data = [];
 
         $data = \Dealt\DealtHookHelper::buildProductAdditionalInfoData($this->context, $id_product,$dealt_product_length * $params['product']['quantity_wanted']);
 

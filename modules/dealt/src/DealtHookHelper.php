@@ -589,36 +589,38 @@ class DealtHookHelper
         }
         $data = [];
 
-        foreach ($idServices as $idService) {
-/*            $product = new \Product($idProduct, false, (int)$ctx->language->id);*/
-            $product = new \Product($idService, false, (int)$ctx->language->id);
+        if(count($idServices) && !empty($longueur)){
+            foreach ($idServices as $idService) {
+    /*            $product = new \Product($idProduct, false, (int)$ctx->language->id);*/
+                $product = new \Product($idService, false, (int)$ctx->language->id);
 
-            $servicePriceTtc = null;
-            if ($idService) {
-                $priceTtc = \Product::getPriceStatic($idService, true);
-                if ($priceTtc > 0) {
-                    $servicePriceTtc = self::formatPrice($ctx, $priceTtc);
+                $servicePriceTtc = null;
+                if ($idService) {
+                    $priceTtc = \Product::getPriceStatic($idService, true);
+                    if ($priceTtc > 0) {
+                        $servicePriceTtc = self::formatPrice($ctx, $priceTtc);
+                    }
                 }
+
+                $serviceRow = $idService ? self::getServiceRowByProductId($idService) : [];
+
+                $data[] = [
+                    'dealt_service_title' => $product->name ?: \Configuration::get('DEALT_SERVICE_TITLE_DEFAULT'),
+                    'dealt_service_price' => $servicePriceTtc ?: '939 €',
+                    'dealt_service_url' => self::getServiceUrl(),
+                    'dealt_product_id' => $idProduct,
+                    'dealt_service_product_id' => $idService,
+    /*                'dealt_offer_id' => $offerId,*/
+                    'dealt_offer_id' => $serviceRow['reference'],
+                    'dealt_store_id' => self::getStoreId(),
+                    'dealt_check_availability_url' => self::getEligibilityUrl($ctx),
+                    'dealt_eligibility_conditions' => self::eligibility_conditions_format($serviceRow['eligibility_conditions'] ?? null),
+                    'dealt_customer_commercial_description' => self::replace_p_to_li($serviceRow['customer_commercial_description'] ?? ''),
+                    'dealt_expert_requirements_description' => self::replace_p_to_li($serviceRow['expert_requirements_description'] ?? ''),
+                    'dealt_longueur_min' => isset($serviceRow['longueur_min']) ? (float)$serviceRow['longueur_min'] : null,
+                    'dealt_longueur_max' => isset($serviceRow['longueur_max']) ? (float)$serviceRow['longueur_max'] : null,
+                ];
             }
-
-            $serviceRow = $idService ? self::getServiceRowByProductId($idService) : [];
-
-            $data[] = [
-                'dealt_service_title' => $product->name ?: \Configuration::get('DEALT_SERVICE_TITLE_DEFAULT'),
-                'dealt_service_price' => $servicePriceTtc ?: '939 €',
-                'dealt_service_url' => self::getServiceUrl(),
-                'dealt_product_id' => $idProduct,
-                'dealt_service_product_id' => $idService,
-/*                'dealt_offer_id' => $offerId,*/
-                'dealt_offer_id' => $serviceRow['reference'],
-                'dealt_store_id' => self::getStoreId(),
-                'dealt_check_availability_url' => self::getEligibilityUrl($ctx),
-                'dealt_eligibility_conditions' => self::eligibility_conditions_format($serviceRow['eligibility_conditions'] ?? null),
-                'dealt_customer_commercial_description' => self::replace_p_to_li($serviceRow['customer_commercial_description'] ?? ''),
-                'dealt_expert_requirements_description' => self::replace_p_to_li($serviceRow['expert_requirements_description'] ?? ''),
-                'dealt_longueur_min' => isset($serviceRow['longueur_min']) ? (float)$serviceRow['longueur_min'] : null,
-                'dealt_longueur_max' => isset($serviceRow['longueur_max']) ? (float)$serviceRow['longueur_max'] : null,
-            ];
         }
         
         \Media::addJsDef($data);
