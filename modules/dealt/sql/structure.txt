@@ -1,0 +1,13 @@
+CREATE TABLE ps_dealt_tva_attestation (
+  id_attestation INT AUTO_INCREMENT PRIMARY KEY,
+  id_customer INT DEFAULT NULL,
+  id_cart INT DEFAULT NULL,
+  id_main_product INT DEFAULT 0,
+  is_validated TINYINT(1) DEFAULT 0,
+  validated_at DATETIME DEFAULT NULL,
+  ip_address VARCHAR(64),
+  user_agent TEXT,
+  token VARCHAR(255), -- pour clients non connectés
+  date_add DATETIME,
+  date_upd DATETIME
+)
