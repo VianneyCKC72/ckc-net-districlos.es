@@ -579,10 +579,10 @@ class DealtHookHelper
                     $idServices[] = $idService;
                 }
             }
-
-            if(!count($idServices)){
+        // plus besoin à cause des nouveaux services
+/*            if(!count($idServices)){
                 return self::buildProductAdditionalInfoData($ctx, $idProduct, ($longueur - 0.5));
-            }
+            }*/
         } else {
             $idService = (int)($serviceIds[0] ?? 0);
             $idServices = $serviceIds;
