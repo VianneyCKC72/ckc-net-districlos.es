@@ -589,7 +589,7 @@ class DealtHookHelper
         }
         $data = [];
 
-        if(count($idServices) && !empty($longueur)){
+        if((count($idServices) && !empty($longueur)) OR count($idServices) == 1){
             foreach ($idServices as $idService) {
     /*            $product = new \Product($idProduct, false, (int)$ctx->language->id);*/
                 $product = new \Product($idService, false, (int)$ctx->language->id);
