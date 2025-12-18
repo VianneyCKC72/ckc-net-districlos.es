@@ -47,10 +47,18 @@ class Accessory extends ProductFactory
                 self::$session->change('deconseil', 0);
             }
 
-            $id_accessory = self::ACCESSORIES_ID[$session->id_category][$accessory_index];
+            // Pour le composite, on utilise COMPOSITE_ID comme clé dans ACCESSORIES_ID
+            $isComposite = in_array($session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true)
+                || $session->id_type === self::COMPOSITE_PLEINES_ID;
+            $categoryKey = $isComposite ? self::COMPOSITE_ID : $session->id_category;
+            $id_accessory = self::ACCESSORIES_ID[$categoryKey][$accessory_index];
 
-            // On récupère l'accessoire grâce à l'id de la catégorie
-            if (self::$session->isSouple()) {
+            // On récupère l'accessoire grâce à l'id de la catégorie (ou directement l'id produit pour le composite)
+            if ($isComposite) {
+                // Pour le composite, ACCESSORIES_ID contient directement les IDs produit
+                $id_product = $id_accessory;
+            }
+            elseif (self::$session->isSouple()) {
                 $id_product = self::matchProduct($id_accessory, $language_id, $soubassement);
             }
             else {
@@ -192,10 +200,14 @@ class Accessory extends ProductFactory
         elseif (self::$session->id_category == self::BARREAUDAGES_ID) {
             $accessories = ["poteaux", "colliers"];
         }
+        elseif (self::$session->id_type === self::COMPOSITE_PLEINES_ID) {
+            // Accessoires spécifiques au composite
+            $accessories = ["poteaux", "profil-finition", "u-finition", "capuchon-poteau", "equerre-fixation"];
+        }
         elseif (self::$session->isAluminium()) {
             $accessories = ["poteaux"];
             $platines    = ["platines"]; // Les vis sont fournis
-            $isPleines = in_array(self::$session->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true);
+            $isPleines = in_array(self::$session->id_type, [self::LAMES_PLEINES_ID], true);
             $isAjour   = in_array(self::$session->id_type, [self::LAMES_AJOUREES_ID], true);
             if ($isPleines) {
                 $accessories[] = 'profil-finition';

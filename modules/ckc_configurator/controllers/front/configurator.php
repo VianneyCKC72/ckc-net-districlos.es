@@ -710,6 +710,18 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     'checked' => $this->session->height == $step
                 ];
             }
+
+            // Pour le composite, on utilise les couleurs définies en dur
+            if ($this->session->id_type === self::COMPOSITE_PLEINES_ID) {
+                $colors = [];
+                foreach (self::COMPOSITE_COLORS as $value => $name) {
+                    $colors[] = [
+                        'value' => $value,
+                        'name' => $name,
+                        'checked' => $this->session->color == $value
+                    ];
+                }
+            }
         }
 
         return ["heights" => $heights, "colors" => $colors];

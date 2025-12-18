@@ -87,14 +87,11 @@ interface Config
             "profil-finition"         =>  362,
         ],
         self::COMPOSITE_ID    => [
-            "poteaux"               => 312,
-            "u-finition"            => 313,
-            "demi-poteaux"          => 314,
-            "entretoise"            => 317,
-            "platines"              => 315,
-            "bouchons"              => 318,
-            "bouchons-demi-poteaux" => 319,
-            "profil-finition"       => 362,
+            "poteaux"           => 2231,
+            "profil-finition"   => 2225,
+            "u-finition"        => 2235,
+            "capuchon-poteau"   => 2229,
+            "equerre-fixation"  => 2230,
         ]
     ];
 
@@ -113,6 +110,11 @@ interface Config
         6 => '1m38',
         7 => '1m55',
         8 => '1m72',
+    ];
+
+    const COMPOSITE_COLORS = [
+        'gris-7016' => 'Gris 7016',
+        'ton-bois'  => 'Ton bois',
     ];
 
     const ALU_QUANTITIES_PLEINES = [
