@@ -622,8 +622,8 @@ class DealtHookHelper
                 ];
             }
         }
-        
-        \Media::addJsDef($data);
+
+        \Media::addJsDef(['dealt_service_info'=>$data]);
         return $data;
     }
 
