@@ -317,7 +317,12 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             unset($installations[2]);
         }
         else if ($this->session->isAluminium()) {
-            unset($installations[0]);
+            // Conserver "Scellement en terre" pour la gamme Composite (438/439)
+            $isComposite = in_array($this->session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true)
+                || in_array($this->session->id_type, [self::COMPOSITE_PLEINES_ID], true);
+            if (!$isComposite) {
+                unset($installations[0]);
+            }
         }
 
         if(!empty($data['heights'])  && !$this->session->isAluminium()) {
@@ -688,9 +693,12 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         }
 
         if ($this->session->isAluminium()) {
-            $hauteurs = self::STEPS_HIGHT_ALU;
-            if ($this->session->id_type == self::LAMES_PLEINES_ID) {
-                $hauteurs = self::STEPS_HIGHT_ALU_LAMES_PLEINES;
+            $isPleines = in_array($this->session->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true);
+            // Pour le composite pleines, on affiche les hauteurs spécifiques
+            if ($this->session->id_type === self::COMPOSITE_PLEINES_ID) {
+                $hauteurs = self::COMPOSITE_STEPS_HIGHT_PLEINES;
+            } else {
+                $hauteurs = $isPleines ? self::STEPS_HIGHT_ALU_LAMES_PLEINES : self::STEPS_HIGHT_ALU;
             }
 
             $heights = [];
@@ -827,11 +835,16 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
 
         // Panneaux déco
         if (isset($panneau_deco['active']) && $panneau_deco['active'] == 'true' && !empty($panneau_deco['id']) && !empty($panneau_deco['id_product_attribute'])) {
-            $length = $this->session->length;
-            $height                = (float)str_replace("m", ".", $this->session->height);
-            $quantities = ($this->session->id_type == self::LAMES_PLEINES_ID)
-                ? self::ALU_QUANTITIES_PLEINES[$this->session->installation][(string)$height]
-                : self::ALU_QUANTITIES_AJOURES[$this->session->installation][(string)$height];
+            $length  = $this->session->length;
+            $height  = (float)str_replace("m", ".", $this->session->height);
+            $isPleines = in_array($this->session->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true);
+            // Alias pour l'alu/composite : "scellement" réutilise les quantitatifs "scellement-sur-muret"
+            $installationKey = ($this->session->isAluminium() && $this->session->installation === 'scellement')
+                ? 'scellement-sur-muret'
+                : $this->session->installation;
+            $quantities = $isPleines
+                ? self::ALU_QUANTITIES_PLEINES[$installationKey][(string)$height]
+                : self::ALU_QUANTITIES_AJOURES[$installationKey][(string)$height];
 
             $lengthKeys = array_keys($quantities);
             $position = array_search($length, $lengthKeys);

@@ -29,26 +29,40 @@ class Grillage extends ProductFactory
             if(empty($session->length)) {
                 $session->length       = 2.09;
                 $session->installation = "scellement-sur-muret";
-                if ($session->id_type == self::LAMES_PLEINES_ID) {
-                    $session->height       = "0m403";
-                }else{
-                    $session->height       = "0m515";
+                $isPleines = in_array($session->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true);
+                if ($isPleines) {
+                    $session->height     = "0m515";
+                    $session->espacement = 0;
+                } else {
+                    $session->height     = "0m403";
+                    $session->espacement = 1;
                 }
-                $session->color        = "gris-7016";
-                $session->espacement   = 1;
+                $session->color = "gris-7016";
             }
             $height                = (float)str_replace("m", ".", $session->height);
+            // Pour le composite (alu) avec "scellement", on réutilise les quantitatifs "scellement-sur-muret"
             $installationType = $session->installation;
+            $installationKey = ($session->isAluminium() && $installationType === 'scellement')
+                ? 'scellement-sur-muret'
+                : $installationType;
             $length = $session->length;
-            if ($session->id_type == self::LAMES_PLEINES_ID) {
+            $isPleines = in_array($session->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true);
+
+            // Mapping des hauteurs composite pleines vers les hauteurs legacy alu pour les quantitatifs
+            $legacyHeight = (string)$height;
+            if ($session->id_type === self::COMPOSITE_PLEINES_ID) {
+                $legacyHeight = self::mapCompositePleinesHeight($height);
+                // Facteur de position basé sur la liste composite
+                $quantity_factor = array_search($session->height, self::COMPOSITE_STEPS_HIGHT_PLEINES, true) + 1;
+            } elseif ($isPleines) {
                 $quantity_factor = array_flip(self::STEPS_HIGHT_ALU_LAMES_PLEINES)[$session->height];
-            }else{
+            } else {
                 $quantity_factor = array_flip(self::STEPS_HIGHT_ALU)[$session->height];
             }
 
-            $quantities = ($session->id_type == self::LAMES_PLEINES_ID)
-                ? self::ALU_QUANTITIES_PLEINES[$installationType][(string)$height]
-                : self::ALU_QUANTITIES_AJOURES[$installationType][(string)$height];
+            $quantities = ($isPleines)
+                ? self::ALU_QUANTITIES_PLEINES[$installationKey][$legacyHeight]
+                : self::ALU_QUANTITIES_AJOURES[$installationKey][$legacyHeight];
 
             $lengthKeys = array_keys($quantities);
             $position = array_search($length, $lengthKeys);
@@ -146,5 +160,21 @@ class Grillage extends ProductFactory
             WHERE pa.`id_product` = '.(int)$id_product);
 
         return $result;
+    }
+
+    /**
+     * Map les nouvelles hauteurs composite pleines vers les hauteurs legacy alu
+     * pour réutiliser les tableaux de quantitatifs existants.
+     */
+    private static function mapCompositePleinesHeight(float $height)
+    {
+        // Regroupement simple par proximité
+        if ($height <= 0.87) {
+            return '0.515';
+        }
+        if ($height <= 1.21) {
+            return '0.96';
+        }
+        return '1.41';
     }
 }

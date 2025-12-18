@@ -12,6 +12,8 @@ interface Config
 
     const SOUPLES_ID              = 174;
     const ALUMINIUM_ID            = 308;
+    const COMPOSITE_ID            = 438;
+    const COMPOSITE_PLEINES_ID    = 439;
     const SOUDES_ID               = 179;
     const SIMPLES_ID              = 180;
     const AGRICOLES_ID            = 181;
@@ -83,6 +85,16 @@ interface Config
             "bouchons"              => 318,
             "bouchons-demi-poteaux" => 319,
             "profil-finition"         =>  362,
+        ],
+        self::COMPOSITE_ID    => [
+            "poteaux"               => 312,
+            "u-finition"            => 313,
+            "demi-poteaux"          => 314,
+            "entretoise"            => 317,
+            "platines"              => 315,
+            "bouchons"              => 318,
+            "bouchons-demi-poteaux" => 319,
+            "profil-finition"       => 362,
         ]
     ];
 
@@ -91,6 +103,17 @@ interface Config
 
     const STEPS_HIGHT_ALU_LAMES_PLEINES =
         [1 => '0m515', 2 => '0m960', 3 => '1m41'];
+
+    const COMPOSITE_STEPS_HIGHT_PLEINES = [
+        1 => '0m530',
+        2 => '0m700',
+        3 => '0m870',
+        4 => '1m04',
+        5 => '1m21',
+        6 => '1m38',
+        7 => '1m55',
+        8 => '1m72',
+    ];
 
     const ALU_QUANTITIES_PLEINES = [
         'scellement-sur-muret' => [

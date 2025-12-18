@@ -159,6 +159,8 @@ class Preview implements Config
                 return 'pleine';
             case self::LAMES_AJOUREES_ID:
                 return 'ajourees';
+            case self::COMPOSITE_PLEINES_ID:
+                return 'composite-pleine';
         }
     }
 

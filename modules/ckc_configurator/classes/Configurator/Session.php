@@ -196,13 +196,15 @@ class Session extends \ObjectModel implements Config
 
     public function isAluminium()
     {
-        if ($this->id_category == self::ALUMINIUM_ID)
-            return true;
+        $aluminiumCategories = [
+            self::ALUMINIUM_ID,
+            self::LAMES_PLEINES_ID,
+            self::LAMES_AJOUREES_ID,
+            self::COMPOSITE_ID,
+            self::COMPOSITE_PLEINES_ID,
+        ];
 
-        if ($this->id_category == self::LAMES_PLEINES_ID || $this->id_category == self::LAMES_AJOUREES_ID)
-            return true;
-
-        return false;
+        return in_array($this->id_category, $aluminiumCategories, true);
     }
 
     public function hasEspacement($type)
@@ -424,20 +426,29 @@ class Session extends \ObjectModel implements Config
             $this->nombre_angle = 0;
         }
         elseif ($this->isAluminium()) {
-            $this->id_type      = isset($this->id_type) ? $this->id_type : self::LAMES_PLEINES_ID;
+            $isComposite = in_array($this->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true)
+                || in_array($this->id_type, [self::COMPOSITE_PLEINES_ID], true);
+
+            $this->id_type      = isset($this->id_type)
+                ? $this->id_type
+                : ($isComposite ? self::COMPOSITE_PLEINES_ID : self::LAMES_PLEINES_ID);
             $this->length       = 2.09;
             $this->installation = "scellement-sur-muret";
             $this->color        = "gris-7016";
             $this->is_aluminium = 1;
             $this->depart_mur   = 0;
             $this->nombre_angle = 0;
-            if ($this->id_type == self::LAMES_AJOUREES_ID) {
+            $isPleines = in_array($this->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true);
+            $isAjour   = in_array($this->id_type, [self::LAMES_AJOUREES_ID], true);
+
+            if ($isAjour) {
                 $this->espacement = 1;
                 $this->height     = "0m403";
             }
             else {
                 $this->espacement = 0;
-                $this->height     = "0m515";
+                // Hauteur par défaut composite pleines : 0m530 (sinon fallback alu 0m515)
+                $this->height     = $isComposite ? "0m530" : "0m515";
             }
         }
         elseif ($this->isBarreaudage()) {
