@@ -32,8 +32,8 @@ class DealtHookHelper
         $idP = (int)($p['id_product'] ?? 0);
         if (!$idP) return;
 
-/*        $id_main_productSQl = Db::getInstance()->getValue('SELECT id_main_product FROM '._DB_PREFIX_.'dealt_tva_attestation WHERE id_cart = '.(int)$cart->id);
-        $id_main_product = !empty($id_main_productSQl) ? $id_main_productSQl : 0;*/
+        /*        $id_main_productSQl = Db::getInstance()->getValue('SELECT id_main_product FROM '._DB_PREFIX_.'dealt_tva_attestation WHERE id_cart = '.(int)$cart->id);
+                $id_main_product = !empty($id_main_productSQl) ? $id_main_productSQl : 0;*/
 
         $eligible = self::getEligibleProductIdsForCart($ctx, $cart);
         if (!in_array($idP, $eligible, true)) return;
@@ -579,10 +579,6 @@ class DealtHookHelper
                     $idServices[] = $idService;
                 }
             }
-        // plus besoin à cause des nouveaux services
-/*            if(!count($idServices)){
-                return self::buildProductAdditionalInfoData($ctx, $idProduct, ($longueur - 0.5));
-            }*/
         } else {
             $idService = (int)($serviceIds[0] ?? 0);
             $idServices = $serviceIds;
@@ -591,7 +587,7 @@ class DealtHookHelper
 
         if((count($idServices) && !empty($longueur)) OR count($idServices) == 1){
             foreach ($idServices as $idService) {
-    /*            $product = new \Product($idProduct, false, (int)$ctx->language->id);*/
+                /*            $product = new \Product($idProduct, false, (int)$ctx->language->id);*/
                 $product = new \Product($idService, false, (int)$ctx->language->id);
 
                 $servicePriceTtc = null;
@@ -610,7 +606,7 @@ class DealtHookHelper
                     'dealt_service_url' => self::getServiceUrl(),
                     'dealt_product_id' => $idProduct,
                     'dealt_service_product_id' => $idService,
-    /*                'dealt_offer_id' => $offerId,*/
+                    /*                'dealt_offer_id' => $offerId,*/
                     'dealt_offer_id' => $serviceRow['reference'],
                     'dealt_store_id' => self::getStoreId(),
                     'dealt_check_availability_url' => self::getEligibilityUrl($ctx),
@@ -822,43 +818,43 @@ class DealtHookHelper
 
         $length = (float)$length - 0.5;
 
-            // Récupère les ids services via les catégories "enfants de 369"
-            $serviceIds = self::getServiceProductIds($ctx, $mainId);
-            foreach ($serviceIds as $sid) {
-                $srv = new \Product($sid, false, $idLang);
-                $priceTtc = \Product::getPriceStatic($sid, true);
-                $serviceRow = self::getServiceRowByProductId($sid) ?: [];
+        // Récupère les ids services via les catégories "enfants de 369"
+        $serviceIds = self::getServiceProductIds($ctx, $mainId);
+        foreach ($serviceIds as $sid) {
+            $srv = new \Product($sid, false, $idLang);
+            $priceTtc = \Product::getPriceStatic($sid, true);
+            $serviceRow = self::getServiceRowByProductId($sid) ?: [];
 
-                if($length <= $serviceRow['longueur_max'] && $length >= $serviceRow['longueur_min']){
-                    $services[] = [
-                        // Contexte main
-                        'main_product_id'   => $mainId,
-                        'main_product_name' => $row['name'] ?? ($main->name ?? ''),
+            if($length <= $serviceRow['longueur_max'] && $length >= $serviceRow['longueur_min']){
+                $services[] = [
+                    // Contexte main
+                    'main_product_id'   => $mainId,
+                    'main_product_name' => $row['name'] ?? ($main->name ?? ''),
 
-                        // Service
-                        'service_product_id' => $sid,
-                        'service_title'      => $srv->name ?: 'Service de pose',
-                        'service_ref'        => (string)($srv->reference ?? ''),
-                        'service_price'      => $priceTtc > 0 ? self::formatPrice($ctx, $priceTtc) . ' TTC' : '',
-                        'service_url'        => self::getServiceUrl(),
+                    // Service
+                    'service_product_id' => $sid,
+                    'service_title'      => $srv->name ?: 'Service de pose',
+                    'service_ref'        => (string)($srv->reference ?? ''),
+                    'service_price'      => $priceTtc > 0 ? self::formatPrice($ctx, $priceTtc) . ' TTC' : '',
+                    'service_url'        => self::getServiceUrl(),
 
-                        // Eligibilité
-                        'offer_id'        => (string)($srv->reference ?? ''),
-                        'store_id'        => self::getStoreId(),
-                        'eligibility_url' => self::getEligibilityUrl($ctx),
+                    // Eligibilité
+                    'offer_id'        => (string)($srv->reference ?? ''),
+                    'store_id'        => self::getStoreId(),
+                    'eligibility_url' => self::getEligibilityUrl($ctx),
 
-                        // Déjà présent ?
-                        'already_in_cart' => isset($serviceIdsInCart[$sid]),
+                    // Déjà présent ?
+                    'already_in_cart' => isset($serviceIdsInCart[$sid]),
 
-                        // (optionnel) contenus BDD si tu veux les afficher dans le panier
-                        'eligibility_conditions'           => $serviceRow['eligibility_conditions'] ?? null,
-                        'customer_commercial_description'  => $serviceRow['customer_commercial_description'] ?? null,
-                        'expert_requirements_description'  => $serviceRow['expert_requirements_description'] ?? null,
-                        'longueur_max' => $serviceRow['longueur_max'] ?? null,
-                        'longueur_min' => $serviceRow['longueur_min'] ?? null,
-                    ];
-                }
+                    // (optionnel) contenus BDD si tu veux les afficher dans le panier
+                    'eligibility_conditions'           => $serviceRow['eligibility_conditions'] ?? null,
+                    'customer_commercial_description'  => $serviceRow['customer_commercial_description'] ?? null,
+                    'expert_requirements_description'  => $serviceRow['expert_requirements_description'] ?? null,
+                    'longueur_max' => $serviceRow['longueur_max'] ?? null,
+                    'longueur_min' => $serviceRow['longueur_min'] ?? null,
+                ];
             }
+        }
 
         if (count($services) < 1 && ((float)$length > 0)){
             return self::getServicesForCart($ctx, $mainId, (float)$length, $idLang);
