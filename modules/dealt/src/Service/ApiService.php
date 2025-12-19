@@ -4,7 +4,8 @@ namespace Dealt\Service;
 
 class ApiService
 {
-    protected $baseUrl = 'https://api.staging.dealt.tech/api/public/v2/';
+    /*    protected $baseUrl = 'https://api.staging.dealt.tech/api/public/v2/';*/
+    protected $baseUrl = 'https://api.dealt.tech/api/public/v2/';
     protected $apiKey;
 
     public function __construct()
@@ -17,7 +18,7 @@ class ApiService
         $params = [
             'country' => $country,
             'zipCode' => $zipcode,
-/*            'city' => 'Paris'*/
+            /*            'city' => 'Paris'*/
         ];
 
         // API actuelle ne prend pas store_id dans cette route
@@ -55,8 +56,8 @@ class ApiService
             'Content-Type: application/json',
             'Accept: application/json',
         ];
-/*        echo $url;
-        echo(' ');*/
+        /*        echo $url;
+                echo(' ');*/
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
