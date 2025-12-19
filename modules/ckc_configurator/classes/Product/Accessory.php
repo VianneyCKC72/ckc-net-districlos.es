@@ -318,12 +318,71 @@ class Accessory extends ProductFactory
                     return 1;
             }
         }
-        elseif ($panneau_times > 0 && self::$session->isAluminium() && in_array(self::$session->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true)) {
+        elseif ($panneau_times > 0 && self::$session->id_type === self::COMPOSITE_PLEINES_ID) {
+            // Logique spécifique pour le composite
+            $lengthMm = $length * 1000;
+            $index = (int) ceil($lengthMm / 1800) - 1;
+            $index = max(0, min($index, count(self::COMPOSITE_PANEL_QUANTITIES[self::$session->height]) - 1));
+            
+            switch ($accessory) {
+                case 'poteaux':
+                    // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height])) {
+                        $qty = self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height][$index];
+                        return max(0, (int)$qty - (int)$depart_du_mur);
+                    }
+                    // Fallback : calcul basique
+                    $nb_panneaux = self::COMPOSITE_PANEL_QUANTITIES[self::$session->height][$index];
+                    return max(0, (int)ceil($nb_panneaux) + 1 - (int)$depart_du_mur);
+                case 'profil-finition':
+                    // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['profil-finition'][self::$session->height])) {
+                        return (int) self::COMPOSITE_ACCESSORIES_QUANTITIES['profil-finition'][self::$session->height][$index];
+                    }
+                    // Fallback : calcul basique
+                    $nb_panneaux = self::COMPOSITE_PANEL_QUANTITIES[self::$session->height][$index];
+                    return (int)$nb_panneaux;
+                case 'u-finition':
+                    // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['u-finition'][self::$session->height])) {
+                        return (int) self::COMPOSITE_ACCESSORIES_QUANTITIES['u-finition'][self::$session->height][$index];
+                    }
+                    // Fallback : calcul basique
+                    $nb_panneaux = self::COMPOSITE_PANEL_QUANTITIES[self::$session->height][$index];
+                    return (int)$nb_panneaux;
+                case 'capuchon-poteau':
+                    // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['capuchon-poteau'][self::$session->height])) {
+                        $qty = self::COMPOSITE_ACCESSORIES_QUANTITIES['capuchon-poteau'][self::$session->height][$index];
+                        return max(0, (int)$qty - (int)$depart_du_mur);
+                    }
+                    // Fallback : calcul basique
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height])) {
+                        $nb_poteaux = self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height][$index];
+                        return max(0, (int)$nb_poteaux - (int)$depart_du_mur);
+                    }
+                    $nb_panneaux = self::COMPOSITE_PANEL_QUANTITIES[self::$session->height][$index];
+                    return max(0, (int)ceil($nb_panneaux) + 1 - (int)$depart_du_mur);
+                case 'equerre-fixation':
+                    // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['equerre-fixation'][self::$session->height])) {
+                        return (int) self::COMPOSITE_ACCESSORIES_QUANTITIES['equerre-fixation'][self::$session->height][$index];
+                    }
+                    // Fallback : 2 équerres par poteau
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height])) {
+                        $nb_poteaux = self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height][$index];
+                        return max(0, (int)$nb_poteaux - (int)$depart_du_mur) * 2;
+                    }
+                    $nb_panneaux = self::COMPOSITE_PANEL_QUANTITIES[self::$session->height][$index];
+                    $nb_poteaux = max(0, (int)ceil($nb_panneaux) + 1 - (int)$depart_du_mur);
+                    return $nb_poteaux * 2;
+                default:
+                    return 1;
+            }
+        }
+        elseif ($panneau_times > 0 && self::$session->isAluminium() && in_array(self::$session->id_type, [self::LAMES_PLEINES_ID], true)) {
             $installationKey = (self::$session->installation === 'scellement') ? 'scellement-sur-muret' : self::$session->installation;
             $legacyHeight = (string)$height;
-            if (self::$session->id_type === self::COMPOSITE_PLEINES_ID) {
-                $legacyHeight = self::mapCompositePleinesHeight($height);
-            }
             switch ($accessory) {
                 case 'profil-finition':
                     return (int) self::ALU_QUANTITIES_PLEINES[$installationKey][$legacyHeight][(string)$length]['profil-finition'];

@@ -48,30 +48,35 @@ class Grillage extends ProductFactory
             $length = $session->length;
             $isPleines = in_array($session->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true);
 
-            // Mapping des hauteurs composite pleines vers les hauteurs legacy alu pour les quantitatifs
-            $legacyHeight = (string)$height;
+            // Calcul spécifique pour le composite
             if ($session->id_type === self::COMPOSITE_PLEINES_ID) {
-                $legacyHeight = self::mapCompositePleinesHeight($height);
-                // Facteur de position basé sur la liste composite
-                $quantity_factor = array_search($session->height, self::COMPOSITE_STEPS_HIGHT_PLEINES, true) + 1;
-            } elseif ($isPleines) {
-                $quantity_factor = array_flip(self::STEPS_HIGHT_ALU_LAMES_PLEINES)[$session->height];
+                // Composite : utilise le tableau COMPOSITE_PANEL_QUANTITIES
+                $lengthMm = $length * 1000; // Conversion m -> mm
+                $index = (int) ceil($lengthMm / 1800) - 1; // Index dans le tableau (0-based)
+                $index = max(0, min($index, count(self::COMPOSITE_PANEL_QUANTITIES[$session->height]) - 1));
+                $quantity_factor = self::COMPOSITE_PANEL_QUANTITIES[$session->height][$index];
             } else {
-                $quantity_factor = array_flip(self::STEPS_HIGHT_ALU)[$session->height];
+                // Mapping des hauteurs alu vers les quantitatifs
+                $legacyHeight = (string)$height;
+                if ($isPleines) {
+                    $quantity_factor = array_flip(self::STEPS_HIGHT_ALU_LAMES_PLEINES)[$session->height];
+                } else {
+                    $quantity_factor = array_flip(self::STEPS_HIGHT_ALU)[$session->height];
+                }
+
+                $quantities = ($isPleines)
+                    ? self::ALU_QUANTITIES_PLEINES[$installationKey][$legacyHeight]
+                    : self::ALU_QUANTITIES_AJOURES[$installationKey][$legacyHeight];
+
+                $lengthKeys = array_keys($quantities);
+                $position = array_search($length, $lengthKeys);
+                $coefficient = 1;
+                if ($position !== false) {
+                    $coefficient = $position + 1;
+                }
+
+                $quantity_factor *= $coefficient;
             }
-
-            $quantities = ($isPleines)
-                ? self::ALU_QUANTITIES_PLEINES[$installationKey][$legacyHeight]
-                : self::ALU_QUANTITIES_AJOURES[$installationKey][$legacyHeight];
-
-            $lengthKeys = array_keys($quantities);
-            $position = array_search($length, $lengthKeys);
-            $coefficient = 1;
-            if ($position !== false) {
-                $coefficient = $position + 1;
-            }
-
-            $quantity_factor *= $coefficient;
             if($session->panneau_deco()) {
                 $quantity_factor -= 1 * $coefficient;
             }
