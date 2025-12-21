@@ -40,6 +40,8 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     public static $actionValidateOrderProcessing = false;
     public static $actionProductListModifierProcessing = false;
     public static $modulePrefix = 'AP5';
+
+    private static $isCloning = false;
     protected $_defaultConfiguration = [
         'displayMode' => 'advanced',
         'bootstrapTheme' => false,
@@ -1520,6 +1522,10 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     public function hookActionProductSave($params)
     {
         if (Tools::getValue('new_pack') == 1 && isset($params['product'])) {
+            if (self::$isCloning) {
+                return;
+            }
+
             $params['product']->addToCategories([$this->context->shop->id_category]);
             $sourceId = (int) Tools::getValue('source_id_product');
             if ($sourceId > 0) {
@@ -1544,27 +1550,30 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             return;
         }
 
-        $target->name = $source->name;
-        $target->description = $source->description;
-        $target->description_short = $source->description_short;
-        $target->link_rewrite = $source->link_rewrite;
-        $target->meta_title = $source->meta_title;
-        $target->meta_description = $source->meta_description;
+        self::$isCloning = true;
+        try {
+            $target->name = $source->name;
+            $target->description = $source->description;
+            $target->description_short = $source->description_short;
+            $target->link_rewrite = $source->link_rewrite;
+            $target->meta_title = $source->meta_title;
+            $target->meta_description = $source->meta_description;
 
-        $target->save();
+            $target->save(); // ne relancera pas TON hook grâce au flag
 
-        // 2) CATEGORIES
-        $sourceCategories = $source->getCategories();
-        if (!empty($sourceCategories)) {
-            $target->updateCategories($sourceCategories);
+            $sourceCategories = $source->getCategories();
+            if (!empty($sourceCategories)) {
+                $target->updateCategories($sourceCategories);
+                $target->id_category_default = (int) $source->id_category_default;
+                $target->save();
+            }
 
-            // même catégorie par défaut
-            $target->id_category_default = (int) $source->id_category_default;
-            $target->save();
+            // Images si tu veux
+            // $this->cloneProductImagesPS8($sourceId, $targetId);
+
+        } finally {
+            self::$isCloning = false;
         }
-
-        // 3) IMAGES
-        //$this->cloneProductImagesPS8($sourceId, $targetId);
     }
 
     private function cloneProductImagesPS8(int $sourceId, int $targetId): void
