@@ -1537,8 +1537,8 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
 
     private function cloneFromSourceProductPS8(int $sourceId, int $targetId): void
     {
-        $source = new Product($sourceId);
-        $target = new Product($targetId);
+        $source = new Product($sourceId, false);
+        $target = new Product($targetId, false);
 
         if (!Validate::isLoadedObject($source) || !Validate::isLoadedObject($target)) {
             return;
