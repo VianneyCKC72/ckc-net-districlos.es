@@ -1519,31 +1519,20 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     }
     public function hookActionProductSave($params)
     {
-        if ((int)Tools::getValue('new_pack') !== 1 || empty($params['product'])) {
-            return;
+        if (Tools::getValue('new_pack') == 1 && isset($params['product'])) {
+            $params['product']->addToCategories([$this->context->shop->id_category]);
+            $sourceId = (int) Tools::getValue('source_id_product');
+            if ($sourceId > 0) {
+                $this->cloneFromSourceProductPS8($sourceId, (int)$params['product']->id);
+            }
+
+
+            if (Tools::getValue('source_id_product')) {
+                Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
+            } else {
+                Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1');
+            }
         }
-
-        /** @var Product $newProduct */
-        $newProduct = $params['product'];
-        $sourceId = (int) Tools::getValue('source_id_product');
-
-        // Catégorie shop (si tu veux la forcer en plus)
-        $newProduct->addToCategories([(int)$this->context->shop->id_category]);
-
-        if ($sourceId > 0) {
-            //$this->cloneFromSourceProductPS8($sourceId, (int)$newProduct->id);
-        }
-
-        $url = $this->getContainer()->get('router')->generate('admin_products_edit', [
-            'productId' => (int)$newProduct->id,
-        ]);
-
-        $url .= '&is_real_new_pack=1';
-        if ($sourceId > 0) {
-            $url .= '&source_id_product=' . $sourceId;
-        }
-
-        Tools::redirectAdmin($url);
     }
 
     private function cloneFromSourceProductPS8(int $sourceId, int $targetId): void
