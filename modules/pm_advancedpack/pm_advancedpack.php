@@ -1608,12 +1608,6 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
 
             $this->copyImageFilesPS8($oldImage, $newImage);
         }
-
-        // sécurité cover
-        $targetCover = Image::getCover($targetId);
-        if (!empty($targetCover['id_image'])) {
-            Image::setCover((int)$targetCover['id_image'], $targetId);
-        }
     }
 
     private function copyImageFilesPS8(Image $oldImage, Image $newImage): void
@@ -1623,17 +1617,14 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
 
         @mkdir(dirname($newPath), 0777, true);
 
-        // extensions possibles en PS8 (selon config images/webp)
         $exts = ['jpg', 'jpeg', 'png', 'webp'];
 
-        // original
         foreach ($exts as $ext) {
             if (file_exists($oldPath . '.' . $ext)) {
                 copy($oldPath . '.' . $ext, $newPath . '.' . $ext);
             }
         }
 
-        // miniatures
         $types = ImageType::getImagesTypes('products');
         foreach ($types as $type) {
             $suffix = '-' . $type['name'];
