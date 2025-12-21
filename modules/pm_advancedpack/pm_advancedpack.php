@@ -1521,10 +1521,10 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     {
         if (Tools::getValue('new_pack') == 1 && isset($params['product'])) {
             $params['product']->addToCategories([$this->context->shop->id_category]);
-//            $sourceId = (int) Tools::getValue('source_id_product');
-//            if ($sourceId > 0) {
-//                $this->cloneFromSourceProductPS8($sourceId, (int)$params['product']->id);
-//            }
+            $sourceId = (int) Tools::getValue('source_id_product');
+            if ($sourceId > 0) {
+                $this->cloneFromSourceProductPS8($sourceId, (int)$params['product']->id);
+            }
 
 
             if (Tools::getValue('source_id_product')) {
@@ -1539,9 +1539,10 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     {
         $idLangDefault = (int) Configuration::get('PS_LANG_DEFAULT');
 
-        $source = new Product($sourceId, false, $idLangDefault, $this->context->shop->id);
-        $target = new Product($targetId, false, $idLangDefault, $this->context->shop->id);
-
+        $source = new Product($sourceId, false, $idLangDefault);
+        $target = new Product($targetId, false, $idLangDefault);
+        dump($target, $source);
+        die;
         if (!Validate::isLoadedObject($source) || !Validate::isLoadedObject($target)) {
             return;
         }
