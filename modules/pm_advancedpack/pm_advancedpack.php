@@ -1529,16 +1529,10 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             }
 
             // ta redirection
-            if ($sourceId > 0) {
-                Tools::redirectAdmin(
-                    $this->getContainer()->get('router')->generate('admin_product_form', ['id' => $newProduct->id])
-                    . '&is_real_new_pack=1&source_id_product=' . $sourceId
-                );
+            if (Tools::getValue('source_id_product')) {
+                Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
             } else {
-                Tools::redirectAdmin(
-                    $this->getContainer()->get('router')->generate('admin_product_form', ['id' => $newProduct->id])
-                    . '&is_real_new_pack=1'
-                );
+                Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1');
             }
         }
     }
