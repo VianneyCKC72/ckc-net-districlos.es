@@ -1559,7 +1559,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             $target->meta_title = $source->meta_title;
             $target->meta_description = $source->meta_description;
 
-            $target->save(); // ne relancera pas TON hook grâce au flag
+            $target->save();
 
             $sourceCategories = $source->getCategories();
             if (!empty($sourceCategories)) {
@@ -1568,8 +1568,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 $target->save();
             }
 
-            // Images si tu veux
-            // $this->cloneProductImagesPS8($sourceId, $targetId);
+            $this->cloneProductImagesPS8($sourceId, $targetId);
 
         } finally {
             self::$isCloning = false;
