@@ -1537,27 +1537,20 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
 
     private function cloneFromSourceProductPS8(int $sourceId, int $targetId): void
     {
-        $idLangDefault = (int) Configuration::get('PS_LANG_DEFAULT');
+        $source = new Product($sourceId);
+        $target = new Product($targetId);
 
-        $source = new Product($sourceId, false, $idLangDefault);
-        $target = new Product($targetId, false, $idLangDefault);
-        dump($target, $source);
-        die;
         if (!Validate::isLoadedObject($source) || !Validate::isLoadedObject($target)) {
             return;
         }
 
-        // 1) NOM (+ SEO utile)
-        foreach (Language::getLanguages(false) as $lang) {
-            $idLang = (int) $lang['id_lang'];
+        $target->name = $source->name;
+        $target->description = $source->description;
+        $target->description_short = $source->description_short;
+        $target->link_rewrite = $source->link_rewrite;
+        $target->meta_title = $source->meta_title;
+        $target->meta_description = $source->meta_description;
 
-            $target->name[$idLang] = $source->name[$idLang] ?? $source->name[$idLangDefault] ?? $target->name[$idLang];
-
-            // recommandé pour éviter des incohérences dans le BO/FO
-            $target->link_rewrite[$idLang] = $source->link_rewrite[$idLang] ?? $source->link_rewrite[$idLangDefault] ?? $target->link_rewrite[$idLang];
-            $target->meta_title[$idLang] = $source->meta_title[$idLang] ?? $source->meta_title[$idLangDefault] ?? $target->meta_title[$idLang];
-            $target->meta_description[$idLang] = $source->meta_description[$idLang] ?? $source->meta_description[$idLangDefault] ?? $target->meta_description[$idLang];
-        }
         $target->save();
 
         // 2) CATEGORIES
@@ -1571,7 +1564,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
         }
 
         // 3) IMAGES
-        $this->cloneProductImagesPS8($sourceId, $targetId);
+        //$this->cloneProductImagesPS8($sourceId, $targetId);
     }
 
     private function cloneProductImagesPS8(int $sourceId, int $targetId): void
