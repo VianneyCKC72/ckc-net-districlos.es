@@ -1,0 +1,785 @@
+.dealt-offer-box {
+    border: 3px solid #7CBA49;
+    border-radius: 11px;
+    padding: 0px 10px;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    color: #333;
+    background: white;
+}
+.zipcode-check-btn.is-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: progress;
+}
+.dealt-offer-icon i {
+    font-size: 32px;
+    color: #7CBA49;
+    margin-right: 15px;
+}
+.dealt-offer-box .picto {
+    width: 58px;
+}
+.dealt-offer-box .picto svg {
+    width: 100%;
+}
+.dealt-zipcode-check {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.zipcode-check-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap:4px;
+}
+.zipcode-check-btn svg {
+    width: 11px;
+}
+.zipcode-check-btn {
+    color:black;
+    font-size: 12px;
+    margin-left:5px;
+}
+#product .zipcode-check-btn{
+    padding: 5px;
+    margin-top: 5px;
+    justify-content: center;
+    color: #fff;
+}
+.dealt-offer-content {
+    flex-grow: 1;
+    padding: 10px;
+}
+
+.dealt-nom-produit {
+    font-size: 17px;
+}
+
+.dealt-offer-title {
+    font-weight: bold;
+    font-size: 17px;
+    margin-bottom: 5px;
+}
+
+.dealt-conditions-link {
+    text-align: right;
+    font-size: 10px;
+    color: #000;
+    text-decoration: underline;
+}
+.product-additional-info {
+    margin-top: 35px;
+}
+#dealt-try-again {
+    font-size: 10px;
+    color: #000;
+    text-decoration: underline;
+    font-weight: bold;
+}
+.dealt-check {
+    font-size: 14px;
+}
+
+.dealt-zipcode-check {
+    display: flex;
+}
+
+#dealt-check-availability-box {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#dealt-check-availability-box label {
+    margin-bottom: 0;
+    text-align: left;
+    font: normal normal normal 13px/20px Poppins;
+    letter-spacing: 0;
+    color: #000000;
+}
+
+#dealt-check-availability-box #dealt-zipcode-check-btn svg {
+    margin-right: 5px;
+}
+
+#dealt-zipcode-check-btn svg {
+    stroke: white;
+    width: 16px;
+    height: 16px;
+}
+#dealt-check-availability-box svg {
+    margin-right: 5px;
+    height: 28px;
+    width: 27px;
+}
+
+.dealt-offer-price {
+    color: #000;
+    font-weight: 600;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+#cart .dealt-offer-price {
+    font: normal normal bold 20px/30px Poppins;
+}
+#dealt-zipcode-input {
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    padding: 8px 10px;
+    outline: none;
+    width: 140px;
+    color: #000;
+}
+
+.dealt-zipcode-wrapper {
+    position: relative;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    background: #F6F2EB;
+    border-radius: 20px;
+    overflow: hidden;
+}
+#cart .dealt-zipcode-wrapper {
+    overflow: visible;
+}
+
+#dealt-zipcode-check-btn {
+    background: #7CBA49;
+    border: none;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-left: 8px;
+    cursor: pointer;
+}
+
+#dealt-zipcode-result {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.dealt-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.dealt-modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 30px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 640px;
+    position: relative;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+.dealt-close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.dealt-conditions-list {
+    text-align: left;
+    margin: 20px 0;
+    padding-left: 20px;
+}
+
+#dealt-service-modal .dealt-modal-content,
+#dealt-tva-modal .dealt-modal-content {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 7px #00000029;
+    border: 3px solid #7CBA49;
+    border-radius: 23px;
+}
+
+#dealt-service-modal .h4,
+#dealt-tva-modal .h4 {
+    text-align: center;
+    font: normal normal bold 20px/38px Poppins;
+}
+
+#dealt-service-modal .h2,
+#dealt-tva-modal .h2 {
+    text-align: center;
+    font: normal normal bold 25px/38px Poppins;
+}
+
+/* Liste conditions (les deux modales) */
+#dealt-service-modal .dealt-conditions-list,
+#dealt-tva-modal .dealt-conditions-list {
+    text-align: left;
+    margin: 20px 0;
+    padding-left: 20px;
+}
+
+#dealt-service-modal ul,
+#dealt-tva-modal ul {
+    padding-left: 20px;
+    margin-bottom: 20px;
+    font: normal normal normal 15px/23px Poppins;
+}
+
+#dealt-service-modal ul li,
+#dealt-tva-modal ul li {
+    list-style-type: disc;
+    margin-bottom: 8px;
+    color: #333;
+    font: normal normal normal 15px/23px Poppins;
+}
+.dealt-btn-primary {
+    background: #7CBA49 0% 0% no-repeat padding-box;
+    border-radius: 24px;
+    opacity: 1;
+    text-align: center;
+    font: normal normal normal 15px/23px Poppins;
+    letter-spacing: 0;
+    color: #FFFFFF;
+    padding: 12px 20px;
+}
+
+.dealt-close:hover {
+    color: #000;
+}
+
+.dealt-retry-box {
+    margin-top: 10px;
+    padding: 5px;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.dealt-retry-box p {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.dealt-retry-box .btn {
+    background-color: #7cba49;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 24px;
+    font: normal normal normal 15px/23px Poppins;
+    letter-spacing: 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.dealt-cart-services {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.dealt-cart-service-box,
+.dealt-tva-box {
+    border: 3px solid #7CBA49;
+    border-radius: 11px;
+    opacity: 1;
+    padding: 15px 50px;
+}
+
+.dealt-cart-service-box h3,
+.dealt-tva-box h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.dealt-cart-service-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.dealt-cart-service-card p {
+    margin: 0;
+}
+
+.dealt-cart-service-card .price {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #009688;
+}
+
+.dealt-cart-service-card .btn {
+    background-color: #009688;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    width: fit-content;
+    transition: background 0.3s ease;
+}
+
+.dealt-cart-service-card .btn:hover {
+    background-color: #00796B;
+}
+
+.dealt-tva-box label {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+#dealt-tva-checkbox {
+    transform: scale(1.2);
+    margin-right: 0.5rem;
+}
+.dealt-cart-service-box {
+    border: 2px solid #e0e0e0;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.dealt-cart-service-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+}
+
+.dealt-cart-service-body ul {
+    padding-left: 1.2rem;
+    list-style: disc;
+}
+
+.dealt-cart-service-footer {
+    margin-top: 1rem;
+}
+.dealt-cart-tva-box {
+    border: 2px solid #cce5ff;
+    background-color: #e9f5ff;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border-radius: 8px;
+}
+
+.dealt-cart-tva h3 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.dealt-cart-tva-box ul {
+    list-style: disc;
+    padding-left: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.tva-attestation-block {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 10px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 25px;
+    margin-right: 10px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0;
+    right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 25px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #4CAF50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+/* Modal */
+.tva-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.tva-modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+}
+
+.tva-close-modal {
+    position: absolute;
+    top: 15px; right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+#dealt-tva-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+}
+
+.dealt-cart-service-box,
+.dealt-tva-box {
+    border: 2px solid #7CBA49;
+    border-radius: 10px;
+    padding: 20px;
+    background: #fff;
+}
+
+.dealt-cart-service-inner {
+    display: flex;
+    gap: 20px;
+    flex-direction: row;
+}
+
+.dealt-cart-service-icon img {
+    width: 50px;
+    height: auto;
+}
+.no-padding {
+    padding:0 !important;
+}
+#cart .dealt-cart-service-action{
+    margin-top: 20px;
+}
+.dealt-cart-service-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.dealt-cart-tva-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+.dealt-cart-service-info .inside {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 0;
+    max-width: 98%;
+}
+.dealt-cart-service-info h3 {
+    margin: 0 0 5px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.dealt-cart-service-inner > .picto.col-1{
+    align-content: center;
+}
+.dealt-cart-service-info .picto svg{
+    max-width: 90px;
+    height:auto;
+}
+.dealt-cart-service-info .block-left{
+    max-width: 350px;
+}
+.service-name {
+    margin: 0;
+    font-size: 1rem;
+}
+#cart .service-name,
+#cart .service-ref {
+    font: normal normal normal 17px/26px Poppins;
+}
+.service-link {
+    text-align: left;
+    text-decoration: underline;
+    font: normal normal normal 15px/23px Poppins;
+    letter-spacing: 0;
+    color: #000000;
+    opacity: 1;
+}
+
+.dealt-cart-service-action {
+    text-align: right;
+}
+
+.dealt-tva-box {
+    margin-bottom:50px;
+}
+
+.service-price {
+    text-align: left;
+    font: normal normal bold 20px/30px Poppins;
+    letter-spacing: 0;
+    color: #000000;
+    opacity: 1;
+}
+
+.btn-add-tva,
+.btn-add {
+    border: none;
+    background: #7CBA49 0% 0% no-repeat padding-box;
+    border-radius: 24px;
+    padding: 10px 20px;
+    font: normal normal normal 15px/23px Poppins;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    cursor: pointer;
+}
+.btn-add-tva:hover,
+.btn-add:hover {
+    background: #6aa83d;
+    color: #FFFFFF;
+}
+
+.added {
+    font-size: 0.95rem;
+    color: #4CAF50;
+}
+
+/* Overlay de fond */
+#dealt-tva-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9998;
+    display: none;
+}
+#dealt-tva-modal .dealt-modal-content {
+    max-width: 960px;
+}
+/* Bouton fermeture */
+#dealt-tva-close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* Responsive mobile */
+@media (max-width: 480px) {
+    #dealt-tva-modal {
+        width: 95%;
+        padding: 15px;
+    }
+}
+
+/* Animation fade-in */
+#dealt-tva-modal.show,
+#dealt-tva-modal-overlay.show {
+    display: block;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.dealt-check-label {
+    display: flex;
+    align-items: center;
+    margin-bottom:0;
+    margin-top:10px;
+}
+.dealt-check-label svg {
+    width: 15px;
+    height:auto;
+}
+.dealt-check-label label {
+    font-size: 13px;
+    font-weight: normal;
+    color: #000;
+    margin-left: 8px;
+    margin-bottom:0;
+}
+#cart .dealt-check-label label {
+    font: normal normal 600 17px/26px Poppins;
+    padding-right: 10px;
+    padding-left: 1px;
+}
+
+#cart .service-name strong {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* max 2 lignes */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.dealt-zipcode-wrapper button {
+    background:#4CAF50;
+}
+.dealt-zipcode-wrapper button svg{
+    width: 10px;
+}
+.dealt-check-box {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+.dealt-retry-box,
+.dealt-result-msg {
+    display: none;
+}
+
+/* Affichage dynamique par JS quand nécessaire */
+.dealt-modal.show {
+    display: block;
+}
+
+/* Style uniquement pour la checkbox de la modale TVA */
+#dealt-tva-modal .form-check-input {
+    width: 1.25em;
+    height: 1.25em;
+    border: 2px solid #7CBA49;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+#dealt-tva-modal .form-check-input:checked {
+    background-color: #7CBA49;
+    border-color: #7CBA49;
+}
+
+#dealt-tva-modal .form-check-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(124, 186, 73, 0.25);
+}
+
+#dealt-tva-modal .form-check-label {
+    font: normal normal normal 15px/23px Poppins, sans-serif;
+    color: #000;
+    cursor: pointer;
+    padding-left: 6px;
+    margin-top: 3px;
+}
+
+/* Bandeau TVA – déclinaison du vert #7cba49 */
+.dealt-tva-notice{
+    --brand: 124,186,73;                 /* #7cba49 en RGB */
+    background: rgba(var(--brand), .10); /* fond très léger */
+    border: 1px solid rgba(var(--brand), .35);
+    border-radius: 10px;
+    padding: 12px 14px 12px 16px;
+    margin-bottom: 14px;
+    line-height: 1.35;
+    font-size: .95rem;
+}
+
+/* Titre (la ligne en gras) */
+.dealt-tva-notice > strong{
+    display: block;
+    margin: 0 0 2px;
+    font-weight: 600;
+    color: #2f6d12; /* vert foncé lisible */
+}
+
+/* Sous-texte */
+.dealt-tva-notice > small{
+    display: block;             /* au cas où d-block n'est pas là */
+    font-size: .9rem;
+    color: #47643a;
+}
+
+/* Petite barre d’accent à gauche (optionnel, sans toucher au HTML) */
+#dealt-tva-notice{
+    position: relative;
+    padding-left: 18px;
+}
+#dealt-tva-notice::before{
+    content: "";
+    position: absolute;
+    left: 8px; top: 8px; bottom: 8px;
+    width: 4px;
+    background: #7cba49;
+    border-radius: 2px;
+}
+
+/* Mode sombre : augmente légèrement le contraste */
+@media (prefers-color-scheme: dark){
+    .dealt-tva-notice{
+        background: rgba(var(--brand), .16);
+        border-color: rgba(var(--brand), .45);
+    }
+    .dealt-tva-notice > small{ color: #6aa055; }
+}
+

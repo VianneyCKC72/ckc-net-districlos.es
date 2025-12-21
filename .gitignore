@@ -451,3 +451,4 @@ modules/ckc_realisation/uploads/2/
 /dump_districlos_refonte.sql.gz
 /modules/ckccustomfilterselector/config_fr.xml
 /modules/pm_advancedpack/cache/*
+!/modules/dealt/
