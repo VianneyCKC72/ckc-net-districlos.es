@@ -1521,10 +1521,10 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     {
         if (Tools::getValue('new_pack') == 1 && isset($params['product'])) {
             $params['product']->addToCategories([$this->context->shop->id_category]);
-            $sourceId = (int) Tools::getValue('source_id_product');
-            if ($sourceId > 0) {
-                $this->cloneFromSourceProductPS8($sourceId, (int)$params['product']->id);
-            }
+//            $sourceId = (int) Tools::getValue('source_id_product');
+//            if ($sourceId > 0) {
+//                $this->cloneFromSourceProductPS8($sourceId, (int)$params['product']->id);
+//            }
 
 
             if (Tools::getValue('source_id_product')) {
