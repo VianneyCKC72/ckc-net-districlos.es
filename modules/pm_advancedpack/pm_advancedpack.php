@@ -1531,7 +1531,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
         $newProduct->addToCategories([(int)$this->context->shop->id_category]);
 
         if ($sourceId > 0) {
-            $this->cloneFromSourceProductPS8($sourceId, (int)$newProduct->id);
+            //$this->cloneFromSourceProductPS8($sourceId, (int)$newProduct->id);
         }
 
         $url = $this->getContainer()->get('router')->generate('admin_products_edit', [
