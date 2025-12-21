@@ -1520,26 +1520,122 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     public function hookActionProductSave($params)
     {
         if (Tools::getValue('new_pack') == 1 && isset($params['product'])) {
-            $params['product']->addToCategories([$this->context->shop->id_category]);
-//            if (version_compare(_PS_VERSION_, '8.1.0', '>=')) {
-//                if (Tools::getValue('source_id_product')) {
-//                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_products_edit', ['productId' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
-//                } else {
-//                    $url = $this->getContainer()->get('router')->generate('admin_products_edit', ['productId' => $params['product']->id]);
-//                    $url = str_replace('products-v2/'.$params['product']->id.'/edit', 'products/'.$params['product']->id, $url);
-//                    Tools::redirectAdmin($url . '&is_real_new_pack=1');
-//                }
-//            } else {
-//                if (Tools::getValue('source_id_product')) {
-//                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
-//                } else {
-//                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1');
-//                }
-//            }
-            if (Tools::getValue('source_id_product')) {
-                Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
+
+            $newProduct = $params['product'];
+            $sourceId = (int) Tools::getValue('source_id_product');
+
+            if ($sourceId > 0) {
+                $this->cloneFromSourceProduct($sourceId, (int)$newProduct->id);
+            }
+
+            // ta redirection
+            if ($sourceId > 0) {
+                Tools::redirectAdmin(
+                    $this->getContainer()->get('router')->generate('admin_product_form', ['id' => $newProduct->id])
+                    . '&is_real_new_pack=1&source_id_product=' . $sourceId
+                );
             } else {
-                Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1');
+                Tools::redirectAdmin(
+                    $this->getContainer()->get('router')->generate('admin_product_form', ['id' => $newProduct->id])
+                    . '&is_real_new_pack=1'
+                );
+            }
+        }
+    }
+
+    private function cloneFromSourceProduct(int $sourceId, int $targetId): void
+    {
+        $idLangDefault = (int) Configuration::get('PS_LANG_DEFAULT');
+
+        $source = new Product($sourceId, false, $idLangDefault, $this->context->shop->id);
+        $target = new Product($targetId, false, $idLangDefault, $this->context->shop->id);
+
+        if (!Validate::isLoadedObject($source) || !Validate::isLoadedObject($target)) {
+            return;
+        }
+
+        foreach (Language::getLanguages(false) as $lang) {
+            $idLang = (int) $lang['id_lang'];
+
+            // au minimum le nom :
+            $target->name[$idLang] = $source->name[$idLang] ?? $source->name[$idLangDefault] ?? $target->name[$idLang];
+
+            // souvent indispensable côté BO/FO :
+            if (property_exists($target, 'link_rewrite')) {
+                $target->link_rewrite[$idLang] = $source->link_rewrite[$idLang] ?? $source->link_rewrite[$idLangDefault] ?? $target->link_rewrite[$idLang];
+            }
+            if (property_exists($target, 'meta_title')) {
+                $target->meta_title[$idLang] = $source->meta_title[$idLang] ?? $source->meta_title[$idLangDefault] ?? $target->meta_title[$idLang];
+            }
+            if (property_exists($target, 'meta_description')) {
+                $target->meta_description[$idLang] = $source->meta_description[$idLang] ?? $source->meta_description[$idLangDefault] ?? $target->meta_description[$idLang];
+            }
+        }
+        $target->save();
+
+        $sourceCategories = $source->getCategories();
+        if (!empty($sourceCategories)) {
+            $target->updateCategories($sourceCategories);
+
+            $target->id_category_default = (int) $source->id_category_default;
+            $target->save();
+        }
+
+        $this->cloneProductImages($sourceId, $targetId);
+    }
+
+    private function cloneProductImages(int $sourceId, int $targetId): void
+    {
+        $sourceImages = Image::getImages($this->context->language->id, $sourceId);
+        if (empty($sourceImages)) {
+            return;
+        }
+
+        $sourceCoverId = (int) Product::getCover($sourceId)['id_image'];
+
+        $position = 1;
+        foreach ($sourceImages as $img) {
+            $oldImage = new Image((int)$img['id_image']);
+            if (!Validate::isLoadedObject($oldImage)) {
+                continue;
+            }
+
+            $newImage = new Image();
+            $newImage->id_product = $targetId;
+            $newImage->position = $position++;
+            $newImage->cover = ((int)$img['id_image'] === $sourceCoverId) ? 1 : 0;
+
+            foreach (Language::getLanguages(false) as $lang) {
+                $idLang = (int) $lang['id_lang'];
+                $newImage->legend[$idLang] = $oldImage->legend[$idLang] ?? '';
+            }
+
+            if (!$newImage->add()) {
+                continue;
+            }
+
+            $this->copyImageFiles($oldImage, $newImage);
+        }
+
+        Image::setCover((int)Image::getCover($targetId)['id_image'], $targetId);
+    }
+
+    private function copyImageFiles(Image $oldImage, Image $newImage): void
+    {
+        $oldPath = _PS_PROD_IMG_DIR_ . $oldImage->getImgPath();
+        $newPath = _PS_PROD_IMG_DIR_ . $newImage->getImgPath();
+
+        if (file_exists($oldPath . '.jpg')) {
+            @mkdir(dirname($newPath), 0777, true);
+            copy($oldPath . '.jpg', $newPath . '.jpg');
+        }
+
+        $types = ImageType::getImagesTypes('products');
+        foreach ($types as $type) {
+            $suffix = '-' . $type['name'];
+            if (file_exists($oldPath . $suffix . '.jpg')) {
+                @mkdir(dirname($newPath), 0777, true);
+                copy($oldPath . $suffix . '.jpg', $newPath . $suffix . '.jpg');
             }
         }
     }
