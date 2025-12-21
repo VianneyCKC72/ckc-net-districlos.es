@@ -1519,25 +1519,34 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     }
     public function hookActionProductSave($params)
     {
-        if (Tools::getValue('new_pack') == 1 && isset($params['product'])) {
-
-            $newProduct = $params['product'];
-            $sourceId = (int) Tools::getValue('source_id_product');
-
-            if ($sourceId > 0) {
-                $this->cloneFromSourceProduct($sourceId, (int)$newProduct->id);
-            }
-
-            // ta redirection
-            if (Tools::getValue('source_id_product')) {
-                Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
-            } else {
-                Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1');
-            }
+        if ((int)Tools::getValue('new_pack') !== 1 || empty($params['product'])) {
+            return;
         }
+
+        /** @var Product $newProduct */
+        $newProduct = $params['product'];
+        $sourceId = (int) Tools::getValue('source_id_product');
+
+        // Catégorie shop (si tu veux la forcer en plus)
+        $newProduct->addToCategories([(int)$this->context->shop->id_category]);
+
+        if ($sourceId > 0) {
+            $this->cloneFromSourceProductPS8($sourceId, (int)$newProduct->id);
+        }
+
+        $url = $this->getContainer()->get('router')->generate('admin_products_edit', [
+            'productId' => (int)$newProduct->id,
+        ]);
+
+        $url .= '&is_real_new_pack=1';
+        if ($sourceId > 0) {
+            $url .= '&source_id_product=' . $sourceId;
+        }
+
+        Tools::redirectAdmin($url);
     }
 
-    private function cloneFromSourceProduct(int $sourceId, int $targetId): void
+    private function cloneFromSourceProductPS8(int $sourceId, int $targetId): void
     {
         $idLangDefault = (int) Configuration::get('PS_LANG_DEFAULT');
 
@@ -1548,48 +1557,46 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             return;
         }
 
+        // 1) NOM (+ SEO utile)
         foreach (Language::getLanguages(false) as $lang) {
             $idLang = (int) $lang['id_lang'];
 
-            // au minimum le nom :
             $target->name[$idLang] = $source->name[$idLang] ?? $source->name[$idLangDefault] ?? $target->name[$idLang];
 
-            // souvent indispensable côté BO/FO :
-            if (property_exists($target, 'link_rewrite')) {
-                $target->link_rewrite[$idLang] = $source->link_rewrite[$idLang] ?? $source->link_rewrite[$idLangDefault] ?? $target->link_rewrite[$idLang];
-            }
-            if (property_exists($target, 'meta_title')) {
-                $target->meta_title[$idLang] = $source->meta_title[$idLang] ?? $source->meta_title[$idLangDefault] ?? $target->meta_title[$idLang];
-            }
-            if (property_exists($target, 'meta_description')) {
-                $target->meta_description[$idLang] = $source->meta_description[$idLang] ?? $source->meta_description[$idLangDefault] ?? $target->meta_description[$idLang];
-            }
+            // recommandé pour éviter des incohérences dans le BO/FO
+            $target->link_rewrite[$idLang] = $source->link_rewrite[$idLang] ?? $source->link_rewrite[$idLangDefault] ?? $target->link_rewrite[$idLang];
+            $target->meta_title[$idLang] = $source->meta_title[$idLang] ?? $source->meta_title[$idLangDefault] ?? $target->meta_title[$idLang];
+            $target->meta_description[$idLang] = $source->meta_description[$idLang] ?? $source->meta_description[$idLangDefault] ?? $target->meta_description[$idLang];
         }
         $target->save();
 
+        // 2) CATEGORIES
         $sourceCategories = $source->getCategories();
         if (!empty($sourceCategories)) {
             $target->updateCategories($sourceCategories);
 
+            // même catégorie par défaut
             $target->id_category_default = (int) $source->id_category_default;
             $target->save();
         }
 
-        $this->cloneProductImages($sourceId, $targetId);
+        // 3) IMAGES
+        $this->cloneProductImagesPS8($sourceId, $targetId);
     }
 
-    private function cloneProductImages(int $sourceId, int $targetId): void
+    private function cloneProductImagesPS8(int $sourceId, int $targetId): void
     {
         $sourceImages = Image::getImages($this->context->language->id, $sourceId);
         if (empty($sourceImages)) {
             return;
         }
 
-        $sourceCoverId = (int) Product::getCover($sourceId)['id_image'];
+        $cover = Product::getCover($sourceId);
+        $sourceCoverId = isset($cover['id_image']) ? (int)$cover['id_image'] : 0;
 
         $position = 1;
-        foreach ($sourceImages as $img) {
-            $oldImage = new Image((int)$img['id_image']);
+        foreach ($sourceImages as $imgRow) {
+            $oldImage = new Image((int)$imgRow['id_image']);
             if (!Validate::isLoadedObject($oldImage)) {
                 continue;
             }
@@ -1597,10 +1604,10 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             $newImage = new Image();
             $newImage->id_product = $targetId;
             $newImage->position = $position++;
-            $newImage->cover = ((int)$img['id_image'] === $sourceCoverId) ? 1 : 0;
+            $newImage->cover = ((int)$imgRow['id_image'] === $sourceCoverId) ? 1 : 0;
 
             foreach (Language::getLanguages(false) as $lang) {
-                $idLang = (int) $lang['id_lang'];
+                $idLang = (int)$lang['id_lang'];
                 $newImage->legend[$idLang] = $oldImage->legend[$idLang] ?? '';
             }
 
@@ -1608,28 +1615,41 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 continue;
             }
 
-            $this->copyImageFiles($oldImage, $newImage);
+            $this->copyImageFilesPS8($oldImage, $newImage);
         }
 
-        Image::setCover((int)Image::getCover($targetId)['id_image'], $targetId);
+        // sécurité cover
+        $targetCover = Image::getCover($targetId);
+        if (!empty($targetCover['id_image'])) {
+            Image::setCover((int)$targetCover['id_image'], $targetId);
+        }
     }
 
-    private function copyImageFiles(Image $oldImage, Image $newImage): void
+    private function copyImageFilesPS8(Image $oldImage, Image $newImage): void
     {
         $oldPath = _PS_PROD_IMG_DIR_ . $oldImage->getImgPath();
         $newPath = _PS_PROD_IMG_DIR_ . $newImage->getImgPath();
 
-        if (file_exists($oldPath . '.jpg')) {
-            @mkdir(dirname($newPath), 0777, true);
-            copy($oldPath . '.jpg', $newPath . '.jpg');
+        @mkdir(dirname($newPath), 0777, true);
+
+        // extensions possibles en PS8 (selon config images/webp)
+        $exts = ['jpg', 'jpeg', 'png', 'webp'];
+
+        // original
+        foreach ($exts as $ext) {
+            if (file_exists($oldPath . '.' . $ext)) {
+                copy($oldPath . '.' . $ext, $newPath . '.' . $ext);
+            }
         }
 
+        // miniatures
         $types = ImageType::getImagesTypes('products');
         foreach ($types as $type) {
             $suffix = '-' . $type['name'];
-            if (file_exists($oldPath . $suffix . '.jpg')) {
-                @mkdir(dirname($newPath), 0777, true);
-                copy($oldPath . $suffix . '.jpg', $newPath . $suffix . '.jpg');
+            foreach ($exts as $ext) {
+                if (file_exists($oldPath . $suffix . '.' . $ext)) {
+                    copy($oldPath . $suffix . '.' . $ext, $newPath . $suffix . '.' . $ext);
+                }
             }
         }
     }
