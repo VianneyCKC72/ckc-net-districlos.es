@@ -317,7 +317,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             unset($installations[2]);
         }
         else if ($this->session->isAluminium()) {
-            // Conserver "Scellement en terre" pour la gamme Composite (438/439)
+            // Conserver "Scellement en terre" pour la gamme Composite (440/443)
             $isComposite = in_array($this->session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true)
                 || in_array($this->session->id_type, [self::COMPOSITE_PLEINES_ID], true);
             if (!$isComposite) {

@@ -12,9 +12,9 @@ interface Config
 
     const SOUPLES_ID              = 174;
     const ALUMINIUM_ID            = 308;
-    const COMPOSITE_ID            = 438;
-    const COMPOSITE_PLEINES_ID    = 439;
-    const PANNEAUX_DECO_COMPOSITE_ID = 441;
+    const COMPOSITE_ID            = 440;
+    const COMPOSITE_PLEINES_ID    = 443;
+    const PANNEAUX_DECO_COMPOSITE_ID = 442;
     const SOUDES_ID               = 179;
     const SIMPLES_ID              = 180;
     const AGRICOLES_ID            = 181;
