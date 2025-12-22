@@ -860,33 +860,14 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                 $lengthMm = $length * 1000; // Conversion m -> mm
                 
                 // Trouver l'index en utilisant le tableau de plages
-                // Index 0 = 0-3599mm, Index 1 = 3600-5399mm, Index 2 = 5400-7199mm, etc.
-                // Chaque plage fait 1800mm (sauf la première qui va de 0 à 3600)
-                $index = 0;
-                if ($lengthMm < 3600) {
-                    $index = 0; // 0-3599mm
+                // Index 0 = 0-1800mm, Index 1 = 1801-3600mm, Index 2 = 3601-5400mm, etc.
+                // Chaque plage fait 1800mm
+                if ($lengthMm <= 1800) {
+                    $index = 0; // 0-1800mm
                 } else {
-                    // Pour les autres plages : 3600-5399, 5400-7199, etc.
-                    // range[1] = 3600 → plage 3600-5399 (index 1)
-                    // range[2] = 5400 → plage 5400-7199 (index 2)
-                    // etc.
-                    $found = false;
-                    for ($i = 1; $i < count(self::COMPOSITE_LENGTH_RANGES); $i++) {
-                        $rangeStart = self::COMPOSITE_LENGTH_RANGES[$i];
-                        $rangeEnd = $rangeStart + 1800;
-                        if ($lengthMm >= $rangeStart && $lengthMm < $rangeEnd) {
-                            $index = $i;
-                            $found = true;
-                            break;
-                        }
-                    }
-                    // Si la longueur dépasse toutes les plages, utiliser le dernier index
-                    if (!$found) {
-                        $lastRangeStart = self::COMPOSITE_LENGTH_RANGES[count(self::COMPOSITE_LENGTH_RANGES) - 1];
-                        if ($lengthMm >= $lastRangeStart + 1800) {
-                            $index = count(self::COMPOSITE_LENGTH_RANGES) - 1;
-                        }
-                    }
+                    // Pour lengthMm > 1800 : calculer l'index basé sur les plages de 1800mm
+                    // 1801-3600 → index 1, 3601-5400 → index 2, etc.
+                    $index = (int) floor(($lengthMm - 1) / 1800);
                 }
                 
                 $index = max(0, min($index, count(self::COMPOSITE_DECO_PANEL_QUANTITIES) - 1));
