@@ -576,176 +576,33 @@ class Accessory extends ProductFactory
 
         $isComposite = in_array(self::$session->id_type, [self::COMPOSITE_PLEINES_ID], true);
         
-        // Cas particulier pour le produit 2231 (poteaux composite) : mapping hauteur → déclinaison
+        // Cas particulier pour le produit 2231 (poteaux composite) : mapping direct hauteur → id_product_attribute
         if ($id_product == 2231 && $isComposite && !empty(self::$session->height)) {
             $height = self::$session->height;
-            $targetHeight = null;
             
-            // Mapping des hauteurs composites vers les déclinaisons du produit 2231
+            // Mapping direct des hauteurs composites vers les IDs de déclinaisons du produit 2231
             if (in_array($height, ['0m53', '0m70'])) {
-                $targetHeight = '1m05';
+                return 11839452; // 1m05
             } elseif ($height == '0m87') {
-                $targetHeight = '1m40';
+                return 11839453; // 1m40
             } elseif (in_array($height, ['1m04', '1m21', '1m38'])) {
-                $targetHeight = '1m85';
+                return 11839454; // 1m85
             } elseif (in_array($height, ['1m55', '1m72'])) {
-                $targetHeight = '2m30';
-            }
-            
-            if ($targetHeight !== null) {
-                // Récupérer l'id_product_attribute correspondant à la hauteur cible
-                $combinations = static::getAttributesInformationsByProduct($id_product);
-                
-                // Normaliser la hauteur cible pour la comparaison
-                $targetHeightNormalized = str_replace([' ', '-'], ['', ''], strtolower($targetHeight));
-                
-                // Grouper les déclinaisons par id_product_attribute
-                $productAttributes = [];
-                foreach ($combinations as $combination) {
-                    $paId = $combination['id_product_attribute'];
-                    if (!isset($productAttributes[$paId])) {
-                        $productAttributes[$paId] = [
-                            'id_product_attribute' => $paId,
-                            'heights' => [],
-                            'colors' => []
-                        ];
-                    }
-                    
-                    $group = strtolower(str_replace([' ', ':'], ['-', ''], $combination['group']));
-                    $attribute = str_replace([' ', '-'], ['', ''], strtolower($combination['attribute']));
-                    
-                    if ($group == 'hauteur' || $group == 'hauteur-du-poteau') {
-                        $productAttributes[$paId]['heights'][] = $attribute;
-                    } elseif ($group == 'couleur') {
-                        $productAttributes[$paId]['colors'][] = $attribute;
-                    }
-                }
-                
-                // Chercher la déclinaison qui correspond à la hauteur cible et éventuellement à la couleur
-                foreach ($productAttributes as $paData) {
-                    $hasMatchingHeight = false;
-                    $hasMatchingColor = true;
-                    
-                    // Vérifier la hauteur
-                    foreach ($paData['heights'] as $heightAttr) {
-                        if ($heightAttr == $targetHeightNormalized) {
-                            $hasMatchingHeight = true;
-                            break;
-                        }
-                    }
-                    
-                    // Si la hauteur correspond, vérifier la couleur
-                    if ($hasMatchingHeight) {
-                        if (!empty(self::$session->color)) {
-                            $sessionColorNormalized = str_replace([' ', '-'], ['', ''], strtolower(self::$session->color));
-                            $hasMatchingColor = false;
-                            foreach ($paData['colors'] as $colorAttr) {
-                                if ($colorAttr == $sessionColorNormalized) {
-                                    $hasMatchingColor = true;
-                                    break;
-                                }
-                            }
-                        }
-                        
-                        // Si la couleur correspond (ou si aucune couleur n'est requise), retourner cette déclinaison
-                        if ($hasMatchingColor) {
-                            return $paData['id_product_attribute'];
-                        }
-                    }
-                }
+                return 11839455; // 2m30
             }
         }
         
-        // Cas particulier pour le produit 2225 (profil-finition composite) : mapping hauteur → déclinaison
+        // Cas particulier pour le produit 2225 (profil-finition composite) : mapping direct hauteur → id_product_attribute
         if ($id_product == 2225 && $isComposite && !empty(self::$session->height)) {
             $height = self::$session->height;
-            $targetHeight = null;
             
-            // Mapping des hauteurs composites vers les déclinaisons du produit 2225
+            // Mapping direct des hauteurs composites vers les IDs de déclinaisons du produit 2225
             if (in_array($height, ['0m53', '0m70'])) {
-                $targetHeight = '1m05';
+                return 11840868; // 1m05
             } elseif ($height == '0m87') {
-                $targetHeight = '1m40';
+                return 11840869; // 1m40
             } elseif (in_array($height, ['1m04', '1m21', '1m38', '1m55', '1m72'])) {
-                // Pour ces hauteurs, on essaie d'abord 1m85, puis 2m30 si 1m85 n'existe pas
-                $targetHeights = ['1m85', '2m30'];
-            } else {
-                $targetHeights = [];
-            }
-            
-            if (isset($targetHeight) || (isset($targetHeights) && !empty($targetHeights))) {
-                // Récupérer l'id_product_attribute correspondant à la hauteur cible
-                $combinations = static::getAttributesInformationsByProduct($id_product);
-                
-                // Si une seule hauteur cible, utiliser cette hauteur
-                if (isset($targetHeight)) {
-                    $targetHeightsToCheck = [$targetHeight];
-                } else {
-                    $targetHeightsToCheck = $targetHeights;
-                }
-                
-                // Normaliser les hauteurs cibles pour la comparaison
-                $targetHeightsNormalized = [];
-                foreach ($targetHeightsToCheck as $th) {
-                    $targetHeightsNormalized[] = str_replace([' ', '-'], ['', ''], strtolower($th));
-                }
-                
-                // Grouper les déclinaisons par id_product_attribute
-                $productAttributes = [];
-                foreach ($combinations as $combination) {
-                    $paId = $combination['id_product_attribute'];
-                    if (!isset($productAttributes[$paId])) {
-                        $productAttributes[$paId] = [
-                            'id_product_attribute' => $paId,
-                            'heights' => [],
-                            'colors' => []
-                        ];
-                    }
-                    
-                    $group = strtolower(str_replace([' ', ':'], ['-', ''], $combination['group']));
-                    $attribute = str_replace([' ', '-'], ['', ''], strtolower($combination['attribute']));
-                    
-                    if ($group == 'hauteur' || $group == 'hauteur-du-poteau') {
-                        $productAttributes[$paId]['heights'][] = $attribute;
-                    } elseif ($group == 'couleur') {
-                        $productAttributes[$paId]['colors'][] = $attribute;
-                    }
-                }
-                
-                // Chercher la déclinaison qui correspond à l'une des hauteurs cibles et éventuellement à la couleur
-                foreach ($targetHeightsNormalized as $targetHeightNormalized) {
-                    foreach ($productAttributes as $paData) {
-                        $hasMatchingHeight = false;
-                        $hasMatchingColor = true;
-                        
-                        // Vérifier la hauteur
-                        foreach ($paData['heights'] as $heightAttr) {
-                            if ($heightAttr == $targetHeightNormalized) {
-                                $hasMatchingHeight = true;
-                                break;
-                            }
-                        }
-                        
-                        // Si la hauteur correspond, vérifier la couleur
-                        if ($hasMatchingHeight) {
-                            if (!empty(self::$session->color)) {
-                                $sessionColorNormalized = str_replace([' ', '-'], ['', ''], strtolower(self::$session->color));
-                                $hasMatchingColor = false;
-                                foreach ($paData['colors'] as $colorAttr) {
-                                    if ($colorAttr == $sessionColorNormalized) {
-                                        $hasMatchingColor = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            
-                            // Si la couleur correspond (ou si aucune couleur n'est requise), retourner cette déclinaison
-                            if ($hasMatchingColor) {
-                                return $paData['id_product_attribute'];
-                            }
-                        }
-                    }
-                }
+                return 11845843; // 1m85/2m30
             }
         }
         
