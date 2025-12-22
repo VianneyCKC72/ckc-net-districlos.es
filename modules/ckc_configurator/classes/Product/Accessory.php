@@ -228,11 +228,14 @@ class Accessory extends ProductFactory
 
         // Platines
         if (self::$session->installation == 'scellement-sur-platine') {
-            // Exclure le composite car il utilise déjà "equerre-fixation" qui est dans les accessoires de base
             $isComposite = self::$session->id_type === self::COMPOSITE_PLEINES_ID 
                 || in_array(self::$session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true);
             
-            if (!$isComposite) {
+            if ($isComposite) {
+                // Pour le composite, ajouter les produits spécifiques pour la pose sur platine
+                $accessories[] = 'platine-2232';
+                $accessories[] = 'platine-2233';
+            } else {
                 // Pour aluminium lames persiennées, exclure les platines pour les hauteurs 0m403 et 0m766
                 $shouldAddPlatines = true;
                 if (self::$session->isAluminium() && in_array(self::$session->id_type, [self::LAMES_AJOUREES_ID], true)) {
@@ -249,6 +252,17 @@ class Accessory extends ProductFactory
                     }
                     $accessories = array_merge($accessories, $platines);
                 }
+            }
+        }
+
+        // Muret (scellement sur muret) pour composite
+        if (self::$session->installation == 'scellement-sur-muret') {
+            $isComposite = self::$session->id_type === self::COMPOSITE_PLEINES_ID 
+                || in_array(self::$session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true);
+            
+            if ($isComposite) {
+                // Pour le composite, ajouter le produit spécifique pour la pose sur muret
+                $accessories[] = 'muret-2234';
             }
         }
 
@@ -412,6 +426,15 @@ class Accessory extends ProductFactory
                     $nb_panneaux = $quantitiesTable[self::$session->height][$index];
                     $nb_poteaux = max(0, (int)ceil($nb_panneaux) + 1 - (int)$depart_du_mur);
                     return $nb_poteaux * 2;
+                case 'platine-2232':
+                case 'platine-2233':
+                case 'muret-2234':
+                    // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES[$accessory][self::$session->height])) {
+                        return (int) self::COMPOSITE_ACCESSORIES_QUANTITIES[$accessory][self::$session->height][$index];
+                    }
+                    // Fallback : quantité par défaut
+                    return 1;
                 default:
                     return 1;
             }
