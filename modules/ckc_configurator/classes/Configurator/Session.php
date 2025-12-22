@@ -244,8 +244,103 @@ class Session extends \ObjectModel implements Config
             }
 
             $name = \Product::getProductName($entry['id_product'], $entry['id_product_attribute'], $language_id);
+            
             if (!$name) {
                 $name = (new \Product($entry['id_product']))->name[$language_id];
+            }
+            
+            // Si id_product_attribute est 0, essayer de trouver les attributs depuis les déclinaisons du produit
+            $attributes = null;
+            if (!$entry['id_product_attribute']) {
+                $product = new \Product($entry['id_product'], false, $language_id);
+                $combinations = $product->getAttributesResume($language_id);
+                
+                if (!empty($combinations)) {
+                    $selectedCombination = null;
+                    $sessionColor = !empty($session->color) ? strtolower($session->color) : null;
+                    $sessionHeight = !empty($session->height) ? strtolower($session->height) : null;
+                    
+                    // Chercher la déclinaison qui correspond à la couleur et hauteur de la session
+                    foreach ($combinations as $combination) {
+                        if (empty($combination['id_product_attribute'])) {
+                            continue;
+                        }
+                        
+                        $comboAttributes = \Product::getAttributesParams($entry['id_product'], $combination['id_product_attribute']);
+                        $matchesColor = false;
+                        $matchesHeight = false;
+                        
+                        foreach ($comboAttributes as $attr) {
+                            $attrName = strtolower($attr['name']);
+                            $attrGroup = strtolower($attr['group']);
+                            
+                            // Vérifier la couleur
+                            if ($sessionColor && $attrGroup == 'couleur') {
+                                if ($attrName == $sessionColor || strpos($attrName, $sessionColor) !== false || strpos($sessionColor, $attrName) !== false) {
+                                    $matchesColor = true;
+                                }
+                            }
+                            
+                            // Vérifier la hauteur
+                            if ($sessionHeight && ($attrGroup == 'hauteur' || $attrGroup == 'hauteur-du-poteau')) {
+                                $attrHeight = str_replace('m', '.', strtolower($attrName));
+                                $sessionHeightFloat = str_replace('m', '.', $sessionHeight);
+                                if ($attrHeight == $sessionHeightFloat || strpos($attrHeight, $sessionHeightFloat) !== false) {
+                                    $matchesHeight = true;
+                                }
+                            }
+                        }
+                        
+                        // Si on a une correspondance pour couleur ET hauteur (ou au moins couleur si pas de hauteur dans les attributs)
+                        if ($matchesColor && ($matchesHeight || !$sessionHeight)) {
+                            $selectedCombination = $combination;
+                            break;
+                        }
+                    }
+                    
+                    // Si pas de correspondance exacte, prendre la première déclinaison qui correspond à la couleur
+                    if (!$selectedCombination && $sessionColor) {
+                        foreach ($combinations as $combination) {
+                            if (empty($combination['id_product_attribute'])) {
+                                continue;
+                            }
+                            $comboAttributes = \Product::getAttributesParams($entry['id_product'], $combination['id_product_attribute']);
+                            foreach ($comboAttributes as $attr) {
+                                $attrName = strtolower($attr['name']);
+                                $attrGroup = strtolower($attr['group']);
+                                if ($attrGroup == 'couleur' && ($attrName == $sessionColor || strpos($attrName, $sessionColor) !== false || strpos($sessionColor, $attrName) !== false)) {
+                                    $selectedCombination = $combination;
+                                    break 2;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Si toujours rien, prendre la première déclinaison
+                    if (!$selectedCombination) {
+                        $selectedCombination = reset($combinations);
+                    }
+                    
+                    if (!empty($selectedCombination['id_product_attribute'])) {
+                        $attributes = \Product::getAttributesParams($entry['id_product'], $selectedCombination['id_product_attribute']);
+                        
+                        // Construire le nom avec les attributs
+                        if (!empty($attributes)) {
+                            $attributeParts = [];
+                            foreach ($attributes as $attr) {
+                                if (!empty($attr['group']) && !empty($attr['name'])) {
+                                    $attributeParts[] = $attr['group'] . ' - ' . $attr['name'];
+                                }
+                            }
+                            if (!empty($attributeParts)) {
+                                $baseName = (new \Product($entry['id_product']))->name[$language_id];
+                                $name = $baseName . ' : ' . implode(', ', $attributeParts);
+                            }
+                        }
+                    }
+                }
+            } else {
+                $attributes = \Product::getAttributesParams($entry['id_product'], $entry['id_product_attribute']);
             }
 
             $price = Helper::getPrice($entry['id_product'], $entry['id_product_attribute'], $entry['quantity']);

@@ -51,6 +51,12 @@ class Accessory extends ProductFactory
             $isComposite = in_array($session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true)
                 || $session->id_type === self::COMPOSITE_PLEINES_ID;
             $categoryKey = $isComposite ? self::COMPOSITE_ID : $session->id_category;
+            
+            // Vérifier que l'accessoire existe dans ACCESSORIES_ID pour éviter les erreurs
+            if (!isset(self::ACCESSORIES_ID[$categoryKey][$accessory_index])) {
+                continue;
+            }
+            
             $id_accessory = self::ACCESSORIES_ID[$categoryKey][$accessory_index];
 
             // On récupère l'accessoire grâce à l'id de la catégorie (ou directement l'id produit pour le composite)
@@ -222,21 +228,27 @@ class Accessory extends ProductFactory
 
         // Platines
         if (self::$session->installation == 'scellement-sur-platine') {
-            // Pour aluminium lames persiennées, exclure les platines pour les hauteurs 0m403 et 0m766
-            $shouldAddPlatines = true;
-            if (self::$session->isAluminium() && in_array(self::$session->id_type, [self::LAMES_AJOUREES_ID], true)) {
-                $heightFloat = (float)str_replace('m', '.', self::$session->height);
-                if ($heightFloat == 0.403 || $heightFloat == 0.766) {
-                    $shouldAddPlatines = false;
-                }
-            }
+            // Exclure le composite car il utilise déjà "equerre-fixation" qui est dans les accessoires de base
+            $isComposite = self::$session->id_type === self::COMPOSITE_PLEINES_ID 
+                || in_array(self::$session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true);
             
-            if ($shouldAddPlatines) {
-                if (self::$session->isRigide()) {
-                    unset($platines[1]);
-                    $platines[] = 'caches_goujons';
+            if (!$isComposite) {
+                // Pour aluminium lames persiennées, exclure les platines pour les hauteurs 0m403 et 0m766
+                $shouldAddPlatines = true;
+                if (self::$session->isAluminium() && in_array(self::$session->id_type, [self::LAMES_AJOUREES_ID], true)) {
+                    $heightFloat = (float)str_replace('m', '.', self::$session->height);
+                    if ($heightFloat == 0.403 || $heightFloat == 0.766) {
+                        $shouldAddPlatines = false;
+                    }
                 }
-                $accessories = array_merge($accessories, $platines);
+                
+                if ($shouldAddPlatines) {
+                    if (self::$session->isRigide()) {
+                        unset($platines[1]);
+                        $platines[] = 'caches_goujons';
+                    }
+                    $accessories = array_merge($accessories, $platines);
+                }
             }
         }
 
@@ -321,8 +333,11 @@ class Accessory extends ProductFactory
         elseif ($panneau_times > 0 && self::$session->id_type === self::COMPOSITE_PLEINES_ID) {
             // Logique spécifique pour le composite
             $lengthMm = $length * 1000;
+            // Utilise COMPOSITE_PANEL_QUANTITIES_WITH_DECO si un panneau déco est sélectionné, sinon COMPOSITE_PANEL_QUANTITIES
+            $hasPanneauDeco = self::$session->panneau_deco();
+            $quantitiesTable = $hasPanneauDeco ? self::COMPOSITE_PANEL_QUANTITIES_WITH_DECO : self::COMPOSITE_PANEL_QUANTITIES;
             $index = (int) ceil($lengthMm / 1800) - 1;
-            $index = max(0, min($index, count(self::COMPOSITE_PANEL_QUANTITIES[self::$session->height]) - 1));
+            $index = max(0, min($index, count($quantitiesTable[self::$session->height]) - 1));
             
             switch ($accessory) {
                 case 'poteaux':
@@ -332,7 +347,7 @@ class Accessory extends ProductFactory
                         return max(0, (int)$qty - (int)$depart_du_mur);
                     }
                     // Fallback : calcul basique
-                    $nb_panneaux = self::COMPOSITE_PANEL_QUANTITIES[self::$session->height][$index];
+                    $nb_panneaux = $quantitiesTable[self::$session->height][$index];
                     return max(0, (int)ceil($nb_panneaux) + 1 - (int)$depart_du_mur);
                 case 'profil-finition':
                     // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
@@ -340,7 +355,7 @@ class Accessory extends ProductFactory
                         return (int) self::COMPOSITE_ACCESSORIES_QUANTITIES['profil-finition'][self::$session->height][$index];
                     }
                     // Fallback : calcul basique
-                    $nb_panneaux = self::COMPOSITE_PANEL_QUANTITIES[self::$session->height][$index];
+                    $nb_panneaux = $quantitiesTable[self::$session->height][$index];
                     return (int)$nb_panneaux;
                 case 'u-finition':
                     // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
@@ -348,7 +363,7 @@ class Accessory extends ProductFactory
                         return (int) self::COMPOSITE_ACCESSORIES_QUANTITIES['u-finition'][self::$session->height][$index];
                     }
                     // Fallback : calcul basique
-                    $nb_panneaux = self::COMPOSITE_PANEL_QUANTITIES[self::$session->height][$index];
+                    $nb_panneaux = $quantitiesTable[self::$session->height][$index];
                     return (int)$nb_panneaux;
                 case 'capuchon-poteau':
                     // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
@@ -361,7 +376,7 @@ class Accessory extends ProductFactory
                         $nb_poteaux = self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height][$index];
                         return max(0, (int)$nb_poteaux - (int)$depart_du_mur);
                     }
-                    $nb_panneaux = self::COMPOSITE_PANEL_QUANTITIES[self::$session->height][$index];
+                    $nb_panneaux = $quantitiesTable[self::$session->height][$index];
                     return max(0, (int)ceil($nb_panneaux) + 1 - (int)$depart_du_mur);
                 case 'equerre-fixation':
                     // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
@@ -373,7 +388,7 @@ class Accessory extends ProductFactory
                         $nb_poteaux = self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height][$index];
                         return max(0, (int)$nb_poteaux - (int)$depart_du_mur) * 2;
                     }
-                    $nb_panneaux = self::COMPOSITE_PANEL_QUANTITIES[self::$session->height][$index];
+                    $nb_panneaux = $quantitiesTable[self::$session->height][$index];
                     $nb_poteaux = max(0, (int)ceil($nb_panneaux) + 1 - (int)$depart_du_mur);
                     return $nb_poteaux * 2;
                 default:
@@ -515,22 +530,46 @@ class Accessory extends ProductFactory
                 return 11768854;
         }
 
-        if (self::$session->isAluminium()) {
+        $isComposite = in_array(self::$session->id_type, [self::COMPOSITE_PLEINES_ID], true);
+        
+        if (self::$session->isAluminium() && !$isComposite) {
+            // Pour l'aluminium (sauf composite), vérifier si id_product_attribute est défini
             if (!isset(self::$session->id_product_attribut) || !self::$session->id_product_attribut) {
                 return null;
             }
         }
+        
+        // Pour les produits composite, on continue même si id_product_attribute n'est pas défini
+        // car les accessoires composite peuvent avoir leurs propres attributs
 
-        $sql = new \DbQuery();
-        $sql->select('name');
-        $sql->from('product_attribute_combination', 'pac');
-        $sql->leftJoin('attribute_lang', 'al', 'pac.id_attribute = al.id_attribute');
-        $sql->where('id_product_attribute = ' . self::$session->id_product_attribute . ' AND id_lang = ' . $language_id);
-        $names = \Db::getInstance()->executeS($sql);
+        $names = [];
+        $height = null;
+        
+        // Pour les produits composite, on récupère les attributs depuis la session directement
+        if ($isComposite) {
+            // Pour le composite, on utilise les valeurs de la session directement
+            if (!empty(self::$session->color)) {
+                $names[] = ['name' => self::$session->color];
+            }
+            if (!empty(self::$session->height)) {
+                $heightString = str_replace('m', '.', self::$session->height);
+                $height = floatval($heightString);
+            }
+        } else {
+            // Pour l'aluminium, on récupère depuis id_product_attribute de la session
+            if (!empty(self::$session->id_product_attribute)) {
+                $sql = new \DbQuery();
+                $sql->select('name');
+                $sql->from('product_attribute_combination', 'pac');
+                $sql->leftJoin('attribute_lang', 'al', 'pac.id_attribute = al.id_attribute');
+                $sql->where('id_product_attribute = ' . self::$session->id_product_attribute . ' AND id_lang = ' . $language_id);
+                $names = \Db::getInstance()->executeS($sql);
 
-        foreach ($names as $name) {
-            if (strpos($name['name'], 'Ht ') !== false || strpos($name['name'], '0m') !== false || strpos($name['name'], '1m') !== false || strpos($name['name'], '2m') !== false) {
-                $height = floatval(str_replace(['Ht ', 'm'], ['', '.'], $name['name']));
+                foreach ($names as $name) {
+                    if (strpos($name['name'], 'Ht ') !== false || strpos($name['name'], '0m') !== false || strpos($name['name'], '1m') !== false || strpos($name['name'], '2m') !== false) {
+                        $height = floatval(str_replace(['Ht ', 'm'], ['', '.'], $name['name']));
+                    }
+                }
             }
         }
 
@@ -564,23 +603,39 @@ class Accessory extends ProductFactory
         }
 
         $id_product_attribute = null;
-        foreach ($colors as $id_product_attribute => $color) {
-            $color = explode('-', strtolower(str_replace(' ', '-', $color)));
-            $count = count($color);
-            $color = end($color);
-
-            if ($count > 1) {
-                foreach ($names as $name) {
-                    $recherche_couleur = strpos($name['name'], $color);
-                    if ($recherche_couleur !== false) {
-                        return $id_product_attribute;
-                    }
+        
+        // Pour les produits composite, on cherche directement la couleur depuis la session
+        if ($isComposite && !empty(self::$session->color)) {
+            $sessionColor = strtolower(self::$session->color);
+            
+            foreach ($colors as $id_attr => $color) {
+                $colorLower = strtolower(str_replace(' ', '-', $color));
+                
+                // Vérifier si la couleur correspond (exact match ou contient la valeur)
+                if ($colorLower == $sessionColor || strpos($colorLower, $sessionColor) !== false || strpos($sessionColor, $colorLower) !== false) {
+                    return $id_attr;
                 }
             }
-            else {
-                foreach ($names as $name) {
-                    if (strpos(strtolower($name['name']), $color) !== false) {
-                        return $id_product_attribute;
+        } else {
+            // Logique originale pour l'aluminium
+            foreach ($colors as $id_product_attribute => $color) {
+                $color = explode('-', strtolower(str_replace(' ', '-', $color)));
+                $count = count($color);
+                $color = end($color);
+
+                if ($count > 1) {
+                    foreach ($names as $name) {
+                        $recherche_couleur = strpos($name['name'], $color);
+                        if ($recherche_couleur !== false) {
+                            return $id_product_attribute;
+                        }
+                    }
+                }
+                else {
+                    foreach ($names as $name) {
+                        if (strpos(strtolower($name['name']), $color) !== false) {
+                            return $id_product_attribute;
+                        }
                     }
                 }
             }

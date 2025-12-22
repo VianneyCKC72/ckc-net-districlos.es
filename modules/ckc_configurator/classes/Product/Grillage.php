@@ -50,11 +50,13 @@ class Grillage extends ProductFactory
 
             // Calcul spécifique pour le composite
             if ($session->id_type === self::COMPOSITE_PLEINES_ID) {
-                // Composite : utilise le tableau COMPOSITE_PANEL_QUANTITIES
+                // Composite : utilise le tableau COMPOSITE_PANEL_QUANTITIES ou COMPOSITE_PANEL_QUANTITIES_WITH_DECO selon si un panneau déco est sélectionné
                 $lengthMm = $length * 1000; // Conversion m -> mm
+                $hasPanneauDeco = $session->panneau_deco();
+                $quantitiesTable = $hasPanneauDeco ? self::COMPOSITE_PANEL_QUANTITIES_WITH_DECO : self::COMPOSITE_PANEL_QUANTITIES;
                 $index = (int) ceil($lengthMm / 1800) - 1; // Index dans le tableau (0-based)
-                $index = max(0, min($index, count(self::COMPOSITE_PANEL_QUANTITIES[$session->height]) - 1));
-                $quantity_factor = self::COMPOSITE_PANEL_QUANTITIES[$session->height][$index];
+                $index = max(0, min($index, count($quantitiesTable[$session->height]) - 1));
+                $quantity_factor = $quantitiesTable[$session->height][$index];
             } else {
                 // Mapping des hauteurs alu vers les quantitatifs
                 $legacyHeight = (string)$height;
@@ -77,7 +79,8 @@ class Grillage extends ProductFactory
 
                 $quantity_factor *= $coefficient;
             }
-            if($session->panneau_deco()) {
+            // Pour le composite, la soustraction du panneau déco est gérée dans COMPOSITE_PANEL_QUANTITIES_WITH_DECO
+            if($session->panneau_deco() && $session->id_type !== self::COMPOSITE_PLEINES_ID) {
                 $quantity_factor -= 1 * $coefficient;
             }
             $quantity = 1;
