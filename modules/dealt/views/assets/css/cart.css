@@ -1,0 +1,693 @@
+.dealt-cart-services {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.dealt-cart-service-box,
+.dealt-tva-box {
+    border: 3px solid #7CBA49;
+    border-radius: 11px;
+    opacity: 1;
+    padding: 15px 50px;
+}
+
+.dealt-cart-service-box h3,
+.dealt-tva-box h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    color: #333;
+    font-weight: 600;
+}
+
+.dealt-cart-service-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+/* Overlay de fond */
+#dealt-tva-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    display: none; /* masqué par défaut */
+}
+
+/* Contenu de la modale */
+#dealt-tva-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 25px 30px;
+    border-radius: 10px;
+    max-width: 600px;
+    width: 90%;
+    z-index: 9999;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    display: none; /* masqué par défaut */
+    animation: dealtFadeIn 0.3s ease-out;
+}
+
+/* Animation d'apparition */
+@keyframes dealtFadeIn {
+    from { opacity: 0; transform: translate(-50%, -45%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* Bouton fermer */
+#dealt-tva-close {
+    position: absolute;
+    right: 15px;
+    top: 12px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+#dealt-tva-close:hover {
+    color: #000;
+}
+
+/* Titre */
+#dealt-tva-modal h2 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+/* Texte conditions */
+#dealt-tva-modal p {
+    margin: 15px 0;
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.4;
+}
+
+/* Formulaire */
+#dealt-tva-form label {
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+    color: #333;
+    gap: 10px;
+}
+
+#dealt-tva-form input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+#dealt-tva-form button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #007bff; /* couleur bootstrap primary */
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+#dealt-tva-form button:hover {
+    background: #0056b3;
+}
+
+.dealt-cart-service-card p {
+    margin: 0;
+}
+
+.dealt-cart-service-card .price {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #009688;
+}
+
+.dealt-cart-service-card .btn {
+    background-color: #009688;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    width: fit-content;
+    transition: background 0.3s ease;
+}
+
+.dealt-cart-service-card .btn:hover {
+    background-color: #00796B;
+}
+
+.dealt-tva-box label {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+#dealt-tva-checkbox {
+    transform: scale(1.2);
+    margin-right: 0.5rem;
+}
+.dealt-cart-service-box {
+    border: 2px solid #e0e0e0;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.dealt-cart-service-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+}
+
+.dealt-cart-service-body ul {
+    padding-left: 1.2rem;
+    list-style: disc;
+}
+
+.dealt-cart-service-footer {
+    margin-top: 1rem;
+}
+.dealt-cart-tva-box {
+    border: 2px solid #cce5ff;
+    background-color: #e9f5ff;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border-radius: 8px;
+}
+
+.dealt-cart-tva h3 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.dealt-cart-tva-box ul {
+    list-style: disc;
+    padding-left: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.tva-attestation-block {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 10px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 25px;
+    margin-right: 10px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0;
+    right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 25px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #4CAF50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+/* Modal */
+.tva-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.tva-modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+}
+
+.tva-close-modal {
+    position: absolute;
+    top: 15px; right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+#dealt-tva-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+}
+
+#dealt-tva-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 2rem;
+    z-index: 9999;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+
+
+.dealt-cart-service-box,
+.dealt-tva-box {
+    border: 2px solid #7CBA49;
+    border-radius: 10px;
+    padding: 20px;
+    background: #fff;
+}
+
+.dealt-cart-service-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.dealt-cart-service-icon img {
+    width: 50px;
+    height: auto;
+}
+
+.dealt-cart-service-info {
+    flex: 1;
+}
+
+.dealt-cart-service-info h3 {
+    margin: 0 0 5px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.service-name {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.service-link {
+    text-align: left;
+    text-decoration: underline;
+    font: normal normal normal 15px/23px Poppins;
+    letter-spacing: 0;
+    color: #000000;
+    opacity: 1;
+}
+
+.dealt-cart-service-action {
+    text-align: right;
+}
+
+.dealt-tva-box {
+    margin-bottom:50px;
+}
+
+.service-price {
+    text-align: left;
+    font: normal normal bold 20px/30px Poppins;
+    letter-spacing: 0;
+    color: #000000;
+    opacity: 1;
+}
+
+.btn-add {
+    border: none;
+    background: #7CBA49 0% 0% no-repeat padding-box;
+    border-radius: 24px;
+    padding: 10px 20px;
+    font: normal normal normal 15px/23px Poppins;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+.btn-add:hover {
+    background: #6aa83d;
+}
+
+.added {
+    font-size: 0.95rem;
+    color: #4CAF50;
+}
+
+/* Overlay de fond */
+#dealt-tva-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9998;
+    display: none;
+}
+
+/* Fenêtre modal */
+#dealt-tva-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px 25px;
+    border-radius: 8px;
+    max-width: 600px;
+    width: 90%;
+    z-index: 9999;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    display: none;
+}
+
+/* Bouton fermeture */
+#dealt-tva-close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* Responsive mobile */
+@media (max-width: 480px) {
+    #dealt-tva-modal {
+        width: 95%;
+        padding: 15px;
+    }
+}
+
+/* Animation fade-in */
+#dealt-tva-modal.show,
+#dealt-tva-modal-overlay.show {
+    display: block;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.dealt-offer-box {
+    border: 3px solid #7CBA49;
+    border-radius: 11px;
+    padding: 10px;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    color: #333;
+    background: white;
+}
+
+.dealt-offer-icon i {
+    font-size: 32px;
+    color: #7CBA49;
+    margin-right: 15px;
+}
+
+.dealt-offer-content {
+    flex-grow: 1;
+}
+
+.dealt-nom-produit {
+    font-size: 17px;
+}
+
+.dealt-offer-title {
+    font-weight: bold;
+    font-size: 17px;
+    margin-bottom: 5px;
+}
+
+.dealt-conditions-link {
+    text-align: right;
+    font-size: 10px;
+    color: #000;
+    text-decoration: underline;
+}
+
+#dealt-try-again {
+    font-size: 10px;
+    color: #000;
+    text-decoration: underline;
+    font-weight: bold;
+}
+.dealt-check {
+    font-size: 14px;
+}
+
+.dealt-zipcode-check {
+    display: flex;
+}
+
+#dealt-check-availability-box {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#dealt-check-availability-box label {
+    margin-bottom: 0;
+    text-align: left;
+    font: normal normal normal 13px/20px Poppins;
+    letter-spacing: 0;
+    color: #000000;
+}
+
+#dealt-check-availability-box #dealt-zipcode-check-btn svg {
+    margin-right: 5px;
+    height: 28px;
+    width: 27px;
+}
+
+#dealt-check-availability-box svg {
+    margin-right: 5px;
+    height: 28px;
+    width: 27px;
+}
+
+.dealt-offer-price {
+    color: #000;
+    font-weight: 600;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#dealt-zipcode-input {
+    border: none;
+    background: transparent;
+    padding: 8px 40px 8px 15px;
+    font-size: 13px;
+    border-radius: 20px;
+}
+
+.dealt-zipcode-wrapper {
+    position: relative;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    background: #F6F2EB;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+#dealt-zipcode-check-btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #7CBA49;
+    border: none;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 20px 20px 0;
+    cursor: pointer;
+    height: 100%;
+}
+
+#dealt-zipcode-result {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.dealt-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.dealt-modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 30px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 640px;
+    position: relative;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+.dealt-close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.dealt-conditions-list {
+    text-align: left;
+    margin: 20px 0;
+    padding-left: 20px;
+}
+
+#dealt-service-modal .dealt-modal-content {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 7px #00000029;
+    border: 3px solid #7CBA49;
+    border-radius: 23px;
+}
+
+#dealt-service-modal .h4 {
+    text-align: center;
+    font: normal normal bold 20px/38px Poppins;
+}
+
+#dealt-service-modal .h2 {
+    text-align: center;
+    font: normal normal bold 25px/38px Poppins;
+}
+
+/* Liste à puces */
+#dealt-service-modal ul {
+    padding-left: 20px;
+    margin-bottom: 20px;
+    font: normal normal normal 15px/23px Poppins;
+}
+
+#dealt-service-modal ul li {
+    list-style-type: disc;
+    margin-bottom: 8px;
+    color: #333;
+    font: normal normal normal 15px/23px Poppins;
+}
+
+.dealt-btn-primary {
+    background: #7CBA49 0% 0% no-repeat padding-box;
+    border-radius: 24px;
+    opacity: 1;
+    text-align: center;
+    font: normal normal normal 15px/23px Poppins;
+    letter-spacing: 0;
+    color: #FFFFFF;
+    padding: 12px 20px;
+}
+
+.dealt-close:hover {
+    color: #000;
+}
+
+.dealt-retry-box {
+    margin-top: 10px;
+    padding: 5px;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+.dealt-retry-box p {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.dealt-retry-box .btn {
+    background-color: #7cba49;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 24px;
+    font: normal normal normal 15px/23px Poppins;
+    letter-spacing: 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
