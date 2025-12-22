@@ -527,10 +527,8 @@ class Session extends \ObjectModel implements Config
             $this->id_type      = isset($this->id_type)
                 ? $this->id_type
                 : ($isComposite ? self::COMPOSITE_PLEINES_ID : self::LAMES_PLEINES_ID);
-            // Ne pas définir de longueur par défaut pour le composite
-            if (!$isComposite) {
-                $this->length = 2.09;
-            }
+            // Longueur par défaut : 1.8 pour composite, 2.09 pour aluminium
+            $this->length = $isComposite ? 1.8 : 2.09;
             $this->installation = "scellement-sur-muret";
             $this->color        = "gris-7016";
             $this->is_aluminium = 1;

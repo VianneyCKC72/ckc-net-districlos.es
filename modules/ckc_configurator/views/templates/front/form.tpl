@@ -49,7 +49,7 @@
             <div class="longueur-container input-group-configurator-text">
                 <input type="text" id="longueur" class="form-control"
                        name="longueur" {if isset($session->length)} value="{$session->length}" {/if}
-                       placeholder="Ex: 1.00, 1.25. Minimum : 2.50"/>
+                       placeholder="Ex: 1.8, 2.0, 2.5"/>
             </div>
 
             <div class="form-title">Type de pose</div>

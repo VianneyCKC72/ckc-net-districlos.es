@@ -31,9 +31,10 @@ class Grillage extends ProductFactory
                 $isComposite = $session->id_type === self::COMPOSITE_PLEINES_ID 
                     || in_array($session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true);
                 
-                // Ne pas définir de longueur par défaut pour le composite
+                // Longueur par défaut : 1.8 pour composite, 2.09 pour aluminium
+                $session->length = $isComposite ? 1.8 : 2.09;
+                
                 if (!$isComposite) {
-                    $session->length       = 2.09;
                     $session->installation = "scellement-sur-muret";
                     $isPleines = in_array($session->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true);
                     if ($isPleines) {
@@ -118,13 +119,34 @@ class Grillage extends ProductFactory
 
         $quantity = $quantity * $quantity_factor;
 
+        // Pour le composite, définir l'id_product_attribute selon la couleur
+        if ($session->id_type === self::COMPOSITE_PLEINES_ID) {
+            if (!empty($session->color)) {
+                if ($session->color === 'ton-bois') {
+                    $session->id_product_attribute = 11840408;
+                    $id_product_attribute = 11840408;
+                } else {
+                    // Par défaut : gris-7016
+                    $session->id_product_attribute = 11840407;
+                    $id_product_attribute = 11840407;
+                }
+            }
+        }
+
         // Get name of grillage with its id_product_attribute or with no specific combination
         if ($id_product == 1324) {
             $session->id_product_attribute = 11780062;
+            $id_product_attribute = 11780062;
         }else if ($id_product == 1323) {
             $session->id_product_attribute = 11780060;
+            $id_product_attribute = 11780060;
         }
-        $name = \Product::getProductName($id_product, $session->id_product_attribute, $language_id);
+        // Utiliser id_product_attribute de la session si elle n'a pas été définie précédemment
+        if ($id_product_attribute === null && !empty($session->id_product_attribute)) {
+            $id_product_attribute = $session->id_product_attribute;
+        }
+        
+        $name = \Product::getProductName($id_product, $id_product_attribute ?? $session->id_product_attribute, $language_id);
 
         if (!$name) {
             $name = (new \Product($id_product))->name[$language_id];
@@ -140,7 +162,7 @@ class Grillage extends ProductFactory
         }
 
         // Get unit_price and total_price of accessory
-        $price = Helper::getPrice($id_product, $id_product_attribute, $quantity);
+        $price = Helper::getPrice($id_product, $id_product_attribute ?? $session->id_product_attribute, $quantity);
 
         $data = [
             "id"           => $id_product,
