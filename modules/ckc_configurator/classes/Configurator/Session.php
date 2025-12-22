@@ -447,8 +447,8 @@ class Session extends \ObjectModel implements Config
             }
             else {
                 $this->espacement = 0;
-                // Hauteur par défaut composite pleines : 0m530 (sinon fallback alu 0m515)
-                $this->height     = $isComposite ? "0m530" : "0m515";
+                // Hauteur par défaut composite pleines : 0m53 (sinon fallback alu 0m515)
+                $this->height     = $isComposite ? "0m53" : "0m515";
             }
         }
         elseif ($this->isBarreaudage()) {
