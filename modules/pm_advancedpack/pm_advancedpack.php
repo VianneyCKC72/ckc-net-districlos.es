@@ -40,6 +40,8 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     public static $actionValidateOrderProcessing = false;
     public static $actionProductListModifierProcessing = false;
     public static $modulePrefix = 'AP5';
+
+    private static $isCloning = false;
     protected $_defaultConfiguration = [
         'displayMode' => 'advanced',
         'bootstrapTheme' => false,
@@ -1520,26 +1522,116 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     public function hookActionProductSave($params)
     {
         if (Tools::getValue('new_pack') == 1 && isset($params['product'])) {
+            if (self::$isCloning) {
+                return;
+            }
+
             $params['product']->addToCategories([$this->context->shop->id_category]);
-//            if (version_compare(_PS_VERSION_, '8.1.0', '>=')) {
-//                if (Tools::getValue('source_id_product')) {
-//                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_products_edit', ['productId' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
-//                } else {
-//                    $url = $this->getContainer()->get('router')->generate('admin_products_edit', ['productId' => $params['product']->id]);
-//                    $url = str_replace('products-v2/'.$params['product']->id.'/edit', 'products/'.$params['product']->id, $url);
-//                    Tools::redirectAdmin($url . '&is_real_new_pack=1');
-//                }
-//            } else {
-//                if (Tools::getValue('source_id_product')) {
-//                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
-//                } else {
-//                    Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1');
-//                }
-//            }
+            $sourceId = (int) Tools::getValue('source_id_product');
+            if ($sourceId > 0) {
+                $this->cloneFromSourceProductPS8($sourceId, (int)$params['product']->id);
+            }
+
+
             if (Tools::getValue('source_id_product')) {
                 Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1&source_id_product=' . (int)Tools::getValue('source_id_product'));
             } else {
                 Tools::redirectAdmin($this->getContainer()->get('router')->generate('admin_product_form', ['id' => $params['product']->id]) . '&is_real_new_pack=1');
+            }
+        }
+    }
+
+    private function cloneFromSourceProductPS8(int $sourceId, int $targetId): void
+    {
+        $source = new Product($sourceId, false);
+        $target = new Product($targetId, false);
+
+        if (!Validate::isLoadedObject($source) || !Validate::isLoadedObject($target)) {
+            return;
+        }
+
+        self::$isCloning = true;
+        try {
+            $target->name = $source->name;
+            $target->description = $source->description;
+            $target->description_short = $source->description_short;
+            $target->link_rewrite = $source->link_rewrite;
+            $target->meta_title = $source->meta_title;
+            $target->meta_description = $source->meta_description;
+
+            $target->save();
+
+            $sourceCategories = $source->getCategories();
+            if (!empty($sourceCategories)) {
+                $target->updateCategories($sourceCategories);
+                $target->id_category_default = (int) $source->id_category_default;
+                $target->save();
+            }
+
+            $this->cloneProductImagesPS8($sourceId, $targetId);
+
+        } finally {
+            self::$isCloning = false;
+        }
+    }
+
+    private function cloneProductImagesPS8(int $sourceId, int $targetId): void
+    {
+        $sourceImages = Image::getImages($this->context->language->id, $sourceId);
+        if (empty($sourceImages)) {
+            return;
+        }
+
+        $cover = Product::getCover($sourceId);
+        $sourceCoverId = isset($cover['id_image']) ? (int)$cover['id_image'] : 0;
+
+        $position = 1;
+        foreach ($sourceImages as $imgRow) {
+            $oldImage = new Image((int)$imgRow['id_image']);
+            if (!Validate::isLoadedObject($oldImage)) {
+                continue;
+            }
+
+            $newImage = new Image();
+            $newImage->id_product = $targetId;
+            $newImage->position = $position++;
+            $newImage->cover = ((int)$imgRow['id_image'] === $sourceCoverId) ? 1 : 0;
+
+            foreach (Language::getLanguages(false) as $lang) {
+                $idLang = (int)$lang['id_lang'];
+                $newImage->legend[$idLang] = $oldImage->legend[$idLang] ?? '';
+            }
+
+            if (!$newImage->add()) {
+                continue;
+            }
+
+            $this->copyImageFilesPS8($oldImage, $newImage);
+        }
+    }
+
+    private function copyImageFilesPS8(Image $oldImage, Image $newImage): void
+    {
+        $oldPath = _PS_PROD_IMG_DIR_ . $oldImage->getImgPath();
+        $newPath = _PS_PROD_IMG_DIR_ . $newImage->getImgPath();
+
+        @mkdir(dirname($newPath), 0777, true);
+
+        $exts = ['jpg', 'jpeg', 'png', 'webp'];
+
+        foreach ($exts as $ext) {
+            if (file_exists($oldPath . '.' . $ext)) {
+                copy($oldPath . '.' . $ext, $newPath . '.' . $ext);
+            }
+        }
+
+        $types = ImageType::getImagesTypes('products');
+        foreach ($types as $type) {
+            $suffix = '-' . $type['name'];
+            foreach ($exts as $ext) {
+                if (file_exists($oldPath . $suffix . '.' . $ext)) {
+                    copy($oldPath . $suffix . '.' . $ext, $newPath . $suffix . '.' . $ext);
+                }
             }
         }
     }

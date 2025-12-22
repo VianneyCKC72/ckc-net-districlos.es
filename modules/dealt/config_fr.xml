@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>dealt</name>
+    <displayName><![CDATA[Dealt - Services associ&eacute;s]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Int&eacute;gration de l&#039;API DEALT pour proposer des services associ&eacute;s &agrave; vos produits.]]></description>
+    <author><![CDATA[Agence CKC NET]]></author>
+    <tab><![CDATA[front_office_features]]></tab>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+</module>

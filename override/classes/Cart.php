@@ -144,6 +144,51 @@ class Cart extends CartCore
         return parent::getTotalWeight($products) + $total_weight;
     }
 
+    public function getPackageList($flush = false){
+
+        $cache_key = (int) $this->id . '_' . (int) $this->id_address_delivery;
+        static::$cachePackageList[$cache_key] = false;
+
+        $package_list = parent::getPackageList();
+
+        if(!empty($package_list)){
+            $id_address_delivery = Context::getContext()->cart->id_address_delivery;
+
+            $packages = [];
+
+            foreach ($package_list[$id_address_delivery] as $package) {
+                $package10 = [];
+                $package20 = [];
+                foreach ($package['product_list'] as $product) {
+                    if($product['rate'] == 10){
+                        $package10['product_list'][] = $product;
+                    } else {
+                        $package20['product_list'][] = $product;
+                    }
+                }
+
+                if(!empty($package10['product_list']) && count($package10['product_list']) > 0){
+                    $package10['carrier_list'] = $package['carrier_list'];
+                    $package10['warehouse_list'] = $package['warehouse_list'];
+                    $package10['id_warehouse'] = $package['id_warehouse'];
+                    $packages[] = $package10;
+                }
+
+                if(!empty($package20['product_list']) && count($package20['product_list']) > 0){
+                    $package20['carrier_list'] = $package['carrier_list'];
+                    $package20['warehouse_list'] = $package['warehouse_list'];
+                    $package20['id_warehouse'] = $package['id_warehouse'];
+                    $packages[] = $package20;
+                }
+
+            }
+            $package_list[$id_address_delivery] = $packages;
+            /*        dump($packages);*/
+        }
+
+        return $package_list;
+    }
+
     protected static function isAttested(int $idCart): bool
     {
         $table = _DB_PREFIX_.'dealt_tva_attestation';

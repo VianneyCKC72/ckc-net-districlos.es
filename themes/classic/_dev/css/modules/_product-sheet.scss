@@ -1845,8 +1845,9 @@
   }
 }
 
-// Style responsive uniquement pour les packs
-.pack-nav {
+// Style responsive pour les packs ET les produits classiques
+.pack-nav,
+.mobile-product-nav-fixed {
   .mobile-nav-container {
     overflow-x: auto;
     overflow-y: hidden;
@@ -1891,18 +1892,6 @@
     padding: 10px 12px;
     margin: 8px 0;
     min-width: fit-content;
-
-    @media (max-width: 480px) {
-      padding: 8px 10px;
-      font-size: 11px;
-      margin: 6px 0;
-    }
-
-    @media (max-width: 360px) {
-      padding: 6px 8px;
-      font-size: 10px;
-      margin: 4px 0;
-    }
   }
 }
 

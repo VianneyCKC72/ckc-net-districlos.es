@@ -31,7 +31,8 @@ class TaxManagerFactory extends TaxManagerFactoryCore
 
             // --- 3) TRANSPORTEUR => 10 % si service présent
             if ($serviceId && self::isProductInCart($cart, $serviceId)) {
-                $carrierId = self::getSelectedCarrierId($cart);
+                /*                $carrierId = self::getSelectedCarrierId($cart);*/
+                $carrierId = $cart->id_carrier;
                 if ($carrierId) {
                     $carrierTRG = (int)Carrier::getIdTaxRulesGroupByIdCarrier($carrierId);
                     if ($carrierTRG && (int)$type === $carrierTRG) {
