@@ -336,7 +336,28 @@ class Accessory extends ProductFactory
             // Utilise COMPOSITE_PANEL_QUANTITIES_WITH_DECO si un panneau déco est sélectionné, sinon COMPOSITE_PANEL_QUANTITIES
             $hasPanneauDeco = self::$session->panneau_deco();
             $quantitiesTable = $hasPanneauDeco ? self::COMPOSITE_PANEL_QUANTITIES_WITH_DECO : self::COMPOSITE_PANEL_QUANTITIES;
-            $index = (int) ceil($lengthMm / 1800) - 1;
+            
+            // Trouver l'index en utilisant le tableau de plages
+            // Index 0 = 0-3599mm, Index 1 = 3600-5399mm, Index 2 = 5400-7199mm, etc.
+            $index = 0;
+            if ($lengthMm < 3600) {
+                $index = 0; // 0-3599mm
+            } else {
+                // Chercher la plage : range[i] <= L < range[i] + 1800
+                $found = false;
+                for ($i = 1; $i < count(self::COMPOSITE_LENGTH_RANGES); $i++) {
+                    if ($lengthMm >= self::COMPOSITE_LENGTH_RANGES[$i] && $lengthMm < self::COMPOSITE_LENGTH_RANGES[$i] + 1800) {
+                        $index = $i;
+                        $found = true;
+                        break;
+                    }
+                }
+                // Si la longueur dépasse toutes les plages, utiliser le dernier index
+                if (!$found && $lengthMm >= self::COMPOSITE_LENGTH_RANGES[count(self::COMPOSITE_LENGTH_RANGES) - 1] + 1800) {
+                    $index = count(self::COMPOSITE_LENGTH_RANGES) - 1;
+                }
+            }
+            
             $index = max(0, min($index, count($quantitiesTable[self::$session->height]) - 1));
             
             switch ($accessory) {
