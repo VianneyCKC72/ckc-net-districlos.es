@@ -678,39 +678,66 @@ class DealtHookHelper
         foreach ($cart->getProducts() as $row) {
             $mainId = (int)$row['id_product'];
             $main   = new \Product($mainId, false, $idLang);
+            $lengthPerUnit = null;
 
 
             // skip si c'est déjà un produit "service"
             if (!empty($main->reference) && self::isServiceReference((string)$main->reference)) {
                 continue;
             }
-            if($main->width != 0){
-                $lengthPerUnit = $main->width / 100;
-                $length = $lengthPerUnit * (int)$row['quantity'];
-            } else {
-                $features = Product::getFrontFeaturesStatic(Context::getContext()->language->id, (int)$row['id_product']);
-                foreach ($features as $feature){
-                    if($feature['name'] == 'Longueur'){
-                        if(preg_match('/mm/', $feature['value']) OR preg_match('/MM/', $feature['value'])){
-                            $lengthInt = (int)$feature['value'];
-                            $lengthPerUnit = $lengthInt / 1000;
-                        } else if(preg_match('/m/', $feature['value']) OR preg_match('/M/', $feature['value'])){
-                            $lengthPerUnit = floatval(preg_replace('/[mM]/', '.', $feature['value']).'0');
-                        } else if(preg_match('/cm/', $feature['value']) OR preg_match('/CM/', $feature['value'])){
-                            $lengthInt = (int)$feature['value'];
-                            $lengthPerUnit = $lengthInt / 100;
+
+            if(!empty($row['id_product_attribute'])){
+                $combinations = self::getAttributesInformationsByProduct($mainId, (int)$row['id_product_attribute']);
+
+                foreach($combinations as $combination){
+                    if($combination['group'] == 'Longueur du Kit' OR $combination['group'] == 'Longueur' OR $combination['group'] == 'longueur'){
+                        if(preg_match('/cm/', $combination['attribute'])){
+                            $lengthPerUnit = floatval(str_replace([' cm', 'cm'], ['', '.'], $combination['attribute'])) / 100;
                         } else {
-                            $lengthPerUnit = (int)$feature['value'];
+                            $lengthPerUnit = floatval(str_replace([' ml', ' m', 'ml', 'm'], ['', '', '.', '.'], $combination['attribute']));
                         }
+
                         break;
                     }
                 }
-                if(!empty($lengthPerUnit)){
+            }
+
+            if(empty($lengthPerUnit)){
+                if($main->width != 0){
+                    $lengthPerUnit = $main->width / 100;
                     $length = $lengthPerUnit * (int)$row['quantity'];
                 } else {
-                    $length = 0;
+                    $features = Product::getFrontFeaturesStatic(Context::getContext()->language->id, (int)$row['id_product']);
+                    foreach ($features as $feature){
+                        if($feature['name'] == 'Longueur'){
+                            if(preg_match('/mm/', $feature['value']) OR preg_match('/MM/', $feature['value'])){
+                                $lengthInt = (int)$feature['value'];
+                                $lengthPerUnit = $lengthInt / 1000;
+                            } else if(preg_match('/ml/', $feature['value'])){
+                                $dealt_product_length = floatval(preg_replace('/[ml]/', '.', $feature['value']).'0');
+                            } else if(preg_match('/ML/', $feature['value'])){
+                                $dealt_product_length = floatval(preg_replace('/[ML]/', '.', $feature['value']).'0');
+                            } else if(preg_match('/m/', $feature['value']) OR preg_match('/M/', $feature['value'])){
+                                $lengthPerUnit = floatval(preg_replace('/[mM]/', '.', $feature['value']).'0');
+                            } else if(preg_match('/cm/', $feature['value']) OR preg_match('/CM/', $feature['value'])){
+                                $lengthInt = (int)$feature['value'];
+                                $lengthPerUnit = $lengthInt / 100;
+                            } else {
+                                $lengthPerUnit = (int)$feature['value'];
+                            }
+                            break;
+                        }
+                    }
+                    if(!empty($lengthPerUnit)){
+                        $length = $lengthPerUnit * (int)$row['quantity'];
+                    } else {
+                        $length = 0;
+                    }
                 }
+            } else {
+                $length = $lengthPerUnit * (int)$row['quantity'];
             }
+
 
             // Récupère les ids services via les catégories "enfants de 369"
             $serviceIds = self::getServiceProductIds($ctx, $mainId);
@@ -810,6 +837,32 @@ class DealtHookHelper
         \Media::addJsDef($data); // si ton JS lit ces données
 
         return $data;
+    }
+
+    public static function getAttributesInformationsByProduct($id_product, $id_product_attribute)
+    {
+        $sql = '
+            SELECT DISTINCT a.`id_attribute`, a.`id_attribute_group`, al.`name` as `attribute`, agl.`name` as `group`, pac.`id_product_attribute`
+            FROM `'._DB_PREFIX_.'attribute` a
+            LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al
+                ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int)Context::getContext()->language->id.')
+            LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl
+                ON (a.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = '.(int)Context::getContext()->language->id.')
+            LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac
+                ON (a.`id_attribute` = pac.`id_attribute`)
+            LEFT JOIN `'._DB_PREFIX_.'product_attribute` pa
+                ON (pac.`id_product_attribute` = pa.`id_product_attribute`)
+            '.\Shop::addSqlAssociation('product_attribute', 'pa').'
+            '.\Shop::addSqlAssociation('attribute', 'pac').'
+            WHERE pa.`id_product` = '.(int)$id_product;
+
+        if(!empty($id_product_attribute)){
+            $sql .= ' AND pac.`id_product_attribute` = '.(int)$id_product_attribute;
+        }
+
+        $result = Db::getInstance()->executeS($sql);
+
+        return $result;
     }
 
     public static function getServicesForCart($ctx, $mainId, $length, $idLang){
