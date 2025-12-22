@@ -27,17 +27,24 @@ class Grillage extends ProductFactory
         // On prend la première catégorie qui équivaut à la première gamme de grillage
         if($session->isAluminium()) {
             if(empty($session->length)) {
-                $session->length       = 2.09;
-                $session->installation = "scellement-sur-muret";
-                $isPleines = in_array($session->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true);
-                if ($isPleines) {
-                    $session->height     = "0m515";
-                    $session->espacement = 0;
-                } else {
-                    $session->height     = "0m403";
-                    $session->espacement = 1;
+                // Vérifier si c'est un composite
+                $isComposite = $session->id_type === self::COMPOSITE_PLEINES_ID 
+                    || in_array($session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true);
+                
+                // Ne pas définir de longueur par défaut pour le composite
+                if (!$isComposite) {
+                    $session->length       = 2.09;
+                    $session->installation = "scellement-sur-muret";
+                    $isPleines = in_array($session->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true);
+                    if ($isPleines) {
+                        $session->height     = "0m515";
+                        $session->espacement = 0;
+                    } else {
+                        $session->height     = "0m403";
+                        $session->espacement = 1;
+                    }
+                    $session->color = "gris-7016";
                 }
-                $session->color = "gris-7016";
             }
             $height                = (float)str_replace("m", ".", $session->height);
             // Pour le composite (alu) avec "scellement", on réutilise les quantitatifs "scellement-sur-muret"
