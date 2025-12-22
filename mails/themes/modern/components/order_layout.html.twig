@@ -8,7 +8,6 @@
   <!--<![endif]-->
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
   {% set direction = 'ltr' %}
   {% set align_left = 'left' %}
   {% set align_right = 'right' %}
@@ -84,40 +83,30 @@
   </style>
   <style type="text/css">
     .shadow {
-      box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
+      box-shadow: 0 20px 30px 0 rgba(0, 0, 0, 0.1);
     }
 
     .label {
-      font-weight: 600;
-      color: #026473;
+      font-weight: 700;
     }
 
     .warning {
-      font-weight: 600;
+      font-weight: 700;
       font-size: 16px;
-      color: #e74c3c;
     }
 
     a {
-      color: #026473;
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.2s ease;
-    }
-
-    a:hover {
-      color: #008397;
+      color: #25B9D7;
       text-decoration: underline;
+      font-weight: 600;
     }
 
     a.light {
       font-weight: 400;
-      color: #7f8c8d;
     }
 
     span.strong {
       font-weight: 600;
-      color: #2c3e50;
     }
 
     .box {
@@ -129,60 +118,34 @@
     }
 
     table {
-      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-family: Open sans, Arial, sans-serif;
       font-size: 14px;
-      line-height: 1.6;
     }
 
     .products-table,
     .products-table th,
     .products-table td {
-      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      font-size: 13px;
-      background-color: #ffffff;
-      color: #1b1b1b;
+      font-family: Open sans, Arial, sans-serif;
+      font-size: 12px;
+      background-color: #FDFDFD;
+      color: #353943;
     }
 
     .products-table th {
       font-weight: 600;
-      padding: 14px 12px;
-      border-bottom: 2px solid #DBE6E8;
-      background-color: #F6F2EB;
-      color: #026473;
-      text-transform: uppercase;
-      font-size: 11px;
-      letter-spacing: 0.5px;
-    }
-
-    .products-table td {
-      padding: 12px;
-      border-bottom: 1px solid #DBE6E8;
-    }
-
-    /* Style pour la colonne Produit (2ème colonne) */
-    .products-table td:nth-child(2) {
-      padding: 12px 12px;
-      line-height: 1.6;
-    }
-
-    /* Centrer les colonnes Référence (1), Prix unitaire (3) et Prix total (5) */
-    .products-table td:nth-child(1),
-    .products-table td:nth-child(3),
-    .products-table td:nth-child(5) {
-      text-align: center;
+      padding: 10px 5px;
+      border: 1px solid #DFDFDF;
     }
 
     .products-table .order_summary td {
       font-weight: 600;
       font-size: 14px;
-      padding: 14px 12px;
-      border-top: 2px solid #DBE6E8;
-      background-color: #F6F2EB;
-      color: #1b1b1b;
+      padding: 10px;
+      border: 1px solid #DFDFDF;
     }
 
     .products-table.mail-alert td {
-      border: 1px solid #ecf0f1;
+      border: 1px solid #DFDFDF;
     }
 
     @media only screen and (max-width: 480px) {
@@ -210,10 +173,10 @@
   {% endblock %}
 </head>
 
-<body style="word-spacing:normal;background-color:#F6F2EB;">
-  <div style="background-color:#F6F2EB;">
-    <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:650px;" width="650" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-    <div style="margin:0px auto;max-width:650px;">
+<body style="word-spacing:normal;background-color:#eeeeee;">
+  <div style="background-color:#eeeeee;">
+    <!--[if mso | IE]><table align="center" border="0" cellpadding="0" cellspacing="0" class="" role="presentation" style="width:604px;" width="604" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
+    <div style="margin:0px auto;max-width:604px;">
       <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;">
         <tbody>
           <tr>
@@ -237,8 +200,8 @@
       </table>
     </div>
     <!--[if mso | IE]></td></tr></table><table align="center" border="0" cellpadding="0" cellspacing="0" class="shadow-outlook wrapper-container-outlook" role="presentation" style="width:604px;" width="604" bgcolor="#ffffff" ><tr><td style="line-height:0px;font-size:0px;mso-line-height-rule:exactly;"><![endif]-->
-    <div class="shadow wrapper-container" style="background:#ffffff;background-color:#ffffff;margin:0px auto;border-radius:8px;max-width:650px;overflow:hidden;border:1px solid #DBE6E8;">
-      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#ffffff;background-color:#ffffff;width:100%;border-radius:8px;">
+    <div class="shadow wrapper-container" style="background:#ffffff;background-color:#ffffff;margin:0px auto;border-radius:4px;max-width:604px;">
+      <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#ffffff;background-color:#ffffff;width:100%;border-radius:4px;">
         <tbody>
           <tr>
             <td style="direction:{{ direction }};font-size:0px;padding:0 0 30px;text-align:center;">
