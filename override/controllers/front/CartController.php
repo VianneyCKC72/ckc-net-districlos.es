@@ -490,6 +490,7 @@ class CartController extends CartControllerCore
             'cart_voucher' => $this->context->smarty->fetch(_PS_MODULE_DIR_.'ets_promotion/views/templates/hook/checkout/cart-voucher.tpl'),
             'cart_sumary_products' => $this->context->smarty->fetch(_PS_MODULE_DIR_.'ets_promotion/views/templates/hook/checkout/cart_sumary_products.tpl'),
             'cart_promos' => $this->context->smarty->fetch(_PS_MODULE_DIR_.'ckcadcampaignconfigurator/views/templates/front/hook/promo_content_cart.tpl'),
+            'cart_footer_dealt' => Hook::exec('displayShoppingCartFooter', [], Module::getModuleIdByName('dealt')),
         ]));
     }
 

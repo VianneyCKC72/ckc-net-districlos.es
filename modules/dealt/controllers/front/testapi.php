@@ -74,5 +74,4 @@ class DealtTestapiModuleFrontController extends ModuleFrontController
         echo json_encode($result, JSON_PRETTY_PRINT);
         exit;
     }
-
 }

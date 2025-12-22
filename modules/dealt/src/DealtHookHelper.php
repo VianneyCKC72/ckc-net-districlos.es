@@ -32,8 +32,8 @@ class DealtHookHelper
         $idP = (int)($p['id_product'] ?? 0);
         if (!$idP) return;
 
-/*        $id_main_productSQl = Db::getInstance()->getValue('SELECT id_main_product FROM '._DB_PREFIX_.'dealt_tva_attestation WHERE id_cart = '.(int)$cart->id);
-        $id_main_product = !empty($id_main_productSQl) ? $id_main_productSQl : 0;*/
+        /*        $id_main_productSQl = Db::getInstance()->getValue('SELECT id_main_product FROM '._DB_PREFIX_.'dealt_tva_attestation WHERE id_cart = '.(int)$cart->id);
+                $id_main_product = !empty($id_main_productSQl) ? $id_main_productSQl : 0;*/
 
         $eligible = self::getEligibleProductIdsForCart($ctx, $cart);
         if (!in_array($idP, $eligible, true)) return;
@@ -579,49 +579,47 @@ class DealtHookHelper
                     $idServices[] = $idService;
                 }
             }
-        // plus besoin à cause des nouveaux services
-/*            if(!count($idServices)){
-                return self::buildProductAdditionalInfoData($ctx, $idProduct, ($longueur - 0.5));
-            }*/
         } else {
             $idService = (int)($serviceIds[0] ?? 0);
             $idServices = $serviceIds;
         }
         $data = [];
 
-        foreach ($idServices as $idService) {
-/*            $product = new \Product($idProduct, false, (int)$ctx->language->id);*/
-            $product = new \Product($idService, false, (int)$ctx->language->id);
+        if((count($idServices) && !empty($longueur)) OR count($idServices) == 1){
+            foreach ($idServices as $idService) {
+                /*            $product = new \Product($idProduct, false, (int)$ctx->language->id);*/
+                $product = new \Product($idService, false, (int)$ctx->language->id);
 
-            $servicePriceTtc = null;
-            if ($idService) {
-                $priceTtc = \Product::getPriceStatic($idService, true);
-                if ($priceTtc > 0) {
-                    $servicePriceTtc = self::formatPrice($ctx, $priceTtc);
+                $servicePriceTtc = null;
+                if ($idService) {
+                    $priceTtc = \Product::getPriceStatic($idService, true);
+                    if ($priceTtc > 0) {
+                        $servicePriceTtc = self::formatPrice($ctx, $priceTtc);
+                    }
                 }
+
+                $serviceRow = $idService ? self::getServiceRowByProductId($idService) : [];
+
+                $data[] = [
+                    'dealt_service_title' => $product->name ?: \Configuration::get('DEALT_SERVICE_TITLE_DEFAULT'),
+                    'dealt_service_price' => $servicePriceTtc ?: '939 €',
+                    'dealt_service_url' => self::getServiceUrl(),
+                    'dealt_product_id' => $idProduct,
+                    'dealt_service_product_id' => $idService,
+                    /*                'dealt_offer_id' => $offerId,*/
+                    'dealt_offer_id' => $serviceRow['reference'],
+                    'dealt_store_id' => self::getStoreId(),
+                    'dealt_check_availability_url' => self::getEligibilityUrl($ctx),
+                    'dealt_eligibility_conditions' => self::eligibility_conditions_format($serviceRow['eligibility_conditions'] ?? null),
+                    'dealt_customer_commercial_description' => self::replace_p_to_li($serviceRow['customer_commercial_description'] ?? ''),
+                    'dealt_expert_requirements_description' => self::replace_p_to_li($serviceRow['expert_requirements_description'] ?? ''),
+                    'dealt_longueur_min' => isset($serviceRow['longueur_min']) ? (float)$serviceRow['longueur_min'] : null,
+                    'dealt_longueur_max' => isset($serviceRow['longueur_max']) ? (float)$serviceRow['longueur_max'] : null,
+                ];
             }
-
-            $serviceRow = $idService ? self::getServiceRowByProductId($idService) : [];
-
-            $data[] = [
-                'dealt_service_title' => $product->name ?: \Configuration::get('DEALT_SERVICE_TITLE_DEFAULT'),
-                'dealt_service_price' => $servicePriceTtc ?: '939 €',
-                'dealt_service_url' => self::getServiceUrl(),
-                'dealt_product_id' => $idProduct,
-                'dealt_service_product_id' => $idService,
-/*                'dealt_offer_id' => $offerId,*/
-                'dealt_offer_id' => $serviceRow['reference'],
-                'dealt_store_id' => self::getStoreId(),
-                'dealt_check_availability_url' => self::getEligibilityUrl($ctx),
-                'dealt_eligibility_conditions' => self::eligibility_conditions_format($serviceRow['eligibility_conditions'] ?? null),
-                'dealt_customer_commercial_description' => self::replace_p_to_li($serviceRow['customer_commercial_description'] ?? ''),
-                'dealt_expert_requirements_description' => self::replace_p_to_li($serviceRow['expert_requirements_description'] ?? ''),
-                'dealt_longueur_min' => isset($serviceRow['longueur_min']) ? (float)$serviceRow['longueur_min'] : null,
-                'dealt_longueur_max' => isset($serviceRow['longueur_max']) ? (float)$serviceRow['longueur_max'] : null,
-            ];
         }
-        
-        \Media::addJsDef($data);
+
+        \Media::addJsDef(['dealt_service_info'=>$data]);
         return $data;
     }
 
@@ -680,39 +678,66 @@ class DealtHookHelper
         foreach ($cart->getProducts() as $row) {
             $mainId = (int)$row['id_product'];
             $main   = new \Product($mainId, false, $idLang);
+            $lengthPerUnit = null;
 
 
             // skip si c'est déjà un produit "service"
             if (!empty($main->reference) && self::isServiceReference((string)$main->reference)) {
                 continue;
             }
-            if($main->width != 0){
-                $lengthPerUnit = $main->width / 100;
-                $length = $lengthPerUnit * (int)$row['quantity'];
-            } else {
-                $features = Product::getFrontFeaturesStatic(Context::getContext()->language->id, (int)$row['id_product']);
-                foreach ($features as $feature){
-                    if($feature['name'] == 'Longueur'){
-                        if(preg_match('/mm/', $feature['value']) OR preg_match('/MM/', $feature['value'])){
-                            $lengthInt = (int)$feature['value'];
-                            $lengthPerUnit = $lengthInt / 1000;
-                        } else if(preg_match('/m/', $feature['value']) OR preg_match('/M/', $feature['value'])){
-                            $lengthPerUnit = floatval(preg_replace('/[mM]/', '.', $feature['value']).'0');
-                        } else if(preg_match('/cm/', $feature['value']) OR preg_match('/CM/', $feature['value'])){
-                            $lengthInt = (int)$feature['value'];
-                            $lengthPerUnit = $lengthInt / 100;
+
+            if(!empty($row['id_product_attribute'])){
+                $combinations = self::getAttributesInformationsByProduct($mainId, (int)$row['id_product_attribute']);
+
+                foreach($combinations as $combination){
+                    if($combination['group'] == 'Longueur du Kit' OR $combination['group'] == 'Longueur' OR $combination['group'] == 'longueur'){
+                        if(preg_match('/cm/', $combination['attribute'])){
+                            $lengthPerUnit = floatval(str_replace([' cm', 'cm'], ['', '.'], $combination['attribute'])) / 100;
                         } else {
-                            $lengthPerUnit = (int)$feature['value'];
+                            $lengthPerUnit = floatval(str_replace([' ml', ' m', 'ml', 'm'], ['', '', '.', '.'], $combination['attribute']));
                         }
+
                         break;
                     }
                 }
-                if(!empty($lengthPerUnit)){
+            }
+
+            if(empty($lengthPerUnit)){
+                if($main->width != 0){
+                    $lengthPerUnit = $main->width / 100;
                     $length = $lengthPerUnit * (int)$row['quantity'];
                 } else {
-                    $length = 0;
+                    $features = Product::getFrontFeaturesStatic(Context::getContext()->language->id, (int)$row['id_product']);
+                    foreach ($features as $feature){
+                        if($feature['name'] == 'Longueur'){
+                            if(preg_match('/mm/', $feature['value']) OR preg_match('/MM/', $feature['value'])){
+                                $lengthInt = (int)$feature['value'];
+                                $lengthPerUnit = $lengthInt / 1000;
+                            } else if(preg_match('/ml/', $feature['value'])){
+                                $dealt_product_length = floatval(preg_replace('/[ml]/', '.', $feature['value']).'0');
+                            } else if(preg_match('/ML/', $feature['value'])){
+                                $dealt_product_length = floatval(preg_replace('/[ML]/', '.', $feature['value']).'0');
+                            } else if(preg_match('/m/', $feature['value']) OR preg_match('/M/', $feature['value'])){
+                                $lengthPerUnit = floatval(preg_replace('/[mM]/', '.', $feature['value']).'0');
+                            } else if(preg_match('/cm/', $feature['value']) OR preg_match('/CM/', $feature['value'])){
+                                $lengthInt = (int)$feature['value'];
+                                $lengthPerUnit = $lengthInt / 100;
+                            } else {
+                                $lengthPerUnit = (int)$feature['value'];
+                            }
+                            break;
+                        }
+                    }
+                    if(!empty($lengthPerUnit)){
+                        $length = $lengthPerUnit * (int)$row['quantity'];
+                    } else {
+                        $length = 0;
+                    }
                 }
+            } else {
+                $length = $lengthPerUnit * (int)$row['quantity'];
             }
+
 
             // Récupère les ids services via les catégories "enfants de 369"
             $serviceIds = self::getServiceProductIds($ctx, $mainId);
@@ -814,49 +839,75 @@ class DealtHookHelper
         return $data;
     }
 
+    public static function getAttributesInformationsByProduct($id_product, $id_product_attribute)
+    {
+        $sql = '
+            SELECT DISTINCT a.`id_attribute`, a.`id_attribute_group`, al.`name` as `attribute`, agl.`name` as `group`, pac.`id_product_attribute`
+            FROM `'._DB_PREFIX_.'attribute` a
+            LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al
+                ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int)Context::getContext()->language->id.')
+            LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl
+                ON (a.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = '.(int)Context::getContext()->language->id.')
+            LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac
+                ON (a.`id_attribute` = pac.`id_attribute`)
+            LEFT JOIN `'._DB_PREFIX_.'product_attribute` pa
+                ON (pac.`id_product_attribute` = pa.`id_product_attribute`)
+            '.\Shop::addSqlAssociation('product_attribute', 'pa').'
+            '.\Shop::addSqlAssociation('attribute', 'pac').'
+            WHERE pa.`id_product` = '.(int)$id_product;
+
+        if(!empty($id_product_attribute)){
+            $sql .= ' AND pac.`id_product_attribute` = '.(int)$id_product_attribute;
+        }
+
+        $result = Db::getInstance()->executeS($sql);
+
+        return $result;
+    }
+
     public static function getServicesForCart($ctx, $mainId, $length, $idLang){
 
         $services = [];
 
         $length = (float)$length - 0.5;
 
-            // Récupère les ids services via les catégories "enfants de 369"
-            $serviceIds = self::getServiceProductIds($ctx, $mainId);
-            foreach ($serviceIds as $sid) {
-                $srv = new \Product($sid, false, $idLang);
-                $priceTtc = \Product::getPriceStatic($sid, true);
-                $serviceRow = self::getServiceRowByProductId($sid) ?: [];
+        // Récupère les ids services via les catégories "enfants de 369"
+        $serviceIds = self::getServiceProductIds($ctx, $mainId);
+        foreach ($serviceIds as $sid) {
+            $srv = new \Product($sid, false, $idLang);
+            $priceTtc = \Product::getPriceStatic($sid, true);
+            $serviceRow = self::getServiceRowByProductId($sid) ?: [];
 
-                if($length <= $serviceRow['longueur_max'] && $length >= $serviceRow['longueur_min']){
-                    $services[] = [
-                        // Contexte main
-                        'main_product_id'   => $mainId,
-                        'main_product_name' => $row['name'] ?? ($main->name ?? ''),
+            if($length <= $serviceRow['longueur_max'] && $length >= $serviceRow['longueur_min']){
+                $services[] = [
+                    // Contexte main
+                    'main_product_id'   => $mainId,
+                    'main_product_name' => $row['name'] ?? ($main->name ?? ''),
 
-                        // Service
-                        'service_product_id' => $sid,
-                        'service_title'      => $srv->name ?: 'Service de pose',
-                        'service_ref'        => (string)($srv->reference ?? ''),
-                        'service_price'      => $priceTtc > 0 ? self::formatPrice($ctx, $priceTtc) . ' TTC' : '',
-                        'service_url'        => self::getServiceUrl(),
+                    // Service
+                    'service_product_id' => $sid,
+                    'service_title'      => $srv->name ?: 'Service de pose',
+                    'service_ref'        => (string)($srv->reference ?? ''),
+                    'service_price'      => $priceTtc > 0 ? self::formatPrice($ctx, $priceTtc) . ' TTC' : '',
+                    'service_url'        => self::getServiceUrl(),
 
-                        // Eligibilité
-                        'offer_id'        => (string)($srv->reference ?? ''),
-                        'store_id'        => self::getStoreId(),
-                        'eligibility_url' => self::getEligibilityUrl($ctx),
+                    // Eligibilité
+                    'offer_id'        => (string)($srv->reference ?? ''),
+                    'store_id'        => self::getStoreId(),
+                    'eligibility_url' => self::getEligibilityUrl($ctx),
 
-                        // Déjà présent ?
-                        'already_in_cart' => isset($serviceIdsInCart[$sid]),
+                    // Déjà présent ?
+                    'already_in_cart' => isset($serviceIdsInCart[$sid]),
 
-                        // (optionnel) contenus BDD si tu veux les afficher dans le panier
-                        'eligibility_conditions'           => $serviceRow['eligibility_conditions'] ?? null,
-                        'customer_commercial_description'  => $serviceRow['customer_commercial_description'] ?? null,
-                        'expert_requirements_description'  => $serviceRow['expert_requirements_description'] ?? null,
-                        'longueur_max' => $serviceRow['longueur_max'] ?? null,
-                        'longueur_min' => $serviceRow['longueur_min'] ?? null,
-                    ];
-                }
+                    // (optionnel) contenus BDD si tu veux les afficher dans le panier
+                    'eligibility_conditions'           => $serviceRow['eligibility_conditions'] ?? null,
+                    'customer_commercial_description'  => $serviceRow['customer_commercial_description'] ?? null,
+                    'expert_requirements_description'  => $serviceRow['expert_requirements_description'] ?? null,
+                    'longueur_max' => $serviceRow['longueur_max'] ?? null,
+                    'longueur_min' => $serviceRow['longueur_min'] ?? null,
+                ];
             }
+        }
 
         if (count($services) < 1 && ((float)$length > 0)){
             return self::getServicesForCart($ctx, $mainId, (float)$length, $idLang);

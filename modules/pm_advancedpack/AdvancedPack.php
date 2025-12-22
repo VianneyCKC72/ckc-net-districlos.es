@@ -2315,6 +2315,8 @@ class AdvancedPack extends Product
             $resPackAdd = true;
             $packProducts = self::getPackContent($idPack, null, true, [], $quantityList);
             $totalPackPrice = 0;
+            $reductionAmountTable = $reductionPercentageTable = [];
+            $forceReductionByAmount = false;
             if (AdvancedPackCoreClass::_isFilledArray($packProducts)) {
                 $context = Context::getContext();
                 $useTax = (Product::getTaxCalculationMethod($context->customer->id) != PS_TAX_EXC);
@@ -2349,13 +2351,41 @@ class AdvancedPack extends Product
                         }
                     }
                     $resPackAdd &= self::getContext()->cart->updateQty((int)$packProduct['quantity'] * $quantity, (int)$packProduct['id_product'], $productPackIdAttribute, null, 'up', $idAddressDelivery);
-                    $totalPackPrice += ((int)$packProduct['quantity'] * $quantity) * $packProduct['productObj']->getPrice($useTax, $productPackIdAttribute);
-                    $explodedProductList[] = [
-                        'id_product' => (int)$packProduct['id_product'],
-                        'id_product_attribute' => $productPackIdAttribute,
-                        'quantity' => (int)$packProduct['quantity'] * $quantity,
-                    ];
+
+                    // reduction
+
+                    $selectedIdProductAttribute = null;
+                    if (empty($selectedIdProductAttribute) && !empty($packProduct['default_id_product_attribute'])) {
+                        $selectedIdProductAttribute = (int)$packProduct['default_id_product_attribute'];
+                    }
+                    if ($selectedIdProductAttribute != null && isset($packProduct['combinationsInformations']) && isset($packProduct['combinationsInformations'][$selectedIdProductAttribute])) {
+                        if ((float)$packProduct['combinationsInformations'][$selectedIdProductAttribute]['reduction_amount'] > 0) {
+                            $forceReductionByAmount = true;
+                        }
+                    }
+                    if ($packProduct['reduction_amount'] > 0 || $packProduct['reduction_percentage'] > 0) {
+                        $sp = new SpecificPrice();
+                        $sp->id_product = $packProduct['id_product'];
+                        $sp->id_cart = self::getContext()->cart->id;
+                        $sp->id_product_attribute = $productPackIdAttribute;
+                        /*        $sp->id_shop = AdvancedPack::getPackIdShop($idPack);*/
+                        $sp->id_shop = Context::getContext()->shop->id;
+                        $sp->id_shop_group = 0;
+                        $sp->id_currency = self::getContext()->currency->id;
+                        $sp->id_country = 0;
+                        $sp->id_group = 0;
+                        $sp->id_customer = 0;
+                        $sp->from = '0000-00-00 00:00:00';
+                        $sp->to = '0000-00-00 00:00:00';
+                        $sp->from_quantity = 1;
+                        $sp->reduction_type = $packProduct['reduction_type'];
+                        $sp->reduction = $packProduct['reduction_amount'];
+                        $sp->price = -1;
+                        $sp->add();
+                    }
                 }
+
+                self::addPackSpecificPrice($idPack, null, $idProductAttributeList);
                 pm_advancedpack::$_preventInfiniteLoop = false;
                 $jsonCartContent = [];
                 $jsonCartContent['id_product'] = (int) $idPack;
