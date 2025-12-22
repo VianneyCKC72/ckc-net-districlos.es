@@ -191,6 +191,7 @@ $(document).ready(function () {
         let formData = null;
         let formDataCart = null;
         let requestURL = '';
+        let updateServiceProduct = false;
 
         if (!cart) {
             formData = getFormData(cart, object, direction, differential);
