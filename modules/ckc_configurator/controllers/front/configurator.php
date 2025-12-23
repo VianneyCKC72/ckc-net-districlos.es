@@ -317,11 +317,8 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             unset($installations[2]);
         }
         else if ($this->session->isAluminium()) {
-            // Conserver "Scellement en terre" pour la gamme Composite (440/443)
-            $isComposite = in_array($this->session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true)
-                || in_array($this->session->id_type, [self::COMPOSITE_PLEINES_ID], true);
-            if (!$isComposite) {
-            unset($installations[0]);
+            if (!Helper::isComposite($this->session)) {
+                unset($installations[0]);
             }
         }
 
@@ -695,11 +692,11 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         }
 
         if ($this->session->isAluminium()) {
-            $isPleines = in_array($this->session->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true);
-            // Pour le composite pleines, on affiche les hauteurs spécifiques
-            if ($this->session->id_type === self::COMPOSITE_PLEINES_ID) {
+            $isComposite = Helper::isComposite($this->session);
+            if ($isComposite) {
                 $hauteurs = self::COMPOSITE_STEPS_HIGHT_PLEINES;
             } else {
+                $isPleines = $this->session->id_type === self::LAMES_PLEINES_ID;
                 $hauteurs = $isPleines ? self::STEPS_HIGHT_ALU_LAMES_PLEINES : self::STEPS_HIGHT_ALU;
             }
 
@@ -713,8 +710,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                 ];
             }
 
-            // Pour le composite, on utilise les couleurs définies en dur
-            if ($this->session->id_type === self::COMPOSITE_PLEINES_ID) {
+            if ($isComposite) {
                 $colors = [];
                 foreach (self::COMPOSITE_COLORS as $value => $name) {
                     $colors[] = [
@@ -847,38 +843,20 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             ]);
         }
 
-        // Panneaux déco
         if (isset($panneau_deco['active']) && $panneau_deco['active'] == 'true' && !empty($panneau_deco['id']) && !empty($panneau_deco['id_product_attribute'])) {
-            $length  = $this->session->length;
-            $height  = $this->session->height;
-            $isComposite = in_array($this->session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true);
+            $length = $this->session->length;
+            $isComposite = Helper::isComposite($this->session);
             
             $coefficient = 1;
             if ($isComposite) {
-                // Pour composite, utiliser COMPOSITE_DECO_PANEL_QUANTITIES
-                // La longueur est en mètres dans la session, convertir en mm puis calculer l'index
-                $lengthMm = $length * 1000; // Conversion m -> mm
-                
-                // Trouver l'index en utilisant le tableau de plages
-                // Index 0 = 0-1800mm, Index 1 = 1801-3600mm, Index 2 = 3601-5400mm, etc.
-                // Chaque plage fait 1800mm
-                if ($lengthMm <= 1800) {
-                    $index = 0; // 0-1800mm
-                } else {
-                    // Pour lengthMm > 1800 : calculer l'index basé sur les plages de 1800mm
-                    // 1801-3600 → index 1, 3601-5400 → index 2, etc.
-                    $index = (int) floor(($lengthMm - 1) / 1800);
-                }
-                
+                $lengthMm = $length * 1000;
+                $index = Helper::getCompositeLengthIndex($lengthMm);
                 $index = max(0, min($index, count(self::COMPOSITE_DECO_PANEL_QUANTITIES) - 1));
-                if ($index >= 0 && $index < count(self::COMPOSITE_DECO_PANEL_QUANTITIES)) {
-                    $coefficient = self::COMPOSITE_DECO_PANEL_QUANTITIES[$index];
-                }
+                $coefficient = self::COMPOSITE_DECO_PANEL_QUANTITIES[$index];
             } else {
-                // Pour aluminium, utiliser la logique existante
+                $height = $this->session->height;
                 $heightFloat = (float)str_replace("m", ".", $height);
-                $isPleines = in_array($this->session->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true);
-                // Alias pour l'alu/composite : "scellement" réutilise les quantitatifs "scellement-sur-muret"
+                $isPleines = $this->session->id_type === self::LAMES_PLEINES_ID;
                 $installationKey = ($this->session->isAluminium() && $this->session->installation === 'scellement')
                     ? 'scellement-sur-muret'
                     : $this->session->installation;
@@ -886,10 +864,10 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     ? self::ALU_QUANTITIES_PLEINES[$installationKey][(string)$heightFloat]
                     : self::ALU_QUANTITIES_AJOURES[$installationKey][(string)$heightFloat];
 
-            $lengthKeys = array_keys($quantities);
-            $position = array_search($length, $lengthKeys);
-            if ($position !== false) {
-                $coefficient = $position + 1;
+                $lengthKeys = array_keys($quantities);
+                $position = array_search($length, $lengthKeys);
+                if ($position !== false) {
+                    $coefficient = $position + 1;
                 }
             }
             $this->session->insertEntry([

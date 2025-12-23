@@ -27,16 +27,12 @@ class Grillage extends ProductFactory
         // On prend la première catégorie qui équivaut à la première gamme de grillage
         if($session->isAluminium()) {
             if(empty($session->length)) {
-                // Vérifier si c'est un composite
-                $isComposite = $session->id_type === self::COMPOSITE_PLEINES_ID 
-                    || in_array($session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true);
-                
-                // Longueur par défaut : 1.8 pour composite, 2.09 pour aluminium
+                $isComposite = Helper::isComposite($session);
                 $session->length = $isComposite ? 1.8 : 2.09;
                 
                 if (!$isComposite) {
                     $session->installation = "scellement-sur-muret";
-                    $isPleines = in_array($session->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true);
+                    $isPleines = $session->id_type === self::LAMES_PLEINES_ID;
                     if ($isPleines) {
                         $session->height     = "0m515";
                         $session->espacement = 0;
@@ -47,37 +43,23 @@ class Grillage extends ProductFactory
                     $session->color = "gris-7016";
                 }
             }
-            $height                = (float)str_replace("m", ".", $session->height);
-            // Pour le composite (alu) avec "scellement", on réutilise les quantitatifs "scellement-sur-muret"
+            $height = (float)str_replace("m", ".", $session->height);
             $installationType = $session->installation;
             $installationKey = ($session->isAluminium() && $installationType === 'scellement')
                 ? 'scellement-sur-muret'
                 : $installationType;
             $length = $session->length;
-            $isPleines = in_array($session->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true);
+            $isPleines = $session->id_type === self::LAMES_PLEINES_ID;
 
-            // Calcul spécifique pour le composite
-            if ($session->id_type === self::COMPOSITE_PLEINES_ID) {
-                // Composite : utilise le tableau COMPOSITE_PANEL_QUANTITIES ou COMPOSITE_PANEL_QUANTITIES_WITH_DECO selon si un panneau déco est sélectionné
-                $lengthMm = $length * 1000; // Conversion m -> mm
+            if (Helper::isComposite($session)) {
+                $lengthMm = $length * 1000;
                 $hasPanneauDeco = $session->panneau_deco();
                 $quantitiesTable = $hasPanneauDeco ? self::COMPOSITE_PANEL_QUANTITIES_WITH_DECO : self::COMPOSITE_PANEL_QUANTITIES;
                 
-                // Trouver l'index en utilisant le tableau de plages
-                // Index 0 = 0-1800mm, Index 1 = 1801-3600mm, Index 2 = 3601-5400mm, etc.
-                // Chaque plage fait 1800mm
-                if ($lengthMm <= 1800) {
-                    $index = 0; // 0-1800mm
-                } else {
-                    // Pour lengthMm > 1800 : calculer l'index basé sur les plages de 1800mm
-                    // 1801-3600 → index 1, 3601-5400 → index 2, etc.
-                    $index = (int) floor(($lengthMm - 1) / 1800);
-                }
-                
+                $index = Helper::getCompositeLengthIndex($lengthMm);
                 $index = max(0, min($index, count($quantitiesTable[$session->height]) - 1));
                 $quantity_factor = $quantitiesTable[$session->height][$index];
             } else {
-                // Mapping des hauteurs alu vers les quantitatifs
                 $legacyHeight = (string)$height;
                 if ($isPleines) {
                     $quantity_factor = array_flip(self::STEPS_HIGHT_ALU_LAMES_PLEINES)[$session->height];
@@ -98,8 +80,7 @@ class Grillage extends ProductFactory
 
                 $quantity_factor *= $coefficient;
             }
-            // Pour le composite, la soustraction du panneau déco est gérée dans COMPOSITE_PANEL_QUANTITIES_WITH_DECO
-            if($session->panneau_deco() && $session->id_type !== self::COMPOSITE_PLEINES_ID) {
+            if($session->panneau_deco() && !Helper::isComposite($session)) {
                 $quantity_factor -= 1 * $coefficient;
             }
             $quantity = 1;
@@ -109,14 +90,12 @@ class Grillage extends ProductFactory
 
         $quantity = $quantity * $quantity_factor;
 
-        // Pour le composite, définir l'id_product_attribute selon la couleur
-        if ($session->id_type === self::COMPOSITE_PLEINES_ID) {
+        if (Helper::isComposite($session)) {
             if (!empty($session->color)) {
                 if ($session->color === 'ton-bois') {
                     $session->id_product_attribute = 11840408;
                     $id_product_attribute = 11840408;
                 } else {
-                    // Par défaut : gris-7016
                     $session->id_product_attribute = 11840407;
                     $id_product_attribute = 11840407;
                 }
@@ -208,21 +187,5 @@ class Grillage extends ProductFactory
             WHERE pa.`id_product` = '.(int)$id_product);
 
         return $result;
-    }
-
-    /**
-     * Map les nouvelles hauteurs composite pleines vers les hauteurs legacy alu
-     * pour réutiliser les tableaux de quantitatifs existants.
-     */
-    private static function mapCompositePleinesHeight(float $height)
-    {
-        // Regroupement simple par proximité
-        if ($height <= 0.87) {
-            return '0.515';
-        }
-        if ($height <= 1.21) {
-            return '0.96';
-        }
-        return '1.41';
     }
 }

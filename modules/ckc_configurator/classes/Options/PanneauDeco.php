@@ -14,9 +14,7 @@ class PanneauDeco extends ProductFactory {
 
         $height = floatval(str_replace(['Ht ', 'ht-', 'm'], ['', '', '.'], $session->height));
 
-        // Déterminer la catégorie selon le type (aluminium ou composite)
-        $isComposite = in_array($session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true)
-            || in_array($session->id_type, [self::COMPOSITE_PLEINES_ID], true);
+        $isComposite = Helper::isComposite($session);
         $categoryId = $isComposite ? self::PANNEAUX_DECO_COMPOSITE_ID : self::PANNEAUX_DECO_ALUMINIUM_ID;
         
         $category = new \Category($categoryId);

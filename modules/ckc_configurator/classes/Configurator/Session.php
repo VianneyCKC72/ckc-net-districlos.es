@@ -521,30 +521,25 @@ class Session extends \ObjectModel implements Config
             $this->nombre_angle = 0;
         }
         elseif ($this->isAluminium()) {
-            $isComposite = in_array($this->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true)
-                || in_array($this->id_type, [self::COMPOSITE_PLEINES_ID], true);
+            $isComposite = Helper::isComposite($this);
 
-            $this->id_type      = isset($this->id_type)
+            $this->id_type = isset($this->id_type)
                 ? $this->id_type
                 : ($isComposite ? self::COMPOSITE_PLEINES_ID : self::LAMES_PLEINES_ID);
-            // Longueur par défaut : 1.8 pour composite, 2.09 pour aluminium
             $this->length = $isComposite ? 1.8 : 2.09;
             $this->installation = "scellement-sur-muret";
-            $this->color        = "gris-7016";
+            $this->color = "gris-7016";
             $this->is_aluminium = 1;
-            $this->depart_mur   = 0;
+            $this->depart_mur = 0;
             $this->nombre_angle = 0;
-            $isPleines = in_array($this->id_type, [self::LAMES_PLEINES_ID, self::COMPOSITE_PLEINES_ID], true);
-            $isAjour   = in_array($this->id_type, [self::LAMES_AJOUREES_ID], true);
+            $isAjour = $this->id_type === self::LAMES_AJOUREES_ID;
 
             if ($isAjour) {
                 $this->espacement = 1;
-                $this->height     = "0m403";
-            }
-            else {
+                $this->height = "0m403";
+            } else {
                 $this->espacement = 0;
-                // Hauteur par défaut composite pleines : 0m53 (sinon fallback alu 0m515)
-                $this->height     = $isComposite ? "0m53" : "0m515";
+                $this->height = $isComposite ? "0m53" : "0m515";
             }
         }
         elseif ($this->isBarreaudage()) {

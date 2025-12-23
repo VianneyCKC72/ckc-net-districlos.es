@@ -47,9 +47,7 @@ class Accessory extends ProductFactory
                 self::$session->change('deconseil', 0);
             }
 
-            // Pour le composite, on utilise COMPOSITE_ID comme clé dans ACCESSORIES_ID
-            $isComposite = in_array($session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true)
-                || $session->id_type === self::COMPOSITE_PLEINES_ID;
+            $isComposite = Helper::isComposite($session);
             $categoryKey = $isComposite ? self::COMPOSITE_ID : $session->id_category;
             
             // Vérifier que l'accessoire existe dans ACCESSORIES_ID pour éviter les erreurs
@@ -59,9 +57,7 @@ class Accessory extends ProductFactory
             
             $id_accessory = self::ACCESSORIES_ID[$categoryKey][$accessory_index];
 
-            // On récupère l'accessoire grâce à l'id de la catégorie (ou directement l'id produit pour le composite)
             if ($isComposite) {
-                // Pour le composite, ACCESSORIES_ID contient directement les IDs produit
                 $id_product = $id_accessory;
             }
             elseif (self::$session->isSouple()) {
@@ -206,8 +202,7 @@ class Accessory extends ProductFactory
         elseif (self::$session->id_category == self::BARREAUDAGES_ID) {
             $accessories = ["poteaux", "colliers"];
         }
-        elseif (self::$session->id_type === self::COMPOSITE_PLEINES_ID) {
-            // Accessoires spécifiques au composite
+        elseif (Helper::isComposite(self::$session)) {
             $accessories = ["poteaux", "profil-finition", "u-finition", "capuchon-poteau", "equerre-fixation"];
         }
         elseif (self::$session->isAluminium()) {
@@ -226,17 +221,11 @@ class Accessory extends ProductFactory
 
         }
 
-        // Platines
         if (self::$session->installation == 'scellement-sur-platine') {
-            $isComposite = self::$session->id_type === self::COMPOSITE_PLEINES_ID 
-                || in_array(self::$session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true);
-            
-            if ($isComposite) {
-                // Pour le composite, ajouter les produits spécifiques pour la pose sur platine
+            if (Helper::isComposite(self::$session)) {
                 $accessories[] = 'platine-2232';
                 $accessories[] = 'platine-2233';
             } else {
-                // Pour aluminium lames persiennées, exclure les platines pour les hauteurs 0m403 et 0m766
                 $shouldAddPlatines = true;
                 if (self::$session->isAluminium() && in_array(self::$session->id_type, [self::LAMES_AJOUREES_ID], true)) {
                     $heightFloat = (float)str_replace('m', '.', self::$session->height);
@@ -255,13 +244,8 @@ class Accessory extends ProductFactory
             }
         }
 
-        // Muret (scellement sur muret) pour composite
         if (self::$session->installation == 'scellement-sur-muret') {
-            $isComposite = self::$session->id_type === self::COMPOSITE_PLEINES_ID 
-                || in_array(self::$session->id_category, [self::COMPOSITE_ID, self::COMPOSITE_PLEINES_ID], true);
-            
-            if ($isComposite) {
-                // Pour le composite, ajouter le produit spécifique pour la pose sur muret
+            if (Helper::isComposite(self::$session)) {
                 $accessories[] = 'muret-2234';
             }
         }
@@ -344,59 +328,39 @@ class Accessory extends ProductFactory
                     return 1;
             }
         }
-        elseif ($panneau_times > 0 && self::$session->id_type === self::COMPOSITE_PLEINES_ID) {
-            // Logique spécifique pour le composite
+        elseif ($panneau_times > 0 && Helper::isComposite(self::$session)) {
             $lengthMm = $length * 1000;
-            // Utilise COMPOSITE_PANEL_QUANTITIES_WITH_DECO si un panneau déco est sélectionné, sinon COMPOSITE_PANEL_QUANTITIES
             $hasPanneauDeco = self::$session->panneau_deco();
             $quantitiesTable = $hasPanneauDeco ? self::COMPOSITE_PANEL_QUANTITIES_WITH_DECO : self::COMPOSITE_PANEL_QUANTITIES;
             
-            // Trouver l'index en utilisant le tableau de plages
-            // Index 0 = 0-1800mm, Index 1 = 1801-3600mm, Index 2 = 3601-5400mm, etc.
-            // Chaque plage fait 1800mm
-            if ($lengthMm <= 1800) {
-                $index = 0; // 0-1800mm
-            } else {
-                // Pour lengthMm > 1800 : calculer l'index basé sur les plages de 1800mm
-                // 1801-3600 → index 1, 3601-5400 → index 2, etc.
-                $index = (int) floor(($lengthMm - 1) / 1800);
-            }
-            
+            $index = Helper::getCompositeLengthIndex($lengthMm);
             $index = max(0, min($index, count($quantitiesTable[self::$session->height]) - 1));
             
             switch ($accessory) {
                 case 'poteaux':
-                    // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
                     if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height])) {
                         $qty = self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height][$index];
                         return max(0, (int)$qty - (int)$depart_du_mur);
                     }
-                    // Fallback : calcul basique
                     $nb_panneaux = $quantitiesTable[self::$session->height][$index];
                     return max(0, (int)ceil($nb_panneaux) + 1 - (int)$depart_du_mur);
                 case 'profil-finition':
-                    // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
                     if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['profil-finition'][self::$session->height])) {
                         return (int) self::COMPOSITE_ACCESSORIES_QUANTITIES['profil-finition'][self::$session->height][$index];
                     }
-                    // Fallback : calcul basique
                     $nb_panneaux = $quantitiesTable[self::$session->height][$index];
                     return (int)$nb_panneaux;
                 case 'u-finition':
-                    // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
                     if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['u-finition'][self::$session->height])) {
                         return (int) self::COMPOSITE_ACCESSORIES_QUANTITIES['u-finition'][self::$session->height][$index];
                     }
-                    // Fallback : calcul basique
                     $nb_panneaux = $quantitiesTable[self::$session->height][$index];
                     return (int)$nb_panneaux;
                 case 'capuchon-poteau':
-                    // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
                     if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['capuchon-poteau'][self::$session->height])) {
                         $qty = self::COMPOSITE_ACCESSORIES_QUANTITIES['capuchon-poteau'][self::$session->height][$index];
                         return max(0, (int)$qty - (int)$depart_du_mur);
                     }
-                    // Fallback : calcul basique
                     if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height])) {
                         $nb_poteaux = self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height][$index];
                         return max(0, (int)$nb_poteaux - (int)$depart_du_mur);
@@ -404,11 +368,9 @@ class Accessory extends ProductFactory
                     $nb_panneaux = $quantitiesTable[self::$session->height][$index];
                     return max(0, (int)ceil($nb_panneaux) + 1 - (int)$depart_du_mur);
                 case 'equerre-fixation':
-                    // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
                     if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['equerre-fixation'][self::$session->height])) {
                         return (int) self::COMPOSITE_ACCESSORIES_QUANTITIES['equerre-fixation'][self::$session->height][$index];
                     }
-                    // Fallback : 2 équerres par poteau
                     if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height])) {
                         $nb_poteaux = self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height][$index];
                         return max(0, (int)$nb_poteaux - (int)$depart_du_mur) * 2;
@@ -419,11 +381,9 @@ class Accessory extends ProductFactory
                 case 'platine-2232':
                 case 'platine-2233':
                 case 'muret-2234':
-                    // Utilise le tableau COMPOSITE_ACCESSORIES_QUANTITIES si disponible
                     if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES[$accessory][self::$session->height])) {
                         return (int) self::COMPOSITE_ACCESSORIES_QUANTITIES[$accessory][self::$session->height][$index];
                     }
-                    // Fallback : quantité par défaut
                     return 1;
                 default:
                     return 1;
@@ -564,9 +524,8 @@ class Accessory extends ProductFactory
                 return 11768854;
         }
 
-        $isComposite = in_array(self::$session->id_type, [self::COMPOSITE_PLEINES_ID], true);
+        $isComposite = Helper::isComposite(self::$session);
         
-        // Cas particulier pour le produit 2231 (poteaux composite) : mapping direct hauteur → id_product_attribute
         if ($id_product == 2231 && $isComposite && !empty(self::$session->height)) {
             $height = self::$session->height;
             
@@ -582,7 +541,6 @@ class Accessory extends ProductFactory
             }
         }
         
-        // Cas particulier pour le produit 2225 (profil-finition composite) : mapping direct hauteur → id_product_attribute
         if ($id_product == 2225 && $isComposite && !empty(self::$session->height)) {
             $height = self::$session->height;
             
@@ -597,21 +555,15 @@ class Accessory extends ProductFactory
         }
         
         if (self::$session->isAluminium() && !$isComposite) {
-            // Pour l'aluminium (sauf composite), vérifier si id_product_attribute est défini
             if (!isset(self::$session->id_product_attribut) || !self::$session->id_product_attribut) {
                 return null;
             }
         }
-        
-        // Pour les produits composite, on continue même si id_product_attribute n'est pas défini
-        // car les accessoires composite peuvent avoir leurs propres attributs
 
         $names = [];
         $height = null;
         
-        // Pour les produits composite, on récupère les attributs depuis la session directement
         if ($isComposite) {
-            // Pour le composite, on utilise les valeurs de la session directement
             if (!empty(self::$session->color)) {
                 $names[] = ['name' => self::$session->color];
             }
@@ -620,7 +572,6 @@ class Accessory extends ProductFactory
                 $height = floatval($heightString);
             }
         } else {
-            // Pour l'aluminium, on récupère depuis id_product_attribute de la session
             if (!empty(self::$session->id_product_attribute)) {
                 $sql = new \DbQuery();
                 $sql->select('name');
@@ -668,7 +619,6 @@ class Accessory extends ProductFactory
 
         $id_product_attribute = null;
         
-        // Pour les produits composite, on cherche directement la couleur depuis la session
         if ($isComposite && !empty(self::$session->color)) {
             $sessionColor = strtolower(self::$session->color);
             
@@ -681,7 +631,6 @@ class Accessory extends ProductFactory
                 }
             }
         } else {
-            // Logique originale pour l'aluminium
             foreach ($colors as $id_product_attribute => $color) {
                 $color = explode('-', strtolower(str_replace(' ', '-', $color)));
                 $count = count($color);
@@ -992,14 +941,4 @@ class Accessory extends ProductFactory
         }
     }
 
-    private static function mapCompositePleinesHeight(float $height)
-    {
-        if ($height <= 0.87) {
-            return '0.515';
-        }
-        if ($height <= 1.21) {
-            return '0.96';
-        }
-        return '1.41';
-    }
 }
