@@ -135,6 +135,7 @@ abstract class ModulesXCatalogXWidgetsXProductXBase extends WidgetBase
             'supplier' => __('Products by Supplier'),
             'products' => __('Custom Products'),
             'quantity-discount' => __('Remise sur quantité'),
+            'service-eligible-products' => __('Liste des produits éligibles aux services'),
         ];
         if ($this->catalog) {
             unset($opts['best-sales']);
@@ -2423,6 +2424,11 @@ abstract class ModulesXCatalogXWidgetsXProductXBase extends WidgetBase
                 // Custom ckc
            case 'quantity-discount':
                 $searchProvider = new \CE\CEQuantityDiscountProductSearchProvider(Helper::$translator);
+                $query->setSortOrder(new \PrestaShop\PrestaShop\Core\Product\Search\SortOrder('product', $order_by, $order_dir));
+                break;
+            // Custom ckc
+            case 'service-eligible-products':
+                $searchProvider = new \CE\CEServiceProductSearchProvider(Helper::$translator);
                 $query->setSortOrder(new \PrestaShop\PrestaShop\Core\Product\Search\SortOrder('product', $order_by, $order_dir));
                 break;
             case 'best-sales':
