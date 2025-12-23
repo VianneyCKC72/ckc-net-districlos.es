@@ -47,10 +47,20 @@ class Accessory extends ProductFactory
                 self::$session->change('deconseil', 0);
             }
 
-            $id_accessory = self::ACCESSORIES_ID[$session->id_category][$accessory_index];
+            $isComposite = Helper::isComposite($session);
+            $categoryKey = $isComposite ? self::COMPOSITE_ID : $session->id_category;
+            
+            // Vérifier que l'accessoire existe dans ACCESSORIES_ID pour éviter les erreurs
+            if (!isset(self::ACCESSORIES_ID[$categoryKey][$accessory_index])) {
+                continue;
+            }
+            
+            $id_accessory = self::ACCESSORIES_ID[$categoryKey][$accessory_index];
 
-            // On récupère l'accessoire grâce à l'id de la catégorie
-            if (self::$session->isSouple()) {
+            if ($isComposite) {
+                $id_product = $id_accessory;
+            }
+            elseif (self::$session->isSouple()) {
                 $id_product = self::matchProduct($id_accessory, $language_id, $soubassement);
             }
             else {
@@ -192,13 +202,15 @@ class Accessory extends ProductFactory
         elseif (self::$session->id_category == self::BARREAUDAGES_ID) {
             $accessories = ["poteaux", "colliers"];
         }
+        elseif (Helper::isComposite(self::$session)) {
+            $accessories = ["poteaux", "profil-finition", "u-finition", "capuchon-poteau", "equerre-fixation"];
+        }
         elseif (self::$session->isAluminium()) {
             $accessories = ["poteaux"];
             $platines    = ["platines"]; // Les vis sont fournis
-//            if (self::$session->id_type == self::LAMES_AJOUREES_ID) {
-//                $accessories = array_merge($accessories, $espacement);
-//            }
-            if (self::$session->id_type == self::LAMES_PLEINES_ID) {
+            $isPleines = in_array(self::$session->id_type, [self::LAMES_PLEINES_ID], true);
+            $isAjour   = in_array(self::$session->id_type, [self::LAMES_AJOUREES_ID], true);
+            if ($isPleines) {
                 $accessories[] = 'profil-finition';
             // }else if(self::$session->height == '1m129'){
             //     $accessories = array_merge($accessories, $platines);
@@ -209,23 +221,32 @@ class Accessory extends ProductFactory
 
         }
 
-        // Platines
         if (self::$session->installation == 'scellement-sur-platine') {
-            // Pour aluminium lames persiennées, exclure les platines pour les hauteurs 0m403 et 0m766
-            $shouldAddPlatines = true;
-            if (self::$session->isAluminium() && self::$session->id_type == self::LAMES_AJOUREES_ID) {
-                $heightFloat = (float)str_replace('m', '.', self::$session->height);
-                if ($heightFloat == 0.403 || $heightFloat == 0.766) {
-                    $shouldAddPlatines = false;
+            if (Helper::isComposite(self::$session)) {
+                $accessories[] = 'platine-2232';
+                $accessories[] = 'platine-2233';
+            } else {
+                $shouldAddPlatines = true;
+                if (self::$session->isAluminium() && in_array(self::$session->id_type, [self::LAMES_AJOUREES_ID], true)) {
+                    $heightFloat = (float)str_replace('m', '.', self::$session->height);
+                    if ($heightFloat == 0.403 || $heightFloat == 0.766) {
+                        $shouldAddPlatines = false;
+                    }
+                }
+                
+                if ($shouldAddPlatines) {
+                    if (self::$session->isRigide()) {
+                        unset($platines[1]);
+                        $platines[] = 'caches_goujons';
+                    }
+                    $accessories = array_merge($accessories, $platines);
                 }
             }
-            
-            if ($shouldAddPlatines) {
-                if (self::$session->isRigide()) {
-                    unset($platines[1]);
-                    $platines[] = 'caches_goujons';
-                }
-                $accessories = array_merge($accessories, $platines);
+        }
+
+        if (self::$session->installation == 'scellement-sur-muret') {
+            if (Helper::isComposite(self::$session)) {
+                $accessories[] = 'muret-2234';
             }
         }
 
@@ -307,14 +328,77 @@ class Accessory extends ProductFactory
                     return 1;
             }
         }
-        elseif ($panneau_times > 0 && self::$session->isAluminium() && self::$session->id_type == self::LAMES_PLEINES_ID) {
+        elseif ($panneau_times > 0 && Helper::isComposite(self::$session)) {
+            $lengthMm = $length * 1000;
+            $hasPanneauDeco = self::$session->panneau_deco();
+            $quantitiesTable = $hasPanneauDeco ? self::COMPOSITE_PANEL_QUANTITIES_WITH_DECO : self::COMPOSITE_PANEL_QUANTITIES;
+            
+            $index = Helper::getCompositeLengthIndex($lengthMm);
+            $index = max(0, min($index, count($quantitiesTable[self::$session->height]) - 1));
+            
+            switch ($accessory) {
+                case 'poteaux':
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height])) {
+                        $qty = self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height][$index];
+                        return max(0, (int)$qty - (int)$depart_du_mur);
+                    }
+                    $nb_panneaux = $quantitiesTable[self::$session->height][$index];
+                    return max(0, (int)ceil($nb_panneaux) + 1 - (int)$depart_du_mur);
+                case 'profil-finition':
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['profil-finition'][self::$session->height])) {
+                        return (int) self::COMPOSITE_ACCESSORIES_QUANTITIES['profil-finition'][self::$session->height][$index];
+                    }
+                    $nb_panneaux = $quantitiesTable[self::$session->height][$index];
+                    return (int)$nb_panneaux;
+                case 'u-finition':
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['u-finition'][self::$session->height])) {
+                        return (int) self::COMPOSITE_ACCESSORIES_QUANTITIES['u-finition'][self::$session->height][$index];
+                    }
+                    $nb_panneaux = $quantitiesTable[self::$session->height][$index];
+                    return (int)$nb_panneaux;
+                case 'capuchon-poteau':
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['capuchon-poteau'][self::$session->height])) {
+                        $qty = self::COMPOSITE_ACCESSORIES_QUANTITIES['capuchon-poteau'][self::$session->height][$index];
+                        return max(0, (int)$qty - (int)$depart_du_mur);
+                    }
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height])) {
+                        $nb_poteaux = self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height][$index];
+                        return max(0, (int)$nb_poteaux - (int)$depart_du_mur);
+                    }
+                    $nb_panneaux = $quantitiesTable[self::$session->height][$index];
+                    return max(0, (int)ceil($nb_panneaux) + 1 - (int)$depart_du_mur);
+                case 'equerre-fixation':
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['equerre-fixation'][self::$session->height])) {
+                        return (int) self::COMPOSITE_ACCESSORIES_QUANTITIES['equerre-fixation'][self::$session->height][$index];
+                    }
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height])) {
+                        $nb_poteaux = self::COMPOSITE_ACCESSORIES_QUANTITIES['poteaux'][self::$session->height][$index];
+                        return max(0, (int)$nb_poteaux - (int)$depart_du_mur) * 2;
+                    }
+                    $nb_panneaux = $quantitiesTable[self::$session->height][$index];
+                    $nb_poteaux = max(0, (int)ceil($nb_panneaux) + 1 - (int)$depart_du_mur);
+                    return $nb_poteaux * 2;
+                case 'platine-2232':
+                case 'platine-2233':
+                case 'muret-2234':
+                    if (isset(self::COMPOSITE_ACCESSORIES_QUANTITIES[$accessory][self::$session->height])) {
+                        return (int) self::COMPOSITE_ACCESSORIES_QUANTITIES[$accessory][self::$session->height][$index];
+                    }
+                    return 1;
+                default:
+                    return 1;
+            }
+        }
+        elseif ($panneau_times > 0 && self::$session->isAluminium() && in_array(self::$session->id_type, [self::LAMES_PLEINES_ID], true)) {
+            $installationKey = (self::$session->installation === 'scellement') ? 'scellement-sur-muret' : self::$session->installation;
+            $legacyHeight = (string)$height;
             switch ($accessory) {
                 case 'profil-finition':
-                    return (int) self::ALU_QUANTITIES_PLEINES[self::$session->installation][(string)$height][(string)$length]['profil-finition'];
+                    return (int) self::ALU_QUANTITIES_PLEINES[$installationKey][$legacyHeight][(string)$length]['profil-finition'];
                 case 'poteaux':
-                    return (int) self::ALU_QUANTITIES_PLEINES[self::$session->installation][(string)$height][(string)$length]['poteaux'] - (int) $depart_du_mur;
+                    return (int) self::ALU_QUANTITIES_PLEINES[$installationKey][$legacyHeight][(string)$length]['poteaux'] - (int) $depart_du_mur;
                 case 'platines':
-                    return isset(self::ALU_QUANTITIES_PLEINES[self::$session->installation][(string)$height][(string)$length]['platines']) ? (int) self::ALU_QUANTITIES_PLEINES[self::$session->installation][(string)$height][(string)$length]['platines'] : 0;
+                    return isset(self::ALU_QUANTITIES_PLEINES[$installationKey][$legacyHeight][(string)$length]['platines']) ? (int) self::ALU_QUANTITIES_PLEINES[$installationKey][$legacyHeight][(string)$length]['platines'] : 0;
                 case 'bouchons-demi-poteaux':
                 case 'demi-poteaux' :
                     return (int) $depart_du_mur;
@@ -322,14 +406,15 @@ class Accessory extends ProductFactory
                     return 1;
             }
         }
-        elseif ($panneau_times > 0 && self::$session->isAluminium() && self::$session->id_type == self::LAMES_AJOUREES_ID) {
+        elseif ($panneau_times > 0 && self::$session->isAluminium() && in_array(self::$session->id_type, [self::LAMES_AJOUREES_ID], true)) {
+            $installationKey = (self::$session->installation === 'scellement') ? 'scellement-sur-muret' : self::$session->installation;
             switch ($accessory) {
                 case 'profil-finition':
-                    return (int) self::ALU_QUANTITIES_AJOURES[self::$session->installation][(string)$height][(string)$length]['profil-finition'];
+                    return (int) self::ALU_QUANTITIES_AJOURES[$installationKey][(string)$height][(string)$length]['profil-finition'];
                 case 'poteaux':
-                    return (int) self::ALU_QUANTITIES_AJOURES[self::$session->installation][(string)$height][(string)$length]['poteaux'];
+                    return (int) self::ALU_QUANTITIES_AJOURES[$installationKey][(string)$height][(string)$length]['poteaux'];
                 case 'platines':
-                    return (int) self::ALU_QUANTITIES_AJOURES[self::$session->installation][(string)$height][(string)$length]['platines'];
+                    return (int) self::ALU_QUANTITIES_AJOURES[$installationKey][(string)$height][(string)$length]['platines'];
                 case 'bouchons-demi-poteaux':
                 case 'demi-poteaux' :
                     return (int) $depart_du_mur;
@@ -439,22 +524,67 @@ class Accessory extends ProductFactory
                 return 11768854;
         }
 
-        if (self::$session->isAluminium()) {
+        $isComposite = Helper::isComposite(self::$session);
+        
+        if ($id_product == 2231 && $isComposite && !empty(self::$session->height)) {
+            $height = self::$session->height;
+            
+            // Mapping direct des hauteurs composites vers les IDs de déclinaisons du produit 2231
+            if (in_array($height, ['0m53', '0m70'])) {
+                return 11839452; // 1m05
+            } elseif ($height == '0m87') {
+                return 11839453; // 1m40
+            } elseif (in_array($height, ['1m04', '1m21', '1m38'])) {
+                return 11839454; // 1m85
+            } elseif (in_array($height, ['1m55', '1m72'])) {
+                return 11839455; // 2m30
+            }
+        }
+        
+        if ($id_product == 2225 && $isComposite && !empty(self::$session->height)) {
+            $height = self::$session->height;
+            
+            // Mapping direct des hauteurs composites vers les IDs de déclinaisons du produit 2225
+            if (in_array($height, ['0m53', '0m70'])) {
+                return 11840868; // 1m05
+            } elseif ($height == '0m87') {
+                return 11840869; // 1m40
+            } elseif (in_array($height, ['1m04', '1m21', '1m38', '1m55', '1m72'])) {
+                return 11845843; // 1m85/2m30
+            }
+        }
+        
+        if (self::$session->isAluminium() && !$isComposite) {
             if (!isset(self::$session->id_product_attribut) || !self::$session->id_product_attribut) {
                 return null;
             }
         }
 
-        $sql = new \DbQuery();
-        $sql->select('name');
-        $sql->from('product_attribute_combination', 'pac');
-        $sql->leftJoin('attribute_lang', 'al', 'pac.id_attribute = al.id_attribute');
-        $sql->where('id_product_attribute = ' . self::$session->id_product_attribute . ' AND id_lang = ' . $language_id);
-        $names = \Db::getInstance()->executeS($sql);
+        $names = [];
+        $height = null;
+        
+        if ($isComposite) {
+            if (!empty(self::$session->color)) {
+                $names[] = ['name' => self::$session->color];
+            }
+            if (!empty(self::$session->height)) {
+                $heightString = str_replace('m', '.', self::$session->height);
+                $height = floatval($heightString);
+            }
+        } else {
+            if (!empty(self::$session->id_product_attribute)) {
+                $sql = new \DbQuery();
+                $sql->select('name');
+                $sql->from('product_attribute_combination', 'pac');
+                $sql->leftJoin('attribute_lang', 'al', 'pac.id_attribute = al.id_attribute');
+                $sql->where('id_product_attribute = ' . self::$session->id_product_attribute . ' AND id_lang = ' . $language_id);
+                $names = \Db::getInstance()->executeS($sql);
 
-        foreach ($names as $name) {
-            if (strpos($name['name'], 'Ht ') !== false || strpos($name['name'], '0m') !== false || strpos($name['name'], '1m') !== false || strpos($name['name'], '2m') !== false) {
-                $height = floatval(str_replace(['Ht ', 'm'], ['', '.'], $name['name']));
+                foreach ($names as $name) {
+                    if (strpos($name['name'], 'Ht ') !== false || strpos($name['name'], '0m') !== false || strpos($name['name'], '1m') !== false || strpos($name['name'], '2m') !== false) {
+                        $height = floatval(str_replace(['Ht ', 'm'], ['', '.'], $name['name']));
+                    }
+                }
             }
         }
 
@@ -488,23 +618,37 @@ class Accessory extends ProductFactory
         }
 
         $id_product_attribute = null;
-        foreach ($colors as $id_product_attribute => $color) {
-            $color = explode('-', strtolower(str_replace(' ', '-', $color)));
-            $count = count($color);
-            $color = end($color);
-
-            if ($count > 1) {
-                foreach ($names as $name) {
-                    $recherche_couleur = strpos($name['name'], $color);
-                    if ($recherche_couleur !== false) {
-                        return $id_product_attribute;
-                    }
+        
+        if ($isComposite && !empty(self::$session->color)) {
+            $sessionColor = strtolower(self::$session->color);
+            
+            foreach ($colors as $id_attr => $color) {
+                $colorLower = strtolower(str_replace(' ', '-', $color));
+                
+                // Vérifier si la couleur correspond (exact match ou contient la valeur)
+                if ($colorLower == $sessionColor || strpos($colorLower, $sessionColor) !== false || strpos($sessionColor, $colorLower) !== false) {
+                    return $id_attr;
                 }
             }
-            else {
-                foreach ($names as $name) {
-                    if (strpos(strtolower($name['name']), $color) !== false) {
-                        return $id_product_attribute;
+        } else {
+            foreach ($colors as $id_product_attribute => $color) {
+                $color = explode('-', strtolower(str_replace(' ', '-', $color)));
+                $count = count($color);
+                $color = end($color);
+
+                if ($count > 1) {
+                    foreach ($names as $name) {
+                        $recherche_couleur = strpos($name['name'], $color);
+                        if ($recherche_couleur !== false) {
+                            return $id_product_attribute;
+                        }
+                    }
+                }
+                else {
+                    foreach ($names as $name) {
+                        if (strpos(strtolower($name['name']), $color) !== false) {
+                            return $id_product_attribute;
+                        }
                     }
                 }
             }
@@ -796,4 +940,5 @@ class Accessory extends ProductFactory
             }
         }
     }
+
 }

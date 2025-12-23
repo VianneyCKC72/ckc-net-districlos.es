@@ -533,10 +533,31 @@ $(document).ready(function () {
         throttle(function () {
             if (isAluminium()) {
                 let inputLength = parseFloat($(event.target).val());
-                let intervals = [2.09, 4.115, 6.14, 8.165, 10.19, 12.215, 14.24, 16.265, 18.29, 20.315, 22.34, 24.365, 26.39];
-
-                let matchedLength = intervals.find(value => inputLength <= value) || Math.max(...intervals);
-                $('input[name="longueur"]').val(matchedLength);
+                
+                if (isComposite()) {
+                    // Intervalles pour composite (en mètres) : limites supérieures des plages
+                    // Index 0 = 0-3.599m, Index 1 = 3.6-5.399m, Index 2 = 5.4-7.199m, etc.
+                    let compositeIntervals = [
+                        3.599, 5.399, 7.199, 8.999, 10.799, 12.599, 14.399, 16.199, 17.999, 19.799,
+                        21.599, 23.399, 25.199, 26.999, 28.799, 30.599, 32.399, 34.199, 35.999, 37.799,
+                        39.599, 41.399, 43.199, 44.999, 46.799, 48.599, 50.399, 52.199, 53.999, 55.799,
+                        57.599, 59.399, 61.199, 62.999, 64.799, 66.599, 68.399, 70.199, 71.999, 73.799,
+                        75.599, 77.399, 79.199, 80.999, 82.799, 84.599, 86.399, 88.199, 89.999, 91.799,
+                        93.599, 95.399, 97.199, 98.999, 100.599
+                    ];
+                    
+                    let matchedLength = compositeIntervals.find(value => inputLength <= value);
+                    if (!matchedLength) {
+                        // Si la longueur dépasse toutes les plages, utiliser la dernière limite
+                        matchedLength = Math.max(...compositeIntervals);
+                    }
+                    $('input[name="longueur"]').val(matchedLength);
+                } else {
+                    // Intervalles pour aluminium classique
+                    let intervals = [2.09, 4.115, 6.14, 8.165, 10.19, 12.215, 14.24, 16.265, 18.29, 20.315, 22.34, 24.365, 26.39];
+                    let matchedLength = intervals.find(value => inputLength <= value) || Math.max(...intervals);
+                    $('input[name="longueur"]').val(matchedLength);
+                }
             }
             refreshPrice();
         }, interval);
@@ -1409,6 +1430,16 @@ $(document).ready(function () {
 
 function isAluminium() {
     if ($('.configurator-first .configurator-action.selected').attr('data-id') === "308") {
+        return true;
+    }
+    return false;
+}
+
+function isComposite() {
+    // Vérifier si la catégorie sélectionnée est composite (440) ou si le type est composite pleines (443)
+    var categoryId = $('.configurator-first .configurator-action.selected').attr('data-id');
+    var typeId = $('input[name="type"]').val();
+    if (categoryId === "440" || typeId === "443") {
         return true;
     }
     return false;

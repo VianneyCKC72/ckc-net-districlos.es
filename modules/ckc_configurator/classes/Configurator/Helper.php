@@ -182,4 +182,18 @@ class Helper
 
         return ['unit_price' => $unitPrice, 'total_price' => $price];
     }
+
+    static public function isComposite($session)
+    {
+        return in_array($session->id_category, [\CkcConfigurator\Config::COMPOSITE_ID, \CkcConfigurator\Config::COMPOSITE_PLEINES_ID], true)
+            || $session->id_type === \CkcConfigurator\Config::COMPOSITE_PLEINES_ID;
+    }
+
+    static public function getCompositeLengthIndex($lengthMm)
+    {
+        if ($lengthMm <= 1800) {
+            return 0;
+        }
+        return (int) floor(($lengthMm - 1) / 1800);
+    }
 }

@@ -27,38 +27,60 @@ class Grillage extends ProductFactory
         // On prend la première catégorie qui équivaut à la première gamme de grillage
         if($session->isAluminium()) {
             if(empty($session->length)) {
-                $session->length       = 2.09;
-                $session->installation = "scellement-sur-muret";
-                if ($session->id_type == self::LAMES_PLEINES_ID) {
-                    $session->height       = "0m403";
-                }else{
-                    $session->height       = "0m515";
+                $isComposite = Helper::isComposite($session);
+                $session->length = $isComposite ? 1.8 : 2.09;
+                
+                if (!$isComposite) {
+                    $session->installation = "scellement-sur-muret";
+                    $isPleines = $session->id_type === self::LAMES_PLEINES_ID;
+                    if ($isPleines) {
+                        $session->height     = "0m515";
+                        $session->espacement = 0;
+                    } else {
+                        $session->height     = "0m403";
+                        $session->espacement = 1;
+                    }
+                    $session->color = "gris-7016";
                 }
-                $session->color        = "gris-7016";
-                $session->espacement   = 1;
             }
-            $height                = (float)str_replace("m", ".", $session->height);
+            $height = (float)str_replace("m", ".", $session->height);
             $installationType = $session->installation;
+            $installationKey = ($session->isAluminium() && $installationType === 'scellement')
+                ? 'scellement-sur-muret'
+                : $installationType;
             $length = $session->length;
-            if ($session->id_type == self::LAMES_PLEINES_ID) {
-                $quantity_factor = array_flip(self::STEPS_HIGHT_ALU_LAMES_PLEINES)[$session->height];
-            }else{
-                $quantity_factor = array_flip(self::STEPS_HIGHT_ALU)[$session->height];
+            $isPleines = $session->id_type === self::LAMES_PLEINES_ID;
+
+            if (Helper::isComposite($session)) {
+                $lengthMm = $length * 1000;
+                $hasPanneauDeco = $session->panneau_deco();
+                $quantitiesTable = $hasPanneauDeco ? self::COMPOSITE_PANEL_QUANTITIES_WITH_DECO : self::COMPOSITE_PANEL_QUANTITIES;
+                
+                $index = Helper::getCompositeLengthIndex($lengthMm);
+                $index = max(0, min($index, count($quantitiesTable[$session->height]) - 1));
+                $quantity_factor = $quantitiesTable[$session->height][$index];
+            } else {
+                $legacyHeight = (string)$height;
+                if ($isPleines) {
+                    $quantity_factor = array_flip(self::STEPS_HIGHT_ALU_LAMES_PLEINES)[$session->height];
+                } else {
+                    $quantity_factor = array_flip(self::STEPS_HIGHT_ALU)[$session->height];
+                }
+
+                $quantities = ($isPleines)
+                    ? self::ALU_QUANTITIES_PLEINES[$installationKey][$legacyHeight]
+                    : self::ALU_QUANTITIES_AJOURES[$installationKey][$legacyHeight];
+
+                $lengthKeys = array_keys($quantities);
+                $position = array_search($length, $lengthKeys);
+                $coefficient = 1;
+                if ($position !== false) {
+                    $coefficient = $position + 1;
+                }
+
+                $quantity_factor *= $coefficient;
             }
-
-            $quantities = ($session->id_type == self::LAMES_PLEINES_ID)
-                ? self::ALU_QUANTITIES_PLEINES[$installationType][(string)$height]
-                : self::ALU_QUANTITIES_AJOURES[$installationType][(string)$height];
-
-            $lengthKeys = array_keys($quantities);
-            $position = array_search($length, $lengthKeys);
-            $coefficient = 1;
-            if ($position !== false) {
-                $coefficient = $position + 1;
-            }
-
-            $quantity_factor *= $coefficient;
-            if($session->panneau_deco()) {
+            if($session->panneau_deco() && !Helper::isComposite($session)) {
                 $quantity_factor -= 1 * $coefficient;
             }
             $quantity = 1;
@@ -68,13 +90,32 @@ class Grillage extends ProductFactory
 
         $quantity = $quantity * $quantity_factor;
 
+        if (Helper::isComposite($session)) {
+            if (!empty($session->color)) {
+                if ($session->color === 'ton-bois') {
+                    $session->id_product_attribute = 11840408;
+                    $id_product_attribute = 11840408;
+                } else {
+                    $session->id_product_attribute = 11840407;
+                    $id_product_attribute = 11840407;
+                }
+            }
+        }
+
         // Get name of grillage with its id_product_attribute or with no specific combination
         if ($id_product == 1324) {
             $session->id_product_attribute = 11780062;
+            $id_product_attribute = 11780062;
         }else if ($id_product == 1323) {
             $session->id_product_attribute = 11780060;
+            $id_product_attribute = 11780060;
         }
-        $name = \Product::getProductName($id_product, $session->id_product_attribute, $language_id);
+        // Utiliser id_product_attribute de la session si elle n'a pas été définie précédemment
+        if ($id_product_attribute === null && !empty($session->id_product_attribute)) {
+            $id_product_attribute = $session->id_product_attribute;
+        }
+        
+        $name = \Product::getProductName($id_product, $id_product_attribute ?? $session->id_product_attribute, $language_id);
 
         if (!$name) {
             $name = (new \Product($id_product))->name[$language_id];
@@ -90,7 +131,7 @@ class Grillage extends ProductFactory
         }
 
         // Get unit_price and total_price of accessory
-        $price = Helper::getPrice($id_product, $id_product_attribute, $quantity);
+        $price = Helper::getPrice($id_product, $id_product_attribute ?? $session->id_product_attribute, $quantity);
 
         $data = [
             "id"           => $id_product,
