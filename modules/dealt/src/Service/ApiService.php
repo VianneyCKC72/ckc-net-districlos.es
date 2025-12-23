@@ -18,7 +18,6 @@ class ApiService
         $params = [
             'country' => $country,
             'zipCode' => $zipcode,
-            /*            'city' => 'Paris'*/
         ];
 
         // API actuelle ne prend pas store_id dans cette route
@@ -40,7 +39,7 @@ class ApiService
 
         $endpoint = "missions/{$id_mission}/cancel";
 
-        return $this->request('POST', $endpoint, [], $params);
+        return $this->request('PUT', $endpoint, [], $params);
     }
 
     private function request(string $method, string $endpoint, array $query = [], array $body = [])
@@ -66,6 +65,9 @@ class ApiService
         if ($method === 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
+        } else if ($method === 'PUT') {
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+            curl_setopt($ch, CURLOPT_POSTFIELDS,http_build_query($query));
         }
 
         $response = curl_exec($ch);

@@ -317,7 +317,9 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             unset($installations[2]);
         }
         else if ($this->session->isAluminium()) {
-            unset($installations[0]);
+            if (!Helper::isComposite($this->session)) {
+                unset($installations[0]);
+            }
         }
 
         if(!empty($data['heights'])  && !$this->session->isAluminium()) {
@@ -409,7 +411,9 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         $this->session->id_type = (int) Tools::getValue('type');
 
         if(empty($this->session->height) || $this->session->isAluminium()) {
-            $this->session->change('id_category', $type->id_parent);
+            $isComposite = $type->id === self::COMPOSITE_PLEINES_ID;
+            $id_category_to_set = $isComposite ? self::COMPOSITE_PLEINES_ID : $type->id_parent;
+            $this->session->change('id_category', $id_category_to_set);
             $this->session->default($this->language_id, $this, $products);
             $this->session->change('id_type', (int)Tools::getValue('type'));
         }
@@ -688,9 +692,12 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         }
 
         if ($this->session->isAluminium()) {
-            $hauteurs = self::STEPS_HIGHT_ALU;
-            if ($this->session->id_type == self::LAMES_PLEINES_ID) {
-                $hauteurs = self::STEPS_HIGHT_ALU_LAMES_PLEINES;
+            $isComposite = Helper::isComposite($this->session);
+            if ($isComposite) {
+                $hauteurs = self::COMPOSITE_STEPS_HIGHT_PLEINES;
+            } else {
+                $isPleines = $this->session->id_type === self::LAMES_PLEINES_ID;
+                $hauteurs = $isPleines ? self::STEPS_HIGHT_ALU_LAMES_PLEINES : self::STEPS_HIGHT_ALU;
             }
 
             $heights = [];
@@ -701,6 +708,17 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     'value' => $step,
                     'checked' => $this->session->height == $step
                 ];
+            }
+
+            if ($isComposite) {
+                $colors = [];
+                foreach (self::COMPOSITE_COLORS as $value => $name) {
+                    $colors[] = [
+                        'value' => $value,
+                        'name' => $name,
+                        'checked' => $this->session->color == $value
+                    ];
+                }
             }
         }
 
@@ -825,19 +843,32 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             ]);
         }
 
-        // Panneaux déco
         if (isset($panneau_deco['active']) && $panneau_deco['active'] == 'true' && !empty($panneau_deco['id']) && !empty($panneau_deco['id_product_attribute'])) {
             $length = $this->session->length;
-            $height                = (float)str_replace("m", ".", $this->session->height);
-            $quantities = ($this->session->id_type == self::LAMES_PLEINES_ID)
-                ? self::ALU_QUANTITIES_PLEINES[$this->session->installation][(string)$height]
-                : self::ALU_QUANTITIES_AJOURES[$this->session->installation][(string)$height];
-
-            $lengthKeys = array_keys($quantities);
-            $position = array_search($length, $lengthKeys);
+            $isComposite = Helper::isComposite($this->session);
+            
             $coefficient = 1;
-            if ($position !== false) {
-                $coefficient = $position + 1;
+            if ($isComposite) {
+                $lengthMm = $length * 1000;
+                $index = Helper::getCompositeLengthIndex($lengthMm);
+                $index = max(0, min($index, count(self::COMPOSITE_DECO_PANEL_QUANTITIES) - 1));
+                $coefficient = self::COMPOSITE_DECO_PANEL_QUANTITIES[$index];
+            } else {
+                $height = $this->session->height;
+                $heightFloat = (float)str_replace("m", ".", $height);
+                $isPleines = $this->session->id_type === self::LAMES_PLEINES_ID;
+                $installationKey = ($this->session->isAluminium() && $this->session->installation === 'scellement')
+                    ? 'scellement-sur-muret'
+                    : $this->session->installation;
+                $quantities = $isPleines
+                    ? self::ALU_QUANTITIES_PLEINES[$installationKey][(string)$heightFloat]
+                    : self::ALU_QUANTITIES_AJOURES[$installationKey][(string)$heightFloat];
+
+                $lengthKeys = array_keys($quantities);
+                $position = array_search($length, $lengthKeys);
+                if ($position !== false) {
+                    $coefficient = $position + 1;
+                }
             }
             $this->session->insertEntry([
                 'id_configurator_session' => $this->session->id,

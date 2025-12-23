@@ -74,7 +74,7 @@
                     <div class="configurator-content">
                         <div class="row row-items initial-m-p">
                             {foreach from=$categories key=i item=category}
-                                <div class="mt-1 col-xs-12 col-sm-4" data-wow-duration="1s" {if $i == 1}data-wow-delay="0.5s"{elseif $i == 2}data-wow-delay="1s"{/if}>
+                                <div class="mt-1 col-xs-12 col-sm-3" data-wow-duration="1s" {if $i == 1}data-wow-delay="0.5s"{elseif $i == 2}data-wow-delay="1s"{elseif $i == 3}data-wow-delay="1.5s"{/if}>
                                     <a href="#" data-id="{$category.id_category}" class="configurator-action">
                                         <img src="{$link->getCatImageLink($category.link_rewrite, $category.id_image)|escape:'html':'UTF-8'}" class="img-responsive" alt="{$category.name}" />
                                         <div class="title-img">

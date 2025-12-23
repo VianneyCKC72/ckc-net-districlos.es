@@ -14,7 +14,10 @@ class PanneauDeco extends ProductFactory {
 
         $height = floatval(str_replace(['Ht ', 'ht-', 'm'], ['', '', '.'], $session->height));
 
-        $category = new \Category(self::PANNEAUX_DECO_ALUMINIUM_ID);
+        $isComposite = Helper::isComposite($session);
+        $categoryId = $isComposite ? self::PANNEAUX_DECO_COMPOSITE_ID : self::PANNEAUX_DECO_ALUMINIUM_ID;
+        
+        $category = new \Category($categoryId);
         $products = $category->getProducts($language_id, 1, 1000000, null, null, false, true, false, 1, false);
         $items = [];
 
