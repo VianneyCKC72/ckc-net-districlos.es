@@ -8,7 +8,7 @@
         </div>
         <div class="dealt-offer-price">
             + {$dealt_service_price}
-            <a href="{$dealt_service_url}" target="_blank" class="dealt-conditions-link">Détails des conditions du service</a>
+            <a href="{$dealt_service_url}" class="dealt-conditions-link">Détails des conditions du service</a>
         </div>
         <div class="dealt-check">
             <label>Vérifier la disponibilité du service :</label>

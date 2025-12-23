@@ -27,7 +27,7 @@
                 +{$service.dealt_service_price|escape:'html':'UTF-8'}
                 {if !empty($service.dealt_service_url)}
                     <a href="{$service.dealt_service_url|escape:'html':'UTF-8'}"
-                       target="_blank" rel="noopener noreferrer nofollow"
+                       rel="noopener noreferrer nofollow"
                        class="dealt-conditions-link">
                         Détails des conditions du service
                     </a>
