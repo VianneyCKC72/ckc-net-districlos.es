@@ -28,6 +28,7 @@ const _CE_CLASSES_ = [
     'CEIconSet' => 'classes/CEIconSet.php',
     // custom ckc 
     'CE\CEQuantityDiscountProductSearchProvider' => 'classes/Providers/CEQuantityDiscountProductSearchProvider.php',
+    'CE\CEServiceProductSearchProvider' => 'classes/Providers/CEServiceProductSearchProvider.php',
 
 ];
 spl_autoload_register(function ($class) {
