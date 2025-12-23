@@ -373,10 +373,14 @@ class FrontControllerCore extends Controller
         if (isset($_GET['logout']) || ($this->context->customer->logged && Customer::isBanned($this->context->customer->id))) {
             $this->context->customer->logout();
 
-            Tools::redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null);
+            $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
+            $safeUrl = $referer ? Tools::secureReferrer($referer) : $this->context->link->getPageLink('index');
+            Tools::redirect($safeUrl);
         } elseif (isset($_GET['mylogout'])) {
             $this->context->customer->mylogout();
-            Tools::redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null);
+            $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
+            $safeUrl = $referer ? Tools::secureReferrer($referer) : $this->context->link->getPageLink('index');
+            Tools::redirect($safeUrl); 
         }
 
         /*
