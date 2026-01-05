@@ -410,11 +410,17 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
 
         $this->session->id_type = (int) Tools::getValue('type');
 
-        if(empty($this->session->height) || $this->session->isAluminium()) {
+        if(empty($this->session->height)) {
             $isComposite = $type->id === self::COMPOSITE_PLEINES_ID;
             $id_category_to_set = $isComposite ? self::COMPOSITE_PLEINES_ID : $type->id_parent;
-            $this->session->change('id_category', $id_category_to_set);
+            $this->session->change('id_category', (int)$id_category_to_set);
             $this->session->default($this->language_id, $this, $products);
+            $this->session->change('id_type', (int)Tools::getValue('type'));
+        } else {
+            // Pour l'aluminium, mettre à jour id_type et id_category sans réinitialiser tout
+            $isComposite = $type->id === self::COMPOSITE_PLEINES_ID;
+            $id_category_to_set = $isComposite ? self::COMPOSITE_PLEINES_ID : $type->id_parent;
+            $this->session->change('id_category', (int)$id_category_to_set);
             $this->session->change('id_type', (int)Tools::getValue('type'));
         }
         if(!empty(Tools::getValue('espacement'))) {
@@ -454,7 +460,8 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             $this->session->deleteEntryByType('main');
             $this->session->deleteEntryByType('accessory');
             $this->session->change('id_type', $type->id);
-            $this->session->change('id_product_attribute', $this->getIdProductAttribute($products, $this->session->height, $this->session->color));
+            $id_product_attribute_result = $this->getIdProductAttribute($products, $this->session->height, $this->session->color);
+            $this->session->change('id_product_attribute', $id_product_attribute_result);
 
             $this->data = $this->getAttributes($products);
             $this->data['poteaux'] = null;
@@ -696,7 +703,8 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             if ($isComposite) {
                 $hauteurs = self::COMPOSITE_STEPS_HIGHT_PLEINES;
             } else {
-                $isPleines = $this->session->id_type === self::LAMES_PLEINES_ID;
+                // Conversion en int pour une comparaison stricte fiable
+                $isPleines = (int)$this->session->id_type === (int)self::LAMES_PLEINES_ID;
                 $hauteurs = $isPleines ? self::STEPS_HIGHT_ALU_LAMES_PLEINES : self::STEPS_HIGHT_ALU;
             }
 
@@ -736,7 +744,6 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             foreach ($products as $product) {
                 $combinations = static::getAttributesInformationsByProduct($product['id_product']);
 
-
                 foreach ($combinations as $combination) {
                     $attribute = str_replace(' ', '-', strtolower($combination['attribute']));
                     if ($attribute == $color) {
@@ -750,12 +757,19 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             }
         }
 
-
         $result = array_intersect($ids_color, $ids_height);
         if (count($result) > 0) {
             foreach ($result as $id_product_attribute) {
                 return $id_product_attribute;
             }
+        }
+
+        // Fallback pour l'aluminium non-composite : si pas de correspondance hauteur+couleur
+        // mais qu'on a des couleurs, retourner la première déclinaison avec la bonne couleur
+        // Ceci gère le cas des lames ajourées qui n'ont pas d'attributs de hauteur
+        // et restaure le comportement de l'ancienne version
+        if ($this->session->isAluminium() && !Helper::isComposite($this->session) && empty($ids_height) && !empty($ids_color)) {
+            return $ids_color[0];
         }
 
         return $id_product_attribute;
