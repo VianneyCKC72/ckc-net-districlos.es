@@ -94,6 +94,17 @@ const STOCK_STATES = {
         blockQuantity: false,
         limitToPlatformStock: true
     },
+    fin_de_vie_national: {
+        title: "Fin de série !",
+        subtitle: "Commandez vite, stock bas !",
+        stock: (qty, seuil, platformStock) => `${qty || 0} produits en stock`,
+        color: "#ff144e",
+        image: 'deliveryFinDeVie.png',
+        showStoreButton: false,
+        disableCart: false,
+        blockQuantity: false,
+        limitToTotalStock: true
+    },
     normal: {
         title: "Stock en magasin",
         subtitle: "",
@@ -110,7 +121,10 @@ function updateStockDisplay(resp) {
     const $container = $('.blockDeliveryDisplayStock').parent();
     
     // Déterminer l'état
-    const stateName = resp.victime_succes ? 'victime_succes' : (resp.fin_de_vie ? 'fin_de_vie' : 'normal');
+    const stateName = resp.victime_succes ? 'victime_succes' 
+        : (resp.fin_de_vie ? 'fin_de_vie' 
+        : (resp.fin_de_vie_national ? 'fin_de_vie_national' 
+        : 'normal'));
     const state = STOCK_STATES[stateName];
     
     // Appliquer les classes CSS
@@ -200,6 +214,41 @@ function updateStockDisplay(resp) {
                 }, 500); // Attendre 500ms après la dernière saisie
             }
         });
+    } else if (state.limitToTotalStock && resp.total_quantity) {
+        // Limiter au stock total national pour les produits fin de vie national
+        $input.attr('max', resp.total_quantity).prop('disabled', false);
+        $buttons.prop('disabled', false).removeClass('disabled').css({'pointer-events': 'auto', 'opacity': '1'});
+        
+        // Corriger si la quantité actuelle dépasse le stock total
+        const currentQty = parseInt($input.val()) || 0;
+        if (currentQty > resp.total_quantity) {
+            $input.val(resp.total_quantity);
+            // Déclencher l'événement pour que PrestaShop recalcule le prix
+            $input.trigger('change');
+            $input.trigger('touchspin.on.startspin');
+            // Afficher le message de limitation
+            showQuantityLimitMessage(resp.total_quantity);
+        }
+        
+        // Ajouter un écouteur pour bloquer les saisies au-dessus du max avec debounce
+        let inputTimeout;
+        $input.off('input.totalLimit').on('input.totalLimit', function() {
+            const $this = $(this);
+            const val = parseInt($this.val());
+            
+            if (val > resp.total_quantity) {
+                $this.val(resp.total_quantity);
+                
+                // Afficher le message de limitation
+                showQuantityLimitMessage(resp.total_quantity);
+                
+                // Déclencher 'change' avec debounce pour éviter les rafraîchissements excessifs
+                clearTimeout(inputTimeout);
+                inputTimeout = setTimeout(function() {
+                    $this.trigger('change');
+                }, 500);
+            }
+        });
     } else {
         // Pas de limitation pour les produits normaux
         $input.removeAttr('max').prop('disabled', false);
@@ -213,7 +262,7 @@ function updateStockDisplay(resp) {
     updateStoreDisplay(resp);
     
     // Mise à jour des stocks par magasin
-    updateStoresModal(resp.stores, resp.fin_de_vie);
+    updateStoresModal(resp.stores, resp.fin_de_vie || resp.fin_de_vie_national);
 }
 
 // Fonctions utilitaires pour le panier
