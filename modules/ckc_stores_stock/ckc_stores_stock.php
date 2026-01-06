@@ -109,6 +109,7 @@ class Ckc_Stores_Stock extends Module
             'stores' => $stockData['stores'],
             'seuil' => $stockData['seuil'],
             'fin_de_vie' => $stockData['fin_de_vie'],
+            'fin_de_vie_national' => isset($stockData['fin_de_vie_national']) ? $stockData['fin_de_vie_national'] : false,
             'victime_succes' => isset($stockData['victime_succes']) ? $stockData['victime_succes'] : false,
         ]);
 
