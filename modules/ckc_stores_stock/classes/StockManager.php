@@ -78,16 +78,18 @@ class StockManager extends Module
         $stores = $this->getStoresData($stock_id_product, $stock_id_product_attribute);
         $total_quantity = array_sum(array_column($stores, 'stock'));
 
-        // Récupérer le statut "fin de vie" et le seuil de stock de la déclinaison
+        // Récupérer le statut "fin de vie" et "fin de vie national" et le seuil de stock de la déclinaison
         $fin_de_vie = false;
+        $fin_de_vie_national = false;
         $stock_threshold = null;
         $victime_succes = false;
         $platform_stock = 0;
 
         if ($id_product_attribute > 0) {
-            $eol_data = Db::getInstance()->getRow('SELECT end_of_life, stock_threshold FROM ' . _DB_PREFIX_ . 'product_attribute_end_of_life WHERE id_product_attribute = ' . (int)$id_product_attribute);
+            $eol_data = Db::getInstance()->getRow('SELECT end_of_life, end_of_life_national, stock_threshold FROM ' . _DB_PREFIX_ . 'product_attribute_end_of_life WHERE id_product_attribute = ' . (int)$id_product_attribute);
             if ($eol_data) {
                 $fin_de_vie = (bool)$eol_data['end_of_life'];
+                $fin_de_vie_national = isset($eol_data['end_of_life_national']) ? (bool)$eol_data['end_of_life_national'] : false;
                 $stock_threshold = $eol_data['stock_threshold'] ? (int)$eol_data['stock_threshold'] : null;
 
                 // Si fin de vie, récupérer le stock de la plateforme (store 18 = DX)
@@ -98,6 +100,12 @@ class StockManager extends Module
 
                     // Pour les produits fin de vie, vérifier avec le stock plateforme
                     if ($stock_threshold !== null && $platform_stock <= $stock_threshold) {
+                        $victime_succes = true;
+                    }
+                } elseif ($fin_de_vie_national) {
+                    // Si fin de vie national, utiliser le stock total national (même comportement visuel que fin de vie)
+                    // Pour les produits fin de vie national, vérifier avec le stock total
+                    if ($stock_threshold !== null && $total_quantity <= $stock_threshold) {
                         $victime_succes = true;
                     }
                 } else {
@@ -119,6 +127,7 @@ class StockManager extends Module
             'isKit' => $isKit,
             'stores' => $stores,
             'fin_de_vie' => $fin_de_vie,
+            'fin_de_vie_national' => $fin_de_vie_national,
             'stock_threshold' => $stock_threshold,
             'victime_succes' => $victime_succes,
         ];
