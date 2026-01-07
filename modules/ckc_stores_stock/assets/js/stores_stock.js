@@ -308,7 +308,10 @@ function showQuantityLimitMessage(maxQty) {
 function updateStoreDisplay(resp) {
     if (resp.id_store) {
         $(".store-selected").show();
-        $(".store-selected .nameStore").html(`${resp.store_name}<br>`);
+        $(".store-selected .nameStore").html(
+            '<img src="/modules/ckc_stores_stock/assets/img/nameStore.webp" alt="Magasin" style="width: 50px; height: 50px;">' +
+            '<span class="font-weight-normal">Votre magasin</span> <span class="font-weight-bold">Districlos ' + resp.store_name.replace('DISTRICLOS ', '').replace('Districlos ', '') + '</span><br>'
+        );
         $(".store-selected .productQuantity").html(resp.quantity > 0 ? `${resp.quantity} produit(s) en stock` : "Arrivage en cours");
         $("#modalProductStock-" + resp.id_store).html(getStockSvg(resp.quantity));
     } else {
@@ -420,6 +423,14 @@ $(document).ready(function () {
 });
 
 
+// Icône info pour productLimit avec wrapper pour tooltip
+function createInfoIcon(tooltipContent) {
+    return '<span class="info-icon-wrapper">' +
+           '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#79c046" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 5px; vertical-align: middle; cursor: pointer;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>' +
+           '<span class="custom-tooltip">' + tooltipContent + '</span>' +
+           '</span>';
+}
+
 if ($('.delivery-option input').length > 0) {
     $('.delivery-option input').change(function () {
         let selectedDelivery = $('input[name*="delivery_option"]:checked').attr('id');
@@ -431,7 +442,10 @@ if ($('.delivery-option input').length > 0) {
             "json"
         ).then(function (resp) {
             // Mettre à jour le nom du magasin (toujours visible)
-            $('#stock-summary-content .nameStore').html(resp.data.stock.store_name);
+            $('#stock-summary-content .nameStore').html(
+                '<img src="/modules/ckc_stores_stock/assets/img/nameStore.webp" alt="Magasin" style="width: 50px; height: 50px;">' +
+                '<span class="font-weight-normal">Votre magasin</span> <span class="font-weight-bold">Districlos ' + resp.data.stock.store_name.replace('DISTRICLOS ', '').replace('Districlos ', '') + '</span>'
+            );
             
             // Vérifier s'il y a des produits normaux (pas fin de série)
             const hasNormalProducts = resp.data.stocks && resp.data.stocks.length > 0;
@@ -456,37 +470,56 @@ if ($('.delivery-option input').length > 0) {
                 if (resp.data.stock.isClickAndCollect) {
                     $('#stock-summary-content .card-header').html('Click & Collect');
                     if (resp.data.stock.stock_ok) {
-                        $('#stock-summary-content .productLimit').html('Super ! Un ou plusieurs produits sont en stock ( hors plateforme )');
+                        var tooltipText = '';
                         // Message spécial pour le store Essonne (19)
                         if (resp.data.stock.store_id == 19) {
-                            $('#stock-summary-content .text').html('<p>Disponibilité sous 5 jours ouvrés en magasin, selon stock. Le magasin vous contactera dès que votre commande sera prête.</p>');
+                            tooltipText = 'Disponibilité sous 5 jours ouvrés en magasin, selon stock. Le magasin vous contactera dès que votre commande sera prête.';
                         } else {
-                            $('#stock-summary-content .text').html('<p>Vous pouvez venir récupérer les produits en stock dans votre magasin 2h après votre commande.</p>')
+                            tooltipText = 'Vous pouvez venir récupérer les produits en stock dans votre magasin 2h après votre commande.';
                         }
+                        $('#stock-summary-content .productLimit').html('Super ! Un ou plusieurs produits sont en stock ( hors plateforme ) ' + createInfoIcon(tooltipText));
                     } else {
-                        $('#stock-summary-content .productLimit').html('Un ou des produits sont en cours de réapprovisionnement ( hors plateforme )');
+                        var tooltipText = '';
                         // Message spécial pour le store Essonne (19)
                         if (resp.data.stock.store_id == 19) {
-                            $('#stock-summary-content .text').html('<p>Disponibilité sous 5 jours ouvrés en magasin, selon stock. Le magasin vous contactera dès que votre commande sera prête.</p>');
+                            tooltipText = 'Disponibilité sous 5 jours ouvrés en magasin, selon stock. Le magasin vous contactera dès que votre commande sera prête.';
                         } else {
-                            $('#stock-summary-content .text').html('<p>Vous pouvez venir récupérer les produits en stock dans votre magasin.</p> <p>Pour les produits en cours de réapprovisionnement, nous vous appellerons aussitôt ces derniers disponibles.</p>')
+                            tooltipText = 'Vous pouvez venir récupérer les produits en stock dans votre magasin.<br><br>Pour les produits en cours de réapprovisionnement, nous vous appellerons aussitôt ces derniers disponibles.';
                         }
+                        $('#stock-summary-content .productLimit').html('Un ou des produits sont en cours de réapprovisionnement ( hors plateforme ) ' + createInfoIcon(tooltipText));
                     }
                 } else {
                     $('#stock-summary-content .card-header').html('Livraison');
-                    $('#stock-summary-content .productLimit').html('Notre magasin vous livre à domicile ou sur votre chantier !');
-                    $('#stock-summary-content .text').html('<p>La livraison se fait sur rendez-vous uniquement. Nous allons vous contacter suite à votre commande pour déterminer cette date.</p><p>Le délais moyen pour vos produits est entre 10 à 15 jours ouvrés (sous réserve de stock disponible).</p>')
+                    var tooltipText = 'La livraison se fait sur rendez-vous uniquement. Nous allons vous contacter suite à votre commande pour déterminer cette date.<br><br>Le délais moyen pour vos produits est entre 10 à 15 jours ouvrés (sous réserve de stock disponible).';
+                    $('#stock-summary-content .productLimit').html('Notre magasin vous livre à domicile ou sur votre chantier ! ' + createInfoIcon(tooltipText));
                 }
                 
                 $('#stock-summary-content .products').empty();
                 
                 for (let i = 0; i < resp.data.stocks.length; i++) {
+                    var image = '';
+                    var statusColor = '';
+                    var statusText = '';
+                    
                     if (resp.data.stocks[i].stock_ok) {
-                        var image = '<img src="/modules/ckc_stores_stock/assets/img/selectionner.webp" class="unveil-loaded">'
+                        image = '<img src="/modules/ckc_stores_stock/assets/img/selectionner.webp" class="unveil-loaded">';
+                        statusColor = '#79C046';
+                        statusText = 'en stock';
                     } else {
-                        var image = '<img src="/modules/ckc_stores_stock/assets/img/moins.webp" class="unveil-loaded">'
+                        image = '<img src="/modules/ckc_stores_stock/assets/img/moins.webp" class="unveil-loaded">';
+                        statusColor = '#F6AC00';
+                        statusText = 'arrivage en cours';
                     }
-                    $('#stock-summary-content .products').append('<p class="productQuantity" style="color:#000000;">' + image + resp.data.stocks[i].product_name + '<br></p>')
+                    
+                    $('#stock-summary-content .products').append(
+                        '<p class="productQuantity" style="color:#000000;">' + 
+                        image + 
+                        '<span>' +
+                        resp.data.stocks[i].product_name + 
+                        '<br><small style="color: ' + statusColor + '; font-size: 11px;">' + 
+                        statusText + 
+                        '</small></span></p>'
+                    );
                 }
             } else {
                 // Aucun produit normal, supprimer/vider les sections
@@ -497,8 +530,9 @@ if ($('.delivery-option input').length > 0) {
             
             // Gérer la section des produits fin de série
             if (hasFinSerieProducts) {
+                var finSerieTooltip = 'Ce produit est disponible sur notre plateforme logistique, pour une meilleure disponibilité.';
                 let finSerieHtml = '<div class="fin-serie-section mt-3">' +
-                    '<p class="productLimit" style="color:#79c046;">Un ou des produits sont en stock sur plateforme</p>' +
+                    '<p class="productLimit" style="color:#79c046;">Un ou des produits sont en stock sur plateforme ' + createInfoIcon(finSerieTooltip) + '</p>' +
                     '<div class="products fin-serie-products">';
                 
                 resp.data.finSerieStocks.forEach(function(productStock) {
