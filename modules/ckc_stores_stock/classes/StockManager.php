@@ -76,7 +76,10 @@ class StockManager extends Module
         }
 
         $stores = $this->getStoresData($stock_id_product, $stock_id_product_attribute);
-        $total_quantity = array_sum(array_column($stores, 'stock'));
+        // Calculer le total en excluant le magasin 19 (qui est juste un affichage visuel du 14)
+        $total_quantity = array_sum(array_map(function($store) {
+            return $store['id'] == 19 ? 0 : $store['stock'];
+        }, $stores));
 
         // Récupérer le statut "fin de vie" et "fin de vie national" et le seuil de stock de la déclinaison
         $fin_de_vie = false;
