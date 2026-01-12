@@ -178,6 +178,7 @@ $(function () {
 
         if($("#product").length){
             var qty = $("#quantity_wanted").val()
+            var packQtyML = $("#quantity_ml").val()
             var isCart = false;
         } else {
             var qty = $("#quantity_wanted[data-product-id="+productId+"]").val()
@@ -186,6 +187,49 @@ $(function () {
 
         function addProductService(){
             qty = qty || 1;
+            packQtyML = packQtyML || 1
+
+            var ap5_quantityWanted = parseInt($('input[name=qty]').val());
+            if (isNaN(ap5_quantityWanted) || ap5_quantityWanted <= 0) {
+                ap5_quantityWanted = 1;
+            }
+
+            var idProductAttributeList = $('#idCombination').val();
+
+            var productPackQuantityList = [];
+            var productPackChoice = [];
+            let attributeChanged = null;
+
+            $('.ap5-attributes').each(function (index, element) {
+                id_product_pack = $(this).attr('data-id-product-pack');
+                productChoice = { idProductPack: id_product_pack, attributesList: []};
+                $('select, input[type=hidden], input[type=radio]:checked', $(element)).each(function(){
+                    productChoice.attributesList.push(parseInt($(this).val()));
+                    attributeChanged = parseInt($(this).val());
+                });
+                productPackChoice.push(productChoice);
+            });
+
+            var productPackQuantityList = [];
+            $('.ap5-quantity-wanted').each(function (index, element) {
+                let id_product_pack = $(this).attr('data-id-product-pack');
+                let productPackQuantity = { idProductPack: id_product_pack, quantity: $(this).val() };
+                productPackQuantityList.push(productPackQuantity);
+            });
+            var productPackCustomizationList = [];
+            $('.ap5-customization-form').each(function () {
+                let id_product_pack = $(this).attr('data-id-product-pack');
+                $('.ap5-customization-block-input', $(this)).each(function (index, element) {
+                    let id_customization_field = $(this).attr('data-id-customization-field');
+                    let productPackCustomization = {
+                        idProductPack: id_product_pack,
+                        idCustomizationField: id_customization_field,
+                        value: $(this).val()
+                    };
+                    productPackCustomizationList.push(productPackCustomization);
+                });
+            });
+
             var ajaxUrl = $("#dealt_ajaxurl").text()
             $.ajax({
                 url: ajaxUrl,
@@ -195,22 +239,24 @@ $(function () {
                     id_product_attribute : id_product_attribute,
                     serviceId : serviceId,
                     qty : qty,
+                    productPackQuantityList: productPackQuantityList,
+                    productPackCustomizationList: productPackCustomizationList,
+                    id_product_attribute_list: idProductAttributeList,
+                    productPackChoice: productPackChoice,
+                    packQtyML : packQtyML,
+                    packQty : ap5_quantityWanted,
                     addToCart: true,
                     isCart : isCart,
                     ajax: true,
                 },
                 dataType: 'json',
                 success: function (response) {
-                    if(response == "success") {
+                    if(response == "success" || response.id_product == productId) {
                         closeServiceModal();
                         // Sur la page panier, un reload unique est plus sûr qu’un emit
                         if (!RELOAD_GUARD) {
                             RELOAD_GUARD = true;
-/*                            if($("#product").length){
-                                location.reload();
-                            } else {*/
-                                window.location.href = window.location.origin + '/panier?action=show'
-/*                            }*/
+                            window.location.href = window.location.origin + '/panier?action=show'
                         }
                     }
                 },
@@ -230,22 +276,31 @@ $(function () {
             return $.post(url, {ajax: 1, action: 'update', id_product: id, qty: qty, add: 1}, null, 'json');
         }
         addProductService();
-/*        addToCart(productId)
-            .then(function () {
-                return addToCart(serviceId);
-            })
-            .then(function () {
-                closeServiceModal();
-                // Sur la page panier, un reload unique est plus sûr qu’un emit
-                if (!RELOAD_GUARD) {
-                    RELOAD_GUARD = true;
-                    location.reload();
-                }
-            })
-            .catch(function () {
-                alert('Erreur lors de l’ajout au panier.');
-            });*/
+        /*        addToCart(productId)
+                    .then(function () {
+                        return addToCart(serviceId);
+                    })
+                    .then(function () {
+                        closeServiceModal();
+                        // Sur la page panier, un reload unique est plus sûr qu’un emit
+                        if (!RELOAD_GUARD) {
+                            RELOAD_GUARD = true;
+                            location.reload();
+                        }
+                    })
+                    .catch(function () {
+                        alert('Erreur lors de l’ajout au panier.');
+                    });*/
     });
+
+
+    $(document).on('input change', '.ap5-attributes #quantity_ml', function(){
+        let packQuantity = $('#quantity_ml').val()
+        packQuantity  = packQuantity || 1
+        if(packQuantity > 0){
+            updateServiceList();
+        }
+    })
 
     // ---------- TVA modal
     function moveTvaModalToBody() {
@@ -381,82 +436,83 @@ $(function () {
 
     function updateServiceList() {
 
-    let parent = $(this).closest('.custom-quantity-selector');
-    let quantityInputEl = $(parent).find('input#quantity_wanted');
-    let quantityInput = quantityInputEl.val();
+        let parent = $(this).closest('.custom-quantity-selector');
+        let quantityInputEl = $(parent).find('input#quantity_wanted');
+        let quantityInput = quantityInputEl.val();
 
-    let length = $('#dealt_product_length').text();
+        /*    let length = $('#dealt_product_length').text();
 
-    let totalLength = length * quantityInput;
-    let id_product = $("input#product_page_product_id").val()
-    let ajaxUrl = $("#dealt_ajaxurl").text()
+            let totalLength = length * quantityInput;*/
+        let totalLength = $('#quantity_ml').val()
+        let id_product = $("input#product_page_product_id").val()
+        let ajaxUrl = $("#dealt_ajaxurl").text()
 
-    $.ajax({
-        url: ajaxUrl,
-        type: "post",
-        data: {
-            totalLength: totalLength,
-            id_product: id_product,
-            changeLengthDealt: true,
-            ajax: true,
-        },
-        dataType: 'json',
-        success: function (response) {
-            if (response.length > 0) {
-                html = '';
-                $picto = '<div class="picto"><svg xml:space="preserve" style="max-height: 500px" viewBox="76.395312 78.96609 131.544 126.438165" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Pictos" version="1.1" width="131.544" height="126.438165"> <style type="text/css">.st0{fill: none;stroke: #090106;stroke-width: 4;stroke-linecap: round;stroke-linejoin: round;}</style><g><path class="st0" d="M196,193.1c-17.5,3.1-17-15.3-6.4-12.8c4.9,1.1,3.6,9.3,0,10.7c-1.8,0.7-3.6,1.7-5,3c0,0,0,0,0,0c-1,1-0.9,2.6,0.1,3.6c4.8,4.1,10.4,4.5,14.2,0.5c5-5.3,6.9-13.4-4.8-22.8c-1.3-1-5.7-5-12-10.3c-11.3-9.4-28.4-23.6-41-35.6c-4-3.8-8.6-8.2-10.6-13.8c-0.9-3.1-1.5-6.3-1.7-9.5c-0.2-3.3-0.8-6.6-1.7-9.7c-2.6-7.2-8.9-12.4-16.5-13.6c-3.7-0.5-7.5,0-10.9,1.5c-3.4,1.5-6.4,3.9-8.4,7c-0.1,0.2-0.2,0.5-0.1,0.7c0.1,0.2,0.3,0.4,0.5,0.5l17.4,6.7c1.3,5.2,2.5,10.8,3.4,16.5c-4.4,1.8-8.8,3.6-13.2,5.3c-5.6-3.2-11.4-6-17.5-8.2c-0.2-0.1-0.5-0.1-0.7,0.1c-0.2,0.1-0.4,0.3-0.4,0.6c-0.6,3.9-0.3,7.9,1.1,11.6c1.7,4.3,4.8,7.8,8.7,10.2c3.6,2.3,8.9,2.8,13.5,3.3c1.5,0.1,2.9,0.3,4.2,0.5c7.6,1.1,12.6,4.5,19.1,10.4c16.7,15.1,38.4,39.7,46.9,48.9" /></g></svg></div>'
-                $pin = '<svg xml:space="preserve" style="max-height: 500px" viewBox="95.067189 89.400024 77.676165 107.726031" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Pictos" version="1.1" width="77.676165" height="107.726031"><style type="text/css">.st0 {fill: none;stroke: #090106;stroke-width: 4;stroke-linecap: round;stroke-linejoin: round;}</style><g id="place"><path class="st0" d="M134,140.4c-6.9,0-12.5-5.5-12.5-12.4c0-6.9,5.5-12.5,12.4-12.5c6.9,0,12.5,5.5,12.5,12.4c0.1,6.8-5.4,12.4-12.2,12.5C134.1,140.4,134.1,140.4,134,140.4z" /></g><path class="st0" d="M128.4,185.7c-9.9-12.2-29.2-38.5-29.2-57.7c0-19.2,15.5-34.8,34.7-34.9s34.8,15.5,34.9,34.7c0.1,25.8-33.8,64-33.8,64c11.5,4.2,14.3-11.5,24.8-2.8" /></svg>'
-                response.forEach(function (service, key) {
-                    html += '<div class="dealt-offer-box" '
-                    html += 'data-dealt="1" '
-                    html += 'data-product-id="' + service.dealt_product_id + '" '
-                    html += 'data-service-product-id="' + service.dealt_service_product_id + '" '
-                    html += 'data-offer-id="' + service.dealt_offer_id + '" '
-                    html += 'data-store-id="' + service.dealt_store_id + '" '
-                    html += 'data-eligibility-url="' + service.dealt_check_availability_url + '">'
-                    html += $picto
-                    html += '<div class="dealt-offer-content">'
-                    html += '<div class="dealt-offer-title">Vous souhaitez une pose ? Vérifiez l\'éligibilité</div>'
-                    html += '<p class="dealt-nom-produit">' + service.dealt_service_title + '</p>'
-                    html += '<div class="dealt-offer-price">'
-                    html += '+' + service.dealt_service_price
-                    if (service.dealt_service_url.length > 0) {
-                        html += '<a href="' + service.dealt_service_url + '" rel="noopener noreferrer nofollow" class="dealt-conditions-link">Détails des conditions du service</a>'
-                    }
-                    html += '</div>'
-                    html += '<div data-dealt-zipcode-check><div data-role="check-box" class="dealt-check-box"><div class="dealt-check-label">'
-                    html += $pin
-                    html += '<label for="dealt-zipcode-input">Vérifiez la disponibilité du service</label>'
-                    html += '</div>'
-                    html += '<div class="dealt-zipcode-check"><div class="dealt-zipcode-wrapper"><input id="dealt-zipcode-input" name="dealt_zipcode" type="text" '
-                    html += 'placeholder="Code postal" inputmode="numeric" pattern="^\\d{5}$" maxlength="5" aria-label="Code postal (5 chiffres)" data-role="zipcode-input" />'
-                    html += '</div>'
-                    html += '<button class="zipcode-check-btn" type="button" data-role="zipcode-check-btn">'
-                    html += '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>'
-                    html += 'Recherche</button>'
-                    html += '</div>'
-                    html += '</div>'
-                    html += '<div data-role="retry-block" class="dealt-retry-box" hidden>'
-                    html += '<button type="button" id="dealt-add-service-only" class="btn btn-primary">'
-                    html += 'Ajouter le service de montage</button>'
-                    html += '<div><a href="#" id="dealt-try-again" data-role="try-again">Réessayer avec un autre code postal</a></div>'
-                    html += '</div>'
-                    html += '</div>'
-                    html += '<div data-role="zipcode-result" class="dealt-result-msg" aria-live="polite"></div>'
-                    html += '</div>'
+        $.ajax({
+            url: ajaxUrl,
+            type: "post",
+            data: {
+                totalLength: totalLength,
+                id_product: id_product,
+                changeLengthDealt: true,
+                ajax: true,
+            },
+            dataType: 'json',
+            success: function (response) {
+                if (response.length > 0) {
+                    html = '';
+                    $picto = '<div class="picto"><svg xml:space="preserve" style="max-height: 500px" viewBox="76.395312 78.96609 131.544 126.438165" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Pictos" version="1.1" width="131.544" height="126.438165"> <style type="text/css">.st0{fill: none;stroke: #090106;stroke-width: 4;stroke-linecap: round;stroke-linejoin: round;}</style><g><path class="st0" d="M196,193.1c-17.5,3.1-17-15.3-6.4-12.8c4.9,1.1,3.6,9.3,0,10.7c-1.8,0.7-3.6,1.7-5,3c0,0,0,0,0,0c-1,1-0.9,2.6,0.1,3.6c4.8,4.1,10.4,4.5,14.2,0.5c5-5.3,6.9-13.4-4.8-22.8c-1.3-1-5.7-5-12-10.3c-11.3-9.4-28.4-23.6-41-35.6c-4-3.8-8.6-8.2-10.6-13.8c-0.9-3.1-1.5-6.3-1.7-9.5c-0.2-3.3-0.8-6.6-1.7-9.7c-2.6-7.2-8.9-12.4-16.5-13.6c-3.7-0.5-7.5,0-10.9,1.5c-3.4,1.5-6.4,3.9-8.4,7c-0.1,0.2-0.2,0.5-0.1,0.7c0.1,0.2,0.3,0.4,0.5,0.5l17.4,6.7c1.3,5.2,2.5,10.8,3.4,16.5c-4.4,1.8-8.8,3.6-13.2,5.3c-5.6-3.2-11.4-6-17.5-8.2c-0.2-0.1-0.5-0.1-0.7,0.1c-0.2,0.1-0.4,0.3-0.4,0.6c-0.6,3.9-0.3,7.9,1.1,11.6c1.7,4.3,4.8,7.8,8.7,10.2c3.6,2.3,8.9,2.8,13.5,3.3c1.5,0.1,2.9,0.3,4.2,0.5c7.6,1.1,12.6,4.5,19.1,10.4c16.7,15.1,38.4,39.7,46.9,48.9" /></g></svg></div>'
+                    $pin = '<svg xml:space="preserve" style="max-height: 500px" viewBox="95.067189 89.400024 77.676165 107.726031" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="Pictos" version="1.1" width="77.676165" height="107.726031"><style type="text/css">.st0 {fill: none;stroke: #090106;stroke-width: 4;stroke-linecap: round;stroke-linejoin: round;}</style><g id="place"><path class="st0" d="M134,140.4c-6.9,0-12.5-5.5-12.5-12.4c0-6.9,5.5-12.5,12.4-12.5c6.9,0,12.5,5.5,12.5,12.4c0.1,6.8-5.4,12.4-12.2,12.5C134.1,140.4,134.1,140.4,134,140.4z" /></g><path class="st0" d="M128.4,185.7c-9.9-12.2-29.2-38.5-29.2-57.7c0-19.2,15.5-34.8,34.7-34.9s34.8,15.5,34.9,34.7c0.1,25.8-33.8,64-33.8,64c11.5,4.2,14.3-11.5,24.8-2.8" /></svg>'
+                    response.forEach(function (service, key) {
+                        html += '<div class="dealt-offer-box" '
+                        html += 'data-dealt="1" '
+                        html += 'data-product-id="' + service.dealt_product_id + '" '
+                        html += 'data-service-product-id="' + service.dealt_service_product_id + '" '
+                        html += 'data-offer-id="' + service.dealt_offer_id + '" '
+                        html += 'data-store-id="' + service.dealt_store_id + '" '
+                        html += 'data-eligibility-url="' + service.dealt_check_availability_url + '">'
+                        html += $picto
+                        html += '<div class="dealt-offer-content">'
+                        html += '<div class="dealt-offer-title">Vous souhaitez une pose ? Vérifiez l\'éligibilité</div>'
+                        html += '<p class="dealt-nom-produit">' + service.dealt_service_title + '</p>'
+                        html += '<div class="dealt-offer-price">'
+                        html += '+' + service.dealt_service_price
+                        if (service.dealt_service_url.length > 0) {
+                            html += '<a href="' + service.dealt_service_url + '" rel="noopener noreferrer nofollow" class="dealt-conditions-link">Détails des conditions du service</a>'
+                        }
+                        html += '</div>'
+                        html += '<div data-dealt-zipcode-check><div data-role="check-box" class="dealt-check-box"><div class="dealt-check-label">'
+                        html += $pin
+                        html += '<label for="dealt-zipcode-input">Vérifiez la disponibilité du service</label>'
+                        html += '</div>'
+                        html += '<div class="dealt-zipcode-check"><div class="dealt-zipcode-wrapper"><input id="dealt-zipcode-input" name="dealt_zipcode" type="text" '
+                        html += 'placeholder="Code postal" inputmode="numeric" pattern="^\\d{5}$" maxlength="5" aria-label="Code postal (5 chiffres)" data-role="zipcode-input" />'
+                        html += '</div>'
+                        html += '<button class="zipcode-check-btn btn btn-secondary" type="button" data-role="zipcode-check-btn">'
+                        html += '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>'
+                        html += 'Recherche</button>'
+                        html += '</div>'
+                        html += '</div>'
+                        html += '<div data-role="retry-block" class="dealt-retry-box" hidden>'
+                        html += '<button type="button" id="dealt-add-service-only" class="btn btn-primary">'
+                        html += 'Ajouter le service de montage</button>'
+                        html += '<div><a href="#" id="dealt-try-again" data-role="try-again">Réessayer avec un autre code postal</a></div>'
+                        html += '</div>'
+                        html += '</div>'
+                        html += '<div data-role="zipcode-result" class="dealt-result-msg" aria-live="polite"></div>'
+                        html += '</div>'
 
-                    html += '</div>'
-                    html += '</div>'
+                        html += '</div>'
+                        html += '</div>'
 
-                });
+                    });
 
-                $('.dealt-offer-box').each(function () {
-                    $(this).remove()
-                })
-                $('.product-additional-info.js-product-additional-info').prepend(html)
+                    $('.dealt-offer-box').each(function () {
+                        $(this).remove()
+                    })
+                    $('.product-additional-info.js-product-additional-info').prepend(html)
+                }
             }
-        }
-    });
+        });
     }
 
     if($("#cart").length){
