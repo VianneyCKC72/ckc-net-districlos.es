@@ -47,6 +47,19 @@
               {l s='Log in instead!' d='Shop.Theme.Customeraccount'}
             </a>
           {/if}
+          
+          {if isset($pro_registration_url) && !empty($pro_registration_url)}
+            <h2 class="mb-4 mt-4">{l s='Vous êtes un professionnel ?' d='Shop.Theme.Customeraccount'}</h2>
+            <a href="{$pro_registration_url}" class="btn btn-secondary" id="inscription-pro">
+              {l s='Créer un compte professionnel' d='Shop.Theme.Customeraccount'}
+            </a>
+            {* Debug temporaire - à supprimer après test *}
+            {if Tools::getValue('debug_pro_url')}
+              <div class="alert alert-info mt-2">
+                <small>URL générée : {$pro_registration_url}</small>
+              </div>
+            {/if}
+          {/if}
         </div>
       </div>
 

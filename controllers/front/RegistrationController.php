@@ -79,9 +79,14 @@ class RegistrationControllerCore extends FrontController
             }
         }
 
+        // URL du site pro pour l'inscription
+        // Remplacez par l'URL complète de votre site pro quand disponible
+        $proRegistrationUrl = ''; // Exemple : 'https://pro.votre-site.com/inscription'
+
         $this->context->smarty->assign([
             'register_form' => $register_form->getProxy(),
             'hook_create_account_top' => Hook::exec('displayCustomerAccountFormTop'),
+            'pro_registration_url' => $proRegistrationUrl,
         ]);
         $this->setTemplate('customer/registration');
 
