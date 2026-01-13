@@ -99,3 +99,245 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 .sidebar.navigation .list-group.categorieList .list-group-item + .list-group-item {
     border-top: none !important;
 }
+
+
+/* ============================================
+   STYLES POUR LE CALENDRIER
+   ============================================ */
+
+/* Variables communes */
+#calendar {
+    --calendar-bg: #026473;
+    --calendar-white: #ffffff;
+    --calendar-border: #d4dce3;
+    --calendar-text-light: #e8eef2;
+    --calendar-hover: #F0F4F7;
+    --calendar-radius: 25px;
+    --calendar-height: 42px;
+}
+
+/* Conteneur principal */
+#calendar.panel {
+    background-color: var(--calendar-bg) !important;
+    border-radius: 40px !important;
+    padding: 15px 25px !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin-bottom: 20px !important;
+}
+
+/* Formulaire - Layout horizontal */
+#calendar_form {
+    margin: 0 !important;
+}
+
+#calendar_form .row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+    gap: 20px !important;
+}
+
+/* Colonnes Bootstrap */
+#calendar .col-lg-6 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+#calendar .col-lg-6:first-child {
+    flex: 0 0 auto !important;
+    margin-right: auto !important;
+    text-align: left !important;
+}
+
+#calendar .col-lg-6:last-child {
+    flex: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 15px !important;
+}
+
+/* Rows internes - Propriétés communes */
+#calendar .col-lg-6 .row,
+#calendar .col-lg-6 .col-md-8 .row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+}
+
+#calendar .col-lg-6 .row {
+    margin: 0 !important;
+    width: 100% !important;
+}
+
+#calendar .col-lg-6 .col-md-8 .row {
+    flex-wrap: nowrap !important;
+}
+
+/* Colonnes internes */
+#calendar .col-lg-6 .col-md-8,
+#calendar .col-lg-6 .col-md-4,
+#calendar .col-xs-6 {
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+#calendar .col-lg-6 .col-md-8 {
+    gap: 15px !important;
+    flex: 1 !important;
+}
+
+#calendar .col-lg-6 .col-md-4 {
+    justify-content: flex-end !important;
+}
+
+#calendar .col-xs-6 {
+    gap: 8px !important;
+    flex: 0 0 auto !important;
+}
+
+/* Groupe de boutons de période */
+#calendar .btn-group {
+    display: inline-flex !important;
+    background-color: var(--calendar-white) !important;
+    border-radius: var(--calendar-radius) !important;
+    border: none !important;
+    gap: 0 !important;
+    align-items: center !important;
+    padding: 4px !important;
+    height: var(--calendar-height) !important;
+}
+
+/* Boutons de période */
+#calendar .btn-group .btn.btn-default {
+    background-color: transparent !important;
+    border: none !important;
+    color: var(--calendar-bg) !important;
+    padding: 7px 12px !important;
+    font-weight: 400 !important;
+    font-size: 13px !important;
+    border-radius: var(--calendar-radius) !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+    white-space: nowrap !important;
+    min-width: auto !important;
+    height: 34px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* État actif et hover (même style) */
+#calendar .btn-group .btn.btn-default.active,
+#calendar .btn-group .btn.btn-default:hover {
+    background-color: var(--calendar-hover) !important;
+    color: var(--calendar-bg) !important;
+}
+
+/* Séparateurs verticaux entre boutons */
+#calendar .btn-group .btn.btn-default:not(:last-child)::after {
+    content: "" !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: 25% !important;
+    bottom: 25% !important;
+    width: 1px !important;
+    background-color: rgba(2, 100, 115, 0.15) !important;
+}
+
+/* Groupes d'input pour les dates */
+#calendar .input-group {
+    background-color: var(--calendar-bg) !important;
+    border-radius: var(--calendar-radius) !important;
+    border: 2px solid var(--calendar-border) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    position: relative !important;
+    padding: 8px 14px !important;
+    width: 165px !important;
+    height: var(--calendar-height) !important;
+}
+
+/* Labels "Du" et "Au" - Positionnés sur la bordure */
+#calendar .input-group-addon {
+    background-color: var(--calendar-bg) !important;
+    border: none !important;
+    color: var(--calendar-text-light) !important;
+    font-weight: 400 !important;
+    padding: 0 8px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
+    position: absolute !important;
+    top: -9px !important;
+    left: 15px !important;
+    z-index: 1 !important;
+}
+
+/* Icône de calendrier */
+#calendar .input-group::after {
+    content: "\f073" !important;
+    font-family: "FontAwesome" !important;
+    color: var(--calendar-white) !important;
+    font-size: 15px !important;
+    flex-shrink: 0 !important;
+    line-height: 1 !important;
+}
+
+/* Champs de date */
+#calendar .datepicker.form-control {
+    background-color: transparent !important;
+    border: none !important;
+    color: var(--calendar-white) !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    flex: 1 !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    text-align: left !important;
+    height: auto !important;
+    line-height: 1.2 !important;
+    max-width: 95px !important;
+}
+
+#calendar .datepicker.form-control:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Bouton Enregistrer */
+#calendar #submitDatePicker.btn.btn-default {
+    background-color: var(--calendar-white) !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: var(--calendar-height) !important;
+    height: var(--calendar-height) !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: var(--calendar-bg) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+    font-size: 0 !important;
+    position: relative !important;
+    flex-shrink: 0 !important;
+}
+
+#calendar #submitDatePicker.btn.btn-default:hover {
+    background-color: var(--calendar-hover) !important;
+    transform: scale(1.05) !important;
+}
+
+#calendar #submitDatePicker.btn.btn-default i {
+    display: none !important;
+}
+
+#calendar #submitDatePicker.btn.btn-default::after {
+    content: ">" !important;
+    font-size: 22px !important;
+    color: var(--calendar-bg) !important;
+    line-height: 1 !important;
+}
