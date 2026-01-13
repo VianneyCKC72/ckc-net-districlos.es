@@ -288,48 +288,96 @@ class Dealt extends Module
                     $combinations = $this->getAttributesInformationsByProduct($mainProduct[0]['id_product'], $mainProduct[0]['default_id_product_attribute']);
                 }
             }
+
+            if(count($combinations)){
+                foreach($combinations as $combination){
+                    if($combination['group'] == 'Longueur du Kit' OR $combination['group'] == 'Longueur' OR $combination['group'] == 'longueur'){
+                        if(preg_match('/cm/', $combination['attribute'])){
+                            $dealt_product_length = floatval(str_replace([' cm', 'cm'], ['', '.'], $combination['attribute'])) / 100;
+                        } else {
+                            $dealt_product_length = floatval(str_replace([' ml', ' m', 'ml', 'm'], ['', '', '.', '.'], $combination['attribute']));
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            if(!empty($mainProduct[0]) && empty($dealt_product_length)){
+                $mainProdInfo = new Product($mainProduct[0]['id_product']);
+
+                if(!empty($mainProdInfo->width) && $mainProdInfo->width != 0){
+                    $dealt_product_length = $mainProdInfo->width/100;
+                } else {
+                    $mainProdInfoFeatures = Product::getFrontFeaturesStatic(Context::getContext()->language->id, $mainProduct[0]['id_product']);
+                    if(count($mainProdInfoFeatures)){
+                        foreach ($mainProdInfoFeatures as $feature){
+                            if($feature['name'] == 'Longueur'){
+                                if(preg_match('/mm/', $feature['value']) OR preg_match('/MM/', $feature['value'])){
+                                    $lengthInt = (int)$feature['value'];
+                                    $dealt_product_length = $lengthInt / 1000;
+                                } else if(preg_match('/ml/', $feature['value'])){
+                                    $dealt_product_length = floatval(preg_replace('/[ml]/', '.', $feature['value']).'0');
+                                } else if(preg_match('/ML/', $feature['value'])){
+                                    $dealt_product_length = floatval(preg_replace('/[ML]/', '.', $feature['value']).'0');
+                                }else if(preg_match('/m/', $feature['value']) OR preg_match('/M/', $feature['value'])){
+                                    $dealt_product_length = floatval(preg_replace('/[mM]/', '.', $feature['value']).'0');
+                                } else if(preg_match('/cm/', $feature['value']) OR preg_match('/CM/', $feature['value'])){
+                                    $lengthInt = (int)$feature['value'];
+                                    $dealt_product_length = $lengthInt / 100;
+                                } else {
+                                    $dealt_product_length = (int)$feature['value'];
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                }
+            }
+
         } else {
             if(!empty($params['product']['id_product_attribute'])){
                 $combinations = $this->getAttributesInformationsByProduct($params['product']['id'], $params['product']['id_product_attribute']);
             }
-        }
 
-        if(count($combinations)){
-            foreach($combinations as $combination){
-                if($combination['group'] == 'Longueur du Kit' OR $combination['group'] == 'Longueur' OR $combination['group'] == 'longueur'){
-                    if(preg_match('/cm/', $combination['attribute'])){
-                        $dealt_product_length = floatval(str_replace([' cm', 'cm'], ['', '.'], $combination['attribute'])) / 100;
-                    } else {
-                        $dealt_product_length = floatval(str_replace([' ml', ' m', 'ml', 'm'], ['', '', '.', '.'], $combination['attribute']));
+            if(count($combinations)){
+                foreach($combinations as $combination){
+                    if($combination['group'] == 'Longueur du Kit' OR $combination['group'] == 'Longueur' OR $combination['group'] == 'longueur'){
+                        if(preg_match('/cm/', $combination['attribute'])){
+                            $dealt_product_length = floatval(str_replace([' cm', 'cm'], ['', '.'], $combination['attribute'])) / 100;
+                        } else {
+                            $dealt_product_length = floatval(str_replace([' ml', ' m', 'ml', 'm'], ['', '', '.', '.'], $combination['attribute']));
+                        }
+
+                        break;
                     }
-
-                    break;
                 }
             }
-        }
 
-        if(empty($dealt_product_length)){
-            if(!empty($params['product']['width']) && $params['product']['width'] != 0){
-                $dealt_product_length = $params['product']['width']/100;
-            } else {
-                foreach ($params['product']['features'] as $feature){
-                    if($feature['name'] == 'Longueur'){
-                        if(preg_match('/mm/', $feature['value']) OR preg_match('/MM/', $feature['value'])){
-                            $lengthInt = (int)$feature['value'];
-                            $dealt_product_length = $lengthInt / 1000;
-                        } else if(preg_match('/ml/', $feature['value'])){
-                            $dealt_product_length = floatval(preg_replace('/[ml]/', '.', $feature['value']).'0');
-                        } else if(preg_match('/ML/', $feature['value'])){
-                            $dealt_product_length = floatval(preg_replace('/[ML]/', '.', $feature['value']).'0');
-                        }else if(preg_match('/m/', $feature['value']) OR preg_match('/M/', $feature['value'])){
-                            $dealt_product_length = floatval(preg_replace('/[mM]/', '.', $feature['value']).'0');
-                        } else if(preg_match('/cm/', $feature['value']) OR preg_match('/CM/', $feature['value'])){
-                            $lengthInt = (int)$feature['value'];
-                            $dealt_product_length = $lengthInt / 100;
-                        } else {
-                            $dealt_product_length = (int)$feature['value'];
+            if(empty($dealt_product_length)){
+                if(!empty($params['product']['width']) && $params['product']['width'] != 0){
+                    $dealt_product_length = $params['product']['width']/100;
+                } else {
+                    foreach ($params['product']['features'] as $feature){
+                        if($feature['name'] == 'Longueur'){
+                            if(preg_match('/mm/', $feature['value']) OR preg_match('/MM/', $feature['value'])){
+                                $lengthInt = (int)$feature['value'];
+                                $dealt_product_length = $lengthInt / 1000;
+                            } else if(preg_match('/ml/', $feature['value'])){
+                                $dealt_product_length = floatval(preg_replace('/[ml]/', '.', $feature['value']).'0');
+                            } else if(preg_match('/ML/', $feature['value'])){
+                                $dealt_product_length = floatval(preg_replace('/[ML]/', '.', $feature['value']).'0');
+                            }else if(preg_match('/m/', $feature['value']) OR preg_match('/M/', $feature['value'])){
+                                $dealt_product_length = floatval(preg_replace('/[mM]/', '.', $feature['value']).'0');
+                            } else if(preg_match('/cm/', $feature['value']) OR preg_match('/CM/', $feature['value'])){
+                                $lengthInt = (int)$feature['value'];
+                                $dealt_product_length = $lengthInt / 100;
+                            } else {
+                                $dealt_product_length = (int)$feature['value'];
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
             }
