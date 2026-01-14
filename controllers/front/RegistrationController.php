@@ -80,8 +80,7 @@ class RegistrationControllerCore extends FrontController
         }
 
         // URL du site pro pour l'inscription
-        // Remplacez par l'URL complète de votre site pro quand disponible
-        $proRegistrationUrl = ''; // Exemple : 'https://pro.votre-site.com/inscription'
+        $proRegistrationUrl = 'https://pro.cloture-discount.fr/inscription';
 
         $this->context->smarty->assign([
             'register_form' => $register_form->getProxy(),
