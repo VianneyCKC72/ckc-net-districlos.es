@@ -276,6 +276,11 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
     z-index: 1 !important;
 }
 
+/* Mettre "Au" en majuscule */
+#calendar .col-xs-6:last-child .input-group-addon {
+    text-transform: capitalize !important;
+}
+
 /* Icône de calendrier */
 #calendar .input-group::after {
     content: "\f073" !important;
