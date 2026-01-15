@@ -188,14 +188,14 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 .sidebar.navigation .list-group.categorieList .list-group-item.active::after {
     bottom: 100% !important;
     border-bottom-right-radius: 18px !important;
-    box-shadow: 0 20px 0 0 #F0F4F7 !important;
+    box-shadow: 0 17px 0 0 #F0F4F7 !important;
 }
 
 /* Petit bout arrondi en bas à droite */
 .sidebar.navigation .list-group.categorieList .list-group-item.active::before {
     top: 100% !important;
     border-top-right-radius: 18px !important;
-    box-shadow: 0 -20px 0 0 #F0F4F7 !important;
+    box-shadow: 0 -17px 0 0 #F0F4F7 !important;
 }
 
 /* Effet hover sur les éléments non actifs */
