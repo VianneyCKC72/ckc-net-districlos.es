@@ -6,6 +6,7 @@
     border-radius: 0;
     border:none;
     min-height: 45px;
+    padding: 0.85rem 1.25rem .75rem;
     @media only screen and (max-width: 1620px) {
         padding-left: 0;
         padding-right: 0;
@@ -26,6 +27,13 @@
 }
 .hide_alert{
     display: none;
+}
+.displayMenu .soldes {
+    background: #ff6a00;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 20px;
+    animation: pulse 2s infinite;
 }
 .block-left-banner {
     font-size: 13px;

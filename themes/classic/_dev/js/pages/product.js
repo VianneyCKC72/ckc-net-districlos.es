@@ -431,6 +431,9 @@ $(document).ready(function () {
         if (typeof $(".cart-promos") !== "undefined") {
             $(".cart-promos").replaceWith(event.resp.cart_promos)
         }
+        if (typeof $(".dealt-cart-services-container") !== "undefined") {
+            $(".dealt-cart-services-container").replaceWith(event.resp.cart_footer_dealt)
+        }
         let availables_services_id = [];
         let all_products_cart_id = [];
         dealt_cart_services.map((product) => availables_services_id.push(product.service_product_id))

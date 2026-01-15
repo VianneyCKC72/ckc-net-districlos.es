@@ -674,6 +674,26 @@ class DealtHookHelper
 
         $services = [];
 
+        $checkIfPack = false;
+        $idPack = null;
+        $idPackMainProduct = null;
+
+        /*        dump(Context::getContext()->cookie);
+                dump(Context::getContext()->cart->id);*/
+
+        if(isset(Context::getContext()->cookie->cart_packs)){
+            $cookiePack = json_decode(Context::getContext()->cookie->cart_packs);
+            if(!empty($cookiePack->id_cart) && !empty($cookiePack->id_pack)){
+                if((int)$cookiePack->id_cart == (int)$cart->id){
+                    $checkIfPack = self::checkIfPack($cookiePack->id_pack, $cart);
+                    if($checkIfPack){
+                        $idPack = $cookiePack->id_pack;
+                        $idPackMainProduct = Db::getInstance()->executeS('SELECT pap.id_product, pap.default_id_product_attribute FROM `'._DB_PREFIX_.'pm_advancedpack_products` pap WHERE pap.id_pack = '.(int)$idPack.' AND pap.position = 0');
+                    }
+                }
+            }
+        }
+
         // Pour chaque produit non-service du panier, proposer ses services liés
         foreach ($cart->getProducts() as $row) {
             $mainId = (int)$row['id_product'];
@@ -686,9 +706,20 @@ class DealtHookHelper
                 continue;
             }
 
-            if(!empty($row['id_product_attribute'])){
-                $combinations = self::getAttributesInformationsByProduct($mainId, (int)$row['id_product_attribute']);
 
+            $combinations = [];
+
+            if($checkIfPack && !empty($idPackMainProduct[0]['id_product']) && $mainId == $idPackMainProduct[0]['id_product']){
+                if(!empty($idPackMainProduct[0]['default_id_product_attribute'])){
+                    $combinations = self::getAttributesInformationsByProduct($idPackMainProduct[0]['id_product'], $idPackMainProduct[0]['default_id_product_attribute']);
+                }
+            } else {
+                if(!empty($row['id_product_attribute'])){
+                    $combinations = self::getAttributesInformationsByProduct($mainId, (int)$row['id_product_attribute']);
+                }
+            }
+
+            if(count($combinations)){
                 foreach($combinations as $combination){
                     if($combination['group'] == 'Longueur du Kit' OR $combination['group'] == 'Longueur' OR $combination['group'] == 'longueur'){
                         if(preg_match('/cm/', $combination['attribute'])){
@@ -738,9 +769,13 @@ class DealtHookHelper
                 $length = $lengthPerUnit * (int)$row['quantity'];
             }
 
-
             // Récupère les ids services via les catégories "enfants de 369"
-            $serviceIds = self::getServiceProductIds($ctx, $mainId);
+            if($checkIfPack && !empty($idPackMainProduct[0]['id_product']) && $mainId == $idPackMainProduct[0]['id_product'] && !empty($idPack)){
+                $serviceIds = self::getServiceProductIds($ctx, $idPack);
+            } else {
+                $serviceIds = self::getServiceProductIds($ctx, $mainId);
+            }
+
             foreach ($serviceIds as $sid) {
                 $srv = new \Product($sid, false, $idLang);
                 $priceTtc = \Product::getPriceStatic($sid, true);
@@ -749,7 +784,7 @@ class DealtHookHelper
                 if($length <= $serviceRow['longueur_max'] && $length >= $serviceRow['longueur_min']){
                     $services[] = [
                         // Contexte main
-                        'main_product_id'   => $mainId,
+                        'main_product_id'   => $checkIfPack && !empty($idPackMainProduct[0]['id_product']) && $mainId == $idPackMainProduct[0]['id_product'] && !empty($idPack) ? $idPack : $mainId,
                         'main_product_name' => $row['name'] ?? ($main->name ?? ''),
 
                         // Service
@@ -780,52 +815,6 @@ class DealtHookHelper
 
         }
 
-        if (count($services) < 1){
-            $services_not_empty = [];
-            // Pour chaque produit non-service du panier, proposer ses services liés
-            foreach ($cart->getProducts() as $row) {
-                $mainId = (int)$row['id_product'];
-                $main = new \Product($mainId, false, $idLang);
-
-
-                // skip si c'est déjà un produit "service"
-                if (!empty($main->reference) && self::isServiceReference((string)$main->reference)) {
-                    continue;
-                }
-                if ($main->width != 0) {
-                    $lengthPerUnit = $main->width / 100;
-                    $length = $lengthPerUnit * (int)$row['quantity'];
-                } else {
-                    $features = Product::getFrontFeaturesStatic(Context::getContext()->language->id, (int)$row['id_product']);
-                    foreach ($features as $feature) {
-                        if ($feature['name'] == 'Longueur') {
-                            if (preg_match('/mm/', $feature['value']) or preg_match('/MM/', $feature['value'])) {
-                                $lengthInt = (int)$feature['value'];
-                                $lengthPerUnit = $lengthInt / 1000;
-                            } else if (preg_match('/m/', $feature['value']) or preg_match('/M/', $feature['value'])) {
-                                $lengthPerUnit = floatval(preg_replace('/[mM]/', '.', $feature['value']) . '0');
-                            } else if (preg_match('/cm/', $feature['value']) or preg_match('/CM/', $feature['value'])) {
-                                $lengthInt = (int)$feature['value'];
-                                $lengthPerUnit = $lengthInt / 100;
-                            } else {
-                                $lengthPerUnit = (int)$feature['value'];
-                            }
-                            break;
-                        }
-                    }
-                    if (!empty($lengthPerUnit)) {
-                        $length = $lengthPerUnit * (int)$row['quantity'];
-                    } else {
-                        $length = 0;
-                    }
-                }
-                $services_not_empty = array_merge($services_not_empty, self::getServicesForCart($ctx, $mainId, $length, $idLang));
-                $services_not_empty = array_unique($services_not_empty);
-            }
-            $services = $services_not_empty;
-        }
-
-
         $data = [
             'dealt_cart_services'  => $services,
             'dealt_tva_enabled'    => self::isTvaAttestedForCart((int)$cart->id),
@@ -837,6 +826,27 @@ class DealtHookHelper
         \Media::addJsDef($data); // si ton JS lit ces données
 
         return $data;
+    }
+
+    public static function checkIfPack($id_pack,$cart){
+        $ifTable = Db::getInstance()->execute('SHOW TABLES LIKE "'._DB_PREFIX_.'pm_advancedpack"');
+        if(!$ifTable){
+            return false;
+        } else {
+            $check = Db::getInstance()->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'pm_advancedpack` WHERE `id_pack` = ' . (int)$id_pack . ' AND id_shop = ' . (int)Context::getContext()->shop->id);
+            if(!empty($check[0])){
+                $packProducts = Db::getInstance()->executeS('SELECT pap.id_product FROM `'._DB_PREFIX_.'pm_advancedpack_products` pap WHERE pap.id_pack = '.(int)$id_pack);
+                $packProductsArr = array_map(fn($value) => $value['id_product'], $packProducts);
+                $cartProductsArr = array_map(fn($value) => $value['id_product'], $cart->getProducts());
+                $array_check = array_intersect($cartProductsArr, $packProductsArr);
+                if(count($array_check) == count($packProductsArr)){
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        }
+        return false;
     }
 
     public static function getAttributesInformationsByProduct($id_product, $id_product_attribute)
@@ -908,11 +918,6 @@ class DealtHookHelper
                 ];
             }
         }
-
-        if (count($services) < 1 && ((float)$length > 0)){
-            return self::getServicesForCart($ctx, $mainId, (float)$length, $idLang);
-        } else {
-            return $services;
-        }
+        return $services;
     }
 }
