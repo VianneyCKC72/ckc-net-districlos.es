@@ -53,12 +53,6 @@
             <a href="{$pro_registration_url}" class="btn btn-secondary" id="inscription-pro">
               {l s='Créer un compte professionnel' d='Shop.Theme.Customeraccount'}
             </a>
-            {* Debug temporaire - à supprimer après test *}
-            {if Tools::getValue('debug_pro_url')}
-              <div class="alert alert-info mt-2">
-                <small>URL générée : {$pro_registration_url}</small>
-              </div>
-            {/if}
           {/if}
         </div>
       </div>
