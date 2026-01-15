@@ -27,6 +27,13 @@
 .hide_alert{
     display: none;
 }
+.displayMenu .soldes {
+    background: #ff6a00;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 20px;
+    animation: pulse 2s infinite;
+}
 .block-left-banner {
     font-size: 13px;
     line-height: 19px;
