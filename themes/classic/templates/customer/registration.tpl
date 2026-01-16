@@ -27,6 +27,21 @@
 {block name='page_content'}
   {block name='register_form_container'}
     {$hook_create_account_top nofilter}
+    <style>
+      .pro-registration-wrapper {
+        margin-top: 3rem;
+        padding-top: 2.5rem;
+      }
+      .pro-registration-title {
+        margin-bottom: 1.5rem !important;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #666;
+      }
+      #inscription-pro {
+        margin-top: 0.5rem;
+      }
+    </style>
     <section class="register-form" id="registration-form">
 
       <div class="already-account">
@@ -49,10 +64,12 @@
           {/if}
           
           {if isset($pro_registration_url) && !empty($pro_registration_url)}
-            <h2 class="mb-4 mt-4">{l s='Vous êtes un professionnel ?' d='Shop.Theme.Customeraccount'}</h2>
-            <a href="{$pro_registration_url}" class="btn btn-secondary" id="inscription-pro">
-              {l s='Créer un compte professionnel' d='Shop.Theme.Customeraccount'}
-            </a>
+            <div class="pro-registration-wrapper">
+              <h2 class="pro-registration-title">{l s='Vous êtes un professionnel ?' d='Shop.Theme.Customeraccount'}</h2>
+              <a href="{$pro_registration_url}" class="btn btn-secondary" id="inscription-pro">
+                {l s='Créer un compte professionnel' d='Shop.Theme.Customeraccount'}
+              </a>
+            </div>
           {/if}
         </div>
       </div>
