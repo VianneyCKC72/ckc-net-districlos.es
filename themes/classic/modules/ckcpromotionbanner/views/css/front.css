@@ -29,11 +29,13 @@
     display: none;
 }
 .displayMenu .soldes {
-    background: #ff6a00;
+    background: #ff144e;
     font-weight: 700;
     padding: 6px 12px;
     border-radius: 20px;
     animation: pulse 2s infinite;
+    margin-right: 15px;
+    white-space: nowrap;
 }
 .block-left-banner {
     font-size: 13px;
@@ -146,6 +148,12 @@
 }
 .ckcpromobarre-text{
     white-space: nowrap;
+    font-weight: 500;
+}
+@media (max-width: 1024px){
+    .ckcpromobarre-text{
+        white-space: wrap;
+    }
 }
 @media (max-width: 768px){
     #ckcpromobarre {
@@ -164,11 +172,17 @@
     flex-direction: row;
     justify-content: flex-start;
     min-width: 31.5%;
+    align-items: center;
 }
 @media (max-width: 550px){
     #ckcpromobarre > span > .container > div:first-child{
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        flex-flow: column-reverse;
+    }
+    #ckcpromobarre .displayMenu:has(.soldes) {
+        margin-top: 15px;
+        margin-bottom: 5px;
     }
 }
