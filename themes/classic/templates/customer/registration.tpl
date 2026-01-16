@@ -47,6 +47,13 @@
               {l s='Log in instead!' d='Shop.Theme.Customeraccount'}
             </a>
           {/if}
+          
+          {if isset($pro_registration_url) && !empty($pro_registration_url)}
+            <h2 class="mb-4 mt-4">{l s='Vous êtes un professionnel ?' d='Shop.Theme.Customeraccount'}</h2>
+            <a href="{$pro_registration_url}" class="btn btn-secondary" id="inscription-pro">
+              {l s='Créer un compte professionnel' d='Shop.Theme.Customeraccount'}
+            </a>
+          {/if}
         </div>
       </div>
 
