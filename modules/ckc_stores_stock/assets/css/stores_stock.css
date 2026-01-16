@@ -24,6 +24,11 @@
 	margin-bottom: 0;
 }
 
+/* Cacher définitivement la section .text car elle est remplacée par le tooltip */
+#stock-summary-content .text {
+	display: none !important;
+}
+
 #stock-summary-content p.productLimit {
 	color: #79c046;
 	font-weight: 600;

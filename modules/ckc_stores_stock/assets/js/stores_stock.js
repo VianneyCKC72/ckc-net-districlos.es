@@ -462,9 +462,9 @@ if ($('.delivery-option input').length > 0) {
                 if ($('#stock-summary-content .products').length === 0) {
                     $('#stock-summary-content .productLimit').after('<div class="products"></div>');
                 }
-                if ($('#stock-summary-content .text').length === 0) {
-                    $('#stock-summary-content .products').after('<div class="text"></div>');
-                }
+                
+                // Supprimer la section .text (elle ne doit plus être utilisée, tout est dans le tooltip)
+                $('#stock-summary-content .text').remove();
                 
                 // Afficher la section normale pour les produits normaux
                 if (resp.data.stock.isClickAndCollect) {
