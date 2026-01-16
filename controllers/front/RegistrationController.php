@@ -79,9 +79,13 @@ class RegistrationControllerCore extends FrontController
             }
         }
 
+        // URL du site pro pour l'inscription
+        $proRegistrationUrl = 'https://pro.cloture-discount.fr/inscription';
+
         $this->context->smarty->assign([
             'register_form' => $register_form->getProxy(),
             'hook_create_account_top' => Hook::exec('displayCustomerAccountFormTop'),
+            'pro_registration_url' => $proRegistrationUrl,
         ]);
         $this->setTemplate('customer/registration');
 
