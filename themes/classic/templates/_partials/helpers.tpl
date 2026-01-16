@@ -33,7 +33,5 @@
       width="{$shop.logo_details.width}"
       height="{$shop.logo_details.height}">
 {*    <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="42" height="42" loading="lazy">*}
-    <div class="desktop_only logo_delimiter"></div>
-    <img  class="desktop_only groupama_fdj" src="/img/Logo_Groupama_FDJ.svg" alt="Groupama-FDJ" />
   </a>
 {/function}

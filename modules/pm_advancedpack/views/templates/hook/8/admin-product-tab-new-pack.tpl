@@ -121,7 +121,7 @@
 								</div>
 							</div>
 
-							<div id="ap5_price_rules_4_configuration" class="clearfix">
+							<div class="clearfix">
 								<div class="row">
 									<label class="control-label col-lg-6" for="ap5_ml_choose">
 														<span class="label-tooltip" data-toggle="{$tooltipToggle}" title="Cochez cette case si vous voulez que la quantité en front soit sélectionnable en ML">
