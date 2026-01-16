@@ -3387,6 +3387,15 @@ body.menu-opened #ckcpromobarre {
         }
     }
 }
+.info-menu-link-on-scroll.mm_menus_li{
+    a{
+        padding-left: 0;
+        padding-top: 0;
+    }
+    span{
+        color: #ff0946;
+    }
+}
 .changestatus .mm_menus_li.menu-mobile-custom-container-links{
     @media (max-width: 768px) {
         height: auto;
