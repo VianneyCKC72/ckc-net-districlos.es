@@ -55,6 +55,7 @@ class Dealt extends Module
                      'actionOrderStatusPostUpdate',
                      'actionPresentCart',
                      'actionPresentCartProduct',
+                     'actionCartSave',
                      'displayProductAdditionalInfo',
                      'displayHeader',
                      'displayShoppingCartFooter',
@@ -276,45 +277,107 @@ class Dealt extends Module
     public function hookDisplayProductAdditionalInfo($params)
     {
         $dealt_product_length = null;
+        $combinations = [];
 
-        if(!empty($params['product']['id_product_attribute'])){
-            $combinations = $this->getAttributesInformationsByProduct($params['product']['id'], $params['product']['id_product_attribute']);
+        $checkIfPack = $this->checkIfPack($params['product']['id']);
 
-            foreach($combinations as $combination){
-                if($combination['group'] == 'Longueur du Kit' OR $combination['group'] == 'Longueur' OR $combination['group'] == 'longueur'){
-                    if(preg_match('/cm/', $combination['attribute'])){
-                        $dealt_product_length = floatval(str_replace([' cm', 'cm'], ['', '.'], $combination['attribute'])) / 100;
-                    } else {
-                        $dealt_product_length = floatval(str_replace([' ml', ' m', 'ml', 'm'], ['', '', '.', '.'], $combination['attribute']));
-                    }
-
-                    break;
+        if($checkIfPack){
+            $mainProduct = Db::getInstance()->executeS('SELECT pap.id_product, pap.default_id_product_attribute FROM `'._DB_PREFIX_.'pm_advancedpack_products` pap WHERE pap.id_pack = '.(int)$params['product']['id'].' AND pap.position = 0');
+            if(!empty($mainProduct[0])){
+                if(!empty($mainProduct[0]['default_id_product_attribute'])){
+                    $combinations = $this->getAttributesInformationsByProduct($mainProduct[0]['id_product'], $mainProduct[0]['default_id_product_attribute']);
                 }
             }
-        }
 
-        if(empty($dealt_product_length)){
-            if(!empty($params['product']['width']) && $params['product']['width'] != 0){
-                $dealt_product_length = $params['product']['width']/100;
-            } else {
-                foreach ($params['product']['features'] as $feature){
-                    if($feature['name'] == 'Longueur'){
-                        if(preg_match('/mm/', $feature['value']) OR preg_match('/MM/', $feature['value'])){
-                            $lengthInt = (int)$feature['value'];
-                            $dealt_product_length = $lengthInt / 1000;
-                        } else if(preg_match('/ml/', $feature['value'])){
-                            $dealt_product_length = floatval(preg_replace('/[ml]/', '.', $feature['value']).'0');
-                        } else if(preg_match('/ML/', $feature['value'])){
-                            $dealt_product_length = floatval(preg_replace('/[ML]/', '.', $feature['value']).'0');
-                        }else if(preg_match('/m/', $feature['value']) OR preg_match('/M/', $feature['value'])){
-                            $dealt_product_length = floatval(preg_replace('/[mM]/', '.', $feature['value']).'0');
-                        } else if(preg_match('/cm/', $feature['value']) OR preg_match('/CM/', $feature['value'])){
-                            $lengthInt = (int)$feature['value'];
-                            $dealt_product_length = $lengthInt / 100;
+            if(count($combinations)){
+                foreach($combinations as $combination){
+                    if($combination['group'] == 'Longueur du Kit' OR $combination['group'] == 'Longueur' OR $combination['group'] == 'longueur'){
+                        if(preg_match('/cm/', $combination['attribute'])){
+                            $dealt_product_length = floatval(str_replace([' cm', 'cm'], ['', '.'], $combination['attribute'])) / 100;
                         } else {
-                            $dealt_product_length = (int)$feature['value'];
+                            $dealt_product_length = floatval(str_replace([' ml', ' m', 'ml', 'm'], ['', '', '.', '.'], $combination['attribute']));
                         }
+
                         break;
+                    }
+                }
+            }
+
+            if(!empty($mainProduct[0]) && empty($dealt_product_length)){
+                $mainProdInfo = new Product($mainProduct[0]['id_product']);
+
+                if(!empty($mainProdInfo->width) && $mainProdInfo->width != 0){
+                    $dealt_product_length = $mainProdInfo->width/100;
+                } else {
+                    $mainProdInfoFeatures = Product::getFrontFeaturesStatic(Context::getContext()->language->id, $mainProduct[0]['id_product']);
+                    if(count($mainProdInfoFeatures)){
+                        foreach ($mainProdInfoFeatures as $feature){
+                            if($feature['name'] == 'Longueur'){
+                                if(preg_match('/mm/', $feature['value']) OR preg_match('/MM/', $feature['value'])){
+                                    $lengthInt = (int)$feature['value'];
+                                    $dealt_product_length = $lengthInt / 1000;
+                                } else if(preg_match('/ml/', $feature['value'])){
+                                    $dealt_product_length = floatval(preg_replace('/[ml]/', '.', $feature['value']).'0');
+                                } else if(preg_match('/ML/', $feature['value'])){
+                                    $dealt_product_length = floatval(preg_replace('/[ML]/', '.', $feature['value']).'0');
+                                }else if(preg_match('/m/', $feature['value']) OR preg_match('/M/', $feature['value'])){
+                                    $dealt_product_length = floatval(preg_replace('/[mM]/', '.', $feature['value']).'0');
+                                } else if(preg_match('/cm/', $feature['value']) OR preg_match('/CM/', $feature['value'])){
+                                    $lengthInt = (int)$feature['value'];
+                                    $dealt_product_length = $lengthInt / 100;
+                                } else {
+                                    $dealt_product_length = (int)$feature['value'];
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                }
+            }
+
+        } else {
+            if(!empty($params['product']['id_product_attribute'])){
+                $combinations = $this->getAttributesInformationsByProduct($params['product']['id'], $params['product']['id_product_attribute']);
+            }
+
+            if(count($combinations)){
+                foreach($combinations as $combination){
+                    if($combination['group'] == 'Longueur du Kit' OR $combination['group'] == 'Longueur' OR $combination['group'] == 'longueur'){
+                        if(preg_match('/cm/', $combination['attribute'])){
+                            $dealt_product_length = floatval(str_replace([' cm', 'cm'], ['', '.'], $combination['attribute'])) / 100;
+                        } else {
+                            $dealt_product_length = floatval(str_replace([' ml', ' m', 'ml', 'm'], ['', '', '.', '.'], $combination['attribute']));
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            if(empty($dealt_product_length)){
+                if(!empty($params['product']['width']) && $params['product']['width'] != 0){
+                    $dealt_product_length = $params['product']['width']/100;
+                } else {
+                    foreach ($params['product']['features'] as $feature){
+                        if($feature['name'] == 'Longueur'){
+                            if(preg_match('/mm/', $feature['value']) OR preg_match('/MM/', $feature['value'])){
+                                $lengthInt = (int)$feature['value'];
+                                $dealt_product_length = $lengthInt / 1000;
+                            } else if(preg_match('/ml/', $feature['value'])){
+                                $dealt_product_length = floatval(preg_replace('/[ml]/', '.', $feature['value']).'0');
+                            } else if(preg_match('/ML/', $feature['value'])){
+                                $dealt_product_length = floatval(preg_replace('/[ML]/', '.', $feature['value']).'0');
+                            }else if(preg_match('/m/', $feature['value']) OR preg_match('/M/', $feature['value'])){
+                                $dealt_product_length = floatval(preg_replace('/[mM]/', '.', $feature['value']).'0');
+                            } else if(preg_match('/cm/', $feature['value']) OR preg_match('/CM/', $feature['value'])){
+                                $lengthInt = (int)$feature['value'];
+                                $dealt_product_length = $lengthInt / 100;
+                            } else {
+                                $dealt_product_length = (int)$feature['value'];
+                            }
+                            break;
+                        }
                     }
                 }
             }
@@ -346,6 +409,16 @@ class Dealt extends Module
         return $this->display(__FILE__, 'views/templates/hook/product_offer.tpl');
     }
 
+    public function checkIfPack($id_product){
+        $ifTable = Db::getInstance()->execute('SHOW TABLES LIKE "'._DB_PREFIX_.'pm_advancedpack"');
+        if(!$ifTable){
+            return false;
+        } else {
+            $check = Db::getInstance()->executeS('SELECT * FROM `'._DB_PREFIX_.'pm_advancedpack` WHERE `id_pack` = '.(int)$id_product.' AND id_shop = '.(int)Context::getContext()->shop->id);
+            return !empty($check[0]);
+        }
+    }
+
     public function getAttributesInformationsByProduct($id_product, $id_product_attribute)
     {
         $sql = '
@@ -370,6 +443,57 @@ class Dealt extends Module
         $result = Db::getInstance()->executeS($sql);
 
         return $result;
+    }
+
+    public function hookActionCartSave($params){
+        $idProduct = (int)Tools::getValue('id_product');
+        if(isset(Context::getContext()->cookie->cart_packs)){
+            $cookiePack = json_decode(Context::getContext()->cookie->cart_packs);
+            if(!empty($cookiePack->id_cart) && !empty(Context::getContext()->cart->id)){
+                if((int)$cookiePack->id_cart != (int)Context::getContext()->cart->id) {
+                    unset(Context::getContext()->cookie->cart_packs);
+                }
+            }
+        }
+        if(Tools::getValue('action') && Tools::getValue('action') == 'add-to-cart'){
+            if(!empty($idProduct)){
+                $ifPack = $this->checkIfPack($idProduct);
+                if($ifPack){
+                    $cart_pack = [
+                        'id_cart' => $params['cart']->id,
+                        'id_pack' => $idProduct,
+                    ];
+                    Context::getContext()->cookie->cart_packs= json_encode($cart_pack);
+                }
+            }
+        } else if (!empty(Tools::getValue('id_product_attribute_list'))) {
+            $packInfo = json_decode(Tools::getValue('id_product_attribute_list'));
+            $fistProductId = array_key_first((array)$packInfo);
+            if(!empty($fistProductId)){
+                $id_pack = $this->findPackId($fistProductId);
+                if(!empty($id_pack)){
+                    $ifPack = $this->checkIfPack((int)$id_pack);
+                    if($ifPack){
+                        $cart_pack = [
+                            'id_cart' => $params['cart']->id,
+                            'id_pack' => $id_pack,
+                        ];
+                        Context::getContext()->cookie->cart_packs= json_encode($cart_pack);
+                    }
+                }
+
+            }
+        }
+    }
+
+    public function findPackId($productPackId){
+        $ifTable = Db::getInstance()->execute('SHOW TABLES LIKE "'._DB_PREFIX_.'pm_advancedpack_products"');
+        if(!$ifTable){
+            return false;
+        } else {
+            $id_pack = Db::getInstance()->executeS('SELECT id_pack FROM `'._DB_PREFIX_.'pm_advancedpack_products` WHERE `id_product_pack` = '.(int)$productPackId);
+            return $id_pack[0]['id_pack'];
+        }
     }
 
     public function hookDisplayShoppingCartFooter($params)
@@ -604,31 +728,31 @@ class Dealt extends Module
                 }
             }
 
-/*            foreach ($order_list as $order) {
-                $order_with_service = 0;
-                $products = $order->getProducts();
-                foreach ($products as $product) {
-                    if($product['id_category_default'] == 369){
-                        $order_with_service = 1;
-                        break;
-                    }
-                }
+            /*            foreach ($order_list as $order) {
+                            $order_with_service = 0;
+                            $products = $order->getProducts();
+                            foreach ($products as $product) {
+                                if($product['id_category_default'] == 369){
+                                    $order_with_service = 1;
+                                    break;
+                                }
+                            }
 
-                // mise à jour du transporteur de la commande sans service (20%)
-                if(!$order_with_service){
+                            // mise à jour du transporteur de la commande sans service (20%)
+                            if(!$order_with_service){
 
-                    $updateOrder = Db::getInstance()->execute("UPDATE " . _DB_PREFIX_ . "orders o 
-                    SET o.total_paid = '".$order->total_products_wt."',
-                    o.total_paid_tax_incl = '".$order->total_products_wt."',
-                    o.total_paid_tax_excl = '".$order->total_products."',
-                    WHERE o.id_order = " . $order->id);
+                                $updateOrder = Db::getInstance()->execute("UPDATE " . _DB_PREFIX_ . "orders o
+                                SET o.total_paid = '".$order->total_products_wt."',
+                                o.total_paid_tax_incl = '".$order->total_products_wt."',
+                                o.total_paid_tax_excl = '".$order->total_products."',
+                                WHERE o.id_order = " . $order->id);
 
-                    $updateCarrier = Db::getInstance()->execute("UPDATE " . _DB_PREFIX_ . "order_carrier oc
-                    SET oc.shipping_cost_tax_excl = 0,
-                    oc.shipping_cost_tax_incl = 0,
-                    WHERE o.id_order = " . $order->id);
-                }
-            }*/
+                                $updateCarrier = Db::getInstance()->execute("UPDATE " . _DB_PREFIX_ . "order_carrier oc
+                                SET oc.shipping_cost_tax_excl = 0,
+                                oc.shipping_cost_tax_incl = 0,
+                                WHERE o.id_order = " . $order->id);
+                            }
+                        }*/
         }
     }
 
