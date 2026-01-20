@@ -397,7 +397,7 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
         $errors = array();
         $fields = array(
             'CKC_BARREPROMO_AVIS_API_KEY' => array('type' => 'text'),
-            'CKC_BARREPROMO_AVIS_API_SECRET' => array('type' => 'text'),
+            'CKC_BARREPROMO_AVIS_API_SECRET' => array('type' => 'password'),
             'CKC_BARREPROMO_AVIS_AUTH_URL' => array('type' => 'url', 'error' => 'L\'URL d\'authentification n\'est pas valide.'),
             'CKC_BARREPROMO_AVIS_API_ENDPOINT' => array('type' => 'url', 'error' => 'L\'URL de l\'endpoint API n\'est pas valide.'),
             'CKC_BARREPROMO_AVIS_CACHE_DURATION' => array('type' => 'int', 'error' => 'La durée du cache doit être un nombre entier.', 'min' => 1, 'max' => 1440, 'error_range' => 'La durée du cache doit être entre 1 et 1440 minutes.'),
@@ -426,6 +426,11 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
                     $errors[] = $this->l($config['error_range']);
                     continue;
                 }
+            }
+            
+            // Pour les champs password, ne mettre à jour que si une valeur est fournie
+            if ($config['type'] === 'password' && empty($value)) {
+                continue;
             }
             
             Configuration::updateValue($field, $config['type'] === 'int' ? $value : Tools::safeOutput($value), true);
