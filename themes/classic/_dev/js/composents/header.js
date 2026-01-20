@@ -66,9 +66,11 @@ $(document).ready(function () {
         $(window).on("scroll", function () {
             if ($(window).scrollTop() > stickyOffset) {
                 $header.addClass("sticky");
+                $promoBar.addClass("sticky");
                 $headerPlaceholder.show();
             } else {
                 $header.removeClass("sticky");
+                $promoBar.removeClass("sticky");
                 $headerPlaceholder.hide();
             }
         });
