@@ -407,7 +407,12 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
         
         foreach ($fields as $field => $config) {
             $value = Tools::getValue($field);
-            if ($value === false) {
+            
+            if ($config['type'] === 'password') {
+                if ($value === false || empty($value)) {
+                    continue;
+                }
+            } elseif ($value === false) {
                 continue;
             }
             
@@ -426,11 +431,6 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
                     $errors[] = $this->l($config['error_range']);
                     continue;
                 }
-            }
-            
-            // Pour les champs password, ne mettre à jour que si une valeur est fournie
-            if ($config['type'] === 'password' && empty($value)) {
-                continue;
             }
             
             Configuration::updateValue($field, $config['type'] === 'int' ? $value : Tools::safeOutput($value), true);
