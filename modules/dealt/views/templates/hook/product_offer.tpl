@@ -28,7 +28,7 @@
                 {if !empty($service.dealt_service_url)}
                     <a href="{$service.dealt_service_url|escape:'html':'UTF-8'}"
                        rel="noopener noreferrer nofollow"
-                       class="dealt-conditions-link">
+                       class="dealt-conditions-link" target="_blank">
                         Détails des conditions du service
                     </a>
                 {/if}
