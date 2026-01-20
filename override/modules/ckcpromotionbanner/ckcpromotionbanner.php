@@ -406,14 +406,22 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
         );
         
         foreach ($fields as $field => $config) {
-            $value = Tools::getValue($field);
-            
+            // Pour les champs password, vérifier d'abord s'il est présent dans le POST
             if ($config['type'] === 'password') {
-                if ($value === false || empty($value)) {
+                // Si le champ password n'est pas présent dans le POST, ne pas le modifier
+                if (!isset($_POST[$field])) {
                     continue;
                 }
-            } elseif ($value === false) {
-                continue;
+                $value = Tools::getValue($field);
+                // Si le champ password est vide, ne pas le modifier
+                if (empty($value)) {
+                    continue;
+                }
+            } else {
+                $value = Tools::getValue($field);
+                if ($value === false) {
+                    continue;
+                }
             }
             
             if ($config['type'] === 'url' && !empty($value) && !Validate::isUrl($value)) {
