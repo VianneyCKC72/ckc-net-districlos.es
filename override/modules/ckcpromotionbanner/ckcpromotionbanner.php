@@ -14,24 +14,6 @@ if (!defined('_PS_VERSION_')) {
 class CkcpromotionbannerOverride extends Ckcpromotionbanner
 {
     /**
-     * Détecte si on est en environnement local pour désactiver SSL
-     *
-     * @return bool True si environnement local, false sinon
-     */
-    protected function isLocalEnvironment()
-    {
-        $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
-        return (
-            (defined('_PS_MODE_DEV_') && _PS_MODE_DEV_) ||
-            in_array($host, ['localhost', '127.0.0.1']) ||
-            strpos($host, '.local') !== false ||
-            strpos($host, '192.168.') !== false ||
-            strpos($host, '10.0.') !== false ||
-            (isset($_SERVER['SERVER_ADDR']) && in_array($_SERVER['SERVER_ADDR'], ['127.0.0.1', '::1']))
-        );
-    }
-
-    /**
      * Récupère les données Avis Vérifiés via l'API avec système de cache
      *
      * @return array|false Retourne un tableau avec 'note' et 'total_reviews' ou false en cas d'erreur
@@ -75,8 +57,7 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
             $apiEndpoint = Configuration::get('CKC_BARREPROMO_AVIS_API_ENDPOINT', 'https://api.skeepers.io/verified-reviews/v1/published/brands');
             
             $ch = curl_init();
-            // En production, vérification SSL activée ; en développement, désactivée pour éviter les erreurs de certificat
-            $sslVerify = !$this->isLocalEnvironment();
+            // SSL toujours activé en production
             curl_setopt_array($ch, array(
                 CURLOPT_URL => $apiEndpoint,
                 CURLOPT_RETURNTRANSFER => true,
@@ -85,8 +66,8 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
                     'Authorization: Bearer ' . $token,
                     'Content-Type: application/json'
                 ),
-                CURLOPT_SSL_VERIFYPEER => $sslVerify,
-                CURLOPT_SSL_VERIFYHOST => $sslVerify ? 2 : 0,
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_SSL_VERIFYHOST => 2,
             ));
 
             $response = curl_exec($ch);
@@ -178,7 +159,7 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
     }
 
     /**
-     * Authentification OAuth avec Skeepers (Avis Vérifiés)
+     * Authentification OAuth avec Skeepers (Avis Vérifiés) avec cache du token
      *
      * @param string $authUrl URL d'authentification
      * @param string $apiKey Client ID
@@ -187,13 +168,24 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
      */
     protected function authenticateAvisVerifies($authUrl, $apiKey, $apiSecret)
     {
+        // Vérification du cache du token OAuth (durée de vie ~5 minutes selon la doc Skeepers)
+        $tokenCacheKey = 'CKC_BARREPROMO_AVIS_TOKEN';
+        $tokenCacheTimestampKey = 'CKC_BARREPROMO_AVIS_TOKEN_TIMESTAMP';
+        
+        $cachedToken = Configuration::get($tokenCacheKey);
+        $tokenTimestamp = (int)Configuration::get($tokenCacheTimestampKey);
+        
+        // Le token expire après 300 secondes (5 minutes), on le renouvelle après 4 minutes pour être sûr
+        if ($cachedToken && $tokenTimestamp > 0 && (time() - $tokenTimestamp) < 240) {
+            return $cachedToken;
+        }
+        
         try {
             // Encodage Base64 pour Basic Auth
             $basicAuth = base64_encode($apiKey . ':' . $apiSecret);
             
             $ch = curl_init();
-            // En production, vérification SSL activée ; en développement, désactivée pour éviter les erreurs de certificat
-            $sslVerify = !$this->isLocalEnvironment();
+            // SSL toujours activé en production
             curl_setopt_array($ch, array(
                 CURLOPT_URL => $authUrl,
                 CURLOPT_RETURNTRANSFER => true,
@@ -207,8 +199,8 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
                     'Authorization: Basic ' . $basicAuth,
                     'Content-Type: application/x-www-form-urlencoded',
                 ),
-                CURLOPT_SSL_VERIFYPEER => $sslVerify,
-                CURLOPT_SSL_VERIFYHOST => $sslVerify ? 2 : 0,
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_SSL_VERIFYHOST => 2,
             ));
 
             $response = curl_exec($ch);
@@ -238,7 +230,13 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
                 return false;
             }
 
-            return $data['access_token'];
+            $token = $data['access_token'];
+            
+            // Mise en cache du token OAuth
+            Configuration::updateValue($tokenCacheKey, $token, true);
+            Configuration::updateValue($tokenCacheTimestampKey, time(), true);
+
+            return $token;
 
         } catch (Exception $e) {
             PrestaShopLogger::addLog(
@@ -284,9 +282,11 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
         Configuration::deleteByName('CKC_BARREPROMO_AVIS_FALLBACK_TEXT');
         Configuration::deleteByName('CKC_BARREPROMO_AVIS_FALLBACK_NOTE');
         
-        // Suppression du cache
-        Cache::clean('ckcpromotionbanner_avis_verifies');
-        Cache::clean('ckcpromotionbanner_avis_verifies_timestamp');
+        // Suppression du cache persistant
+        Configuration::deleteByName('CKC_BARREPROMO_AVIS_CACHE_DATA');
+        Configuration::deleteByName('CKC_BARREPROMO_AVIS_CACHE_TIMESTAMP');
+        Configuration::deleteByName('CKC_BARREPROMO_AVIS_TOKEN');
+        Configuration::deleteByName('CKC_BARREPROMO_AVIS_TOKEN_TIMESTAMP');
         
         return parent::uninstall();
     }
@@ -420,33 +420,79 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
     }
 
     /**
-     * Traitement du formulaire - Gestion des champs Avis Vérifiés
+     * Traitement du formulaire - Gestion des champs Avis Vérifiés avec validation
      */
     protected function postProcess()
     {
         parent::postProcess();
         
-        // Traitement des champs Avis Vérifiés
-        $avisFields = array(
-            'CKC_BARREPROMO_AVIS_API_KEY',
-            'CKC_BARREPROMO_AVIS_API_SECRET',
-            'CKC_BARREPROMO_AVIS_AUTH_URL',
-            'CKC_BARREPROMO_AVIS_API_ENDPOINT',
-            'CKC_BARREPROMO_AVIS_CACHE_DURATION',
-            'CKC_BARREPROMO_AVIS_FALLBACK_TEXT',
-            'CKC_BARREPROMO_AVIS_FALLBACK_NOTE',
-        );
+        $errors = array();
         
-        foreach ($avisFields as $field) {
-            $value = Tools::getValue($field);
-            if ($value !== false) {
-                Configuration::updateValue($field, $value, true);
+        // Traitement des champs Avis Vérifiés avec validation
+        $apiKey = Tools::getValue('CKC_BARREPROMO_AVIS_API_KEY');
+        if ($apiKey !== false) {
+            Configuration::updateValue('CKC_BARREPROMO_AVIS_API_KEY', Tools::safeOutput($apiKey), true);
+        }
+        
+        $apiSecret = Tools::getValue('CKC_BARREPROMO_AVIS_API_SECRET');
+        if ($apiSecret !== false) {
+            Configuration::updateValue('CKC_BARREPROMO_AVIS_API_SECRET', Tools::safeOutput($apiSecret), true);
+        }
+        
+        $authUrl = Tools::getValue('CKC_BARREPROMO_AVIS_AUTH_URL');
+        if ($authUrl !== false) {
+            if (!empty($authUrl) && !Validate::isUrl($authUrl)) {
+                $errors[] = $this->l('L\'URL d\'authentification n\'est pas valide.');
+            } else {
+                Configuration::updateValue('CKC_BARREPROMO_AVIS_AUTH_URL', Tools::safeOutput($authUrl), true);
             }
         }
         
-        // Invalidation du cache lors de la modification des paramètres API
-        Configuration::deleteByName('CKC_BARREPROMO_AVIS_CACHE_DATA');
-        Configuration::deleteByName('CKC_BARREPROMO_AVIS_CACHE_TIMESTAMP');
+        $apiEndpoint = Tools::getValue('CKC_BARREPROMO_AVIS_API_ENDPOINT');
+        if ($apiEndpoint !== false) {
+            if (!empty($apiEndpoint) && !Validate::isUrl($apiEndpoint)) {
+                $errors[] = $this->l('L\'URL de l\'endpoint API n\'est pas valide.');
+            } else {
+                Configuration::updateValue('CKC_BARREPROMO_AVIS_API_ENDPOINT', Tools::safeOutput($apiEndpoint), true);
+            }
+        }
+        
+        $cacheDuration = Tools::getValue('CKC_BARREPROMO_AVIS_CACHE_DURATION');
+        if ($cacheDuration !== false) {
+            if (!empty($cacheDuration) && !Validate::isInt($cacheDuration)) {
+                $errors[] = $this->l('La durée du cache doit être un nombre entier.');
+            } else {
+                $cacheDuration = (int)$cacheDuration;
+                if ($cacheDuration < 1 || $cacheDuration > 1440) {
+                    $errors[] = $this->l('La durée du cache doit être entre 1 et 1440 minutes.');
+                } else {
+                    Configuration::updateValue('CKC_BARREPROMO_AVIS_CACHE_DURATION', $cacheDuration, true);
+                }
+            }
+        }
+        
+        $fallbackText = Tools::getValue('CKC_BARREPROMO_AVIS_FALLBACK_TEXT');
+        if ($fallbackText !== false) {
+            Configuration::updateValue('CKC_BARREPROMO_AVIS_FALLBACK_TEXT', Tools::safeOutput($fallbackText), true);
+        }
+        
+        $fallbackNote = Tools::getValue('CKC_BARREPROMO_AVIS_FALLBACK_NOTE');
+        if ($fallbackNote !== false) {
+            Configuration::updateValue('CKC_BARREPROMO_AVIS_FALLBACK_NOTE', Tools::safeOutput($fallbackNote), true);
+        }
+        
+        // Affichage des erreurs si présentes
+        if (!empty($errors)) {
+            foreach ($errors as $error) {
+                $this->context->controller->errors[] = $error;
+            }
+        } else {
+            // Invalidation du cache et du token lors de la modification des paramètres API
+            Configuration::deleteByName('CKC_BARREPROMO_AVIS_CACHE_DATA');
+            Configuration::deleteByName('CKC_BARREPROMO_AVIS_CACHE_TIMESTAMP');
+            Configuration::deleteByName('CKC_BARREPROMO_AVIS_TOKEN');
+            Configuration::deleteByName('CKC_BARREPROMO_AVIS_TOKEN_TIMESTAMP');
+        }
     }
 
     /**
@@ -467,16 +513,6 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
             // Lien dynamique vers la page des avis (certificate_link)
             $certificateLink = isset($avisData['certificate_link']) && !empty($avisData['certificate_link']) ? $avisData['certificate_link'] : '';
             $this->smarty->assign('avis_certificate_link', $certificateLink);
-            
-            // Debug temporaire (à supprimer après vérification)
-            if (empty($certificateLink)) {
-                PrestaShopLogger::addLog(
-                    'Ckcpromotionbanner - certificate_link vide dans les données: ' . print_r($avisData, true),
-                    2,
-                    null,
-                    'Ckcpromotionbanner'
-                );
-            }
         } else {
             // Utilisation des valeurs de secours
             $this->smarty->assign('avis_note', false);
