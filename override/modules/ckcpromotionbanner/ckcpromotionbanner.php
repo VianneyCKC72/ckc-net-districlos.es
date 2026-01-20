@@ -25,12 +25,10 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
         $authUrl = Configuration::get('CKC_BARREPROMO_AVIS_AUTH_URL');
         $cacheDuration = (int)Configuration::get('CKC_BARREPROMO_AVIS_CACHE_DURATION', 60);
 
-        // Vérification des paramètres requis
         if (empty($apiKey) || empty($apiSecret) || empty($authUrl)) {
             return false;
         }
 
-        // Vérification du cache persistant (Configuration)
         $cacheKey = 'CKC_BARREPROMO_AVIS_CACHE_DATA';
         $cacheTimestampKey = 'CKC_BARREPROMO_AVIS_CACHE_TIMESTAMP';
         
@@ -45,19 +43,15 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
         }
 
         try {
-            // Étape 1 : Authentification OAuth
             $token = $this->authenticateAvisVerifies($authUrl, $apiKey, $apiSecret);
             
             if (!$token) {
                 return false;
             }
 
-            // Étape 2 : Récupération des données (note moyenne de la marque)
-            // Endpoint Skeepers pour obtenir les notes agrégées de la marque
             $apiEndpoint = Configuration::get('CKC_BARREPROMO_AVIS_API_ENDPOINT', 'https://api.skeepers.io/verified-reviews/v1/published/brands');
             
             $ch = curl_init();
-            // SSL toujours activé en production
             curl_setopt_array($ch, array(
                 CURLOPT_URL => $apiEndpoint,
                 CURLOPT_RETURNTRANSFER => true,
@@ -87,7 +81,6 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
 
             $data = json_decode($response, true);
             
-            // La réponse est un tableau, on prend le premier élément (ou on calcule la moyenne)
             if (!is_array($data) || empty($data)) {
                 PrestaShopLogger::addLog(
                     'Ckcpromotionbanner - Réponse API Skeepers invalide ou vide',
@@ -98,28 +91,20 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
                 return false;
             }
 
-            // Extraction de la note moyenne depuis la structure Skeepers
-            // La note peut être dans one_year.average ou five_year.average
+            $brandData = $data[0];
             $note = null;
             $totalReviews = 0;
             
-            // On prend le premier shop/brand de la réponse
-            $brandData = $data[0];
-            
-            // Vérifier si la note est dans one_year (dernière année)
             if (isset($brandData['one_year']['average'])) {
                 $note = (float)$brandData['one_year']['average'];
                 $totalReviews = isset($brandData['one_year']['count_total']) ? (int)$brandData['one_year']['count_total'] : 0;
             }
-            // Sinon vérifier dans five_year (5 dernières années)
             elseif (isset($brandData['five_year']['average'])) {
                 $note = (float)$brandData['five_year']['average'];
                 $totalReviews = isset($brandData['five_year']['count_total']) ? (int)$brandData['five_year']['count_total'] : 0;
             }
-            // Sinon utiliser count_total_since_creation si disponible
-            elseif (isset($brandData['count_total_since_creation']) && $brandData['count_total_since_creation'] > 0) {
-                // Si pas de note moyenne dans la réponse, on peut essayer de récupérer depuis /brands/reviews
-                // Pour l'instant, on retourne false et on utilisera les valeurs de secours
+            
+            if (!$note || $note <= 0) {
                 PrestaShopLogger::addLog(
                     'Ckcpromotionbanner - Note moyenne non trouvée dans la réponse API',
                     2,
@@ -128,12 +113,7 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
                 );
                 return false;
             }
-            
-            if ($note === null || $note <= 0) {
-                return false;
-            }
 
-            // Formatage des données
             $result = array(
                 'note' => number_format($note, 1, '.', ''),
                 'total_reviews' => $totalReviews > 0 ? $totalReviews : (isset($brandData['count_total_since_creation']) ? (int)$brandData['count_total_since_creation'] : 0),
@@ -141,7 +121,6 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
                 'certificate_link' => isset($brandData['certificate_link']) ? $brandData['certificate_link'] : '',
             );
 
-            // Mise en cache persistant (Configuration)
             Configuration::updateValue($cacheKey, json_encode($result), true);
             Configuration::updateValue($cacheTimestampKey, time(), true);
 
@@ -175,17 +154,14 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
         $cachedToken = Configuration::get($tokenCacheKey);
         $tokenTimestamp = (int)Configuration::get($tokenCacheTimestampKey);
         
-        // Le token expire après 300 secondes (5 minutes), on le renouvelle après 4 minutes pour être sûr
         if ($cachedToken && $tokenTimestamp > 0 && (time() - $tokenTimestamp) < 240) {
             return $cachedToken;
         }
         
         try {
-            // Encodage Base64 pour Basic Auth
             $basicAuth = base64_encode($apiKey . ':' . $apiSecret);
             
             $ch = curl_init();
-            // SSL toujours activé en production
             curl_setopt_array($ch, array(
                 CURLOPT_URL => $authUrl,
                 CURLOPT_RETURNTRANSFER => true,
@@ -232,7 +208,6 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
 
             $token = $data['access_token'];
             
-            // Mise en cache du token OAuth
             Configuration::updateValue($tokenCacheKey, $token, true);
             Configuration::updateValue($tokenCacheTimestampKey, time(), true);
 
@@ -282,7 +257,6 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
         Configuration::deleteByName('CKC_BARREPROMO_AVIS_FALLBACK_TEXT');
         Configuration::deleteByName('CKC_BARREPROMO_AVIS_FALLBACK_NOTE');
         
-        // Suppression du cache persistant
         Configuration::deleteByName('CKC_BARREPROMO_AVIS_CACHE_DATA');
         Configuration::deleteByName('CKC_BARREPROMO_AVIS_CACHE_TIMESTAMP');
         Configuration::deleteByName('CKC_BARREPROMO_AVIS_TOKEN');
@@ -296,13 +270,9 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
      */
     protected function getConfigForm()
     {
-        // Récupération du formulaire parent (retourne array('form' => ...))
         $parentForm = parent::getConfigForm();
-        
-        // Conversion en tableau numérique pour pouvoir ajouter plusieurs formulaires
         $form = array($parentForm);
         
-        // Ajout d'une nouvelle section pour Avis Vérifiés
         $avisForm = array(
             'form' => array(
                 'legend' => array(
@@ -366,7 +336,6 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
             ),
         );
         
-        // Fusion des deux formulaires
         $form[] = $avisForm;
         
         return $form;
@@ -392,12 +361,11 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
         $helper->token = Tools::getAdminTokenLite('AdminModules');
 
         $helper->tpl_vars = array(
-            'fields_value' => $this->getConfigFormValues(), /* Add values for your inputs */
+            'fields_value' => $this->getConfigFormValues(),
             'languages' => $this->context->controller->getLanguages(),
             'id_language' => $this->context->language->id,
         );
 
-        // getConfigForm() retourne maintenant un tableau numérique de formulaires
         return $helper->generateForm($this->getConfigForm());
     }
 
@@ -427,67 +395,47 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
         parent::postProcess();
         
         $errors = array();
+        $fields = array(
+            'CKC_BARREPROMO_AVIS_API_KEY' => array('type' => 'text'),
+            'CKC_BARREPROMO_AVIS_API_SECRET' => array('type' => 'text'),
+            'CKC_BARREPROMO_AVIS_AUTH_URL' => array('type' => 'url', 'error' => 'L\'URL d\'authentification n\'est pas valide.'),
+            'CKC_BARREPROMO_AVIS_API_ENDPOINT' => array('type' => 'url', 'error' => 'L\'URL de l\'endpoint API n\'est pas valide.'),
+            'CKC_BARREPROMO_AVIS_CACHE_DURATION' => array('type' => 'int', 'error' => 'La durée du cache doit être un nombre entier.', 'min' => 1, 'max' => 1440, 'error_range' => 'La durée du cache doit être entre 1 et 1440 minutes.'),
+            'CKC_BARREPROMO_AVIS_FALLBACK_TEXT' => array('type' => 'text'),
+            'CKC_BARREPROMO_AVIS_FALLBACK_NOTE' => array('type' => 'text'),
+        );
         
-        // Traitement des champs Avis Vérifiés avec validation
-        $apiKey = Tools::getValue('CKC_BARREPROMO_AVIS_API_KEY');
-        if ($apiKey !== false) {
-            Configuration::updateValue('CKC_BARREPROMO_AVIS_API_KEY', Tools::safeOutput($apiKey), true);
-        }
-        
-        $apiSecret = Tools::getValue('CKC_BARREPROMO_AVIS_API_SECRET');
-        if ($apiSecret !== false) {
-            Configuration::updateValue('CKC_BARREPROMO_AVIS_API_SECRET', Tools::safeOutput($apiSecret), true);
-        }
-        
-        $authUrl = Tools::getValue('CKC_BARREPROMO_AVIS_AUTH_URL');
-        if ($authUrl !== false) {
-            if (!empty($authUrl) && !Validate::isUrl($authUrl)) {
-                $errors[] = $this->l('L\'URL d\'authentification n\'est pas valide.');
-            } else {
-                Configuration::updateValue('CKC_BARREPROMO_AVIS_AUTH_URL', Tools::safeOutput($authUrl), true);
+        foreach ($fields as $field => $config) {
+            $value = Tools::getValue($field);
+            if ($value === false) {
+                continue;
             }
-        }
-        
-        $apiEndpoint = Tools::getValue('CKC_BARREPROMO_AVIS_API_ENDPOINT');
-        if ($apiEndpoint !== false) {
-            if (!empty($apiEndpoint) && !Validate::isUrl($apiEndpoint)) {
-                $errors[] = $this->l('L\'URL de l\'endpoint API n\'est pas valide.');
-            } else {
-                Configuration::updateValue('CKC_BARREPROMO_AVIS_API_ENDPOINT', Tools::safeOutput($apiEndpoint), true);
+            
+            if ($config['type'] === 'url' && !empty($value) && !Validate::isUrl($value)) {
+                $errors[] = $this->l($config['error']);
+                continue;
             }
-        }
-        
-        $cacheDuration = Tools::getValue('CKC_BARREPROMO_AVIS_CACHE_DURATION');
-        if ($cacheDuration !== false) {
-            if (!empty($cacheDuration) && !Validate::isInt($cacheDuration)) {
-                $errors[] = $this->l('La durée du cache doit être un nombre entier.');
-            } else {
-                $cacheDuration = (int)$cacheDuration;
-                if ($cacheDuration < 1 || $cacheDuration > 1440) {
-                    $errors[] = $this->l('La durée du cache doit être entre 1 et 1440 minutes.');
-                } else {
-                    Configuration::updateValue('CKC_BARREPROMO_AVIS_CACHE_DURATION', $cacheDuration, true);
+            
+            if ($config['type'] === 'int' && !empty($value)) {
+                if (!Validate::isInt($value)) {
+                    $errors[] = $this->l($config['error']);
+                    continue;
+                }
+                $value = (int)$value;
+                if (isset($config['min']) && isset($config['max']) && ($value < $config['min'] || $value > $config['max'])) {
+                    $errors[] = $this->l($config['error_range']);
+                    continue;
                 }
             }
+            
+            Configuration::updateValue($field, $config['type'] === 'int' ? $value : Tools::safeOutput($value), true);
         }
         
-        $fallbackText = Tools::getValue('CKC_BARREPROMO_AVIS_FALLBACK_TEXT');
-        if ($fallbackText !== false) {
-            Configuration::updateValue('CKC_BARREPROMO_AVIS_FALLBACK_TEXT', Tools::safeOutput($fallbackText), true);
-        }
-        
-        $fallbackNote = Tools::getValue('CKC_BARREPROMO_AVIS_FALLBACK_NOTE');
-        if ($fallbackNote !== false) {
-            Configuration::updateValue('CKC_BARREPROMO_AVIS_FALLBACK_NOTE', Tools::safeOutput($fallbackNote), true);
-        }
-        
-        // Affichage des erreurs si présentes
         if (!empty($errors)) {
             foreach ($errors as $error) {
                 $this->context->controller->errors[] = $error;
             }
         } else {
-            // Invalidation du cache et du token lors de la modification des paramètres API
             Configuration::deleteByName('CKC_BARREPROMO_AVIS_CACHE_DATA');
             Configuration::deleteByName('CKC_BARREPROMO_AVIS_CACHE_TIMESTAMP');
             Configuration::deleteByName('CKC_BARREPROMO_AVIS_TOKEN');
@@ -500,28 +448,22 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
      */
     public function hookDisplayAfterBodyOpeningTag()
     {
-        // Récupération des données Avis Vérifiés AVANT d'appeler le parent
-        // pour que les variables soient disponibles lors du rendu du template
         $avisData = $this->getAvisVerifiesData();
+        $fallbackText = Configuration::get('CKC_BARREPROMO_AVIS_FALLBACK_TEXT', 'Nos clients sont satisfaits');
         
         if ($avisData && isset($avisData['note'])) {
-            // Données récupérées avec succès depuis l'API
             $this->smarty->assign('avis_note', $avisData['note']);
             $this->smarty->assign('avis_total_reviews', $avisData['total_reviews']);
             $this->smarty->assign('avis_recent_reviews', $avisData['recent_reviews']);
-            $this->smarty->assign('avis_text', Configuration::get('CKC_BARREPROMO_AVIS_FALLBACK_TEXT', 'Nos clients sont satisfaits'));
-            // Lien dynamique vers la page des avis (certificate_link)
-            $certificateLink = isset($avisData['certificate_link']) && !empty($avisData['certificate_link']) ? $avisData['certificate_link'] : '';
-            $this->smarty->assign('avis_certificate_link', $certificateLink);
+            $this->smarty->assign('avis_text', $fallbackText);
+            $this->smarty->assign('avis_certificate_link', !empty($avisData['certificate_link']) ? $avisData['certificate_link'] : '');
         } else {
-            // Utilisation des valeurs de secours
             $this->smarty->assign('avis_note', false);
-            $this->smarty->assign('avis_text', Configuration::get('CKC_BARREPROMO_AVIS_FALLBACK_TEXT', 'Nos clients sont satisfaits'));
+            $this->smarty->assign('avis_text', $fallbackText);
             $this->smarty->assign('avis_fallback_note', Configuration::get('CKC_BARREPROMO_AVIS_FALLBACK_NOTE', '4.8/5'));
             $this->smarty->assign('avis_certificate_link', '');
         }
         
-        // Maintenant on appelle le parent qui va rendre le template avec nos variables
         return parent::hookDisplayAfterBodyOpeningTag();
     }
 }
