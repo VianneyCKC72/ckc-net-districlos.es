@@ -377,7 +377,7 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
         $values = parent::getConfigFormValues();
         
         $values['CKC_BARREPROMO_AVIS_API_KEY'] = Configuration::get('CKC_BARREPROMO_AVIS_API_KEY', '');
-        $values['CKC_BARREPROMO_AVIS_API_SECRET'] = Configuration::get('CKC_BARREPROMO_AVIS_API_SECRET', '');
+        $values['CKC_BARREPROMO_AVIS_API_SECRET'] = ''; // Valeur vide pour les champs password (sécurité)
         $values['CKC_BARREPROMO_AVIS_AUTH_URL'] = Configuration::get('CKC_BARREPROMO_AVIS_AUTH_URL', '');
         $values['CKC_BARREPROMO_AVIS_API_ENDPOINT'] = Configuration::get('CKC_BARREPROMO_AVIS_API_ENDPOINT', 'https://api.skeepers.io/verified-reviews/v1/published/brands');
         $values['CKC_BARREPROMO_AVIS_CACHE_DURATION'] = Configuration::get('CKC_BARREPROMO_AVIS_CACHE_DURATION', 60);
@@ -392,10 +392,9 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
      */
     protected function postProcess()
     {
-        parent::postProcess();
-        
+        // Traiter nos champs AVANT le parent pour éviter que le parent écrase le password
         $errors = array();
-        $fields = array(
+        $avisFields = array(
             'CKC_BARREPROMO_AVIS_API_KEY' => array('type' => 'text'),
             'CKC_BARREPROMO_AVIS_API_SECRET' => array('type' => 'password'),
             'CKC_BARREPROMO_AVIS_AUTH_URL' => array('type' => 'url', 'error' => 'L\'URL d\'authentification n\'est pas valide.'),
@@ -405,7 +404,10 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
             'CKC_BARREPROMO_AVIS_FALLBACK_NOTE' => array('type' => 'text'),
         );
         
-        foreach ($fields as $field => $config) {
+        // Sauvegarder la valeur actuelle du password avant le traitement du parent
+        $currentPassword = Configuration::get('CKC_BARREPROMO_AVIS_API_SECRET');
+        
+        foreach ($avisFields as $field => $config) {
             // Pour les champs password, vérifier d'abord s'il est présent dans le POST
             if ($config['type'] === 'password') {
                 // Si le champ password n'est pas présent dans le POST, ne pas le modifier
@@ -442,6 +444,17 @@ class CkcpromotionbannerOverride extends Ckcpromotionbanner
             }
             
             Configuration::updateValue($field, $config['type'] === 'int' ? $value : Tools::safeOutput($value), true);
+        }
+        
+        // Appeler le parent qui va traiter ses propres champs
+        parent::postProcess();
+        
+        // Restaurer le password si le parent l'a écrasé et qu'on ne l'a pas modifié
+        if (!isset($_POST['CKC_BARREPROMO_AVIS_API_SECRET']) || empty(Tools::getValue('CKC_BARREPROMO_AVIS_API_SECRET'))) {
+            $passwordAfterParent = Configuration::get('CKC_BARREPROMO_AVIS_API_SECRET');
+            if (empty($passwordAfterParent) && !empty($currentPassword)) {
+                Configuration::updateValue('CKC_BARREPROMO_AVIS_API_SECRET', $currentPassword, true);
+            }
         }
         
         if (!empty($errors)) {
