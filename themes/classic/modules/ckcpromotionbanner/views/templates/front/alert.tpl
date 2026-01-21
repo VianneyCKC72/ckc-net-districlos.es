@@ -73,15 +73,9 @@
                     <strong><span id="ckctimer" style="color: {$CKC_BARREPROMO_TIMER_COLOR} !important;"></span></strong>
                 </div>
                 <div class="block-question"><img src="/img/cms/ico-question.png" width="22" height="20" class="ico-question" alt="des question?" />Des questions ?<a href="tel:0422531034"><strong>04 22 53 10 34</strong></a></div>
-                {if isset($avis_note) && $avis_note}
-                    {if isset($avis_certificate_link) && $avis_certificate_link}
-                        <div class="clients"><a href="{$avis_certificate_link}" target="_blank" rel="noopener noreferrer" class="avis-link" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 6px;">{$avis_text} : <strong>{$avis_note}/5</strong><img class="ico-stars" src="/img/cms/ico-stars.png" alt="ico-stars.png" /></a></div>
-                    {else}
-                        <div class="clients">{$avis_text} : <strong>{$avis_note}/5</strong><img class="ico-stars" src="/img/cms/ico-stars.png" alt="ico-stars.png" /></div>
-                    {/if}
-                {else}
-                    <div class="clients">{$avis_text} : <strong>{$avis_fallback_note}</strong><img class="ico-stars" src="/img/cms/ico-stars.png" alt="ico-stars.png" /></div>
-                {/if}
+                <div class="clients">
+                    {hook h='displaySkeepersRating' mod='dtc_skeepers'}
+                </div>
             </div>
         </span>
         {*        <button type="button" class="close close_once" data-dismiss="alert" aria-label="Close">*}
@@ -93,15 +87,9 @@
                 <div class="ckcpromobarre-text-change-container">
                 </div>
                 <div class="block-question"><img src="/img/cms/ico-question.png" width="22" height="20" class="ico-question" alt="des question?" />Des questions ?<a href="tel:0422531034"><strong>04 22 53 10 34</strong></a></div>
-                {if isset($avis_note) && $avis_note}
-                    {if isset($avis_certificate_link) && $avis_certificate_link}
-                        <div class="clients"><a href="{$avis_certificate_link}" target="_blank" rel="noopener noreferrer" class="avis-link" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 6px;">{$avis_text} : <strong>{$avis_note}/5</strong><img class="ico-stars" src="/img/cms/ico-stars.png" alt="ico-stars.png" /></a></div>
-                    {else}
-                        <div class="clients">{$avis_text} : <strong>{$avis_note}/5</strong><img class="ico-stars" src="/img/cms/ico-stars.png" alt="ico-stars.png" /></div>
-                    {/if}
-                {else}
-                    <div class="clients">{$avis_text} : <strong>{$avis_fallback_note}</strong><img class="ico-stars" src="/img/cms/ico-stars.png" alt="ico-stars.png" /></div>
-                {/if}
+                <div class="clients">
+                    {hook h='displaySkeepersRating' mod='dtc_skeepers'}
+                </div>
             </div>
         </span>
     {/if}
