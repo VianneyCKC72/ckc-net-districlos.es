@@ -63,7 +63,7 @@
             </a>
           {/if}
           
-          {if isset($pro_registration_url) && !empty($pro_registration_url)}
+          {if isset($pro_registration_url) && !empty($pro_registration_url) && (!isset($pro.env) || $pro.env != 1)}
             <div class="pro-registration-wrapper">
               <h2 class="pro-registration-title">{l s='Vous êtes un professionnel ?' d='Shop.Theme.Customeraccount'}</h2>
               <a href="{$pro_registration_url}" class="btn btn-secondary" id="inscription-pro">
