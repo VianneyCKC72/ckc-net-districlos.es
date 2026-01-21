@@ -24,6 +24,12 @@
     position: absolute !important;
   }
 }
+.pastille_fr_icon.pastille-fr-icon-page-produit{
+  width: 70px !important;
+  @media (max-width: 768px){
+    width: 50px !important;
+  }
+}
 
 .banner-quick-view-row {
 

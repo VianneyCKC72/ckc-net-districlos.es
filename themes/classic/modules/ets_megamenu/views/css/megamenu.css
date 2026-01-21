@@ -3136,10 +3136,14 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         top: 49px !important;
     }
     .sticky .ets_mm_megamenu.layout_layout1.scroll_heading:not(.ybc_vertical_menu) .mm_menus_ul {
-        top: 82px !important;
+        top: 127px !important;
     }
 }
-
+@media (max-width: 1299px) {
+    header.sticky .ets_mm_megamenu.layout_layout1.scroll_heading:not(.ybc_vertical_menu) .mm_menus_ul {
+        top: 141px !important;
+    }
+}
 
 /*// adaptation de l'ancien menu'*/
 
@@ -3385,6 +3389,15 @@ body.menu-opened #ckcpromobarre {
         span{
             color: #ff0946;
         }
+    }
+}
+.info-menu-link-on-scroll.mm_menus_li{
+    a{
+        padding-left: 0;
+        padding-top: 0;
+    }
+    span{
+        color: #ff0946;
     }
 }
 .changestatus .mm_menus_li.menu-mobile-custom-container-links{

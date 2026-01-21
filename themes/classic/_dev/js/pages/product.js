@@ -98,7 +98,7 @@ $(document).ready(function () {
     $('body').on('keyup', '.js-product-quantity', function (event) {
         $('.js-product-quantity').trigger('change');
     });
-    
+
     // Bloque la touche Entrée sur la quantité des produits, accessoires et autres champs
     $('body').on('keydown', '.js-product-quantity, .custom_quantity, .form-control-select, .product-combination', function (event) {
         if (event.keyCode === 13 || event.key === 'Enter') {
@@ -385,6 +385,17 @@ $(document).ready(function () {
         $('.wrapper__swiper__product-img').replaceWith(event.product_cover_thumbnails);
 
         refreshPrice();
+
+        if(typeof $("span.chooseYourProduct") !== "undefined" && $("span.chooseYourProduct").length > 1){
+            let chooseYourProductEl = false
+            $("span.chooseYourProduct").each(function(){
+                if(chooseYourProductEl){
+                    $(this).remove()
+                } else {
+                    chooseYourProductEl = true
+                }
+            })
+        }
 
         if (event && event.product_reference) {
             const refEl = document.getElementById('product_reference');
@@ -677,11 +688,11 @@ $(document).ready(function () {
                 if (col12Section) {
                     // Détecter si on est sur une page pack
                     // On vérifie d'abord l'input is_pack puis la classe ap5-buy-block
-                    const isPack = (document.getElementById('is_pack')?.value === '1') || 
-                                   document.querySelector('.ap5-buy-block') !== null;
-                    
+                    const isPack = (document.getElementById('is_pack')?.value === '1') ||
+                        document.querySelector('.ap5-buy-block') !== null;
+
                     const offset = col12Section.offsetTop + (isPack ? 350 : 370); // Première valeur : Pack, Deuxième valeur : Produit
-                    
+
                     $('html, body').animate({
                         scrollTop: offset
                     }, 300);
