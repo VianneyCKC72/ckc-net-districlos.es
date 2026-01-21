@@ -261,7 +261,7 @@
     }
   }
   .row-header:has(.ico.btn-espace-pro) {
-    justify-content: flex-start;
+    /*justify-content: flex-start;*/
     @media (max-width: 996px) {
       justify-content: space-between;
     }
@@ -376,6 +376,21 @@
         font-size: 14px;
       }
     }
+  }
+}
+#ckcpromobarre.sticky{
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  transition: transform .3s;
+  @media (max-width: 1299px) {
+    height: 59px;
+    align-content: center;
+  }
+  @media (max-width: 550px) {
+    height: 75px;
   }
 }
 .header-top{
