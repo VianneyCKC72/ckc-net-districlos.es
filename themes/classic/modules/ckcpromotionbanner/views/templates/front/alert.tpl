@@ -73,7 +73,9 @@
                     <strong><span id="ckctimer" style="color: {$CKC_BARREPROMO_TIMER_COLOR} !important;"></span></strong>
                 </div>
                 <div class="block-question"><img src="/img/cms/ico-question.png" width="22" height="20" class="ico-question" alt="des question?" />Des questions ?<a href="tel:0422531034"><strong>04 22 53 10 34</strong></a></div>
-                <div class="clients">Nos clients sont satisfaits : <strong>9.5/10</strong><img class="ico-stars" src="/img/cms/ico-stars.png" alt="ico-stars.png" /></div>
+                <div class="clients">
+                    {hook h='displaySkeepersRating' mod='dtc_skeepers'}
+                </div>
             </div>
         </span>
         {*        <button type="button" class="close close_once" data-dismiss="alert" aria-label="Close">*}
@@ -85,7 +87,9 @@
                 <div class="ckcpromobarre-text-change-container">
                 </div>
                 <div class="block-question"><img src="/img/cms/ico-question.png" width="22" height="20" class="ico-question" alt="des question?" />Des questions ?<a href="tel:0422531034"><strong>04 22 53 10 34</strong></a></div>
-                <div class="clients">Nos clients sont satisfaits : <strong>9.5/10</strong><img class="ico-stars" src="/img/cms/ico-stars.png" alt="ico-stars.png" /></div>
+                <div class="clients">
+                    {hook h='displaySkeepersRating' mod='dtc_skeepers'}
+                </div>
             </div>
         </span>
     {/if}
