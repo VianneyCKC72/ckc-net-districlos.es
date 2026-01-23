@@ -59,7 +59,7 @@
             <div class="add">
                 <button class="btn btn-secondary add-to-cart" data-button-action="add-to-cart" type="submit"
                         {if !$product.add_to_cart_url} disabled {/if}>
-                    <svg width="28" height="20" viewBox="0 0 28 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <svg width="28" height="20" viewBox="0 0 28 20" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
                         <g>
                             <path class="st0" d="M9.3,15.2c-0.4,0-0.7,0.2-1,0.4c-0.3,0.3-0.4,0.7-0.4,1.1c0,0.4,0.2,0.8,0.4,1.1c0.3,0.3,0.6,0.4,1,0.4
               c0.4,0,0.7-0.2,1-0.4c0.3-0.3,0.4-0.7,0.4-1.1c0-0.4-0.2-0.8-0.4-1.1C10,15.3,9.6,15.2,9.3,15.2z"/>
@@ -79,8 +79,8 @@
 
                 {* Loader en dehors du bouton pour compatibilité maximale *}
                 <span class="loader" style="display:none; margin-left:10px;">
-        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-          <circle cx="50" cy="50" r="35" stroke-width="10" stroke="currentColor" stroke-dasharray="164"
+        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="#ffffff">
+          <circle cx="50" cy="50" r="35" stroke-width="10" stroke="#ffffff" stroke-dasharray="164"
                   stroke-linecap="round" fill="none">
             <animateTransform attributeName="transform" type="rotate" dur="1s" repeatCount="indefinite"
                               from="0 50 50" to="360 50 50" />
