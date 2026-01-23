@@ -23,14 +23,6 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 
-<div id="global-loader-wrapper" style="display:none; position:fixed; top:20px; right:20px; z-index:10000;">
-    <svg width="30" height="30" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-        <circle cx="50" cy="50" r="35" stroke-width="10" stroke="currentColor" stroke-dasharray="164" stroke-linecap="round" fill="none">
-            <animateTransform attributeName="transform" type="rotate" dur="1s" repeatCount="indefinite" from="0 50 50" to="360 50 50" />
-        </circle>
-    </svg>
-</div>
-
 <div class="product-add-to-cart js-product-add-to-cart">
     {if !$configuration.is_catalog}{block name='product_quantity'}
         <div class="product-quantity">
