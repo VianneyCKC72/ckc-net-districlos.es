@@ -113,5 +113,33 @@
                 margin-left: 0 !important;
             }
         }
+        
+        /* Masque les modifications de prix pour les produits dynamicproduct */
+        body.dynamic-product .product-prices .price-integer,
+        body.dynamic-product .product-prices .price-decimal {
+            /* Prix d'origine restauré par JS */
+        }
     </style>
+    
+    <script>
+    (function() {
+        // Vérifie si c'est un produit dynamicproduct
+        if (document.body.classList.contains('dynamic-product')) {
+            
+            // Masque les blocs de prix avec show_final_price (SOLDES)
+            document.addEventListener('DOMContentLoaded', function() {
+                var priceBlocks = document.querySelectorAll('.product-prices');
+                priceBlocks.forEach(function(block) {
+                    // Masque les blocs qui contiennent "SOLDES"
+                    var soldesLabels = block.querySelectorAll('.price-remise-label');
+                    soldesLabels.forEach(function(label) {
+                        if (label.textContent.includes('SOLDES')) {
+                            label.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        }
+    })();
+    </script>
 {/if}
