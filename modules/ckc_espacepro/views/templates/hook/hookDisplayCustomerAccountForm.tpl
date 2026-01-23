@@ -18,6 +18,7 @@
             <div class="col-md-12">
                 <label class="form-label" for="nafCodeSelect">Code NAF*</label>
                 <select class="form-control pad20" name="naf" id="nafCodeSelect" required>
+                    <option value="" {if !isset($customer->ape) || empty($customer->ape)}selected{/if}>Choisir un code NAF</option>
                     {foreach from=$code_naf item="naf"}
                         <option value="{$naf.code}"
                                 {if isset($customer->ape) && $customer->ape == $naf.code}selected{/if}>

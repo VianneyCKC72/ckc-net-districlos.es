@@ -3,7 +3,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 
 /* Conteneur principal du sidebar des statistiques - Desktop large (>1200px) */
 @media (min-width: 1200px) {
-    .sidebar.navigation.col-md-3 {
+    body.adminstats .sidebar.navigation.col-md-3 {
         width: 18% !important;
         max-width: 250px !important;
         flex: 0 0 18% !important;
@@ -11,7 +11,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
     }
     
     /* Ajustement de la colonne de contenu pour compenser */
-    #statsContainer.col-md-9 {
+    body.adminstats #statsContainer.col-md-9 {
         width: 82% !important;
         flex: 0 0 82% !important;
         max-width: calc(100% - 280px) !important;
@@ -21,14 +21,14 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 
 /* Petit desktop / Laptop (992px à 1199px) */
 @media (min-width: 992px) and (max-width: 1199px) {
-    .sidebar.navigation.col-md-3 {
+    body.adminstats .sidebar.navigation.col-md-3 {
         width: 20% !important;
         max-width: 200px !important;
         flex: 0 0 20% !important;
         padding-top: 50px !important;
     }
     
-    #statsContainer.col-md-9 {
+    body.adminstats #statsContainer.col-md-9 {
         width: 80% !important;
         flex: 0 0 80% !important;
         max-width: calc(100% - 220px) !important;
@@ -36,24 +36,24 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
     }
     
     /* Calendrier : layout vertical compact */
-    #calendar.panel {
+    body.adminstats #calendar.panel {
         padding: 12px 15px !important;
     }
     
-    #calendar_form .row {
+    body.adminstats #calendar_form .row {
         flex-direction: column !important;
         gap: 10px !important;
     }
     
     /* Ligne 1 : Boutons de période */
-    #calendar .col-lg-6:first-child {
+    body.adminstats #calendar .col-lg-6:first-child {
         flex: 1 1 100% !important;
         width: 100% !important;
         margin-right: 0 !important;
     }
     
     /* Ligne 2 : Dates + Submit */
-    #calendar .col-lg-6:last-child {
+    body.adminstats #calendar .col-lg-6:last-child {
         flex: 1 1 100% !important;
         width: 100% !important;
         justify-content: space-between !important;
@@ -61,7 +61,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
     }
     
     /* Boutons de période : compacts */
-    #calendar .btn-group {
+    body.adminstats #calendar .btn-group {
         width: 100% !important;
         justify-content: center !important;
         flex-wrap: wrap !important;
@@ -70,7 +70,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
         height: auto !important;
     }
     
-    #calendar .btn-group .btn.btn-default {
+    body.adminstats #calendar .btn-group .btn.btn-default {
         padding: 6px 10px !important;
         font-size: 11px !important;
         height: 30px !important;
@@ -79,23 +79,23 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
     }
     
     /* Conteneur des dates */
-    #calendar .col-lg-6 .col-md-8 {
+    body.adminstats #calendar .col-lg-6 .col-md-8 {
         flex: 1 !important;
         max-width: 100% !important;
     }
     
-    #calendar .col-lg-6 .col-md-8 .row {
+    body.adminstats #calendar .col-lg-6 .col-md-8 .row {
         gap: 8px !important;
         flex-wrap: nowrap !important;
     }
     
     /* Inputs de date : compacts */
-    #calendar .col-xs-6 {
+    body.adminstats #calendar .col-xs-6 {
         flex: 1 !important;
         min-width: 0 !important;
     }
     
-    #calendar .input-group {
+    body.adminstats #calendar .input-group {
         width: 100% !important;
         min-width: 140px !important;
         max-width: 180px !important;
@@ -103,33 +103,33 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
         height: 38px !important;
     }
     
-    #calendar .datepicker.form-control {
+    body.adminstats #calendar .datepicker.form-control {
         font-size: 11px !important;
         max-width: 80px !important;
     }
     
-    #calendar .input-group-addon {
+    body.adminstats #calendar .input-group-addon {
         font-size: 10px !important;
         padding: 0 6px !important;
     }
     
     /* Bouton submit : compact */
-    #calendar .col-md-4 {
+    body.adminstats #calendar .col-md-4 {
         flex: 0 0 auto !important;
     }
     
-    #calendar #submitDatePicker.btn.btn-default {
+    body.adminstats #calendar #submitDatePicker.btn.btn-default {
         width: 38px !important;
         height: 38px !important;
     }
     
-    #calendar #submitDatePicker.btn.btn-default::after {
+    body.adminstats #calendar #submitDatePicker.btn.btn-default::after {
         font-size: 18px !important;
     }
 }
 
 /* aside - Sidebar principal */
-.sidebar.navigation {
+body.adminstats .sidebar.navigation {
     color: #fff !important;
     padding: 20px 0 20px 20px !important;
     background-color: #026473 !important;
@@ -139,7 +139,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 }
 
 /* Navigation liste des modules de statistiques */
-.sidebar.navigation .list-group.categorieList {
+body.adminstats .sidebar.navigation .list-group.categorieList {
     background-color: transparent !important;
     border: none !important;
     padding: 0 !important;
@@ -148,7 +148,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 }
 
 /* aside a - Éléments du menu (non actifs) */
-.sidebar.navigation .list-group.categorieList .list-group-item {
+body.adminstats .sidebar.navigation .list-group.categorieList .list-group-item {
     font-size: 14px !important;
     font-weight: 400 !important;
     color: #fff !important;
@@ -162,7 +162,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 }
 
 /* aside a:hover - Élément actif du menu */
-.sidebar.navigation .list-group.categorieList .list-group-item.active {
+body.adminstats .sidebar.navigation .list-group.categorieList .list-group-item.active {
     color: #026473 !important;
     background-color: #F0F4F7 !important;
     outline: none !important;
@@ -173,8 +173,8 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 }
 
 /* Propriétés communes aux pseudo-éléments ::before et ::after */
-.sidebar.navigation .list-group.categorieList .list-group-item.active::before,
-.sidebar.navigation .list-group.categorieList .list-group-item.active::after {
+body.adminstats .sidebar.navigation .list-group.categorieList .list-group-item.active::before,
+body.adminstats .sidebar.navigation .list-group.categorieList .list-group-item.active::after {
     content: "" !important;
     position: absolute !important;
     background-color: transparent !important;
@@ -185,27 +185,27 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 }
 
 /* Petit bout arrondi en haut à droite */
-.sidebar.navigation .list-group.categorieList .list-group-item.active::after {
+body.adminstats .sidebar.navigation .list-group.categorieList .list-group-item.active::after {
     bottom: 100% !important;
     border-bottom-right-radius: 18px !important;
     box-shadow: 0 17px 0 0 #F0F4F7 !important;
 }
 
 /* Petit bout arrondi en bas à droite */
-.sidebar.navigation .list-group.categorieList .list-group-item.active::before {
+body.adminstats .sidebar.navigation .list-group.categorieList .list-group-item.active::before {
     top: 100% !important;
     border-top-right-radius: 18px !important;
     box-shadow: 0 -17px 0 0 #F0F4F7 !important;
 }
 
 /* Effet hover sur les éléments non actifs */
-.sidebar.navigation .list-group.categorieList .list-group-item:hover:not(.active) {
+body.adminstats .sidebar.navigation .list-group.categorieList .list-group-item:hover:not(.active) {
     background-color: rgba(255, 255, 255, 0.1) !important;
     color: #ffffff !important;
 }
 
 /* Suppression des séparateurs entre les éléments */
-.sidebar.navigation .list-group.categorieList .list-group-item + .list-group-item {
+body.adminstats .sidebar.navigation .list-group.categorieList .list-group-item + .list-group-item {
     border-top: none !important;
 }
 
@@ -215,7 +215,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
    ============================================ */
 
 /* Variables communes */
-#calendar {
+body.adminstats #calendar {
     --calendar-bg: #026473;
     --calendar-white: #ffffff;
     --calendar-border: #d4dce3;
@@ -226,7 +226,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 }
 
 /* Conteneur principal */
-#calendar.panel {
+body.adminstats #calendar.panel {
     background-color: var(--calendar-bg) !important;
     border-radius: 40px !important;
     padding: 15px 25px !important;
@@ -236,11 +236,11 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 }
 
 /* Formulaire - Layout horizontal */
-#calendar_form {
+body.adminstats #calendar_form {
     margin: 0 !important;
 }
 
-#calendar_form .row {
+body.adminstats #calendar_form .row {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
@@ -249,7 +249,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 }
 
 /* Colonnes Bootstrap */
-#calendar .col-lg-6 {
+body.adminstats #calendar .col-lg-6 {
     padding-left: 0 !important;
     padding-right: 0 !important;
 }
@@ -269,47 +269,47 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 }
 
 /* Rows internes - Propriétés communes */
-#calendar .col-lg-6 .row,
-#calendar .col-lg-6 .col-md-8 .row {
+body.adminstats #calendar .col-lg-6 .row,
+body.adminstats #calendar .col-lg-6 .col-md-8 .row {
     display: flex !important;
     align-items: center !important;
     gap: 15px !important;
 }
 
-#calendar .col-lg-6 .row {
-    margin: 0 !important;
-    width: 100% !important;
-}
-
-#calendar .col-lg-6 .col-md-8 .row {
+body.adminstats #calendar .col-lg-6 .row {
+        margin: 0 !important;
+        width: 100% !important;
+    }
+    
+    body.adminstats #calendar .col-lg-6 .col-md-8 .row {
     flex-wrap: nowrap !important;
 }
 
 /* Colonnes internes */
-#calendar .col-lg-6 .col-md-8,
-#calendar .col-lg-6 .col-md-4,
-#calendar .col-xs-6 {
+body.adminstats #calendar .col-lg-6 .col-md-8,
+body.adminstats #calendar .col-lg-6 .col-md-4,
+body.adminstats #calendar .col-xs-6 {
     padding: 0 !important;
     display: flex !important;
     align-items: center !important;
 }
 
-#calendar .col-lg-6 .col-md-8 {
-    gap: 15px !important;
-    flex: 1 !important;
-}
-
-#calendar .col-lg-6 .col-md-4 {
+body.adminstats #calendar .col-lg-6 .col-md-8 {
+        gap: 15px !important;
+        flex: 1 !important;
+    }
+    
+    body.adminstats #calendar .col-lg-6 .col-md-4 {
     justify-content: flex-end !important;
 }
 
-#calendar .col-xs-6 {
-    gap: 8px !important;
-    flex: 0 0 auto !important;
-}
-
-/* Groupe de boutons de période */
-#calendar .btn-group {
+body.adminstats #calendar .col-xs-6 {
+        gap: 8px !important;
+        flex: 0 0 auto !important;
+    }
+    
+    /* Groupe de boutons de période */
+    body.adminstats #calendar .btn-group {
     display: inline-flex !important;
     background-color: var(--calendar-white) !important;
     border-radius: var(--calendar-radius) !important;
@@ -321,7 +321,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 }
 
 /* Boutons de période */
-#calendar .btn-group .btn.btn-default {
+body.adminstats #calendar .btn-group .btn.btn-default {
     background-color: transparent !important;
     border: none !important;
     color: var(--calendar-bg) !important;
@@ -339,14 +339,14 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 }
 
 /* État actif et hover (même style) */
-#calendar .btn-group .btn.btn-default.active,
-#calendar .btn-group .btn.btn-default:hover {
+body.adminstats #calendar .btn-group .btn.btn-default.active,
+body.adminstats #calendar .btn-group .btn.btn-default:hover {
     background-color: var(--calendar-hover) !important;
     color: var(--calendar-bg) !important;
 }
 
 /* Séparateurs verticaux entre boutons */
-#calendar .btn-group .btn.btn-default:not(:last-child)::after {
+body.adminstats #calendar .btn-group .btn.btn-default:not(:last-child)::after {
     content: "" !important;
     position: absolute !important;
     right: 0 !important;
@@ -357,7 +357,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 }
 
 /* Groupes d'input pour les dates */
-#calendar .input-group {
+body.adminstats #calendar .input-group {
     background-color: var(--calendar-bg) !important;
     border-radius: var(--calendar-radius) !important;
     border: 2px solid var(--calendar-border) !important;
@@ -371,7 +371,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 }
 
 /* Labels "Du" et "Au" - Positionnés sur la bordure */
-#calendar .input-group-addon {
+body.adminstats #calendar .input-group-addon {
     background-color: var(--calendar-bg) !important;
     border: none !important;
     color: var(--calendar-text-light) !important;
@@ -386,12 +386,12 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 }
 
 /* Mettre "Au" en majuscule */
-#calendar .col-xs-6:last-child .input-group-addon {
+body.adminstats #calendar .col-xs-6:last-child .input-group-addon {
     text-transform: capitalize !important;
 }
 
 /* Icône de calendrier */
-#calendar .input-group::after {
+body.adminstats #calendar .input-group::after {
     content: "\f073" !important;
     font-family: "FontAwesome" !important;
     color: var(--calendar-white) !important;
@@ -401,7 +401,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 }
 
 /* Champs de date */
-#calendar .datepicker.form-control {
+body.adminstats #calendar .datepicker.form-control {
     background-color: transparent !important;
     border: none !important;
     color: var(--calendar-white) !important;
@@ -416,13 +416,13 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
     max-width: 95px !important;
 }
 
-#calendar .datepicker.form-control:focus {
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-/* Bouton Enregistrer */
-#calendar #submitDatePicker.btn.btn-default {
+body.adminstats #calendar .datepicker.form-control:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Bouton Enregistrer */
+    body.adminstats #calendar #submitDatePicker.btn.btn-default {
     background-color: var(--calendar-white) !important;
     border: none !important;
     border-radius: 50% !important;
@@ -440,43 +440,43 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
     flex-shrink: 0 !important;
 }
 
-#calendar #submitDatePicker.btn.btn-default:hover {
-    background-color: var(--calendar-hover) !important;
-    transform: scale(1.05) !important;
-}
-
-#calendar #submitDatePicker.btn.btn-default i {
+body.adminstats #calendar #submitDatePicker.btn.btn-default:hover {
+        background-color: var(--calendar-hover) !important;
+        transform: scale(1.05) !important;
+    }
+    
+    body.adminstats #calendar #submitDatePicker.btn.btn-default i {
     display: none !important;
 }
 
-#calendar #submitDatePicker.btn.btn-default::after {
-    content: ">" !important;
-    font-size: 22px !important;
-    color: var(--calendar-bg) !important;
-    line-height: 1 !important;
-}
-
-/* ============================================
-   RESPONSIVE - MOBILE ET TABLETTE
-   ============================================ */
-
-/* Masquer les éléments mobiles sur desktop (par défaut) */
-.mobile-sidebar-toggle,
-.sidebar-close-btn,
-.sidebar-overlay {
+body.adminstats #calendar #submitDatePicker.btn.btn-default::after {
+        content: ">" !important;
+        font-size: 22px !important;
+        color: var(--calendar-bg) !important;
+        line-height: 1 !important;
+    }
+    
+    /* ============================================
+       RESPONSIVE - MOBILE ET TABLETTE
+       ============================================ */
+    
+    /* Masquer les éléments mobiles sur desktop (par défaut) */
+    body.adminstats .mobile-sidebar-toggle,
+    body.adminstats .sidebar-close-btn,
+    body.adminstats .sidebar-overlay {
     display: none !important;
 }
 
 /* Tablette (769px à 991px) */
 @media screen and (min-width: 769px) and (max-width: 991px) {
     /* Sidebar : réduire la largeur */
-    .sidebar.navigation.col-md-3 {
+    body.adminstats .sidebar.navigation.col-md-3 {
         width: 22% !important;
         max-width: 220px !important;
         flex: 0 0 22% !important;
     }
     
-    #statsContainer.col-md-9 {
+    body.adminstats #statsContainer.col-md-9 {
         width: 78% !important;
         flex: 0 0 78% !important;
         max-width: calc(100% - 240px) !important;
@@ -484,24 +484,24 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
     }
     
     /* Calendrier : layout vertical */
-    #calendar_form .row {
+    body.adminstats #calendar_form .row {
         flex-direction: column !important;
         gap: 10px !important;
     }
     
-    #calendar .col-lg-6:first-child {
+    body.adminstats #calendar .col-lg-6:first-child {
         width: 100% !important;
         flex: 1 1 100% !important;
     }
     
-    #calendar .col-lg-6:last-child {
+    body.adminstats #calendar .col-lg-6:last-child {
         width: 100% !important;
         flex: 1 1 100% !important;
         justify-content: space-between !important;
     }
     
     /* Boutons de période : 2 lignes de 3 colonnes */
-    #calendar .btn-group {
+    body.adminstats #calendar .btn-group {
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
         gap: 4px !important;
@@ -509,7 +509,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
         padding: 4px !important;
     }
     
-    #calendar .btn-group .btn.btn-default {
+    body.adminstats #calendar .btn-group .btn.btn-default {
         padding: 7px 10px !important;
         font-size: 12px !important;
         height: 32px !important;
@@ -517,15 +517,15 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
     }
     
     /* Champs de date */
-    #calendar .col-lg-6 .col-md-8 .row {
+    body.adminstats #calendar .col-lg-6 .col-md-8 .row {
         gap: 10px !important;
     }
     
-    #calendar .input-group {
+    body.adminstats #calendar .input-group {
         width: 160px !important;
     }
     
-    #calendar .datepicker.form-control {
+    body.adminstats #calendar .datepicker.form-control {
         font-size: 11px !important;
     }
 }
@@ -533,7 +533,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 /* Mobile (max-width: 768px) */
 @media screen and (max-width: 768px) {
     /* Afficher le bouton hamburger - positionné bien plus bas */
-    .mobile-sidebar-toggle {
+    body.adminstats .mobile-sidebar-toggle {
         display: flex !important;
         position: fixed;
         top: 120px;
@@ -563,7 +563,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
     }
     
     /* Afficher le bouton de fermeture dans la sidebar */
-    .sidebar-close-btn {
+    body.adminstats .sidebar-close-btn {
         display: flex !important;
         position: absolute;
         top: 15px;
@@ -582,13 +582,13 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
         transition: all 0.3s ease;
     }
     
-    .sidebar-close-btn:hover {
+    body.adminstats .sidebar-close-btn:hover {
         background: rgba(255, 255, 255, 0.3);
         transform: scale(1.1);
     }
     
     /* Sidebar : cacher par défaut, peut être ouverte avec classe */
-    .sidebar.navigation.col-md-3 {
+    body.adminstats .sidebar.navigation.col-md-3 {
         position: fixed !important;
         left: -100% !important;
         top: 0 !important;
@@ -602,13 +602,13 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1) !important;
     }
     
-    .sidebar.navigation.col-md-3.mobile-open,
-    .sidebar.navigation.col-md-3.show {
+    body.adminstats .sidebar.navigation.col-md-3.mobile-open,
+    body.adminstats .sidebar.navigation.col-md-3.show {
         left: 0 !important;
     }
     
     /* Overlay pour fermer la sidebar */
-    .sidebar-overlay {
+    body.adminstats .sidebar-overlay {
         display: none;
         position: fixed;
         top: 0;
@@ -619,12 +619,12 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
         z-index: 1040;
     }
     
-    .sidebar-overlay.active {
+    body.adminstats .sidebar-overlay.active {
         display: block;
     }
     
     /* Contenu principal : pleine largeur */
-    #statsContainer.col-md-9 {
+    body.adminstats #statsContainer.col-md-9 {
         width: 100% !important;
         flex: 0 0 100% !important;
         max-width: 100% !important;
@@ -633,27 +633,27 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
     }
     
     /* Calendrier : layout vertical simplifié */
-    #calendar.panel {
+    body.adminstats #calendar.panel {
         padding: 15px !important;
         border-radius: 20px !important;
     }
     
-    #calendar_form .row {
+    body.adminstats #calendar_form .row {
         flex-direction: column !important;
         gap: 12px !important;
     }
     
-    #calendar .col-lg-6 {
+    body.adminstats #calendar .col-lg-6 {
         width: 100% !important;
         flex: 1 1 100% !important;
     }
     
-    #calendar .col-lg-6:first-child {
+    body.adminstats #calendar .col-lg-6:first-child {
         margin-right: 0 !important;
     }
     
     /* Boutons de période : 2 colonnes */
-    #calendar .btn-group {
+    body.adminstats #calendar .btn-group {
         flex-wrap: wrap !important;
         height: auto !important;
         padding: 4px !important;
@@ -661,7 +661,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
         justify-content: center !important;
     }
     
-    #calendar .btn-group .btn.btn-default {
+    body.adminstats #calendar .btn-group .btn.btn-default {
         padding: 8px 12px !important;
         font-size: 11px !important;
         height: 34px !important;
@@ -670,18 +670,18 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
     }
     
     /* Champs de date : empilés */
-    #calendar .col-lg-6 .col-md-8 {
+    body.adminstats #calendar .col-lg-6 .col-md-8 {
         flex-direction: column !important;
         width: 100% !important;
     }
     
-    #calendar .col-lg-6 .col-md-8 .row {
+    body.adminstats #calendar .col-lg-6 .col-md-8 .row {
         flex-direction: column !important;
         gap: 10px !important;
         width: 100% !important;
     }
     
-    #calendar .col-xs-6 {
+    body.adminstats #calendar .col-xs-6 {
         width: 100% !important;
         flex: 1 1 100% !important;
     }
@@ -698,19 +698,7 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
         justify-content: center !important;
     }
     
-    #calendar #submitDatePicker.btn.btn-default {
-        width: 100% !important;
-        max-width: 250px !important;
-        border-radius: 25px !important;
-        height: 45px !important;
-    }
-    
-    #calendar #submitDatePicker.btn.btn-default::after {
-        font-size: 24px !important;
-    }
-    
-    /* Labels de date */
-    #calendar .input-group-addon {
+    body.adminstats #calendar .input-group-addon {
         font-size: 11px !important;
         left: 12px !important;
         top: -8px !important;
@@ -720,13 +708,13 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
 /* Petit mobile (max-width: 480px) */
 @media screen and (max-width: 480px) {
     /* Calendrier : padding réduit */
-    #calendar.panel {
+    body.adminstats #calendar.panel {
         padding: 12px !important;
         border-radius: 15px !important;
     }
     
     /* Boutons de période : pleine largeur */
-    #calendar .btn-group .btn.btn-default {
+    body.adminstats #calendar .btn-group .btn.btn-default {
         padding: 8px 10px !important;
         font-size: 11px !important;
         height: 36px !important;
@@ -734,22 +722,22 @@ You should NOT edit any other exisiting back-office CSS file manually: they are 
     }
     
     /* Champs de date */
-    #calendar .datepicker.form-control {
+    body.adminstats #calendar .datepicker.form-control {
         font-size: 12px !important;
     }
     
-    #calendar .input-group {
+    body.adminstats #calendar .input-group {
         padding: 8px 12px !important;
         height: 40px !important;
     }
     
-    #calendar .input-group-addon {
+    body.adminstats #calendar .input-group-addon {
         font-size: 10px !important;
         top: -8px !important;
     }
     
     /* Bouton submit plus compact */
-    #calendar #submitDatePicker.btn.btn-default {
+    body.adminstats #calendar #submitDatePicker.btn.btn-default {
         height: 42px !important;
     }
 }

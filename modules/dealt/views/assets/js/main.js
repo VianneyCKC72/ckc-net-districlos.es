@@ -477,7 +477,7 @@ $(function () {
                         html += '<div class="dealt-offer-price">'
                         html += '+' + service.dealt_service_price
                         if (service.dealt_service_url.length > 0) {
-                            html += '<a href="' + service.dealt_service_url + '" rel="noopener noreferrer nofollow" class="dealt-conditions-link">Détails des conditions du service</a>'
+                            html += '<a href="' + service.dealt_service_url + '" rel="noopener noreferrer nofollow" class="dealt-conditions-link" target="_blank">Détails des conditions du service</a>'
                         }
                         html += '</div>'
                         html += '<div data-dealt-zipcode-check><div data-role="check-box" class="dealt-check-box"><div class="dealt-check-label">'
