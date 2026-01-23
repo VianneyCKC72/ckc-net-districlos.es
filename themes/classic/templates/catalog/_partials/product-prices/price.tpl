@@ -103,11 +103,6 @@
             display: none !important;
         }
         
-        /* Affiche uniquement Prix remisé pour les dynamicproduct s'il y a une réduction */
-        body.dynamic-product .product-discount .price-remise-label:first-child {
-            display: block !important;
-        }
-        
         @media (max-width: 767.98px) {
             .price-remise-label {
                 font-size: 10px !important;
