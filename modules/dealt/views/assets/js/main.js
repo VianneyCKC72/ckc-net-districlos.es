@@ -87,7 +87,7 @@ $(function () {
         var $box = $block.find('[data-role="check-box"]');
 
         if($("#product").length){
-            var $parent = $block.parent().parent()
+            var $parent = $block.closest('.dealt-offer-box');
             var offerId = $parent.data('offer-id');
             var storeId = $parent.data('store-id');
             window.dealt_check_availability_url = $parent.data('eligibility-url');
