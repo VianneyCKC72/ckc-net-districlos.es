@@ -78,7 +78,7 @@
             <div class="product-discount" style="margin-left: 15px;">
                 <div class="price-remise-label">Prix remisé : <span class="regular-price">{$product.regular_price|replace:' €':''}</span>
                     {if isset($dynamic_discount_percent) && $dynamic_discount_percent > 0}
-                        <span style="color: #ff144e; font-weight: bold;">-{$dynamic_discount_percent}%</span>
+                        <span style="color: #ff144e; font-weight: bold;">-{$dynamic_discount_percent}</span>
                     {/if}
                 </div>
             </div>
