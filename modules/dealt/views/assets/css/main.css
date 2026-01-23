@@ -1,12 +1,14 @@
+.dealt-collapse-content {
+    margin-top: 1em;
+}
+
 .dealt-offer-box {
-    border: 3px solid #7CBA49;
-    border-radius: 11px;
-    padding: 0px 10px;
+    border-radius: 10px;
+    padding: 10px;
     display: flex;
     align-items: flex-start;
     margin-bottom: 20px;
-    color: #333;
-    background: white;
+    background: #F6F2EB;
 }
 .zipcode-check-btn.is-loading {
     opacity: 0.6;
@@ -52,16 +54,18 @@
 }
 .dealt-offer-content {
     flex-grow: 1;
-    padding: 10px;
+    padding: 5px;
 }
 
 .dealt-nom-produit {
-    font-size: 17px;
+    margin: 0;
+    font-size: 13px;
+    font-style: italic;
 }
 
 .dealt-offer-title {
-    font-weight: bold;
-    font-size: 17px;
+    font-weight: 600;
+    font-size: 16px;
     margin-bottom: 5px;
 }
 
@@ -119,24 +123,21 @@
 }
 
 .dealt-offer-price {
-    color: #000;
-    font-weight: 600;
-    font-size: 17px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    color: #026473;
+    font-size: 16px;
+    font-style: italic;
 }
 #cart .dealt-offer-price {
     font: normal normal bold 20px/30px Poppins;
 }
 #dealt-zipcode-input {
-    border: none;
-    background: transparent;
-    font-size: 14px;
-    padding: 8px 10px;
-    outline: none;
-    width: 140px;
-    color: #000;
+    font-size: 13px;
+    padding: 8px 40px 8px 15px;
+    width: 170px;
+    font-weight: normal;
+    border: 1px solid;
+    border-radius: 20px;
+    background: white;
 }
 
 .dealt-zipcode-wrapper {
@@ -146,22 +147,50 @@
     align-items: center;
     background: #F6F2EB;
     border-radius: 20px;
-    overflow: hidden;
+    overflow: visible;
 }
 #cart .dealt-zipcode-wrapper {
     overflow: visible;
 }
 
-#dealt-zipcode-check-btn {
-    background: #7CBA49;
-    border: none;
-    padding: 6px 12px;
+.zipcode-search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    margin-left: 8px;
-    cursor: pointer;
+}
+
+.zipcode-search-icon:hover {
+    opacity: 0.7;
+}
+
+.zipcode-search-icon svg {
+    stroke: #026473;
+}
+
+.zipcode-search-icon:active {
+    opacity: 0.5;
+}
+
+.zipcode-search-icon.is-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: progress;
+}
+
+.zipcode-search-icon.is-loading svg {
+    animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 #dealt-zipcode-result {
@@ -666,9 +695,6 @@ input:checked + .slider:before {
 .dealt-check-label label {
     font-size: 13px;
     font-weight: normal;
-    color: #000;
-    margin-left: 8px;
-    margin-bottom:0;
 }
 #cart .dealt-check-label label {
     font: normal normal 600 17px/26px Poppins;
@@ -683,17 +709,12 @@ input:checked + .slider:before {
     overflow: hidden;
 }
 
-.dealt-zipcode-wrapper button {
-    background:#4CAF50;
-}
 .dealt-zipcode-wrapper button svg{
-    width: 10px;
+    width: 15px;
 }
 .dealt-check-box {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-top: 10px;
+    gap: 10px;
 }
 .dealt-retry-box,
 .dealt-result-msg {
@@ -783,3 +804,101 @@ input:checked + .slider:before {
     .dealt-tva-notice > small{ color: #6aa055; }
 }
 
+/* Styles pour l'accordéon dépliable */
+.dealt-offer-toggle {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    transition: opacity 0.2s ease;
+    gap: 15px;
+}
+
+.dealt-toggle-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.dealt-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.dealt-offer-toggle .dealt-offer-title {
+    font-weight: bold;
+    font-size: 16px;
+    color: #026473;
+    margin-bottom: 0;
+}
+
+.dealt-offer-toggle .dealt-offer-subtitle,
+.dealt-offer-toggle .dealt-offer-subtitle-expanded {
+    font-size: 13px;
+    font-weight: normal;
+    color: #171717;
+    display: block;
+}
+
+.dealt-conditions-link-toggle {
+    font-size: 10px;
+    color: #000;
+    text-decoration: underline;
+    white-space: nowrap;
+    font-weight: normal;
+}
+
+.dealt-toggle-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+/* Icône qui tourne quand c'est ouvert */
+.dealt-offer-toggle.is-expanded .dealt-toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* Responsive : affichage mobile */
+@media (max-width: 768px) {
+    .dealt-offer-toggle {
+        gap: 10px;
+    }
+    
+    .dealt-conditions-link-toggle {
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dealt-offer-toggle .dealt-offer-title {
+        font-size: 15px;
+    }
+    
+    .dealt-offer-toggle .dealt-offer-subtitle,
+    .dealt-offer-toggle .dealt-offer-subtitle-expanded {
+        font-size: 12px;
+    }
+    
+    .dealt-conditions-link-toggle {
+        font-size: 8px;
+    }
+    
+    #dealt-zipcode-input {
+        width: 150px;
+        padding: 8px 35px 8px 12px;
+    }
+    
+    .dealt-zipcode-wrapper {
+        width: 100%;
+    }
+}
