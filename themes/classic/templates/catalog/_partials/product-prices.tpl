@@ -30,8 +30,22 @@
         {include file='catalog/_partials/product-prices/has-discount.tpl'}
       {/if}
       {include file='catalog/_partials/product-prices/price.tpl'}
+      <div id="global-loader-wrapper" style="display:none; position:fixed; top:20px; right:20px; z-index:10000;">
+        <svg width="30" height="30" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <circle cx="50" cy="50" r="35" stroke-width="10" stroke="currentColor" stroke-dasharray="164" stroke-linecap="round" fill="none">
+            <animateTransform attributeName="transform" type="rotate" dur="1s" repeatCount="indefinite" from="0 50 50" to="360 50 50" />
+          </circle>
+        </svg>
+      </div>
+      {block name='product_add_to_cart'}
+
+        {include file='catalog/_partials/product-add-to-cart.tpl'}
+
+      {/block}
+      
+      {* Paiement en plusieurs fois *}
       {if ($product.price_amount * $product.quantity_wanted > 300)}
-        <div>
+        <div style="margin-top: 15px;">
           <p class="mb-0">Payez en plusieurs fois
             {if $product.price_amount * $product.quantity_wanted >= 2000}
               <span style="margin-inline: 10px">
@@ -54,11 +68,6 @@
             de vous engager.</p>
         </div>
       {/if}
-      {block name='product_add_to_cart'}
-
-        {include file='catalog/_partials/product-add-to-cart.tpl'}
-
-      {/block}
 
       {* <div class="product-price{if $product.has_discount}has-discount{/if}">
 
