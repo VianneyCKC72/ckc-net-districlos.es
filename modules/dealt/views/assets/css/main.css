@@ -7,7 +7,7 @@
     padding: 10px;
     display: flex;
     align-items: flex-start;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     background: #F6F2EB;
 }
 .zipcode-check-btn.is-loading {
@@ -211,12 +211,12 @@
 }
 
 .dealt-modal-content {
-    background-color: #fff;
+    background-color: #F6F2EB;
     margin: 10% auto;
     padding: 30px;
     border-radius: 8px;
     width: 90%;
-    max-width: 640px;
+    max-width: 40%;
     position: relative;
     text-align: center;
     font-family: Arial, sans-serif;
@@ -236,16 +236,9 @@
     padding-left: 20px;
 }
 
-#dealt-service-modal .dealt-modal-content,
-#dealt-tva-modal .dealt-modal-content {
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    box-shadow: 0px 5px 7px #00000029;
-    border: 3px solid #7CBA49;
-    border-radius: 23px;
-}
-
 #dealt-service-modal .h4,
 #dealt-tva-modal .h4 {
+    color: #026473;
     text-align: center;
     font: normal normal bold 20px/38px Poppins;
 }
@@ -253,7 +246,8 @@
 #dealt-service-modal .h2,
 #dealt-tva-modal .h2 {
     text-align: center;
-    font: normal normal bold 25px/38px Poppins;
+    font-size: 20px;
+    font-weight: 400;
 }
 
 /* Liste conditions (les deux modales) */
