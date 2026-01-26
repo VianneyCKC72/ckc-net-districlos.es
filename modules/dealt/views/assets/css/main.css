@@ -938,11 +938,11 @@ input:checked+.slider:before {
     }
 
     .dealt-modal-content {
-        width: 90%;
+        max-width: 90%;
     }
 
     .dealt-conditions-list {
-        padding: 0;
+        padding: 0 !important;
     }
 }
 
