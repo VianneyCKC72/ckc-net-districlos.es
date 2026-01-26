@@ -931,6 +931,19 @@ input:checked+.slider:before {
     .dealt-conditions-link-toggle {
         font-size: 9px;
     }
+
+    .dealt-btn-primary {
+        width: 100%;
+        font-size: 11px;
+    }
+
+    .dealt-modal-content {
+        width: 90%;
+    }
+
+    .dealt-conditions-list {
+        padding: 0;
+    }
 }
 
 @media (max-width: 480px) {
