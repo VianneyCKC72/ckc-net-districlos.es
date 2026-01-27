@@ -650,24 +650,11 @@ input:checked+.slider:before {
 .btn-add-tva,
 .btn-add {
     border: none;
-    background: #7CBA49 0% 0% no-repeat padding-box;
     border-radius: 24px;
     padding: 10px 20px;
-    font: normal normal normal 15px/23px Poppins;
-    letter-spacing: 0px;
-    color: #FFFFFF;
     cursor: pointer;
-}
-
-.btn-add-tva:hover,
-.btn-add:hover {
-    background: #6aa83d;
-    color: #FFFFFF;
-}
-
-.added {
-    font-size: 0.95rem;
-    color: #4CAF50;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 /* Overlay de fond */
@@ -821,6 +808,7 @@ input:checked+.slider:before {
 .dealt-tva-notice--cartline {
     display: flex;
     align-items: center;
+    width: 100%;
 }
 
 .dealt-tva-notice--cartline .dealt-tva-notice__text {
@@ -973,7 +961,13 @@ input:checked+.slider:before {
    STYLES POUR LES PRODUITS DEALT DANS LE PANIER
    ======================================== */
 
-/* Conteneur principal du produit service */
+.cart-item:has(.dealt-service-product) {
+    background: #F6F2EB;
+    flex-direction: column;
+    padding: 15px;
+    display: flex !important;
+    gap: 15px;
+}
 
 .dealt-service-icon-container {
     display: flex;
@@ -981,6 +975,27 @@ input:checked+.slider:before {
     justify-content: center;
     width: 100%;
     height: 100%;
+}
+
+.product-line-grid.dealt-service-product {
+    display: flex !important;
+}
+
+.dealt-tva-notice__text {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-line-grid-left {
+    width: 70%;
+}
+
+.product-line-grid-right {
+    width: 30%;
+}
+
+.dealt-service-unit-price {
+    font-weight: 400;
 }
 
 /* Responsive */
