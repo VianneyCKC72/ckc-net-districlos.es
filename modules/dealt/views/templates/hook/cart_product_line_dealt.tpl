@@ -9,8 +9,7 @@
         <div class="product-details d-flex flex-column">
             {* Titre du produit *}
             <div class="product-line-info">
-                <a class="h4 text-black d-block m-0" href="{$product.url}"
-                    data-id_customization="{$product.id_customization|intval}">
+                <a class="h4 text-black d-block m-0" data-id_customization="{$product.id_customization|intval}">
                     {$product.name}
                 </a>
             </div>
@@ -75,7 +74,15 @@
       </small>
     </div>
     <a href="{$tva_modal_url|default:'#'|escape:'html':'UTF-8'}" class="btn-secondary btn-add dealt-tva-open-popup">
-      Ajoute la réduction
+      Ajouter la réduction
     </a>
   </div>
+
+    {* Inclure le modal TVA une seule fois *}
+  {include file="module:dealt/views/templates/front/_partials/modal_tva.tpl"}
+  {if isset($tva_attestation_url)}
+    <script>window.tva_attestation_url = '{$tva_attestation_url|escape:'javascript'}';</script>
+  {/if}
+
 {/if}
+

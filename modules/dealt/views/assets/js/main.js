@@ -547,11 +547,17 @@ $(function () {
 
         const localMatch = all_products_cart_id.includes(parseInt(localStorage.getItem('dealt_service_product_id'), 10));
 
+        // Toujours activer les boutons dans .dealt-tva-notice--cartline (produits services déjà dans le panier)
+        $(".dealt-tva-notice--cartline .btn-add.dealt-tva-open-popup").css('pointer-events', 'auto')
+        $(".dealt-tva-notice--cartline .btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box')
+
         if(!intersection.length && !localMatch){
-            $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'none')
-            $(".btn-add.dealt-tva-open-popup").css('background', '#b6c7a8 0% 0% no-repeat padding-box')
+            // Désactiver uniquement les autres boutons (ceux du footer)
+            $(".btn-add.dealt-tva-open-popup").not(".dealt-tva-notice--cartline .btn-add").css('pointer-events', 'none')
+            $(".btn-add.dealt-tva-open-popup").not(".dealt-tva-notice--cartline .btn-add").css('background', '#b6c7a8 0% 0% no-repeat padding-box')
             $("#tva-submit-btn").attr('disabled', true)
         } else {
+            // Activer tous les boutons
             $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'auto')
             $(".btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box')
             $("#tva-submit-btn").attr('disabled', false)
