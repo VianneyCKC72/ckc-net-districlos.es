@@ -798,19 +798,7 @@ input:checked+.slider:before {
     margin-top: 3px;
 }
 
-/* Bandeau TVA – déclinaison du vert #7cba49 */
-.dealt-tva-notice {
-    --brand: 124, 186, 73;
-    /* #7cba49 en RGB */
-    background: rgba(var(--brand), .10);
-    /* fond très léger */
-    border: 1px solid rgba(var(--brand), .35);
-    border-radius: 10px;
-    padding: 12px 14px 12px 16px;
-    margin-bottom: 14px;
-    line-height: 1.35;
-    font-size: .95rem;
-}
+/* Bandeau TVA */
 
 /* Titre (la ligne en gras) */
 .dealt-tva-notice>strong {
@@ -833,8 +821,6 @@ input:checked+.slider:before {
 .dealt-tva-notice--cartline {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 16px;
 }
 
 .dealt-tva-notice--cartline .dealt-tva-notice__text {
@@ -865,10 +851,6 @@ input:checked+.slider:before {
 
 /* Mode sombre : augmente légèrement le contraste */
 @media (prefers-color-scheme: dark) {
-    .dealt-tva-notice {
-        background: rgba(var(--brand), .16);
-        border-color: rgba(var(--brand), .45);
-    }
 
     .dealt-tva-notice>small {
         color: #6aa055;
@@ -992,29 +974,6 @@ input:checked+.slider:before {
    ======================================== */
 
 /* Conteneur principal du produit service */
-.dealt-service-product {
-    background: linear-gradient(to right, #f8fdf5 0%, #ffffff 100%);
-    border-left: 4px solid #7CBA49;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    transition: all 0.3s ease;
-}
-
-.dealt-service-product:hover {
-    box-shadow: 0 2px 12px rgba(124, 186, 73, 0.15);
-}
-
-/* Image/Icône du service */
-.dealt-service-image {
-    background: #f6f2eb;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100px;
-    width: 100px;
-}
 
 .dealt-service-icon-container {
     display: flex;
@@ -1024,118 +983,7 @@ input:checked+.slider:before {
     height: 100%;
 }
 
-.dealt-service-icon-container svg {
-    filter: drop-shadow(0 2px 4px rgba(124, 186, 73, 0.2));
-}
-
-/* Badge "Service de pose" */
-.dealt-service-badge {
-    background: #7CBA49;
-    color: white;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-    margin-right: 8px;
-    display: inline-block;
-    vertical-align: middle;
-    box-shadow: 0 2px 4px rgba(124, 186, 73, 0.3);
-}
-
-/* Description du service */
-.dealt-service-description {
-    margin-top: 10px;
-    padding: 10px 12px;
-    background: #e8f5e0;
-    border-radius: 6px;
-    font-size: 13px;
-    color: #2f6d12;
-    border-left: 3px solid #7CBA49;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-weight: 500;
-}
-
-.dealt-service-description svg {
-    flex-shrink: 0;
-}
-
-/* Quantité fixe pour les services */
-.dealt-service-quantity-fixed {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: #f0f0f0;
-    border-radius: 8px;
-    font-weight: 600;
-    color: #333;
-}
-
-.dealt-service-quantity-fixed .quantity-label {
-    font-size: 13px;
-    color: #666;
-}
-
-.dealt-service-quantity-fixed .quantity-value {
-    font-size: 16px;
-    color: #7CBA49;
-    font-weight: 700;
-}
-
-/* Prix du service */
-.dealt-service-unit-price {
-    color: #7CBA49;
-    font-weight: 600;
-}
-
-.dealt-service-total-price strong {
-    color: #7CBA49 !important;
-    font-size: 20px !important;
-    font-weight: 700 !important;
-}
-
-/* Icône de suppression en vert */
-.dealt-service-product .remove-from-cart svg path {
-    fill: #7CBA49;
-}
-
-.dealt-service-product .remove-from-cart:hover svg path {
-    fill: #6aa83d;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
-    .dealt-service-product {
-        padding: 12px;
-    }
-
-    .dealt-service-image {
-        min-height: 80px;
-        width: 80px;
-    }
-
-    .dealt-service-icon-container svg {
-        width: 40px;
-        height: 40px;
-    }
-
-    .dealt-service-badge {
-        font-size: 10px;
-        padding: 3px 8px;
-    }
-
-    .dealt-service-description {
-        font-size: 12px;
-        padding: 8px 10px;
-    }
-
-    .dealt-service-quantity-fixed {
-        padding: 8px 12px;
-    }
-
-    .dealt-service-total-price strong {
-        font-size: 18px !important;
-    }
+   
 }

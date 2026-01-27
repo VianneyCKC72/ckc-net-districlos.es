@@ -6,19 +6,13 @@
 <div class="product-line-grid dealt-service-product">
     <!--  product line left content: image personnalisée-->
     <div class="product-line-grid-left">
-        <a href="{$product.url}" class="product-image media-middle dealt-service-image">
-        </a>
-
         <div class="product-details d-flex flex-column">
-
-            {* Description du service *}
-            <div class="dealt-service-description">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                    stroke="#7CBA49" stroke-width="2">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                    <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
-                Installation professionnelle incluse
+            {* Titre du produit *}
+            <div class="product-line-info">
+                <a class="h4 text-black mb-2 d-block" href="{$product.url}"
+                    data-id_customization="{$product.id_customization|intval}">
+                    {$product.name}
+                </a>
             </div>
 
             {foreach from=$product.attributes key="attribute" item="value"}
