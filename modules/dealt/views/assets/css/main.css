@@ -979,6 +979,7 @@ input:checked+.slider:before {
 
 .product-line-grid.dealt-service-product {
     display: flex !important;
+    justify-content: space-between;
 }
 
 .dealt-tva-notice__text {

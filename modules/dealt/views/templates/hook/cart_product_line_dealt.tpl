@@ -69,7 +69,7 @@
 {if isset($dealt_show_tva_block) && $dealt_show_tva_block && (isset($dealt_tva_enabled) && !$dealt_tva_enabled)}
   <div class="dealt-tva-notice dealt-tva-notice--cartline">
     <div class="dealt-tva-notice__text">
-      <strong>Réduisez votre TVA</strong>
+      <span style="font-weight: 600;">Réduisez votre TVA</span>
       <small>
         Vous pouvez bénéficier d'une TVA à 10% soit une réduction de 10% du montant de vos achats !
       </small>
