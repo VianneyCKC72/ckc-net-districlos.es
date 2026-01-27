@@ -5,11 +5,11 @@
 
 <div class="product-line-grid dealt-service-product">
     <!--  product line left content: image personnalisée-->
-    <div class="product-line-grid-left">
+    <div class="product-line-grid-left" style="width: 70%;">
         <div class="product-details d-flex flex-column">
             {* Titre du produit *}
             <div class="product-line-info">
-                <a class="h4 text-black d-block" href="{$product.url}"
+                <a class="h4 text-black d-block m-0" href="{$product.url}"
                     data-id_customization="{$product.id_customization|intval}">
                     {$product.name}
                 </a>
@@ -70,7 +70,6 @@
   <div class="dealt-tva-notice dealt-tva-notice--cartline">
     <div class="dealt-tva-notice__text">
       <strong>Réduisez votre TVA</strong>
-      <br>
       <small>
         Vous pouvez bénéficier d'une TVA à 10% soit une réduction de 10% du montant de vos achats !
       </small>

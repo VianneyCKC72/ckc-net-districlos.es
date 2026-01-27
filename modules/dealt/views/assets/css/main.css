@@ -986,11 +986,7 @@ input:checked+.slider:before {
     flex-direction: column;
 }
 
-.product-line-grid-left {
-    width: 70%;
-}
-
-.product-line-grid-right {
+.product-line-grid.dealt-service-product{
     width: 30%;
 }
 
