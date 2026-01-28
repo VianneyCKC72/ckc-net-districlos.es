@@ -35,7 +35,14 @@
           {/if}
         <li class="cart-item">
           {block name='cart_detailed_product_line'}
-            {include file='checkout/_partials/cart-detailed-product-line.tpl' product=$product}
+            {* Appeler le hook displayCartProductLine *}
+            {assign var="customProductLine" value={hook h='displayCartProductLine' product=$product pro=$pro urls=$urls}}
+            {if $customProductLine}
+              {$customProductLine nofilter}
+            {else}
+              {* Template par défaut si le hook ne retourne rien *}
+              {include file='checkout/_partials/cart-detailed-product-line.tpl' product=$product}
+            {/if}
           {/block}
         </li>
         {if is_array($product.customizations) && $product.customizations|count >1}<hr>{/if}

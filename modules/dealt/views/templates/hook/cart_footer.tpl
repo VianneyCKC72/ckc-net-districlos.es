@@ -129,34 +129,7 @@
             {/if}
         {/foreach}
 
-        {* ====== BLOC TVA RÉDUITE ====== *}
-        {if !$dealt_tva_enabled}
-            <div class="dealt-tva-box">
-                <div class="dealt-cart-service-inner">
-                    <div class="dealt-cart-tva-info">
-                        <h3>Réduisez la TVA</h3>
-                        <div class="inside">
-                            <div class="picto col-1">
-                                {include file="module:dealt/views/templates/hook/svg/coupon.tpl"}
-                            </div>
-                            <div class="no-padding col-11">
-                                <strong>Faites des économies en bénéficiant d'une TVA réduite !</strong>
-                                En ajoutant notre service de pose par un professionnel, vous pouvez bénéficier d'une TVA à 10%,
-                                ce qui vous permettra d'économiser 10% sur le montant de vos achats !<br>
-                                <strong>Je confirme que les travaux seront réalisés dans un lieu d'habitation achevé depuis
-                                    plus de 2 ans (agrandissements exclus).</strong>
-                            </div>
-                        </div>
-                        <div class="dealt-cart-service-action">
-                            <a href="{$tva_modal_url|default:'#'|escape:'html':'UTF-8'}"
-                               class="btn-add dealt-tva-open-popup">
-                                Ajouter le service au panier
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {/if}
+        {* TVA réduite déplacée dans cart_product_line_dealt.tpl (ligne produit) *}
 
     </div>
 
