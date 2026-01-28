@@ -24,8 +24,8 @@ class DealtEligibilityModuleFrontController extends ModuleFrontController
 
             try {
                 $productId = Tools::getValue("productId");
+
                 $serviceId = Tools::getValue("serviceId");
-                $serviceOnly = Tools::getValue("serviceOnly"); // Flag pour ajouter seulement le service
                 $qty = Tools::getValue("qty");
                 $packQtyML = Tools::getValue("packQtyML");
                 $packQty  = Tools::getValue("packQty");
@@ -43,15 +43,6 @@ class DealtEligibilityModuleFrontController extends ModuleFrontController
                         Context::getContext()->cookie->id_cart = (int)Context::getContext()->cart->id;
                     }
                 }
-
-                // Si serviceOnly est activé, ajouter seulement le service sans le produit principal
-                if($serviceOnly && $serviceId){
-                    $cart->updateQty(1, $serviceId);
-                    $cart->update();
-                    echo json_encode("success");
-                    return;
-                }
-
                 if(Tools::getValue("isCart") == "false"){
                     $checkIfPack = $this->checkIfPack($productId);
                     if($checkIfPack && file_exists(_PS_MODULE_DIR_.'pm_advancedpack/AdvancedPack.php')){
