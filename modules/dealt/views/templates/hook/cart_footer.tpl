@@ -143,5 +143,30 @@
         {/if}
     {/if}
         <div id="dealt_ajaxurl" style="display: none;" >{$ajaxUrl}</div>
+        
+        {* Script pour mettre à jour les variables JavaScript après refresh AJAX *}
+        <script>
+        {if isset($dealt_cart_services_json)}
+            (function() {
+                try {
+                    var servicesData = {$dealt_cart_services_json|escape:'javascript' nofilter};
+                    if (typeof dealt_cart_services !== 'undefined') {
+                        dealt_cart_services = servicesData;
+                    } else {
+                        window.dealt_cart_services = servicesData;
+                    }
+                } catch(e) {
+                    console.error('Erreur mise à jour dealt_cart_services:', e);
+                }
+            })();
+        {/if}
+        {if isset($dealt_tva_enabled)}
+            if (typeof dealt_tva_enabled !== 'undefined') {
+                dealt_tva_enabled = {if $dealt_tva_enabled}true{else}false{/if};
+            } else {
+                window.dealt_tva_enabled = {if $dealt_tva_enabled}true{else}false{/if};
+            }
+        {/if}
+        </script>
     </div>
 {/if}

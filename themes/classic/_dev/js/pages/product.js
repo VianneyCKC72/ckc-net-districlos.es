@@ -442,12 +442,30 @@ $(document).ready(function () {
         if (typeof $(".cart-promos") !== "undefined") {
             $(".cart-promos").replaceWith(event.resp.cart_promos)
         }
-        if (typeof $(".dealt-cart-services-container") !== "undefined") {
-            $(".dealt-cart-services-container").replaceWith(event.resp.cart_footer_dealt)
+        if (typeof $(".dealt-cart-services-container") !== "undefined" && event.resp.cart_footer_dealt) {
+            // Remplacer le conteneur et exécuter les scripts inclus
+            var $newContent = $(event.resp.cart_footer_dealt);
+            $(".dealt-cart-services-container").replaceWith($newContent);
+            
+            // Exécuter les scripts dans le nouveau contenu
+            $newContent.find('script').each(function() {
+                var scriptContent = $(this).html();
+                if (scriptContent) {
+                    try {
+                        eval(scriptContent);
+                    } catch (e) {
+                        console.error('Erreur exécution script Dealt:', e);
+                    }
+                }
+            });
         }
+        
+        // Mettre à jour les variables si elles existent
         let availables_services_id = [];
         let all_products_cart_id = [];
-        dealt_cart_services.map((product) => availables_services_id.push(product.service_product_id))
+        if (typeof dealt_cart_services !== 'undefined' && Array.isArray(dealt_cart_services)) {
+            dealt_cart_services.map((product) => availables_services_id.push(product.service_product_id))
+        }
 
         $(".custom-quantity-selector").each(function (){
             if($(this).find("input#quantity_wanted").data('product-id') == localStorage.getItem('dealt_service_product_id')){

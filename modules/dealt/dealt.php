@@ -446,7 +446,16 @@ class Dealt extends Module
         return $result;
     }
 
+    // Variable statique pour éviter les boucles infinies lors de la synchronisation
+    private static $syncingServiceQuantities = false;
+
     public function hookActionCartSave($params){
+        $cart = $params['cart'];
+        if (!Validate::isLoadedObject($cart)) {
+            return;
+        }
+
+        // Gestion des packs (code existant)
         $idProduct = (int)Tools::getValue('id_product');
         if(isset(Context::getContext()->cookie->cart_packs)){
             $cookiePack = json_decode(Context::getContext()->cookie->cart_packs);
@@ -485,6 +494,107 @@ class Dealt extends Module
 
             }
         }
+
+        // Synchroniser les quantités produit/service
+        // Éviter les boucles infinies
+        if (self::$syncingServiceQuantities) {
+            return;
+        }
+
+        // Ne pas synchroniser si c'est une action d'ajout de service seul
+        if (Tools::getValue('serviceOnly')) {
+            return;
+        }
+
+        self::$syncingServiceQuantities = true;
+
+        try {
+            $cartProducts = $cart->getProducts();
+            $idLang = (int)$this->context->language->id;
+            
+            // Créer un mapping des produits principaux avec leurs quantités
+            $mainProductsMap = [];
+            $serviceProductsMap = [];
+
+            // Parcourir tous les produits du panier pour les classer
+            foreach ($cartProducts as $productRow) {
+                $productId = (int)$productRow['id_product'];
+                $quantity = (int)$productRow['quantity'];
+                
+                // Vérifier si c'est un produit service (catégorie 369)
+                $idCategoryDefault = (int)Db::getInstance()->getValue(
+                    'SELECT id_category_default FROM ' . _DB_PREFIX_ . 'product_shop 
+                    WHERE id_product = ' . (int)$productId . ' 
+                    AND id_shop = ' . (int)$this->context->shop->id
+                );
+
+                if ($idCategoryDefault === 369) {
+                    // C'est un service
+                    $serviceProductsMap[$productId] = $quantity;
+                } else {
+                    // C'est un produit principal
+                    $mainProductsMap[$productId] = $quantity;
+                }
+            }
+
+            // Pour chaque produit principal, synchroniser son service associé
+            foreach ($mainProductsMap as $mainProductId => $mainQuantity) {
+                // Trouver le service associé à ce produit
+                $serviceIds = \Dealt\DealtHookHelper::getServiceProductIds($this->context, $mainProductId);
+                
+                if (!empty($serviceIds)) {
+                    foreach ($serviceIds as $serviceId) {
+                        // Vérifier si le service est déjà dans le panier
+                        if (isset($serviceProductsMap[$serviceId])) {
+                            $serviceCartQuantity = $serviceProductsMap[$serviceId];
+                            
+                            // Synchroniser la quantité du service avec le produit principal
+                            if ($serviceCartQuantity !== $mainQuantity) {
+                                // Calculer la différence de quantité
+                                $quantityDiff = $mainQuantity - $serviceCartQuantity;
+                                
+                                if ($quantityDiff > 0) {
+                                    // Augmenter la quantité
+                                    $cart->updateQty($quantityDiff, $serviceId, null, false, 'up', 0, null, true);
+                                } else {
+                                    // Diminuer la quantité (ou supprimer si quantité devient 0)
+                                    $cart->updateQty(abs($quantityDiff), $serviceId, null, false, 'down', 0, null, true);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Vérifier les services orphelins (services sans produit principal associé)
+            foreach ($serviceProductsMap as $serviceId => $serviceQuantity) {
+                $hasMainProduct = false;
+                
+                // Vérifier si un produit principal associé existe dans le panier
+                foreach ($mainProductsMap as $mainProductId => $mainQuantity) {
+                    $serviceIds = \Dealt\DealtHookHelper::getServiceProductIds($this->context, $mainProductId);
+                    if (in_array($serviceId, $serviceIds)) {
+                        $hasMainProduct = true;
+                        break;
+                    }
+                }
+                
+                // Si le service n'a plus de produit principal associé, le supprimer
+                if (!$hasMainProduct) {
+                    $cart->deleteProduct($serviceId);
+                }
+            }
+
+            // Si des modifications ont été faites, mettre à jour le panier
+            if ($cart->hasBeenModified()) {
+                $cart->update();
+            }
+        } catch (\Exception $e) {
+            // En cas d'erreur, logger mais ne pas bloquer
+            PrestaShopLogger::addLog('Erreur synchronisation quantité service: ' . $e->getMessage(), 3, null, 'dealt', null, true);
+        } finally {
+            self::$syncingServiceQuantities = false;
+        }
     }
 
     public function findPackId($productPackId){
@@ -519,10 +629,15 @@ class Dealt extends Module
             'dealt_product_id'             => (int)$safe['dealt_main_product_id'],
             'tva_token'                    => (string)$safe['tva_token'],
             'tva_attestation_url'          => (string)$safe['tva_attestation_url'],
+            'dealt_cart_services'         => isset($safe['dealt_cart_services']) ? $safe['dealt_cart_services'] : [],
+            'dealt_tva_enabled'            => isset($safe['dealt_tva_enabled']) ? (bool)$safe['dealt_tva_enabled'] : false,
         ]);
 
         $this->context->smarty->assign($safe);
-        $this->context->smarty->assign(['ajaxUrl' => Context::getContext()->link->getModuleLink('dealt', 'eligibility', array('ajax'=>true))]);
+        $this->context->smarty->assign([
+            'ajaxUrl' => Context::getContext()->link->getModuleLink('dealt', 'eligibility', array('ajax'=>true)),
+            'dealt_cart_services_json' => isset($safe['dealt_cart_services']) ? json_encode($safe['dealt_cart_services'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : '[]',
+        ]);
         return $this->display(__FILE__, 'views/templates/hook/cart_footer.tpl');
     }
 

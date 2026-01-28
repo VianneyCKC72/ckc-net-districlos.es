@@ -306,6 +306,64 @@ $(function () {
                     });*/
     });
 
+    // Add service only (without main product) - from cart footer
+    $(document).on('click', '.dealt-add-service-only', function (e) {
+        e.preventDefault();
+
+        var serviceId = $(this).data('service-product-id');
+        if (!serviceId) {
+            alert('Service introuvable.');
+            return;
+        }
+
+        var ajaxUrl = $("#dealt_ajaxurl").text();
+        if (!ajaxUrl) {
+            ajaxUrl = window.location.origin + '/module/dealt/eligibility';
+        }
+
+        $.ajax({
+            url: ajaxUrl,
+            type: "post",
+            data: {
+                serviceId: serviceId,
+                addToCart: true,
+                isCart: true,
+                serviceOnly: true, // Flag pour indiquer qu'on ajoute seulement le service
+                ajax: true,
+            },
+            dataType: 'json',
+            success: function (response) {
+                if(response == "success") {
+                    // Rafraîchir le panier via AJAX
+                    if (typeof refreshCart === 'function') {
+                        // Utiliser la fonction refreshCart si disponible (page panier)
+                        refreshCart();
+                    } else if (typeof prestashop !== 'undefined' && prestashop.emit) {
+                        // Utiliser l'événement PrestaShop
+                        prestashop.emit('updateCart', {
+                            reason: {
+                                idProduct: serviceId,
+                                linkAction: 'add-to-cart'
+                            },
+                            resp: {}
+                        });
+                    } else {
+                        // Fallback : refresh complet
+                        if (!RELOAD_GUARD) {
+                            RELOAD_GUARD = true;
+                            window.location.href = window.location.origin + '/panier?action=show';
+                        }
+                    }
+                }
+            },
+            error: function (jqXHR, exception, error) {
+                alert('Erreur lors de l\'ajout du service au panier.');
+                console.log(jqXHR.statusText);
+                console.log(exception);
+                console.log(error);
+            }
+        });
+    });
 
     $(document).on('input change', '.ap5-attributes #quantity_ml', function(){
         let packQuantity = $('#quantity_ml').val()
