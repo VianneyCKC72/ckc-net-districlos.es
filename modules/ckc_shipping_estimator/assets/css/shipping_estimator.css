@@ -295,5 +295,9 @@ a.estimate-shipping-cost-btn {
     .form-shipping {
         width: 100%;
     }
+    .close-shipping-btn {
+        position: sticky;
+        float: right;
+    }
 }
 
