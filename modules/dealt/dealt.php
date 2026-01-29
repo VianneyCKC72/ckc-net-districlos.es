@@ -456,6 +456,21 @@ class Dealt extends Module
                 }
             }
         }
+        if(Tools::getValue('action') == 'update'){
+            $cart = Context::getContext()->cart;
+            $ifTVAAttested = $this->isTvaAttestedForCart($cart->id);
+            if($ifTVAAttested && !empty($idProduct)){
+                // check if service
+                $product = new Product($idProduct);
+                if($product->id_category_default == 369){
+                    // check if service is not in Cart
+                    if(!$cart->containsProduct($idProduct)){
+                        $deleteTVAAttestation = Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'dealt_tva_attestation` WHERE `id_cart` = '.(int)$cart->id.' 
+                        AND `is_validated` = 1');
+                    }
+                }
+            }
+        }
         if(Tools::getValue('action') && Tools::getValue('action') == 'add-to-cart'){
             if(!empty($idProduct)){
                 $ifPack = $this->checkIfPack($idProduct);
