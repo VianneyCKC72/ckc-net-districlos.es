@@ -133,8 +133,7 @@ class DealtHookHelper
 
             $qty = (int)($p['quantity'] ?? 1);
             /*$priceTE = isset($p['price']) ? (float)$p['price'] : 0.0;*/
-            $priceTE = isset($p['price']) ? (float)str_replace([' €', ','], ['', '.'], $p['price']) : 0.0;
-
+            $priceTE = isset($p['price']) ? (float)str_replace(',', '.',preg_replace('/[^0-9,]/', '', $p['price'])) : 0.0;
             // Si on n’a que le TTC, approx puis correction via le calc
             if ($priceTE <= 0 && !empty($p['price_with_tax'])) {
                 $priceTE = (float)$p['price_with_tax'] / 1.20;
@@ -145,7 +144,7 @@ class DealtHookHelper
             $totalTE = $priceTE * $qty;
 
             // MàJ des clés courantes (unitaires + totaux)
-            $p['price'] = (string)str_replace(['.'], [','], $priceTE). ' €';
+            $p['price'] = (string)number_format($priceTE, 2, ",", " "). ' €';
             $p['unit_price'] = $priceTE;
             $p['price_with_tax'] = $priceWT;
             $p['price_wt'] = $priceWT;
@@ -153,7 +152,7 @@ class DealtHookHelper
             $p['unit_price_tax_included'] = $priceWT;
             $p['unit_price_tax_excluded'] = $priceTE;
 
-            $p['total'] = (string)str_replace(['.'], [','], $totalTE). ' €';
+            $p['total'] = (string)number_format($totalTE, 2, ",", " "). ' €';
             $p['total_with_tax'] = $totalWT;
             $p['total_wt'] = $totalWT;
 
