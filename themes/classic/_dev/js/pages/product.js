@@ -95,6 +95,26 @@ $(document).ready(function () {
         checkStock(false, input, direction, differential);
     });
 
+    $('body').on('change', '.js-cart-line-product-quantity', function (event) {
+        let updateServiceProduct = false;
+        let currentProductChangeId = $('.js-cart-line-product-quantity').attr('data-product-id')
+
+        let main_product_id = localStorage.getItem('dealt_product_id')
+        let main_product_id_attribute = localStorage.getItem('dealt_id_product_attribute')
+        let service_product_id = localStorage.getItem('dealt_service_product_id')
+
+        if(currentProductChangeId == main_product_id){
+            if($('.product-line-grid.dealt-service-product').length){
+                if ($('.product-line-grid.dealt-service-product .product-line-info a').attr('data-product-id-dealt') == service_product_id) {
+                    updateServiceProduct = true
+                }
+            }
+        }
+        if(updateServiceProduct){
+            updateServiceProductInCart(localStorage.getItem('dealt_product_id'), localStorage.getItem('dealt_service_product_id'), $('input[data-product-id='+localStorage.getItem('dealt_product_id')+']').val(), localStorage.getItem('dealt_id_product_attribute'));
+        }
+    });
+
     $('body').on('keyup', '.js-product-quantity', function (event) {
         $('.js-product-quantity').trigger('change');
     });
@@ -191,7 +211,6 @@ $(document).ready(function () {
         let formData = null;
         let formDataCart = null;
         let requestURL = '';
-        let updateServiceProduct = false;
 
         if (!cart) {
             formData = getFormData(cart, object, direction, differential);
@@ -199,20 +218,6 @@ $(document).ready(function () {
         } else {
             formDataCart = getFormData(cart, object, direction, differential);
             requestURL = $(object).attr('data-update-url');
-
-            let main_product_id = localStorage.getItem('dealt_product_id')
-            let main_product_id_attribute = localStorage.getItem('dealt_id_product_attribute')
-            let service_product_id = localStorage.getItem('dealt_service_product_id')
-
-            if (requestURL.indexOf(main_product_id) >= 0 && requestURL.indexOf(main_product_id_attribute) >= 0) {
-
-                $("input.quantity-input.js-cart-line-product-quantity").each(function(){
-                    if ($(this).data('product-id') == service_product_id) {
-                        updateServiceProduct = true
-                        return false
-                    }
-                })
-            }
         }
 
         $.ajax({
@@ -229,11 +234,7 @@ $(document).ready(function () {
                 if (data) {
                     if (cart) {
                         refreshCart();
-                        if(updateServiceProduct){
-                            $(".warning_dealt").remove()
-                            let $warning_dealt = '<div class="alert alert-danger warning_dealt">Vous venez de modifier la quantité d\'un produit, merci de mettre à jour le service correspondant.</div>'
-                            $('.notifications-container.container').append($warning_dealt)
-                        }
+
                     } else {
                         updateViewProduct(data, formData.quantity);
                     }
@@ -259,6 +260,32 @@ $(document).ready(function () {
                 }
             }
             $('.js-product-quantity').attr('data-valueqty', $('.js-product-quantity').val());
+        });
+    }
+
+    function updateServiceProductInCart(main_product_id, service_product_id, qty, main_product_id_attribute){
+        let qty_update = qty || 1;
+        let main_product_id_update = main_product_id;
+        let service_product_id_update = service_product_id;
+        let main_product_id_attribute_update = main_product_id_attribute;
+        
+        let ajax_url_update = $("#dealt_ajaxurl").attr('data-update-url');
+        $.ajax({
+            url: ajax_url_update,
+            type: "post",
+            data: {
+                qty: qty_update,
+                main_product_id: main_product_id_update,
+                service_product_id: service_product_id_update,
+                main_product_id_attribute : main_product_id_attribute_update,
+                ajax: true,
+            },
+            dataType: 'json',
+            success: function (response) {
+                if(response.status == 'success' && response.newserviceid != 0){
+                    localStorage.setItem('dealt_service_product_id', response.newserviceid)
+                }
+            }
         });
     }
 
