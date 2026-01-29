@@ -292,6 +292,9 @@ a.estimate-shipping-cost-btn {
     .modal-shipping-content .container {
         padding: 2rem;
     }
+    .modal-shipping-content {
+        overflow-y: auto;
+    }
     .form-shipping {
         width: 100%;
     }
