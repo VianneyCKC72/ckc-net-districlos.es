@@ -80,9 +80,9 @@ class DealtUpdateServiceCartModuleFrontController extends ModuleFrontController
                             $lengthInt = (int)$feature['value'];
                             $lengthPerUnit = $lengthInt / 1000;
                         } else if(preg_match('/ml/', $feature['value'])){
-                            $dealt_product_length = floatval(preg_replace('/[ml]/', '.', $feature['value']).'0');
+                            $lengthPerUnit = floatval(preg_replace('/[ml]/', '.', $feature['value']).'0');
                         } else if(preg_match('/ML/', $feature['value'])){
-                            $dealt_product_length = floatval(preg_replace('/[ML]/', '.', $feature['value']).'0');
+                            $lengthPerUnit = floatval(preg_replace('/[ML]/', '.', $feature['value']).'0');
                         } else if(preg_match('/m/', $feature['value']) OR preg_match('/M/', $feature['value'])){
                             $lengthPerUnit = floatval(preg_replace('/[mM]/', '.', $feature['value']).'0');
                         } else if(preg_match('/cm/', $feature['value']) OR preg_match('/CM/', $feature['value'])){
