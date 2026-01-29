@@ -9,7 +9,7 @@
         <div class="product-details d-flex flex-column">
             {* Titre du produit *}
             <div class="product-line-info">
-                <a class="h4 text-black d-block m-0" data-id_customization="{$product.id_customization|intval}">
+                <a class="h4 text-black d-block m-0" data-id_customization="{$product.id_customization|intval}" data-product-id-dealt="{$product_id_dealt}">
                     {$product.name}
                 </a>
             </div>

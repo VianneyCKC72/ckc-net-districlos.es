@@ -142,6 +142,6 @@
             <script>window.tva_attestation_url = '{$tva_attestation_url|escape:'javascript'}';</script>
         {/if}
     {/if}
-        <div id="dealt_ajaxurl" style="display: none;" >{$ajaxUrl}</div>
+        <div id="dealt_ajaxurl" style="display: none;" data-update-url="{$ajaxUrlUpdateCart}">{$ajaxUrl}</div>
     </div>
 {/if}

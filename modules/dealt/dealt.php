@@ -523,6 +523,7 @@ class Dealt extends Module
 
         $this->context->smarty->assign($safe);
         $this->context->smarty->assign(['ajaxUrl' => Context::getContext()->link->getModuleLink('dealt', 'eligibility', array('ajax'=>true))]);
+        $this->context->smarty->assign(['ajaxUrlUpdateCart' => Context::getContext()->link->getModuleLink('dealt', 'updateServiceCart', array('ajax'=>true))]);
         return $this->display(__FILE__, 'views/templates/hook/cart_footer.tpl');
     }
 
@@ -901,6 +902,7 @@ class Dealt extends Module
                 'tva_attestation_url' => $cartFooterData['tva_attestation_url'] ?? '',
                 // Permet d'afficher le bloc TVA une seule fois (géré ici plutôt que dans Smarty)
                 'dealt_show_tva_block' => !$tvaBlockRendered,
+                'product_id_dealt' => $params['product']['id_product']
             ]);
 
             $tvaBlockRendered = true;
