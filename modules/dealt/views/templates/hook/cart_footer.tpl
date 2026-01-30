@@ -49,7 +49,7 @@
                                     {/if}
 
                                     <div class="dealt-offer-price">
-                                        {$s.service_price|default:''}
+                                        + {$s.service_price|default:''}
                                     </div>
 
                                     <div class="dealt-cart-service-action">
@@ -61,39 +61,38 @@
                                         <div data-dealt-zipcode-check>
                                             <div data-role="check-box" class="dealt-check-box">
                                                 <div class="dealt-check-label">
-                                                    <label for="dealt-zipcode-input-{$s.service_product_id|intval}">
-                                                        Trouver un installateur
-                                                    </label>
+                                                    <label for="dealt-zipcode-input-{$s.service_product_id|intval}">Trouver un installateur</label>
                                                 </div>
 
                                                 <div class="dealt-zipcode-check">
                                                     <div class="dealt-zipcode-wrapper">
-                                                        <input type="text"
+                                                        <input id="dealt-zipcode-input-{$s.service_product_id|intval}"
+                                                               name="dealt_zipcode"
+                                                               type="text"
                                                                placeholder="Code postal"
-                                                               data-role="zipcode-input"
-{*                                                               id="dealt-zipcode-input-{$s.service_product_id|intval}" />*}
-                                                        id="dealt-zipcode-input" />
+                                                               inputmode="numeric"
+                                                               pattern="^\d{5}$"
+                                                               maxlength="5"
+                                                               aria-label="Code postal (5 chiffres)"
+                                                               data-role="zipcode-input" />
+                                                        <button class="zipcode-search-icon{if $elig_disabled} is-disabled{/if}" 
+                                                                type="button"
+                                                                data-role="zipcode-check-btn"
+                                                                data-offer-id="{$offer_id|escape:'html':'UTF-8'}"
+                                                                data-store-id="{$store_id|escape:'html':'UTF-8'}"
+                                                                data-service-product-id="{$s.service_product_id|intval}"
+                                                                data-main-product-id="{$s.main_product_id|intval}"
+                                                                data-eligibility-url="{$s.eligibility_url|escape:'html':'UTF-8'}"
+                                                                aria-label="Rechercher"
+                                                                {if $elig_disabled}disabled="disabled"
+                                                                title="Configuration manquante pour la vérification"{/if}>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>
+                                                            </svg>
+                                                        </button>
                                                     </div>
-
-                                                    <a href="{if $elig_disabled}javascript:void(0){else}#{/if}"
-                                                       class="zipcode-check-btn{if $elig_disabled} is-disabled{/if}"
-                                                       type="button"
-                                                       data-role="zipcode-check-btn"
-                                                       data-offer-id="{$offer_id|escape:'html':'UTF-8'}"
-                                                       data-store-id="{$store_id|escape:'html':'UTF-8'}"
-                                                       data-service-product-id="{$s.service_product_id|intval}"
-                                                       data-main-product-id="{$s.main_product_id|intval}"
-                                                       data-eligibility-url="{$s.eligibility_url|escape:'html':'UTF-8'}"
-                                                       {if $elig_disabled}aria-disabled="true"
-                                                       title="Configuration manquante pour la vérification"{/if}>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                                             class="lucide lucide-search-icon lucide-search">
-                                                            <path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/>
-                                                        </svg>
-                                                        Recherche
-                                                    </a>
                                                 </div>
                                             </div>
 

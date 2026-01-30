@@ -573,7 +573,7 @@ input:checked+.slider:before {
 }
 
 .dealt-cart-service-info h3 {
-    margin: 0;
+    margin-bottom: 10px;
     font-size: 17px;
     font-weight: bold;
     color: white;
@@ -589,7 +589,8 @@ input:checked+.slider:before {
 }
 
 .dealt-cart-service-info .block-left {
-    max-width: 350px;
+    max-width: 60%;
+    font-size: 17px;
 }
 
 .service-name, .service-ref {
@@ -598,6 +599,7 @@ input:checked+.slider:before {
 }
 
 .service-link {
+    font-size: 13px;
     text-decoration: underline;
     color: white;
 }
