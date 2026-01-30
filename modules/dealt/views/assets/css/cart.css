@@ -317,12 +317,9 @@ input:checked + .slider:before {
 }
 
 .service-link {
-    text-align: left;
     text-decoration: underline;
-    font: normal normal normal 15px/23px Poppins;
-    letter-spacing: 0;
-    color: #000000;
-    opacity: 1;
+    color: white;
+
 }
 
 .dealt-cart-service-action {

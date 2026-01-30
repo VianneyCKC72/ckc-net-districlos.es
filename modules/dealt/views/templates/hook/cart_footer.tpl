@@ -15,27 +15,26 @@
                             {include file="module:dealt/views/templates/hook/svg/cle_molette.tpl"}
                         </div>
                         <div class="dealt-cart-service-info">
-                            <h3>Vous souhaitez une pose de vos produits par un professionnel ?</h3>
-
-                            <p style="margin-bottom: 1rem;">
-                                Vérifiez votre éligibilité en fonction du produit et de votre zone géographique ! Nos experts s'occupent de monter votre clôture, grillage ou portail à votre place.
-                            </p>
-
-                            <a href="{$s.service_url|default:'#'|escape:'html':'UTF-8'}"
-                               target="_blank" rel="noopener"
-                               class="service-link"
-                               style="display:block;margin-bottom: 1rem;">
-                                Détails et conditions du service
-                            </a>
-
                             <div class="inside col-11">
-
                                 <div class="block-left">
-                                    {if $s.main_product_name|default:''}
+                                    <h3>Vous souhaitez une pose de vos produits par un professionnel ?</h3>
+
+                                    <p style="margin-bottom: 1rem;">
+                                        Vérifiez votre éligibilité en fonction du produit et de votre zone géographique ! Nos experts s'occupent de monter votre clôture, grillage ou portail à votre place.
+                                    </p>
+
+                                    <a href="{$s.service_url|default:'#'|escape:'html':'UTF-8'}"
+                                       target="_blank" rel="noopener"
+                                       class="service-link"
+                                       style="display:block;margin-bottom: 1rem;">
+                                        Détails et conditions du service
+                                    </a>
+
+                                    {* {if $s.main_product_name|default:''}
                                         <small class="text-muted" style="display:block;margin-top:.25rem;">
                                             Pour : {$s.main_product_name|escape:'html':'UTF-8'}
                                         </small>
-                                    {/if}
+                                    {/if} *}
                                 </div>
 
                                 <div class="block-right">
@@ -48,6 +47,10 @@
                                             Ref : {$s.service_ref|escape:'html':'UTF-8'}
                                         </p>
                                     {/if}
+
+                                    <div class="dealt-offer-price">
+                                        {$s.service_price|default:''}
+                                    </div>
 
                                     <div class="dealt-cart-service-action">
 
@@ -117,12 +120,7 @@
                                         </div>
 
                                     </div>
-
-                                    <div class="dealt-offer-price">
-                                        {$s.service_price|default:''}
-                                    </div>
                                 </div>
-
                             </div>
                         </div>
 
