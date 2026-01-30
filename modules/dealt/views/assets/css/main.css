@@ -989,6 +989,7 @@ input:checked+.slider:before {
     .picto-mobile path {
         stroke: #fff !important;
         fill: none;
+        stroke-width: 6;
     }
     
     .block-left-header h3 {
