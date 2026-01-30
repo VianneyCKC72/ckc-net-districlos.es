@@ -17,7 +17,12 @@
                         <div class="dealt-cart-service-info">
                             <div class="inside col-11">
                                 <div class="block-left">
-                                    <h3>Vous souhaitez une pose de vos produits par un professionnel ?</h3>
+                                    <div class="block-left-header">
+                                        <div class="picto-mobile">
+                                            {include file="module:dealt/views/templates/hook/svg/cle_molette.tpl"}
+                                        </div>
+                                        <h3>Besoin d'une pose ?</h3>
+                                    </div>
 
                                     <p style="margin-bottom: 1rem;">
                                         Vérifiez votre éligibilité en fonction du produit et de votre zone géographique ! Nos experts s'occupent de monter votre clôture, grillage ou portail à votre place.
@@ -25,8 +30,7 @@
 
                                     <a href="{$s.service_url|default:'#'|escape:'html':'UTF-8'}"
                                        target="_blank" rel="noopener"
-                                       class="service-link"
-                                       style="display:block;margin-bottom: 1rem;">
+                                       class="service-link">
                                         Détails et conditions du service
                                     </a>
 
