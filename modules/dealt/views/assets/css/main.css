@@ -953,6 +953,14 @@ input:checked+.slider:before {
 
 /* Responsive */
 @media (max-width: 768px) {
+
+    .dealt-cart-service-info .inside {
+        flex-direction: column;
+    }
+    .dealt-cart-service-info .block-left {
+        max-width: 100%;
+    }
+
     /* Cacher le picto original sur mobile */
     .dealt-cart-service-inner > .picto.col-1 {
         display: none;
@@ -974,6 +982,13 @@ input:checked+.slider:before {
     .picto-mobile svg {
         width: 40px;
         height: auto;
+    }
+    
+    /* Forcer l'icône en blanc sur mobile */
+    .picto-mobile .st0,
+    .picto-mobile path {
+        stroke: #fff !important;
+        fill: none;
     }
     
     .block-left-header h3 {
