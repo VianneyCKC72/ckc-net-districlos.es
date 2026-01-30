@@ -74,7 +74,9 @@
                                                                pattern="^\d{5}$"
                                                                maxlength="5"
                                                                aria-label="Code postal (5 chiffres)"
-                                                               data-role="zipcode-input" />
+                                                               data-role="zipcode-input"
+                                                               style="padding: 5px;border-radius: 20px;border: 2px solid;"
+                                                               data-1p-ignore />
                                                         <button class="zipcode-search-icon{if $elig_disabled} is-disabled{/if}" 
                                                                 type="button"
                                                                 data-role="zipcode-check-btn"

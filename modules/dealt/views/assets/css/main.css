@@ -31,12 +31,6 @@
     width: 100%;
 }
 
-.dealt-zipcode-check {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
 .zipcode-check-btn {
     display: flex;
     align-items: center;
@@ -98,10 +92,6 @@
 
 .dealt-check {
     font-size: 14px;
-}
-
-.dealt-zipcode-check {
-    display: flex;
 }
 
 #dealt-check-availability-box {
@@ -693,6 +683,7 @@ input:checked+.slider:before {
 .dealt-check-label label {
     font-size: 13px;
     font-weight: normal;
+    margin: 0;
 }
 
 #cart .service-name strong {
