@@ -31,12 +31,6 @@
     width: 100%;
 }
 
-.dealt-zipcode-check {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
 .zipcode-check-btn {
     display: flex;
     align-items: center;
@@ -100,10 +94,6 @@
     font-size: 14px;
 }
 
-.dealt-zipcode-check {
-    display: flex;
-}
-
 #dealt-check-availability-box {
     margin-top: 10px;
     display: flex;
@@ -136,13 +126,9 @@
 }
 
 .dealt-offer-price {
-    color: #026473;
+    color: #7CBA49;
     font-size: 16px;
-    font-style: italic;
-}
-
-#cart .dealt-offer-price {
-    font: normal normal bold 20px/30px Poppins;
+    font-weight: bold;
 }
 
 #dealt-zipcode-input {
@@ -345,12 +331,10 @@
     gap: 0;
 }
 
-.dealt-cart-service-box,
-.dealt-tva-box {
-    border: 3px solid #7CBA49;
-    border-radius: 11px;
-    opacity: 1;
-    padding: 15px 50px;
+.dealt-cart-service-box {
+    padding: 2rem;
+    background-color: #026473;
+    border-radius: 4px;
 }
 
 .dealt-cart-service-box h3,
@@ -405,14 +389,6 @@
 #dealt-tva-checkbox {
     transform: scale(1.2);
     margin-right: 0.5rem;
-}
-
-.dealt-cart-service-box {
-    border: 2px solid #e0e0e0;
-    padding: 1.5rem;
-    margin: 1rem 0;
-    background-color: #f9f9f9;
-    border-radius: 8px;
 }
 
 .dealt-cart-service-header {
@@ -544,14 +520,6 @@ input:checked+.slider:before {
     z-index: 9998;
 }
 
-.dealt-cart-service-box,
-.dealt-tva-box {
-    border: 2px solid #7CBA49;
-    border-radius: 10px;
-    padding: 20px;
-    background: #fff;
-}
-
 .dealt-cart-service-inner {
     display: flex;
     gap: 20px;
@@ -577,6 +545,7 @@ input:checked+.slider:before {
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
+    color: white;
 }
 
 .dealt-cart-tva-info {
@@ -594,9 +563,10 @@ input:checked+.slider:before {
 }
 
 .dealt-cart-service-info h3 {
-    margin: 0 0 5px;
-    font-size: 1.2rem;
+    margin-bottom: 10px;
+    font-size: 17px;
     font-weight: bold;
+    color: white;
 }
 
 .dealt-cart-service-inner>.picto.col-1 {
@@ -609,26 +579,19 @@ input:checked+.slider:before {
 }
 
 .dealt-cart-service-info .block-left {
-    max-width: 350px;
+    max-width: 60%;
+    font-size: 17px;
 }
 
-.service-name {
+.service-name, .service-ref {
     margin: 0;
-    font-size: 1rem;
-}
-
-#cart .service-name,
-#cart .service-ref {
-    font: normal normal normal 17px/26px Poppins;
+    font-size: 13px;
 }
 
 .service-link {
-    text-align: left;
+    font-size: 13px;
     text-decoration: underline;
-    font: normal normal normal 15px/23px Poppins;
-    letter-spacing: 0;
-    color: #000000;
-    opacity: 1;
+    color: white;
 }
 
 .dealt-cart-service-action {
@@ -710,8 +673,6 @@ input:checked+.slider:before {
 .dealt-check-label {
     display: flex;
     align-items: center;
-    margin-bottom: 0;
-    margin-top: 10px;
 }
 
 .dealt-check-label svg {
@@ -722,12 +683,7 @@ input:checked+.slider:before {
 .dealt-check-label label {
     font-size: 13px;
     font-weight: normal;
-}
-
-#cart .dealt-check-label label {
-    font: normal normal 600 17px/26px Poppins;
-    padding-right: 10px;
-    padding-left: 1px;
+    margin: 0;
 }
 
 #cart .service-name strong {
@@ -997,5 +953,57 @@ input:checked+.slider:before {
 
 /* Responsive */
 @media (max-width: 768px) {
-   
+
+    .dealt-cart-service-info .inside {
+        flex-direction: column;
+    }
+    .dealt-cart-service-info .block-left {
+        max-width: 100%;
+    }
+
+    /* Cacher le picto original sur mobile */
+    .dealt-cart-service-inner > .picto.col-1 {
+        display: none;
+    }
+    
+    /* Afficher le picto dans block-left sur mobile */
+    .block-left-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1rem;
+    }
+    
+    .picto-mobile {
+        display: block;
+        flex-shrink: 0;
+    }
+    
+    .picto-mobile svg {
+        width: 40px;
+        height: auto;
+    }
+    
+    /* Forcer l'icône en blanc sur mobile */
+    .picto-mobile .st0,
+    .picto-mobile path {
+        stroke: #fff !important;
+        fill: none;
+        stroke-width: 6;
+    }
+    
+    .block-left-header h3 {
+        margin: 0;
+    }
+}
+
+/* Desktop : cacher le picto mobile */
+@media (min-width: 769px) {
+    .picto-mobile {
+        display: none;
+    }
+    
+    .block-left-header {
+        display: block;
+    }
 }
