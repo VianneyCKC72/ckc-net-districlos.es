@@ -225,6 +225,11 @@
       }
     }
   }
+
+  // Masquer le bloc promo-name dans le bloc code promo (il est déjà affiché dans les subtotaux)
+  .block-promo .cart-voucher .promo-name {
+    display: none;
+  }
 }
 
 .payment-methods__listing {
