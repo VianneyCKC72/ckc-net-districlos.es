@@ -55,7 +55,7 @@
                                         {foreach from=$cart.vouchers.added item=voucher}
                                             <li class="cart-summary-line">
                                                 <span class="label">{$voucher.name}</span>
-                                                <div class="float-xs-right">
+                                                <div class="float-xs-right font-weight-semibold" style="color: red;">
                                                     <span>{$voucher.reduction_formatted}{if $pro.env == 1}HT{/if}</span>
                                                     {if isset($voucher.code) && $voucher.code !== ''}
                                                         <a href="{$voucher.delete_url}" data-link-action="remove-voucher" class="ml-2">

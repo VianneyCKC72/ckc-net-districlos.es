@@ -187,6 +187,9 @@ body#checkout {
   }
 
   .cart-summary {
+    .cart-detailed-totals {
+      margin-bottom: 0;
+    }
     .cart-summary-line {
       display: flex;
       justify-content: space-between;
