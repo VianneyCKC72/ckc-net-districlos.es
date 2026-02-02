@@ -60,6 +60,7 @@ class Dealt extends Module
                      'displayHeader',
                      'displayShoppingCartFooter',
                      'displayCheckoutSummaryTop',
+                     'displayCartProductLine',
                  ] as $hook) {
             if (!$this->isRegisteredInHook($hook) && !$this->registerHook($hook)) {
                 return false;
@@ -455,6 +456,21 @@ class Dealt extends Module
                 }
             }
         }
+        if(Tools::getValue('action') == 'update'){
+            $cart = Context::getContext()->cart;
+            $ifTVAAttested = $this->isTvaAttestedForCart($cart->id);
+            if($ifTVAAttested && !empty($idProduct)){
+                // check if service
+                $product = new Product($idProduct);
+                if($product->id_category_default == 369){
+                    // check if service is not in Cart
+                    if(!$cart->containsProduct($idProduct)){
+                        $deleteTVAAttestation = Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'dealt_tva_attestation` WHERE `id_cart` = '.(int)$cart->id.' 
+                        AND `is_validated` = 1');
+                    }
+                }
+            }
+        }
         if(Tools::getValue('action') && Tools::getValue('action') == 'add-to-cart'){
             if(!empty($idProduct)){
                 $ifPack = $this->checkIfPack($idProduct);
@@ -522,6 +538,7 @@ class Dealt extends Module
 
         $this->context->smarty->assign($safe);
         $this->context->smarty->assign(['ajaxUrl' => Context::getContext()->link->getModuleLink('dealt', 'eligibility', array('ajax'=>true))]);
+        $this->context->smarty->assign(['ajaxUrlUpdateCart' => Context::getContext()->link->getModuleLink('dealt', 'updateServiceCart', array('ajax'=>true))]);
         return $this->display(__FILE__, 'views/templates/hook/cart_footer.tpl');
     }
 
@@ -793,7 +810,19 @@ class Dealt extends Module
     public function hookActionPresentCartProduct(array $params)
     {
         if (empty($params['product']) || !is_array($params['product'])) return;
-        DealtHookHelper::applyTvaOnPresentedCartProduct($this->context, $params['product']); // passe par référence
+        
+        $product = &$params['product']; // Référence pour modifier directement
+        
+        // S'assurer que id_category_default est présent dans les données du produit
+        if (!isset($product['id_category_default']) && isset($product['id_product'])) {
+            $product['id_category_default'] = (int)Db::getInstance()->getValue(
+                'SELECT id_category_default FROM ' . _DB_PREFIX_ . 'product_shop 
+                WHERE id_product = ' . (int)$product['id_product'] . ' 
+                AND id_shop = ' . (int)$this->context->shop->id
+            );
+        }
+        
+        DealtHookHelper::applyTvaOnPresentedCartProduct($this->context, $product); // passe par référence
     }
 
     public function hookActionPresentCart(array $params)
@@ -858,4 +887,47 @@ class Dealt extends Module
 
         return (int)$tax->id;
     }
+
+    /**
+     * Hook pour personnaliser l'affichage des produits Dealt dans le panier
+     * Note: id_category_default doit être enrichi via hookActionPresentCartProduct
+     */
+    public function hookDisplayCartProductLine($params)
+    {
+        if (!isset($params['product']['id_category_default'])) {
+            return '';
+        }
+
+        // Si c'est un produit service (catégorie 369)
+        if ((int)$params['product']['id_category_default'] === 369) {
+            // N'afficher le bloc TVA qu'une seule fois par page (même si plusieurs lignes "service")
+            static $tvaBlockRendered = false;
+
+            // Réutilise les données déjà calculées pour le footer panier (URLs + état attestation)
+            $cartFooterData = \Dealt\DealtHookHelper::buildCartFooterData($this->context) ?: [];
+
+            // Assigner les données du produit au template
+            $this->context->smarty->assign([
+                'product' => $params['product'],
+                'pro' => isset($params['pro']) ? $params['pro'] : null,
+                'urls' => isset($params['urls']) ? $params['urls'] : $this->context->link,
+                // TVA
+                'dealt_tva_enabled' => !empty($cartFooterData['dealt_tva_enabled']),
+                'tva_modal_url' => $cartFooterData['tva_modal_url'] ?? '',
+                'tva_attestation_url' => $cartFooterData['tva_attestation_url'] ?? '',
+                // Permet d'afficher le bloc TVA une seule fois (géré ici plutôt que dans Smarty)
+                'dealt_show_tva_block' => !$tvaBlockRendered,
+                'product_id_dealt' => $params['product']['id_product']
+            ]);
+
+            $tvaBlockRendered = true;
+            
+            // Retourner le template personnalisé
+            return $this->display(__FILE__, 'views/templates/hook/cart_product_line_dealt.tpl');
+        }
+        
+        // Pour les autres produits, ne rien retourner (affichage normal)
+        return '';
+    }
+
 }

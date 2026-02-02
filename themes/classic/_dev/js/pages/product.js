@@ -95,6 +95,37 @@ $(document).ready(function () {
         checkStock(false, input, direction, differential);
     });
 
+    var updateServiceTimeout = null;
+    $('body').on('change', '.js-cart-line-product-quantity', function (event) {
+        let $input = $(this);
+        let currentProductChangeId = $input.attr('data-product-id');
+
+        let main_product_id = localStorage.getItem('dealt_product_id')
+        let main_product_id_attribute = localStorage.getItem('dealt_id_product_attribute')
+        let service_product_id = localStorage.getItem('dealt_service_product_id')
+
+        // Annule le timeout précédent pour éviter les appels multiples
+        if (updateServiceTimeout) {
+            clearTimeout(updateServiceTimeout);
+        }
+
+        // Utilise un debounce pour éviter les appels multiples lors des clics rapides sur +/-
+        updateServiceTimeout = setTimeout(function() {
+            let updateServiceProduct = false;
+
+            if(currentProductChangeId == main_product_id){
+                if($('.product-line-grid.dealt-service-product').length){
+                    if ($('.product-line-grid.dealt-service-product .product-line-info a').attr('data-product-id-dealt') == service_product_id) {
+                        updateServiceProduct = true
+                    }
+                }
+            }
+            if(updateServiceProduct){
+                updateServiceProductInCart(localStorage.getItem('dealt_product_id'), localStorage.getItem('dealt_service_product_id'), $input.val(), localStorage.getItem('dealt_id_product_attribute'));
+            }
+        }, 300); // Délai de 300ms pour regrouper les changements rapides
+    });
+
     $('body').on('keyup', '.js-product-quantity', function (event) {
         $('.js-product-quantity').trigger('change');
     });
@@ -191,7 +222,6 @@ $(document).ready(function () {
         let formData = null;
         let formDataCart = null;
         let requestURL = '';
-        let updateServiceProduct = false;
 
         if (!cart) {
             formData = getFormData(cart, object, direction, differential);
@@ -199,20 +229,6 @@ $(document).ready(function () {
         } else {
             formDataCart = getFormData(cart, object, direction, differential);
             requestURL = $(object).attr('data-update-url');
-
-            let main_product_id = localStorage.getItem('dealt_product_id')
-            let main_product_id_attribute = localStorage.getItem('dealt_id_product_attribute')
-            let service_product_id = localStorage.getItem('dealt_service_product_id')
-
-            if (requestURL.indexOf(main_product_id) >= 0 && requestURL.indexOf(main_product_id_attribute) >= 0) {
-
-                $("input.quantity-input.js-cart-line-product-quantity").each(function(){
-                    if ($(this).data('product-id') == service_product_id) {
-                        updateServiceProduct = true
-                        return false
-                    }
-                })
-            }
         }
 
         $.ajax({
@@ -229,11 +245,7 @@ $(document).ready(function () {
                 if (data) {
                     if (cart) {
                         refreshCart();
-                        if(updateServiceProduct){
-                            $(".warning_dealt").remove()
-                            let $warning_dealt = '<div class="alert alert-danger warning_dealt">Vous venez de modifier la quantité d\'un produit, merci de mettre à jour le service correspondant.</div>'
-                            $('.notifications-container.container').append($warning_dealt)
-                        }
+
                     } else {
                         updateViewProduct(data, formData.quantity);
                     }
@@ -259,6 +271,32 @@ $(document).ready(function () {
                 }
             }
             $('.js-product-quantity').attr('data-valueqty', $('.js-product-quantity').val());
+        });
+    }
+
+    function updateServiceProductInCart(main_product_id, service_product_id, qty, main_product_id_attribute){
+        let qty_update = qty || 1;
+        let main_product_id_update = main_product_id;
+        let service_product_id_update = service_product_id;
+        let main_product_id_attribute_update = main_product_id_attribute;
+        
+        let ajax_url_update = $("#dealt_ajaxurl").attr('data-update-url');
+        $.ajax({
+            url: ajax_url_update,
+            type: "post",
+            data: {
+                qty: qty_update,
+                main_product_id: main_product_id_update,
+                service_product_id: service_product_id_update,
+                main_product_id_attribute : main_product_id_attribute_update,
+                ajax: true,
+            },
+            dataType: 'json',
+            success: function (response) {
+                if(response.status == 'success' && response.newserviceid != 0){
+                    localStorage.setItem('dealt_service_product_id', response.newserviceid)
+                }
+            }
         });
     }
 
@@ -341,10 +379,6 @@ $(document).ready(function () {
             }
         });
 
-        let availables_services_id = [];
-        let all_products_cart_id = [];
-        dealt_cart_services.map((product) => availables_services_id.push(product.service_product_id))
-
         $(".custom-quantity-selector").each(function (){
             if($(this).find("input#quantity_wanted").data('product-id') == localStorage.getItem('dealt_service_product_id')){
                 $(this).css('display', 'none');
@@ -352,22 +386,12 @@ $(document).ready(function () {
                     $(this).css('display', 'none');
                 });
             }
-            all_products_cart_id.push($(this).find("input#quantity_wanted").data('product-id'))
         })
 
-        const intersection = availables_services_id.filter(element => all_products_cart_id.includes(element));
-
-        const localMatch = all_products_cart_id.includes(parseInt(localStorage.getItem('dealt_service_product_id'), 10));
-
-        if(!intersection.length && !localMatch){
-            $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'none')
-            $(".btn-add.dealt-tva-open-popup").css('background', '#b6c7a8 0% 0% no-repeat padding-box')
-            $("#tva-submit-btn").attr('disabled', true)
-        } else {
-            $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'auto')
-            $(".btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box')
-            $("#tva-submit-btn").attr('disabled', false)
-        }
+        /* Bouton « Ajouter la réduction » toujours actif */
+        $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'auto')
+        $(".btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box')
+        $("#tva-submit-btn").attr('disabled', false)
 
         let total = 0;
         $("[data-valueqty]").each(function () {
@@ -445,10 +469,6 @@ $(document).ready(function () {
         if (typeof $(".dealt-cart-services-container") !== "undefined") {
             $(".dealt-cart-services-container").replaceWith(event.resp.cart_footer_dealt)
         }
-        let availables_services_id = [];
-        let all_products_cart_id = [];
-        dealt_cart_services.map((product) => availables_services_id.push(product.service_product_id))
-
         $(".custom-quantity-selector").each(function (){
             if($(this).find("input#quantity_wanted").data('product-id') == localStorage.getItem('dealt_service_product_id')){
                 $(this).css('display', 'none');
@@ -456,22 +476,12 @@ $(document).ready(function () {
                     $(this).css('display', 'none');
                 });
             }
-            all_products_cart_id.push($(this).find("input#quantity_wanted").data('product-id'))
         })
 
-        const intersection = availables_services_id.filter(element => all_products_cart_id.includes(element));
-
-        const localMatch = all_products_cart_id.includes(parseInt(localStorage.getItem('dealt_service_product_id'), 10));
-
-        if(!intersection.length && !localMatch){
-            $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'none')
-            $(".btn-add.dealt-tva-open-popup").css('background', '#b6c7a8 0% 0% no-repeat padding-box')
-            $("#tva-submit-btn").attr('disabled', true)
-        } else {
-            $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'auto')
-            $(".btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box')
-            $("#tva-submit-btn").attr('disabled', false)
-        }
+        /* Bouton « Ajouter la réduction » toujours actif */
+        $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'auto')
+        $(".btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box')
+        $("#tva-submit-btn").attr('disabled', false)
     });
 
     // Page produit uniquement

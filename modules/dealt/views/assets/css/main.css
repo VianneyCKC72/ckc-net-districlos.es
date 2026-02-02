@@ -1,67 +1,74 @@
+.dealt-collapse-content {
+    margin-top: 1em;
+}
+
 .dealt-offer-box {
-    border: 3px solid #7CBA49;
-    border-radius: 11px;
-    padding: 0px 10px;
+    border-radius: 10px;
+    padding: 10px;
     display: flex;
     align-items: flex-start;
-    margin-bottom: 20px;
-    color: #333;
-    background: white;
+    margin-bottom: 10px;
+    background: #F6F2EB;
 }
+
 .zipcode-check-btn.is-loading {
     opacity: 0.6;
     pointer-events: none;
     cursor: progress;
 }
+
 .dealt-offer-icon i {
     font-size: 32px;
     color: #7CBA49;
     margin-right: 15px;
 }
+
 .dealt-offer-box .picto {
     width: 58px;
 }
+
 .dealt-offer-box .picto svg {
     width: 100%;
-}
-.dealt-zipcode-check {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
 }
 
 .zipcode-check-btn {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap:4px;
+    gap: 4px;
 }
+
 .zipcode-check-btn svg {
     width: 11px;
 }
+
 .zipcode-check-btn {
-    color:black;
+    color: black;
     font-size: 12px;
-    margin-left:5px;
+    margin-left: 5px;
 }
-#product .zipcode-check-btn{
+
+#product .zipcode-check-btn {
     padding: 5px;
     margin-top: 5px;
     justify-content: center;
     color: #fff;
 }
+
 .dealt-offer-content {
     flex-grow: 1;
-    padding: 10px;
+    padding: 5px;
 }
 
 .dealt-nom-produit {
-    font-size: 17px;
+    margin: 0;
+    font-size: 13px;
+    font-style: italic;
 }
 
 .dealt-offer-title {
-    font-weight: bold;
-    font-size: 17px;
+    font-weight: 600;
+    font-size: 16px;
     margin-bottom: 5px;
 }
 
@@ -71,21 +78,20 @@
     color: #000;
     text-decoration: underline;
 }
+
 .product-additional-info {
     margin-top: 35px;
 }
+
 #dealt-try-again {
     font-size: 10px;
     color: #000;
     text-decoration: underline;
     font-weight: bold;
 }
+
 .dealt-check {
     font-size: 14px;
-}
-
-.dealt-zipcode-check {
-    display: flex;
 }
 
 #dealt-check-availability-box {
@@ -112,6 +118,7 @@
     width: 16px;
     height: 16px;
 }
+
 #dealt-check-availability-box svg {
     margin-right: 5px;
     height: 28px;
@@ -119,24 +126,19 @@
 }
 
 .dealt-offer-price {
-    color: #000;
-    font-weight: 600;
-    font-size: 17px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    color: #7CBA49;
+    font-size: 16px;
+    font-weight: bold;
 }
-#cart .dealt-offer-price {
-    font: normal normal bold 20px/30px Poppins;
-}
+
 #dealt-zipcode-input {
-    border: none;
-    background: transparent;
-    font-size: 14px;
-    padding: 8px 10px;
-    outline: none;
-    width: 140px;
-    color: #000;
+    font-size: 13px;
+    padding: 8px 40px 8px 15px;
+    width: 170px;
+    font-weight: normal;
+    border: 1px solid;
+    border-radius: 20px;
+    background: white;
 }
 
 .dealt-zipcode-wrapper {
@@ -146,22 +148,52 @@
     align-items: center;
     background: #F6F2EB;
     border-radius: 20px;
-    overflow: hidden;
+    overflow: visible;
 }
+
 #cart .dealt-zipcode-wrapper {
     overflow: visible;
 }
 
-#dealt-zipcode-check-btn {
-    background: #7CBA49;
-    border: none;
-    padding: 6px 12px;
+.zipcode-search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    margin-left: 8px;
-    cursor: pointer;
+}
+
+.zipcode-search-icon:hover {
+    opacity: 0.7;
+}
+
+.zipcode-search-icon svg {
+    stroke: #026473;
+}
+
+.zipcode-search-icon:active {
+    opacity: 0.5;
+}
+
+.zipcode-search-icon.is-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: progress;
+}
+
+.zipcode-search-icon.is-loading svg {
+    animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 #dealt-zipcode-result {
@@ -182,12 +214,12 @@
 }
 
 .dealt-modal-content {
-    background-color: #fff;
+    background-color: #F6F2EB;
     margin: 10% auto;
-    padding: 30px;
+    padding: 40px;
     border-radius: 8px;
     width: 90%;
-    max-width: 640px;
+    max-width: 40%;
     position: relative;
     text-align: center;
     font-family: Arial, sans-serif;
@@ -201,30 +233,19 @@
     cursor: pointer;
 }
 
-.dealt-conditions-list {
-    text-align: left;
-    margin: 20px 0;
-    padding-left: 20px;
-}
-
-#dealt-service-modal .dealt-modal-content,
-#dealt-tva-modal .dealt-modal-content {
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    box-shadow: 0px 5px 7px #00000029;
-    border: 3px solid #7CBA49;
-    border-radius: 23px;
-}
-
 #dealt-service-modal .h4,
 #dealt-tva-modal .h4 {
+    color: #026473;
     text-align: center;
-    font: normal normal bold 20px/38px Poppins;
+    font-size: 24px;
+    font-weight: 500;
 }
 
 #dealt-service-modal .h2,
 #dealt-tva-modal .h2 {
     text-align: center;
-    font: normal normal bold 25px/38px Poppins;
+    font-size: 20px;
+    font-weight: 400;
 }
 
 /* Liste conditions (les deux modales) */
@@ -233,6 +254,7 @@
     text-align: left;
     margin: 20px 0;
     padding-left: 20px;
+    font-size: 16px;
 }
 
 #dealt-service-modal ul,
@@ -249,6 +271,7 @@
     color: #333;
     font: normal normal normal 15px/23px Poppins;
 }
+
 .dealt-btn-primary {
     background: #7CBA49 0% 0% no-repeat padding-box;
     border-radius: 24px;
@@ -294,11 +317,13 @@
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
+
 .dealt-cart-services {
     margin-top: 2rem;
     display: flex;
@@ -306,12 +331,10 @@
     gap: 0;
 }
 
-.dealt-cart-service-box,
-.dealt-tva-box {
-    border: 3px solid #7CBA49;
-    border-radius: 11px;
-    opacity: 1;
-    padding: 15px 50px;
+.dealt-cart-service-box {
+    padding: 2rem;
+    background-color: #026473;
+    border-radius: 4px;
 }
 
 .dealt-cart-service-box h3,
@@ -367,13 +390,6 @@
     transform: scale(1.2);
     margin-right: 0.5rem;
 }
-.dealt-cart-service-box {
-    border: 2px solid #e0e0e0;
-    padding: 1.5rem;
-    margin: 1rem 0;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-}
 
 .dealt-cart-service-header {
     display: flex;
@@ -391,6 +407,7 @@
 .dealt-cart-service-footer {
     margin-top: 1rem;
 }
+
 .dealt-cart-tva-box {
     border: 2px solid #cce5ff;
     background-color: #e9f5ff;
@@ -434,8 +451,10 @@
 .slider {
     position: absolute;
     cursor: pointer;
-    top: 0; left: 0;
-    right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-color: #ccc;
     transition: 0.4s;
     border-radius: 25px;
@@ -453,19 +472,22 @@
     border-radius: 50%;
 }
 
-input:checked + .slider {
+input:checked+.slider {
     background-color: #4CAF50;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
     transform: translateX(24px);
 }
 
 /* Modal */
 .tva-modal {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -482,7 +504,8 @@ input:checked + .slider:before {
 
 .tva-close-modal {
     position: absolute;
-    top: 15px; right: 20px;
+    top: 15px;
+    right: 20px;
     font-size: 24px;
     cursor: pointer;
 }
@@ -497,14 +520,6 @@ input:checked + .slider:before {
     z-index: 9998;
 }
 
-.dealt-cart-service-box,
-.dealt-tva-box {
-    border: 2px solid #7CBA49;
-    border-radius: 10px;
-    padding: 20px;
-    background: #fff;
-}
-
 .dealt-cart-service-inner {
     display: flex;
     gap: 20px;
@@ -515,24 +530,30 @@ input:checked + .slider:before {
     width: 50px;
     height: auto;
 }
+
 .no-padding {
-    padding:0 !important;
+    padding: 0 !important;
 }
-#cart .dealt-cart-service-action{
+
+#cart .dealt-cart-service-action {
     margin-top: 20px;
 }
+
 .dealt-cart-service-info {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
+    color: white;
 }
+
 .dealt-cart-tva-info {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
+
 .dealt-cart-service-info .inside {
     display: flex;
     justify-content: space-between;
@@ -540,36 +561,37 @@ input:checked + .slider:before {
     padding-left: 0;
     max-width: 98%;
 }
+
 .dealt-cart-service-info h3 {
-    margin: 0 0 5px;
-    font-size: 1.2rem;
+    margin-bottom: 10px;
+    font-size: 17px;
     font-weight: bold;
+    color: white;
 }
-.dealt-cart-service-inner > .picto.col-1{
+
+.dealt-cart-service-inner>.picto.col-1 {
     align-content: center;
 }
-.dealt-cart-service-info .picto svg{
+
+.dealt-cart-service-info .picto svg {
     max-width: 90px;
-    height:auto;
+    height: auto;
 }
-.dealt-cart-service-info .block-left{
-    max-width: 350px;
+
+.dealt-cart-service-info .block-left {
+    max-width: 60%;
+    font-size: 17px;
 }
-.service-name {
+
+.service-name, .service-ref {
     margin: 0;
-    font-size: 1rem;
+    font-size: 13px;
 }
-#cart .service-name,
-#cart .service-ref {
-    font: normal normal normal 17px/26px Poppins;
-}
+
 .service-link {
-    text-align: left;
+    font-size: 13px;
     text-decoration: underline;
-    font: normal normal normal 15px/23px Poppins;
-    letter-spacing: 0;
-    color: #000000;
-    opacity: 1;
+    color: white;
 }
 
 .dealt-cart-service-action {
@@ -577,7 +599,7 @@ input:checked + .slider:before {
 }
 
 .dealt-tva-box {
-    margin-bottom:50px;
+    margin-bottom: 50px;
 }
 
 .service-price {
@@ -591,23 +613,11 @@ input:checked + .slider:before {
 .btn-add-tva,
 .btn-add {
     border: none;
-    background: #7CBA49 0% 0% no-repeat padding-box;
     border-radius: 24px;
     padding: 10px 20px;
-    font: normal normal normal 15px/23px Poppins;
-    letter-spacing: 0px;
-    color: #FFFFFF;
     cursor: pointer;
-}
-.btn-add-tva:hover,
-.btn-add:hover {
-    background: #6aa83d;
-    color: #FFFFFF;
-}
-
-.added {
-    font-size: 0.95rem;
-    color: #4CAF50;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 /* Overlay de fond */
@@ -617,13 +627,15 @@ input:checked + .slider:before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 9998;
     display: none;
 }
+
 #dealt-tva-modal .dealt-modal-content {
     max-width: 960px;
 }
+
 /* Bouton fermeture */
 #dealt-tva-close {
     position: absolute;
@@ -649,52 +661,48 @@ input:checked + .slider:before {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .dealt-check-label {
     display: flex;
     align-items: center;
-    margin-bottom:0;
-    margin-top:10px;
 }
+
 .dealt-check-label svg {
     width: 15px;
-    height:auto;
+    height: auto;
 }
+
 .dealt-check-label label {
     font-size: 13px;
     font-weight: normal;
-    color: #000;
-    margin-left: 8px;
-    margin-bottom:0;
-}
-#cart .dealt-check-label label {
-    font: normal normal 600 17px/26px Poppins;
-    padding-right: 10px;
-    padding-left: 1px;
+    margin: 0;
 }
 
 #cart .service-name strong {
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* max 2 lignes */
+    -webkit-line-clamp: 2;
+    /* max 2 lignes */
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-.dealt-zipcode-wrapper button {
-    background:#4CAF50;
+.dealt-zipcode-wrapper button svg {
+    width: 15px;
 }
-.dealt-zipcode-wrapper button svg{
-    width: 10px;
-}
+
 .dealt-check-box {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-top: 10px;
+    gap: 10px;
 }
+
 .dealt-retry-box,
 .dealt-result-msg {
     display: none;
@@ -733,53 +741,269 @@ input:checked + .slider:before {
     margin-top: 3px;
 }
 
-/* Bandeau TVA – déclinaison du vert #7cba49 */
-.dealt-tva-notice{
-    --brand: 124,186,73;                 /* #7cba49 en RGB */
-    background: rgba(var(--brand), .10); /* fond très léger */
-    border: 1px solid rgba(var(--brand), .35);
-    border-radius: 10px;
-    padding: 12px 14px 12px 16px;
-    margin-bottom: 14px;
-    line-height: 1.35;
-    font-size: .95rem;
-}
+/* Bandeau TVA */
 
 /* Titre (la ligne en gras) */
-.dealt-tva-notice > strong{
+.dealt-tva-notice>strong {
     display: block;
     margin: 0 0 2px;
     font-weight: 600;
-    color: #2f6d12; /* vert foncé lisible */
+    color: #2f6d12;
+    /* vert foncé lisible */
 }
 
 /* Sous-texte */
-.dealt-tva-notice > small{
-    display: block;             /* au cas où d-block n'est pas là */
+.dealt-tva-notice>small {
+    display: block;
+    /* au cas où d-block n'est pas là */
     font-size: .9rem;
     color: #47643a;
 }
 
+/* Variante panier (ligne produit) : texte + bouton sur la même ligne */
+.dealt-tva-notice--cartline {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.dealt-tva-notice--cartline .dealt-tva-notice__text {
+    flex: 1;
+    min-width: 0;
+}
+
+.dealt-tva-notice--cartline .btn-add {
+    white-space: nowrap;
+}
+
 /* Petite barre d’accent à gauche (optionnel, sans toucher au HTML) */
-#dealt-tva-notice{
+#dealt-tva-notice {
     position: relative;
     padding-left: 18px;
 }
-#dealt-tva-notice::before{
+
+#dealt-tva-notice::before {
     content: "";
     position: absolute;
-    left: 8px; top: 8px; bottom: 8px;
+    left: 8px;
+    top: 8px;
+    bottom: 8px;
     width: 4px;
     background: #7cba49;
     border-radius: 2px;
 }
 
 /* Mode sombre : augmente légèrement le contraste */
-@media (prefers-color-scheme: dark){
-    .dealt-tva-notice{
-        background: rgba(var(--brand), .16);
-        border-color: rgba(var(--brand), .45);
+@media (prefers-color-scheme: dark) {
+
+    .dealt-tva-notice>small {
+        color: #6aa055;
     }
-    .dealt-tva-notice > small{ color: #6aa055; }
 }
 
+/* Styles pour l'accordéon dépliable */
+.dealt-offer-toggle {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    transition: opacity 0.2s ease;
+    gap: 15px;
+}
+
+.dealt-toggle-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.dealt-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.dealt-offer-toggle .dealt-offer-title {
+    font-weight: bold;
+    font-size: 16px;
+    color: #026473;
+    margin-bottom: 0;
+}
+
+.dealt-offer-toggle .dealt-offer-subtitle,
+.dealt-offer-toggle .dealt-offer-subtitle-expanded {
+    font-size: 13px;
+    font-weight: normal;
+    color: #171717;
+    display: block;
+}
+
+.dealt-conditions-link-toggle {
+    font-size: 10px;
+    color: #000;
+    text-decoration: underline;
+    white-space: nowrap;
+    font-weight: normal;
+}
+
+.dealt-toggle-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+/* Icône qui tourne quand c'est ouvert */
+.dealt-offer-toggle.is-expanded .dealt-toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* Responsive : affichage mobile */
+@media (max-width: 768px) {
+    .dealt-offer-toggle {
+        gap: 10px;
+    }
+
+    .dealt-conditions-link-toggle {
+        font-size: 9px;
+    }
+
+    .dealt-btn-primary {
+        width: 100%;
+        font-size: 11px;
+    }
+
+    .dealt-modal-content {
+        max-width: 90%;
+    }
+
+    .dealt-conditions-list {
+        padding: 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .dealt-offer-toggle .dealt-offer-title {
+        font-size: 15px;
+    }
+
+    .dealt-offer-toggle .dealt-offer-subtitle,
+    .dealt-offer-toggle .dealt-offer-subtitle-expanded {
+        font-size: 12px;
+    }
+
+    .dealt-conditions-link-toggle {
+        font-size: 8px;
+    }
+
+    #dealt-zipcode-input {
+        width: 150px;
+        padding: 8px 35px 8px 12px;
+    }
+
+    .dealt-zipcode-wrapper {
+        width: 100%;
+    }
+}
+
+/* ========================================
+   STYLES POUR LES PRODUITS DEALT DANS LE PANIER
+   ======================================== */
+
+.cart-item:has(.dealt-service-product) {
+    background: #F6F2EB;
+    flex-direction: column;
+    padding: 15px;
+    display: flex !important;
+    gap: 15px;
+}
+
+.dealt-service-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.product-line-grid.dealt-service-product {
+    display: flex !important;
+    justify-content: space-between;
+}
+
+.dealt-tva-notice__text {
+    display: flex;
+    flex-direction: column;
+}
+
+.product-line-grid.dealt-service-product{
+    width: 30%;
+}
+
+.dealt-service-unit-price {
+    font-weight: 400;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+
+    .dealt-cart-service-info .inside {
+        flex-direction: column;
+    }
+    .dealt-cart-service-info .block-left {
+        max-width: 100%;
+    }
+
+    /* Cacher le picto original sur mobile */
+    .dealt-cart-service-inner > .picto.col-1 {
+        display: none;
+    }
+    
+    /* Afficher le picto dans block-left sur mobile */
+    .block-left-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1rem;
+    }
+    
+    .picto-mobile {
+        display: block;
+        flex-shrink: 0;
+    }
+    
+    .picto-mobile svg {
+        width: 40px;
+        height: auto;
+    }
+    
+    /* Forcer l'icône en blanc sur mobile */
+    .picto-mobile .st0,
+    .picto-mobile path {
+        stroke: #fff !important;
+        fill: none;
+        stroke-width: 6;
+    }
+    
+    .block-left-header h3 {
+        margin: 0;
+    }
+}
+
+/* Desktop : cacher le picto mobile */
+@media (min-width: 769px) {
+    .picto-mobile {
+        display: none;
+    }
+    
+    .block-left-header {
+        display: block;
+    }
+}

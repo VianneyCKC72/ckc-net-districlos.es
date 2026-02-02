@@ -1,5 +1,5 @@
 <svg xml:space="preserve"
-     style="max-height: 500px"
+     style="max-height: 50px"
      viewBox="76.395312 78.96609 131.544 126.438165"
      xmlns="http://www.w3.org/2000/svg"
      xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -10,7 +10,7 @@
     <style type="text/css">
         .picto .st0 {
             fill: none;
-            stroke: #090106;
+            stroke: white;
             stroke-width: 4;
             stroke-linecap: round;
             stroke-linejoin: round;

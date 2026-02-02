@@ -62,6 +62,19 @@ $(function () {
         if (e.key === 'Escape') closeServiceModal();
     });
 
+    // Gérer la touche Entrée sur l'input code postal
+    $(document).on('keypress', '[data-dealt-zipcode-check] [data-role="zipcode-input"]', function (e) {
+        if (e.key === 'Enter' || e.which === 13) {
+            e.preventDefault();
+            var $input = $(this);
+            var $block = $input.closest('[data-dealt-zipcode-check]');
+            var $btn = $block.find('[data-role="zipcode-check-btn"]');
+            if ($btn.length) {
+                $btn.click();
+            }
+        }
+    });
+
     // ZIP check → open modal on success
     $(document).on('click', '[data-dealt-zipcode-check] [data-role="zipcode-check-btn"]', function (e) {
         e.preventDefault();
@@ -74,7 +87,7 @@ $(function () {
         var $box = $block.find('[data-role="check-box"]');
 
         if($("#product").length){
-            var $parent = $block.parent().parent()
+            var $parent = $block.closest('.dealt-offer-box');
             var offerId = $parent.data('offer-id');
             var storeId = $parent.data('store-id');
             window.dealt_check_availability_url = $parent.data('eligibility-url');
@@ -486,11 +499,10 @@ $(function () {
                         html += '</div>'
                         html += '<div class="dealt-zipcode-check"><div class="dealt-zipcode-wrapper"><input id="dealt-zipcode-input" name="dealt_zipcode" type="text" '
                         html += 'placeholder="Code postal" inputmode="numeric" pattern="^\\d{5}$" maxlength="5" aria-label="Code postal (5 chiffres)" data-role="zipcode-input" />'
-                        html += '</div>'
-                        html += '<button class="zipcode-check-btn btn btn-secondary" type="button" data-role="zipcode-check-btn">'
-                        html += '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search-icon lucide-search"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>'
-                        html += 'Recherche</button>'
-                        html += '</div>'
+                        html += '<button class="zipcode-search-icon" type="button" data-role="zipcode-check-btn" aria-label="Rechercher">'
+                        html += '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>'
+                        html += '</button>'
+                        html += '</div></div>'
                         html += '</div>'
                         html += '<div data-role="retry-block" class="dealt-retry-box" hidden>'
                         html += '<button type="button" id="dealt-add-service-only" class="btn btn-primary">'
@@ -517,10 +529,6 @@ $(function () {
 
     if($("#cart").length){
 
-        let availables_services_id = [];
-        let all_products_cart_id = [];
-        dealt_cart_services.map((product) => availables_services_id.push(product.service_product_id))
-
         $(".custom-quantity-selector").each(function (){
             if($(this).find("input#quantity_wanted").data('product-id') == localStorage.getItem('dealt_service_product_id')){
                 $(this).css('display', 'none');
@@ -528,22 +536,12 @@ $(function () {
                     $(this).css('display', 'none');
                 });
             }
-            all_products_cart_id.push($(this).find("input#quantity_wanted").data('product-id'))
         })
 
-        const intersection = availables_services_id.filter(element => all_products_cart_id.includes(element));
-
-        const localMatch = all_products_cart_id.includes(parseInt(localStorage.getItem('dealt_service_product_id'), 10));
-
-        if(!intersection.length && !localMatch){
-            $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'none')
-            $(".btn-add.dealt-tva-open-popup").css('background', '#b6c7a8 0% 0% no-repeat padding-box')
-            $("#tva-submit-btn").attr('disabled', true)
-        } else {
-            $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'auto')
-            $(".btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box')
-            $("#tva-submit-btn").attr('disabled', false)
-        }
+        /* Bouton « Ajouter la réduction » toujours actif */
+        $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'auto')
+        $(".btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box')
+        $("#tva-submit-btn").attr('disabled', false)
     }
 
 });
