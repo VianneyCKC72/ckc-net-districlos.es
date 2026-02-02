@@ -254,7 +254,7 @@ body#checkout {
   .cart-grid-body {
     display: flex;
     flex-direction: column;
-    row-gap: 16px;
+    row-gap: 10px;
   }
 
   .checkout-step {
@@ -646,16 +646,6 @@ body#checkout {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-
-  .img-moyens-paiement-summary {
-    max-width: 70px;
-    @media (max-width: 399px) {
-      max-width: 60px;
-    }
-    @media (max-width: 360px) {
-      max-width: 50px;
-    }
-  }
 
   @media (max-width: 430px) {
     flex-wrap: nowrap;
