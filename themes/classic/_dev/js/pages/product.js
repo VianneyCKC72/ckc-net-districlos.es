@@ -95,24 +95,35 @@ $(document).ready(function () {
         checkStock(false, input, direction, differential);
     });
 
+    var updateServiceTimeout = null;
     $('body').on('change', '.js-cart-line-product-quantity', function (event) {
-        let updateServiceProduct = false;
-        let currentProductChangeId = $('.js-cart-line-product-quantity').attr('data-product-id')
+        let $input = $(this);
+        let currentProductChangeId = $input.attr('data-product-id');
 
         let main_product_id = localStorage.getItem('dealt_product_id')
         let main_product_id_attribute = localStorage.getItem('dealt_id_product_attribute')
         let service_product_id = localStorage.getItem('dealt_service_product_id')
 
-        if(currentProductChangeId == main_product_id){
-            if($('.product-line-grid.dealt-service-product').length){
-                if ($('.product-line-grid.dealt-service-product .product-line-info a').attr('data-product-id-dealt') == service_product_id) {
-                    updateServiceProduct = true
+        // Annule le timeout précédent pour éviter les appels multiples
+        if (updateServiceTimeout) {
+            clearTimeout(updateServiceTimeout);
+        }
+
+        // Utilise un debounce pour éviter les appels multiples lors des clics rapides sur +/-
+        updateServiceTimeout = setTimeout(function() {
+            let updateServiceProduct = false;
+
+            if(currentProductChangeId == main_product_id){
+                if($('.product-line-grid.dealt-service-product').length){
+                    if ($('.product-line-grid.dealt-service-product .product-line-info a').attr('data-product-id-dealt') == service_product_id) {
+                        updateServiceProduct = true
+                    }
                 }
             }
-        }
-        if(updateServiceProduct){
-            updateServiceProductInCart(localStorage.getItem('dealt_product_id'), localStorage.getItem('dealt_service_product_id'), $('input[data-product-id='+localStorage.getItem('dealt_product_id')+']').val(), localStorage.getItem('dealt_id_product_attribute'));
-        }
+            if(updateServiceProduct){
+                updateServiceProductInCart(localStorage.getItem('dealt_product_id'), localStorage.getItem('dealt_service_product_id'), $input.val(), localStorage.getItem('dealt_id_product_attribute'));
+            }
+        }, 300); // Délai de 300ms pour regrouper les changements rapides
     });
 
     $('body').on('keyup', '.js-product-quantity', function (event) {
