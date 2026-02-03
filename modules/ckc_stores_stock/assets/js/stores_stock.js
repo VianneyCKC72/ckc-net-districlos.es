@@ -504,11 +504,11 @@ if ($('.delivery-option input').length > 0) {
                     if (resp.data.stocks[i].stock_ok) {
                         image = '<img src="/modules/ckc_stores_stock/assets/img/selectionner.webp" class="unveil-loaded">';
                         statusColor = '#79C046';
-                        statusText = 'en stock';
+                        statusText = 'Disponible en magasin';
                     } else {
                         image = '<img src="/modules/ckc_stores_stock/assets/img/moins.webp" class="unveil-loaded">';
                         statusColor = '#F6AC00';
-                        statusText = 'arrivage en cours';
+                        statusText = 'Forte demande : expédition/retrait sous 10 jours';
                     }
                     
                     $('#stock-summary-content .products').append(
