@@ -68,7 +68,7 @@
                         <span style="color: #ff144e; font-weight: bold;">-{$dynamic_discount_percent}</span>
                     </div>
                 {/if}
-                <div class="price-remise-label">SOLDES : <span class="regular-price">{$product.price}</span>
+                <div class="price-remise-label">PROMOS : <span class="regular-price">{$product.price}</span>
                     {if isset($hard_discount_percent)}
                         <span style="color: #ff144e; font-weight: bold;">-{$hard_discount_percent}%</span>
                     {/if}
