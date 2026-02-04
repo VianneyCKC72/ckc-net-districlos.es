@@ -407,9 +407,15 @@ $(document).ready(function () {
                     // Pour cart_summary_totals, remplacer le contenu du bloc cart-detailed-totals qui contient cart-total
                     // Note: cart_summary_totals contient seulement le contenu du template (les divs avec cart-total), pas le wrapper div
                     var $blockCheckout = $('.block-checkout');
+                    if (!$blockCheckout.length) {
+                        console.warn('block-checkout introuvable');
+                        return;
+                    }
+                    
                     var $totalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
                         return $(this).find('.cart-total').length > 0 && !$(this).hasClass('js-cart-detailed-totals');
                     });
+                    
                     if ($totalTTC.length) {
                         // Remplacer seulement le contenu du wrapper, pas le wrapper lui-même
                         var $wrapper = $totalTTC.first();
@@ -417,15 +423,21 @@ $(document).ready(function () {
                     } else {
                         // Si le bloc n'existe pas, créer le wrapper et ajouter le contenu
                         var $newWrapper = $('<div class="cart-detailed-totals"></div>').html(value);
-                        var $lastCartTotals = $blockCheckout.find('.cart-detailed-totals').last();
-                        if ($lastCartTotals.length) {
-                            $lastCartTotals.after($newWrapper);
+                        
+                        // Trouver le bon endroit pour insérer le bloc total TTC
+                        // Il doit être après le bloc-promo et avant les actions
+                        var $blockPromo = $blockCheckout.find('.block-promo').first();
+                        if ($blockPromo.length) {
+                            // Insérer après le bloc-promo
+                            $blockPromo.after($newWrapper);
                         } else {
-                            // Chercher le bloc-promo pour insérer avant
-                            var $blockPromo = $blockCheckout.find('.block-promo').first();
-                            if ($blockPromo.length) {
-                                $blockPromo.before($newWrapper);
+                            // Si pas de bloc-promo, chercher le dernier cart-detailed-totals (js-cart-detailed-totals)
+                            var $lastCartTotals = $blockCheckout.find('.js-cart-detailed-totals').last();
+                            if ($lastCartTotals.length) {
+                                // Insérer après le dernier cart-detailed-totals
+                                $lastCartTotals.after($newWrapper);
                             } else {
+                                // En dernier recours, ajouter à la fin de block-checkout
                                 $blockCheckout.append($newWrapper);
                             }
                         }
@@ -547,6 +559,51 @@ $(document).ready(function () {
                     window.reinitializePromoForm();
                 }
             }, 100);
+        }
+        
+        // Mettre à jour cart_summary_totals si présent dans la réponse
+        if (event.resp && event.resp.cart_summary_totals) {
+            var $blockCheckout = $('.block-checkout');
+            if (!$blockCheckout.length) return;
+            
+            var $totalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
+                return $(this).find('.cart-total').length > 0 && !$(this).hasClass('js-cart-detailed-totals');
+            });
+            
+            if ($totalTTC.length) {
+                // Remplacer seulement le contenu du wrapper
+                $totalTTC.first().html(event.resp.cart_summary_totals);
+            } else {
+                // Créer le wrapper et insérer le contenu
+                var $newWrapper = $('<div class="cart-detailed-totals"></div>').html(event.resp.cart_summary_totals);
+                var $blockPromo = $blockCheckout.find('.block-promo').first();
+                if ($blockPromo.length) {
+                    // Insérer après le bloc-promo
+                    $blockPromo.after($newWrapper);
+                } else {
+                    // Si pas de bloc-promo, chercher le dernier js-cart-detailed-totals
+                    var $lastCartTotals = $blockCheckout.find('.js-cart-detailed-totals').last();
+                    if ($lastCartTotals.length) {
+                        $lastCartTotals.after($newWrapper);
+                    } else {
+                        // En dernier recours, ajouter à la fin de block-checkout
+                        $blockCheckout.append($newWrapper);
+                    }
+                }
+            }
+        } else if (event.resp && !event.resp.cart_summary_totals) {
+            // Si cart_summary_totals n'est pas dans la réponse, vérifier s'il existe dans le DOM
+            var $blockCheckout = $('.block-checkout');
+            if ($blockCheckout.length) {
+                var $totalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
+                    return $(this).find('.cart-total').length > 0 && !$(this).hasClass('js-cart-detailed-totals');
+                });
+                if ($totalTTC.length === 0) {
+                    // Le bloc total TTC n'existe pas et n'a pas été mis à jour
+                    // Il faudra le restaurer via ensureTotalTTCExists()
+                    console.warn('cart_summary_totals manquant dans la réponse AJAX');
+                }
+            }
         }
         $(".custom-quantity-selector").each(function (){
             if($(this).find("input#quantity_wanted").data('product-id') == localStorage.getItem('dealt_service_product_id')){

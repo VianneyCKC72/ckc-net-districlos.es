@@ -155,19 +155,9 @@ $(document).ready(function () {
                 return !$(this).hasClass('js-cart-detailed-totals');
             });
             
-            // S'assurer qu'il y a au moins un bloc total TTC sans js-cart-detailed-totals
-            if ($totalTTCWithoutJS.length === 0) {
-                // Le bloc total TTC a disparu ou n'existe pas
-                // Vérifier s'il existe dans le DOM mais n'a pas été trouvé
-                var $checkTotalTTC = $blockCheckout.find('.cart-total').closest('.cart-detailed-totals');
-                if ($checkTotalTTC.length && $checkTotalTTC.hasClass('js-cart-detailed-totals')) {
-                    // Le total TTC est dans le mauvais bloc, on ne peut pas le déplacer facilement
-                    console.warn('Le total TTC est dans le bloc js-cart-detailed-totals, ce qui est incorrect');
-                } else if ($checkTotalTTC.length === 0) {
-                    // Le bloc total TTC n'existe vraiment pas
-                    console.warn('Bloc total TTC introuvable dans block-checkout');
-                }
-            }
+            // IMPORTANT: Ne jamais supprimer le bloc total TTC s'il existe
+            // Si on trouve un bloc total TTC sans js-cart-detailed-totals, on le garde
+            // Si on ne le trouve pas, c'est qu'il a été supprimé par erreur ailleurs
         }
 
         function isDesktop() {
@@ -265,19 +255,74 @@ $(document).ready(function () {
         // Fonction pour s'assurer que le bloc total TTC existe toujours
         function ensureTotalTTCExists() {
             var $blockCheckout = $cartSummary.find('.block-checkout');
+            if (!$blockCheckout.length) return;
+            
             var $totalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
                 return $(this).find('.cart-total').length > 0 && !$(this).hasClass('js-cart-detailed-totals');
             });
             
             if ($totalTTC.length === 0) {
-                // Le bloc total TTC n'existe pas, vérifier s'il a été supprimé par erreur
-                var $jsTotals = $blockCheckout.find('.js-cart-detailed-totals');
-                var $blockPromo = $blockCheckout.find('.block-promo').first();
-                
-                // Créer un nouveau bloc total TTC si nécessaire
-                // Note: On ne peut pas restaurer le contenu exact sans refaire une requête AJAX
-                // Mais on peut au moins créer la structure vide pour éviter les erreurs
-                console.warn('Bloc total TTC manquant, il devrait être restauré par la prochaine mise à jour AJAX');
+                // Le bloc total TTC n'existe pas, il faut le restaurer
+                // Faire une requête AJAX pour récupérer le cart_summary_totals
+                var refreshURL = $('.blockcart').data('refresh-url') || window.location.href;
+                if (refreshURL) {
+                    $.ajax({
+                        url: refreshURL,
+                        type: 'POST',
+                        data: {
+                            ajax: 1,
+                            action: 'refresh'
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response && response.cart_summary_totals) {
+                                // Créer le wrapper et insérer le contenu
+                                var $newWrapper = $('<div class="cart-detailed-totals"></div>').html(response.cart_summary_totals);
+                                var $blockPromo = $blockCheckout.find('.block-promo').first();
+                                if ($blockPromo.length) {
+                                    $blockPromo.after($newWrapper);
+                                } else {
+                                    var $lastCartTotals = $blockCheckout.find('.js-cart-detailed-totals').last();
+                                    if ($lastCartTotals.length) {
+                                        $lastCartTotals.after($newWrapper);
+                                    } else {
+                                        $blockCheckout.append($newWrapper);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    // Essayer d'utiliser l'URL de la page actuelle avec le paramètre ajax
+                    var currentURL = window.location.href.split('?')[0];
+                    $.ajax({
+                        url: currentURL,
+                        type: 'POST',
+                        data: {
+                            ajax: 1,
+                            action: 'refresh',
+                            token: $('input[name="token"]').val() || ''
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response && response.cart_summary_totals) {
+                                // Créer le wrapper et insérer le contenu
+                                var $newWrapper = $('<div class="cart-detailed-totals"></div>').html(response.cart_summary_totals);
+                                var $blockPromo = $blockCheckout.find('.block-promo').first();
+                                if ($blockPromo.length) {
+                                    $blockPromo.after($newWrapper);
+                                } else {
+                                    var $lastCartTotals = $blockCheckout.find('.js-cart-detailed-totals').last();
+                                    if ($lastCartTotals.length) {
+                                        $lastCartTotals.after($newWrapper);
+                                    } else {
+                                        $blockCheckout.append($newWrapper);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
             }
         }
 
