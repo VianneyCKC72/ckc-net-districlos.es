@@ -239,6 +239,52 @@ $(document).ready(function () {
             cleanDuplicateCartDetailedTotals();
         }
 
+        // Fonction pour réinitialiser le formulaire de code promo après mise à jour AJAX
+        // Rendre cette fonction globale pour qu'elle soit accessible depuis d'autres fichiers
+        window.reinitializePromoForm = function() {
+            var $cartSummary = $('.cart-summary');
+            if (!$cartSummary.length) return;
+            
+            var $blockPromo = $cartSummary.find('.block-checkout .block-promo').first();
+            if ($blockPromo.length) {
+                var $promoCollapse = $blockPromo.find('#promoCollapse');
+                var $promoForm = $blockPromo.find('form[data-link-action="add-voucher"]');
+                
+                // S'assurer que le formulaire existe
+                if ($promoForm.length && $promoCollapse.length) {
+                    // Réinitialiser les événements du collapse
+                    $promoCollapse.off('show.bs.collapse hide.bs.collapse');
+                    var $chevron = $blockPromo.find('.chevron-toggle svg');
+                    
+                    $promoCollapse.on('show.bs.collapse', function () {
+                        if ($chevron.length) {
+                            $chevron.css('transform', 'rotate(180deg)');
+                        }
+                    });
+                    
+                    $promoCollapse.on('hide.bs.collapse', function () {
+                        if ($chevron.length) {
+                            $chevron.css('transform', 'rotate(0deg)');
+                        }
+                    });
+                    
+                    // Réinitialiser les événements du chevron
+                    $blockPromo.find('.chevron-toggle').off('click');
+                    $blockPromo.find('.chevron-toggle').on('click', function(e) {
+                        e.preventDefault();
+                        $promoCollapse.collapse('toggle');
+                    });
+                    
+                    // Réinitialiser les événements du collapse-toggle
+                    $blockPromo.find('.collapse-toggle').off('click');
+                    $blockPromo.find('.collapse-toggle').on('click', function(e) {
+                        e.preventDefault();
+                        $promoCollapse.collapse('toggle');
+                    });
+                }
+            }
+        };
+
         // Nettoyer les doublons après les mises à jour AJAX du panier
         $(document).ajaxComplete(function(event, xhr, settings) {
             if ($('body').hasClass('page-cart')) {
@@ -255,7 +301,25 @@ $(document).ready(function () {
                     setTimeout(function() {
                         cleanDuplicateCartDetailedTotals();
                         cleanDuplicateBlockPromo();
+                        reinitializePromoForm();
                     }, 150);
+                }
+            }
+        });
+
+        // Intercepter les réponses AJAX pour mettre à jour cart_voucher
+        $(document).ajaxSuccess(function(event, xhr, settings) {
+            if ($('body').hasClass('page-cart')) {
+                try {
+                    var response = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON : JSON.parse(xhr.responseText);
+                    if (response && response.cart_voucher) {
+                        // Le cart_voucher a été mis à jour, réinitialiser le formulaire après
+                        setTimeout(function() {
+                            reinitializePromoForm();
+                        }, 100);
+                    }
+                } catch(e) {
+                    // Pas une réponse JSON, ignorer
                 }
             }
         });
@@ -267,6 +331,7 @@ $(document).ready(function () {
                     setTimeout(function() {
                         cleanDuplicateCartDetailedTotals();
                         cleanDuplicateBlockPromo();
+                        reinitializePromoForm();
                     }, 200);
                 }
             });

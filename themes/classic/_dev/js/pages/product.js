@@ -372,7 +372,8 @@ $(document).ready(function () {
                 'cart_summary_top': '.js-cart-summary-top',
                 'cart_summary_totals': '.cart-summary-totals',
                 'cart_promos': '.cart-promos',
-                'cart_footer_dealt': '.dealt-cart-services-container'
+                'cart_footer_dealt': '.dealt-cart-services-container',
+                'cart_voucher': '.block-promo'
             };
             if (key in selectorMap && value) {
                 var $target = $(selectorMap[key]);
@@ -381,6 +382,27 @@ $(document).ready(function () {
                     $target.first().replaceWith(value);
                     // Supprimer les autres doublons
                     $target.slice(1).remove();
+                } else if (key === 'cart_voucher') {
+                    // Pour cart_voucher, remplacer le bloc-promo dans block-checkout
+                    var $blockCheckout = $('.block-checkout');
+                    var $blockPromo = $blockCheckout.find('.block-promo').first();
+                    if ($blockPromo.length) {
+                        $blockPromo.replaceWith(value);
+                    } else {
+                        // Si le bloc promo n'existe pas, l'ajouter après le dernier cart-detailed-totals
+                        var $lastCartTotals = $blockCheckout.find('.cart-detailed-totals').last();
+                        if ($lastCartTotals.length) {
+                            $lastCartTotals.after(value);
+                        } else {
+                            $blockCheckout.append(value);
+                        }
+                    }
+                    // Réinitialiser le formulaire après remplacement
+                    setTimeout(function() {
+                        if (typeof window.reinitializePromoForm === 'function') {
+                            window.reinitializePromoForm();
+                        }
+                    }, 100);
                 } else {
                     $target.replaceWith(value);
                 }
@@ -476,6 +498,28 @@ $(document).ready(function () {
         }
         if (typeof $(".dealt-cart-services-container") !== "undefined") {
             $(".dealt-cart-services-container").replaceWith(event.resp.cart_footer_dealt)
+        }
+        // Mettre à jour cart_voucher si présent dans la réponse
+        if (event.resp && event.resp.cart_voucher) {
+            var $blockCheckout = $('.block-checkout');
+            var $blockPromo = $blockCheckout.find('.block-promo').first();
+            if ($blockPromo.length) {
+                $blockPromo.replaceWith(event.resp.cart_voucher);
+            } else {
+                // Si le bloc promo n'existe pas, l'ajouter après le dernier cart-detailed-totals
+                var $lastCartTotals = $blockCheckout.find('.cart-detailed-totals').last();
+                if ($lastCartTotals.length) {
+                    $lastCartTotals.after(event.resp.cart_voucher);
+                } else {
+                    $blockCheckout.append(event.resp.cart_voucher);
+                }
+            }
+            // Réinitialiser le formulaire après remplacement
+            setTimeout(function() {
+                if (typeof window.reinitializePromoForm === 'function') {
+                    window.reinitializePromoForm();
+                }
+            }, 100);
         }
         $(".custom-quantity-selector").each(function (){
             if($(this).find("input#quantity_wanted").data('product-id') == localStorage.getItem('dealt_service_product_id')){
