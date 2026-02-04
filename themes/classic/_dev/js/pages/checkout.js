@@ -120,6 +120,33 @@ $(document).ready(function () {
             }
         }
 
+        // Fonction pour nettoyer les doublons de cart-detailed-totals
+        function cleanDuplicateCartDetailedTotals() {
+            var $blockCheckout = $cartSummary.find('.block-checkout');
+            
+            // Il ne doit y avoir qu'un seul .js-cart-detailed-totals (celui avec les subtotaux)
+            var $jsCartDetailedTotals = $blockCheckout.find('.js-cart-detailed-totals');
+            if ($jsCartDetailedTotals.length > 1) {
+                // Garder seulement le premier et supprimer les autres
+                $jsCartDetailedTotals.slice(1).remove();
+            }
+            
+            // S'assurer qu'il n'y a qu'un seul cart-detailed-totals avec js- dans block-checkout
+            var $allCartDetailedTotals = $blockCheckout.find('.cart-detailed-totals');
+            var $jsTotals = $allCartDetailedTotals.filter('.js-cart-detailed-totals');
+            var $totalTTC = $allCartDetailedTotals.filter(function() {
+                return $(this).find('.cart-total').length > 0;
+            });
+            
+            // Il doit y avoir exactement 1 js-cart-detailed-totals et 1 avec cart-total
+            if ($jsTotals.length > 1) {
+                $jsTotals.slice(1).remove();
+            }
+            if ($totalTTC.length > 1) {
+                $totalTTC.slice(1).remove();
+            }
+        }
+
         function isDesktop() {
             return $(window).width() >= 992;
         }
@@ -209,6 +236,40 @@ $(document).ready(function () {
             
             // Nettoyer à nouveau après réinsertion pour être sûr
             cleanDuplicateBlockPromo();
+            cleanDuplicateCartDetailedTotals();
+        }
+
+        // Nettoyer les doublons après les mises à jour AJAX du panier
+        $(document).ajaxComplete(function(event, xhr, settings) {
+            if ($('body').hasClass('page-cart')) {
+                // Vérifier si c'est une requête liée au panier
+                var isCartRequest = false;
+                if (settings.url && (settings.url.includes('panier') || settings.url.includes('cart') || settings.url.includes('ajax=1'))) {
+                    isCartRequest = true;
+                }
+                if (settings.data && (settings.data.includes('addDiscount') || settings.data.includes('add-voucher') || settings.data.includes('deleteDiscount'))) {
+                    isCartRequest = true;
+                }
+                
+                if (isCartRequest) {
+                    setTimeout(function() {
+                        cleanDuplicateCartDetailedTotals();
+                        cleanDuplicateBlockPromo();
+                    }, 150);
+                }
+            }
+        });
+
+        // Écouter aussi les événements PrestaShop
+        if (typeof prestashop !== 'undefined') {
+            prestashop.on('updatedCart', function(event) {
+                if ($('body').hasClass('page-cart')) {
+                    setTimeout(function() {
+                        cleanDuplicateCartDetailedTotals();
+                        cleanDuplicateBlockPromo();
+                    }, 200);
+                }
+            });
         }
     }
 

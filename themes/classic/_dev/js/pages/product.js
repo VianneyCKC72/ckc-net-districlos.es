@@ -375,7 +375,15 @@ $(document).ready(function () {
                 'cart_footer_dealt': '.dealt-cart-services-container'
             };
             if (key in selectorMap && value) {
-                $(selectorMap[key]).replaceWith(value);
+                var $target = $(selectorMap[key]);
+                // Pour cart_detailed_totals, s'assurer qu'on ne remplace que le premier élément
+                if (key === 'cart_detailed_totals' && $target.length > 1) {
+                    $target.first().replaceWith(value);
+                    // Supprimer les autres doublons
+                    $target.slice(1).remove();
+                } else {
+                    $target.replaceWith(value);
+                }
             }
         });
 
