@@ -370,7 +370,7 @@ $(document).ready(function () {
                 'cart_summary_products': '.js-cart-summary-products',
                 'cart_summary_subtotals_container': '.js-cart-summary-subtotals-container',
                 'cart_summary_top': '.js-cart-summary-top',
-                'cart_summary_totals': '.cart-summary-totals',
+                'cart_summary_totals': '.cart-detailed-totals:has(.cart-total):not(.js-cart-detailed-totals)',
                 'cart_promos': '.cart-promos',
                 'cart_footer_dealt': '.dealt-cart-services-container',
                 'cart_voucher': '.block-promo'
@@ -403,6 +403,24 @@ $(document).ready(function () {
                             window.reinitializePromoForm();
                         }
                     }, 100);
+                } else if (key === 'cart_summary_totals') {
+                    // Pour cart_summary_totals, remplacer le bloc cart-detailed-totals qui contient cart-total
+                    var $blockCheckout = $('.block-checkout');
+                    var $totalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
+                        return $(this).find('.cart-total').length > 0 && !$(this).hasClass('js-cart-detailed-totals');
+                    });
+                    if ($totalTTC.length) {
+                        // Remplacer le premier bloc trouvé
+                        $totalTTC.first().replaceWith(value);
+                    } else {
+                        // Si le bloc n'existe pas, l'ajouter après le dernier cart-detailed-totals
+                        var $lastCartTotals = $blockCheckout.find('.cart-detailed-totals').last();
+                        if ($lastCartTotals.length) {
+                            $lastCartTotals.after(value);
+                        } else {
+                            $blockCheckout.append(value);
+                        }
+                    }
                 } else {
                     $target.replaceWith(value);
                 }

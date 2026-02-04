@@ -135,15 +135,31 @@ $(document).ready(function () {
             var $allCartDetailedTotals = $blockCheckout.find('.cart-detailed-totals');
             var $jsTotals = $allCartDetailedTotals.filter('.js-cart-detailed-totals');
             var $totalTTC = $allCartDetailedTotals.filter(function() {
-                return $(this).find('.cart-total').length > 0;
+                return $(this).find('.cart-total').length > 0 && !$(this).hasClass('js-cart-detailed-totals');
             });
             
-            // Il doit y avoir exactement 1 js-cart-detailed-totals et 1 avec cart-total
+            // Il doit y avoir exactement 1 js-cart-detailed-totals et 1 avec cart-total (sans js-)
             if ($jsTotals.length > 1) {
                 $jsTotals.slice(1).remove();
             }
             if ($totalTTC.length > 1) {
+                // Garder seulement le premier bloc avec cart-total
                 $totalTTC.slice(1).remove();
+            }
+            
+            // S'assurer qu'il y a toujours un bloc avec cart-total (sans js-cart-detailed-totals)
+            // Ne pas supprimer le bloc total TTC s'il existe
+            var $allTotalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
+                return $(this).find('.cart-total').length > 0;
+            });
+            var $totalTTCWithoutJS = $allTotalTTC.filter(function() {
+                return !$(this).hasClass('js-cart-detailed-totals');
+            });
+            
+            // S'assurer qu'il y a au moins un bloc total TTC sans js-cart-detailed-totals
+            if ($totalTTCWithoutJS.length === 0 && $allTotalTTC.length > 0) {
+                // Le bloc total TTC existe mais a la classe js-cart-detailed-totals, ce qui est incorrect
+                // On ne peut pas le corriger ici, mais on peut au moins s'assurer qu'il n'est pas supprimé
             }
         }
 
