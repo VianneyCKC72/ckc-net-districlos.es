@@ -78,11 +78,12 @@
                             {block name='cart_totals'}
                                 {include file='checkout/_partials/cart-detailed-totals.tpl' cart=$cart}
                             {/block}
-                            {hook h='displayAfterCartDetailedActions'}
 
                             {if file_exists($smarty.const._PS_MODULE_DIR_|cat:'ckc_shipping_estimator/views/templates/front/cart/shipping_estimator.tpl')}
                                 {include file="module:ckc_shipping_estimator/views/templates/front/cart/shipping_estimator.tpl"}
                             {/if}
+
+                            {hook h='displayAfterCartDetailedActions'}
 
                             {block name='cart_voucher'}
                                 {include file='checkout/_partials/cart-voucher.tpl'}

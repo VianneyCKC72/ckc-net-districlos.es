@@ -228,6 +228,16 @@
   .block-promo .cart-voucher .promo-name {
     display: none;
   }
+
+  // Styles pour le bloc cart-promos
+  .checkout.cart-promos.js-cart-promos.card-block {
+    margin-top: 1rem;
+    padding: 10px;
+    border: 1px solid #FF285A;
+    border-radius: 9px;
+    font-size: 15px;
+    color: #FF285A;
+  }
 }
 
 .payment-methods__listing {
