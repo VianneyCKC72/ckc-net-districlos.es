@@ -6,14 +6,6 @@
     align-content: center;
   }
 
-  .header-logo-and-buttons {
-    gap: 50px;
-  }
-
-  .header-buttons-menu-soldes {
-    gap: 8px;
-  }
-
   .cart-products-count {
     background: #ff144e;
     color: #fff;
@@ -70,18 +62,16 @@
 
   .link-danger {
     font-weight: 700;
-    font-size: 14px;
-    line-height: 22px;
+    font-size: 16px;
+    line-height: 25px;
     color: $redLink;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
-    padding: 0.35rem 0.65rem;
     @media only screen and (max-width: 1620px) {
-      font-size: 13px;
-      line-height: 18px;
-      padding: 0.3rem 0.55rem;
+      font-size: 15px;
+      line-height: 19px;
     }
     @media only screen and (max-width: 1292px) {
       display: none;
@@ -119,74 +109,31 @@
     }
   }
 
-  @media (min-width: 993px) {
-    .menu-button .ybc-menu-toggle {
-      background-color: $primary-color;
-      border: none;
-      border-radius: 140px;
-      color: #fff !important;
-      height: 35px;
-      display: flex !important;
-      align-items: center;
-      justify-content: center;
-      min-width: 140px;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-      &:hover,
-      &:focus,
-      &:active {
-        background-color: darken($primary-color, 6%);
-        color: #fff !important;
-      }
-      svg g {
-        stroke: #fff !important;
-      }
-      .hamburger_sticky {
-        display: none;
-      }
-      .main_menu_label {
-        color: #fff;
-      }
-    }
-  }
-
   .btn-configurateur {
-    background-color: $redLink !important;
-    border-color: $redLink !important;
-    &:hover,
-    &:focus,
-    &:active,
-    &.focus,
-    &.active {
-      background-color: darken($redLink, 6%) !important;
-      border-color: darken($redLink, 6%) !important;
-      box-shadow: none !important;
-    }
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 220px;
+    width: 240px;
     text-align: left;
-    height: 44px;
+    height: 50px;
     @media only screen and (max-width: 1620px) {
-      width: 200px;
+      width: 220px;
     }
     @media only screen and (max-width: 1420px) {
       img {
-        width: 22px;
+        width: 25px;
         height: auto;
       }
     }
     @media only screen and (max-width: 1200px) {
-      width: 175px;
-      height: 40px;
+      width: 190px;
       img {
-        width: 18px;
+        width: 20px;
         height: auto;
       }
     }
     @media only screen and (max-width: 1068px) {
-      width: 155px;
+      width: 170px;
     }
     @media only screen and (max-width: 768px) {
       display:none;
@@ -199,27 +146,27 @@
 
       .small-text {
         font-weight: 600;
-        font-size: 11px;
-        line-height: 11px;
+        font-size: 12px;
+        line-height: 12px;
         letter-spacing: 0;
         @media only screen and (max-width: 1420px) {
-          font-size: 9px;
+          font-size: 10px;
         }
         @media only screen and (max-width: 1200px) {
-          font-size: 8px;
+          font-size: 9px;
         }
       }
 
       .medium-text {
         font-weight: 600;
-        font-size: 14px;
-        line-height: 14px;
+        font-size: 16px;
+        line-height: 16px;
         @media only screen and (max-width: 1420px) {
-          font-size: 13px;
+          font-size: 14px;
           font-weight: 700;
         }
         @media only screen and (max-width: 1200px) {
-          font-size: 11px;
+          font-size: 12px;
         }
       }
     }
@@ -235,7 +182,7 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 20px;
+      gap: 30px;
       text-transform: uppercase;
       padding-left: 30px;
       @media only screen and (max-width: 996px) {
@@ -277,7 +224,7 @@
   max-width: 160px;
   width: 160px;
   .logo {
-    max-width: 180px !important;
+    max-width: 160px !important;
   }
   .logo_delimiter {
     width: 1px;
@@ -456,10 +403,6 @@
 .pc_displayNav2_8 {
   display: flex;
   gap: 15px;
-}
-
-#search_widget form input {
-  height: 44px !important;
 }
 
 // Barre de recherche visible par défaut sur desktop

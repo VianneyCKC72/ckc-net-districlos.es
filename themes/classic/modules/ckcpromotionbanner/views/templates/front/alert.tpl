@@ -28,7 +28,7 @@
         <span>
             <div class="container">
                 <div>
-<!--                     {if Context::getContext()->shop->id == 1}
+                    {if Context::getContext()->shop->id == 1}
                         <div class="displayMenu">
                         <a class="link-danger soldes" href="/400-destockage">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
@@ -37,7 +37,7 @@
                             Bons plans
                         </a>
                         </div>
-                    {/if} -->
+                    {/if}
                     {if $env_pro == 1 OR Tools::getValue("ep") == 1}
                         {if isset($ckcpromobarretextsPro) && !empty($ckcpromobarretextsPro)}
                             {if $ckcpromobarretextsPro|@count > 1}
