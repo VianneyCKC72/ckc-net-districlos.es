@@ -17,7 +17,7 @@
     <div class="header-top">
         <div class="row-header d-flex align-items-center">
 
-            <!-- Logo + Nos produits + Soldes (rapprochés du logo) -->
+            <!-- Logo + Nos produits + Promos -->
             <div class="header-logo-and-buttons d-flex align-items-center">
                 <!-- Logo Desktop (Visible seulement à partir de md) -->
                 <div class="d-none d-xl-block">
