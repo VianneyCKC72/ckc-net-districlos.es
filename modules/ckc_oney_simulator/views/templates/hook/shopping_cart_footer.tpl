@@ -1,6 +1,6 @@
 <script type="text/javascript" src="https://assets.oney.io/build/loader.min.js"></script>
 
-{* <div id="financing-discover">
+ <div id="financing-discover">
     <p class="h2">Découvrez nos moyens de financement</p>
     <div class="payment-methods__listing mt-5">
         <div class="payment-method">
@@ -54,7 +54,7 @@
             </p>
         </div>
     </div>
-</div> *}
+</div>
 
 <div class="mt-5 w-lg-75" id="financing-choice">
     <div class="d-flex flex-wrap align-items-center gap-16">
