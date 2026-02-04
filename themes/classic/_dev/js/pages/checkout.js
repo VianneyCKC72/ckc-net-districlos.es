@@ -110,6 +110,16 @@ $(document).ready(function () {
         var $blockPromo = null;
         var $h3 = null;
 
+        // Fonction pour nettoyer les doublons de bloc promo
+        function cleanDuplicateBlockPromo() {
+            var $blockCheckout = $cartSummary.find('.block-checkout');
+            var $blockPromos = $blockCheckout.find('.block-promo');
+            if ($blockPromos.length > 1) {
+                // Garder seulement le premier et supprimer les autres
+                $blockPromos.slice(1).remove();
+            }
+        }
+
         function isDesktop() {
             return $(window).width() >= 992;
         }
@@ -148,34 +158,57 @@ $(document).ready(function () {
         });
 
         function applySticky() {
+            if (isSticky) return; // Éviter les appels multiples
             isSticky = true;
             $cartSummary.addClass('sticky-summary');
 
             $moyenPaiement = $cartSummary.find('.moyen_de_paiement').detach();
-            $blockPromo = $cartSummary.find('.block-promo').detach();
+            // Ne détacher que le bloc promo qui est dans block-checkout, pas celui dans cart-detailed-totals
+            var $blockPromoInCheckout = $cartSummary.find('.block-checkout .block-promo').first();
+            if ($blockPromoInCheckout.length) {
+                $blockPromo = $blockPromoInCheckout.detach();
+            }
             $h3 = $cartSummary.find('h3').detach();
         }
 
         function removeSticky() {
+            if (!isSticky) return; // Éviter les appels multiples
             isSticky = false;
             $cartSummary.removeClass('sticky-summary');
 
             var $inside = $cartSummary.find('.cart-summary-inside');
+            var $blockCheckout = $inside.find('.block-checkout');
 
-            var $cartDetailedTotals = $inside.find(".cart-detailed-totals");
+            // Nettoyer les doublons avant de réinsérer
+            cleanDuplicateBlockPromo();
 
-            if ($h3) {
+            if ($h3 && $h3.length) {
                 $inside.prepend($h3);
                 $h3 = null;
             }
-            if ($blockPromo && !$(".cart-summary .cart-detailed-totals .block-promo").length) {
-                $cartDetailedTotals.append($blockPromo);
+            // Réinsérer le bloc promo dans block-checkout, après le total TTC, seulement s'il n'existe pas déjà
+            if ($blockPromo && $blockPromo.length) {
+                var $existingBlockPromo = $blockCheckout.find('.block-promo');
+                if ($existingBlockPromo.length === 0) {
+                    var $cartDetailedTotals = $blockCheckout.find(".cart-detailed-totals").last();
+                    if ($cartDetailedTotals.length) {
+                        $cartDetailedTotals.after($blockPromo);
+                    } else {
+                        $blockCheckout.append($blockPromo);
+                    }
+                } else {
+                    // Si un bloc promo existe déjà, supprimer celui qu'on a détaché pour éviter les doublons
+                    $blockPromo.remove();
+                }
                 $blockPromo = null;
             }
-            if ($moyenPaiement) {
+            if ($moyenPaiement && $moyenPaiement.length) {
                 $inside.append($moyenPaiement);
                 $moyenPaiement = null;
             }
+            
+            // Nettoyer à nouveau après réinsertion pour être sûr
+            cleanDuplicateBlockPromo();
         }
     }
 
