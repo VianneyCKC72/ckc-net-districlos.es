@@ -65,7 +65,7 @@
                                 <span>
                                     {$productStock.product_name}<br>
                                     <small style="color: {if $productStock.stock_ok}#79C046{else}#F6AC00{/if}; font-size: 11px;">
-                                        {if $productStock.stock_ok}en stock{else}arrivage en cours{/if}
+                                        {if $productStock.stock_ok}Disponible en magasin{else}Forte demande : expédition/retrait sous 10 jours{/if}
                                     </small>
                                 </span>
                             </p>
