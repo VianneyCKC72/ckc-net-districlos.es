@@ -226,15 +226,31 @@ $(document).ready(function () {
                 $inside.prepend($h3);
                 $h3 = null;
             }
-            // Réinsérer le bloc promo dans block-checkout, après le total TTC, seulement s'il n'existe pas déjà
+            // Réinsérer le bloc promo dans block-checkout, AVANT le total TTC, seulement s'il n'existe pas déjà
             if ($blockPromo && $blockPromo.length) {
                 var $existingBlockPromo = $blockCheckout.find('.block-promo');
                 if ($existingBlockPromo.length === 0) {
-                    var $cartDetailedTotals = $blockCheckout.find(".cart-detailed-totals").last();
-                    if ($cartDetailedTotals.length) {
-                        $cartDetailedTotals.after($blockPromo);
+                    // Trouver le bloc total TTC (celui avec cart-total mais sans js-cart-detailed-totals)
+                    var $totalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
+                        return $(this).find('.cart-total').length > 0 && !$(this).hasClass('js-cart-detailed-totals');
+                    });
+                    if ($totalTTC.length) {
+                        // Insérer le bloc promo AVANT le total TTC (ordre correct selon le template)
+                        $totalTTC.first().before($blockPromo);
                     } else {
-                        $blockCheckout.append($blockPromo);
+                        // Si pas de total TTC, chercher le dernier cart-detailed-totals (js-cart-detailed-totals)
+                        var $lastCartTotals = $blockCheckout.find(".js-cart-detailed-totals").last();
+                        if ($lastCartTotals.length) {
+                            // Chercher le bloc cart-promos pour insérer après
+                            var $cartPromos = $blockCheckout.find('.cart-promos').last();
+                            if ($cartPromos.length) {
+                                $cartPromos.after($blockPromo);
+                            } else {
+                                $lastCartTotals.after($blockPromo);
+                            }
+                        } else {
+                            $blockCheckout.append($blockPromo);
+                        }
                     }
                 } else {
                     // Si un bloc promo existe déjà, supprimer celui qu'on a détaché pour éviter les doublons
