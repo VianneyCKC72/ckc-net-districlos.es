@@ -110,6 +110,56 @@ $(document).ready(function () {
         var $blockPromo = null;
         var $h3 = null;
 
+        // Fonction pour nettoyer les doublons de bloc promo
+        function cleanDuplicateBlockPromo() {
+            var $blockCheckout = $cartSummary.find('.block-checkout');
+            var $blockPromos = $blockCheckout.find('.block-promo');
+            if ($blockPromos.length > 1) {
+                // Garder seulement le premier et supprimer les autres
+                $blockPromos.slice(1).remove();
+            }
+        }
+
+        // Fonction pour nettoyer les doublons de cart-detailed-totals
+        function cleanDuplicateCartDetailedTotals() {
+            var $blockCheckout = $cartSummary.find('.block-checkout');
+            
+            // Il ne doit y avoir qu'un seul .js-cart-detailed-totals (celui avec les subtotaux)
+            var $jsCartDetailedTotals = $blockCheckout.find('.js-cart-detailed-totals');
+            if ($jsCartDetailedTotals.length > 1) {
+                // Garder seulement le premier et supprimer les autres
+                $jsCartDetailedTotals.slice(1).remove();
+            }
+            
+            // S'assurer qu'il n'y a qu'un seul cart-detailed-totals avec js- dans block-checkout
+            var $allCartDetailedTotals = $blockCheckout.find('.cart-detailed-totals');
+            var $jsTotals = $allCartDetailedTotals.filter('.js-cart-detailed-totals');
+            var $totalTTC = $allCartDetailedTotals.filter(function() {
+                return $(this).find('.cart-total').length > 0 && !$(this).hasClass('js-cart-detailed-totals');
+            });
+            
+            // Il doit y avoir exactement 1 js-cart-detailed-totals et 1 avec cart-total (sans js-)
+            if ($jsTotals.length > 1) {
+                $jsTotals.slice(1).remove();
+            }
+            if ($totalTTC.length > 1) {
+                // Garder seulement le premier bloc avec cart-total
+                $totalTTC.slice(1).remove();
+            }
+            
+            // S'assurer qu'il y a toujours un bloc avec cart-total (sans js-cart-detailed-totals)
+            var $allTotalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
+                return $(this).find('.cart-total').length > 0;
+            });
+            var $totalTTCWithoutJS = $allTotalTTC.filter(function() {
+                return !$(this).hasClass('js-cart-detailed-totals');
+            });
+            
+            // IMPORTANT: Ne jamais supprimer le bloc total TTC s'il existe
+            // Si on trouve un bloc total TTC sans js-cart-detailed-totals, on le garde
+            // Si on ne le trouve pas, c'est qu'il a été supprimé par erreur ailleurs
+        }
+
         function isDesktop() {
             return $(window).width() >= 992;
         }
@@ -148,34 +198,250 @@ $(document).ready(function () {
         });
 
         function applySticky() {
+            if (isSticky) return; // Éviter les appels multiples
             isSticky = true;
             $cartSummary.addClass('sticky-summary');
 
             $moyenPaiement = $cartSummary.find('.moyen_de_paiement').detach();
-            $blockPromo = $cartSummary.find('.block-promo').detach();
+            // Ne détacher que le bloc promo qui est dans block-checkout, pas celui dans cart-detailed-totals
+            var $blockPromoInCheckout = $cartSummary.find('.block-checkout .block-promo').first();
+            if ($blockPromoInCheckout.length) {
+                $blockPromo = $blockPromoInCheckout.detach();
+            }
             $h3 = $cartSummary.find('h3').detach();
         }
 
         function removeSticky() {
+            if (!isSticky) return; // Éviter les appels multiples
             isSticky = false;
             $cartSummary.removeClass('sticky-summary');
 
             var $inside = $cartSummary.find('.cart-summary-inside');
+            var $blockCheckout = $inside.find('.block-checkout');
 
-            var $cartDetailedTotals = $inside.find(".cart-detailed-totals");
+            // Nettoyer les doublons avant de réinsérer
+            cleanDuplicateBlockPromo();
 
-            if ($h3) {
+            if ($h3 && $h3.length) {
                 $inside.prepend($h3);
                 $h3 = null;
             }
-            if ($blockPromo && !$(".cart-summary .cart-detailed-totals .block-promo").length) {
-                $cartDetailedTotals.append($blockPromo);
+            // Réinsérer le bloc promo dans block-checkout, AVANT le total TTC, seulement s'il n'existe pas déjà
+            if ($blockPromo && $blockPromo.length) {
+                var $existingBlockPromo = $blockCheckout.find('.block-promo');
+                if ($existingBlockPromo.length === 0) {
+                    // Trouver le bloc total TTC (celui avec cart-total mais sans js-cart-detailed-totals)
+                    var $totalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
+                        return $(this).find('.cart-total').length > 0 && !$(this).hasClass('js-cart-detailed-totals');
+                    });
+                    if ($totalTTC.length) {
+                        // Insérer le bloc promo AVANT le total TTC (ordre correct selon le template)
+                        $totalTTC.first().before($blockPromo);
+                    } else {
+                        // Si pas de total TTC, chercher le dernier cart-detailed-totals (js-cart-detailed-totals)
+                        var $lastCartTotals = $blockCheckout.find(".js-cart-detailed-totals").last();
+                        if ($lastCartTotals.length) {
+                            // Chercher le bloc cart-promos pour insérer après
+                            var $cartPromos = $blockCheckout.find('.cart-promos').last();
+                            if ($cartPromos.length) {
+                                $cartPromos.after($blockPromo);
+                            } else {
+                                $lastCartTotals.after($blockPromo);
+                            }
+                        } else {
+                            $blockCheckout.append($blockPromo);
+                        }
+                    }
+                } else {
+                    // Si un bloc promo existe déjà, supprimer celui qu'on a détaché pour éviter les doublons
+                    $blockPromo.remove();
+                }
                 $blockPromo = null;
             }
-            if ($moyenPaiement) {
+            if ($moyenPaiement && $moyenPaiement.length) {
                 $inside.append($moyenPaiement);
                 $moyenPaiement = null;
             }
+            
+            // Nettoyer à nouveau après réinsertion pour être sûr
+            cleanDuplicateBlockPromo();
+            cleanDuplicateCartDetailedTotals();
+        }
+
+        // Fonction pour s'assurer que le bloc total TTC existe toujours
+        function ensureTotalTTCExists() {
+            var $blockCheckout = $cartSummary.find('.block-checkout');
+            if (!$blockCheckout.length) return;
+            
+            var $totalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
+                return $(this).find('.cart-total').length > 0 && !$(this).hasClass('js-cart-detailed-totals');
+            });
+            
+            if ($totalTTC.length === 0) {
+                // Le bloc total TTC n'existe pas, il faut le restaurer
+                // Faire une requête AJAX pour récupérer le cart_summary_totals
+                var refreshURL = $('.blockcart').data('refresh-url') || window.location.href;
+                if (refreshURL) {
+                    $.ajax({
+                        url: refreshURL,
+                        type: 'POST',
+                        data: {
+                            ajax: 1,
+                            action: 'refresh'
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response && response.cart_summary_totals) {
+                                // Créer le wrapper et insérer le contenu
+                                var $newWrapper = $('<div class="cart-detailed-totals"></div>').html(response.cart_summary_totals);
+                                var $blockPromo = $blockCheckout.find('.block-promo').first();
+                                if ($blockPromo.length) {
+                                    $blockPromo.after($newWrapper);
+                                } else {
+                                    var $lastCartTotals = $blockCheckout.find('.js-cart-detailed-totals').last();
+                                    if ($lastCartTotals.length) {
+                                        $lastCartTotals.after($newWrapper);
+                                    } else {
+                                        $blockCheckout.append($newWrapper);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    // Essayer d'utiliser l'URL de la page actuelle avec le paramètre ajax
+                    var currentURL = window.location.href.split('?')[0];
+                    $.ajax({
+                        url: currentURL,
+                        type: 'POST',
+                        data: {
+                            ajax: 1,
+                            action: 'refresh',
+                            token: $('input[name="token"]').val() || ''
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response && response.cart_summary_totals) {
+                                // Créer le wrapper et insérer le contenu
+                                var $newWrapper = $('<div class="cart-detailed-totals"></div>').html(response.cart_summary_totals);
+                                var $blockPromo = $blockCheckout.find('.block-promo').first();
+                                if ($blockPromo.length) {
+                                    $blockPromo.after($newWrapper);
+                                } else {
+                                    var $lastCartTotals = $blockCheckout.find('.js-cart-detailed-totals').last();
+                                    if ($lastCartTotals.length) {
+                                        $lastCartTotals.after($newWrapper);
+                                    } else {
+                                        $blockCheckout.append($newWrapper);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        // Fonction pour réinitialiser le formulaire de code promo après mise à jour AJAX
+        // Rendre cette fonction globale pour qu'elle soit accessible depuis d'autres fichiers
+        window.reinitializePromoForm = function() {
+            var $cartSummary = $('.cart-summary');
+            if (!$cartSummary.length) return;
+            
+            var $blockPromo = $cartSummary.find('.block-checkout .block-promo').first();
+            if ($blockPromo.length) {
+                var $promoCollapse = $blockPromo.find('#promoCollapse');
+                var $promoForm = $blockPromo.find('form[data-link-action="add-voucher"]');
+                
+                // S'assurer que le formulaire existe
+                if ($promoForm.length && $promoCollapse.length) {
+                    // Réinitialiser les événements du collapse
+                    $promoCollapse.off('show.bs.collapse hide.bs.collapse');
+                    var $chevron = $blockPromo.find('.chevron-toggle svg');
+                    
+                    $promoCollapse.on('show.bs.collapse', function () {
+                        if ($chevron.length) {
+                            $chevron.css('transform', 'rotate(180deg)');
+                        }
+                    });
+                    
+                    $promoCollapse.on('hide.bs.collapse', function () {
+                        if ($chevron.length) {
+                            $chevron.css('transform', 'rotate(0deg)');
+                        }
+                    });
+                    
+                    // Réinitialiser les événements du chevron
+                    $blockPromo.find('.chevron-toggle').off('click');
+                    $blockPromo.find('.chevron-toggle').on('click', function(e) {
+                        e.preventDefault();
+                        $promoCollapse.collapse('toggle');
+                    });
+                    
+                    // Réinitialiser les événements du collapse-toggle
+                    $blockPromo.find('.collapse-toggle').off('click');
+                    $blockPromo.find('.collapse-toggle').on('click', function(e) {
+                        e.preventDefault();
+                        $promoCollapse.collapse('toggle');
+                    });
+                }
+            }
+        };
+
+        // Nettoyer les doublons après les mises à jour AJAX du panier
+        $(document).ajaxComplete(function(event, xhr, settings) {
+            if ($('body').hasClass('page-cart')) {
+                // Vérifier si c'est une requête liée au panier
+                var isCartRequest = false;
+                if (settings.url && (settings.url.includes('panier') || settings.url.includes('cart') || settings.url.includes('ajax=1'))) {
+                    isCartRequest = true;
+                }
+                if (settings.data && (settings.data.includes('addDiscount') || settings.data.includes('add-voucher') || settings.data.includes('deleteDiscount'))) {
+                    isCartRequest = true;
+                }
+                
+                if (isCartRequest) {
+                    setTimeout(function() {
+                        cleanDuplicateCartDetailedTotals();
+                        cleanDuplicateBlockPromo();
+                        reinitializePromoForm();
+                        // S'assurer que le bloc total TTC existe toujours
+                        ensureTotalTTCExists();
+                    }, 150);
+                }
+            }
+        });
+
+        // Intercepter les réponses AJAX pour mettre à jour cart_voucher
+        $(document).ajaxSuccess(function(event, xhr, settings) {
+            if ($('body').hasClass('page-cart')) {
+                try {
+                    var response = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON : JSON.parse(xhr.responseText);
+                    if (response && response.cart_voucher) {
+                        // Le cart_voucher a été mis à jour, réinitialiser le formulaire après
+                        setTimeout(function() {
+                            reinitializePromoForm();
+                        }, 100);
+                    }
+                } catch(e) {
+                    // Pas une réponse JSON, ignorer
+                }
+            }
+        });
+
+        // Écouter aussi les événements PrestaShop
+        if (typeof prestashop !== 'undefined') {
+            prestashop.on('updatedCart', function(event) {
+                if ($('body').hasClass('page-cart')) {
+                    setTimeout(function() {
+                        cleanDuplicateCartDetailedTotals();
+                        cleanDuplicateBlockPromo();
+                        reinitializePromoForm();
+                        // S'assurer que le bloc total TTC existe toujours
+                        ensureTotalTTCExists();
+                    }, 200);
+                }
+            });
         }
     }
 

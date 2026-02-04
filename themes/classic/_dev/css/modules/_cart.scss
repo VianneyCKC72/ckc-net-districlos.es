@@ -170,8 +170,6 @@
   }
 
   .cart-detailed-totals {
-    margin-bottom: 24px;
-
     .cart-summary-line {
       display: flex;
       justify-content: space-between;
@@ -222,6 +220,27 @@
 
       &:focus {
         outline: none;
+      }
+    }
+  }
+
+  // Masquer le bloc promo-name dans le bloc code promo (il est déjà affiché dans les subtotaux)
+  .block-promo .cart-voucher .promo-name {
+    display: none;
+  }
+
+  // Styles pour le bloc cart-promos
+  .checkout.cart-promos.js-cart-promos.card-block {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 10px;
+    border: 1px solid #FF285A;
+    border-radius: 9px;
+    font-size: 15px;
+
+    > div {
+      p {
+        margin: 0;
       }
     }
   }
