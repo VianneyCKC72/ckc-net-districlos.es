@@ -404,21 +404,30 @@ $(document).ready(function () {
                         }
                     }, 100);
                 } else if (key === 'cart_summary_totals') {
-                    // Pour cart_summary_totals, remplacer le bloc cart-detailed-totals qui contient cart-total
+                    // Pour cart_summary_totals, remplacer le contenu du bloc cart-detailed-totals qui contient cart-total
+                    // Note: cart_summary_totals contient seulement le contenu du template (les divs avec cart-total), pas le wrapper div
                     var $blockCheckout = $('.block-checkout');
                     var $totalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
                         return $(this).find('.cart-total').length > 0 && !$(this).hasClass('js-cart-detailed-totals');
                     });
                     if ($totalTTC.length) {
-                        // Remplacer le premier bloc trouvé
-                        $totalTTC.first().replaceWith(value);
+                        // Remplacer seulement le contenu du wrapper, pas le wrapper lui-même
+                        var $wrapper = $totalTTC.first();
+                        $wrapper.html(value);
                     } else {
-                        // Si le bloc n'existe pas, l'ajouter après le dernier cart-detailed-totals
+                        // Si le bloc n'existe pas, créer le wrapper et ajouter le contenu
+                        var $newWrapper = $('<div class="cart-detailed-totals"></div>').html(value);
                         var $lastCartTotals = $blockCheckout.find('.cart-detailed-totals').last();
                         if ($lastCartTotals.length) {
-                            $lastCartTotals.after(value);
+                            $lastCartTotals.after($newWrapper);
                         } else {
-                            $blockCheckout.append(value);
+                            // Chercher le bloc-promo pour insérer avant
+                            var $blockPromo = $blockCheckout.find('.block-promo').first();
+                            if ($blockPromo.length) {
+                                $blockPromo.before($newWrapper);
+                            } else {
+                                $blockCheckout.append($newWrapper);
+                            }
                         }
                     }
                 } else {

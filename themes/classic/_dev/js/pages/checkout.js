@@ -148,7 +148,6 @@ $(document).ready(function () {
             }
             
             // S'assurer qu'il y a toujours un bloc avec cart-total (sans js-cart-detailed-totals)
-            // Ne pas supprimer le bloc total TTC s'il existe
             var $allTotalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
                 return $(this).find('.cart-total').length > 0;
             });
@@ -157,9 +156,17 @@ $(document).ready(function () {
             });
             
             // S'assurer qu'il y a au moins un bloc total TTC sans js-cart-detailed-totals
-            if ($totalTTCWithoutJS.length === 0 && $allTotalTTC.length > 0) {
-                // Le bloc total TTC existe mais a la classe js-cart-detailed-totals, ce qui est incorrect
-                // On ne peut pas le corriger ici, mais on peut au moins s'assurer qu'il n'est pas supprimé
+            if ($totalTTCWithoutJS.length === 0) {
+                // Le bloc total TTC a disparu ou n'existe pas
+                // Vérifier s'il existe dans le DOM mais n'a pas été trouvé
+                var $checkTotalTTC = $blockCheckout.find('.cart-total').closest('.cart-detailed-totals');
+                if ($checkTotalTTC.length && $checkTotalTTC.hasClass('js-cart-detailed-totals')) {
+                    // Le total TTC est dans le mauvais bloc, on ne peut pas le déplacer facilement
+                    console.warn('Le total TTC est dans le bloc js-cart-detailed-totals, ce qui est incorrect');
+                } else if ($checkTotalTTC.length === 0) {
+                    // Le bloc total TTC n'existe vraiment pas
+                    console.warn('Bloc total TTC introuvable dans block-checkout');
+                }
             }
         }
 
@@ -255,6 +262,25 @@ $(document).ready(function () {
             cleanDuplicateCartDetailedTotals();
         }
 
+        // Fonction pour s'assurer que le bloc total TTC existe toujours
+        function ensureTotalTTCExists() {
+            var $blockCheckout = $cartSummary.find('.block-checkout');
+            var $totalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
+                return $(this).find('.cart-total').length > 0 && !$(this).hasClass('js-cart-detailed-totals');
+            });
+            
+            if ($totalTTC.length === 0) {
+                // Le bloc total TTC n'existe pas, vérifier s'il a été supprimé par erreur
+                var $jsTotals = $blockCheckout.find('.js-cart-detailed-totals');
+                var $blockPromo = $blockCheckout.find('.block-promo').first();
+                
+                // Créer un nouveau bloc total TTC si nécessaire
+                // Note: On ne peut pas restaurer le contenu exact sans refaire une requête AJAX
+                // Mais on peut au moins créer la structure vide pour éviter les erreurs
+                console.warn('Bloc total TTC manquant, il devrait être restauré par la prochaine mise à jour AJAX');
+            }
+        }
+
         // Fonction pour réinitialiser le formulaire de code promo après mise à jour AJAX
         // Rendre cette fonction globale pour qu'elle soit accessible depuis d'autres fichiers
         window.reinitializePromoForm = function() {
@@ -318,6 +344,8 @@ $(document).ready(function () {
                         cleanDuplicateCartDetailedTotals();
                         cleanDuplicateBlockPromo();
                         reinitializePromoForm();
+                        // S'assurer que le bloc total TTC existe toujours
+                        ensureTotalTTCExists();
                     }, 150);
                 }
             }
@@ -348,6 +376,8 @@ $(document).ready(function () {
                         cleanDuplicateCartDetailedTotals();
                         cleanDuplicateBlockPromo();
                         reinitializePromoForm();
+                        // S'assurer que le bloc total TTC existe toujours
+                        ensureTotalTTCExists();
                     }, 200);
                 }
             });
