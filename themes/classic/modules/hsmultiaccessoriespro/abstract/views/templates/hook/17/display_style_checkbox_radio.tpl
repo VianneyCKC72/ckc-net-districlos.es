@@ -33,8 +33,10 @@
                 {/if}
             {/if}
         {/if}
+        {* Vérifier le statut "victime de son succès" via la fonction Smarty personnalisée *}
+        {checkVictimeSucces id_product=$accessory.id_accessory id_product_attribute=$accessory.default_id_product_attribute assign="accessory_victime_succes"}
         {* Désactiver la case si le produit n'est pas disponible pour commande OU s'il est "victime de son succès" *}
-        {if !$accessory.is_available_for_order || $accessory.victime_succes}
+        {if !$accessory.is_available_for_order || $accessory_victime_succes}
             {assign var=is_disabled value=1}        
         {/if}
 
@@ -100,7 +102,7 @@
                     {else}
                         {$accessory.name|escape:'htmlall':'UTF-8'}
                     {/if}
-                    {if $accessory.victime_succes}
+                    {if $accessory_victime_succes}
                         <span class="forbidden_ordering" title="Victime de son succès - Produit épuisé"></span>
                     {else if $accessory.is_available_when_out_of_stock && $accessory_configuration_keys.HSMA_SHOW_ICON_OUT_OF_STOCK}
                         <span class="warning_out_of_stock" title="{$accessory.available_later|escape:'html':'UTF-8'}"></span>
