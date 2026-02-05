@@ -361,6 +361,80 @@ $(document).ready(function () {
         }
     }
 
+    // Fonctions réutilisables pour éviter la duplication de code
+    function updateCartVoucher(value) {
+        var $blockCheckout = $('.block-checkout');
+        var $blockPromo = $blockCheckout.find('.block-promo').first();
+        if ($blockPromo.length) {
+            $blockPromo.replaceWith(value);
+        } else {
+            // Si le bloc promo n'existe pas, l'ajouter après le dernier cart-detailed-totals
+            var $lastCartTotals = $blockCheckout.find('.cart-detailed-totals').last();
+            if ($lastCartTotals.length) {
+                $lastCartTotals.after(value);
+            } else {
+                $blockCheckout.append(value);
+            }
+        }
+        // Réinitialiser le formulaire après remplacement
+        setTimeout(function() {
+            if (typeof window.reinitializePromoForm === 'function') {
+                window.reinitializePromoForm();
+            }
+        }, 100);
+    }
+
+    function updateCartSummaryTotals(value) {
+        var $blockCheckout = $('.block-checkout');
+        if (!$blockCheckout.length) {
+            console.warn('block-checkout introuvable');
+            return;
+        }
+        
+        var $totalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
+            return $(this).find('.cart-total').length > 0 && !$(this).hasClass('js-cart-detailed-totals');
+        });
+        
+        if ($totalTTC.length) {
+            // Remplacer seulement le contenu du wrapper, pas le wrapper lui-même
+            $totalTTC.first().html(value);
+        } else {
+            // Si le bloc n'existe pas, créer le wrapper et ajouter le contenu
+            var $newWrapper = $('<div class="cart-detailed-totals"></div>').html(value);
+            
+            // Trouver le bon endroit pour insérer le bloc total TTC
+            var $blockPromo = $blockCheckout.find('.block-promo').first();
+            if ($blockPromo.length) {
+                // Insérer après le bloc-promo
+                $blockPromo.after($newWrapper);
+            } else {
+                // Si pas de bloc-promo, chercher le dernier cart-detailed-totals (js-cart-detailed-totals)
+                var $lastCartTotals = $blockCheckout.find('.js-cart-detailed-totals').last();
+                if ($lastCartTotals.length) {
+                    $lastCartTotals.after($newWrapper);
+                } else {
+                    // En dernier recours, ajouter à la fin de block-checkout
+                    $blockCheckout.append($newWrapper);
+                }
+            }
+        }
+    }
+
+    function updateDealtElements() {
+        $(".custom-quantity-selector").each(function (){
+            if($(this).find("input#quantity_wanted").data('product-id') == localStorage.getItem('dealt_service_product_id')){
+                $(this).css('display', 'none');
+                $(".dealt-cart-service-box").each(function (){
+                    $(this).css('display', 'none');
+                });
+            }
+        });
+
+        /* Bouton « Ajouter la réduction » toujours actif */
+        $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'auto');
+        $(".btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box');
+        $("#tva-submit-btn").attr('disabled', false);
+    }
 
     function updateViewProductCart(data) {
         $.each(data, function (key, value) {
@@ -370,28 +444,32 @@ $(document).ready(function () {
                 'cart_summary_products': '.js-cart-summary-products',
                 'cart_summary_subtotals_container': '.js-cart-summary-subtotals-container',
                 'cart_summary_top': '.js-cart-summary-top',
-                'cart_summary_totals': '.cart-summary-totals',
+                'cart_summary_totals': '.cart-detailed-totals:has(.cart-total):not(.js-cart-detailed-totals)',
                 'cart_promos': '.cart-promos',
-                'cart_footer_dealt': '.dealt-cart-services-container'
+                'cart_voucher': '.block-promo'
+                // Note: cart_footer_dealt est géré directement dans prestashop.on('updatedCart')
             };
             if (key in selectorMap && value) {
-                $(selectorMap[key]).replaceWith(value);
+                var $target = $(selectorMap[key]);
+                // Pour cart_detailed_totals, s'assurer qu'on ne remplace que le premier élément
+                if (key === 'cart_detailed_totals' && $target.length > 1) {
+                    $target.first().replaceWith(value);
+                    // Supprimer les autres doublons
+                    $target.slice(1).remove();
+                } else if (key === 'cart_voucher') {
+                    // Utiliser la fonction réutilisable
+                    updateCartVoucher(value);
+                } else if (key === 'cart_summary_totals') {
+                    // Utiliser la fonction réutilisable
+                    updateCartSummaryTotals(value);
+                } else {
+                    $target.replaceWith(value);
+                }
             }
         });
 
-        $(".custom-quantity-selector").each(function (){
-            if($(this).find("input#quantity_wanted").data('product-id') == localStorage.getItem('dealt_service_product_id')){
-                $(this).css('display', 'none');
-                $(".dealt-cart-service-box").each(function (){
-                    $(this).css('display', 'none');
-                });
-            }
-        })
-
-        /* Bouton « Ajouter la réduction » toujours actif */
-        $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'auto')
-        $(".btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box')
-        $("#tva-submit-btn").attr('disabled', false)
+        // Utiliser la fonction réutilisable pour les éléments dealt
+        updateDealtElements();
 
         let total = 0;
         $("[data-valueqty]").each(function () {
@@ -469,19 +547,31 @@ $(document).ready(function () {
         if (typeof $(".dealt-cart-services-container") !== "undefined") {
             $(".dealt-cart-services-container").replaceWith(event.resp.cart_footer_dealt)
         }
-        $(".custom-quantity-selector").each(function (){
-            if($(this).find("input#quantity_wanted").data('product-id') == localStorage.getItem('dealt_service_product_id')){
-                $(this).css('display', 'none');
-                $(".dealt-cart-service-box").each(function (){
-                    $(this).css('display', 'none');
+        // Mettre à jour cart_voucher si présent dans la réponse
+        if (event.resp && event.resp.cart_voucher) {
+            updateCartVoucher(event.resp.cart_voucher);
+        }
+        
+        // Mettre à jour cart_summary_totals si présent dans la réponse
+        if (event.resp && event.resp.cart_summary_totals) {
+            updateCartSummaryTotals(event.resp.cart_summary_totals);
+        } else if (event.resp && !event.resp.cart_summary_totals) {
+            // Si cart_summary_totals n'est pas dans la réponse, vérifier s'il existe dans le DOM
+            var $blockCheckout = $('.block-checkout');
+            if ($blockCheckout.length) {
+                var $totalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
+                    return $(this).find('.cart-total').length > 0 && !$(this).hasClass('js-cart-detailed-totals');
                 });
+                if ($totalTTC.length === 0) {
+                    // Le bloc total TTC n'existe pas et n'a pas été mis à jour
+                    // Il faudra le restaurer via ensureTotalTTCExists()
+                    console.warn('cart_summary_totals manquant dans la réponse AJAX');
+                }
             }
-        })
-
-        /* Bouton « Ajouter la réduction » toujours actif */
-        $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'auto')
-        $(".btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box')
-        $("#tva-submit-btn").attr('disabled', false)
+        }
+        
+        // Utiliser la fonction réutilisable pour les éléments dealt
+        updateDealtElements();
     });
 
     // Page produit uniquement
