@@ -344,6 +344,7 @@
     align-items: flex-start;
     gap: 2rem;
     padding: 15px;
+    justify-content: space-between;
 
     // Masquer uniquement les éléments non nécessaires
     .cart-summary-subtotals-container,
@@ -354,36 +355,12 @@
 
     // Afficher le titre "Récapitulatif" et le bloc estimation dans le premier div
     > div:first-child {
-      flex: 0 0 auto;
-      min-width: 250px;
-      
-      .h3 {
-        display: block !important;
-        margin-bottom: 1rem;
-      }
-      
-      .cart-summary-top {
-        display: none;
-      }
-      
-      // Afficher le bloc estimation de livraison avec l'icône
-      .d-flex.align-items-center.mb-2 {
-        display: flex !important;
-        margin-bottom: 1rem;
-        margin-top: 1rem;
-      }
-      
-      // Afficher le lien "Estimez vos frais de livraison"
-      #openModalShippingCost {
-        display: block !important;
-        margin-top: 0.5rem;
-      }
+      display: none;
     }
 
     // Le bloc checkout avec les totaux (masquer le bouton et les promos)
     .block-checkout {
-      flex: 1;
-      
+
       .checkout.cart-detailed-actions {
         display: none !important;
       }
@@ -391,6 +368,10 @@
       .cart-promos {
         display: none !important;
       }
+    }
+
+    .checkout .cart-detailed-actions {
+      display: none !important;
     }
 
     // Afficher le bouton dans action_sticky à droite
