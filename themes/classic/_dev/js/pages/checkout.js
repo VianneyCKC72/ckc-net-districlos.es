@@ -147,17 +147,6 @@ $(document).ready(function () {
                 $totalTTC.slice(1).remove();
             }
             
-            // S'assurer qu'il y a toujours un bloc avec cart-total (sans js-cart-detailed-totals)
-            var $allTotalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
-                return $(this).find('.cart-total').length > 0;
-            });
-            var $totalTTCWithoutJS = $allTotalTTC.filter(function() {
-                return !$(this).hasClass('js-cart-detailed-totals');
-            });
-            
-            // IMPORTANT: Ne jamais supprimer le bloc total TTC s'il existe
-            // Si on trouve un bloc total TTC sans js-cart-detailed-totals, on le garde
-            // Si on ne le trouve pas, c'est qu'il a été supprimé par erreur ailleurs
         }
 
         function isDesktop() {
@@ -388,7 +377,19 @@ $(document).ready(function () {
             }
         };
 
-        // Nettoyer les doublons après les mises à jour AJAX du panier
+        // Fonction centralisée pour nettoyer et réinitialiser après mise à jour AJAX
+        function cleanupAfterCartUpdate() {
+            if ($('body').hasClass('page-cart')) {
+                setTimeout(function() {
+                    cleanDuplicateCartDetailedTotals();
+                    cleanDuplicateBlockPromo();
+                    reinitializePromoForm();
+                    ensureTotalTTCExists();
+                }, 150);
+            }
+        }
+
+        // Nettoyer les doublons après les mises à jour AJAX du panier (pour les requêtes qui ne déclenchent pas updatedCart)
         $(document).ajaxComplete(function(event, xhr, settings) {
             if ($('body').hasClass('page-cart')) {
                 // Vérifier si c'est une requête liée au panier
@@ -401,46 +402,15 @@ $(document).ready(function () {
                 }
                 
                 if (isCartRequest) {
-                    setTimeout(function() {
-                        cleanDuplicateCartDetailedTotals();
-                        cleanDuplicateBlockPromo();
-                        reinitializePromoForm();
-                        // S'assurer que le bloc total TTC existe toujours
-                        ensureTotalTTCExists();
-                    }, 150);
+                    cleanupAfterCartUpdate();
                 }
             }
         });
 
-        // Intercepter les réponses AJAX pour mettre à jour cart_voucher
-        $(document).ajaxSuccess(function(event, xhr, settings) {
-            if ($('body').hasClass('page-cart')) {
-                try {
-                    var response = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON : JSON.parse(xhr.responseText);
-                    if (response && response.cart_voucher) {
-                        // Le cart_voucher a été mis à jour, réinitialiser le formulaire après
-                        setTimeout(function() {
-                            reinitializePromoForm();
-                        }, 100);
-                    }
-                } catch(e) {
-                    // Pas une réponse JSON, ignorer
-                }
-            }
-        });
-
-        // Écouter aussi les événements PrestaShop
+        // Écouter les événements PrestaShop (méthode principale pour les mises à jour du panier)
         if (typeof prestashop !== 'undefined') {
             prestashop.on('updatedCart', function(event) {
-                if ($('body').hasClass('page-cart')) {
-                    setTimeout(function() {
-                        cleanDuplicateCartDetailedTotals();
-                        cleanDuplicateBlockPromo();
-                        reinitializePromoForm();
-                        // S'assurer que le bloc total TTC existe toujours
-                        ensureTotalTTCExists();
-                    }, 200);
-                }
+                cleanupAfterCartUpdate();
             });
         }
     }

@@ -232,7 +232,6 @@
   // Styles pour le bloc cart-promos
   .checkout.cart-promos.js-cart-promos.card-block {
     margin-top: 1rem;
-    margin-bottom: 1rem;
     padding: 10px;
     border: 1px solid #FF285A;
     border-radius: 9px;
@@ -242,6 +241,22 @@
       p {
         margin: 0;
       }
+    }
+
+    // Masquer la bordure et le padding si le bloc est vide
+    &:empty {
+      display: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    // Masquer si le bloc ne contient pas de div enfant (pas de contenu)
+    &:not(:has(> div)) {
+      display: none;
+      border: none;
+      padding: 0;
+      margin: 0;
     }
   }
 }
