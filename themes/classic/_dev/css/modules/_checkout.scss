@@ -277,6 +277,7 @@ body#checkout {
         // S'assurer que le bloc stock copié a les mêmes styles que l'original
         #stock-summary-content-mobile {
           display: block !important;
+          margin-top: 1rem;
           
           .card {
             position: relative;
@@ -296,6 +297,81 @@ body#checkout {
           
           .card-block {
             padding: 1.25rem;
+            border: 1px solid #e6e6e6;
+          }
+          
+          // Styles pour les éléments du bloc stock
+          p.productLimit {
+            color: #79c046;
+            font-weight: 600;
+            margin: 0.5rem 0;
+            position: relative;
+            font-size: inherit;
+          }
+          
+          p.productQuantity {
+            font-size: 14px;
+            font-weight: 400;
+            margin-bottom: 5px;
+            display: flex;
+            gap: 10px;
+            line-height: 1.2;
+            
+            img {
+              display: flex;
+              height: 18px !important;
+              width: 18px !important;
+              margin: auto 0;
+              max-width: 18px !important;
+              max-height: 18px !important;
+            }
+          }
+          
+          span.nameStore {
+            font-size: 16px;
+            text-decoration: none !important;
+            
+            img {
+              width: 50px !important;
+              height: 50px !important;
+              max-width: 50px !important;
+              max-height: 50px !important;
+            }
+          }
+          
+          // Styles pour le tooltip
+          .info-icon-wrapper {
+            position: relative;
+            display: inline-block;
+            
+            .custom-tooltip {
+              display: block;
+              visibility: hidden;
+              opacity: 0;
+              position: absolute;
+              z-index: 9999;
+              top: 125%;
+              transform: translateX(-50%);
+              background-color: white;
+              color: black;
+              text-align: left;
+              padding: 12px 15px;
+              font-size: 10px;
+              font-weight: normal;
+              min-width: 280px;
+              max-width: 350px;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+          }
+          
+          .info-icon-wrapper:hover .custom-tooltip {
+            visibility: visible;
+            opacity: 1;
+          }
+          
+          // Appliquer tous les styles de #stock-summary-content à la copie mobile
+          div.text {
+            display: none !important;
           }
         }
       }
@@ -702,6 +778,109 @@ body#checkout {
 
     .ets_mm_megamenu.hook-default {
       margin-top: 0;
+    }
+  }
+}
+
+// Appliquer les styles du module stores_stock à la copie mobile du bloc stock
+// Ces styles complètent ceux déjà définis dans le module ckc_stores_stock
+#stock-summary-content-mobile {
+  // Dupliquer les styles de #stock-summary-content pour la copie mobile
+  margin-top: 1rem;
+  
+  div.text p {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 0;
+  }
+  
+  .text {
+    display: none !important;
+  }
+  
+  p.productLimit {
+    color: #79c046;
+    font-weight: 600;
+    margin: 0.5rem 0;
+    position: relative;
+  }
+  
+  p.productQuantity {
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 5px;
+    display: flex;
+    gap: 10px;
+    line-height: 1.2;
+    
+    img {
+      display: flex;
+      height: 18px !important;
+      width: 18px !important;
+      margin: auto 0;
+      max-width: 18px !important;
+      max-height: 18px !important;
+      object-fit: contain;
+    }
+  }
+  
+  div.card div.card-block {
+    border: 1px solid #e6e6e6;
+    padding: 1.25rem;
+  }
+  
+  div.card div.card-block span.nameStore {
+    font-size: 16px;
+    text-decoration: none !important;
+    
+    img {
+      width: 50px !important;
+      height: 50px !important;
+      max-width: 50px !important;
+      max-height: 50px !important;
+      object-fit: contain;
+    }
+  }
+  
+  // Styles pour le tooltip
+  .info-icon-wrapper {
+    position: relative;
+    display: inline-block;
+    
+    .custom-tooltip {
+      display: block;
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      z-index: 9999;
+      top: 125%;
+      transform: translateX(-50%);
+      background-color: white;
+      color: black;
+      text-align: left;
+      padding: 12px 15px;
+      font-size: 10px;
+      font-weight: normal;
+      min-width: 280px;
+      max-width: 350px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+  
+  .info-icon-wrapper:hover .custom-tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  @media screen and (max-width: 992px) {
+    margin-top: 1rem;
+    
+    &.page-content.page-order-confirmation > div.card {
+      margin-bottom: 0.75rem;
+    }
+    
+    &.page-content.page-order-confirmation {
+      margin-top: 15px;
     }
   }
 }
