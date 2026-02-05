@@ -101,20 +101,22 @@ $(document).ready(function () {
             var $stockMobileContainer = $('.cart-grid-stock-mobile');
             
             if ($stockBlock.length && $stockMobileContainer.length) {
+                var $existingClone = $stockMobileContainer.find('#stock-summary-content-mobile');
+                
                 if ($(window).width() <= 991) {
-                    if ($stockMobileContainer.find('#stock-summary-content-mobile').length === 0) {
+                    // Créer le clone seulement s'il n'existe pas
+                    if ($existingClone.length === 0) {
                         var $stockClone = $stockBlock.clone(true, true);
                         $stockClone.attr('id', 'stock-summary-content-mobile');
                         $stockClone.attr('class', $stockBlock.attr('class'));
                         $stockMobileContainer.append($stockClone);
-                    } else {
-                        var $existingClone = $stockMobileContainer.find('#stock-summary-content-mobile');
-                        if ($existingClone.length) {
-                            $existingClone.replaceWith($stockBlock.clone(true, true).attr('id', 'stock-summary-content-mobile').attr('class', $stockBlock.attr('class')));
-                        }
                     }
+                    // Si le clone existe déjà, ne rien faire (optimisation)
                 } else {
-                    $stockMobileContainer.find('#stock-summary-content-mobile').remove();
+                    // En desktop, supprimer le clone mobile s'il existe
+                    if ($existingClone.length > 0) {
+                        $existingClone.remove();
+                    }
                 }
             }
         }
@@ -143,8 +145,6 @@ $(document).ready(function () {
         var isSticky = false;
         var stickyOffsetTop = null;
         var $stickyPlaceholder = null; // Placeholder pour éviter le saut visuel lors du passage en sticky
-
-        var $moyenPaiement = null;
         var $blockPromo = null;
         var $h3 = null;
 
@@ -252,8 +252,10 @@ $(document).ready(function () {
             
             // Ajouter la classe sticky-summary
             $cartSummary.addClass('sticky-summary');
+            
+            // Ajouter une classe au body pour masquer moyen_de_paiement via CSS
+            $('body').addClass('cart-summary-sticky');
 
-            $moyenPaiement = $cartSummary.find('.moyen_de_paiement').detach();
             // Ne détacher que le bloc promo qui est dans block-checkout, pas celui dans cart-detailed-totals
             var $blockPromoInCheckout = $cartSummary.find('.block-checkout .block-promo').first();
             if ($blockPromoInCheckout.length) {
@@ -273,6 +275,9 @@ $(document).ready(function () {
             }
             
             $cartSummary.removeClass('sticky-summary');
+            
+            // Retirer la classe du body
+            $('body').removeClass('cart-summary-sticky');
 
             var $inside = $cartSummary.find('.cart-summary-inside');
             var $blockCheckout = $inside.find('.block-checkout');
@@ -315,10 +320,6 @@ $(document).ready(function () {
                     $blockPromo.remove();
                 }
                 $blockPromo = null;
-            }
-            if ($moyenPaiement && $moyenPaiement.length) {
-                $inside.append($moyenPaiement);
-                $moyenPaiement = null;
             }
             
             // Nettoyer à nouveau après réinsertion pour être sûr

@@ -147,6 +147,13 @@
     column-gap: 120px;
   }
 }
+
+// Masquer moyen_de_paiement quand cart-summary devient sticky
+// Le moyen_de_paiement est dans cart-grid-right, donc on le masque quand sticky-summary existe
+body.cart-summary-sticky .cart-grid-right .moyen_de_paiement,
+body:has(.sticky-summary) .cart-grid-right .moyen_de_paiement {
+  display: none !important;
+}
 .moyen_de_paiement {
   margin-top:15px;
 }
@@ -243,13 +250,8 @@
       }
     }
 
-    &:empty {
-      display: none;
-      border: none;
-      padding: 0;
-      margin: 0;
-    }
-
+    // Masquer le bloc s'il est vide (règle consolidée)
+    &:empty,
     &:not(:has(> div)) {
       display: none;
       border: none;
@@ -348,7 +350,6 @@
 
     // Masquer uniquement les éléments non nécessaires
     .cart-summary-subtotals-container,
-    .moyen_de_paiement,
     .block-promo {
       display: none;
     }
