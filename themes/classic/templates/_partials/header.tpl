@@ -56,10 +56,10 @@
                                 </span>
                                 <span class="medium-text">votre clôture</span>
                             </div>
-                            <img width="37" height="35" alt="Configurez votre clôture" src="/img/configurer-icon.svg">
+                            <img width="37" height="35" alt="Configurez votre clôture" src="/themes/classic/assets/img/configurer-icon.svg">
                         </a>
                         <a href="{$urls.base_url}content/657-service-de-pose" class="ico btn-service-pose" title="Service de pose">
-                            <img src="/img/service-de-pose.svg" alt="Service de pose" width="28" height="28" class="btn-service-pose__icon" loading="lazy">
+                            <img src="/themes/classic/assets/img/service-de-pose.svg" alt="Service de pose" width="28" height="28" class="btn-service-pose__icon" loading="lazy">
                             <span>Service de pose</span>
                         </a>
                         <div class="block-question block-question-header">
