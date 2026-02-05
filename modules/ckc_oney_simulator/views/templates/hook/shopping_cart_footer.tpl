@@ -60,7 +60,7 @@
     <div class="d-flex flex-wrap align-items-center gap-16">
         {* <p class="h3 mb-0">Choix du financement</p> *}
         <select class="form-control form-control-select w-max-content" id="paiement-select-desktop" name="payment-method">
-            <option value="">Choix du paiement - gratuit en plusieurs fois</option>
+            <option value="">Paiement gratuit en plusieurs fois</option>
             <option value="oney3x" class="financement-option" data-min="300" data-max="6000" data-placeholder="#paymentOption3x" data-free="true" data-method="bnpl">Payez en 3 fois sans frais</option>
             <option value="oney4x" class="financement-option" data-min="400" data-max="6000" data-placeholder="#paymentOption4x" data-free="true" data-method="bnpl">Payez en 4 fois sans frais</option>
             <option value="oney10x" class="financement-option" data-min="500" data-max="3000" data-placeholder="#paymentOption10x" data-free="true" data-method="bnpl">Payez en 10 fois sans frais</option>
