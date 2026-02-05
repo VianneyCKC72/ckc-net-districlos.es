@@ -871,7 +871,7 @@ span.mm_alert.alert-warning:before {
 }
 .ybc-menu-toggle {
     font-size: 15px;
-    font-weight: 500;
+    font-weight: bold;
     line-height: 19px;
     width: 135px;
     cursor: pointer;
