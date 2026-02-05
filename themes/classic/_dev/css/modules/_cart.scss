@@ -341,66 +341,77 @@
   .cart-summary-inside {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    gap: 1rem;
-    justify-content: space-between;
-    padding: 10px 0;
+    align-items: flex-start;
+    gap: 2rem;
+    padding: 15px;
 
-    > div {
-      width: calc(100% / 3);
-      display: flex;
-      align-items: center;
-      flex-direction: column;
-      &:first-child {
-        justify-content: flex-start;
-      }
-
-      &:nth-child(2) {
-        justify-content: center;
-      }
-
-      &:last-child {
-        justify-content: flex-end;
-      }
-    }
-
+    // Masquer uniquement les éléments non nécessaires
     .cart-summary-subtotals-container,
-    #cart-subtotal-shipping,
     .moyen_de_paiement,
-    .h3,
     .block-promo {
       display: none;
     }
 
-    // Afficher le bloc estimation de livraison à gauche dans la sticky bar
-    #openModalShippingCost {
-      display: block !important;
-      margin-top: 0 !important;
-      margin-bottom: 0;
-      white-space: nowrap;
-    }
-
-    .checkout {
-      margin: 10px 0 15px 0 !important;
-      display: none;
-    }
-
-    .action_sticky {
-      display: block;
-
-      .checkout {
-        display: block;
-
-        > div {
-          width: 420px;
-          float: right;
-        }
+    // Afficher le titre "Récapitulatif" et le bloc estimation dans le premier div
+    > div:first-child {
+      flex: 0 0 auto;
+      min-width: 250px;
+      
+      .h3 {
+        display: block !important;
+        margin-bottom: 1rem;
+      }
+      
+      .cart-summary-top {
+        display: none;
+      }
+      
+      // Afficher le bloc estimation de livraison avec l'icône
+      .d-flex.align-items-center.mb-2 {
+        display: flex !important;
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+      }
+      
+      // Afficher le lien "Estimez vos frais de livraison"
+      #openModalShippingCost {
+        display: block !important;
+        margin-top: 0.5rem;
       }
     }
 
-    .cart-detailed-complete {
-      display: flex;
-      flex-direction: column;
+    // Le bloc checkout avec les totaux (masquer le bouton et les promos)
+    .block-checkout {
+      flex: 1;
+      
+      .checkout.cart-detailed-actions {
+        display: none !important;
+      }
+      
+      .cart-promos {
+        display: none !important;
+      }
+    }
+
+    // Afficher le bouton dans action_sticky à droite
+    .action_sticky {
+      display: block !important;
+      flex: 0 0 auto;
+      align-self: center;
+
+      .checkout {
+        display: block !important;
+        margin: 0 !important;
+
+        > div {
+          width: auto;
+        }
+        
+        .btn {
+          white-space: nowrap;
+          min-width: 200px;
+        }
+      }
     }
   }
 
