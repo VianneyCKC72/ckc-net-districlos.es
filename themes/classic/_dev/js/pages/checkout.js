@@ -101,27 +101,34 @@ $(document).ready(function () {
             var $stockMobileContainer = $('.cart-grid-stock-mobile');
             
             if ($stockBlock.length && $stockMobileContainer.length) {
-                // Vérifier si on est en mobile
                 if ($(window).width() <= 991) {
-                    // En mobile : copier le bloc dans le conteneur mobile s'il n'y est pas déjà
                     if ($stockMobileContainer.find('#stock-summary-content-mobile').length === 0) {
-                        var $stockClone = $stockBlock.clone();
+                        var $stockClone = $stockBlock.clone(true, true);
                         $stockClone.attr('id', 'stock-summary-content-mobile');
+                        $stockClone.attr('class', $stockBlock.attr('class'));
                         $stockMobileContainer.append($stockClone);
+                    } else {
+                        var $existingClone = $stockMobileContainer.find('#stock-summary-content-mobile');
+                        if ($existingClone.length) {
+                            $existingClone.replaceWith($stockBlock.clone(true, true).attr('id', 'stock-summary-content-mobile').attr('class', $stockBlock.attr('class')));
+                        }
                     }
                 } else {
-                    // En desktop : supprimer la copie mobile si elle existe
                     $stockMobileContainer.find('#stock-summary-content-mobile').remove();
                 }
             }
         }
         
-        // Exécuter au chargement
-        moveStockBlockForMobile();
-        
-        // Réexécuter lors du redimensionnement
-        $(window).on('resize', function() {
+        setTimeout(function() {
             moveStockBlockForMobile();
+        }, 100);
+        
+        var resizeTimeout;
+        $(window).on('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                moveStockBlockForMobile();
+            }, 150);
         });
     }
 
@@ -135,6 +142,7 @@ $(document).ready(function () {
 
         var isSticky = false;
         var stickyOffsetTop = null;
+        var $stickyPlaceholder = null; // Placeholder pour éviter le saut visuel lors du passage en sticky
 
         var $moyenPaiement = null;
         var $blockPromo = null;
@@ -190,6 +198,11 @@ $(document).ready(function () {
         }
 
         function updateStickyOffset() {
+            // Supprimer le placeholder si présent lors du recalcul
+            if ($stickyPlaceholder && $stickyPlaceholder.length) {
+                $stickyPlaceholder.remove();
+                $stickyPlaceholder = null;
+            }
             $cartSummary.removeClass('sticky-summary');
             stickyOffsetTop = $cartSummary.offset().top;
         }
@@ -219,6 +232,25 @@ $(document).ready(function () {
         function applySticky() {
             if (isSticky) return; // Éviter les appels multiples
             isSticky = true;
+            
+            // Créer un placeholder invisible pour maintenir l'espace et éviter le saut visuel
+            var originalHeight = $cartSummary.outerHeight();
+            var originalWidth = $cartSummary.outerWidth();
+            
+            // Créer le placeholder avant de rendre sticky pour éviter le freeze
+            $stickyPlaceholder = $('<div class="cart-summary-placeholder"></div>')
+                .css({
+                    'height': originalHeight + 'px',
+                    'width': originalWidth + 'px',
+                    'visibility': 'hidden',
+                    'pointer-events': 'none',
+                    'flex-shrink': '0'
+                });
+            
+            // Insérer le placeholder juste après le cart-summary
+            $cartSummary.after($stickyPlaceholder);
+            
+            // Ajouter la classe sticky-summary
             $cartSummary.addClass('sticky-summary');
 
             $moyenPaiement = $cartSummary.find('.moyen_de_paiement').detach();
@@ -233,6 +265,13 @@ $(document).ready(function () {
         function removeSticky() {
             if (!isSticky) return; // Éviter les appels multiples
             isSticky = false;
+            
+            // Supprimer le placeholder avant de retirer le sticky
+            if ($stickyPlaceholder && $stickyPlaceholder.length) {
+                $stickyPlaceholder.remove();
+                $stickyPlaceholder = null;
+            }
+            
             $cartSummary.removeClass('sticky-summary');
 
             var $inside = $cartSummary.find('.cart-summary-inside');
