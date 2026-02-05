@@ -70,7 +70,7 @@
 
   .link-danger {
     font-weight: 700;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 22px;
     color: $redLink;
     display: flex;
@@ -117,6 +117,9 @@
     @media only screen and (max-width: 1068px) {
       gap: 10px;
     }
+    .btn-configurateur {
+      margin-left: -6px;
+    }
   }
 
   @media (min-width: 993px) {
@@ -125,7 +128,7 @@
       border: none;
       border-radius: 140px;
       color: #fff !important;
-      height: 35px;
+      height: 44px;
       display: flex !important;
       align-items: center;
       justify-content: center;
@@ -165,7 +168,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 220px;
+    width: 200px;
     text-align: left;
     height: 44px;
     @media only screen and (max-width: 1620px) {
@@ -225,17 +228,53 @@
     }
   }
 
+  /* Service de pose */
+  .btn-service-pose {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: $primary-color;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 10px;
+    line-height: 15px;
+    text-align: center;
+    background: none;
+    border: none;
+    padding: 0;
+    transition: color 0.2s ease;
+    &:hover,
+    &:focus {
+      color: $primary-light-color;
+    }
+    .btn-service-pose__icon,
+    svg {
+      flex-shrink: 0;
+      color: $primary-color;
+      stroke: currentColor;
+    }
+    &:hover svg,
+    &:focus svg {
+      color: $primary-light-color;
+      stroke: currentColor;
+    }
+    @media only screen and (max-width: 768px) {
+      display: none;
+    }
+  }
 
   .header-nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 80px;
 
     .displayNav2 {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 20px;
+      gap: 15px;
       text-transform: uppercase;
       padding-left: 30px;
       @media only screen and (max-width: 996px) {
@@ -371,7 +410,7 @@
     }
   }
   .link-danger{
-    font-size: 14px;
+    font-size: 16px;
     white-space: nowrap;
     padding-right: 10px;
   }

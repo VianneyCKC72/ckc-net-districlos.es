@@ -56,7 +56,11 @@
                                 </span>
                                 <span class="medium-text">votre clôture</span>
                             </div>
-                            <img width="37px" height="35px" alt="cloture" src="/img/menu-mobile-fence.svg">
+                            <img width="37" height="35" alt="Configurez votre clôture" src="/img/configurer-icon.svg">
+                        </a>
+                        <a href="{$urls.base_url}content/657-service-de-pose" class="ico btn-service-pose" title="Service de pose">
+                            <img src="/img/service-de-pose.svg" alt="Service de pose" width="28" height="28" class="btn-service-pose__icon" loading="lazy">
+                            <span>Service de pose</span>
                         </a>
                         <div class="block-question block-question-header">
                             <img loading="lazy" src="/img/menu-mobile-phone.svg" width="22" height="20" class="ico-question" alt="des question?">
