@@ -139,7 +139,8 @@
     .cart-grid-body {
       flex: 2;
     }
-    .cart-grid-right {
+    .cart-grid-right,
+    .cart-grid-right-wrapper {
       flex: 1;
     }
   }
@@ -243,7 +244,6 @@
       }
     }
 
-    // Masquer la bordure et le padding si le bloc est vide
     &:empty {
       display: none;
       border: none;
@@ -251,7 +251,6 @@
       margin: 0;
     }
 
-    // Masquer si le bloc ne contient pas de div enfant (pas de contenu)
     &:not(:has(> div)) {
       display: none;
       border: none;

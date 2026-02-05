@@ -259,11 +259,35 @@ body#checkout {
         order: 2; // Les étapes de commande en deuxième position
       }
       
-      .cart-grid-right {
-        order: 1; // Le récapitulatif du panier en première position (en haut)
-        margin-bottom: 20px;
+      .cart-grid-right-wrapper {
+        order: 1; // Le wrapper avec récapitulatif en première position (en haut)
+        display: flex;
+        flex-direction: column;
+        
+        .cart-grid-right {
+          margin-bottom: 20px;
+        }
+        
+        .cart-grid-stock {
+          order: 2; // Le bloc stock après le récapitulatif dans le wrapper
+        }
       }
     }
+  }
+
+  // Wrapper pour regrouper cart-grid-right et cart-grid-stock en desktop
+  .cart-grid-right-wrapper {
+    @include media-breakpoint-up(lg) {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+  }
+
+  // S'assurer que cart-grid-right garde ses styles existants
+  .cart-grid-right {
+    // Les styles sont déjà définis dans _cart.scss
   }
 
   .cart-grid-body {
