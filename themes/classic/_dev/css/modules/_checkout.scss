@@ -250,7 +250,7 @@ body#checkout {
   .cart-grid {
     margin-bottom: 5rem;
     
-    // En mobile, réorganiser l'ordre pour mettre cart-grid-right en haut
+    // En mobile uniquement, réorganiser l'ordre
     @media (max-width: 991px) {
       display: flex;
       flex-direction: column;
@@ -259,35 +259,35 @@ body#checkout {
         order: 2; // Les étapes de commande en deuxième position
       }
       
-      .cart-grid-right-wrapper {
-        order: 1; // Le wrapper avec récapitulatif en première position (en haut)
-        display: flex;
-        flex-direction: column;
+      .cart-grid-right {
+        order: 1; // Le récapitulatif en première position (en haut)
+        margin-bottom: 20px;
         
-        .cart-grid-right {
-          margin-bottom: 20px;
+        // Masquer le bloc stock original dans cart-grid-right en mobile
+        #stock-summary-content {
+          display: none !important;
         }
-        
-        .cart-grid-stock {
-          order: 2; // Le bloc stock après le récapitulatif dans le wrapper
+      }
+      
+      // Afficher le bloc stock après les étapes en mobile
+      .cart-grid-stock-mobile {
+        order: 3; // Le bloc stock en troisième position (après les étapes)
+        margin-top: 20px;
+      }
+    }
+    
+    // En desktop, le bloc stock reste dans cart-grid-right (position normale)
+    @include media-breakpoint-up(lg) {
+      .cart-grid-stock-mobile {
+        display: none !important; // Masquer la copie mobile en desktop
+      }
+      
+      .cart-grid-right {
+        #stock-summary-content {
+          display: block !important; // Afficher le bloc stock original en desktop
         }
       }
     }
-  }
-
-  // Wrapper pour regrouper cart-grid-right et cart-grid-stock en desktop
-  .cart-grid-right-wrapper {
-    @include media-breakpoint-up(lg) {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-  }
-
-  // S'assurer que cart-grid-right garde ses styles existants
-  .cart-grid-right {
-    // Les styles sont déjà définis dans _cart.scss
   }
 
   .cart-grid-body {

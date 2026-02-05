@@ -94,6 +94,36 @@ $(document).ready(function () {
         });
     }
 
+    // Gérer le déplacement du bloc stock en mobile sur la page checkout
+    if ($('body').hasClass('page-order')) {
+        function moveStockBlockForMobile() {
+            var $stockBlock = $('#stock-summary-content');
+            var $stockMobileContainer = $('.cart-grid-stock-mobile');
+            
+            if ($stockBlock.length && $stockMobileContainer.length) {
+                // Vérifier si on est en mobile
+                if ($(window).width() <= 991) {
+                    // En mobile : copier le bloc dans le conteneur mobile s'il n'y est pas déjà
+                    if ($stockMobileContainer.find('#stock-summary-content-mobile').length === 0) {
+                        var $stockClone = $stockBlock.clone();
+                        $stockClone.attr('id', 'stock-summary-content-mobile');
+                        $stockMobileContainer.append($stockClone);
+                    }
+                } else {
+                    // En desktop : supprimer la copie mobile si elle existe
+                    $stockMobileContainer.find('#stock-summary-content-mobile').remove();
+                }
+            }
+        }
+        
+        // Exécuter au chargement
+        moveStockBlockForMobile();
+        
+        // Réexécuter lors du redimensionnement
+        $(window).on('resize', function() {
+            moveStockBlockForMobile();
+        });
+    }
 
     if ($('body').hasClass('page-cart')) {
 
