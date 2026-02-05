@@ -12,7 +12,6 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-require_once _PS_MODULE_DIR_ . 'hsmultiaccessoriespro/hsmultiaccessoriespro.php';
 require_once _PS_MODULE_DIR_ . 'ckc_stores_stock/classes/StockManager.php';
 
 class HsMultiAccessoriesPro extends HsMultiAccessoriesProCore
