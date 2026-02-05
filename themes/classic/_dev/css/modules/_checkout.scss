@@ -249,6 +249,21 @@ body#checkout {
 
   .cart-grid {
     margin-bottom: 5rem;
+    
+    // En mobile, réorganiser l'ordre pour mettre cart-grid-right en haut
+    @media (max-width: 991px) {
+      display: flex;
+      flex-direction: column;
+      
+      .cart-grid-body {
+        order: 2; // Les étapes de commande en deuxième position
+      }
+      
+      .cart-grid-right {
+        order: 1; // Le récapitulatif du panier en première position (en haut)
+        margin-bottom: 20px;
+      }
+    }
   }
 
   .cart-grid-body {
