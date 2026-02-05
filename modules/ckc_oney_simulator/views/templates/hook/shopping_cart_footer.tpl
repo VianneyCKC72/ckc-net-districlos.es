@@ -1,8 +1,8 @@
 <script type="text/javascript" src="https://assets.oney.io/build/loader.min.js"></script>
 
-{* <div id="financing-discover">
-    <p class="h2">Découvrez nos moyens de financement</p>
-    <div class="payment-methods__listing mt-5">
+ <div id="financing-discover">
+    <p class="h2">Aide au financement</p>
+    {* <div class="payment-methods__listing mt-5">
         <div class="payment-method">
             <div class="img">
                 <img src="/themes/classic/assets/img/payment-methods/boncontact.jpg" loading="lazy" alt="Bancontact">
@@ -53,14 +53,14 @@
                 </svg>
             </p>
         </div>
-    </div>
-</div> *}
+    </div> *}
+</div>
 
-<div class="mt-5 w-lg-75" id="financing-choice">
+<div class="mt-3 w-lg-75" id="financing-choice">
     <div class="d-flex flex-wrap align-items-center gap-16">
-        <p class="h3 mb-0">Choix du financement</p>
+        {* <p class="h3 mb-0">Choix du financement</p> *}
         <select class="form-control form-control-select w-max-content" id="paiement-select-desktop" name="payment-method">
-            <option value="">Sélectionner un moyen de financement</option>
+            <option value="">Paiement gratuit en plusieurs fois</option>
             <option value="oney3x" class="financement-option" data-min="300" data-max="6000" data-placeholder="#paymentOption3x" data-free="true" data-method="bnpl">Payez en 3 fois sans frais</option>
             <option value="oney4x" class="financement-option" data-min="400" data-max="6000" data-placeholder="#paymentOption4x" data-free="true" data-method="bnpl">Payez en 4 fois sans frais</option>
             <option value="oney10x" class="financement-option" data-min="500" data-max="3000" data-placeholder="#paymentOption10x" data-free="true" data-method="bnpl">Payez en 10 fois sans frais</option>

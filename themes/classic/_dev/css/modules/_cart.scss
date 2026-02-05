@@ -147,6 +147,13 @@
     column-gap: 120px;
   }
 }
+
+// Masquer moyen_de_paiement quand cart-summary devient sticky
+// Le moyen_de_paiement est dans cart-grid-right, donc on le masque quand sticky-summary existe
+body.cart-summary-sticky .cart-grid-right .moyen_de_paiement,
+body:has(.sticky-summary) .cart-grid-right .moyen_de_paiement {
+  display: none !important;
+}
 .moyen_de_paiement {
   margin-top:15px;
 }
@@ -232,7 +239,6 @@
   // Styles pour le bloc cart-promos
   .checkout.cart-promos.js-cart-promos.card-block {
     margin-top: 1rem;
-    margin-bottom: 1rem;
     padding: 10px;
     border: 1px solid #FF285A;
     border-radius: 9px;
@@ -242,6 +248,15 @@
       p {
         margin: 0;
       }
+    }
+
+    // Masquer le bloc s'il est vide (règle consolidée)
+    &:empty,
+    &:not(:has(> div)) {
+      display: none;
+      border: none;
+      padding: 0;
+      margin: 0;
     }
   }
 }
@@ -328,58 +343,60 @@
   .cart-summary-inside {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    gap: 1rem;
+    align-items: flex-start;
+    gap: 2rem;
+    padding: 15px;
     justify-content: space-between;
-    padding: 10px 0;
 
-    > div {
-      width: calc(100% / 3);
-      display: flex;
-      align-items: center;
-      flex-direction: column;
-      &:first-child {
-        justify-content: flex-start;
-      }
-
-      &:nth-child(2) {
-        justify-content: center;
-      }
-
-      &:last-child {
-        justify-content: flex-end;
-      }
-    }
-
+    // Masquer uniquement les éléments non nécessaires
     .cart-summary-subtotals-container,
-    #cart-subtotal-shipping,
-    .moyen_de_paiement,
-    .h3,
     .block-promo {
       display: none;
     }
 
-    .checkout {
-      margin: 10px 0 15px 0 !important;
+    // Afficher le titre "Récapitulatif" et le bloc estimation dans le premier div
+    > div:first-child {
       display: none;
     }
 
-    .action_sticky {
-      display: block;
-
-      .checkout {
-        display: block;
-
-        > div {
-          width: 420px;
-          float: right;
-        }
+    // Le bloc checkout avec les totaux (masquer le bouton et les promos)
+    .block-checkout {
+      flex: 1;
+      
+      .checkout.cart-detailed-actions {
+        display: none !important;
+      }
+      
+      .cart-promos {
+        display: none !important;
       }
     }
 
-    .cart-detailed-complete {
-      display: flex;
-      flex-direction: column;
+    // Masquer le bouton checkout cart-detailed-actions dans la sticky bar
+    .cart-detailed-actions.js-cart-detailed-actions{
+      display: none !important;
+    }
+
+    // Afficher le bouton dans action_sticky à droite
+    .action_sticky {
+      display: block !important;
+      flex: 0 0 auto;
+      align-self: center;
+      width: 25%;
+
+      .checkout {
+        display: block !important;
+        margin: 0 !important;
+
+        > div {
+          width: auto;
+        }
+        
+        .btn {
+          white-space: nowrap;
+          min-width: 200px;
+        }
+      }
     }
   }
 
@@ -404,4 +421,5 @@
       }
     }
   }
+
 }

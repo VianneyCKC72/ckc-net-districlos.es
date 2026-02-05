@@ -94,6 +94,45 @@ $(document).ready(function () {
         });
     }
 
+    // Gérer le déplacement du bloc stock en mobile sur la page checkout
+    if ($('body').hasClass('page-order')) {
+        function moveStockBlockForMobile() {
+            var $stockBlock = $('#stock-summary-content');
+            var $stockMobileContainer = $('.cart-grid-stock-mobile');
+            
+            if ($stockBlock.length && $stockMobileContainer.length) {
+                var $existingClone = $stockMobileContainer.find('#stock-summary-content-mobile');
+                
+                if ($(window).width() <= 991) {
+                    // Créer le clone seulement s'il n'existe pas
+                    if ($existingClone.length === 0) {
+                        var $stockClone = $stockBlock.clone(true, true);
+                        $stockClone.attr('id', 'stock-summary-content-mobile');
+                        $stockClone.attr('class', $stockBlock.attr('class'));
+                        $stockMobileContainer.append($stockClone);
+                    }
+                    // Si le clone existe déjà, ne rien faire (optimisation)
+                } else {
+                    // En desktop, supprimer le clone mobile s'il existe
+                    if ($existingClone.length > 0) {
+                        $existingClone.remove();
+                    }
+                }
+            }
+        }
+        
+        setTimeout(function() {
+            moveStockBlockForMobile();
+        }, 100);
+        
+        var resizeTimeout;
+        $(window).on('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                moveStockBlockForMobile();
+            }, 150);
+        });
+    }
 
     if ($('body').hasClass('page-cart')) {
 
@@ -105,8 +144,7 @@ $(document).ready(function () {
 
         var isSticky = false;
         var stickyOffsetTop = null;
-
-        var $moyenPaiement = null;
+        var $stickyPlaceholder = null; // Placeholder pour éviter le saut visuel lors du passage en sticky
         var $blockPromo = null;
         var $h3 = null;
 
@@ -147,17 +185,6 @@ $(document).ready(function () {
                 $totalTTC.slice(1).remove();
             }
             
-            // S'assurer qu'il y a toujours un bloc avec cart-total (sans js-cart-detailed-totals)
-            var $allTotalTTC = $blockCheckout.find('.cart-detailed-totals').filter(function() {
-                return $(this).find('.cart-total').length > 0;
-            });
-            var $totalTTCWithoutJS = $allTotalTTC.filter(function() {
-                return !$(this).hasClass('js-cart-detailed-totals');
-            });
-            
-            // IMPORTANT: Ne jamais supprimer le bloc total TTC s'il existe
-            // Si on trouve un bloc total TTC sans js-cart-detailed-totals, on le garde
-            // Si on ne le trouve pas, c'est qu'il a été supprimé par erreur ailleurs
         }
 
         function isDesktop() {
@@ -171,6 +198,11 @@ $(document).ready(function () {
         }
 
         function updateStickyOffset() {
+            // Supprimer le placeholder si présent lors du recalcul
+            if ($stickyPlaceholder && $stickyPlaceholder.length) {
+                $stickyPlaceholder.remove();
+                $stickyPlaceholder = null;
+            }
             $cartSummary.removeClass('sticky-summary');
             stickyOffsetTop = $cartSummary.offset().top;
         }
@@ -200,9 +232,30 @@ $(document).ready(function () {
         function applySticky() {
             if (isSticky) return; // Éviter les appels multiples
             isSticky = true;
+            
+            // Créer un placeholder invisible pour maintenir l'espace et éviter le saut visuel
+            var originalHeight = $cartSummary.outerHeight();
+            var originalWidth = $cartSummary.outerWidth();
+            
+            // Créer le placeholder avant de rendre sticky pour éviter le freeze
+            $stickyPlaceholder = $('<div class="cart-summary-placeholder"></div>')
+                .css({
+                    'height': originalHeight + 'px',
+                    'width': originalWidth + 'px',
+                    'visibility': 'hidden',
+                    'pointer-events': 'none',
+                    'flex-shrink': '0'
+                });
+            
+            // Insérer le placeholder juste après le cart-summary
+            $cartSummary.after($stickyPlaceholder);
+            
+            // Ajouter la classe sticky-summary
             $cartSummary.addClass('sticky-summary');
+            
+            // Ajouter une classe au body pour masquer moyen_de_paiement via CSS
+            $('body').addClass('cart-summary-sticky');
 
-            $moyenPaiement = $cartSummary.find('.moyen_de_paiement').detach();
             // Ne détacher que le bloc promo qui est dans block-checkout, pas celui dans cart-detailed-totals
             var $blockPromoInCheckout = $cartSummary.find('.block-checkout .block-promo').first();
             if ($blockPromoInCheckout.length) {
@@ -214,7 +267,17 @@ $(document).ready(function () {
         function removeSticky() {
             if (!isSticky) return; // Éviter les appels multiples
             isSticky = false;
+            
+            // Supprimer le placeholder avant de retirer le sticky
+            if ($stickyPlaceholder && $stickyPlaceholder.length) {
+                $stickyPlaceholder.remove();
+                $stickyPlaceholder = null;
+            }
+            
             $cartSummary.removeClass('sticky-summary');
+            
+            // Retirer la classe du body
+            $('body').removeClass('cart-summary-sticky');
 
             var $inside = $cartSummary.find('.cart-summary-inside');
             var $blockCheckout = $inside.find('.block-checkout');
@@ -257,10 +320,6 @@ $(document).ready(function () {
                     $blockPromo.remove();
                 }
                 $blockPromo = null;
-            }
-            if ($moyenPaiement && $moyenPaiement.length) {
-                $inside.append($moyenPaiement);
-                $moyenPaiement = null;
             }
             
             // Nettoyer à nouveau après réinsertion pour être sûr
@@ -388,7 +447,19 @@ $(document).ready(function () {
             }
         };
 
-        // Nettoyer les doublons après les mises à jour AJAX du panier
+        // Fonction centralisée pour nettoyer et réinitialiser après mise à jour AJAX
+        function cleanupAfterCartUpdate() {
+            if ($('body').hasClass('page-cart')) {
+                setTimeout(function() {
+                    cleanDuplicateCartDetailedTotals();
+                    cleanDuplicateBlockPromo();
+                    reinitializePromoForm();
+                    ensureTotalTTCExists();
+                }, 150);
+            }
+        }
+
+        // Nettoyer les doublons après les mises à jour AJAX du panier (pour les requêtes qui ne déclenchent pas updatedCart)
         $(document).ajaxComplete(function(event, xhr, settings) {
             if ($('body').hasClass('page-cart')) {
                 // Vérifier si c'est une requête liée au panier
@@ -401,46 +472,15 @@ $(document).ready(function () {
                 }
                 
                 if (isCartRequest) {
-                    setTimeout(function() {
-                        cleanDuplicateCartDetailedTotals();
-                        cleanDuplicateBlockPromo();
-                        reinitializePromoForm();
-                        // S'assurer que le bloc total TTC existe toujours
-                        ensureTotalTTCExists();
-                    }, 150);
+                    cleanupAfterCartUpdate();
                 }
             }
         });
 
-        // Intercepter les réponses AJAX pour mettre à jour cart_voucher
-        $(document).ajaxSuccess(function(event, xhr, settings) {
-            if ($('body').hasClass('page-cart')) {
-                try {
-                    var response = typeof xhr.responseJSON !== 'undefined' ? xhr.responseJSON : JSON.parse(xhr.responseText);
-                    if (response && response.cart_voucher) {
-                        // Le cart_voucher a été mis à jour, réinitialiser le formulaire après
-                        setTimeout(function() {
-                            reinitializePromoForm();
-                        }, 100);
-                    }
-                } catch(e) {
-                    // Pas une réponse JSON, ignorer
-                }
-            }
-        });
-
-        // Écouter aussi les événements PrestaShop
+        // Écouter les événements PrestaShop (méthode principale pour les mises à jour du panier)
         if (typeof prestashop !== 'undefined') {
             prestashop.on('updatedCart', function(event) {
-                if ($('body').hasClass('page-cart')) {
-                    setTimeout(function() {
-                        cleanDuplicateCartDetailedTotals();
-                        cleanDuplicateBlockPromo();
-                        reinitializePromoForm();
-                        // S'assurer que le bloc total TTC existe toujours
-                        ensureTotalTTCExists();
-                    }, 200);
-                }
+                cleanupAfterCartUpdate();
             });
         }
     }

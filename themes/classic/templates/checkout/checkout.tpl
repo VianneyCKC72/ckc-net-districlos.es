@@ -34,6 +34,8 @@
       {block name='checkout_process'}
         {render file='checkout/checkout-process.tpl' ui=$checkout_process}
       {/block}
+      {* Emplacement pour le bloc stock en mobile (après les étapes) *}
+      <div class="cart-grid-stock-mobile"></div>
     </div>
     <div class="cart-grid-right">
       <div class="text-right">
