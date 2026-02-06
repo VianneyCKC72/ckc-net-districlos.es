@@ -70,6 +70,7 @@
     font-weight: 600;
     font-size: 16px;
     margin-bottom: 5px;
+    color: #026473;
 }
 
 .dealt-conditions-link {
@@ -952,8 +953,9 @@ input:checked+.slider:before {
 }
 
 .btn-promo-dealt {
-    padding: 10px;
+    padding: 10px 15px;
     border-radius: 20px;
+    font-weight: 600;
 }
 
 /* Responsive */
