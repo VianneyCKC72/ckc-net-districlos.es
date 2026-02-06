@@ -951,6 +951,11 @@ input:checked+.slider:before {
     font-weight: 400;
 }
 
+.btn-promo-dealt {
+    padding: 10px;
+    border-radius: 20px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
 
