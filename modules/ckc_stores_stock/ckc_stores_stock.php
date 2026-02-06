@@ -17,6 +17,11 @@ class Ckc_Stores_Stock extends Module
 
         $this->displayName = $this->l('Stocks par magasin');
         $this->description = $this->l('Affiche les stocks par magasin sur la fiche produit.');
+        
+        // Enregistrer la fonction Smarty dès le constructeur pour qu'elle soit disponible partout
+        if (class_exists('Context') && Context::getContext()->smarty) {
+            Context::getContext()->smarty->registerPlugin('function', 'checkVictimeSucces', array($this, 'smartyCheckVictimeSucces'));
+        }
     }
 
     public function install()
