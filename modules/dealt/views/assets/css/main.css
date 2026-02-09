@@ -1002,6 +1002,10 @@ input:checked+.slider:before {
     .block-left-header h3 {
         margin: 0;
     }
+
+    .product-line-grid.dealt-service-product {
+        flex-direction: column;
+    }
 }
 
 /* Desktop : cacher le picto mobile */

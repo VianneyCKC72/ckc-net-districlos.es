@@ -13,7 +13,7 @@
         <div class="dealt-promo-cta" style="width: 30%;text-align: end;">
             <a href="{$promo_kit_link|escape:'html':'UTF-8'}" 
                class="btn-primary btn-promo-dealt"
-               target="_blank"
+               target="_self"
                rel="noopener noreferrer">
                 Voir nos kits
             </a>
