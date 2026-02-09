@@ -993,6 +993,10 @@ input:checked+.slider:before {
         width: 40px;
         height: auto;
     }
+
+    .dealt-tva-actions-wrapper {
+        width: 100%;
+    }
     
     /* Forcer l'icône en blanc sur mobile */
     .picto-mobile .st0,
