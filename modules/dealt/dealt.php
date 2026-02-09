@@ -61,6 +61,7 @@ class Dealt extends Module
                      'displayShoppingCartFooter',
                      'displayCheckoutSummaryTop',
                      'displayCartProductLine',
+                     'displayProductPromoInstallation',
                  ] as $hook) {
             if (!$this->isRegisteredInHook($hook) && !$this->registerHook($hook)) {
                 return false;
@@ -928,6 +929,46 @@ class Dealt extends Module
         
         // Pour les autres produits, ne rien retourner (affichage normal)
         return '';
+    }
+
+    /**
+     * Affiche une promo "Besoin d'une pose ?" pour certains produits configurés
+     */
+    public function hookDisplayProductPromoInstallation($params)
+    {
+        $idProduct = isset($params['product']['id_product'])
+            ? (int)$params['product']['id_product']
+            : (int)Tools::getValue('id_product');
+        
+        if (!$idProduct) {
+            return '';
+        }
+        
+        // Charger la configuration des mappings
+        $configFile = _PS_MODULE_DIR_ . 'dealt/config/promo_mappings.php';
+        if (!file_exists($configFile)) {
+            return '';
+        }
+        
+        $mappings = include($configFile);
+        
+        // Vérifier si ce produit a une promo configurée
+        if (!isset($mappings[$idProduct])) {
+            return '';
+        }
+        
+        $promoConfig = $mappings[$idProduct];
+        
+        // Vérifier que le lien existe
+        if (empty($promoConfig['link_cta'])) {
+            return '';
+        }
+        
+        $this->context->smarty->assign([
+            'promo_kit_link' => $promoConfig['link_cta'],
+        ]);
+        
+        return $this->display(__FILE__, 'views/templates/hook/promo_installation.tpl');
     }
 
 }

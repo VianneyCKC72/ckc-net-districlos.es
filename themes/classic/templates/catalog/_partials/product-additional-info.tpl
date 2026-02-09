@@ -24,4 +24,5 @@
  *}
 <div class="product-additional-info js-product-additional-info">
   {hook h='displayProductAdditionalInfo' product=$product}
+  {hook h='displayProductPromoInstallation' product=$product}
 </div>
