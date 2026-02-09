@@ -770,7 +770,6 @@ input:checked+.slider:before {
 
 .dealt-tva-notice--cartline .dealt-tva-notice__text {
     flex: 1;
-    min-width: 0;
 }
 
 .dealt-tva-notice--cartline .btn-add {
@@ -958,6 +957,10 @@ input:checked+.slider:before {
     font-weight: 600;
 }
 
+.dealt-tva-title {
+    font-weight: 600;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
 
@@ -1006,6 +1009,38 @@ input:checked+.slider:before {
     .product-line-grid.dealt-service-product {
         flex-direction: column;
     }
+    
+    .product-line-grid.dealt-service-product .product-line-grid-right {
+        display: none !important;
+    }
+    
+    /* Bloc TVA en colonne mobile */
+    .dealt-tva-notice--cartline {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .product-line-grid-left {
+        width: 100% !important;
+    }
+    
+    .dealt-tva-btn-desktop {
+        display: none;
+    }
+    
+    .dealt-tva-actions-mobile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .dealt-mobile-actions-always {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 }
 
 /* Desktop : cacher le picto mobile */
@@ -1016,6 +1051,15 @@ input:checked+.slider:before {
     
     .block-left-header {
         display: block;
+    }
+    
+    .dealt-tva-actions-mobile,
+    .dealt-mobile-actions-always {
+        display: none;
+    }
+    
+    .dealt-tva-btn-desktop {
+        display: inline-block;
     }
 }
 
