@@ -6,7 +6,7 @@
                     Besoin d'une pose ?
                 </span>
             </div>
-            <span class="dealt-offer-subtitle">
+            <span class="dealt-offer-subtitle" style="font-size: 13px;">
                 Faites appel à un installateur et économisez <strong>10%</strong> en passant par nos <strong>kits</strong>
             </span>
         </div>
