@@ -81,19 +81,19 @@ class Cart extends CartCore
                 );
 
                 $cart = Context::getContext()->cart;
-                if(!self::isAttested((int)$cart->id)){
-                    if ($soubCheck) {
-                        Hook::exec('actionSoubShippingCost', [
-                            'object' => &$this,
-                            'id_carrier' => &$id_carrier,
-                            'use_tax' => &$use_tax,
-                            'default_country' => &$default_country,
-                            'product_list' => &$product_list,
-                            'id_zone' => &$id_zone,
-                            'keepOrderPrices' => &$keepOrderPrices,
-                            'shipping_cost' => &$shipping_cost
-                        ]);
-                    }
+                /*$isTvaAttested = self::isAttested((int)$cart->id);*/
+                if ($soubCheck) {
+                    Hook::exec('actionSoubShippingCost', [
+                        'object' => &$this,
+                        'id_carrier' => &$id_carrier,
+                        'use_tax' => &$use_tax,
+                        'default_country' => &$default_country,
+                        'product_list' => &$product_list,
+                        'id_zone' => &$id_zone,
+                        'keepOrderPrices' => &$keepOrderPrices,
+                        'shipping_cost' => &$shipping_cost,
+                        /*'is_tva_attested' => &$isTvaAttested,*/
+                    ]);
                 }
 
                 if ($shipping_cost !== false) {
