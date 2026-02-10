@@ -749,7 +749,7 @@ $(document).ready(function () {
             if (!ticking) {
                 requestAnimationFrame(function() {
                     const tabsRect = productTabs.getBoundingClientRect();
-                    const headerHeight = 200; // Hauteur du header + marge pour apparaître plus tôt
+                    const headerHeight = 300; // Hauteur du header + marge pour apparaître plus tôt
 
                     // Afficher la barre quand on arrive à la section des onglets
                     if (tabsRect.top <= headerHeight) {
@@ -791,7 +791,7 @@ $(document).ready(function () {
                     const isPack = (document.getElementById('is_pack')?.value === '1') ||
                         document.querySelector('.ap5-buy-block') !== null;
 
-                    const offset = col12Section.offsetTop + (isPack ? 350 : 370); // Première valeur : Pack, Deuxième valeur : Produit
+                    const offset = col12Section.offsetTop + (isPack ? 210 : 230); // Première valeur : Pack, Deuxième valeur : Produit
 
                     $('html, body').animate({
                         scrollTop: offset
