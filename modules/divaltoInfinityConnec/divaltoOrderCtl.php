@@ -255,6 +255,20 @@ where ord.id_order='$id_order'";
 
     $code_ldd = ($datas['Ref_Carrier_Divalto'] == 'LAD') ? 'LDD' : '';
 
+    $pose = 1;
+    foreach ($datasl as $row) {
+        $mapped = Db::getInstance()->getValue(
+            'SELECT 1 FROM '._DB_PREFIX_.'divalto_ref_mapping 
+            WHERE ref_prestashop = \''.pSQL($row['product_reference']).'\' LIMIT 1'
+        );
+        if ($mapped) {
+            $pose = 2;
+            break;
+        }
+    }
+
+    $tva_reduction = 2;
+
     $entete = array($num_cde, 'Temporairement désactivé', $datas['lastname'], $datas['firstname'], $datas['dic_tiers'], $datas['dic_tiers_contact'],
         $datas['alias'], $datas['company'], $datas['firstliv'], $datas['lastliv'], $datas['address1'], $datas['address2'], $datas['postcode'], $datas['city'],
         $datas['other'], $datas['phoneliv'], $datas['mobileliv'], $datas['paysliv'],
@@ -265,7 +279,7 @@ where ord.id_order='$id_order'";
         $diva_dossier, $datas['invoice_number'], $datas['invoice_date'],
         $datas['delivery_number'], $datas['delivery_date'], $datas['current_state'],
         $datas['total_shipping_tax_incl'], $datas['total_discounts_tax_incl'], $datas['total_wrapping_tax_incl'], $cde_ttc, $datas['reference']
-    , $datas['total_paid'], $datas['id_customer'], $datas['Ref_Carrier_Divalto'], $diva_etb, $diva_depot, $diva_type, '2', $datas['siret'], $code_sans_points, $code_ldd
+    , $datas['total_paid'], $datas['id_customer'], $datas['Ref_Carrier_Divalto'], $diva_etb, $diva_depot, $diva_type, '2', $datas['siret'], $code_sans_points, $code_ldd, $pose, $tva_reduction
     );
 
     foreach ($entete as $k => $champs) {
@@ -304,6 +318,11 @@ where ord.id_order='$id_order'";
     $detail = array();
 
     foreach ($datasl AS $k => $row) {
+
+        $mappingRef = Db::getInstance()->getValue('SELECT ref_divalto FROM '._DB_PREFIX_.'divalto_ref_mapping WHERE ref_prestashop = \''.pSQL($row['product_reference']).'\'');
+        if ($mappingRef) {
+            $row['product_reference'] = $mappingRef;
+        }
 
         //ajout produit customisation 09-02-23
         $monProduit = $row["product_id"];
