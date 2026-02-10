@@ -113,66 +113,6 @@ where ord.id_order='$id_order'";
     $datasm = Db::getInstance()->getRow($sql);
 //echo "SQL ".$sql."<br>";
 
-// ligne entêtes
-// N° Commande Prestashop
-// Message du client
-// Nom du client
-// Prénom du client
-// Code client Divalto (Si le client est un client Pro)
-// Code contact Divalto (Si le client est un client Pro)
-// Code adresse livraison (Alias) le 29 08 18 (id_address)
-// Société - Adresse livraison
-// Prénom du client livraison
-// Nom livraison
-// Adresse 1 livraison
-// Adresse 2 livraison
-// Code postal livraison
-// Ville livraison
-// Autre informations livraison
-// Téléphone livraison
-// Mobile livraison
-// Pays livraison
-// Code adresse facturation (Alias) le 29 08 18 (id_address)
-// Société - Adresse facturation
-// Prénom facturation
-// Nom facturation
-// Adresse 1 facturation
-// Adresse 2 facturation
-// Code postal facturation
-// Ville facturation
-// Autres informations facturation
-// Téléphone facturation
-// Mobile facturation
-// Pays facturation
-// Date de création de commande Prestashop
-// Montant port Divalto (pas utilisé en standard)
-// Montant frais Divalto (pas utilisé en standard)
-// Mode de paiement
-// Email
-// Total transport HT
-// Nom transporteur
-// Remise générale HT (Bon de réduction)
-// Total frais emballage HT
-// Dossier Divalto
-// N° de Facture Prestashop
-// Date de facture Prestashop
-// N° de BL Prestashop
-// Date de BL Prestashop
-// Id Status de la commande Prestashop
-// Total transport TTC
-// Remise générale TTC (Bon de reduction)
-// Total frais emballage TTC
-// Commande enregistrée HT ou TTC (H ou T)
-// Reference de commande
-// Montant Payé (total_paid)
-// Code client Prestashop (id_customer)
-// Code Transport Divalto
-// Etablissement Divalto
-// Dépôt Divalto
-// Type du site (B2C ou B2B)
-// Siret
-// Code NAF
-
 
     $datas['other']   = str_replace(CHR(13).CHR(10), " - ", $datas['other']);
     $datas['other']   = str_replace(CHR(13), " - ", $datas['other']);
@@ -255,6 +195,125 @@ where ord.id_order='$id_order'";
 
     $code_ldd = ($datas['Ref_Carrier_Divalto'] == 'LAD') ? 'LDD' : '';
 
+    // ligne produits
+    // N° Commande Prestashop
+    // Désignation du produit
+    // Quantité commandée
+    // Prix unitaire sans remise HT (pas utilisé en standard)
+    // % de remise (pas utilisé en standard)
+    // Montant de remise (pas utilisé en standard)
+    // Référence du produit
+    // Taux de taxe
+    // Eco taxe (Deee)
+    // Code Déclinaison Prestashop
+    // Référence fournisseur du produit
+    // Prix unitaire Net HT
+    // Prix unitaire Net TTC
+    // id product Prestashop
+
+    $sql = "SELECT id_order, product_name, product_quantity, product_price, reduction_percent, reduction_amount, 
+    product_reference, tax_rate, ecotax, product_attribute_id as sref1, 
+    product_supplier_reference as sref2, unit_price_tax_excl, unit_price_tax_incl, reduction_amount_tax_excl, reduction_amount_tax_incl, product_id
+    FROM "._DB_PREFIX_."order_detail 
+    where id_order = '$id_order' order by id_order_detail";
+    $datasl = Db::getInstance()->ExecuteS($sql);
+    if (!is_array($datasl)) {
+        $datasl = [];
+    }
+    echo "DEBUG: order_detail chargé (".count($datasl)." lignes)<br>";
+
+    $pose = 1;
+    foreach ($datasl as $row) {
+        $refPose = isset($row['product_reference']) ? (string) $row['product_reference'] : '';
+        // Réf hash = 24 caractères hex (ex: 691cd48b8762c71ea351d53e) → mapping uniquement pour celles-ci
+        $isHashRef = (strlen($refPose) === 24 && ctype_xdigit($refPose));
+        if ($isHashRef) {
+            try {
+                $result = Db::getInstance()->executeS(
+                    'SELECT 1 as ok FROM `'._DB_PREFIX_.'divalto_ref_mapping` WHERE `ref_prestashop` = \''.pSQL($refPose).'\''
+                );
+                $mapped = !empty($result);
+                if ($mapped) {
+                    $pose = 2;
+                    break;
+                }
+            } catch (Exception $e) {
+                // Erreur requête mapping, on continue avec pose = 1
+            }
+        }
+    }
+
+    $tvaResult = Db::getInstance()->executeS(
+        'SELECT 1 as ok FROM `' . _DB_PREFIX_ . 'dealt_tva_attestation` dta
+         INNER JOIN `' . _DB_PREFIX_ . 'orders` o ON o.id_cart = dta.id_cart
+         WHERE o.id_order = ' . (int) $id_order . ' AND dta.is_validated = 1'
+    );
+    $hasTvaReduite = !empty($tvaResult);
+    $tva_reduction = $hasTvaReduite ? 2 : 1;
+
+    // ligne entêtes
+    // N° Commande Prestashop
+    // Message du client
+    // Nom du client
+    // Prénom du client
+    // Code client Divalto (Si le client est un client Pro)
+    // Code contact Divalto (Si le client est un client Pro)
+    // Code adresse livraison (Alias) le 29 08 18 (id_address)
+    // Société - Adresse livraison
+    // Prénom du client livraison
+    // Nom livraison
+    // Adresse 1 livraison
+    // Adresse 2 livraison
+    // Code postal livraison
+    // Ville livraison
+    // Autre informations livraison
+    // Téléphone livraison
+    // Mobile livraison
+    // Pays livraison
+    // Code adresse facturation (Alias) le 29 08 18 (id_address)
+    // Société - Adresse facturation
+    // Prénom facturation
+    // Nom facturation
+    // Adresse 1 facturation
+    // Adresse 2 facturation
+    // Code postal facturation
+    // Ville facturation
+    // Autres informations facturation
+    // Téléphone facturation
+    // Mobile facturation
+    // Pays facturation
+    // Date de création de commande Prestashop
+    // Montant port Divalto (pas utilisé en standard)
+    // Montant frais Divalto (pas utilisé en standard)
+    // Mode de paiement
+    // Email
+    // Total transport HT
+    // Nom transporteur
+    // Remise générale HT (Bon de réduction)
+    // Total frais emballage HT
+    // Dossier Divalto
+    // N° de Facture Prestashop
+    // Date de facture Prestashop
+    // N° de BL Prestashop
+    // Date de BL Prestashop
+    // Id Status de la commande Prestashop
+    // Total transport TTC
+    // Remise générale TTC (Bon de reduction)
+    // Total frais emballage TTC
+    // Commande enregistrée HT ou TTC (H ou T)
+    // Reference de commande
+    // Montant Payé (total_paid)
+    // Code client Prestashop (id_customer)
+    // Code Transport Divalto
+    // Etablissement Divalto
+    // Dépôt Divalto
+    // Type du site (B2C ou B2B)
+    // Siret
+    // Code NAF
+    // Code LDD
+    // Pose
+    // TVA réduction
+
     $entete = array($num_cde, 'Temporairement désactivé', $datas['lastname'], $datas['firstname'], $datas['dic_tiers'], $datas['dic_tiers_contact'],
         $datas['alias'], $datas['company'], $datas['firstliv'], $datas['lastliv'], $datas['address1'], $datas['address2'], $datas['postcode'], $datas['city'],
         $datas['other'], $datas['phoneliv'], $datas['mobileliv'], $datas['paysliv'],
@@ -265,7 +324,7 @@ where ord.id_order='$id_order'";
         $diva_dossier, $datas['invoice_number'], $datas['invoice_date'],
         $datas['delivery_number'], $datas['delivery_date'], $datas['current_state'],
         $datas['total_shipping_tax_incl'], $datas['total_discounts_tax_incl'], $datas['total_wrapping_tax_incl'], $cde_ttc, $datas['reference']
-    , $datas['total_paid'], $datas['id_customer'], $datas['Ref_Carrier_Divalto'], $diva_etb, $diva_depot, $diva_type, '2', $datas['siret'], $code_sans_points, $code_ldd
+    , $datas['total_paid'], $datas['id_customer'], $datas['Ref_Carrier_Divalto'], $diva_etb, $diva_depot, $diva_type, '2', $datas['siret'], $code_sans_points, $code_ldd, $pose, $tva_reduction
     );
 
     foreach ($entete as $k => $champs) {
@@ -276,34 +335,19 @@ where ord.id_order='$id_order'";
         $entete[$k] = utf8_decode($champs);
     }
 
-// ligne produits
-// N° Commande Prestashop
-// Désignation du produit
-// Quantité commandée
-// Prix unitaire sans remise HT (pas utilisé en standard)
-// % de remise (pas utilisé en standard)
-// Montant de remise (pas utilisé en standard)
-// Référence du produit
-// Taux de taxe
-// Eco taxe (Deee)
-// Code Déclinaison Prestashop
-// Référence fournisseur du produit
-// Prix unitaire Net HT
-// Prix unitaire Net TTC
-// id product Prestashop
-
-    $sql = "SELECT id_order, product_name, product_quantity, product_price, reduction_percent, reduction_amount, 
-    product_reference, tax_rate, ecotax, product_attribute_id as sref1, 
-    product_supplier_reference as sref2, unit_price_tax_excl, unit_price_tax_incl,reduction_amount_tax_excl, reduction_amount_tax_incl,product_id
-    FROM "._DB_PREFIX_."order_detail 
-    where id_order = '$id_order' order by id_order_detail";
-
-    $datasl = Db::getInstance()->ExecuteS($sql);
-
-
     $detail = array();
 
     foreach ($datasl AS $k => $row) {
+
+        $refProd = isset($row['product_reference']) ? (string) $row['product_reference'] : '';
+        $isHashRef = (strlen($refProd) === 24 && ctype_xdigit($refProd));
+        if ($isHashRef) {
+            $mappingRow = Db::getInstance()->getRow('SELECT `ref_divalto` FROM `'._DB_PREFIX_.'divalto_ref_mapping` WHERE `ref_prestashop` = \''.pSQL($refProd).'\'');
+            $mappingRef = $mappingRow ? $mappingRow['ref_divalto'] : null;
+            if ($mappingRef) {
+                $row['product_reference'] = $mappingRef;
+            }
+        }
 
         //ajout produit customisation 09-02-23
         $monProduit = $row["product_id"];
