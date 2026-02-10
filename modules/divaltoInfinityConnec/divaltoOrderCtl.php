@@ -217,25 +217,38 @@ where ord.id_order='$id_order'";
     FROM "._DB_PREFIX_."order_detail 
     where id_order = '$id_order' order by id_order_detail";
     $datasl = Db::getInstance()->ExecuteS($sql);
+    if (!is_array($datasl)) {
+        $datasl = [];
+    }
+    echo "DEBUG: order_detail chargé (".count($datasl)." lignes)<br>";
 
     $pose = 1;
     foreach ($datasl as $row) {
-        $mapped = Db::getInstance()->getValue(
-            'SELECT 1 FROM '._DB_PREFIX_.'divalto_ref_mapping 
-            WHERE ref_prestashop = \''.pSQL($row['product_reference']).'\' LIMIT 1'
-        );
-        if ($mapped) {
-            $pose = 2;
-            break;
+        $refPose = isset($row['product_reference']) ? (string) $row['product_reference'] : '';
+        // Réf hash = 24 caractères hex (ex: 691cd48b8762c71ea351d53e) → mapping uniquement pour celles-ci
+        $isHashRef = (strlen($refPose) === 24 && ctype_xdigit($refPose));
+        if ($isHashRef) {
+            try {
+                $result = Db::getInstance()->executeS(
+                    'SELECT 1 as ok FROM `'._DB_PREFIX_.'divalto_ref_mapping` WHERE `ref_prestashop` = \''.pSQL($refPose).'\''
+                );
+                $mapped = !empty($result);
+                if ($mapped) {
+                    $pose = 2;
+                    break;
+                }
+            } catch (Exception $e) {
+                // Erreur requête mapping, on continue avec pose = 1
+            }
         }
     }
 
-    $hasTvaReduite = (int) Db::getInstance()->getValue(
-        'SELECT 1 FROM ' . _DB_PREFIX_ . 'dealt_tva_attestation dta
-         INNER JOIN ' . _DB_PREFIX_ . 'orders o ON o.id_cart = dta.id_cart
-         WHERE o.id_order = ' . (int) $id_order . ' AND dta.is_validated = 1
-         LIMIT 1'
-    ) > 0;
+    $tvaResult = Db::getInstance()->executeS(
+        'SELECT 1 as ok FROM `' . _DB_PREFIX_ . 'dealt_tva_attestation` dta
+         INNER JOIN `' . _DB_PREFIX_ . 'orders` o ON o.id_cart = dta.id_cart
+         WHERE o.id_order = ' . (int) $id_order . ' AND dta.is_validated = 1'
+    );
+    $hasTvaReduite = !empty($tvaResult);
     $tva_reduction = $hasTvaReduite ? 2 : 1;
 
     // ligne entêtes
@@ -326,9 +339,14 @@ where ord.id_order='$id_order'";
 
     foreach ($datasl AS $k => $row) {
 
-        $mappingRef = Db::getInstance()->getValue('SELECT ref_divalto FROM '._DB_PREFIX_.'divalto_ref_mapping WHERE ref_prestashop = \''.pSQL($row['product_reference']).'\'');
-        if ($mappingRef) {
-            $row['product_reference'] = $mappingRef;
+        $refProd = isset($row['product_reference']) ? (string) $row['product_reference'] : '';
+        $isHashRef = (strlen($refProd) === 24 && ctype_xdigit($refProd));
+        if ($isHashRef) {
+            $mappingRow = Db::getInstance()->getRow('SELECT `ref_divalto` FROM `'._DB_PREFIX_.'divalto_ref_mapping` WHERE `ref_prestashop` = \''.pSQL($refProd).'\'');
+            $mappingRef = $mappingRow ? $mappingRow['ref_divalto'] : null;
+            if ($mappingRef) {
+                $row['product_reference'] = $mappingRef;
+            }
         }
 
         //ajout produit customisation 09-02-23
