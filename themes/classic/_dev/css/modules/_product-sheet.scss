@@ -47,10 +47,6 @@
       margin-left: 5px;
     }
 
-    .align-items-center {
-      align-items: flex-end !important;
-    }
-
     /*    .product-discount.has-discount {
           display: none !important;
         }*/
@@ -815,6 +811,12 @@
     &.visible {
       opacity: 1;
       visibility: visible;
+    }
+
+    @media screen and (min-width: 768px) {
+      .add-mobile {
+        display: none !important;
+      }
     }
 
     @media screen and (max-width: 1200px) {
