@@ -811,6 +811,12 @@
     padding-bottom: 16px;
     opacity: 0;
     visibility: hidden;
+
+    &.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
     @media screen and (max-width: 1200px) {
       padding-top: 10px;
       padding-bottom: 10px;
