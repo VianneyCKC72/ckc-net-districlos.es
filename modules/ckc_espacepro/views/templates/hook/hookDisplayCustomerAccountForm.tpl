@@ -59,7 +59,7 @@
                 <div class="file-wrap">
                     <label for="file-upload" class="custom-file-upload">Choisir un fichier</label>
                     <input style="opacity:0;height:0;width:0;" id="file-upload" class="file-input js-file-input" type="file"
-                           name="kbis" accept=".pdf,.jpg,.png">
+                           name="kbis" accept=".pdf,.jpg,.png" required>
                     <span class="file-chosen js-file-name">Aucun fichier choisi</span>
                 </div>
             </div>
@@ -72,7 +72,7 @@
                 <div class="file-wrap">
                     <label for="rib-upload" class="custom-file-upload">Choisir un fichier</label>
                     <input style="opacity:0;height:0;width:0;" id="rib-upload" class="file-input js-file-input" type="file"
-                           name="rib" accept=".pdf,.jpg,.png">
+                           name="rib" accept=".pdf,.jpg,.png" required>
                     <span class="file-chosen js-file-name">Aucun fichier choisi</span>
                 </div>
             </div>

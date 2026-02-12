@@ -216,14 +216,20 @@ $(document).ready(function () {
             });
             if (firstInvalid) {
                 var inputToFocus = firstInvalid.tagName === 'INPUT' || firstInvalid.tagName === 'SELECT' ? firstInvalid : firstInvalid.querySelector('input, select');
-                if (inputToFocus) inputToFocus.focus();
+                if (inputToFocus) {
+                    inputToFocus.focus();
+                    if (form.reportValidity) form.reportValidity();
+                }
                 return false;
             }
             return true;
         }
 
         form.addEventListener('click', function (e) {
-            if (e.target.closest('.js-registration-next') && currentStep < 3 && validateStep(currentStep)) showStep(currentStep + 1);
+            if (e.target.closest('.js-registration-next') && currentStep < 3) {
+                if (!validateStep(currentStep)) return;
+                showStep(currentStep + 1);
+            }
             if (e.target.closest('.js-registration-prev') && currentStep > 1) showStep(currentStep - 1);
         });
     }
