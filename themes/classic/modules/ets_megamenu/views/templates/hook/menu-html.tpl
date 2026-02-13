@@ -19,35 +19,18 @@
 *  International Registered Trademark & Property of ETS-Soft
 *}
 {if isset($menus) && $menus}
-    {*    <div class="ybc-menu-toggle ybc-menu-btn closed">*}
-    {*        <div class="mm_modal_filter"></div>*}
-    {*        <span class="ybc-menu-button-toggle_icon">*}
-    {*                            <svg class="Header__toggle-svg hamburger" viewbox="0 0 60 40">*}
-    {*                                <g stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">*}
-    {*                                    <path class="top-line" d="M10,10 L50,10 Z"></path>*}
-    {*                                    <path class="middle-line" d="M10,20 L50,20 Z"></path>*}
-    {*                                    <path class="bottom-line" d="M10,30 L50,30 Z"></path>*}
-    {*                                </g>*}
-    {*                            </svg>*}
-    {*                            <svg class="Header__toggle-svg hamburger_sticky" viewbox="0 0 60 40">*}
-    {*                                <g stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">*}
-    {*                                    <path class="top-line" d="M10,10 L50,10 Z"></path>*}
-    {*                                    <path class="middle-line" d="M10,20 L50,20 Z"></path>*}
-    {*                                    <path class="bottom-line" d="M10,30 L50,30 Z"></path>*}
-    {*                                </g>*}
-    {*                            </svg>*}
-    {*                        </span>*}
-    {*        <span class="main_menu_label">Nos produits</span>*}
-    {*    </div>*}
-
+ 
     <ul class="mm_menus_ul {if isset($mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB) && $mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB} clicktext_show_submenu{/if} {if isset($mm_config.ETS_MM_SHOW_ICON_VERTICAL)&& !$mm_config.ETS_MM_SHOW_ICON_VERTICAL} hide_icon_vertical{/if}">
+        <li class="mm-menu-section-top">
+            <ul class="mm-menu-inner">
         <li class="close_menu">
             <a class="pull-left" href="{$urls.base_url}">
                 {if Context::getContext()->shop->id == 2}
                     <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
                 {else}
-                    <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                    <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="40" height="40" loading="lazy">
                 {/if}
+                <span class="txt-logo-mobile">Menu</span>
             </a>
             <div class="pull-right">
                 <span class="mm_menus_back">
@@ -66,7 +49,7 @@
             </div>
         </li>
         {foreach from=$menus item='menu'}
-            <li class="mobile_noclic closed mm_menus_li{if $menu.enabled_vertical} mm_menus_li_tab{if $menu.menu_ver_hidden_border} mm_no_border{/if}{if $menu.menu_ver_alway_show} menu_ver_alway_show_sub{/if}{/if}{if $menu.custom_class} {$menu.custom_class|escape:'html':'UTF-8'}{/if}{if $menu.sub_menu_type} mm_sub_align_{strtolower($menu.sub_menu_type)|escape:'html':'UTF-8'}{/if}{if $menu.columns} mm_has_sub{/if}{if $menu.display_tabs_in_full_width && $menu.enabled_vertical} display_tabs_in_full_width{/if}"
+            <li style="border-right: none !important;" class="mobile_noclic closed mm_menus_li{if $menu.enabled_vertical} mm_menus_li_tab{if $menu.menu_ver_hidden_border} mm_no_border{/if}{if $menu.menu_ver_alway_show} menu_ver_alway_show_sub{/if}{/if}{if $menu.custom_class} {$menu.custom_class|escape:'html':'UTF-8'}{/if}{if $menu.sub_menu_type} mm_sub_align_{strtolower($menu.sub_menu_type)|escape:'html':'UTF-8'}{/if}{if $menu.columns} mm_has_sub{/if}{if $menu.display_tabs_in_full_width && $menu.enabled_vertical} display_tabs_in_full_width{/if}"
                 {if $menu.enabled_vertical}style="width: {if $menu.menu_item_width}{$menu.menu_item_width|escape:'html':'UTF-8'}{else}{*230px*}auto;{/if}"{/if}>
                 <div class="d_flex item_first_layer mm_has_sub">
                     <a {if isset($menu.menu_open_new_tab) && $menu.menu_open_new_tab == 1} target="_blank"{/if}
@@ -296,33 +279,7 @@
                 </a></li>
         {/if}
         <li class="menu-mobile-custom-container-links mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
-            <div class="menu-mobile-custom-useful-links">
-                {if $pro.env != 1}
-                    <a class="menu-mobile-useful-link" href="{$pro.url_domain}">
-                        <img src="/img/menu-mobile-espace-pro.svg" alt="espace pro" width="19px" height="18px">
-                        <p>ESPACE<br>
-                            PRO</p>
-                    </a>
-                {else}
-                    {*                    Todo : en attnete du client !*}
-                    {*                    <a class="menu-mobile-useful-link" href="{$urls.base_url}guides-et-fiches-techniques-produits">*}
-                    {*                        <img src="/img/menu-mobile-espace-pro.svg" alt="documents" width="19px" height="18px">*}
-                    {*                        <p>DOCUMENTS</p>*}
-                    {*                    </a>*}
-                {/if}
-                <a class="menu-mobile-useful-link" href="/module/opartdevis/simplequotation">
-                    <img src="/img/menu-mobile-devis.svg" alt="devis" width="20px" height="19px">
-                    <p>DEVIS</p>
-                </a>
-                <a class="menu-mobile-useful-link" href="/content/11-nos-magasins-de-cloture">
-                    <img src="/img/menu-mobile-magasins.svg" alt="magasins" width="19px" height="19px">
-                    <p>MAGASINS</p>
-                </a>
-                <a class="menu-mobile-useful-link" href="{$urls.pages.authentication}" onclick="window.location.href='{$urls.pages.authentication}?back={$urls.current_url|urlencode}'">
-                    <img src="/img/menu-mobile-compte.svg" alt="compte" width="16px" height="19px">
-                    <p>COMPTE</p>
-                </a>
-            </div>
+
             {if Context::getContext()->shop->id == 2}
                 <a href="/avantages-pro" class="btn btn-primary btn-avantages-mobile">
                     <div class="text-btn">
@@ -331,22 +288,55 @@
                 </a>
             {else}
                 <a href="{$link->getModuleLink('ckc_configurator', 'configurator')|escape:'htmlall':'UTF-8'}" class="btn-configurateur-mobile">
-                    <div class="text-btn">
-                                <span class="small-text">
-                                    Configurez<br>
-                                </span>
-                        <span class="medium-text">votre clôture</span>
-                    </div>
-                    <img width="63px" height="63px" alt="cloture" src="/img/menu-mobile-fence.svg">
+                <img width="45px" height="45px" alt="configurer votre clôture" src="themes/classic/assets/img/configurer-icon.svg">
+                <div class="text-btn">
+                    <span class="medium-text">Configurez votre clôture</span>
+                </div>
                 </a>
             {/if}
-            <a href="tel:+33422531034" class="menu-mobile-phone-contact">
-                <img loading="lazy" src="/img/menu-mobile-phone.svg" alt="contact téléphone" width="27px" height="25px">
-                <span class="menu-mobile-phone-text">Des questions ?&nbsp;</span>
-                <span class="menu-mobile-phone-number">04 22 53 10 34</span>
-            </a>
-            <img src="/img/menu-mobile-stars.svg" alt="note" width="72px" height="11px" class="menu-mobile-stars" loading="lazy">
-            <p class="menu-mobile-note-text">Nos clients sont satisfaits :&nbsp;<span>9.5/10</span></p>
+        </li>
+            </ul>
+        </li>
+        <li class="mm-menu-section-bottom">
+            <ul class="mm-menu-inner">
+        <li class="menu-mobile-custom-container-links mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
+            <div style="display: flex; flex-direction: column; gap: 30px;">
+                <div class="menu-mobile-custom-useful-links">
+                    {if $pro.env != 1}
+                        <a class="menu-mobile-useful-link" href="{$pro.url_domain}">
+                            <img src="/img/menu-mobile-espace-pro.svg" alt="espace pro" width="19px" height="18px">
+                            <p>ESPACE<br>
+                                PRO</p>
+                        </a>
+                    {/if}
+                    <a class="menu-mobile-useful-link" href="/module/opartdevis/simplequotation">
+                        <img src="/img/menu-mobile-devis.svg" alt="devis" width="20px" height="19px">
+                        <p>DEVIS</p>
+                    </a>
+                    <a class="menu-mobile-useful-link" href="/content/11-nos-magasins-de-cloture">
+                        <img src="/img/menu-mobile-magasins.svg" alt="magasins" width="19px" height="19px">
+                        <p>MAGASINS</p>
+                    </a>
+                    <a class="menu-mobile-useful-link" href="/content/657-service-de-pose">
+                        <img src="themes/classic/assets/img/service-de-pose.svg" alt="magasins" width="19px" height="19px">
+                        <p style="color: #026473;">SERVICE DE POSE</p>
+                    </a>
+                    <a class="menu-mobile-useful-link" href="{$urls.pages.authentication}" onclick="window.location.href='{$urls.pages.authentication}?back={$urls.current_url|urlencode}'">
+                        <img src="/img/menu-mobile-compte.svg" alt="compte" width="16px" height="19px">
+                        <p>COMPTE</p>
+                    </a>
+                </div>
+
+                <a href="tel:+33422531034" class="menu-mobile-phone-contact">
+                    <img loading="lazy" src="/img/menu-mobile-phone.svg" alt="contact téléphone" width="27px" height="25px">
+                    <span class="menu-mobile-phone-text">Des questions ?&nbsp;</span>
+                    <span class="menu-mobile-phone-number">04 22 53 10 34</span>
+                </a>
+                <div class="menu-mobile-stars-container">
+                    <img src="/img/menu-mobile-stars.svg" alt="note" width="72px" height="11px" class="menu-mobile-stars" loading="lazy">
+                    <p class="menu-mobile-note-text">Nos clients sont satisfaits :&nbsp;<span>4.8/5</span></p>
+                </div>
+            </div>
         </li>
         {* Suppression de l'élément "Soldes" qui apparaît lors du scroll sur desktop *}
         {*
@@ -364,6 +354,8 @@
                                 </a>*}
                 {hook h='displayPromoMenuImage'}
             </div>
+        </li>
+            </ul>
         </li>
     </ul>
     {hook h='displayCustomMenu'}

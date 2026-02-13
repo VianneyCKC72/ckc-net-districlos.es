@@ -25,13 +25,11 @@
     .changestatus.transition_floating .close_menu.close-menu-sub {
         background-color: #000000;
         color: #FFFFFF;
-        display: block !important;
         font-size: 20px;
         font-weight: bold;
         line-height: 26px;
         padding: 10px 0;
         text-align: center;
-        text-transform: uppercase;
         width: 100%;
         cursor: pointer;
     }
@@ -75,13 +73,11 @@
     .transition_floating .close_menu{
         background-color: #000000;
         color: #FFFFFF;
-        display: block !important;
         font-size: 20px;
         font-weight: bold;
         line-height: 26px;
         padding: 10px 0;
         text-align: center;
-        text-transform: uppercase;
         width: 100%;
         cursor: pointer;
     }
