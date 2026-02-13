@@ -48,6 +48,5 @@
 {*            {include file='checkout/_partials/cart-voucher.tpl'}*}
 {*        {/block}*}
 
-        {include file='checkout/_partials/cart-moyen-paiement.tpl'}
     </div>
 </section>

@@ -51,25 +51,41 @@
             <img src="/img/cms/image-connexion-particulier.jpg" alt="connexion" />
           </picture>
         </div>
-        <div class="inside">
-          <h2 class="mb-4">{l s='Already have an account?' d='Shop.Theme.Customeraccount'}</h2>
-          {if Tools::getValue("ep") == 1}
-            <a href="{$urls.pages.authentication}?back=my-account&amp;ep=1" class="btn btn-secondary" id="inscription">
-              {l s='Log in instead!' d='Shop.Theme.Customeraccount'}
-            </a>
-          {else}
-            <a href="{$urls.pages.authentication}" class="btn btn-secondary" id="inscription">
-              {l s='Log in instead!' d='Shop.Theme.Customeraccount'}
-            </a>
-          {/if}
-          
-          {if isset($pro_registration_url) && !empty($pro_registration_url) && (!isset($pro.env) || $pro.env != 1)}
-            <div class="pro-registration-wrapper">
-              <h2 class="pro-registration-title">{l s='Vous êtes un professionnel ?' d='Shop.Theme.Customeraccount'}</h2>
-              <a href="{$pro_registration_url}" class="btn btn-secondary" id="inscription-pro">
-                {l s='Créer un compte professionnel' d='Shop.Theme.Customeraccount'}
-              </a>
+        <div class="inside{if isset($pro.env) && $pro.env == 1} already-account--pro{/if}">
+          {if isset($pro.env) && $pro.env == 1}
+            <div class="already-account-banner-center">
+              <div class="already-account-banner-left">
+                <span class="already-account-banner-title">Formulaire d'inscription</span>
+              </div>
+              <div class="already-account-banner-right">
+                <span class="already-account-banner-question">Vous avez déjà un compte ?</span>
+                {if Tools::getValue("ep") == 1}
+                  {assign var="auth_url" value=$urls.pages.authentication|cat:'?back=my-account&ep=1'}
+                {else}
+                  {assign var="auth_url" value=$urls.pages.authentication}
+                {/if}
+                <a href="{$auth_url}" class="btn btn-secondary btn-banner-connect" id="inscription">Je me connecte</a>
+              </div>
             </div>
+          {else}
+            <h2 class="mb-4">{l s='Already have an account?' d='Shop.Theme.Customeraccount'}</h2>
+            {if Tools::getValue("ep") == 1}
+              <a href="{$urls.pages.authentication}?back=my-account&amp;ep=1" class="btn btn-secondary" id="inscription">
+                {l s='Log in instead!' d='Shop.Theme.Customeraccount'}
+              </a>
+            {else}
+              <a href="{$urls.pages.authentication}" class="btn btn-secondary" id="inscription">
+                {l s='Log in instead!' d='Shop.Theme.Customeraccount'}
+              </a>
+            {/if}
+            {if isset($pro_registration_url) && !empty($pro_registration_url)}
+              <div class="pro-registration-wrapper">
+                <h2 class="pro-registration-title">{l s='Vous êtes un professionnel ?' d='Shop.Theme.Customeraccount'}</h2>
+                <a href="{$pro_registration_url}" class="btn btn-secondary" id="inscription-pro">
+                  {l s='Créer un compte professionnel' d='Shop.Theme.Customeraccount'}
+                </a>
+              </div>
+            {/if}
           {/if}
         </div>
       </div>

@@ -4871,6 +4871,10 @@ a.bg-inverse:hover {
   color: #7a7a7a !important;
 }
 
+.text-underline {
+  text-decoration: underline;
+}
+
 a.text-muted:focus,
 a.text-muted:hover {
   color: #616161 !important;
@@ -8524,7 +8528,7 @@ form
 
 #header .header-top {
   padding-top: 25px;
-  padding-bottom: 20px;
+  padding-bottom: 70px;
   max-width: 1520px;
   margin: 0 auto;
   @media only screen and (max-width: 1620px) {

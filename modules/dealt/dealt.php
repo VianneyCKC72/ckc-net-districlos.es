@@ -61,6 +61,7 @@ class Dealt extends Module
                      'displayShoppingCartFooter',
                      'displayCheckoutSummaryTop',
                      'displayCartProductLine',
+                     'displayProductPromoInstallation',
                  ] as $hook) {
             if (!$this->isRegisteredInHook($hook) && !$this->registerHook($hook)) {
                 return false;
@@ -550,126 +551,131 @@ class Dealt extends Module
         $orderObject = $params['order'];
         $customerObject = $params['customer'];
         $cartObject = $params['cart'];
-        $idlang = Context::getContext()->language->id;
-        $hasValidParams = Validate::isLoadedObject($orderObject) && Validate::isLoadedObject($customerObject) && Validate::isLoadedObject($cartObject);
-        if ($hasValidParams) {
-            $orderDetails = $orderObject->getOrderDetailList();
-            $servicePrice = 0;
-            $offerId = '';
-            $storeId = '';
+        $orderStatus = $params['orderStatus'];
+        if((int)$orderStatus->paid){
+            $idlang = Context::getContext()->language->id;
+            $hasValidParams = Validate::isLoadedObject($orderObject) && Validate::isLoadedObject($customerObject) && Validate::isLoadedObject($cartObject);
+            if ($hasValidParams) {
+                $orderDetails = $orderObject->getOrderDetailList();
+                $servicePrice = 0;
+                $offerId = '';
+                $storeId = '';
 
-            foreach ($orderDetails as $orderDetail) {
-                $containsService = false;
-                $defaultCategory = Db::getInstance()->executeS('SELECT id_category_default FROM `' . _DB_PREFIX_ . 'product`
+                foreach ($orderDetails as $orderDetail) {
+                    $containsService = false;
+                    $defaultCategory = Db::getInstance()->executeS('SELECT id_category_default FROM `' . _DB_PREFIX_ . 'product`
                 WHERE `id_product` = ' . (int)$orderDetail['product_id']);
-                if ($defaultCategory[0]['id_category_default'] == 369) {
-                    $taxPercentage = 100 + (int)$orderDetail['tax_rate'];
-                    $servicePrice = $orderDetail['product_price'] / 100 * $taxPercentage;
-                    $serviceProduct = new \Product($orderDetail['product_id'], false, $idlang);
-                    $offerId = $serviceProduct->reference;
-                    $containsService = true;
+                    if ($defaultCategory[0]['id_category_default'] == 369) {
+                        $taxPercentage = 100 + (int)$orderDetail['tax_rate'];
+                        $servicePrice = $orderDetail['product_price'] / 100 * $taxPercentage;
+                        $serviceProduct = new \Product($orderDetail['product_id'], false, $idlang);
+                        $offerId = $serviceProduct->reference;
+                        $containsService = true;
 
-                    if ($containsService) {
-                        $productsPriceTotal = $orderObject->total_products_wt - $servicePrice;
+                        if ($containsService) {
+                            $productsPriceTotal = $orderObject->total_products_wt - $servicePrice;
 
-                        $addressSQL = Db::getInstance()->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'address`
+                            $addressSQL = Db::getInstance()->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'address`
                 WHERE `id_address` = ' . (int)$cartObject->id_address_delivery);
 
-                        $customer = [
-                            'firstName' => $customerObject->firstname,
-                            'lastName' => $customerObject->lastname,
-                            'emailAddress' => $customerObject->email,
-                            'phoneNumber' => (string)$addressSQL[0]['phone'],
-                            'customerProductPrice' => $productsPriceTotal,
-                            'customerServicePrice' => $servicePrice,
-                            'purchaseOrder' => (string)$orderObject->id,
-                        ];
+                            $customer = [
+                                'firstName' => $customerObject->firstname,
+                                'lastName' => $customerObject->lastname,
+                                'emailAddress' => $customerObject->email,
+                                'phoneNumber' => (string)$addressSQL[0]['phone'],
+                                'customerProductPrice' => $productsPriceTotal,
+                                'customerServicePrice' => $servicePrice,
+                                'purchaseOrder' => (string)$orderObject->id,
+                            ];
 
-                        $countrySql = Db::getInstance()->executeS('SELECT c.name FROM `' . _DB_PREFIX_ . 'country_lang` c
+                            $countrySql = Db::getInstance()->executeS('SELECT c.name FROM `' . _DB_PREFIX_ . 'country_lang` c
             WHERE `id_country` = ' . (int)$addressSQL[0]['id_country'] . ' AND `id_lang` = ' . $idlang);
 
-                        $address = [
-                            'country' => $countrySql[0]['name'],
-                            'zipCode' => $addressSQL[0]['postcode'],
-                            'city' => $addressSQL[0]['city'],
-                            'street1' => $addressSQL[0]['address1'],
-                        ];
+                            $address = [
+                                'country' => $countrySql[0]['name'],
+                                'zipCode' => $addressSQL[0]['postcode'],
+                                'city' => $addressSQL[0]['city'],
+                                'street1' => $addressSQL[0]['address1'],
+                            ];
 
-                        $customer_zip_code = pSQL($addressSQL[0]['postcode']);
+                            $customer_zip_code = pSQL($addressSQL[0]['postcode']);
 
-                        $stores = Db::getInstance()->executeS('SELECT zip_codes, name FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
+                            $stores = Db::getInstance()->executeS('SELECT zip_codes, name FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
 
-                        $store_name = null;
+                            $store_name = null;
 
-                        foreach ($stores as $store) {
-                            $zip_codes = explode(',', $store['zip_codes']);
+                            foreach ($stores as $store) {
+                                $zip_codes = explode(',', $store['zip_codes']);
 
-                            foreach ($zip_codes as $zip_code) {
-                                $zip_code = trim($zip_code);
+                                foreach ($zip_codes as $zip_code) {
+                                    $zip_code = trim($zip_code);
 
-                                if ($zip_code === $customer_zip_code || (strpos($zip_code, '*') !== false && preg_match('/^' . str_replace('*', '.*', $zip_code) . '$/', $customer_zip_code))) {
-                                    $store_name = $store['name'];
-                                    break 2;
+                                    if ($zip_code === $customer_zip_code || (strpos($zip_code, '*') !== false && preg_match('/^' . str_replace('*', '.*', $zip_code) . '$/', $customer_zip_code))) {
+                                        $store_name = $store['name'];
+                                        break 2;
+                                    }
                                 }
                             }
-                        }
 
-                        if(!empty($store_name)){
-                            $stores2 = Db::getInstance()->executeS('SELECT offerId, departement FROM ' . _DB_PREFIX_ . 'ckcstorespresentation');
-                            foreach ($stores2 as $store) {
-                                $storeName = strtolower(str_replace('ô', 'o', $store['departement']));
-                                $store_name = strtolower($store_name);
-                                if(strpos($store_name, $storeName) !== false){
-                                    $storeId = $store['offerId'];
-                                    /*PrestaShopLogger::addLog('StoreName :'.$storeName.'. StoreId : '.$storeId, 1, null, 'dealt', $orderObject->id, true);*/
-                                    break;
+                            if(!empty($store_name)){
+                                $stores2 = Db::getInstance()->executeS('SELECT offerId, departement FROM ' . _DB_PREFIX_ . 'ckcstorespresentation');
+                                foreach ($stores2 as $store) {
+                                    $storeName = strtolower(str_replace('ô', 'o', $store['departement']));
+                                    $store_name = strtolower($store_name);
+                                    if(strpos($store_name, $storeName) !== false){
+                                        $storeId = $store['offerId'];
+                                        /*PrestaShopLogger::addLog('StoreName :'.$storeName.'. StoreId : '.$storeId, 1, null, 'dealt', $orderObject->id, true);*/
+                                        break;
+                                    }
                                 }
                             }
-                        }
 
-                        // (!!) StoreId de test : à remplacer par le réel ($storeId) lors de la mise en prod :
-                        if(Context::getContext()->shop->id == 1) {
-                            $storeIdTest = '6846de0f80a710f6d4b75296';
-                        } else {
-                            $storeIdTest = '68776d60d3af94cf7663bff9';
-                        }
+                            // (!!) StoreId de test : à remplacer par le réel ($storeId) lors de la mise en prod :
+                            if(Context::getContext()->shop->id == 1) {
+                                $storeIdTest = '6846de0f80a710f6d4b75296';
+                            } else {
+                                $storeIdTest = '68776d60d3af94cf7663bff9';
+                            }
 
-                        $data = [];
-                        // (!!) OfferId Réel :
-                        $data['offerId'] = $offerId;
+                            $data = [];
+                            // (!!) OfferId Réel :
+                            $data['offerId'] = $offerId;
 
-                        // (!!) OfferId de Test : à supprimer et décommenter réel lors de la mise en prod :
-                        /*$data['offerId'] = '6846df4980a710f6d4b755c7';*/
+                            // (!!) OfferId de Test : à supprimer et décommenter réel lors de la mise en prod :
+                            /*$data['offerId'] = '6846df4980a710f6d4b755c7';*/
 
-                        $data['customer'] = $customer;
-                        $data['address'] = $address;
-                        $data['storeId'] = $storeId;
+                            $data['customer'] = $customer;
+                            $data['address'] = $address;
+                            $data['storeId'] = $storeId;
 
-                        $apiService = new \Dealt\Service\ApiService();
+                            $apiService = new \Dealt\Service\ApiService();
 
-                        $response = $apiService->submitMission($data);
+                            $response = $apiService->submitMission($data);
 
-                        if(!empty($response['createdAt'])){
-                            $id_mission = $response['id'];
-                            $id_order = $orderObject->id;
-                            $id_offer = $response['offer']['id'];
+                            if(!empty($response['createdAt'])){
+                                $id_mission = $response['id'];
+                                $id_order = $orderObject->id;
+                                $id_offer = $response['offer']['id'];
 
-                            if(!empty($id_mission) && !empty($id_order) && !empty($id_offer)){
-                                $insertMission = Db::getInstance()->execute('INSERT INTO ' . _DB_PREFIX_ . 'dealt_missions (`id`, `id_mission`, `id_order`, `id_offer`, `date_add`, `date_upd`) 
+                                if(!empty($id_mission) && !empty($id_order) && !empty($id_offer)){
+                                    $insertMission = Db::getInstance()->execute('INSERT INTO ' . _DB_PREFIX_ . 'dealt_missions (`id`, `id_mission`, `id_order`, `id_offer`, `date_add`, `date_upd`) 
                                 VALUES (NULL, "'.$id_mission.'", '.$id_order.', "'.$id_offer.'", CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())');
 
-                                PrestaShopLogger::addLog(json_encode($insertMission), 1, null, 'dealt', $orderObject->id, true);
+                                    PrestaShopLogger::addLog(json_encode($insertMission), 1, null, 'dealt', $orderObject->id, true);
+                                }
                             }
-                        }
 
-                        PrestaShopLogger::addLog(json_encode($response), 1, null, 'dealt', $orderObject->id, true);
+                            PrestaShopLogger::addLog(json_encode($response), 1, null, 'dealt', $orderObject->id, true);
+                        }
                     }
                 }
-            }
 
-            PrestaShopLogger::addLog('Valid Objects', 1, null, 'dealt', $orderObject->id, true);
+                PrestaShopLogger::addLog('Valid Objects', 1, null, 'dealt', $orderObject->id, true);
+            } else {
+                PrestaShopLogger::addLog('Invalid Objects', 1, null, 'dealt', $orderObject->id, true);
+            }
         } else {
-            PrestaShopLogger::addLog('Invalid Objects', 1, null, 'dealt', $orderObject->id, true);
+            PrestaShopLogger::addLog('Order Not Paid : '.json_encode($orderStatus->paid), 1, null, 'dealt', $orderObject->id, true);
         }
     }
 
@@ -776,14 +782,12 @@ class Dealt extends Module
     public function hookActionOrderStatusPostUpdate($params)
     {
         $orderStatus = $params['newOrderStatus'];
+        $order_id = $params['id_order'];
 
+        $order = new Order($order_id);
+
+        $allProducts = $order->getProducts();
         if($orderStatus->id == 6){
-            $order_id = $params['id_order'];
-
-            $order = new Order($order_id);
-
-            $allProducts = $order->getProducts();
-
             foreach ($allProducts as $key => $product) {
                 if((int)$allProducts[$key]['id_category_default'] == 369){
 
@@ -804,15 +808,143 @@ class Dealt extends Module
                     }
                 }
             }
+        } else if((int)$orderStatus->paid) {
+            $ifContainsService = false;
+            // Vérifier si la commande contient un service
+            foreach ($allProducts as $key => $product) {
+                if((int)$allProducts[$key]['id_category_default'] == 369) {
+                    $ifContainsService = true;
+                    break;
+                }
+            }
+            if($ifContainsService){
+                // Vérifier si une mission pour la commande est déjà créé ou pas
+                $ifMissionExists = Db::getInstance()->getValue('SELECT id_mission FROM ' . _DB_PREFIX_ . 'dealt_missions dm 
+                WHERE dm.id_order LIKE "'.$order_id.'"');
+
+                // si une mission n'est pas créée pour cette commande payée, créer des missions pour chaque service dans la commande
+                if(empty($ifMissionExists)){
+                    $idlang = Context::getContext()->language->id;
+                    foreach ($allProducts as $key => $product) {
+                        if((int)$allProducts[$key]['id_category_default'] == 369) {
+                            $offerId = $allProducts[$key]['reference'];
+                            $productId = $allProducts[$key]['id_product'];
+
+                            $orderDetails = Db::getInstance()->executeS('SELECT product_price, tax_rate FROM ' . _DB_PREFIX_ . 'order_detail 
+                            WHERE id_order = '.(int)$order->id.' AND product_id = '.(int)$productId);
+
+                            $taxPercentage = 100 + (int)$orderDetails[0]['tax_rate'];
+                            $servicePrice = $orderDetails[0]['product_price'] / 100 * $taxPercentage;
+
+                            $cartObject = new Cart($order->id_cart);
+                            $customerObject = new Customer($order->id_customer);
+
+                            $productsPriceTotal = $order->total_products_wt - $servicePrice;
+
+                            $addressSQL = Db::getInstance()->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'address`
+                WHERE `id_address` = ' . (int)$cartObject->id_address_delivery);
+
+                            $customer = [
+                                'firstName' => $customerObject->firstname,
+                                'lastName' => $customerObject->lastname,
+                                'emailAddress' => $customerObject->email,
+                                'phoneNumber' => (string)$addressSQL[0]['phone'],
+                                'customerProductPrice' => $productsPriceTotal,
+                                'customerServicePrice' => $servicePrice,
+                                'purchaseOrder' => (string)$order->id,
+                            ];
+
+                            $countrySql = Db::getInstance()->executeS('SELECT c.name FROM `' . _DB_PREFIX_ . 'country_lang` c
+            WHERE `id_country` = ' . (int)$addressSQL[0]['id_country'] . ' AND `id_lang` = ' . $idlang);
+
+                            $address = [
+                                'country' => $countrySql[0]['name'],
+                                'zipCode' => $addressSQL[0]['postcode'],
+                                'city' => $addressSQL[0]['city'],
+                                'street1' => $addressSQL[0]['address1'],
+                            ];
+
+                            $customer_zip_code = pSQL($addressSQL[0]['postcode']);
+
+                            $stores = Db::getInstance()->executeS('SELECT zip_codes, name FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
+
+                            $store_name = null;
+
+                            foreach ($stores as $store) {
+                                $zip_codes = explode(',', $store['zip_codes']);
+
+                                foreach ($zip_codes as $zip_code) {
+                                    $zip_code = trim($zip_code);
+
+                                    if ($zip_code === $customer_zip_code || (strpos($zip_code, '*') !== false && preg_match('/^' . str_replace('*', '.*', $zip_code) . '$/', $customer_zip_code))) {
+                                        $store_name = $store['name'];
+                                        break 2;
+                                    }
+                                }
+                            }
+
+                            if(!empty($store_name)){
+                                $stores2 = Db::getInstance()->executeS('SELECT offerId, departement FROM ' . _DB_PREFIX_ . 'ckcstorespresentation');
+                                foreach ($stores2 as $store) {
+                                    $storeName = strtolower(str_replace('ô', 'o', $store['departement']));
+                                    $store_name = strtolower($store_name);
+                                    if(strpos($store_name, $storeName) !== false){
+                                        $storeId = $store['offerId'];
+                                        /*PrestaShopLogger::addLog('StoreName :'.$storeName.'. StoreId : '.$storeId, 1, null, 'dealt', $orderObject->id, true);*/
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // (!!) StoreId de test : à remplacer par le réel ($storeId) lors de la mise en prod :
+                            if(Context::getContext()->shop->id == 1) {
+                                $storeIdTest = '6846de0f80a710f6d4b75296';
+                            } else {
+                                $storeIdTest = '68776d60d3af94cf7663bff9';
+                            }
+
+                            $data = [];
+                            // (!!) OfferId Réel :
+                            $data['offerId'] = $offerId;
+
+                            // (!!) OfferId de Test : à supprimer et décommenter réel lors de la mise en prod :
+                            /*$data['offerId'] = '6846df4980a710f6d4b755c7';*/
+
+                            $data['customer'] = $customer;
+                            $data['address'] = $address;
+                            $data['storeId'] = $storeId;
+
+                            $apiService = new \Dealt\Service\ApiService();
+
+                            $response = $apiService->submitMission($data);
+
+                            if(!empty($response['createdAt'])){
+                                $id_mission = $response['id'];
+                                $id_order = $order->id;
+                                $id_offer = $response['offer']['id'];
+
+                                if(!empty($id_mission) && !empty($id_order) && !empty($id_offer)){
+                                    $insertMission = Db::getInstance()->execute('INSERT INTO ' . _DB_PREFIX_ . 'dealt_missions (`id`, `id_mission`, `id_order`, `id_offer`, `date_add`, `date_upd`) 
+                                VALUES (NULL, "'.$id_mission.'", '.$id_order.', "'.$id_offer.'", CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())');
+
+                                    PrestaShopLogger::addLog(json_encode($insertMission), 1, null, 'dealt', $order->id, true);
+                                }
+                            }
+
+                            PrestaShopLogger::addLog(json_encode($response), 1, null, 'dealt', $order->id, true);
+                        }
+                    }
+                }
+            }
         }
     }
 
     public function hookActionPresentCartProduct(array $params)
     {
         if (empty($params['product']) || !is_array($params['product'])) return;
-        
+
         $product = &$params['product']; // Référence pour modifier directement
-        
+
         // S'assurer que id_category_default est présent dans les données du produit
         if (!isset($product['id_category_default']) && isset($product['id_product'])) {
             $product['id_category_default'] = (int)Db::getInstance()->getValue(
@@ -821,7 +953,7 @@ class Dealt extends Module
                 AND id_shop = ' . (int)$this->context->shop->id
             );
         }
-        
+
         DealtHookHelper::applyTvaOnPresentedCartProduct($this->context, $product); // passe par référence
     }
 
@@ -921,13 +1053,53 @@ class Dealt extends Module
             ]);
 
             $tvaBlockRendered = true;
-            
+
             // Retourner le template personnalisé
             return $this->display(__FILE__, 'views/templates/hook/cart_product_line_dealt.tpl');
         }
-        
+
         // Pour les autres produits, ne rien retourner (affichage normal)
         return '';
+    }
+
+    /**
+     * Affiche une promo "Besoin d'une pose ?" pour certains produits configurés
+     */
+    public function hookDisplayProductPromoInstallation($params)
+    {
+        $idProduct = isset($params['product']['id_product'])
+            ? (int)$params['product']['id_product']
+            : (int)Tools::getValue('id_product');
+
+        if (!$idProduct) {
+            return '';
+        }
+
+        // Charger la configuration des mappings
+        $configFile = _PS_MODULE_DIR_ . 'dealt/config/promo_mappings.php';
+        if (!file_exists($configFile)) {
+            return '';
+        }
+
+        $mappings = include($configFile);
+
+        // Vérifier si ce produit a une promo configurée
+        if (!isset($mappings[$idProduct])) {
+            return '';
+        }
+
+        $promoConfig = $mappings[$idProduct];
+
+        // Vérifier que le lien existe
+        if (empty($promoConfig['link_cta'])) {
+            return '';
+        }
+
+        $this->context->smarty->assign([
+            'promo_kit_link' => $promoConfig['link_cta'],
+        ]);
+
+        return $this->display(__FILE__, 'views/templates/hook/promo_installation.tpl');
     }
 
 }

@@ -3,7 +3,7 @@
     <div class="dealt-cart-services-container">
     <p class="h2" style="margin-top: 50px">Notre suggestion</p>
 
-    <div class="dealt-cart-services">
+    <div class="dealt-cart-services mb-3">
 
         {* ====== LISTE DES SERVICES SUGGÉRÉS (un par produit non-service du panier) ====== *}
         {foreach from=$dealt_cart_services item=s}

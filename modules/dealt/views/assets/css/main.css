@@ -70,6 +70,7 @@
     font-weight: 600;
     font-size: 16px;
     margin-bottom: 5px;
+    color: #026473;
 }
 
 .dealt-conditions-link {
@@ -335,6 +336,7 @@
     padding: 2rem;
     background-color: #026473;
     border-radius: 4px;
+    margin-bottom: 15px;
 }
 
 .dealt-cart-service-box h3,
@@ -556,7 +558,6 @@ input:checked+.slider:before {
 
 .dealt-cart-service-info .inside {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     padding-left: 0;
     max-width: 98%;
@@ -648,7 +649,7 @@ input:checked+.slider:before {
 /* Responsive mobile */
 @media (max-width: 480px) {
     #dealt-tva-modal {
-        width: 95%;
+        width: 100%;
         padding: 15px;
     }
 }
@@ -769,7 +770,6 @@ input:checked+.slider:before {
 
 .dealt-tva-notice--cartline .dealt-tva-notice__text {
     flex: 1;
-    min-width: 0;
 }
 
 .dealt-tva-notice--cartline .btn-add {
@@ -951,6 +951,17 @@ input:checked+.slider:before {
     font-weight: 400;
 }
 
+.btn-promo-dealt {
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.dealt-tva-title {
+    font-weight: 600;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
 
@@ -983,6 +994,10 @@ input:checked+.slider:before {
         width: 40px;
         height: auto;
     }
+
+    .dealt-tva-actions-wrapper {
+        width: 100%;
+    }
     
     /* Forcer l'icône en blanc sur mobile */
     .picto-mobile .st0,
@@ -995,6 +1010,42 @@ input:checked+.slider:before {
     .block-left-header h3 {
         margin: 0;
     }
+
+    .product-line-grid.dealt-service-product {
+        flex-direction: column;
+    }
+    
+    .product-line-grid.dealt-service-product .product-line-grid-right {
+        display: none !important;
+    }
+    
+    /* Bloc TVA en colonne mobile */
+    .dealt-tva-notice--cartline {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .product-line-grid-left {
+        width: 100% !important;
+    }
+    
+    .dealt-tva-btn-desktop {
+        display: none;
+    }
+    
+    .dealt-tva-actions-mobile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .dealt-mobile-actions-always {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
 }
 
 /* Desktop : cacher le picto mobile */
@@ -1006,4 +1057,14 @@ input:checked+.slider:before {
     .block-left-header {
         display: block;
     }
+    
+    .dealt-tva-actions-mobile,
+    .dealt-mobile-actions-always {
+        display: none;
+    }
+    
+    .dealt-tva-btn-desktop {
+        display: inline-block;
+    }
 }
+

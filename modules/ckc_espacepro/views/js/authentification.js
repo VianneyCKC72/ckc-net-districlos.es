@@ -2,8 +2,6 @@ $(document).ready(function () {
     // On agit uniquement dans l'espace pro
     if (!$('.espace_pro').length) return;
 
-    console.log("🔧 Script espace pro chargé");
-
     /* ----------------------------------------------------
        1️⃣ Suppression et gestion des éléments spécifiques
     ---------------------------------------------------- */
@@ -108,10 +106,135 @@ $(document).ready(function () {
         form.innerHTML = "";
         form.appendChild(fragment);
 
-        console.log("✅ Champs réordonnés dans .identity-form form / #customer-form");
     }
 
     reorderForm();
+
+    /* ----------------------------------------------------
+       Formulaire inscription pro en 3 étapes (uniquement page registration)
+    ---------------------------------------------------- */
+    var STEP_SELECTORS = {
+        1: ['#customer-company', '#customer-siret', '#nafCodeInput', '#nafCodeSelect', '#customer-tva', '#customer-vat_number', '#file-upload', '#rib-upload'],
+        2: ['#customer-adresse', '#customer-adresse2', '#customer-cp', '#customer-ville', '#customer-pays']
+    };
+
+    function getStepForNode(node) {
+        if (!node || !node.querySelector) return 3;
+        for (var s = 1; s <= 2; s++) {
+            for (var i = 0; i < STEP_SELECTORS[s].length; i++) {
+                if (node.querySelector(STEP_SELECTORS[s][i])) return s;
+            }
+        }
+        return 3;
+    }
+
+    function initRegistrationSteps() {
+        if (!$('body#registration.registration-pro').length) return;
+        var form = document.getElementById('customer-form');
+        if (!form) return;
+
+        var children = Array.from(form.children);
+        if (!children.length) return;
+
+        var stepTitles = { 1: 'Votre société', 2: 'Coordonnées', 3: 'Informations personnelles' };
+        var steps = [];
+        var stepDiv;
+
+        for (var s = 1; s <= 3; s++) {
+            stepDiv = document.createElement('div');
+            stepDiv.className = 'registration-step registration-step-' + s;
+            stepDiv.setAttribute('data-step', String(s));
+            stepDiv.insertAdjacentHTML('afterbegin',
+                '<div class="registration-step-header">' +
+                '<span class="registration-step-header-num">' + s + '</span>' +
+                '<span class="registration-step-header-title">' + stepTitles[s] + '</span></div>');
+            steps.push(stepDiv);
+        }
+
+        children.forEach(function (node) {
+            steps[getStepForNode(node) - 1].appendChild(node);
+        });
+
+        var indicatorParts = [];
+        for (var i = 1; i <= 3; i++) {
+            if (i > 1) indicatorParts.push('<span class="registration-step-connector" aria-hidden="true"></span>');
+            indicatorParts.push('<div class="registration-step-item' + (i === 1 ? ' active' : '') + '" data-step="' + i + '">' +
+                '<span class="registration-step-num">' + i + '</span><span class="registration-step-label">' + stepTitles[i] + '</span></div>');
+        }
+
+        var stepIndicator = document.createElement('div');
+        stepIndicator.className = 'registration-steps-indicator';
+        stepIndicator.innerHTML = indicatorParts.join('');
+
+        var btnNext = '<button type="button" class="btn btn-primary js-registration-next">Prochaine étape</button>';
+        var btnPrev = '<button type="button" class="btn btn-link js-registration-prev">Précédent</button>';
+
+        function createActionsEl(html, isPrevOnly) {
+            var el = document.createElement('div');
+            el.className = 'registration-step-actions' + (isPrevOnly ? ' registration-step-actions--prev' : '');
+            el.innerHTML = html;
+            return el;
+        }
+
+        steps[0].appendChild(createActionsEl(btnNext));
+        steps[1].appendChild(createActionsEl(btnPrev + ' ' + btnNext));
+        var registerContainer = steps[2].querySelector('.actions-container-register');
+        if (registerContainer) {
+            var prevWrap = createActionsEl(btnPrev, true);
+            prevWrap.style.marginBottom = '0';
+            registerContainer.insertBefore(prevWrap, registerContainer.firstChild);
+        }
+
+        form.innerHTML = '';
+        form.appendChild(stepIndicator);
+        steps.forEach(function (el) { form.appendChild(el); });
+
+        steps[1].classList.add('registration-step-hidden');
+        steps[2].classList.add('registration-step-hidden');
+
+        var currentStep = 1;
+
+        function updateIndicator() {
+            stepIndicator.querySelectorAll('.registration-step-item').forEach(function (el, i) {
+                el.classList.toggle('active', (i + 1) === currentStep);
+            });
+        }
+
+        function showStep(stepNum) {
+            currentStep = stepNum;
+            steps.forEach(function (el, i) {
+                el.classList.toggle('registration-step-hidden', (i + 1) !== stepNum);
+            });
+            updateIndicator();
+        }
+
+        function validateStep(stepNum) {
+            var stepEl = steps[stepNum - 1];
+            var firstInvalid = Array.prototype.find.call(stepEl.querySelectorAll('[required]'), function (el) {
+                var input = el.tagName === 'INPUT' || el.tagName === 'SELECT' ? el : el.querySelector('input, select');
+                return input && (!input.value || (input.type === 'file' && !input.files.length));
+            });
+            if (firstInvalid) {
+                var inputToFocus = firstInvalid.tagName === 'INPUT' || firstInvalid.tagName === 'SELECT' ? firstInvalid : firstInvalid.querySelector('input, select');
+                if (inputToFocus) {
+                    inputToFocus.focus();
+                    if (form.reportValidity) form.reportValidity();
+                }
+                return false;
+            }
+            return true;
+        }
+
+        form.addEventListener('click', function (e) {
+            if (e.target.closest('.js-registration-next') && currentStep < 3) {
+                if (!validateStep(currentStep)) return;
+                showStep(currentStep + 1);
+            }
+            if (e.target.closest('.js-registration-prev') && currentStep > 1) showStep(currentStep - 1);
+        });
+    }
+
+    initRegistrationSteps();
 
     /* ----------------------------------------------------
        5️⃣ Gestion upload fichiers (label dynamique)

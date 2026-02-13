@@ -569,10 +569,20 @@ class DealtHookHelper
 
         if(!empty($longueur) && count($serviceIds)){
             foreach ($serviceIds as $serviceId) {
-                $serviceIdSql = Db::getInstance()->executeS('SELECT p.id_product FROM ' . _DB_PREFIX_ . 'product p
-                LEFT JOIN ' . _DB_PREFIX_ . 'dealt_service ds ON ds.reference = p.reference
-                WHERE '.$longueur.' >= ds.longueur_min AND '.$longueur.' <= ds.longueur_max 
-                AND p.id_product = '.$serviceId);
+                $checkIncludesLength = Db::getInstance()->getValue('SELECT d.includes_length FROM ' . _DB_PREFIX_ . 'dealt_service d
+                LEFT JOIN ' . _DB_PREFIX_ . 'product p ON p.reference = d.reference 
+                WHERE p.id_product = ' . $serviceId);
+
+                if((int)$checkIncludesLength){
+                    $serviceIdSql = Db::getInstance()->executeS('SELECT p.id_product FROM ' . _DB_PREFIX_ . 'product p
+                    LEFT JOIN ' . _DB_PREFIX_ . 'dealt_service ds ON ds.reference = p.reference
+                    WHERE '.$longueur.' >= ds.longueur_min AND '.$longueur.' <= ds.longueur_max 
+                    AND p.id_product = '.$serviceId);
+                } else {
+                    $serviceIdSql = Db::getInstance()->executeS('SELECT p.id_product FROM ' . _DB_PREFIX_ . 'product p
+                    LEFT JOIN ' . _DB_PREFIX_ . 'dealt_service ds ON ds.reference = p.reference
+                    WHERE p.id_product = '.$serviceId);
+                }
 
                 if(!empty($serviceIdSql[0]['id_product'])){
                     $idService = $serviceIdSql[0]['id_product'];
@@ -781,7 +791,11 @@ class DealtHookHelper
                 $priceTtc = \Product::getPriceStatic($sid, true);
                 $serviceRow = self::getServiceRowByProductId($sid) ?: [];
 
-                if($length <= $serviceRow['longueur_max'] && $length >= $serviceRow['longueur_min']){
+                $checkIncludesLength = Db::getInstance()->getValue('SELECT d.includes_length FROM ' . _DB_PREFIX_ . 'dealt_service d
+                LEFT JOIN ' . _DB_PREFIX_ . 'product p ON p.reference = d.reference 
+                WHERE p.id_product = ' . $sid);
+
+                if($length <= $serviceRow['longueur_max'] && $length >= $serviceRow['longueur_min'] OR !(int)$checkIncludesLength){
                     $services[] = [
                         // Contexte main
                         'main_product_id'   => $checkIfPack && !empty($idPackMainProduct[0]['id_product']) && $mainId == $idPackMainProduct[0]['id_product'] && !empty($idPack) ? $idPack : $mainId,

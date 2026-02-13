@@ -873,7 +873,7 @@ span.mm_alert.alert-warning:before {
     font-size: 15px;
     font-weight: bold;
     line-height: 19px;
-    width: 135px;
+    width: 180px;
     cursor: pointer;
     color: #000;
     display: flex !important;

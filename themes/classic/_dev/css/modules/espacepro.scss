@@ -1727,3 +1727,309 @@ $bp-md: 768px;
 #authentication.-pro #login-form .cont-all-btn-login button#submit-login.btn-primary-pro:hover {
   border-color: $pro-color;
 }
+
+// Inscription pro (body#registration.registration-pro)
+body.registration-pro#registration {
+  $banner-btn-bg: #f6b000;
+  $banner-btn-hover: #e0a000;
+  $step-inactive: #999;
+  $step-border: #e0e0e0;
+  $step-active-text: #333;
+
+  #registration-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 40px;
+  }
+
+  .already-account { width: 100%; }
+
+  .already-account--pro.inside {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .already-account-banner-center {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .already-account-banner-left { flex-shrink: 0; }
+
+  .already-account-banner-right {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    gap: 0.25rem;
+  }
+
+  .already-account-banner-title,
+  .already-account-banner-question {
+    color: #fff;
+    margin: 0;
+  }
+
+  .already-account-banner-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+
+  .already-account-banner-question {
+    font-size: 0.8rem !important;
+    font-weight: 500;
+  }
+
+  .btn-banner-connect {
+    margin-top: 0;
+    background-color: $banner-btn-bg !important;
+    border-color: $banner-btn-bg !important;
+    color: #fff !important;
+    &:hover {
+      background-color: $banner-btn-hover !important;
+      border-color: $banner-btn-hover !important;
+    }
+  }
+
+  .inside-register-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #customer-form {
+    max-width: 950px;
+    width: 100%;
+  }
+
+  .registration-steps-indicator {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 0;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+  }
+
+  .registration-step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    font-size: 14px;
+    color: $step-inactive;
+    flex: 0 0 140px;
+    min-width: 140px;
+    max-width: 140px;
+
+    .registration-step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: $step-border;
+      color: $step-inactive;
+      font-size: 16px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .registration-step-label {
+      text-align: center;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+
+    &.active {
+      color: $step-active-text;
+      font-weight: 600;
+      .registration-step-num {
+        background: $pro-color;
+        color: #fff;
+      }
+    }
+  }
+
+  .registration-step-connector {
+    flex: 1;
+    min-width: 180px;
+    height: 4px;
+    border-radius: 10px;
+    background: $step-border;
+    margin: 16px -36px 0;
+    align-self: flex-start;
+  }
+
+  .registration-step-hidden { display: none !important; }
+
+  .registration-step {
+    background: #fff;
+    border: 1px solid $step-border;
+    padding: 2.25rem 17.5rem;
+    width: 100%;
+
+    @media (max-width: 768px) { padding: 2.25rem 6rem; }
+
+    .registration-step-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+
+    .registration-step-header-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: $pro-color;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .registration-step-header-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: $step-active-text;
+    }
+
+    .registration-step-actions {
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      &--prev { margin-bottom: 1rem; }
+    }
+
+    .actions-container-register {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      .registration-step-actions { margin-top: 0; }
+      .btn {
+        font-size: 0.9rem;
+        padding: 0.45rem 1rem;
+      }
+    }
+  }
+
+  @media (max-width: 767px) {
+    $mobile-pad: 1.25rem;
+
+    #registration-form { row-gap: 24px; }
+
+    .already-account--pro.inside {
+      padding: $mobile-pad 1rem;
+      align-items: center;
+    }
+
+    .already-account-banner-center {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .already-account-banner-left,
+    .already-account-banner-right {
+      width: 100%;
+      align-items: center;
+      text-align: center;
+    }
+
+    .already-account-banner-title {
+      font-size: 1.35rem;
+      word-break: break-word;
+    }
+
+    .already-account-banner-question { font-size: 0.85rem !important; }
+
+    .registration-steps-indicator {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 4px;
+      max-width: 100%;
+      margin-bottom: 1.5rem;
+      padding: 0 0.5rem;
+    }
+
+    .registration-step-item {
+      flex: 0 0 auto;
+      min-width: 90px;
+      max-width: 110px;
+
+      .registration-step-num {
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
+      }
+
+      .registration-step-label {
+        font-size: 11px;
+        white-space: normal;
+        text-align: center;
+        line-height: 1.2;
+      }
+    }
+
+    .registration-step-connector {
+      min-width: 24px;
+      margin: 14px -24px 0;
+    }
+
+    #customer-form {
+      max-width: 100%;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .registration-step {
+      padding: 1.5rem $mobile-pad;
+      width: 100%;
+      box-sizing: border-box;
+
+      .registration-step-header { margin-bottom: $mobile-pad; }
+
+      .registration-step-header-num {
+        width: 32px;
+        height: 32px;
+        font-size: 13px;
+      }
+
+      .registration-step-header-title { font-size: 0.95rem; }
+
+      .registration-step-actions { margin-top: $mobile-pad; }
+
+      .actions-container-register {
+        flex-direction: column;
+        align-items: stretch;
+
+        .registration-step-actions { order: -1; }
+        .btn { width: 100%; }
+      }
+    }
+  }
+}
+
+// Site pro uniquement : dégradé de la bannière à 90deg (au lieu de 270deg)
+body.registration-pro#registration .already-account .img::after,
+body.registration-pro#registration .not-account-yet .img::after,
+body#authentication.espace_pro .already-account .img::after,
+body#authentication.espace_pro .not-account-yet .img::after {
+  background: linear-gradient(90deg, #026473 0, transparent 100%);
+}
