@@ -17,21 +17,23 @@
     <div class="header-top">
         <div class="row-header d-flex align-items-center">
 
-            <!-- Logo Desktop (Visible seulement à partir de md) -->
-            <div class="d-none d-xl-block">
-                {if ($page.page_name == 'authentication' || $page.page_name == 'registration') && $pro.env == 1}
-                    <a href="/">
-                        <img class="desktop_only" width="180" src="/img/DISTRICLOS_pro_logo.png" alt="{$shop.name} Pro" />
-                    </a>
-                {elseif $shop.logo_details}
-                    {renderLogo}
-                {/if}
-            </div>
-
-
-            <!-- Bouton menu (Visible uniquement sur Desktop) -->
-            <div class="menu-button d-none d-md-block">
-                {include file='_partials/btn-menu.tpl'}
+            <!-- Logo + Nos produits (Desktop) -->
+            <div class="header-logo-and-buttons d-flex align-items-center">
+                <div class="d-none d-xl-block">
+                    {if ($page.page_name == 'authentication' || $page.page_name == 'registration') && $pro.env == 1}
+                        <a href="/">
+                            <img class="desktop_only" width="180" src="/img/DISTRICLOS_pro_logo.png" alt="{$shop.name} Pro" />
+                        </a>
+                    {elseif $shop.logo_details}
+                        {renderLogo}
+                    {/if}
+                </div>
+                <div class="header-buttons-menu-soldes d-flex align-items-center">
+                    <!-- Bouton menu "Nos produits" (Visible uniquement sur Desktop) -->
+                    <div class="menu-button d-none d-md-block">
+                        {include file='_partials/btn-menu.tpl'}
+                    </div>
+                </div>
             </div>
 
             <!-- Logo Mobile (Visible seulement sur xs et sm) -->
@@ -52,7 +54,11 @@
                                 </span>
                                 <span class="medium-text">votre clôture</span>
                             </div>
-                            <img width="37px" height="35px" alt="cloture" src="/img/menu-mobile-fence.svg">
+                            <img width="37" height="35" alt="Configurez votre clôture" src="/themes/classic/assets/img/configurer-icon.svg">
+                        </a>
+                        <a href="{$urls.base_url}content/657-service-de-pose" class="ico btn-service-pose" title="Service de pose">
+                            <img src="/themes/classic/assets/img/service-de-pose.svg" alt="Service de pose" width="28" height="28" class="btn-service-pose__icon" loading="lazy">
+                            <span>Service de pose</span>
                         </a>
                         <div class="block-question block-question-header">
                             <img loading="lazy" src="/img/menu-mobile-phone.svg" width="22" height="20" class="ico-question" alt="des question?">

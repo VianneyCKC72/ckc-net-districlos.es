@@ -1,9 +1,66 @@
 #header {
+  /* Refonte header : desktop uniquement (≥993px). Tablette et mobile inchangés. */
   .row-header {
     gap: 20px;
     display: flex;
     justify-content: space-between;
     align-content: center;
+  }
+  
+  @media only screen and (min-width: 993px) {
+    .header-logo-and-buttons {
+      gap: 50px;
+      margin-right: 35px;
+    }
+
+    .header-buttons-menu-soldes {
+      gap: 4px;
+    }
+
+    /* Bouton "Nos produits" (teal, arrondi) desktop uniquement */
+    .menu-button .ybc-menu-toggle {
+      background-color: #026473;
+      border: none;
+      border-radius: 140px;
+      color: #fff !important;
+      height: 44px;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      min-width: 155px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      &:hover,
+      &:focus,
+      &:active {
+        background-color: #025a68;
+        color: #fff !important;
+      }
+      svg g {
+        stroke: #fff !important;
+      }
+      .hamburger_sticky {
+        display: none;
+      }
+      .main_menu_label {
+        color: #fff;
+      }
+    }
+  }
+
+  /* 768px–992px : wrappers sans style refonte, ne pas casser le flex (display: contents) */
+  @media only screen and (min-width: 768px) and (max-width: 992px) {
+    .header-logo-and-buttons,
+    .header-buttons-menu-soldes {
+      display: contents;
+    }
+  }
+
+  /* Service de pose : masqué sur mobile et tablette (≤992px), visible desktop uniquement */
+  @media only screen and (max-width: 992px) {
+    .ico.btn-service-pose {
+      display: none !important;
+    }
   }
 
   .cart-products-count {
@@ -113,9 +170,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 240px;
+    width: 210px;
     text-align: left;
-    height: 50px;
+    height: 44px;
     @media only screen and (max-width: 1620px) {
       width: 220px;
     }
@@ -182,9 +239,9 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 30px;
+      gap: 15px;
       text-transform: uppercase;
-      padding-left: 30px;
+      padding-left: 100px;
       @media only screen and (max-width: 996px) {
         .btn-espace-pro, .btn-devis, .btn-magasin {
           display: none;
