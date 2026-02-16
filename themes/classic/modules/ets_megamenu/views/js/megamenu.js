@@ -13,16 +13,35 @@ $(document).ready(function () {
             .appendTo('head');
     }
 
-    // Gestion du clic sur le lien de premier niveau
-    $('.item_first_layer.mm_has_sub > a').on('click', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var arrow = this.nextElementSibling;
-        if (arrow && arrow.classList.contains('arrow')) {
-            arrow.click();
-        }
-        return false;
-    });
+    // En desktop : rendre toute la zone item_first_layer cliquable pour ouvrir le sous-menu
+    if (!isMobile) {
+        // Gestionnaire sur toute la zone item_first_layer
+        $(document).on('click', '.item_first_layer.mm_has_sub', function(e) {
+            // Ne pas déclencher si on clique sur la flèche elle-même (elle a son propre gestionnaire)
+            if ($(e.target).closest('.arrow').length) {
+                return;
+            }
+            
+            var $arrow = $(this).find('.arrow').first();
+            if ($arrow.length) {
+                e.preventDefault();
+                e.stopPropagation();
+                $arrow[0].click();
+                return false;
+            }
+        });
+    } else {
+        // En mobile : gestion uniquement sur le lien
+        $('.item_first_layer.mm_has_sub > a').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var arrow = this.nextElementSibling;
+            if (arrow && arrow.classList.contains('arrow')) {
+                arrow.click();
+            }
+            return false;
+        });
+    }
 
     // Fonction utilitaire pour rendre un élément cliquable en mobile
     function makeClickable(selector, arrowSelector, ignoreSelectors) {

@@ -573,6 +573,12 @@ li.menu_block_product {
     display: flex;
     justify-content: space-between;
 }
+/* Rendre toute la zone cliquable en desktop */
+@media (min-width: 769px) {
+    .item_first_layer.mm_has_sub {
+        cursor: pointer;
+    }
+}
 .item_first_layer a{
     display: flex;
     justify-content: space-between;
