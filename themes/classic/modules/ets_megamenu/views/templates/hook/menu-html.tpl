@@ -138,20 +138,13 @@
                                                         {if $tab.tab_img_link}
                                                             <img src="{$tab.tab_img_link|escape:'html':'UTF-8'}"
                                                                  title="" alt="" width="20"/>
-
-
-
-
-{elseif $tab.tab_icon}
-
-
-
-
+                                                            {elseif $tab.tab_icon}
                                                             <i class="fa {$tab.tab_icon|escape:'html':'UTF-8'}"></i>
                                                         {/if}
-                                                        {$tab.title|escape:'html':'UTF-8'}
-                                                        {if $tab.bubble_text}<span class="mm_bubble_text"
-                                                                                   style="background: {if $tab.bubble_background_color}{$tab.bubble_background_color|escape:'html':'UTF-8'}{else}#FC4444{/if}; color: {if $tab.bubble_text_color|escape:'html':'UTF-8'}{$tab.bubble_text_color|escape:'html':'UTF-8'}{else}#ffffff{/if};">{$tab.bubble_text|escape:'html':'UTF-8'}</span>{/if}
+                                                        <div class="mm_tab_title_wrapper" style="display: flex;flex-direction: column-reverse;align-items: flex-start;">
+                                                            {$tab.title|escape:'html':'UTF-8'}
+                                                            {if $tab.bubble_text}<span class="mm_bubble_text"style="background: {if $tab.bubble_background_color}{$tab.bubble_background_color|escape:'html':'UTF-8'}{else}#FC4444{/if}; color: {if $tab.bubble_text_color|escape:'html':'UTF-8'}{$tab.bubble_text_color|escape:'html':'UTF-8'}{else}#ffffff{/if};">{$tab.bubble_text|escape:'html':'UTF-8'}</span>{/if}
+                                                        </div>
                                                         {if $tab.url}
                                                     </a>
                                                      <span class="arrow YES closed niveau2">

@@ -46,8 +46,6 @@ body .ets_mm_megamenu.bg_submenu:before {
 }
 body .container .ets_mm_megamenu.bg_submenu:before {
     left: calc((100vw - 1180px) / -2);
-    left: -webkit-calc((100vw - 1180px) / -2);
-    left: -moz-calc((100vw - 1180px) / -2);
 }
 .bg_submenu:before {
     height: 100vw;
@@ -156,7 +154,6 @@ li.menu_block_product {
     cursor: pointer;
     outline: medium none !important;
     transform: translateY(50%);
-    -webkit-transform: translateY(50%);
     padding-right: 0;
     transition: all 0.2s;
     -webkit-transition: all 0.2s;
@@ -180,8 +177,7 @@ li.menu_block_product {
     right: 0;
     transition: all 0.2s ease 0s;
     -webkit-transition: all 0.2s ease 0s;
-    transform: translatey(-50%);
-    -webkit-transform: translatey(-50%);
+    transform: translateY(-50%);
 
     -webkit-box-shadow: 0 0 6px -1px #999;
     visibility: hidden;
@@ -203,12 +199,10 @@ li.menu_block_product {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
 }
 .mm_extra_item .search-widget form button[type="submit"] {
     top: 50%;
     transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
     bottom: auto;
 }
 .mm_extra_item.mm_display_search_default .search-widget form input[type="text"] {
@@ -297,9 +291,7 @@ li.menu_block_product {
     background-repeat: no-repeat;
     visibility: hidden;
     width: calc(100% - 197px);
-    width: -webkit-calc(100% - 197px);
     min-height: calc(100% + 1px);
-    min-height: -webkit-calc(100% + 1px);
     @media (max-width: 767px){
         background-color: #026473;
 
@@ -425,10 +417,6 @@ li.menu_block_product {
 .mm_menu_content_title {
     display: inline-block;
     float: left;
-}
-.mm_menus_li > a,
-.mm_menus_li > a span:not(.mm_bubble_text) {
-    /*height: 100%;*/
 }
 .ets-dir-rtl .mm_menus_li {
     float: right;
@@ -756,10 +744,6 @@ li.menu_block_product {
     position: absolute;
     top: 50%;
     transform: translate3d(-50%, -50%, 0px);
-    -webkit-transform: translate3d(-50%, -50%, 0px);
-    -moz-transform: translate3d(-50%, -50%, 0px);
-    -ms-transform: translate3d(-50%, -50%, 0px);
-    -o-transform: translate3d(-50%, -50%, 0px);
     white-space: nowrap;
     width: auto;
 }
@@ -1062,7 +1046,6 @@ span.mm_alert.alert-warning:before {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
     width: 5px;
 }
 .layout_layout1 .ets_mm_block_content ul li a::before {
@@ -1165,8 +1148,6 @@ span.mm_alert.alert-warning:before {
     -o-perspective: 500px;
     -webkit-perspective: 500px;
     backface-visibility: hidden;
-    -o-backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
 }
 .ets_mm_block_content img {
     transition: all 0.3s;
@@ -1178,17 +1159,12 @@ span.mm_alert.alert-warning:before {
     -o-perspective: 500px;
     -webkit-perspective: 500px;
     backface-visibility: hidden;
-    -o-backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
 }
 .mm_block_type_product .thumbnail-container .thumbnail > img{
     position: relative;
 }
 .ets_mm_block_content img:hover {
     transform: scale(1.05);
-    -o-transform: scale(1.05);
-    -ms-transform: scale(1.05);
-    -webkit-transform: scale(1.05);
 }
 .mm_block_type_product .product_list_shop_by {
     margin-bottom: 7px;
@@ -1393,7 +1369,6 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
     }
     .changestatus .clicktext_show_submenu .mm_tab_toggle_title a {
         min-width: calc(100% + 30px);
-        min-width: -webkit-calc(100% + 30px);
     }
     .changestatus .clicktext_show_submenu .mm_tab_has_child::after {
         pointer-events: none;
@@ -1473,7 +1448,6 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
     }
     .clicktext_show_submenu .mm_tab_toggle_title a {
         min-width: calc(100% + 30px);
-        min-width: -webkit-calc(100% + 30px);
     }
     .clicktext_show_submenu .mm_tab_toggle_title, .clicktext_show_submenu .mm_tab_toggle_title a {
         width: 100%;
@@ -1600,15 +1574,8 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         padding: 0;
     }
     .hook-default.scroll_heading:not(.disable_sticky_mobile) .mm_menus_ul {
-        display: -webkit-box;
-        display: -moz-box;
-        display: flex;
-        display: -o-flex;
-        display: -webkit-flex;
-        display: -ms-flex;
-        display: -moz-flex;
-        justify-content: left;
         display: inline-block;
+        justify-content: left;
     }
     .mm_tabs_li {
         float: left;
@@ -1700,7 +1667,7 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
     .menu-arrow-back-container {
         padding: 15px 25px;
         cursor: pointer;
-        margin-top: 60px;
+        margin-top: 70px;
     }
     .menu-arrow-back-container .menu-arrow-back {
         display: block;
@@ -1779,19 +1746,8 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         display: none !important
     }
     .mm_bubble_text {
-        display: inline-block;
-        font-size: 10px;
-        line-height: 14px;
-        margin-left: 5px;
-        margin-top: -10px;
-        padding: 0 5px;
-        position: relative;
-        right: 5px;
-        text-transform: capitalize;
-        top: 3px;
-        transform: translateY(-50%);
-        -webkit-transform: translateY(-50%);
-        vertical-align: 5px;
+        position: inherit;
+        margin-bottom: 5px;
     }
     .ybc-menu-toggle {
         display: block;
@@ -1847,7 +1803,6 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         text-align: center;
         width: 140px;
         z-index: 100;
-        cursor: pointer;
     }
     .mm_menus_li > a {
         font-size: 13px;
@@ -2096,7 +2051,6 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
     .mm_extra_item {
         height: 100%;
         max-width: calc(100% - 125px);
-        max-width: -webkit-calc(100% - 125px);
         position: static;
         min-height: 50px;
     }
@@ -2197,6 +2151,9 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         float: left;
         width: auto;
     }
+    .mm_columns_ul_tab > li.mm_tabs_liver_alway_hide:last-of-type {
+        /* vos styles ici */
+    }
     .ets-dir-ltr.layout_layout3 .mm_menus_ul > li.mm_no_border {
         border-left: none;
     }
@@ -2296,7 +2253,6 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
     }
     .mm_block_type_image .ets_mm_block_content > a {
         backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
         display: block;
         overflow: hidden;
         perspective: 50em;
@@ -3138,6 +3094,13 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         padding-right: 0;
     }
 }
+/* Supprimer la div wrapper en desktop mais garder le contenu */
+@media (min-width: 769px) {
+    .mm_tab_title_wrapper {
+        display: contents !important;
+    }
+}
+
 @media (min-width: 991px) {
     .changestatus.ets_mm_megamenu.hook-custom {
         border-top: 1px solid #ddd;
@@ -3307,6 +3270,7 @@ li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name.active,
         font-size: 20px;
         line-height: 104%;
         font-weight: 700;
+        justify-content: flex-start;
     }
 }
 
@@ -3674,6 +3638,10 @@ span.mm_menu_content_title > div:nth-child(2){
     .logo-menu-mobile-sub-cat {
         display: none;
     }
+    li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name a {
+        color : #000 !important;
+        font-weight: 700 !important;
+    }
     .mm_tab_toggle_title .arrow.YES.niveau2{
         width: 50px;
     }
@@ -3741,10 +3709,6 @@ span.mm_menu_content_title > div:nth-child(2){
         color: #026473 !important;
         font-weight: normal !important;
     }
-    .mm_tabs_liver_alway_hide .mm_tab_toggle_title{
-        border: none;
-        padding: 0 !important;
-    }
     .mm_tabs_liver_alway_hide .mm_tab_toggle_title span.arrow.YES.niveau2
     {
         display: none;
@@ -3806,6 +3770,9 @@ span.mm_menu_content_title > div:nth-child(2){
 .mm_tab_name.mm_tab_toggle:not(.mm_tab_has_child){
     height: 48px;
     align-content: center;
+    @media (max-width: 767px){
+        height: auto;
+    }
     .arrow.YES.closed.niveau2{
         display: none;
     }
