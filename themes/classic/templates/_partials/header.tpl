@@ -17,7 +17,7 @@
     <div class="header-top">
         <div class="row-header d-flex align-items-center">
 
-            <!-- Logo Desktop (Visible seulement à partir de md) -->
+            <!-- Logo Desktop (Visible seulement à partir de xl) -->
             <div class="d-none d-xl-block">
                 {if ($page.page_name == 'authentication' || $page.page_name == 'registration') && $pro.env == 1}
                     <a href="/">
@@ -28,8 +28,7 @@
                 {/if}
             </div>
 
-
-            <!-- Bouton menu (Visible uniquement sur Desktop) -->
+            <!-- Bouton menu "Nos produits" (Visible uniquement sur Desktop) -->
             <div class="menu-button d-none d-md-block">
                 {include file='_partials/btn-menu.tpl'}
             </div>
@@ -52,7 +51,11 @@
                                 </span>
                                 <span class="medium-text">votre clôture</span>
                             </div>
-                            <img width="37px" height="35px" alt="cloture" src="/img/menu-mobile-fence.svg">
+                            <img width="37" height="35" alt="Configurez votre clôture" src="/themes/classic/assets/img/configurer-icon.svg">
+                        </a>
+                        <a href="{$urls.base_url}content/657-service-de-pose" class="ico btn-service-pose" title="Service de pose">
+                            <img src="/themes/classic/assets/img/service-de-pose.svg" alt="Service de pose" width="28" height="28" class="btn-service-pose__icon" loading="lazy">
+                            <span>Service de pose</span>
                         </a>
                         <div class="block-question block-question-header">
                             <img loading="lazy" src="/img/menu-mobile-phone.svg" width="22" height="20" class="ico-question" alt="des question?">
