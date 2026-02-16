@@ -43,7 +43,8 @@ $(document).ready(function () {
         });
     }
 
-    // Fonction utilitaire pour rendre un élément cliquable en mobile
+    // Fonction utilitaire pour rendre un élément cliquable en mobile avec détection tap vs scroll
+    var TAP_MOVE_THRESHOLD = 10;
     function makeClickable(selector, arrowSelector, ignoreSelectors) {
         $(selector).each(function() {
             var elem = this;
@@ -52,13 +53,40 @@ $(document).ready(function () {
 
             $(elem).css({ 'cursor': 'pointer', 'width': '100%', 'display': 'flex', 'justify-content': 'space-between', 'align-items': 'center' });
 
+            var touchData = { startX: 0, startY: 0, isValidTap: false };
+
+            elem.addEventListener('touchstart', function(e) {
+                if (e.touches.length !== 1) return;
+                touchData.startX = e.touches[0].clientX;
+                touchData.startY = e.touches[0].clientY;
+                touchData.isValidTap = true;
+                e.stopImmediatePropagation();
+            }, true);
+
+            elem.addEventListener('touchmove', function(e) {
+                if (!touchData.isValidTap || e.touches.length !== 1) return;
+                var dx = Math.abs(e.touches[0].clientX - touchData.startX);
+                var dy = Math.abs(e.touches[0].clientY - touchData.startY);
+                if (dx > TAP_MOVE_THRESHOLD || dy > TAP_MOVE_THRESHOLD) {
+                    touchData.isValidTap = false;
+                }
+            }, { passive: true });
+
             elem.addEventListener('click', function(e) {
+                if (!e.isTrusted) return;
                 if ($(e.target).closest(ignoreSelectors).length) return;
-                if ($(e.target).closest(selector).length || e.target === elem) {
+                if (!$(e.target).closest(selector).length && e.target !== elem) return;
+
+                if (!touchData.isValidTap) {
                     e.preventDefault();
                     e.stopPropagation();
-                    $arrow[0].click();
+                    e.stopImmediatePropagation();
+                    return;
                 }
+
+                e.preventDefault();
+                e.stopPropagation();
+                $arrow[0].click();
             }, true);
         });
     }
