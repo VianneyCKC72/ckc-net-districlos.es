@@ -17,23 +17,20 @@
     <div class="header-top">
         <div class="row-header d-flex align-items-center">
 
-            <!-- Logo + Nos produits (Desktop) -->
-            <div class="header-logo-and-buttons d-flex align-items-center">
-                <div class="d-none d-xl-block">
-                    {if ($page.page_name == 'authentication' || $page.page_name == 'registration') && $pro.env == 1}
-                        <a href="/">
-                            <img class="desktop_only" width="180" src="/img/DISTRICLOS_pro_logo.png" alt="{$shop.name} Pro" />
-                        </a>
-                    {elseif $shop.logo_details}
-                        {renderLogo}
-                    {/if}
-                </div>
-                <div class="header-buttons-menu-soldes d-flex align-items-center">
-                    <!-- Bouton menu "Nos produits" (Visible uniquement sur Desktop) -->
-                    <div class="menu-button d-none d-md-block">
-                        {include file='_partials/btn-menu.tpl'}
-                    </div>
-                </div>
+            <!-- Logo Desktop (Visible seulement à partir de xl) -->
+            <div class="d-none d-xl-block">
+                {if ($page.page_name == 'authentication' || $page.page_name == 'registration') && $pro.env == 1}
+                    <a href="/">
+                        <img class="desktop_only" width="180" src="/img/DISTRICLOS_pro_logo.png" alt="{$shop.name} Pro" />
+                    </a>
+                {elseif $shop.logo_details}
+                    {renderLogo}
+                {/if}
+            </div>
+
+            <!-- Bouton menu "Nos produits" (Visible uniquement sur Desktop) -->
+            <div class="menu-button d-none d-md-block">
+                {include file='_partials/btn-menu.tpl'}
             </div>
 
             <!-- Logo Mobile (Visible seulement sur xs et sm) -->
