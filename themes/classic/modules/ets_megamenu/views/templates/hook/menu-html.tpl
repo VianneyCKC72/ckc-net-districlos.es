@@ -26,7 +26,7 @@
         <li class="close_menu">
             <a class="pull-left" href="{$urls.base_url}">
                 {if Context::getContext()->shop->id == 2}
-                    <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
+                    <img class="logo img-fluid" src="/img/logo-mobile-pro.svg" alt="Districlos" width="40" height="40" loading="lazy">
                 {else}
                     <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="40" height="40" loading="lazy">
                 {/if}
