@@ -1675,7 +1675,45 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         padding: 15px;
     }
     .ets_mm_megamenu .mm_menus_ul .close_menu.close-menu-sub{
-        padding: 60px 25px 10px;
+        padding: 15px 25px 15px;
+    }
+    /* Logo et texte Menu dans les sous-menus avec flèche de retour */
+    .close_menu.close-menu-sub .pull-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .menu-arrow-back-container {
+        padding: 15px 25px;
+        cursor: pointer;
+        margin-top: 60px;
+    }
+    .menu-arrow-back-container .menu-arrow-back {
+        display: block;
+        width: 26px;
+        height: 12px;
+    }
+    .close_menu.close-menu-sub .menu-arrow-back {
+        cursor: pointer;
+        flex-shrink: 0;
+        display: block;
+        width: 26px;
+        height: 12px;
+    }
+    .close_menu.close-menu-sub .logo-link-menu {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+    }
+    .close_menu.close-menu-sub .logo {
+        margin-right: 0;
+    }
+    .close_menu.close-menu-sub .txt-logo-mobile {
+        color: #0D0D0D !important;
+    }
+    /* Texte blanc sur fond bleu foncé pour le deuxième niveau */
+    .mm_columns_contents_ul .close_menu.close-menu-sub .txt-logo-mobile {
+        color: #FFFFFF !important;
     }
     .close_menu .icon-bar {
         background-color: #FFFFFF;
@@ -2032,6 +2070,7 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         margin: 0 15px 0 15px;
         width: calc(100% - 30px) !important;  /* 15px de chaque côté */
     }
+    
 }
 @media (max-width: 480px) {
     .mm_menus_ul.active .mm_menu_content_title {
@@ -3247,6 +3286,7 @@ li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name.active,
         font-weight: 600;
         font-size: 20px;
         line-height: 104%;
+        font-weight: 700;
     }
 }
 
@@ -3635,13 +3675,14 @@ span.mm_menu_content_title > div:nth-child(2){
         align-items: center;
         justify-content: center;
         position: relative;
+        z-index: 10000000;
     }
     .mm_columns_li.column_size_3.back_menu_parent_li span{
         color: #35B2C5;
         font-weight: 700;
         font-size: 25px;
         line-height: 120%;
-        margin-bottom: 50px;
+        margin-bottom: 80px;
     }
     .mm_columns_contents_ul .close_menu.close-menu-sub{
         background-color: #026473;

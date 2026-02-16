@@ -94,7 +94,14 @@
                             style="width:{$menu.sub_menu_max_width|escape:'html':'UTF-8'};{if Configuration::get('ETS_MM_TEXT_FONT_SIZE')} font-size:{Configuration::get('ETS_MM_TEXT_FONT_SIZE')|intval}px;{/if}">
                             <li class="close_menu close-menu-sub">
                                 <div class="pull-left">
-                                    <img src="/img/mobile-menu-arrow-left.svg" alt="Districlos" width="26px" height="12px">
+                                    <a href="{$urls.base_url}" class="logo-link-menu">
+                                        {if Context::getContext()->shop->id == 2}
+                                            <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
+                                        {else}
+                                            <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="40" height="40" loading="lazy">
+                                        {/if}
+                                        <span class="txt-logo-mobile">Menu</span>
+                                    </a>
                                 </div>
                                 <div class="pull-right">
                                     <span class="mm_menus_back">
@@ -107,6 +114,11 @@
                                         </svg>
                                     </span>
                                 </div>
+                            </li>
+                            <li class="menu-arrow-back-container">
+                                <svg class="menu-arrow-back" width="26" height="12" viewBox="0 0 26 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M25 6L1 6M1 6L6 1M1 6L6 11" stroke="#0D0D0D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
                             </li>
                             <li class="mm_tabs_li mm_tabs_has_content back_menu_parent_li back_first">
                                 <span class="back_menu_parent">{$menu.title|escape:'html':'UTF-8'}</span>
@@ -159,7 +171,14 @@
                                             <ul class="mm_columns_contents_ul ">
                                                 <li class="close_menu close-menu-sub">
                                                     <div class="pull-left">
-                                                        <img src="/img/mobile-menu-arrow-left-white.svg" alt="Districlos" width="26px" height="12px">
+                                                        <a href="{$urls.base_url}" class="logo-link-menu">
+                                                            {if Context::getContext()->shop->id == 2}
+                                                                <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
+                                                            {else}
+                                                                <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="40" height="40" loading="lazy">
+                                                            {/if}
+                                                            <span class="txt-logo-mobile">Menu</span>
+                                                        </a>
                                                     </div>
                                                     <div class="pull-right">
                                                         <span class="mm_menus_back">
@@ -172,6 +191,11 @@
                                                             </svg>
                                                         </span>
                                                     </div>
+                                                </li>
+                                                <li class="menu-arrow-back-container">
+                                                    <svg class="menu-arrow-back" width="26" height="12" viewBox="0 0 26 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M25 6L1 6M1 6L6 1M1 6L6 11" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    </svg>
                                                 </li>
                                                 <li class="mm_columns_li column_size_3 back_menu_parent_li">
                                                     <span class="back_menu_parent">{$tab.title|escape:'html':'UTF-8'}</span>

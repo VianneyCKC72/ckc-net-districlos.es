@@ -156,4 +156,40 @@ $(document).ready(function () {
             });
         });
     }
+
+    // Gestion du clic sur la flèche de retour dans les sous-menus mobile
+    $(document).on('click', '.menu-arrow-back-container, .menu-arrow-back-container .menu-arrow-back', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var $container = $(this).closest('.menu-arrow-back-container');
+        
+        // Si on est dans un sous-menu de niveau 2 (mm_columns_contents_ul)
+        if ($container.closest('.mm_columns_contents_ul').length) {
+            // Fermer le sous-menu de niveau 2 - même logique que back_menu_parent
+            var $submenu = $container.closest('.mm_columns_contents_ul');
+            var $tab = $submenu.prev('.mm_tab_li_content');
+            if ($tab.length) {
+                $tab.removeClass('opened').addClass('closed');
+            }
+            $submenu.removeClass('active');
+            var $menu = $('.mm_menus_ul.active');
+            $menu.removeClass('mm_menus_ul_big').addClass('mm_menus_ul_medium');
+        } 
+        // Si on est dans un sous-menu de niveau 1 (mm_columns_ul_tab)
+        else if ($container.closest('.mm_columns_ul_tab').length) {
+            // Fermer le sous-menu de niveau 1 - même logique que back_menu_parent
+            var $submenu = $container.closest('.mm_columns_ul_tab');
+            var $parentLi = $submenu.closest('.mm_menus_li');
+            var $parentArrow = $parentLi.find('.item_first_layer .arrow');
+            if ($parentArrow.length) {
+                $parentArrow.removeClass('opened').addClass('closed');
+            }
+            $submenu.removeClass('active');
+            var $menu = $('.mm_menus_ul.active');
+            $menu.removeClass('mm_menus_ul_medium mm_menus_ul_big');
+        }
+        
+        return false;
+    });
 });
