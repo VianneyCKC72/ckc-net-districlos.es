@@ -62,7 +62,7 @@ body .container .ets_mm_megamenu.bg_submenu:before {
 }
 .mm_tab_toggle_title img {
     margin-right: 20px;
-    width: 60px;
+    width: 50px;
 }
 li.menu_block_product {
     padding: 0;
@@ -582,10 +582,15 @@ li.menu_block_product {
     font-size: 16px;
     font-weight: bold;
     color: #000;
+    display: flex;
+    justify-content: space-between;
 }
 .item_first_layer a{
     display: flex;
     justify-content: space-between;
+    @media (max-width: 768px){
+        display: block;
+    }
 }
 .hook-default.layout_layout1 .mm_menus_li:not(:nth-child(2)) {
     margin-left:15px;
@@ -1466,11 +1471,6 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
     .ets_mm_block_content ul.ets_mm_categories li.has-sub ul.active {
         height: auto;
     }
-    .mm_tab_toggle_title a {
-        /*          margin: -9px -15px;
-                    padding: 9px 15px; */
-        padding: 0 10px;
-    }
     .clicktext_show_submenu .mm_tab_toggle_title a {
         min-width: calc(100% + 30px);
         min-width: -webkit-calc(100% + 30px);
@@ -1543,8 +1543,14 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         z-index: 100;
         background: transparent !important;
     }
+    .mm_tab_toggle_title{
+        border-bottom: 1px solid #C1C1C1;
+        padding-left: 0;
+    }
     .distri_vertical_menu-flex span.mm_tab_toggle_title {
-        padding: 10px 31px 10px 25px;
+        margin: 10px 25px;
+        padding-bottom: 15px;
+        width: calc(100% - 50px);
     }
     .ets_mm_megamenu.layout_layout1:not(.ybc_vertical_menu) .mm_menus_ul {
         max-width: 100%;
@@ -2069,6 +2075,9 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
         float: left;
         width: 100%;
         line-height: 120%;
+        @media (max-width: 768px){
+            font-size: 20px;
+        }
     }
     .mobile_noclic.closed.mm_menus_li.mm_menus_li_tab.distri_megamenu.mm_sub_align_full.menu_item_mobile{
         display: none;
@@ -3301,12 +3310,6 @@ li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name.active,
     }
 }
 
-.mm_tabs_li .mm_tab_toggle_title {
-    @media (max-width: 769px) {
-        height: auto !important;
-    }
-}
-
 .image-fw-mm {
     width: 390px;
     margin-left: -30px;
@@ -3672,7 +3675,7 @@ span.mm_menu_content_title > div:nth-child(2){
         display: none;
     }
     .mm_tab_toggle_title .arrow.YES.niveau2{
-        width: 90px;
+        width: 50px;
     }
     .mm_tab_toggle_title .arrow.YES.niveau2 svg{
         stroke: black;
@@ -3733,20 +3736,17 @@ span.mm_menu_content_title > div:nth-child(2){
             font-size: 22px !important;
         }
     }
-    .mm_tab_toggle_title a{
-        color: #000 !important;
+    .mm_tabs_liver_alway_hide .mm-link-menu-sub{
+        font-size: 18px;
+        color: #026473 !important;
+        font-weight: normal !important;
     }
     .mm_tabs_liver_alway_hide .mm_tab_toggle_title{
-        font-weight: 500 !important;
-        font-size: 17px !important;
-        color: #000;
-        display: flex !important;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        height: 48px;
+        border: none;
+        padding: 0 !important;
     }
-    .mm_tabs_liver_alway_hide .mm_tab_toggle_title span.arrow.YES.niveau2{
+    .mm_tabs_liver_alway_hide .mm_tab_toggle_title span.arrow.YES.niveau2
+    {
         display: none;
     }
     .ets_mm_block .ets_mm_block_content{
@@ -3785,9 +3785,6 @@ span.mm_menu_content_title > div:nth-child(2){
     .mm_menus_ul .arrow.YES.arrow-sub-menu-mobile-hide.arrow-sub-menu-mobile-show{
         transform: rotate(90deg);
         transition: transform .3s ease-out;
-    }
-    .back_menu_parent_li.back_first span {
-        margin-bottom: 25px;
     }
     .ets_mm_megamenu.layout_layout1:not(.ybc_vertical_menu) .ets_mm_megamenu_content_content > .mm_menus_ul{
         overflow-y: scroll;
