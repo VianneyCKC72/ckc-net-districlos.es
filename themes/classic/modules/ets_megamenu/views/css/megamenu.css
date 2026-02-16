@@ -8,6 +8,10 @@
     float: right;
 }
 
+.mm-menu-inner {
+    margin-top: 15px;
+}
+
 .ets-dir-rtl .mm_tabs_li.open.mm_tabs_has_content .mm_tab_li_content .mm_tab_name::before {
     left: -3px;
     right: auto;
@@ -578,6 +582,10 @@ li.menu_block_product {
     font-size: 16px;
     font-weight: bold;
     color: #000;
+}
+.item_first_layer a{
+    display: flex;
+    justify-content: space-between;
 }
 .hook-default.layout_layout1 .mm_menus_li:not(:nth-child(2)) {
     margin-left:15px;
@@ -3235,6 +3243,9 @@ li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name a {
     .mm_columns_contents_ul.active .mm_subcat_img.promoted {
         display: block;
         animation: fadeInImage 0.3s ease-in-out 0.5s both;
+    }
+    .menu-arrow-back-container{
+        display: none;
     }
 }
 
