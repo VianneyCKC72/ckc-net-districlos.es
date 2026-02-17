@@ -3342,8 +3342,6 @@ body.menu-opened {
     overflow: hidden;
 }
 
-
-
 body.menu-opened::before {
     content: "";
     position: fixed;
@@ -3467,6 +3465,13 @@ body.menu-opened #ckcpromobarre {
 }
 .menu-mobile-useful-link img{
     margin-bottom: 7px;
+}
+.menu-mobile-useful-link.menu-mobile-particuliers svg{
+    margin-bottom: 7px;
+    flex-shrink: 0;
+    width: 22px;
+    height: 20px;
+    color: #000;
 }
 /* Séparateurs entre les liens utiles du menu mobile */
 .menu-mobile-custom-useful-links .menu-mobile-useful-link:not(:first-child){
@@ -3723,10 +3728,25 @@ span.mm_menu_content_title > div:nth-child(2){
         font-size: 18px;
         color: #026473 !important;
         font-weight: normal !important;
+        pointer-events: auto !important;
+        z-index: 10;
+        position: relative;
     }
-    .mm_tabs_liver_alway_hide .mm_tab_toggle_title span.arrow.YES.niveau2
-    {
-        display: none;
+    /* Masquer toutes les flèches sur les éléments sans sous-menu (liens cliquables) */
+    .mm_tabs_liver_alway_hide .mm_tab_toggle_title span.arrow.YES.niveau2,
+    .mm_tabs_liver_alway_hide .mm_tab_toggle_title .arrow,
+    .mm_tabs_liver_alway_hide .mm_tab_li_content .arrow,
+    .mm_tabs_liver_alway_hide .arrow.YES,
+    .mm_tabs_liver_alway_hide span.arrow {
+        display: none !important;
+    }
+    /* S'assurer que les liens dans les éléments sans sous-menu sont cliquables */
+    .mm_tabs_liver_alway_hide .mm_tab_li_content a.mm-link-menu-sub,
+    .mm_tab_li_content:not(:has(+ .mm_columns_contents_ul)) a.mm-link-menu-sub,
+    .ets_mm_block .h4 > a:not(:has(+ .ets_mm_block_content:not(:empty))) {
+        pointer-events: auto !important;
+        z-index: 10;
+        position: relative;
     }
     .ets_mm_block .ets_mm_block_content{
         overflow: hidden;
