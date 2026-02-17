@@ -77,6 +77,18 @@ $(document).ready(function () {
                 if ($(e.target).closest(ignoreSelectors).length) return;
                 if (!$(e.target).closest(selector).length && e.target !== elem) return;
 
+                // Si le clic est sur un lien, permettre la navigation (surtout pour les éléments sans sous-menu réel)
+                var $link = $(elem).find('a').first();
+                if ($link.length && $(e.target).closest('a').length) {
+                    // Vérifier si l'élément a vraiment un sous-menu avec du contenu
+                    var $submenu = $(elem).next(ignoreSelectors.split(',')[1] ? ignoreSelectors.split(',')[1].trim() : '.mm_columns_contents_ul, .ets_mm_block_content');
+                    if (!$submenu.length || !$submenu.text().trim() || ($submenu.find('p').length === 1 && !$submenu.find('p').text().trim())) {
+                        // Pas de sous-menu réel, permettre la navigation
+                        e.stopPropagation();
+                        return true; // Laisser le lien fonctionner
+                    }
+                }
+
                 if (!touchData.isValidTap) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -100,30 +112,93 @@ $(document).ready(function () {
 
     // Gestion des onglets desktop et liens sans sous-menu
     $('.mm_tab_li_content').each(function() {
-        var $link = $(this).find('> .mm_tab_name > .mm_tab_toggle_title > a.mm-link-menu-sub');
+        var $tab = $(this);
+        var $link = $tab.find('> .mm_tab_name > .mm_tab_toggle_title > a.mm-link-menu-sub');
         if (!$link.length) return;
 
-        var $submenu = $(this).next('.mm_columns_contents_ul');
+        var $submenu = $tab.next('.mm_columns_contents_ul');
+        var isNoSubmenu = !$submenu.length || $tab.closest('.mm_tabs_liver_alway_hide').length;
 
-        if ($submenu.length && !isMobile) {
+        // Pour les éléments sans sous-menu, permettre le clic direct sur le lien
+        if (isNoSubmenu) {
+            // Désactiver le gestionnaire makeClickable pour cet élément en mobile
+            if (isMobile) {
+                $tab.off('click touchstart');
+            }
+            
+            // Permettre le clic direct sur le lien et ses enfants
+            $link.on('click', function(e) {
+                // Laisser le lien fonctionner normalement
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return true;
+            });
+            
+            // Si on clique ailleurs sur l'élément (pas sur le lien), naviguer quand même
+            $tab.on('click', function(e) {
+                // Si le clic est sur le lien ou un de ses enfants, ne rien faire (le lien gère déjà)
+                if ($(e.target).closest('a.mm-link-menu-sub').length) {
+                    return true; // Laisser le lien gérer
+                }
+                // Sinon, naviguer vers le lien
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                window.location.href = $link[0].href;
+                return false;
+            });
+        } else if ($submenu.length && !isMobile) {
+            // Pour les éléments avec sous-menu en desktop, ouvrir le sous-menu au clic sur le lien
             $link[0].onclick = function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                this.nextElementSibling.click();
-                return false;
-            };
-        } else if (!$submenu.length) {
-            var href = $link[0].href;
-            this.onclick = function(e) {
-                if (e.target.tagName !== 'A') {
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    location.href = href;
-                    return false;
+                var $arrow = $tab.find('.arrow').first();
+                if ($arrow.length) {
+                    $arrow[0].click();
                 }
+                return false;
             };
         }
     });
+    
+    // Gestionnaire avec priorité pour les éléments sans sous-menu - utilise addEventListener natif avec capture
+    // Ce gestionnaire intercepte les clics AVANT le code jQuery minifié
+    document.addEventListener('click', function(e) {
+        var $target = $(e.target);
+        
+        // Gestion des éléments de niveau 2 (mm_tab_li_content)
+        var $tab = $target.closest('.mm_tab_li_content');
+        if ($tab.length) {
+            var $submenu = $tab.next('.mm_columns_contents_ul');
+            var isNoSubmenu = !$submenu.length || $tab.closest('.mm_tabs_liver_alway_hide').length;
+            
+            if (isNoSubmenu) {
+                var $link = $tab.find('a.mm-link-menu-sub');
+                if ($link.length && $target.closest('a.mm-link-menu-sub').length) {
+                    // Empêcher la propagation vers les gestionnaires jQuery qui pourraient bloquer
+                    e.stopImmediatePropagation();
+                    // Laisser le lien fonctionner normalement
+                    return true;
+                }
+            }
+        }
+        
+        // Gestion des éléments de niveau 3 (ets_mm_block .h4)
+        var $h4 = $target.closest('.ets_mm_block .h4');
+        if ($h4.length) {
+            var $blockContent = $h4.next('.ets_mm_block_content');
+            var $link = $h4.find('> a');
+            
+            // Si l'élément n'a pas de contenu ou le contenu est vide, permettre le clic sur le lien
+            if ($link.length && (!$blockContent.length || !$blockContent.text().trim() || $blockContent.find('p').length === 1 && !$blockContent.find('p').text().trim())) {
+                if ($target.closest('a').length) {
+                    // Empêcher la propagation vers les gestionnaires qui pourraient bloquer
+                    e.stopImmediatePropagation();
+                    // Laisser le lien fonctionner normalement
+                    return true;
+                }
+            }
+        }
+    }, true); // Utiliser capture phase (true) pour prendre la priorité sur tous les gestionnaires jQuery
 
     if (!isMobile) {
         var supportsWebP = (function() {
