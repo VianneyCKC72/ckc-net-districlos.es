@@ -574,6 +574,7 @@
     padding: 2rem 20rem;
     box-sizing: border-box;
     background-color: $primary-color;
+    color: $white;
 
     @include media-breakpoint-down(xl) {
       padding: 2rem 5rem;
@@ -1882,7 +1883,7 @@
   }
 }
 
-// Style responsive pour les packs ET les produits classiques
+// Style responsive pour les packs
 .content-kit-description {
   @include media-breakpoint-down(md) {
     margin-top: 40px;
