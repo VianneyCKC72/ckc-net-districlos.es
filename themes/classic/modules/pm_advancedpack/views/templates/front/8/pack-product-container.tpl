@@ -1,12 +1,12 @@
 {foreach from=$productsPackUnique item=productPack name=productPack_list}
     <div class="row mb-5" style="border-bottom: 1px solid #DBDBDB;padding-bottom: 50px;">
-        <div class="col-md-2 position-relative d-flex">
+        <div class="col-md-2 position-relative d-flex" style="justify-content: center;">
             {assign var=productPackImageIds value="`$productPack.id_product`-`$productPack.image.id_image`"}
-            <div style="padding: 20px;border-radius: 4px;border: 1px solid #DBDBDB;width: 100%;" class="d-flex">
+            <div class="pack-product-image-box d-flex" style="padding: 20px;border-radius: 4px;border: 1px solid #DBDBDB;width: 100%;">
                 <img src="{$pmlink->getImageLink($productPack.presentation.link_rewrite, $productPackImageIds, $imageFormatProductSlideshow)}" alt="{$productPack.image.legend}" style="width: auto;max-height: 190px;max-width: 100%;margin: auto;">
             </div>
             <div class="position-absolute w-100 d-flex" style="bottom: -16px !important;">
-                <span class="text-center m-auto" style="padding: 5px;background-color: #79C144;border-radius: 20px;color: #fff;font-weight: 600;font-size: 17px;">x{$productPack.quantity}</span>
+                <span class="text-center m-auto bg-secondary text-white font-weight-semibold" style="padding: 5px 10px;border-radius: 20px;font-size: 17px;">x{$productPack.quantity}</span>
             </div>
         </div>
         <div class="col-md-10 content-kit-description">

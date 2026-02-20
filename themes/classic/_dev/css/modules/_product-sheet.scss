@@ -481,6 +481,22 @@
 }
 
 #product {
+
+  .product-container .row {
+    > .col-lg-7 {
+      @include media-breakpoint-up(lg) {
+        align-self: flex-start; // Nécessaire pour que sticky fonctionne
+      }
+    }
+  }
+  
+  .wrapper__swiper__product-img {
+    @include media-breakpoint-up(lg) {
+      position: sticky;
+      top: 100px; // Ajuster selon la hauteur du header (header fixe, etc.)
+    }
+  }
+
   .cn_content.cn_content_type_inline {
     display:none !important;
   }
@@ -1884,6 +1900,12 @@
 }
 
 // Style responsive pour les packs
+.pack-product-image-box {
+  @include media-breakpoint-down(md) {
+    width: 50% !important;
+  }
+}
+
 .content-kit-description {
   @include media-breakpoint-down(md) {
     margin-top: 40px;
