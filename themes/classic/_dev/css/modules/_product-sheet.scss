@@ -1,12 +1,12 @@
 .tag-discount {
   background-color: $red;
   color: $white;
-  padding: 8px 18px;
+  padding: 10px 20px;
   border-radius: 40px;
   font-size: 10px;
   font-weight: 700;
   @media (max-width: 768px) {
-    min-width: 85px;
+    min-width: 95px;
   }
 }
 
@@ -485,15 +485,11 @@
   .product-container .row {
     > .col-lg-7 {
       @include media-breakpoint-up(lg) {
-        align-self: flex-start; // Nécessaire pour que sticky fonctionne
+        position: sticky;
+        top: 150px;
+        align-self: flex-start;
+        height: fit-content;
       }
-    }
-  }
-  
-  .wrapper__swiper__product-img {
-    @include media-breakpoint-up(lg) {
-      position: sticky;
-      top: 100px; // Ajuster selon la hauteur du header (header fixe, etc.)
     }
   }
 
@@ -593,7 +589,7 @@
     color: $white;
 
     @include media-breakpoint-down(xl) {
-      padding: 2rem 5rem;
+      padding: 2rem 20rem;
     }
     @include media-breakpoint-down(lg) {
       padding: 2rem 15rem;
@@ -1512,9 +1508,7 @@
         margin-top: 15px;
       }
       .shipping-block-product-info {
-        justify-content: center;
-        margin-top: 80px;
-        gap: 30px;
+        margin-top: 30px;
       }
     }
     @media (max-width: 480px) {

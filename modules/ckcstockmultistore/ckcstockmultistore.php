@@ -607,7 +607,7 @@ class Ckcstockmultistore extends Module
         }
         
         // Log unique avec toutes les infos importantes
-        PrestaShopLogger::addLog('Store #'.$id_store.' assigné par '.$attribution_method.' - Commande #'.$id_order.' ('.$customer_country_iso.' - '.$customer_zip_code.')', 1, null, 'Ckcstockmultistore', $id_order, true);
+/*        PrestaShopLogger::addLog('Store #'.$id_store.' assigné par '.$attribution_method.' - Commande #'.$id_order.' ('.$customer_country_iso.' - '.$customer_zip_code.')', 1, null, 'Ckcstockmultistore', $id_order, true);*/
 
         Db::getInstance()->execute(
             'UPDATE ' . _DB_PREFIX_ . 'orders 
