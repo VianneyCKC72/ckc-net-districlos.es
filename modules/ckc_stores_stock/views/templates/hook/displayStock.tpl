@@ -25,7 +25,7 @@
                 {/if}
             </div>
         </div>
-        <button type="button" id="selectShop" class="d-block small text-black bg-transparent font-weight-semibold text-underline" {if $fin_de_vie || $fin_de_vie_national || $victime_succes}style="display: none;"{/if}>Voir le magasin le plus proche {*<svg
+        <button type="button" id="selectShop" style="text-align: start;" class="d-block small text-black bg-transparent font-weight-semibold text-underline" {if $fin_de_vie || $fin_de_vie_national || $victime_succes}style="display: none;"{/if}>Voir le magasin le plus proche {*<svg
                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
                         class="lucide lucide-move-right ml-2">
