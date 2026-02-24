@@ -1,7 +1,7 @@
 <div id="ap5-product-list">
     {foreach from=$productsPack item=productPack}
         {if !empty($productPack.attributes.groups)}
-            <span class="font-weight-bold">{$productPack.presentation.name}{if $productPack.quantity} <span style="padding: 1px 15px;background-color: #79C144;color: #fff;font-weight: 600;font-size: 16px;margin-left: 10px;">x{$productPack.quantity}</span>{/if}</span>
+            <span class="font-weight-bold">{$productPack.presentation.name}{*{if $productPack.quantity} <span style="padding: 1px 15px;background-color: #79C144;color: #fff;font-weight: 600;font-size: 16px;margin-left: 10px;">x{$productPack.quantity}</span>{/if}*}</span>
             <!-- attributes -->
             <div class="product-variants ap5-attributes" data-id-product-pack="{$productPack.id_product_pack|intval}">
                 {foreach from=$productPack.attributes.groups key=id_attribute_group item=group}
