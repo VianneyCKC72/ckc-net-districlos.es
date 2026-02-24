@@ -1,12 +1,12 @@
 .tag-discount {
   background-color: $red;
   color: $white;
-  padding: 8px 18px;
+  padding: 10px 20px;
   border-radius: 40px;
   font-size: 10px;
   font-weight: 700;
   @media (max-width: 768px) {
-    min-width: 85px;
+    min-width: 95px;
   }
 }
 
@@ -310,10 +310,9 @@
   }
 
   h3 {
-    font-size: 14px;
+    font-size: 15px;
     line-height: 18px;
-    font-weight: 600;
-    margin-bottom: 12px;
+    font-weight: bold;
   }
 
   .nav-tabs {
@@ -482,6 +481,18 @@
 }
 
 #product {
+
+  .product-container .row {
+    > .col-lg-7 {
+      @include media-breakpoint-up(lg) {
+        position: sticky;
+        top: 150px;
+        align-self: flex-start;
+        height: fit-content;
+      }
+    }
+  }
+
   .cn_content.cn_content_type_inline {
     display:none !important;
   }
@@ -564,6 +575,31 @@
 
   .banner-quick-view .container {
     max-width: 1648px !important;
+  }
+
+  // Banner-services en pleine largeur (breakout du container)
+  .product-container .banner-services.stack-row__cards {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    padding: 2rem 20rem;
+    box-sizing: border-box;
+    background-color: $primary-color;
+    color: $white;
+
+    @include media-breakpoint-down(xl) {
+      padding: 2rem 20rem;
+    }
+    @include media-breakpoint-down(lg) {
+      padding: 2rem 15rem;
+    }
+    @include media-breakpoint-down(md) {
+      padding: 2rem 10rem;
+    }
+    @include media-breakpoint-down(xs) {
+      padding: 2rem 0rem;
+    }
   }
 
   .custom-color-select {
@@ -1472,9 +1508,7 @@
         margin-top: 15px;
       }
       .shipping-block-product-info {
-        justify-content: center;
-        margin-top: 80px;
-        gap: 30px;
+        margin-top: 30px;
       }
     }
     @media (max-width: 480px) {
@@ -1720,7 +1754,7 @@
     }
     .shipping-block-product-info {
       justify-content: center;
-      margin-top: 80px;
+      margin-top: 30px;
       gap: 30px;
     }
   }
@@ -1859,7 +1893,23 @@
   }
 }
 
-// Style responsive pour les packs ET les produits classiques
+// Style responsive pour les packs
+.pack-product-image-box {
+  @include media-breakpoint-down(md) {
+    width: 50% !important;
+  }
+}
+
+.content-kit-description {
+  @include media-breakpoint-down(md) {
+    margin-top: 40px;
+
+    .mt-10 {
+      text-align: center;
+    }
+  }
+}
+
 .pack-nav,
 .mobile-product-nav-fixed {
   .mobile-nav-container {
