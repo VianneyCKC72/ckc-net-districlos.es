@@ -7,6 +7,13 @@
     align-content: center;
   }
   
+    /* Rapprocher "Nos produits" du logo : plus la valeur est négative, plus le bouton est à gauche */
+  @media only screen and (min-width: 1440px) {
+    .row-header > .menu-button.d-none.d-md-block {
+      margin-left: -160px;
+    }
+  }
+
   @media only screen and (min-width: 993px) {
     .header-logo-and-buttons {
       gap: 50px;
