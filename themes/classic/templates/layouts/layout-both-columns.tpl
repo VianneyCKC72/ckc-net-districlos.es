@@ -19,6 +19,12 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T3HJWLD" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>
 
+    <div id="ckc-infobar-maintenance" style="background-color: #f6f2eb; color: black; text-align: center; padding: 5px 15px; font-size: 14px;">
+        <div class="container">
+            Notre site web sera en maintenance ce jeudi 26/02 de 7h30 à 12h00. Nous nous excusons pour la gêne occasionnée.
+        </div>
+    </div>        
+
     {block name='hook_after_body_opening_tag'}
         {hook h='displayAfterBodyOpeningTag'}
     {/block}
