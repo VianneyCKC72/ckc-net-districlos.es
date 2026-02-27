@@ -50,7 +50,7 @@
                             <thead>
                             <tr>
                                 <th class="text-center">Transporteur</th>
-                                <th>Durée de livraison</th>
+                                <th>Prix de livraison</th>
                                 <th>Informations et délais moyens</th>
                             </tr>
                             </thead>
