@@ -83,7 +83,22 @@ function searchProduct(url, data) {
                 let $tableBody = $('.deliveriesTable tbody');
                 $tableBody.empty();
 
-                $.each(resp.deliveries_options, function (_, deliveryOption) {
+                let options = resp.deliveries_options || [];
+                let retrait = [];
+                let others = [];
+
+                options.forEach(function (deliveryOption) {
+                    let nameLower = (deliveryOption.name || '').toLowerCase();
+                    if (nameLower.indexOf('retrait chez districlos') !== -1) {
+                        retrait.push(deliveryOption);
+                    } else {
+                        others.push(deliveryOption);
+                    }
+                });
+
+                options = others.concat(retrait);
+
+                $.each(options, function (_, deliveryOption) {
                     let price = deliveryOption.price === 'gratuit' ? 'Gratuit' : deliveryOption.price;
                     let reduc = deliveryOption.price !== 'gratuit' ? `<span class="text-line-through color-red mr-10">${deliveryOption.reduc}</span>` : '';
 

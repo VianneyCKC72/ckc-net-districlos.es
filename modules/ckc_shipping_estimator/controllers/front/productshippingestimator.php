@@ -118,40 +118,35 @@ class ckc_shipping_estimatorproductshippingestimatorModuleFrontController extend
                                 ORDER BY r.`delimiter1` ASC';
                                 $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
                             }
-                            if ($result) {
-                                $price = $result['price'];
-                                if ($this->isFreeShipping($this->context->cart, $carriers_list) && (!$price || (float)$price == 0)) {
-                                    $carrier['price'] = $this->translator->trans('Free', [], 'Shop.Theme.Checkout');
-                                }
-                                else {
-                                    if ($include_taxes) {
-                                        $carrier['reduc'] = $priceFormatter->format(ceil(($carriers_list['total_price_with_tax'] + ($price * (1 + 20 / 100))) * 2));
-                                        $carrier['price'] = $priceFormatter->format($carriers_list['total_price_with_tax'] + ($price * (1 + 20 / 100)));
-                                        if ($display_taxes_label) {
-                                            $carrier['price'] = $this->translator->trans('%price% tax incl.', ['%price%' => $carrier['price']], 'Shop.Theme.Checkout');
-                                        }
+                            $price = $result ? $result['price'] : 0;
+                            if ($this->isFreeShipping($this->context->cart, $carriers_list) && (!$price || (float)$price == 0)) {
+                                $carrier['price'] = $this->translator->trans('Free', [], 'Shop.Theme.Checkout');
+                            } else {
+                                if ($include_taxes) {
+                                    $carrier['reduc'] = $priceFormatter->format(ceil(($carriers_list['total_price_with_tax'] + ($price * (1 + 20 / 100))) * 2));
+                                    $carrier['price'] = $priceFormatter->format($carriers_list['total_price_with_tax'] + ($price * (1 + 20 / 100)));
+                                    if ($display_taxes_label) {
+                                        $carrier['price'] = $this->translator->trans('%price% tax incl.', ['%price%' => $carrier['price']], 'Shop.Theme.Checkout');
                                     }
-                                    else {
-                                        $carrier['reduc'] = $priceFormatter->format(ceil(($carriers_list['total_price_without_tax'] + $price) * 2));
-                                        $carrier['price'] = $priceFormatter->format($carriers_list['total_price_without_tax'] + $price);
-                                        if ($display_taxes_label) {
-                                            $carrier['price'] = $this->translator->trans('%price% tax excl.', ['%price%' => $carrier['price']], 'Shop.Theme.Checkout');
-                                        }
+                                } else {
+                                    $carrier['reduc'] = $priceFormatter->format(ceil(($carriers_list['total_price_without_tax'] + $price) * 2));
+                                    $carrier['price'] = $priceFormatter->format($carriers_list['total_price_without_tax'] + $price);
+                                    if ($display_taxes_label) {
+                                        $carrier['price'] = $this->translator->trans('%price% tax excl.', ['%price%' => $carrier['price']], 'Shop.Theme.Checkout');
                                     }
                                 }
-                                if (count($carriers) > 1) {
-                                    $carrier['label'] = $carrier['price'];
-                                }
-                                else {
-                                    $carrier['label'] = $carrier['name'] . ' - ' . $carrier['delay'] . ' - ' . $carrier['price'];
-                                }
-                                if ($carrier['is_module']) {
-                                    if ($moduleId = Module::getModuleIdByName($carrier['external_module_name'])) {
-                                        $carrier['extraContent'] = Hook::exec('displayCarrierExtraContent', ['carrier' => $carrier], $moduleId);
-                                    }
-                                }
-                                $carriers_available[$id_carriers_list] = $carrier;
                             }
+                            if (count($carriers) > 1) {
+                                $carrier['label'] = $carrier['price'];
+                            } else {
+                                $carrier['label'] = $carrier['name'] . ' - ' . $carrier['delay'] . ' - ' . $carrier['price'];
+                            }
+                            if ($carrier['is_module']) {
+                                if ($moduleId = Module::getModuleIdByName($carrier['external_module_name'])) {
+                                    $carrier['extraContent'] = Hook::exec('displayCarrierExtraContent', ['carrier' => $carrier], $moduleId);
+                                }
+                            }
+                            $carriers_available[$id_carriers_list] = $carrier;
                         }
                     }
                 }
