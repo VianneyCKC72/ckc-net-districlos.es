@@ -147,6 +147,24 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
      */
     public function renderModal($id_product, $id_product_attribute, $id_customization, $isPack, $packContent)
     {
+        // Détection automatique du contenu d'un pack AP5 standard (qty > 1)
+        // quand le contenu n'est pas déjà fourni (cas pack éclaté géré séparément).
+        // Module::isInstalled() utilise le cache mémoire PS → vérification quasi-gratuite.
+        if (!$isPack && empty($packContent) && (int) $id_product_attribute > 0
+            && Module::isInstalled('pm_advancedpack')
+        ) {
+            $ap5Module = Module::getInstanceByName('pm_advancedpack');
+            if ($ap5Module instanceof pm_advancedpack && $ap5Module->active) {
+                if (AdvancedPack::isValidPack((int) $id_product)) {
+                    $packContent = $ap5Module->displayPackContent(
+                        (int) $id_product,
+                        (int) $id_product_attribute,
+                        pm_advancedpack::PACK_CONTENT_SHOPPING_CART
+                    );
+                }
+            }
+        }
+
         $data = $this->getPresentedCart();
         $product = null;
         

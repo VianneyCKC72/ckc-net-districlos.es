@@ -796,6 +796,17 @@ $(document).ready(function() {
     ap5Plugin.updatePackTable();
 });
 
+// Fix : contenu du pack non affiché dans la modale pour quantité > 1.
+// L'événement shown.bs.modal garantit que la modale est dans le DOM avant
+// de lancer le remplacement, évitant la condition de course entre ajaxSuccess
+// (qui peut trouver l'uniqid dans le mini-panier et stopper les retries)
+// et l'insertion effective de la modale par showModal().
+$(document).on('shown.bs.modal', '#blockcart-modal', function () {
+    if (typeof ap5_setPackContentData === 'function') {
+        ap5_setPackContentData();
+    }
+});
+
 $(window).on('load', function () {
     ap5Plugin.initNewContent();
 
