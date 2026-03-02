@@ -145,11 +145,16 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
     }
     public function displayAjax()
     {
-        if (!count($this->productPackExclude) && !$this->packHasEditedQuantity) {
-            AdvancedPack::addPackToCart($this->idPack, $this->quantity, $this->idProductAttributeList, $this->productPackCustomizationList, true, true);
-        } else {
-            AdvancedPack::addExplodedPackToCart($this->idPack, $this->quantity, $this->idProductAttributeList, $this->productPackCustomizationList, $this->productPackQuantityList, $this->productPackExclude);
-        }
+
+        // MODIF YAN 02/03/2026 POUR EXPLODED PACK
+        // if (!count($this->productPackExclude) && !$this->packHasEditedQuantity) {
+        //     AdvancedPack::addPackToCart($this->idPack, $this->quantity, $this->idProductAttributeList, $this->productPackCustomizationList, true, true);
+        // } else {
+        //     AdvancedPack::addExplodedPackToCart($this->idPack, $this->quantity, $this->idProductAttributeList, $this->productPackCustomizationList, $this->productPackQuantityList, $this->productPackExclude);
+        // }
+
+        AdvancedPack::addExplodedPackToCart($this->idPack, $this->quantity, $this->idProductAttributeList, $this->productPackCustomizationList, $this->productPackQuantityList, $this->productPackExclude);
+
     }
     public function initContent()
     {
