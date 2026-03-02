@@ -1,0 +1,612 @@
+/* ===========================
+   Reset & Base
+=========================== */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #333;
+    min-height: 100vh;
+}
+
+/* ===========================
+   En-tête
+=========================== */
+.site-header {
+    background-color: #333346;
+    color: #fff;
+    text-align: center;
+    padding: 64px 20px;
+}
+
+.site-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 0.01em;
+}
+
+.header-subtitle {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 400;
+}
+
+/* ===========================
+   Contenu principal
+=========================== */
+.main-content {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.card-divider {
+    width: 100%;
+    height: 1px;
+    background-color: #ebebeb;
+}
+
+/* ===========================
+   Carte entreprise
+=========================== */
+.company-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.company-card {
+    padding: 32px;
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+    max-width: 960px;
+}
+
+/* Infos gauche */
+.company-info {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.company-logo-wrapper {
+    flex-shrink: 0;
+    width: 90px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+}
+
+.company-logo-wrapper .logo {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.company-details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+    color: #4a9a6e;
+    font-weight: 500;
+    border: 1px solid #4a9a6e;
+    border-radius: 20px;
+    padding: 3px 10px;
+    width: fit-content;
+}
+
+.verified-badge svg {
+    stroke: #4a9a6e;
+}
+
+.company-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #222;
+}
+
+.company-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rating-count {
+    font-size: 0.85rem;
+    color: #555;
+    font-weight: 500;
+}
+
+.stars-display {
+    display: flex;
+    gap: 2px;
+}
+
+.stars-display .star {
+    font-size: 1.1rem;
+    color: #ddd;
+}
+
+.stars-display .star.filled {
+    color: #f5a623;
+}
+
+.company-tagline {
+    font-size: 0.85rem;
+    color: #777;
+    margin-top: 2px;
+}
+
+.btn-visit {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 9px 20px;
+    background-color: #e8722a;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    width: fit-content;
+}
+
+.btn-visit:hover {
+    background-color: #d06420;
+}
+
+/* Séparateur vertical */
+.company-divider {
+    width: 1px;
+    background-color: #e8e8e8;
+    align-self: stretch;
+    flex-shrink: 0;
+}
+
+/* À propos droite */
+.company-about {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.about-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #222;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.about-description {
+    font-size: 0.875rem;
+    color: #555;
+    line-height: 1.6;
+}
+
+.about-location {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.875rem;
+    color: #555;
+}
+
+.about-location svg {
+    stroke: #777;
+    flex-shrink: 0;
+}
+
+.about-website {
+    font-size: 0.875rem;
+    color: #555;
+    text-decoration: none;
+}
+
+.about-website:hover {
+    text-decoration: underline;
+}
+
+/* ===========================
+   Section formulaire
+=========================== */
+.form-section {
+    width: 100%;
+}
+
+.form-section form {
+    padding: 40px 48px;
+}
+
+/* ===========================
+   Indicateur d'étapes
+=========================== */
+.steps-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 36px;
+}
+
+.step {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: #e8e8e8;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.step.active {
+    background-color: #e8722a;
+    color: #fff;
+}
+
+.step.completed {
+    background-color: #4a9a6e;
+    color: #fff;
+}
+
+.step-line {
+    flex: 1;
+    max-width: 80px;
+    height: 2px;
+    background-color: #e8e8e8;
+    transition: background-color 0.3s ease;
+}
+
+.step-line.completed {
+    background-color: #4a9a6e;
+}
+
+/* ===========================
+   Étapes du formulaire
+=========================== */
+.form-step {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+}
+
+.form-step.active {
+    display: flex;
+}
+
+.step-question {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* ===========================
+   Notation par étoiles
+=========================== */
+.star-rating-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 6px;
+}
+
+.star-rating input[type="radio"] {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 2.4rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.15s ease, transform 0.1s ease;
+    line-height: 1;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+    color: #f5a623;
+}
+
+.star-rating label:hover {
+    transform: scale(1.15);
+}
+
+.star-labels {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 220px;
+    font-size: 0.78rem;
+    color: #888;
+}
+
+/* ===========================
+   Textarea
+=========================== */
+.form-textarea {
+    width: 100%;
+    max-width: 560px;
+    padding: 14px 16px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: #333;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+    outline: none;
+}
+
+.form-textarea:focus {
+    border-color: #e8722a;
+    box-shadow: 0 0 0 3px rgba(232, 114, 42, 0.12);
+}
+
+/* ===========================
+   Champs de saisie
+=========================== */
+.form-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+    max-width: 560px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+}
+
+.form-group label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-input {
+    padding: 11px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: #333;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+    border-color: #e8722a;
+    box-shadow: 0 0 0 3px rgba(232, 114, 42, 0.12);
+}
+
+/* ===========================
+   Boutons d'action
+=========================== */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 4px;
+}
+
+.btn-next,
+.btn-submit {
+    padding: 11px 40px;
+    background-color: #e8722a;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-next:hover,
+.btn-submit:hover {
+    background-color: #d06420;
+}
+
+.btn-prev {
+    padding: 11px 32px;
+    background-color: transparent;
+    color: #777;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-prev:hover {
+    background-color: #f5f5f5;
+    border-color: #bbb;
+    color: #444;
+}
+
+/* ===========================
+   Étape 3 – layout interne
+=========================== */
+.step3-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+    max-width: 560px;
+}
+
+.form-group-full {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 280px;
+}
+
+.label-centered {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.input-date {
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+}
+
+/* Question contact */
+.contact-question {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+}
+
+.radio-group {
+    display: flex;
+    gap: 28px;
+    align-items: center;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #333;
+    font-weight: 500;
+    user-select: none;
+}
+
+.radio-label input[type="radio"] {
+    display: none;
+}
+
+.radio-custom {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.radio-label input[type="radio"]:checked + .radio-custom {
+    border-color: #e8722a;
+    background-color: #e8722a;
+    box-shadow: inset 0 0 0 4px #fff;
+}
+
+/* Champs de contact désactivés */
+.contact-fields {
+    width: 100%;
+    transition: opacity 0.25s ease;
+}
+
+.contact-fields.disabled {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+.contact-fields.disabled .form-input {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+@media (max-width: 768px) {
+    .main-card {
+        border-radius: 6px;
+    }
+
+    .company-card {
+        flex-direction: column;
+        gap: 24px;
+        padding: 24px 182px; /* vertical horizontal */
+    }
+
+    .company-divider {
+        width: 100%;
+        height: 1px;
+    }
+
+    .form-section form {
+        padding: 28px 20px;
+    }
+
+    .form-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .step-line {
+        max-width: 48px;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-header h1 {
+        font-size: 1.35rem;
+    }
+
+    .company-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .company-details {
+        align-items: center;
+    }
+
+    .star-rating label {
+        font-size: 2rem;
+    }
+}
