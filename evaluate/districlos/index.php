@@ -1,12 +1,82 @@
 <?php
 
-// PHPMailer pour envoi des documents en PJ
+// PHPMailer pour envoi des avis
 require_once __DIR__ . '/phpmailer/src/PHPMailer.php';
 require_once __DIR__ . '/phpmailer/src/SMTP.php';
 require_once __DIR__ . '/phpmailer/src/Exception.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+
+// --- Configuration (à personnaliser) ---
+$MAIL_FROM = 'formulaire@cloture-discount.fr';
+$MAIL_FROM_NAME = 'Formulaire Satisfaction';
+$MAIL_RECIPIENTS = [
+    'yan.ledoux@districlos.com',
+    'commercial@districlos.com',
+];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    function safe($key) {
+        return isset($_POST[$key]) ? htmlspecialchars(trim($_POST[$key]), ENT_QUOTES, 'UTF-8') : '';
+    }
+
+    $rating = isset($_POST['rating']) ? (int) $_POST['rating'] : 0;
+    if ($rating < 1 || $rating > 5) {
+        header('Location: index.php?error=rating');
+        exit;
+    }
+
+    $comment = safe('comment');
+    $experienceDate = safe('experience_date');
+    $contact = safe('contact');
+    $lastname = safe('lastname');
+    $firstname = safe('firstname');
+    $email = safe('email');
+    $phone = safe('phone');
+
+    $fields = [
+        'Note' => $rating . ' / 5',
+        'Commentaire' => $comment !== '' ? $comment : 'Non renseigné',
+        'Date de l\'expérience' => $experienceDate !== '' ? $experienceDate : 'Non renseignée',
+        'Souhaite être contacté' => $contact === 'oui' ? 'Oui' : 'Non',
+    ];
+    if ($contact === 'oui') {
+        $fields['Nom'] = $lastname;
+        $fields['Prénom'] = $firstname;
+        $fields['Email'] = $email;
+        $fields['Téléphone'] = $phone;
+    }
+
+    $message = "Nouvel avis reçu via le formulaire de satisfaction.\n\n";
+    foreach ($fields as $label => $value) {
+        $message .= $label . ' : ' . ($value !== '' ? $value : 'Non renseigné') . "\n";
+    }
+
+    $mail = new PHPMailer(true);
+    try {
+        $mail->CharSet = 'UTF-8';
+        $mail->Encoding = 'base64';
+        $mail->setFrom($MAIL_FROM, $MAIL_FROM_NAME);
+        foreach ($MAIL_RECIPIENTS as $recipient) {
+            $mail->addAddress($recipient);
+        }
+        if ($contact === 'oui' && $email !== '') {
+            $mail->addReplyTo($email);
+        }
+
+        $mail->isHTML(false);
+        $mail->Subject = '[Avis client] Formulaire de satisfaction - Note ' . $rating . '/5';
+        $mail->Body = $message;
+
+        $mail->send();
+        header('Location: index.php?success=1');
+        exit;
+    } catch (Exception $e) {
+        header('Location: index.php?error=sendmail');
+        exit;
+    }
+}
 
 ?>
 
@@ -81,6 +151,24 @@ use PHPMailer\PHPMailer\Exception;
 
         <!-- Formulaire multi-étapes -->
         <section class="form-section">
+            <?php if (isset($_GET['success']) && $_GET['success'] == '1'): ?>
+                <div class="form-message form-message--success">
+                    Merci ! Votre avis a bien été envoyé.
+                </div>
+            <?php elseif (isset($_GET['error'])): ?>
+                <div class="form-message form-message--error">
+                    <?php
+                    if ($_GET['error'] === 'sendmail') {
+                        echo 'L\'envoi du message a échoué. Veuillez réessayer plus tard.';
+                    } elseif ($_GET['error'] === 'rating') {
+                        echo 'Veuillez indiquer une note (étape 1).';
+                    } else {
+                        echo 'Une erreur est survenue.';
+                    }
+                    ?>
+                </div>
+            <?php endif; ?>
+
             <form action="index.php" method="POST" enctype="multipart/form-data" id="satisfaction-form">
 
                 <!-- Indicateur d'étapes -->
