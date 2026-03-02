@@ -92,5 +92,3 @@
   {/if}
 {/block}
 
-{hook h='displayAfterCartSummaryTotals' cart=$cart}
-

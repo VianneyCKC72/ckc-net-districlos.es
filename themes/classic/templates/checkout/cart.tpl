@@ -93,6 +93,7 @@
                                 {block name='cart_summary_totals'}
                                     {include file='checkout/_partials/cart-summary-totals.tpl' cart=$cart}
                                 {/block}
+                                {hook h='displayAfterCartSummaryTotals' cart=$cart}
                             </div>
                         </div>
 
