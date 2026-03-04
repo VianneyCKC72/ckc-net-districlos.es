@@ -25,13 +25,27 @@
 {if $show_your_gpt_link}
  <script type="text/javascript">
   if (!document.getElementById('yourgpt-chatbot')) {
+
+   function setYourGptVar(){
+    if(typeof prestashop.customer.id !== 'undefined'){
+     let visitorDataGptName = prestashop.customer.firstname + ' ' + prestashop.customer.lastname
+     let visitorDataGptEmail = prestashop.customer.email
+     $yourgptChatbot.set("visitor:data", {
+      name: visitorDataGptName,
+      email: visitorDataGptEmail,
+     });
+    }
+   }
+
    var gptScript = document.createElement('script');
    gptScript.src = "https://widget.yourgpt.ai/script.js";
    gptScript.id = "yourgpt-chatbot";
    gptScript.setAttribute('data-widget', '{$gpt_link_id}');
    gptScript.setAttribute('defer', '');
    gptScript.setAttribute('async', '');
+   gptScript.setAttribute("onload","setYourGptVar()");
    document.body.appendChild(gptScript);
+
   }
  </script>
 {/if}
