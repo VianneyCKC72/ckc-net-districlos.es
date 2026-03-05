@@ -179,7 +179,7 @@ function _lp_pro_send_mail(
     </div>
 
     <div class="lp-catalogue">
-        <a href="<?= $assets ?>docs/Catalogue_Pro_2025.pdf" target="_blank" rel="noopener" title="Télécharger le catalogue Pro">
+        <a href="/index.php?controller=attachment&amp;id_attachment=362" target="_blank" rel="noopener" title="Télécharger le catalogue Pro">
             <img src="<?= $assets ?>img/catalogue-pro.png" alt="Catalogue Pro Districlos 2025"
                  onerror="this.style.opacity='.3'">
         </a>
