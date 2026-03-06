@@ -127,7 +127,7 @@ function _lp_pro_send_mail(
 </section>
 <?php else: ?>
 <section class="lp-form-section">
-    <div class="lp-form-inner">
+    <div class="lp-form-inner"> 
         <?php if ($formError): ?>
             <div class="lp-alert lp-alert--error"><?= $formError ?></div>
         <?php endif; ?>
