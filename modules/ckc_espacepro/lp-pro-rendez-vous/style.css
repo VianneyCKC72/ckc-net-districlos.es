@@ -26,7 +26,7 @@ body { font-family: 'Poppins', sans-serif; color: #1a1a1a; background: #fff; lin
 .lp-alert { padding: 14px 18px; border-radius: 8px; font-size: .88rem; font-weight: 600; margin-bottom: 18px; }
 .lp-alert--error { background: #fdecea; border: 1px solid #ef9a9a; color: #c62828; }
 
-.lp-catalogue { position: absolute; bottom: 20px; right: 42px; text-align: center; width: 160px; }
+.lp-catalogue { bottom: 20px; right: 42px; text-align: center; width: 160px; }
 .lp-catalogue a { display: inline-block; text-decoration: none; }
 .lp-catalogue img { width: 100%; }
 .lp-catalogue__label { margin-top: 10px; font-family: 'Caveat', cursive; font-size: 1.15rem; color: #1a1a1a; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
