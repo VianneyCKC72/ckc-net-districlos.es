@@ -1,4 +1,8 @@
-{if !empty($subcategoryLinks)}
+{if isset($category.id) && $category.id == 215}
+    {include file='catalog/_partials/category-filter-wizard-215.tpl'}
+{elseif isset($category.id) && $category.id == 438}
+    {* Wizard à créer pour la catégorie 438 *}
+{elseif !empty($subcategoryLinks)}
     <div class="category_inline description_souscat">
         {foreach $subcategoryLinks as $link}
             <a href="{$link.url}" class="item description_souscatconf {$link.class}">
@@ -8,15 +12,15 @@
                     </span>
                 </h2>
                 <span class="btn-primary-arrow">
-                            <svg
-                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                    class="lucide lucide-move-up-right">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-move-up-right">
                         <path d="M13 5H19V11"></path>
                         <path d="M19 5L5 19"></path>
                     </svg>
-            </span>
+                </span>
             </a>
         {/foreach}
     </div>

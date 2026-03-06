@@ -43,9 +43,6 @@ class Ckc_Stores_Stock extends Module
     {
         $this->context->controller->addJS($this->_path . 'assets/js/stores_stock.js');
         $this->context->controller->addCSS($this->_path . 'assets/css/stores_stock.css');
-        
-        // Enregistrer une fonction Smarty personnalisée pour vérifier le statut "victime de son succès"
-        $this->context->smarty->registerPlugin('function', 'checkVictimeSucces', array($this, 'smartyCheckVictimeSucces'));
     }
     
     /**
