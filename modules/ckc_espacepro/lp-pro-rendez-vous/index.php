@@ -127,52 +127,42 @@ function _lp_pro_send_mail(
 </section>
 <?php else: ?>
 <section class="lp-form-section">
-    <div class="lp-form-inner">
+    <div class="lp-form-inner"> 
         <?php if ($formError): ?>
             <div class="lp-alert lp-alert--error"><?= $formError ?></div>
         <?php endif; ?>
-        <form method="post" action="">
-            <div class="lp-form-row">
-                <div class="lp-field">
-                    <label for="lp_nom">Nom</label>
-                    <input id="lp_nom" type="text" name="nom" value="<?= htmlspecialchars($_POST['nom'] ?? '') ?>" required>
-                </div>
-                <div class="lp-field">
-                    <label for="lp_prenom">Prénom</label>
-                    <input id="lp_prenom" type="text" name="prenom" value="<?= htmlspecialchars($_POST['prenom'] ?? '') ?>">
-                </div>
+        <form method="post" action="" class="lp-form-grid">
+            <div class="lp-field">
+                <label for="lp_nom">Nom</label>
+                <input id="lp_nom" type="text" name="nom" value="<?= htmlspecialchars($_POST['nom'] ?? '') ?>" required>
             </div>
-            <div class="lp-form-row">
-                <div class="lp-field lp-field--md">
-                    <label for="lp_societe">Société</label>
-                    <input id="lp_societe" type="text" name="societe" value="<?= htmlspecialchars($_POST['societe'] ?? '') ?>">
-                </div>
+            <div class="lp-field">
+                <label for="lp_prenom">Prénom</label>
+                <input id="lp_prenom" type="text" name="prenom" value="<?= htmlspecialchars($_POST['prenom'] ?? '') ?>">
             </div>
-            <div class="lp-form-row">
-                <div class="lp-field lp-field--sm">
-                    <label for="lp_type">Type de professionnel</label>
-                    <select id="lp_type" name="type_pro">
-                        <?php foreach (['installateur' => 'Installateur', 'artisan' => 'Artisan', 'paysagiste' => 'Paysagiste', 'macon' => 'Maçon'] as $val => $label): ?>
-                            <option value="<?= $val ?>" <?= (($_POST['type_pro'] ?? '') === $val) ? 'selected' : '' ?>><?= $label ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+            <div class="lp-field">
+                <label for="lp_societe">Société</label>
+                <input id="lp_societe" type="text" name="societe" value="<?= htmlspecialchars($_POST['societe'] ?? '') ?>">
             </div>
-            <div class="lp-form-row">
-                <div class="lp-field">
-                    <label for="lp_tel">Téléphone</label>
-                    <input id="lp_tel" type="tel" name="telephone" value="<?= htmlspecialchars($_POST['telephone'] ?? '') ?>">
-                </div>
-                <div class="lp-field">
-                    <label for="lp_email">Email</label>
-                    <input id="lp_email" type="email" name="email" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" required>
-                </div>
+            <div class="lp-field">
+                <label for="lp_type">Type de professionnel</label>
+                <select id="lp_type" name="type_pro">
+                    <?php foreach (['installateur' => 'Installateur', 'artisan' => 'Artisan', 'paysagiste' => 'Paysagiste', 'macon' => 'Maçon', 'autre' => 'Autre'] as $val => $label): ?>
+                        <option value="<?= $val ?>" <?= (($_POST['type_pro'] ?? '') === $val) ? 'selected' : '' ?>><?= $label ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
-            <div class="lp-form-row">
-                <div class="lp-field lp-field--md">
-                    <label for="lp_adresse">Adresse postale</label>
-                    <input id="lp_adresse" type="text" name="adresse" value="<?= htmlspecialchars($_POST['adresse'] ?? '') ?>">
-                </div>
+            <div class="lp-field">
+                <label for="lp_tel">Téléphone</label>
+                <input id="lp_tel" type="tel" name="telephone" value="<?= htmlspecialchars($_POST['telephone'] ?? '') ?>">
+            </div>
+            <div class="lp-field">
+                <label for="lp_email">Email</label>
+                <input id="lp_email" type="email" name="email" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" required>
+            </div>
+            <div class="lp-field lp-field--span2">
+                <label for="lp_adresse">Adresse postale</label>
+                <input id="lp_adresse" type="text" name="adresse" value="<?= htmlspecialchars($_POST['adresse'] ?? '') ?>">
             </div>
             <button type="submit" name="lp_submit" class="lp-submit">Je veux être recontacté</button>
         </form>
