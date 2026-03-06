@@ -798,6 +798,17 @@ class ckc_espacepro extends Module
                     'controller' => 'lprendezvous'
                 ]
             ],
+            'lp_pro_rendez_vous_merci' => [
+                'rule' => 'lp-pro-rendez-vous/remerciements',
+                'controller' => 'lprendezvous',
+                'keywords' => [],
+                'params' => [
+                    'module' => $this->name,
+                    'fc' => 'module',
+                    'controller' => 'lprendezvous',
+                    'remerciements' => '1'
+                ]
+            ],
         ];
     }
 
