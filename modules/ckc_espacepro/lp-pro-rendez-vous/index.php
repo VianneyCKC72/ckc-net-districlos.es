@@ -5,7 +5,7 @@ if (!defined('_PS_VERSION_')) {
 
 $assets = isset($baseUrl) ? rtrim($baseUrl, '/') . '/' : '';
 
-$formSent  = false;
+$formSent  = $isConfirm ?? false;
 $formError = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lp_submit'])) {
@@ -20,10 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lp_submit'])) {
     if (empty($nom) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $formError = 'Veuillez renseigner au minimum votre nom et une adresse email valide.';
     } else {
-        $formSent = _lp_pro_send_mail($nom, $prenom, $societe, $typePro, $tel, $email, $adresse);
-        if (!$formSent) {
-            $formError = 'Une erreur est survenue lors de l\'envoi. Veuillez réessayer.';
+        $sent = _lp_pro_send_mail($nom, $prenom, $societe, $typePro, $tel, $email, $adresse);
+        if ($sent) {
+            $scheme = Tools::usingSecureMode() ? 'https' : 'http';
+            header('Location: ' . $scheme . '://' . Tools::getHttpHost() . rtrim(__PS_BASE_URI__, '/') . '/lp-pro-rendez-vous/remerciements');
+            exit;
         }
+        $formError = 'Une erreur est survenue lors de l\'envoi. Veuillez réessayer.';
     }
 }
 

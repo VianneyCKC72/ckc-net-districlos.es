@@ -24,11 +24,12 @@ class Ckc_EspaceproLprendezvousModuleFrontController extends ModuleFrontControll
             return;
         }
 
-        // $baseUrl est disponible dans index.php via la portée de la fonction (include partage le scope)
         $baseUrl = (Tools::usingSecureMode() ? 'https' : 'http')
             . '://' . Tools::getHttpHost()
             . __PS_BASE_URI__
             . 'modules/ckc_espacepro/lp-pro-rendez-vous/';
+
+        $isConfirm = (bool) Tools::getValue('remerciements');
 
         header('Content-Type: text/html; charset=utf-8');
         header('Cache-Control: public, max-age=300');
