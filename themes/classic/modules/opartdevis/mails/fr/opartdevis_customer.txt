@@ -1,4 +1,4 @@
 Bonjour {firstname} {lastname} et merci de votre confiance
 Vous trouverez ci-joint votre devis.
-Vous pouvez nous contacter par mail {shopMail} ou par tél au {shopTel}
+Vous pouvez nous contacter par mail Commercial@districlos.com ou par téléphone au 04 22 53 10 34
 A très vite sur {shopUrl}
