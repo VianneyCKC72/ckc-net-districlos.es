@@ -1,0 +1,13 @@
+Nouvelle demande de contact PRO
+================================
+
+Nom              : {nom}
+Prénom           : {prenom}
+Société          : {societe}
+Type             : {type}
+Téléphone        : {tel}
+Email            : {email}
+Adresse postale  : {adresse}
+
+--
+Message envoyé depuis la landing page LP PRO – pro.cloture-discount.fr
