@@ -224,7 +224,9 @@ var ap5Plugin = {
                         prestashop.emit('updateCart', {
                             reason: {
                                 idProduct: idPack,
-                                idProductAttribute: (typeof(jsonData.ap5Data.explodedProductsData) == 'object' ? jsonData.ap5Data.cartPackProducts.ap5ExplodedCart : jsonData.ap5Data.idProductAttribute),
+                                // Pack éclaté: on doit envoyer les données de pack éclaté (cq/idpal/ql/pel)
+                                // afin que ps_shoppingcart/ajax reçoive un array et puisse rendre la modale.
+                                idProductAttribute: (typeof(jsonData.ap5Data.explodedProductsData) == 'object' ? jsonData.ap5Data.explodedProductsData : jsonData.ap5Data.idProductAttribute),
                                 linkAction: 'add-to-cart',
                                 cart: jsonData.cart
                             },
