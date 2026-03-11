@@ -303,6 +303,24 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
                 $product['cart_quantity'] = max(1, (int) $id_product_attribute['cq']);
             }
 
+            // Prix du pack : on le calcule pour éviter un affichage vide (",") et garantir le symbole de devise
+            if (Module::isInstalled('pm_advancedpack') && AdvancedPack::isValidPack((int) $id_product)) {
+                $useTax = !((int) Group::getCurrent()->price_display_method); // 0=TTC, 1=HT
+                $idpal = (is_array($id_product_attribute) && isset($id_product_attribute['idpal']) && is_array($id_product_attribute['idpal']))
+                    ? $id_product_attribute['idpal']
+                    : [];
+                $ql = (is_array($id_product_attribute) && isset($id_product_attribute['ql']) && is_array($id_product_attribute['ql']))
+                    ? $id_product_attribute['ql']
+                    : [];
+                $pel = (is_array($id_product_attribute) && isset($id_product_attribute['pel']) && is_array($id_product_attribute['pel']))
+                    ? $id_product_attribute['pel']
+                    : [];
+
+                $packPrice = AdvancedPack::getPackPrice((int) $id_product, $useTax, true, true, 6, $idpal, $ql, $pel, true);
+                $product['price'] = Tools::displayPrice($packPrice);
+                $product['has_discount'] = false;
+            }
+
             // Forcer la branche standard de modal-part.tpl (affiche quantité + prix + contenu)
             $isPack = false;
         } else {
