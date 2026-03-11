@@ -64,7 +64,6 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
 
         // Fallback runtime (qty>1): si le champ id_product_attribute_list n'est pas envoyé,
         // on reconstruit les déclinaisons via les champs group_<id_product>_<id_attribute_group>.
-        // Preuve: logs montrent post_has_idpal=false mais group_1052_* / group_1053_* présents.
         if (!count($this->idProductAttributeList)) {
             $byProductId = [];
             foreach ($_POST as $k => $v) {
@@ -197,15 +196,26 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
     public function displayAjax()
     {
 
-        // MODIF YAN 02/03/2026 POUR EXPLODED PACK
-        // if (!count($this->productPackExclude) && !$this->packHasEditedQuantity) {
-        //     AdvancedPack::addPackToCart($this->idPack, $this->quantity, $this->idProductAttributeList, $this->productPackCustomizationList, true, true);
-        // } else {
-        //     AdvancedPack::addExplodedPackToCart($this->idPack, $this->quantity, $this->idProductAttributeList, $this->productPackCustomizationList, $this->productPackQuantityList, $this->productPackExclude);
-        // }
-
         AdvancedPack::addExplodedPackToCart($this->idPack, $this->quantity, $this->idProductAttributeList, $this->productPackCustomizationList, $this->productPackQuantityList, $this->productPackExclude);
 
+        // Ajouter les accessoires Multi Accessories Pro (HSMA)
+        $idAccessories = trim(Tools::getValue('id_accessories', ''));
+        $idAccessoriesAttributes = trim(Tools::getValue('id_accesories_attributes', ''));
+        $customQty = trim(Tools::getValue('custom_qty', ''));
+
+        if ($idAccessories !== '' && $idAccessories !== false) {
+            $ids = array_map('intval', array_filter(explode(',', $idAccessories)));
+            $attrs = $idAccessoriesAttributes !== '' ? array_map('intval', array_filter(explode(',', $idAccessoriesAttributes))) : array_fill(0, count($ids), 0);
+            $qtys = $customQty !== '' ? array_map('intval', array_filter(explode(',', $customQty))) : array_fill(0, count($ids), 1);
+            foreach ($ids as $i => $idProduct) {
+                if ($idProduct <= 0) {
+                    continue;
+                }
+                $idProductAttribute = isset($attrs[$i]) ? $attrs[$i] : 0;
+                $quantity = isset($qtys[$i]) && $qtys[$i] > 0 ? $qtys[$i] : 1;
+                $this->context->cart->updateQty($quantity, $idProduct, $idProductAttribute, null, 'up');
+            }
+        }
     }
     public function initContent()
     {
