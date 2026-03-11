@@ -171,8 +171,7 @@ var ap5Plugin = {
                 ml = 0;
             }
 
-            var checkedCount = $('#group_accessories .accessory_item:checked').length;
-            $.ajax({
+$.ajax({
                 type: 'POST',
                 url: $(callerElement).attr('action'),
                 data: {
@@ -185,9 +184,7 @@ var ap5Plugin = {
                     id_accessories: idAccesories,
                     id_accesories_attributes: idAccesoriesAttributes,
                     custom_qty: customQties,
-                    _debug_checked_count: checkedCount,
-                    _debug_id_acc: idAccesories,
-                    ajax: true,
+ajax: true,
                     quantity_ml: ml
                 },
                 dataType: 'json',
