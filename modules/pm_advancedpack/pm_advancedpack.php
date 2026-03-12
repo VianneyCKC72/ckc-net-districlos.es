@@ -3899,6 +3899,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
         $product = null;
         $groupPriceDisplayMethod = (int)Group::getCurrent()->price_display_method;
         $psTaxDisplay = (int)Configuration::get('PS_TAX_DISPLAY');
+
         if (is_array($id_product_attribute)) {
             $explodedPackData = $id_product_attribute;
             if (!isset($explodedPackData['cq']) || !is_numeric($explodedPackData['cq']) || $explodedPackData['cq'] <= 0) {

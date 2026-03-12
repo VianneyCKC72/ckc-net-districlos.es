@@ -36,16 +36,18 @@ class Ps_ShoppingcartAjaxModuleFrontController extends ModuleFrontController
         $modal = null;
         $isPack = false;
         $packContent = null;
-        
-        if (gettype(Tools::getValue('id_product_attribute')) == 'array') {
+        $rawIdProductAttribute = Tools::getValue('id_product_attribute');
+        $rawIdProduct = Tools::getValue('id_product');
+
+        if (gettype($rawIdProductAttribute) == 'array') {
             $isPack = true;
-            $packContent = Tools::getValue('id_product_attribute')['block_cart'];
+            $packContent = isset($rawIdProductAttribute['block_cart']) ? $rawIdProductAttribute['block_cart'] : null;
         }
 
         if (Tools::getValue('action') === 'add-to-cart') {
             $modal = $this->module->renderModal(
-                (int) Tools::getValue('id_product'),
-                (int) Tools::getValue('id_product_attribute'),
+                (int) $rawIdProduct,
+                $rawIdProductAttribute,
                 (int) Tools::getValue('id_customization'),
                 $isPack,
                 $packContent
