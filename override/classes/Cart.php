@@ -193,14 +193,18 @@ class Cart extends CartCore
 
     protected static function isAttested(int $idCart): bool
     {
+        static $cache = [];
+
+        if (isset($cache[$idCart])) {
+            return $cache[$idCart];
+        }
+
         $table = _DB_PREFIX_.'dealt_tva_attestation';
-        $exists = (bool)Db::getInstance()->getValue(
-            "SELECT COUNT(*) FROM information_schema.TABLES
-             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '".pSQL($table)."'"
+
+        $cache[$idCart] = (bool)Db::getInstance()->getValue(
+            "SELECT 1 FROM `$table` WHERE id_cart=".(int)$idCart." AND is_validated=1"
         );
-        if (!$exists) return false;
-        return (bool)Db::getInstance()->getValue(
-            "SELECT COUNT(*) FROM `$table` WHERE id_cart=".(int)$idCart." AND is_validated=1"
-        );
+
+        return $cache[$idCart];
     }
 }
