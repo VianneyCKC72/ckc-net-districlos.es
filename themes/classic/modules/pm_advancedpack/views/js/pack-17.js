@@ -137,13 +137,11 @@ var ap5Plugin = {
                         idAccesoriesAttributes.push(parseInt($(this).data('id-product-attribute')));
 
                     if ($(parentElement).find('input').hasClass('custom_quantity')) {
-                        customQty = parseInt($(parentElement).find('.custom_quantity').val());
-                        if (customQty > 0) {
-                            customQties.push(customQty);
-                        } else {
-                            idAccesoriesAttributes.pop();
-                            idAccesories.pop();
+                        customQty = parseInt($(parentElement).find('.custom_quantity').val(), 10);
+                        if (customQty <= 0 || isNaN(customQty)) {
+                            customQty = Math.max(1, ap5_quantityWanted);
                         }
+                        customQties.push(customQty);
                     }
                 });
             }
@@ -173,7 +171,7 @@ var ap5Plugin = {
                 ml = 0;
             }
 
-            $.ajax({
+$.ajax({
                 type: 'POST',
                 url: $(callerElement).attr('action'),
                 data: {
@@ -186,7 +184,7 @@ var ap5Plugin = {
                     id_accessories: idAccesories,
                     id_accesories_attributes: idAccesoriesAttributes,
                     custom_qty: customQties,
-                    ajax: true,
+ajax: true,
                     quantity_ml: ml
                 },
                 dataType: 'json',
@@ -224,7 +222,9 @@ var ap5Plugin = {
                         prestashop.emit('updateCart', {
                             reason: {
                                 idProduct: idPack,
-                                idProductAttribute: (typeof(jsonData.ap5Data.explodedProductsData) == 'object' ? jsonData.ap5Data.cartPackProducts.ap5ExplodedCart : jsonData.ap5Data.idProductAttribute),
+                                // Pack éclaté: on doit envoyer les données de pack éclaté (cq/idpal/ql/pel)
+                                // afin que ps_shoppingcart/ajax reçoive un array et puisse rendre la modale.
+                                idProductAttribute: (typeof(jsonData.ap5Data.explodedProductsData) == 'object' ? jsonData.ap5Data.explodedProductsData : jsonData.ap5Data.idProductAttribute),
                                 linkAction: 'add-to-cart',
                                 cart: jsonData.cart
                             },
@@ -287,6 +287,13 @@ var ap5Plugin = {
             $('[data-button-action="add-to-cart"]').attr('data-button-action', 'add-pack-to-cart');
         }
         $('.product-add-to-cart .js-add-to-cart').removeClass('js-add-to-cart');
+
+        if (ap5_displayMode != 'bundle') {
+            $('input#quantity_wanted').off('change.ap5qty').on('change.ap5qty', function(e) {
+                e.stopPropagation();
+                ap5Plugin.updatePackTable();
+            });
+        }
 
         // $('div.ap5-pack-product-image a.fancybox, div.ap5-pack-product-slideshow a.fancybox').fancybox();
         if (typeof($.fn.pmAPOwlCarousel) !== 'undefined') {
@@ -466,6 +473,9 @@ var ap5Plugin = {
             ml = 0;
         }
 
+        var qty = parseInt($('input#quantity_wanted').val()) || 1;
+        if (isNaN(qty) || qty <= 0) { qty = 1; }
+
         var pmAjaxSpinnerInstance = ap5Plugin.addLayerLoading($('#ap5-product-list'));
         $.ajax({
             type: 'POST',
@@ -474,6 +484,7 @@ var ap5Plugin = {
                 productPackChoice: productPackChoice,
                 productPackExclude: ap5Plugin.productPackExclude,
                 productPackQuantityList: productPackQuantityList,
+                qty: qty,
                 fromQuickView: (typeof(ap5Plugin.fromQuickView) != 'undefined' && ap5Plugin.fromQuickView ? 1 : 0),
                 token: prestashop.static_token,
                 quantity_ml: ml
@@ -606,6 +617,37 @@ var ap5Plugin = {
 
 $(window).off('hashchange');
 // End - Remove default behavior of product.js
+
+// Interception de tout bouton "add-to-cart" sur les pages pack en phase CAPTURE.
+// Capture tous les boutons avec data-button-action="add-to-cart" (sticky OU formulaire principal)
+// et les redirige vers addPackToCart pour inclure les accessoires HSMA.
+document.addEventListener('click', function(e) {
+    var btn = e.target.closest('[data-button-action="add-to-cart"]');
+    if (!btn) return;
+    if (!document.querySelector('form.ap5-buy-block')) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Sync qty : sticky bar OU input principal → champ qty du formulaire
+    var $bottomQty = $('#quantity_wanted_bottom');
+    if ($bottomQty.length) {
+        var bottomVal = parseInt($bottomQty.val());
+        if (!isNaN(bottomVal) && bottomVal > 0) {
+            $('input[name=qty]', 'form.ap5-buy-block').val(bottomVal);
+        }
+    }
+
+    var pm_ap5_id_pack;
+    if ($('input[name=id_product]').data('ap5BundleId')) {
+        pm_ap5_id_pack = parseInt($('input[name=id_product]').data('ap5BundleId'));
+    } else {
+        pm_ap5_id_pack = parseInt($('input[name=id_product]').val());
+    }
+    var pm_ap5_id_product_attribute_list = $('#idCombination').val();
+
+    ap5Plugin.addPackToCart(pm_ap5_id_pack, pm_ap5_id_product_attribute_list, $('form.ap5-buy-block'));
+}, true);
 
 // Add pack to cart
 $(document).on('submit', 'form.ap5-buy-block', function(e){

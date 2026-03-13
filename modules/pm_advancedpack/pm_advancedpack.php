@@ -3681,7 +3681,8 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             $assembler->assembleProduct(['id_product' => (int)$productPack->id]),
             $context->language
         );
-        $productPresentation['quantity_wanted'] = (isset($packQuantityList[0])) ? $packQuantityList[0] : 1;
+        $quantityWanted = max(1, (int) Tools::getValue('qty', 1));
+        $productPresentation['quantity_wanted'] = $quantityWanted;
         $productPresentation['quantity'] = AdvancedPack::getPackAvailableQuantity($idPack, $packAttributesList, $packQuantityList, $packExcludeList);
         $productPresentation['rounded_display_price'] = Tools::ps_round(
             $productPresentation['price_amount'],
@@ -3899,6 +3900,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
         $product = null;
         $groupPriceDisplayMethod = (int)Group::getCurrent()->price_display_method;
         $psTaxDisplay = (int)Configuration::get('PS_TAX_DISPLAY');
+
         if (is_array($id_product_attribute)) {
             $explodedPackData = $id_product_attribute;
             if (!isset($explodedPackData['cq']) || !is_numeric($explodedPackData['cq']) || $explodedPackData['cq'] <= 0) {
