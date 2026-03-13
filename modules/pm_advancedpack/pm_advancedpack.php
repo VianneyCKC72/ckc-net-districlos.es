@@ -3681,7 +3681,8 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             $assembler->assembleProduct(['id_product' => (int)$productPack->id]),
             $context->language
         );
-        $productPresentation['quantity_wanted'] = (isset($packQuantityList[0])) ? $packQuantityList[0] : 1;
+        $quantityWanted = max(1, (int) Tools::getValue('qty', 1));
+        $productPresentation['quantity_wanted'] = $quantityWanted;
         $productPresentation['quantity'] = AdvancedPack::getPackAvailableQuantity($idPack, $packAttributesList, $packQuantityList, $packExcludeList);
         $productPresentation['rounded_display_price'] = Tools::ps_round(
             $productPresentation['price_amount'],
