@@ -288,6 +288,13 @@ ajax: true,
         }
         $('.product-add-to-cart .js-add-to-cart').removeClass('js-add-to-cart');
 
+        if (ap5_displayMode != 'bundle') {
+            $('input#quantity_wanted').off('change.ap5qty').on('change.ap5qty', function(e) {
+                e.stopPropagation();
+                ap5Plugin.updatePackTable();
+            });
+        }
+
         // $('div.ap5-pack-product-image a.fancybox, div.ap5-pack-product-slideshow a.fancybox').fancybox();
         if (typeof($.fn.pmAPOwlCarousel) !== 'undefined') {
             $("div.ap5-pack-product-slideshow:not(.no-carousel)").pmAPOwlCarousel({
@@ -466,6 +473,9 @@ ajax: true,
             ml = 0;
         }
 
+        var qty = parseInt($('input#quantity_wanted').val()) || 1;
+        if (isNaN(qty) || qty <= 0) { qty = 1; }
+
         var pmAjaxSpinnerInstance = ap5Plugin.addLayerLoading($('#ap5-product-list'));
         $.ajax({
             type: 'POST',
@@ -474,6 +484,7 @@ ajax: true,
                 productPackChoice: productPackChoice,
                 productPackExclude: ap5Plugin.productPackExclude,
                 productPackQuantityList: productPackQuantityList,
+                qty: qty,
                 fromQuickView: (typeof(ap5Plugin.fromQuickView) != 'undefined' && ap5Plugin.fromQuickView ? 1 : 0),
                 token: prestashop.static_token,
                 quantity_ml: ml
