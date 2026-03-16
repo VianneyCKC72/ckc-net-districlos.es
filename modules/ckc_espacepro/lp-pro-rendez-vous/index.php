@@ -111,7 +111,7 @@ function _lp_pro_send_mail(
 <?php if (!$formSent): ?>
 <section class="lp-hero">
     <p class="lp-hero__title">Vous êtes professionnel du bâtiment ou de l'aménagement extérieur&nbsp;?</p>
-    <p class="lp-hero__subtitle">Rejoignez notre programme professionnel&nbsp;!</p>
+    <p class="lp-hero__subtitle">Accédez à nos avantages PRO dès la 1ère commande&nbsp;!</p>
     <p class="lp-hero__desc">Développez votre activité avec un partenaire solide et bénéficiez d'avantages exclusifs dès votre première commande.</p>
 </section>
 <?php endif; ?>
@@ -210,7 +210,7 @@ function _lp_pro_send_mail(
                 <div class="lp-why__num">1</div>
                 <div class="lp-why__text">
                     <h4>Un partenaire fiable pour vos chantiers</h4>
-                    <p>Nous sélectionnons des matériaux de qualité (aluminium, composite, bois, bambou…) majoritairement européens et garantis jusqu'à 10 ans. Avec 17 magasins en France et une équipe dédiée, nous assurons un suivi sérieux et réactif de vos commandes.</p>
+                    <p>Nous sélectionnons des matériaux de qualité (aluminium, composite, bois, bambou…) majoritairement européens et garantis jusqu'à 10 ans. Avec 18 magasins en France et une équipe dédiée, nous assurons un suivi sérieux et réactif de vos commandes.</p>
                 </div>
             </div>
             <div class="lp-why__item">
@@ -222,7 +222,7 @@ function _lp_pro_send_mail(
                         <li>Kits d'occultation et brise-vues</li>
                         <li>Portails et portillons</li>
                     </ul>
-                    <p style="margin-top:10px">Que ce soit pour des projets résidentiels, collectifs ou commerciaux, nous avons les solutions adaptées à vos contraintes techniques et budgétaires.</p>
+                    <p style="margin-top:10px">Que ce soit pour des projets résidentiels, collectifs, industriels ou commerciaux, nous avons les solutions adaptées à vos contraintes techniques et budgétaires.</p>
                 </div>
             </div>
         </div>
@@ -281,7 +281,7 @@ function _lp_pro_send_mail(
 <section class="lp-video">
     <div class="lp-video__text">
         <h3>Districlos, votre partenaire clôture partout en France</h3>
-        <p>Avec 17 magasins et une expertise reconnue dans l'aménagement extérieur, nous accompagnons déjà des centaines de professionnels dans leurs projets.</p>
+        <p>Avec 18 magasins et une expertise reconnue dans l'aménagement extérieur, nous accompagnons déjà des centaines de professionnels dans leurs projets.</p>
     </div>
     <div class="lp-video__frame">
         <iframe src="https://www.youtube.com/embed/RLDv5ANGbdg?rel=0"
@@ -289,6 +289,51 @@ function _lp_pro_send_mail(
                 allowfullscreen
                 title="Districlos est fier d'accompagner au quotidien ses pros"></iframe>
         <div class="lp-video__overlay">DISTRICLOS EST FIER D'ACCOMPAGNER AU QUOTIDIEN SES PROS</div>
+    </div>
+</section>
+
+<section class="lp-reviews">
+    <h2 class="lp-reviews__title">C'est votre avis qui compte&nbsp;!</h2>
+    <p class="lp-reviews__subtitle">
+        Déjà plus de <strong>2000 professionnels</strong> inscrits depuis <strong>15 ans d'expertise</strong> Districlos&nbsp;!
+        Rejoignez notre communauté de professionnels dès maintenant.
+    </p>
+
+    <div class="lp-reviews__grid">
+        <article class="lp-reviews__card">
+            <div class="lp-reviews__avatar">
+                <img src="<?= $assets ?>img/avis-pro-1.jpg" alt="Avis client professionnel 1">
+            </div>
+            <div class="lp-reviews__stars">★★★★★</div>
+            <p class="lp-reviews__text">
+                «&nbsp;Mise à dispo de la clôture super rapide, bien emballée pour éviter les rayures.
+                De plus des raidisseurs sont fournis, ce qui facilite énormément la pose de la clôture&nbsp;!
+                Merci beaucoup.&nbsp;»
+            </p>
+        </article>
+
+        <article class="lp-reviews__card">
+            <div class="lp-reviews__avatar">
+                <img src="<?= $assets ?>img/avis-pro-2.jpg" alt="Avis client professionnel 2">
+            </div>
+            <div class="lp-reviews__stars">★★★★★</div>
+            <p class="lp-reviews__text">
+                «&nbsp;Produits visiblement de bonne qualité, prix plutôt compétitifs, livraison rapide et
+                service client réactif. Je recommande.&nbsp;»
+            </p>
+        </article>
+
+        <article class="lp-reviews__card">
+            <div class="lp-reviews__avatar">
+                <img src="<?= $assets ?>img/avis-pro-3.jpg" alt="Avis client professionnel 3">
+            </div>
+            <div class="lp-reviews__stars">★★★★★</div>
+            <p class="lp-reviews__text">
+                «&nbsp;Navigation fluide et simple sur le site web jusqu'à la commande, livraison rapide
+                (si stock disponible), livraison soignée. La clôture est vraiment de très bonne qualité
+                et simple à installer. Je recommande vivement.&nbsp;»
+            </p>
+        </article>
     </div>
 </section>
 
