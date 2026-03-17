@@ -97,6 +97,17 @@ function _lp_pro_send_mail(
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Caveat:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= $assets ?>style.css">
+    <script>
+        (function (w, d, s, l, i){
+      w[l]=w[l]||[];w[l].push({
+        'gtm.start':new Date().getTime(),event:'gtm.js'
+      });
+      var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+      j.async=true;
+      j.src= 'https://cdn.cloture-discount.fr/lj59djkyo5o1ip3.js?aw='+i.replace(/^GTM-/, '')+dl;
+      f.parentNode.insertBefore(j,f);
+    })(window, document, 'script', 'dataLayer', 'GTM-T3HJWLD');
+</script>
 </head>
 <body>
 
