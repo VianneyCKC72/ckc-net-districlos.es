@@ -302,7 +302,7 @@ function _lp_pro_send_mail(
     <div class="lp-reviews__grid">
         <article class="lp-reviews__card">
             <div class="lp-reviews__avatar">
-                <img src="<?= $assets ?>img/avis-pro-1.jpg" alt="Avis client professionnel 1">
+                <img src="<?= $assets ?>img/avis-pro-1.png" alt="Avis client professionnel 1">
             </div>
             <div class="lp-reviews__stars">★★★★★</div>
             <p class="lp-reviews__text">
@@ -314,7 +314,7 @@ function _lp_pro_send_mail(
 
         <article class="lp-reviews__card">
             <div class="lp-reviews__avatar">
-                <img src="<?= $assets ?>img/avis-pro-2.jpg" alt="Avis client professionnel 2">
+                <img src="<?= $assets ?>img/avis-pro-2.png" alt="Avis client professionnel 2">
             </div>
             <div class="lp-reviews__stars">★★★★★</div>
             <p class="lp-reviews__text">
@@ -325,7 +325,7 @@ function _lp_pro_send_mail(
 
         <article class="lp-reviews__card">
             <div class="lp-reviews__avatar">
-                <img src="<?= $assets ?>img/avis-pro-3.jpg" alt="Avis client professionnel 3">
+                <img src="<?= $assets ?>img/avis-pro-3.png" alt="Avis client professionnel 3">
             </div>
             <div class="lp-reviews__stars">★★★★★</div>
             <p class="lp-reviews__text">
