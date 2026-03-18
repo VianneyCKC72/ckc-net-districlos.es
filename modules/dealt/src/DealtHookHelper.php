@@ -601,10 +601,19 @@ class DealtHookHelper
                 $product = new \Product($idService, false, (int)$ctx->language->id);
 
                 $servicePriceTtc = null;
+                $servicePriceTtcBefore = null;
                 if ($idService) {
-                    $priceTtc = \Product::getPriceStatic($idService, true);
-                    if ($priceTtc > 0) {
-                        $servicePriceTtc = self::formatPrice($ctx, $priceTtc);
+                    // Prix TTC final (avec remises PrestaShop) + prix TTC avant remise
+                    $priceTtcFinal = (float) \Product::getPriceStatic($idService, true, null, 6, null, false, true);
+                    $priceTtcBefore = (float) \Product::getPriceStatic($idService, true, null, 6, null, false, false);
+
+                    if ($priceTtcFinal > 0) {
+                        $servicePriceTtc = self::formatPrice($ctx, $priceTtcFinal);
+                    }
+
+                    // On ne renvoie un "avant" que s'il est strictement supérieur (donc remise réelle)
+                    if ($priceTtcBefore > 0 && $priceTtcFinal > 0 && $priceTtcBefore > $priceTtcFinal) {
+                        $servicePriceTtcBefore = self::formatPrice($ctx, $priceTtcBefore);
                     }
                 }
 
@@ -613,6 +622,7 @@ class DealtHookHelper
                 $data[] = [
                     'dealt_service_title' => $product->name ?: \Configuration::get('DEALT_SERVICE_TITLE_DEFAULT'),
                     'dealt_service_price' => $servicePriceTtc ?: '939 €',
+                    'dealt_service_price_before' => $servicePriceTtcBefore,
                     'dealt_service_url' => self::getServiceUrl(),
                     'dealt_product_id' => $idProduct,
                     'dealt_service_product_id' => $idService,
