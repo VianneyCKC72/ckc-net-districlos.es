@@ -92,6 +92,7 @@ class Cart extends CartCore
                         'id_zone' => &$id_zone,
                         'keepOrderPrices' => &$keepOrderPrices,
                         'shipping_cost' => &$shipping_cost,
+                        'total_extra' => &$total,
                         /*'is_tva_attested' => &$isTvaAttested,*/
                     ]);
                 }
