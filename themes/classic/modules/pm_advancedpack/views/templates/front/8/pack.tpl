@@ -139,13 +139,25 @@
                                     justify-content: center;
                                     width: 20px;
                                     height: 20px;
-                                    border-radius: 50%;
-                                    background: #6ac259;
-                                    color: #fff;
-                                    font-size: 12px;
-                                    font-weight: 700;
+                                    border-radius: 0;
+                                    background: transparent;
+                                    color: #79c046;
+                                    font-size: 0;
+                                    font-weight: 400;
                                     line-height: 1;
                                     cursor: help;
+                                }
+
+                                .ap5-ml-help-icon {
+                                    width: 20px;
+                                    height: 20px;
+                                    display: block;
+                                }
+
+                                .ap5-ml-help svg {
+                                    width: 16px;
+                                    height: 16px;
+                                    display: block;
                                 }
 
                                 .ap5-ml-help-tooltip {
@@ -225,7 +237,11 @@
                                     <p class="font-weight-bold group-name">
                                         Choisissez la longueur en mètres linéaires
                                         <span class="ap5-ml-help" tabindex="0" aria-label="Aide sur le calcul des mètres linéaires">
-                                            i
+                                            <svg class="ap5-ml-help-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                            </svg>
                                             <span class="ap5-ml-help-tooltip">Calcul mètres linéaires : addition de toutes les longueurs en mètres</span>
                                         </span>
                                     </p>
