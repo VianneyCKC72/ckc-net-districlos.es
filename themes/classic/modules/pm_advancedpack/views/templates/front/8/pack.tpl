@@ -148,15 +148,7 @@
                                     cursor: help;
                                 }
 
-                                .ap5-ml-help-icon {
-                                    width: 20px;
-                                    height: 20px;
-                                    display: block;
-                                }
-
                                 .ap5-ml-help svg {
-                                    width: 16px;
-                                    height: 16px;
                                     display: block;
                                 }
 
@@ -217,7 +209,6 @@
                                 .ap5-ml-field #quantity_ml.ap5-ml-invalid {
                                     color: #f33 !important;
                                     border-bottom: 2px solid #f33 !important;
-                                    border-radius: 0;
                                 }
 
                                 .ap5-ml-error {
@@ -237,7 +228,7 @@
                                     <p class="font-weight-bold group-name">
                                         Choisissez la longueur en mètres linéaires
                                         <span class="ap5-ml-help" tabindex="0" aria-label="Aide sur le calcul des mètres linéaires">
-                                            <svg class="ap5-ml-help-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                                 <circle cx="12" cy="12" r="10"></circle>
                                                 <line x1="12" y1="16" x2="12" y2="12"></line>
                                                 <line x1="12" y1="8" x2="12.01" y2="8"></line>
