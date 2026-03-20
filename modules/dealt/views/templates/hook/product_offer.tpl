@@ -26,6 +26,9 @@
                         <span class="dealt-offer-title">
                             Besoin d'une pose ?
                         </span>
+                        <span class="dealt-offer-badge" aria-label="Promotion pose -5%" style="padding: 5px; border-radius: 20px; background: #ff144e; color: #ffffff; font-weight: 700; font-size: 12px; line-height: 1;">
+                            -5%
+                        </span>
                         {if !empty($service.dealt_service_url)}
                             <a href="{$service.dealt_service_url|escape:'html':'UTF-8'}"
                                rel="noopener noreferrer nofollow"
@@ -63,7 +66,16 @@
                 </p>
 
                 <div class="dealt-offer-price">
-                    +{$service.dealt_service_price|escape:'html':'UTF-8'}
+                    {if !empty($service.dealt_service_price_before)}
+                        <span class="dealt-offer-price-before" style="margin-right: 8px; text-decoration: line-through;">
+                            +{$service.dealt_service_price_before|escape:'html':'UTF-8'}
+                        </span>
+                        <span class="dealt-offer-price-now" style="color: #ff144e; font-weight: 700;">
+                            +{$service.dealt_service_price|escape:'html':'UTF-8'}
+                        </span>
+                    {else}
+                        +{$service.dealt_service_price|escape:'html':'UTF-8'}
+                    {/if}
                 </div>
 
                 {* Bloc vérification code postal *}

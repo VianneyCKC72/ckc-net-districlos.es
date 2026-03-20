@@ -1,6 +1,8 @@
 <?php
 class ckc_shipping_estimatorcartshippingestimatorModuleFrontController extends ModuleFrontController
 {
+    private const TEMP_ADDRESS_ALIAS_PREFIX = 'temp_shipping_estimator';
+
     CONST CARRIERS = ['1084',
         '1085',
         '1086',
@@ -129,9 +131,10 @@ class ckc_shipping_estimatorcartshippingestimatorModuleFrontController extends M
     {
         parent::initContent();
 
-        $postalCode = (int)Tools::getValue('postal_code');
+        $postalCode = (string) Tools::getValue('postal_code');
         header('Content-Type: application/json');
-        if (!$postalCode) {
+        $postalCode = trim($postalCode);
+        if ($postalCode === '') {
             echo json_encode([
                 'success' => false,
                 'message' => 'Postal code is required'
@@ -157,16 +160,10 @@ class ckc_shipping_estimatorcartshippingestimatorModuleFrontController extends M
     private function getDeliveryOptionsByPostalCode($postalCode)
     {
         $originalAddressId = $this->context->cart->id_address_delivery;
-        $tempAddress = new Address();
-        $tempAddress->alias = 'temp';
-        $tempAddress->firstname = 'temp';
-        $tempAddress->lastname = 'temp';
-        $tempAddress->address1 = 'temp';
-        $tempAddress->postcode = $postalCode;
-        $tempAddress->city = 'temp';
-        $tempAddress->id_customer = Context::getContext()->cookie->id_customer;
-        $tempAddress->id_country = 8;
-        $tempAddress->save();
+        $tempAddress = $this->getOrCreateTempAddress((string) $postalCode);
+        if (!Validate::isLoadedObject($tempAddress)) {
+            return [];
+        }
 
         $this->context->cart->updateAddressId($this->context->cart->id_address_delivery, $tempAddress->id);
         $this->context->cart->id_address_delivery = $tempAddress->id;
@@ -183,16 +180,14 @@ class ckc_shipping_estimatorcartshippingestimatorModuleFrontController extends M
         $display_taxes_label = (Configuration::get('PS_TAX') && !Configuration::get('AEUC_LABEL_TAX_INC_EXC'));
         $carriers_available = [];
         $priceFormatter = new \PrestaShop\PrestaShop\Adapter\Product\PriceFormatter();
-        if (substr($postalCode, 0, 1) == 0) {
-            $postalCode = substr($postalCode, 1);
-        }
+        $postalCodeNumeric = (int) ltrim((string) $postalCode, '0');
         $sql = 'SELECT *
 					FROM `' . _DB_PREFIX_ . 'zip_code_zone` z
-					WHERE "'.$postalCode.'" BETWEEN z.`min` AND z.`max`';
+					WHERE "' . (int) $postalCodeNumeric . '" BETWEEN z.`min` AND z.`max`';
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
-        $id_zone = $result['id_zone'];
+        $id_zone = isset($result['id_zone']) ? (int) $result['id_zone'] : 0;
 
-        if (isset($delivery_option_list[$this->context->cart->id_address_delivery])) {
+        if ($id_zone > 0 && isset($delivery_option_list[$this->context->cart->id_address_delivery])) {
             foreach ($delivery_option_list[$this->context->cart->id_address_delivery] as $id_carriers_list => $carriers_list) {
                 foreach ($carriers_list as $carriers) {
                     if (is_array($carriers)) {
@@ -287,6 +282,44 @@ class ckc_shipping_estimatorcartshippingestimatorModuleFrontController extends M
         });
 
         return $carriers_available;
+    }
+
+    private function getOrCreateTempAddress(string $postalCode): Address
+    {
+        $context = Context::getContext();
+        $idCustomer = (int) ($context->cookie->id_customer ?? 0);
+        $idGuest = (int) ($context->cookie->id_guest ?? 0);
+        $alias = self::TEMP_ADDRESS_ALIAS_PREFIX;
+
+        if ($idCustomer <= 0 && $idGuest > 0) {
+            $alias .= '_' . $idGuest;
+        }
+
+        $existingId = (int) Db::getInstance()->getValue(
+            'SELECT a.`id_address`
+            FROM `' . _DB_PREFIX_ . 'address` a
+            WHERE a.`id_customer` = ' . (int) $idCustomer . '
+            AND a.`alias` = "' . pSQL($alias) . '"
+            ORDER BY a.`id_address` DESC'
+        );
+
+        $address = $existingId > 0 ? new Address($existingId) : new Address();
+        $address->alias = $alias;
+        $address->firstname = 'temp';
+        $address->lastname = 'temp';
+        $address->address1 = 'temp';
+        $address->postcode = $postalCode;
+        $address->city = 'temp';
+        $address->id_customer = $idCustomer;
+        $address->id_country = 8;
+        $address->deleted = 1;
+
+        $saved = $existingId > 0 ? $address->update() : $address->add();
+        if (!$saved || !Validate::isLoadedObject($address)) {
+            return new Address();
+        }
+
+        return $address;
     }
     private function isFreeShipping($cart, array $carrier)
     {
