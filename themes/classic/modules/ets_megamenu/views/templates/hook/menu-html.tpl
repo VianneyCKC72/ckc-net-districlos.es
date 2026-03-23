@@ -358,7 +358,7 @@
                 </a>
                 <div class="menu-mobile-stars-container">
                     <img src="/img/menu-mobile-stars.svg" alt="note" width="72px" height="11px" class="menu-mobile-stars" loading="lazy">
-                    <p class="menu-mobile-note-text">Nos clients sont satisfaits :&nbsp;<span class="menu-mobile-note-value">-</span></p>
+                    {hook h='displaySkeepersRating' mod='dtc_skeepers'}
                 </div>
             </div>
         </li>
