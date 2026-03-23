@@ -119,21 +119,131 @@
 
                         {if isset($packMlChoose) && $packMlChoose}
                             <style>
-                                #quantity_ml::placeholder {
-                                    color: #666 !important;
+                                .ap5-ml-field .group-name {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                    margin: 0 0 10px;
+                                }
+
+                                .ap5-ml-field {
+                                    background: #F5F5F5;
+                                    border-radius: 4px;
+                                    padding: 14px 16px;
+                                }
+
+                                .ap5-ml-help {
+                                    position: relative;
+                                    display: inline-flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    width: 20px;
+                                    height: 20px;
+                                    border-radius: 0;
+                                    background: transparent;
+                                    color: #79c046;
+                                    font-size: 0;
+                                    font-weight: 400;
+                                    line-height: 1;
+                                    cursor: help;
+                                }
+
+                                .ap5-ml-help svg {
+                                    display: block;
+                                }
+
+                                .ap5-ml-help-tooltip {
+                                    position: absolute;
+                                    left: 50%;
+                                    top: 28px;
+                                    transform: translateX(-50%);
+                                    min-width: 190px;
+                                    max-width: 260px;
+                                    padding: 8px 10px;
+                                    background: #f1f1f1;
+                                    border: 1px solid #bdbdbd;
+                                    color: #6f6f6f;
+                                    font-size: 12px;
+                                    font-weight: 400;
+                                    line-height: 1.3;
+                                    text-align: left;
+                                    visibility: hidden;
+                                    opacity: 0;
+                                    z-index: 15;
+                                    transition: opacity 0.2s ease;
+                                }
+
+                                .ap5-ml-help:hover .ap5-ml-help-tooltip,
+                                .ap5-ml-help:focus .ap5-ml-help-tooltip {
+                                    visibility: visible;
                                     opacity: 1;
                                 }
+
+                                .ap5-ml-field #quantity_ml {
+                                    display: block;
+                                    width: 100%;
+                                    background: transparent !important;
+                                    border: 0 !important;
+                                    border-bottom: 1px solid #a6a6a6 !important;
+                                    border-radius: 0 !important;
+                                    padding: 0 0 8px !important;
+                                    margin: 0;
+                                    height: auto;
+                                    min-height: 0;
+                                    line-height: 1.2;
+                                    color: #222;
+                                    box-shadow: none !important;
+                                    outline: none;
+                                }
+
+                                .ap5-ml-field #quantity_ml::placeholder {
+                                    color: #8a8a8a !important;
+                                    opacity: 1;
+                                }
+
+                                .ap5-ml-field #quantity_ml:focus {
+                                    border-bottom: 1px solid #7e7e7e !important;
+                                    box-shadow: none !important;
+                                }
+
+                                .ap5-ml-field #quantity_ml.ap5-ml-invalid {
+                                    color: #f33 !important;
+                                    border-bottom: 2px solid #f33 !important;
+                                }
+
+                                .ap5-ml-error {
+                                    display: none;
+                                    margin-top: 6px;
+                                    color: #f33;
+                                    font-size: 13px;
+                                    text-align: right;
+                                }
+
+                                .ap5-ml-error.ap5-ml-error-visible {
+                                    display: block;
+                                }
                             </style>
-                            <div class="ap5-attributes" style="margin-bottom: 1rem;">
+                            <div class="ap5-attributes ap5-ml-field" style="margin-bottom: 1rem;">
                                 <div class="clearfix hiddenlabel">
-                                    <p class="font-weight-bold group-name">Choisissez la longueur en mètres linéaires</p>
+                                    <p class="font-weight-bold group-name">
+                                        Choisissez la longueur en mètres linéaires
+                                        <span class="ap5-ml-help" tabindex="0" aria-label="Aide sur le calcul des mètres linéaires">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                            </svg>
+                                            <span class="ap5-ml-help-tooltip">Calcul mètres linéaires : addition de toutes les longueurs en mètres</span>
+                                        </span>
+                                    </p>
                                     <div class="select_wrap">
                                         <div class="clearfix dis_flex">
                                                     <span class="input-group-btn-vertical dis_flex">
-                                                        <input type="number" id="quantity_ml" value="" class="form-control" min="1" step="1" style="display: block;" placeholder="Renseignez votre longueur (en m)">
+                                                        <input type="number" id="quantity_ml" value="" class="form-control" min="1" step="1" placeholder="Renseignez votre longueur (en mètres linéaires)" required>
                                                     </span>
                                         </div>
                                     </div>
+                                    <p id="quantity_ml_error" class="ap5-ml-error">Veuillez renseigner ce champ</p>
                                 </div>
                             </div>
                         {/if}
