@@ -1,5 +1,6 @@
 $(document).ready(function () {
     let skeepers = $('.skeepers_product__stars');
+    let mobileMenuNote = $('.menu-mobile-note-value');
 
     if (skeepers.length > 0) {
         let observer = new MutationObserver(function (mutations) {
@@ -10,6 +11,9 @@ $(document).ready(function () {
                         let note = rateElement.first().text().trim();
 
                         if (note.length > 0) {
+                            if (mobileMenuNote.length > 0) {
+                                mobileMenuNote.text(note);
+                            }
 
                             let avisLi = $(`
                                 <li class="nav-item">
