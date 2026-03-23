@@ -357,8 +357,7 @@
                     <span class="menu-mobile-phone-number">04 22 53 10 34</span>
                 </a>
                 <div class="menu-mobile-stars-container">
-                    <img src="/img/menu-mobile-stars.svg" alt="note" width="72px" height="11px" class="menu-mobile-stars" loading="lazy">
-                    <p class="menu-mobile-note-text">Nos clients sont satisfaits :&nbsp;<span>4.8/5</span></p>
+                    {hook h='displaySkeepersRating' mod='dtc_skeepers'}
                 </div>
             </div>
         </li>
