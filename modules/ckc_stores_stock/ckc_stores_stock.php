@@ -5,6 +5,12 @@ if (!defined('_PS_VERSION_')) {
 
 class Ckc_Stores_Stock extends Module
 {
+    /**
+     * Évite l'exception Smarty: "Plugin tag 'checkVictimeSucces' already registered"
+     * quand le module est instancié plusieurs fois dans le même request.
+     */
+    private static bool $smartyPluginRegistered = false;
+
     public function __construct()
     {
         $this->name = 'ckc_stores_stock';
@@ -18,9 +24,19 @@ class Ckc_Stores_Stock extends Module
         $this->displayName = $this->l('Stocks par magasin');
         $this->description = $this->l('Affiche les stocks par magasin sur la fiche produit.');
         
-        // Enregistrer la fonction Smarty dès le constructeur pour qu'elle soit disponible partout
-        if (class_exists('Context') && Context::getContext()->smarty) {
-            Context::getContext()->smarty->registerPlugin('function', 'checkVictimeSucces', array($this, 'smartyCheckVictimeSucces'));
+        // Enregistrer la fonction Smarty dès le constructeur, mais une seule fois par request.
+        if (!self::$smartyPluginRegistered && class_exists('Context') && Context::getContext()->smarty) {
+            try {
+                Context::getContext()->smarty->registerPlugin(
+                    'function',
+                    'checkVictimeSucces',
+                    [$this, 'smartyCheckVictimeSucces']
+                );
+                self::$smartyPluginRegistered = true;
+            } catch (\Throwable $e) {
+                // Smarty peut throw en cas de double register : on ignore pour éviter un 500 bloquant.
+                self::$smartyPluginRegistered = true;
+            }
         }
     }
 
