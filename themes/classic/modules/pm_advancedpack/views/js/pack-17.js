@@ -646,13 +646,43 @@ document.addEventListener('click', function(e) {
     }
     var pm_ap5_id_product_attribute_list = $('#idCombination').val();
 
+    if (typeof ap5ValidateMlField === 'function' && !ap5ValidateMlField()) {
+        return;
+    }
+
     ap5Plugin.addPackToCart(pm_ap5_id_pack, pm_ap5_id_product_attribute_list, $('form.ap5-buy-block'));
 }, true);
+
+function ap5ValidateMlField() {
+    var $mlField = $('#quantity_ml');
+    if (!$mlField.length) {
+        return true;
+    }
+
+    var rawValue = ($mlField.val() || '').toString().trim();
+    var numericValue = parseFloat(rawValue);
+    var isValid = rawValue !== '' && !isNaN(numericValue) && numericValue > 0;
+    var $error = $('#quantity_ml_error');
+
+    if (isValid) {
+        $mlField.removeClass('ap5-ml-invalid');
+        $error.removeClass('ap5-ml-error-visible');
+        return true;
+    }
+
+    $mlField.addClass('ap5-ml-invalid');
+    $error.addClass('ap5-ml-error-visible');
+    $mlField.trigger('focus');
+    return false;
+}
 
 // Add pack to cart
 $(document).on('submit', 'form.ap5-buy-block', function(e){
     e.preventDefault();
     e.stopImmediatePropagation();
+    if (!ap5ValidateMlField()) {
+        return false;
+    }
     // Handle specific bundle case
     if ($('input[name=id_product]').data('ap5BundleId')) {
         var pm_ap5_id_pack = parseInt($('input[name=id_product]').data('ap5BundleId'));
@@ -713,13 +743,16 @@ $(document).on('ap5-CombinationUpdate', function(e){
 $(document).on('change blur', '#quantity_ml', function(e){
     e.preventDefault();
 
-    var currentVal = $(this).val();
-    // Si le champ est vide, NaN, ou <= 0, mettre à 1
-    if (currentVal === '' || isNaN(currentVal) || parseFloat(currentVal) <= 0) {
-        $(this).val(1);
-    } else {
+    var currentVal = ($(this).val() || '').toString().trim();
+    if (currentVal !== '' && !isNaN(currentVal) && parseFloat(currentVal) > 0) {
         $(this).val(Math.round(parseFloat(currentVal)));
+        $(this).removeClass('ap5-ml-invalid');
+        $('#quantity_ml_error').removeClass('ap5-ml-error-visible');
+    } else if (currentVal === '') {
+        $(this).removeClass('ap5-ml-invalid');
+        $('#quantity_ml_error').removeClass('ap5-ml-error-visible');
     }
+
     ap5Plugin.updatePackTable();
 });
 // Quantity increment
