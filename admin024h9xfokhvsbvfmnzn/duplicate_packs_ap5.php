@@ -145,7 +145,7 @@ function duplicateAP5Products($id_pack_source, $id_pack_target)
 ");
 
     if ($exists) {
-        continue; // ne pas recréer la ligne
+        return true; // ne pas recréer la ligne
     }
 
     $exists = $db->getValue("
@@ -153,7 +153,7 @@ function duplicateAP5Products($id_pack_source, $id_pack_target)
     WHERE id_product_pack = ".(int)$id_pack_target."
       AND id_product_attribute = ".(int)$a['id_product_attribute']."
 ");
-    if ($exists) continue;
+    if ($exists) return true;
 
     // pm_advancedpack_products
     $items = $db->executeS("
@@ -192,7 +192,107 @@ function duplicateAP5Products($id_pack_source, $id_pack_target)
     }
     echo "   - pm_advancedpack_products_attributes OK\n";
 }
+function duplicateSpecificPrices($id_product, $shop_target, $shop_source){
+    $db = Db::getInstance();
+    $groupsPro = json_decode($db->getValue("SELECT value FROM ps_configuration WHERE name LIKE 'CKC_GROUP_PRO_IDS'"));
+    $specificPrices = [];
+    if(is_array($groupsPro)){
+        foreach ($groupsPro as $group) {
+            $specificPricesGroup = $db->executeS("SELECT * FROM ps_specific_price WHERE id_product=".(int)$id_product." AND id_shop=".(int)$shop_source."
+             AND id_group=".(int)$group);
 
+            if(count($specificPricesGroup) > 0 && isset($specificPricesGroup[0]['id_product'])){
+                $specificPrices = array_merge($specificPrices, $specificPricesGroup);
+            }
+        }
+    }
+    if(count($specificPrices) > 0 && isset($specificPrices[0]['id_product'])){
+        foreach ($specificPrices as $specificPrice) {
+
+            $checkIfExists = $db->getValue("SELECT COUNT(*) FROM ps_specific_price WHERE id_product=".(int)$specificPrice['id_product']." AND id_shop=".(int)$shop_target."
+             AND id_group=".(int)$specificPrice['id_group']);
+
+            if(!$checkIfExists){
+                $createSpecificPrice = $db->insert("specific_price", [
+                    'id_specific_price_rule'      => (int)$specificPrice['id_specific_price_rule'],
+                    'id_cart'                     => (int)$specificPrice['id_cart'],
+                    'id_product'                  => (int)$specificPrice['id_product'],
+                    'id_shop'                     => (int)$shop_target,
+                    'id_shop_group'               => (int)$specificPrice['id_shop_group'],
+                    'id_currency'                 => (int)$specificPrice['id_currency'],
+                    'id_country'                  => (int)$specificPrice['id_country'],
+                    'id_group'                    => (int)$specificPrice['id_group'],
+                    'id_customer'                 => (int)$specificPrice['id_customer'],
+                    'id_product_attribute'        => (int)$specificPrice['id_product_attribute'],
+                    'price'                       => $specificPrice['price'],
+                    'from_quantity'               => $specificPrice['from_quantity'],
+                    'reduction'                   => $specificPrice['reduction'],
+                    'reduction_tax'               => $specificPrice['reduction_tax'],
+                    'reduction_type'              => $specificPrice['reduction_type'],
+                    'from'                        => $specificPrice['from'],
+                    'to'                          => $specificPrice['to']
+                ]);
+            }
+        }
+    }
+
+}
+
+function duplicateProductData($id_product, $shop_target, $shop_source){
+    $db = Db::getInstance();
+    $exists = $db->getValue("SELECT COUNT(*) FROM ps_product_lang WHERE id_product=".(int)$id_product." AND id_shop=".(int)$shop_target);
+    if(!$exists){
+        $originalProductData = $db->getRow("SELECT * FROM ps_product_lang WHERE id_product=".(int)$id_product." AND id_shop=".(int)$shop_source);
+        if(isset($originalProductData['id_product'])){
+            $createProductData = Db::getInstance()->insert("product_lang", [
+                'id_product'            => (int)$originalProductData['id_product'],
+                'id_shop'               => (int)$shop_target,
+                'id_lang'               => (int)$originalProductData['id_lang'],
+                'description'           => $originalProductData['description'],
+                'description_short'     => $originalProductData['description_short'],
+                'link_rewrite'          => $originalProductData['link_rewrite'],
+                'meta_description'      => $originalProductData['meta_description'],
+                'meta_keywords'         => $originalProductData['meta_keywords'],
+                'meta_title'            => $originalProductData['meta_title'],
+                'name'                  => $originalProductData['name'],
+                'available_now'         => $originalProductData['available_now'],
+                'available_later'       => $originalProductData['available_later'],
+                'delivery_in_stock'     => $originalProductData['delivery_in_stock'],
+                'delivery_out_stock'    => $originalProductData['delivery_out_stock']
+            ]);
+        }
+    }
+}
+
+function duplicateProductAttributes($id_product, $shop_target, $shop_source){
+    $db = Db::getInstance();
+    $sourceShopAttributes = $db->executeS("SELECT * FROM ps_product_attribute_shop WHERE id_product=".(int)$id_product." AND id_shop=".(int)$shop_source);
+
+    if(isset($sourceShopAttributes[0]['id_product_attribute'])){
+        foreach ($sourceShopAttributes as $sourceShopAttribute) {
+            $checkIfExists = $db->getValue("SELECT COUNT(*) FROM ps_product_attribute_shop WHERE id_product=".(int)$id_product." AND id_shop=".(int)$shop_target." 
+            AND id_product_attribute=".(int)$sourceShopAttribute['id_product_attribute']);
+            if(!$checkIfExists){
+                $createProductAttribute = Db::getInstance()->insert("product_attribute_shop", [
+                    'id_product'          => (int)$id_product,
+                    'id_product_attribute'      => (int)$sourceShopAttribute['id_product_attribute'],
+                    'id_shop' => (int)$shop_target,
+                    'wholesale_price' => $sourceShopAttribute['wholesale_price'],
+                    'price' => $sourceShopAttribute['price'],
+                    'ecotax' => $sourceShopAttribute['ecotax'],
+                    'weight' => $sourceShopAttribute['weight'],
+                    'unit_price_impact' => $sourceShopAttribute['unit_price_impact'],
+                    'default_on' => $sourceShopAttribute['default_on'],
+                    'minimal_quantity' => $sourceShopAttribute['minimal_quantity'],
+                    'low_stock_threshold' => $sourceShopAttribute['low_stock_threshold'],
+                    'low_stock_alert' => $sourceShopAttribute['low_stock_alert'],
+                    'available_date' => $sourceShopAttribute['available_date']
+                ]);
+            }
+
+        }
+    }
+}
 
 
 // ------------------------------------------------------
@@ -213,8 +313,11 @@ for ($i = 0; $i < count($packs); $i++) {
         $db->execute("START TRANSACTION");
 
         duplicateProductToShop($id_product, $shop_target);
+        duplicateSpecificPrices($id_product, $shop_target, $shop_source);
+        duplicateProductData($id_product, $shop_target, $shop_source);
+        duplicateProductAttributes($id_product, $shop_target, $shop_source);
         duplicateAP5Data($id_pack_source, $id_product, $shop_target);
-        duplicateAP5Products($id_pack_source, $id_product);
+        /*duplicateAP5Products($id_pack_source, $id_product);*/
 
         $db->execute("COMMIT");
 
