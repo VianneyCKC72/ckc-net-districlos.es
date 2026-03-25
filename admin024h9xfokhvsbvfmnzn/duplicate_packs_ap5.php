@@ -138,23 +138,6 @@ function duplicateAP5Products($id_pack_source, $id_pack_target)
 {
     $db = Db::getInstance();
 
-    $exists = $db->getValue("
-    SELECT COUNT(*) FROM ps_pm_advancedpack_products
-    WHERE id_pack = ".(int)$id_pack_target."
-      AND id_product = ".(int)$it['id_product']."
-");
-
-    if ($exists) {
-        return true; // ne pas recréer la ligne
-    }
-
-    $exists = $db->getValue("
-    SELECT COUNT(*) FROM ps_pm_advancedpack_products_attributes
-    WHERE id_product_pack = ".(int)$id_pack_target."
-      AND id_product_attribute = ".(int)$a['id_product_attribute']."
-");
-    if ($exists) return true;
-
     // pm_advancedpack_products
     $items = $db->executeS("
         SELECT * FROM ps_pm_advancedpack_products
@@ -162,6 +145,17 @@ function duplicateAP5Products($id_pack_source, $id_pack_target)
     ");
 
     foreach ($items as $it) {
+
+        $exists = $db->getValue("
+        SELECT COUNT(*) FROM ps_pm_advancedpack_products
+        WHERE id_pack = ".(int)$id_pack_target."
+          AND id_product = ".(int)$it['id_product']."
+        ");
+
+        if ($exists) {
+            return true; // ne pas recréer la ligne
+        }
+
         $db->insert("pm_advancedpack_products", [
             'id_pack'                     => (int)$id_pack_target,
             'id_product'                  => (int)$it['id_product'],
@@ -173,6 +167,7 @@ function duplicateAP5Products($id_pack_source, $id_pack_target)
             'reduction_amount'            => (float)$it['reduction_amount'],
             'reduction_type'              => pSQL($it['reduction_type'])
         ]);
+
     }
     echo "   - pm_advancedpack_products OK\n";
 
@@ -183,6 +178,14 @@ function duplicateAP5Products($id_pack_source, $id_pack_target)
     ");
 
     foreach ($attrs as $a) {
+        $exists = $db->getValue("
+        SELECT COUNT(*) FROM ps_pm_advancedpack_products_attributes
+        WHERE id_product_pack = ".(int)$id_pack_target."
+          AND id_product_attribute = ".(int)$a['id_product_attribute']."
+        ");
+
+        if ($exists) return true;
+
         $db->insert("pm_advancedpack_products_attributes", [
             'id_product_pack'     => (int)$id_pack_target,
             'id_product_attribute'=> (int)$a['id_product_attribute'],
@@ -232,6 +235,8 @@ function duplicateSpecificPrices($id_product, $shop_target, $shop_source){
                     'from'                        => $specificPrice['from'],
                     'to'                          => $specificPrice['to']
                 ]);
+            } else {
+                echo 'SpecificPrice exists :'.$specificPrice['id_specific_price_rule'].' . Product : '.$specificPrice['id_product'];
             }
         }
     }
@@ -261,6 +266,8 @@ function duplicateProductData($id_product, $shop_target, $shop_source){
                 'delivery_out_stock'    => $originalProductData['delivery_out_stock']
             ]);
         }
+    } else {
+        echo 'ProductData exists : '.$id_product;
     }
 }
 
@@ -273,21 +280,25 @@ function duplicateProductAttributes($id_product, $shop_target, $shop_source){
             $checkIfExists = $db->getValue("SELECT COUNT(*) FROM ps_product_attribute_shop WHERE id_product=".(int)$id_product." AND id_shop=".(int)$shop_target." 
             AND id_product_attribute=".(int)$sourceShopAttribute['id_product_attribute']);
             if(!$checkIfExists){
+                echo 'ProductAttribute Create INFO : '.$sourceShopAttribute['id_product_attribute'].' . Product : '.$id_product. '. Shop : '. $shop_target;
                 $createProductAttribute = Db::getInstance()->insert("product_attribute_shop", [
                     'id_product'          => (int)$id_product,
                     'id_product_attribute'      => (int)$sourceShopAttribute['id_product_attribute'],
                     'id_shop' => (int)$shop_target,
-                    'wholesale_price' => $sourceShopAttribute['wholesale_price'],
-                    'price' => $sourceShopAttribute['price'],
-                    'ecotax' => $sourceShopAttribute['ecotax'],
-                    'weight' => $sourceShopAttribute['weight'],
-                    'unit_price_impact' => $sourceShopAttribute['unit_price_impact'],
-                    'default_on' => $sourceShopAttribute['default_on'],
-                    'minimal_quantity' => $sourceShopAttribute['minimal_quantity'],
-                    'low_stock_threshold' => $sourceShopAttribute['low_stock_threshold'],
-                    'low_stock_alert' => $sourceShopAttribute['low_stock_alert'],
-                    'available_date' => $sourceShopAttribute['available_date']
+                    'wholesale_price' => (float)$sourceShopAttribute['wholesale_price'],
+                    'price' => (float)$sourceShopAttribute['price'],
+                    'ecotax' => (float)$sourceShopAttribute['ecotax'],
+                    'weight' => (float)$sourceShopAttribute['weight'],
+                    'unit_price_impact' => (float)$sourceShopAttribute['unit_price_impact'],
+                    'default_on' => (int)$sourceShopAttribute['default_on'],
+                    'minimal_quantity' => (int)$sourceShopAttribute['minimal_quantity'],
+                    'low_stock_threshold' => (int)$sourceShopAttribute['low_stock_threshold'],
+                    'low_stock_alert' => (int)$sourceShopAttribute['low_stock_alert'],
+                    'available_date' => pSQL($sourceShopAttribute['available_date'])
                 ]);
+                echo 'ProductAttribute Create : '.json_encode($createProductAttribute);
+            } else {
+                echo 'ProductAttribute exists : '.$sourceShopAttribute['id_product_attribute'].' . Product : '.$id_product;
             }
 
         }
@@ -315,7 +326,7 @@ for ($i = 0; $i < count($packs); $i++) {
         duplicateProductToShop($id_product, $shop_target);
         duplicateSpecificPrices($id_product, $shop_target, $shop_source);
         duplicateProductData($id_product, $shop_target, $shop_source);
-        duplicateProductAttributes($id_product, $shop_target, $shop_source);
+        /*duplicateProductAttributes($id_product, $shop_target, $shop_source);*/
         duplicateAP5Data($id_pack_source, $id_product, $shop_target);
         /*duplicateAP5Products($id_pack_source, $id_product);*/
 
