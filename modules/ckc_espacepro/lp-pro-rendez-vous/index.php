@@ -9,6 +9,18 @@ $formSent  = $isConfirm ?? false;
 $formError = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lp_submit'])) {
+    $token = (string)($_POST['lp_token'] ?? '');
+    if ($token === '' || !hash_equals((string)Tools::getToken(false), $token)) {
+        $formError = 'Session expirée, merci de réessayer.';
+    }
+
+    $honeypot = trim((string)($_POST['website'] ?? ''));
+    if ($formError === '' && $honeypot !== '') {
+        $scheme = Tools::usingSecureMode() ? 'https' : 'http';
+        header('Location: ' . $scheme . '://' . Tools::getHttpHost() . rtrim(__PS_BASE_URI__, '/') . '/lp-pro-rendez-vous/remerciements');
+        exit;
+    }
+
     $nom     = htmlspecialchars(trim($_POST['nom']       ?? ''), ENT_QUOTES);
     $prenom  = htmlspecialchars(trim($_POST['prenom']    ?? ''), ENT_QUOTES);
     $societe = htmlspecialchars(trim($_POST['societe']   ?? ''), ENT_QUOTES);
@@ -17,9 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lp_submit'])) {
     $email   = trim($_POST['email'] ?? '');
     $adresse = htmlspecialchars(trim($_POST['adresse']   ?? ''), ENT_QUOTES);
 
-    if (empty($nom) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    if ($formError === '' && (empty($nom) || !filter_var($email, FILTER_VALIDATE_EMAIL))) {
         $formError = 'Veuillez renseigner au minimum votre nom et une adresse email valide.';
-    } else {
+    } elseif ($formError === '') {
+        _lp_pro_save_lead($nom, $prenom, $societe, $typePro, $tel, $email, $adresse);
         $sent = _lp_pro_send_mail($nom, $prenom, $societe, $typePro, $tel, $email, $adresse);
         if ($sent) {
             $scheme = Tools::usingSecureMode() ? 'https' : 'http';
@@ -27,6 +40,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lp_submit'])) {
             exit;
         }
         $formError = 'Une erreur est survenue lors de l\'envoi. Veuillez réessayer.';
+    }
+}
+
+function _lp_pro_save_lead(
+    string $nom, string $prenom, string $societe, string $typePro,
+    string $tel, string $email, string $adresse
+): void {
+    try {
+        Db::getInstance()->insert('lp_pro_lead', [
+            'nom'        => pSQL($nom),
+            'prenom'     => pSQL($prenom),
+            'societe'    => pSQL($societe),
+            'type_pro'   => pSQL($typePro),
+            'telephone'  => pSQL($tel),
+            'email'      => pSQL($email),
+            'adresse'    => pSQL($adresse),
+            'created_at' => date('Y-m-d H:i:s'),
+        ], false, true, Db::INSERT_IGNORE);
+    } catch (\Throwable $e) {
+        PrestaShopLogger::addLog(
+            'LP PRO - Echec sauvegarde lead: ' . $e->getMessage(),
+            3,
+            null,
+            'LpProLead'
+        );
     }
 }
 
@@ -58,7 +96,7 @@ function _lp_pro_send_mail(
     $tplPath    = _PS_MODULE_DIR_ . 'ckc_espacepro/mails/';
     $success    = true;
 
-    foreach ($recipients as $toEmail => $toName) {
+    foreach ($recipients as $toEmail => $toName) { 
         $result = Mail::Send(
             $idLang,
             'lp_pro_contact',
@@ -146,6 +184,8 @@ function _lp_pro_send_mail(
             <div class="lp-alert lp-alert--error"><?= $formError ?></div>
         <?php endif; ?>
         <form method="post" action="" class="lp-form-grid">
+            <input type="hidden" name="lp_token" value="<?= htmlspecialchars(Tools::getToken(false), ENT_QUOTES, 'UTF-8') ?>">
+            <input type="text" name="website" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
             <div class="lp-field">
                 <label for="lp_nom">Nom</label>
                 <input id="lp_nom" type="text" name="nom" value="<?= htmlspecialchars($_POST['nom'] ?? '') ?>" required>
