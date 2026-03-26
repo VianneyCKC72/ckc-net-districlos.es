@@ -160,7 +160,7 @@
                                     min-width: 190px;
                                     max-width: 260px;
                                     padding: 8px 10px;
-                                    background: #f1f1f1;
+                                    background: #FFFFFF;
                                     border: 1px solid #bdbdbd;
                                     color: #6f6f6f;
                                     font-size: 12px;

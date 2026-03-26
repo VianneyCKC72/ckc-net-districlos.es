@@ -3770,13 +3770,13 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             throw new PrestaShopException($this->l('Unable to clone pack images'));
         }
         $associatedShops = $productPack->getAssociatedShops();
-        if (self::_isFilledArray($associatedShops) && count($associatedShops) > 1) {
+/*        if (self::_isFilledArray($associatedShops) && count($associatedShops) > 1) {
             foreach ($associatedShops as $idShopToRemove) {
                 if (!empty($idShopToRemove) && $idShopToRemove != AdvancedPack::getPackIdShop($idPack)) {
                     Db::getInstance()->delete('product_shop', '`id_product`=' . (int)$idPack . ' AND `id_shop`=' . (int)$idShopToRemove);
                 }
             }
-        }
+        }*/
         $config = $this->_getModuleConfiguration();
         if (AdvancedPack::isBundle($productPack->id)) {
             $mainProduct = new Product(AdvancedPack::getMainProductIdFromBundleId($productPack->id));
