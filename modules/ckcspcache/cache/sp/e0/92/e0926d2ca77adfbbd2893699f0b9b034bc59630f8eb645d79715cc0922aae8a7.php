@@ -1,0 +1,22 @@
+<?php
+return array (
+  'id_specific_price' => '84727786',
+  'id_specific_price_rule' => '0',
+  'id_cart' => '0',
+  'id_product' => '1353',
+  'id_shop' => '1',
+  'id_shop_group' => '0',
+  'id_currency' => '1',
+  'id_country' => '8',
+  'id_group' => '3',
+  'id_customer' => '0',
+  'id_product_attribute' => '11878469',
+  'price' => '1405.920000',
+  'from_quantity' => '1',
+  'reduction' => '0.000000',
+  'reduction_tax' => '1',
+  'reduction_type' => 'amount',
+  'from' => '0000-00-00 00:00:00',
+  'to' => '0000-00-00 00:00:00',
+  'score' => '62',
+);
