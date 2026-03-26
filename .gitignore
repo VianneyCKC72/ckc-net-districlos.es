@@ -448,6 +448,7 @@ error_log.txt.gz
 /modules/creativeelements/views/css/ce/
 modules/ckc_realisation/uploads/2/
 /admin024h9xfokhvsbvfmnzn/CRON_customers_updated.php
+/admin024h9xfokhvsbvfmnzn/duplicate_packs_ap5.php
 
 # Scripts PHP personnalisés dans admin
 /admin024h9xfokhvsbvfmnzn/*.php
@@ -456,4 +457,4 @@ modules/ckc_realisation/uploads/2/
 /modules/ckccustomfilterselector/config_fr.xml
 /modules/pm_advancedpack/cache/*
 !/modules/dealt/
-modules/ckcspcache/cache/sp/
+/modules/ckcspcache/
