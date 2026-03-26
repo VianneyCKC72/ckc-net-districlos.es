@@ -1,6 +1,43 @@
+function openCkcShopDrawer() {
+    const $drawer = $("#modalSelectShop");
+    if (!$drawer.length) return;
+
+    $drawer.addClass("is-open").attr("aria-hidden", "false");
+    $("body").addClass("ckc-shop-drawer-open");
+
+    // focus: mettre le curseur sur le champ CP si présent
+    const $cp = $drawer.find("#cp");
+    if ($cp.length) {
+        setTimeout(() => $cp.trigger("focus"), 50);
+    }
+}
+
+function closeCkcShopDrawer() {
+    const $drawer = $("#modalSelectShop");
+    if (!$drawer.length) return;
+
+    $drawer.removeClass("is-open").attr("aria-hidden", "true");
+    $("body").removeClass("ckc-shop-drawer-open");
+}
+
 $("#selectShop, #changeShop").click(function (e) {
     e.preventDefault();
-    $("#modalSelectShop").modal("show");
+    openCkcShopDrawer();
+});
+
+// fermeture via bouton/overlay
+$(document).on("click", "[data-ckc-shop-drawer-close]", function (e) {
+    e.preventDefault();
+    closeCkcShopDrawer();
+});
+
+// fermeture via ESC
+$(document).on("keydown", function (e) {
+    if (e.key === "Escape" || e.keyCode === 27) {
+        if ($("#modalSelectShop").hasClass("is-open")) {
+            closeCkcShopDrawer();
+        }
+    }
 });
 
 $('.btn-coordonnes').click(function () {
@@ -53,21 +90,31 @@ function fetchStockData(isPack = false, packList = {}) {
         let id_store = $(".setStore.selected-1").data("shop-id") || null;
         let id_product = $("#product_page_product_id").val();
         let dataProduct = $("#product-details").data('product');
-        
-        if (dataProduct) {
-            let id_product_attribute = dataProduct.id_product_attribute || null;
-            
-            $.post('/modules/ckc_stores_stock/ajax.php', {
-                ajax: 1,
-                id_product,
-                id_product_attribute,
-                id_store,
-                isPack,
-                packList
-            }, function (response) {
-                updateStockDisplay(response);
-            }, "json");
+
+        // Sur certaines pages (ex: pack advancedpack), #product-details n'a pas data('product').
+        // Si on a une liste pack, on doit quand même pouvoir appeler l'AJAX.
+        let id_product_attribute = (dataProduct && dataProduct.id_product_attribute) ? dataProduct.id_product_attribute : 0;
+
+        if (!id_product) {
+            return;
         }
+
+        // Ne bloquer que si on n'a ni dataProduct ni packList utile
+        const hasPackList = Array.isArray(packList) ? packList.length > 0 : (packList && Object.keys(packList).length > 0);
+        if (!dataProduct && !hasPackList) {
+            return;
+        }
+        
+        $.post('/modules/ckc_stores_stock/ajax.php', {
+            ajax: 1,
+            id_product,
+            id_product_attribute,
+            id_store,
+            isPack,
+            packList
+        }, function (response) {
+            updateStockDisplay(response);
+        }, "json");
     }, 100);
 }
 
@@ -116,6 +163,9 @@ const STOCK_STATES = {
         blockQuantity: false
     }
 };
+
+// Cache du détail kit (sert à éviter qu'un refresh "non-pack" écrase l'affichage pack)
+let ckcLastPackItems = null;
 
 function updateStockDisplay(resp) {
     const $container = $('.blockDeliveryDisplayStock').parent();
@@ -262,7 +312,26 @@ function updateStockDisplay(resp) {
     updateStoreDisplay(resp);
     
     // Mise à jour des stocks par magasin
-    updateStoresModal(resp.stores, resp.fin_de_vie || resp.fin_de_vie_national);
+    const isPackPage = ($('#is_pack').val() == '1') || ($('#is_pack').length > 0) || (Array.isArray(window.ckcPackList) && window.ckcPackList.length);
+    if (Array.isArray(resp && resp.pack_items) && resp.pack_items.length) {
+        ckcLastPackItems = resp.pack_items;
+    }
+
+    const packItemsForStores = (Array.isArray(resp && resp.pack_items) && resp.pack_items.length)
+        ? resp.pack_items
+        : (isPackPage ? ckcLastPackItems : null);
+
+    updateStoresModal(resp.stores, resp.fin_de_vie || resp.fin_de_vie_national, packItemsForStores);
+
+    // Détail du kit (test)
+    if (Array.isArray(resp && resp.pack_items)) {
+        updatePackBreakdown(resp.pack_items, resp.pack_summary);
+    } else {
+        // Sur une page pack, un second refresh "non-pack" peut arriver et ne doit pas masquer le détail déjà rendu.
+        if (!isPackPage) {
+            updatePackBreakdown(null, null);
+        }
+    }
 }
 
 // Fonctions utilitaires pour le panier
@@ -320,10 +389,36 @@ function updateStoreDisplay(resp) {
 }
 
 // Fonction pour gérer la modal des magasins
-function updateStoresModal(stores, isFinDeVie) {
+function updateStoresModal(stores, isFinDeVie, packItems = null) {
+    const hasPackItems = Array.isArray(packItems) && packItems.length > 0;
+
     stores.forEach(store => {
-        const stockText = store.stock > 0 && store.seuil ? `${store.stock} en stock` : "Arrivage en cours";
-        $("#modalProductStock-" + store.id).html(getStockSvg(stockText));
+        if (hasPackItems) {
+            const lines = packItems.map(item => {
+                const itemStore = Array.isArray(item.stores)
+                    ? item.stores.find(s => Number(s.id) === Number(store.id))
+                    : null;
+                const itemQty = itemStore ? Number(itemStore.stock) : 0;
+                const itemSeuil = itemStore ? !!itemStore.seuil : true;
+                const itemStatus = (itemQty > 0 && itemSeuil) ? `${itemQty} en stock` : 'Arrivage en cours';
+                const itemName = (item.name || 'Produit').trim() || 'Produit';
+                return `
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                        <svg fill="#79c046" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width:16px; min-width:16px; margin-top:2px;">
+                            <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
+                        </svg>
+                        <div>
+                            <div style="color:#000; line-height:1.2; font-size: 14px;">${itemName}</div>
+                            <div style="color:#79c046; line-height:1.2; font-size: 15px;">${itemStatus}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            $("#modalProductStock-" + store.id).html(lines);
+        } else {
+            const stockText = store.stock > 0 && store.seuil ? `${store.stock} en stock` : "Arrivage en cours";
+            $("#modalProductStock-" + store.id).html(getStockSvg(stockText));
+        }
         
         if (store.selected) {
             $('.shopId-' + store.id).hide().next().show();
@@ -342,6 +437,34 @@ function getStockSvg(text) {
     return `<svg fill="#79c046" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="width: 20px;margin-right: 1rem;">
         <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
     </svg> ${text}`;
+}
+
+function updatePackBreakdown(packItems, packSummary) {
+    const $container = $('#ckc-pack-stock-breakdown');
+    const $list = $('#ckc-pack-stock-breakdown-list');
+
+    if (!$container.length || !$list.length) return;
+
+    if (!Array.isArray(packItems) || packItems.length === 0) {
+        $container.hide();
+        $list.empty();
+        return;
+    }
+
+    let html = '';
+    if (packSummary && typeof packSummary.stock_pack_possible_national !== 'undefined') {
+        html += `<div class="small text-secondary" style="margin-bottom: 8px;">Stock kit possible (national) : <b>${packSummary.stock_pack_possible_national}</b></div>`;
+    }
+    html += '<ul style="margin:0; padding-left: 18px;">';
+    packItems.forEach(item => {
+        const name = item.name || 'Produit';
+        const qty = typeof item.total_quantity !== 'undefined' ? item.total_quantity : 0;
+        html += `<li><b>${name}</b> : ${qty} en stock</li>`;
+    });
+    html += '</ul>';
+
+    $list.html(html);
+    $container.show();
 }
 
 $(document).ready(function () {
@@ -420,6 +543,16 @@ $(document).ready(function () {
             }
         }
     });
+});
+
+// Auto: si on est sur un pack (pm_advancedpack), envoyer la liste des composants si disponible
+$(document).ready(function () {
+    const isPack = ($('#is_pack').val() == '1') || ($('#is_pack').length > 0);
+    if (!isPack) return;
+
+    if (Array.isArray(window.ckcPackList) && window.ckcPackList.length) {
+        fetchStockData(true, window.ckcPackList);
+    }
 });
 
 

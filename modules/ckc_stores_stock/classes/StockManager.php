@@ -120,7 +120,7 @@ class StockManager extends Module
             }
         }
 
-        return [
+        $response = [
             'quantity' => $quantity_by_store,
             'total_quantity' => $total_quantity,
             'platform_stock' => $platform_stock,
@@ -134,6 +134,64 @@ class StockManager extends Module
             'stock_threshold' => $stock_threshold,
             'victime_succes' => $victime_succes,
         ];
+
+        // Mode "pack détaillé" (test) : renvoyer le stock national par composant
+        if (!empty($packList) && is_array($packList)) {
+            $packItems = [];
+            $packPossible = null;
+
+            foreach ($packList as $item) {
+                if (!is_array($item)) {
+                    continue;
+                }
+
+                $itemProductId = isset($item['id_product']) ? (int) $item['id_product'] : 0;
+                if ($itemProductId <= 0) {
+                    continue;
+                }
+
+                $itemAttrId = isset($item['id_product_attribute']) ? (int) $item['id_product_attribute'] : 0;
+                if ($itemAttrId <= 0) {
+                    $itemAttrId = (int) Product::getDefaultAttribute($itemProductId);
+                }
+
+                $qtyInPack = isset($item['qty_in_pack']) ? (int) $item['qty_in_pack'] : 1;
+                if ($qtyInPack <= 0) {
+                    $qtyInPack = 1;
+                }
+
+                $itemStores = $this->getStoresData($itemProductId, $itemAttrId);
+                $itemTotal = array_sum(array_map(function($store) {
+                    return $store['id'] == 19 ? 0 : $store['stock'];
+                }, $itemStores));
+
+                $possibleForItem = (int) floor($itemTotal / $qtyInPack);
+                $packPossible = ($packPossible === null) ? $possibleForItem : min($packPossible, $possibleForItem);
+
+                $packItems[] = [
+                    'key' => isset($item['key']) ? (string) $item['key'] : ($itemProductId . ':' . $itemAttrId),
+                    'id_product' => $itemProductId,
+                    'id_product_attribute' => $itemAttrId,
+                    'qty_in_pack' => $qtyInPack,
+                    'name' => isset($item['name']) ? (string) $item['name'] : ('Produit #' . $itemProductId),
+                    'total_quantity' => (int) $itemTotal,
+                    'stores' => array_map(function ($store) {
+                        return [
+                            'id' => (int) $store['id'],
+                            'stock' => (int) $store['stock'],
+                            'seuil' => (bool) $store['seuil'],
+                        ];
+                    }, $itemStores),
+                ];
+            }
+
+            $response['pack_items'] = $packItems;
+            $response['pack_summary'] = [
+                'stock_pack_possible_national' => (int) ($packPossible ?? 0),
+            ];
+        }
+
+        return $response;
     }
 
     public function getStoresData($id_product, $id_product_attribute)
