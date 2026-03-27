@@ -179,6 +179,8 @@
 	opacity: 0.8;
 }
 
+
+
 /* Volet latéral (remplace la modale Bootstrap) */
 #modalSelectShop.ckc-shop-drawer {
 	position: fixed;

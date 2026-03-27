@@ -90,6 +90,15 @@ function fetchStockData(isPack = false, packList = {}) {
         let id_store = $(".setStore.selected-1").data("shop-id") || null;
         let id_product = $("#product_page_product_id").val();
         let dataProduct = $("#product-details").data('product');
+        const isPackPage = ($('#is_pack').val() == '1') || ($('#is_pack').length > 0) || (Array.isArray(window.ckcPackList) && window.ckcPackList.length);
+
+        // Sur une page pack, toujours envoyer packList pour éviter un refresh "normal" qui écrase l'état pack
+        if (isPackPage) {
+            isPack = true;
+            if ((Array.isArray(window.ckcPackList) && window.ckcPackList.length) && (!Array.isArray(packList) || packList.length === 0)) {
+                packList = window.ckcPackList;
+            }
+        }
 
         // Sur certaines pages (ex: pack advancedpack), #product-details n'a pas data('product').
         // Si on a une liste pack, on doit quand même pouvoir appeler l'AJAX.
@@ -136,7 +145,7 @@ const STOCK_STATES = {
         stock: (qty, seuil, platformStock) => `${platformStock || 0} produits en stock`,
         color: "#ff144e",
         image: 'deliveryFinDeVie.png',
-        showStoreButton: false,
+        showStoreButton: true,
         disableCart: false,
         blockQuantity: false,
         limitToPlatformStock: true
@@ -147,7 +156,7 @@ const STOCK_STATES = {
         stock: (qty, seuil, platformStock) => `${qty || 0} produits en stock`,
         color: "#ff144e",
         image: 'deliveryFinDeVie.png',
-        showStoreButton: false,
+        showStoreButton: true,
         disableCart: false,
         blockQuantity: false,
         limitToTotalStock: true
@@ -171,13 +180,22 @@ function updateStockDisplay(resp) {
     const $container = $('.blockDeliveryDisplayStock').parent();
     
     // Déterminer l'état
-    const stateName = resp.victime_succes ? 'victime_succes' 
+    let stateName = resp.victime_succes ? 'victime_succes' 
         : (resp.fin_de_vie ? 'fin_de_vie' 
         : (resp.fin_de_vie_national ? 'fin_de_vie_national' 
         : 'normal'));
+
+    const isPackPage = ($('#is_pack').val() == '1') || ($('#is_pack').length > 0) || (Array.isArray(window.ckcPackList) && window.ckcPackList.length);
+    const packItemsForMain = (Array.isArray(resp && resp.pack_items) && resp.pack_items.length)
+        ? resp.pack_items
+        : (isPackPage ? ckcLastPackItems : null);
+    const packIsInStockNational = (isPackPage && Array.isArray(packItemsForMain) && packItemsForMain.length)
+        ? packItemsForMain.every(item => Number(item.total_quantity || 0) > 0)
+        : false;
+
     const state = STOCK_STATES[stateName];
     
-    // Appliquer les classes CSS
+    // Appliquer les classes CSS (même style que produits normaux)
     $container.removeClass('stock-special fin-de-vie victime-succes');
     if (stateName !== 'normal') {
         $container.addClass('stock-special ' + stateName.replace('_', '-'));
@@ -192,19 +210,18 @@ function updateStockDisplay(resp) {
         : state.stock;
     $(".stock-display").text(stockText);
 
-    // Packs: le "stock principal" doit dépendre de tous les composants
-    // Règle: "En stock" si chaque produit du pack est en stock (national), sinon "Arrivage en cours"
-    const isPackPage = ($('#is_pack').val() == '1') || ($('#is_pack').length > 0) || (Array.isArray(window.ckcPackList) && window.ckcPackList.length);
-    const packItemsForMain = (Array.isArray(resp && resp.pack_items) && resp.pack_items.length)
-        ? resp.pack_items
-        : (isPackPage ? ckcLastPackItems : null);
-
-    if (isPackPage && stateName === 'normal' && Array.isArray(packItemsForMain) && packItemsForMain.length) {
-        const packIsInStockNational = packItemsForMain.every(item => Number(item.total_quantity || 0) > 0);
-        $(".stock-display").text(packIsInStockNational ? "En stock" : "Arrivage en cours");
+    // Packs: adapter le "stock principal" (texte uniquement)
+    if (isPackPage && Array.isArray(packItemsForMain) && packItemsForMain.length) {
+        if (stateName === 'normal') {
+            $(".stock-display").text(packIsInStockNational ? "En stock" : "Arrivage en cours");
+        } else if (stateName === 'fin_de_vie' || stateName === 'fin_de_vie_national') {
+            $(".stock-display").text(packIsInStockNational ? "En stock" : "Arrivage en cours");
+        } else if (stateName === 'victime_succes') {
+            $(".stock-display").text("Produit épuisé");
+        }
     }
     
-    // Appliquer la couleur
+    // Appliquer la couleur (même style que produits normaux)
     if (state.color) {
         $(".stock-display").removeClass('text-secondary').attr('style', 'color: ' + state.color + ' !important;');
     } else {
@@ -216,8 +233,10 @@ function updateStockDisplay(resp) {
     
     // Gérer le bouton "Voir magasin"
     if (state.showStoreButton) {
+        $("#selectShop").css('display', 'block');
         $(".remove_findevie").css('display', 'block');
     } else {
+        $("#selectShop").attr('style', 'display: none !important');
         $(".remove_findevie").attr('style', 'display: none !important');
     }
     
@@ -402,6 +421,7 @@ function updateStoreDisplay(resp) {
 // Fonction pour gérer la modal des magasins
 function updateStoresModal(stores, isFinDeVie, packItems = null) {
     const hasPackItems = Array.isArray(packItems) && packItems.length > 0;
+    const outOfStockLabel = isFinDeVie ? "Disponible sous 10 jours" : "Arrivage en cours";
 
     stores.forEach(store => {
         if (hasPackItems) {
@@ -411,7 +431,7 @@ function updateStoresModal(stores, isFinDeVie, packItems = null) {
                     : null;
                 const itemQty = itemStore ? Number(itemStore.stock) : 0;
                 const itemSeuil = itemStore ? !!itemStore.seuil : true;
-                const itemStatus = (itemQty > 0 && itemSeuil) ? `${itemQty} en stock` : 'Arrivage en cours';
+                const itemStatus = (itemQty > 0 && itemSeuil) ? `${itemQty} en stock` : outOfStockLabel;
                 const itemName = (item.name || 'Produit').trim() || 'Produit';
                 return `
                     <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
@@ -428,15 +448,15 @@ function updateStoresModal(stores, isFinDeVie, packItems = null) {
             const $el = $("#modalProductStock-" + store.id);
             $el.addClass('ckc-modal-product-stock--pack').html(lines);
         } else {
-            const stockText = store.stock > 0 && store.seuil ? `${store.stock} en stock` : "Arrivage en cours";
+            const stockText = store.stock > 0 && store.seuil ? `${store.stock} en stock` : outOfStockLabel;
             const $el = $("#modalProductStock-" + store.id);
             $el.removeClass('ckc-modal-product-stock--pack').html(getStockSvg(stockText));
         }
         
         if (store.selected) {
             $('.shopId-' + store.id).hide().next().show();
-            const quantityText = store.stock ? `${store.stock} en stock` : "Arrivage en cours";
-            $('.stock-display').html(quantityText + ' à <br>' + store.name);
+            // Ne pas écraser le texte principal avec "à <magasin>"
+            // (les textes fin de vie / victime / packs sont gérés par updateStockDisplay)
             
             if (!isFinDeVie) {
                 $('#selectShop').text('Changer de magasin');
@@ -547,7 +567,11 @@ $(document).ready(function () {
             // Éviter les appels multiples simultanés
             if (!isAjaxProcessing) {
                 isAjaxProcessing = true;
-                fetchStockData();
+                if (($('#is_pack').val() == '1') || ($('#is_pack').length > 0) || (Array.isArray(window.ckcPackList) && window.ckcPackList.length)) {
+                    fetchStockData(true, window.ckcPackList);
+                } else {
+                    fetchStockData();
+                }
                 
                 // Réinitialiser le flag après 200ms
                 setTimeout(function() {

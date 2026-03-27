@@ -138,7 +138,8 @@ class StockManager extends Module
         // Mode "pack détaillé" (test) : renvoyer le stock national par composant
         if (!empty($packList) && is_array($packList)) {
             $packItems = [];
-            $packPossible = null;
+            $packPossibleNational = null;
+            $packPossiblePlatform = null;
 
             foreach ($packList as $item) {
                 if (!is_array($item)) {
@@ -165,8 +166,21 @@ class StockManager extends Module
                     return $store['id'] == 19 ? 0 : $store['stock'];
                 }, $itemStores));
 
-                $possibleForItem = (int) floor($itemTotal / $qtyInPack);
-                $packPossible = ($packPossible === null) ? $possibleForItem : min($packPossible, $possibleForItem);
+                // Stock possible national (min des composants / qty dans le pack)
+                $possibleForItemNational = (int) floor($itemTotal / $qtyInPack);
+                $packPossibleNational = ($packPossibleNational === null) ? $possibleForItemNational : min($packPossibleNational, $possibleForItemNational);
+
+                // Stock possible plateforme (store 18) (min des composants / qty dans le pack)
+                $platformRow = null;
+                foreach ($itemStores as $s) {
+                    if ((int)$s['id'] === 18) {
+                        $platformRow = $s;
+                        break;
+                    }
+                }
+                $itemPlatformQty = $platformRow ? (int)$platformRow['stock'] : 0;
+                $possibleForItemPlatform = (int) floor($itemPlatformQty / $qtyInPack);
+                $packPossiblePlatform = ($packPossiblePlatform === null) ? $possibleForItemPlatform : min($packPossiblePlatform, $possibleForItemPlatform);
 
                 $packItems[] = [
                     'key' => isset($item['key']) ? (string) $item['key'] : ($itemProductId . ':' . $itemAttrId),
@@ -187,8 +201,22 @@ class StockManager extends Module
 
             $response['pack_items'] = $packItems;
             $response['pack_summary'] = [
-                'stock_pack_possible_national' => (int) ($packPossible ?? 0),
+                'stock_pack_possible_national' => (int) ($packPossibleNational ?? 0),
+                'stock_pack_possible_platform' => (int) ($packPossiblePlatform ?? 0),
             ];
+
+            // Appliquer la règle "victime de son succès" sur les packs via stock possible du pack
+            if ($stock_threshold !== null) {
+                if ($fin_de_vie) {
+                    // fin de vie -> comparaison sur plateforme (store 18)
+                    $response['platform_stock'] = (int) ($packPossiblePlatform ?? 0);
+                    $response['victime_succes'] = ((int) ($packPossiblePlatform ?? 0) <= (int) $stock_threshold);
+                } elseif ($fin_de_vie_national) {
+                    // fin de vie national -> comparaison sur national (tous magasins)
+                    $response['total_quantity'] = (int) ($packPossibleNational ?? 0);
+                    $response['victime_succes'] = ((int) ($packPossibleNational ?? 0) <= (int) $stock_threshold);
+                }
+            }
         }
 
         return $response;

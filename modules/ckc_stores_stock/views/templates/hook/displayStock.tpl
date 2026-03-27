@@ -1,4 +1,4 @@
-{if !in_array(294,Product::getProductCategories($product->id|intval)) and !in_array(295,Product::getProductCategories($product->id|intval)) and !in_array(293,Product::getProductCategories($product->id|intval)) and (!$isKit || ($isKit and $seuil))}
+{if !in_array(294,Product::getProductCategories($product->id|intval)) and !in_array(295,Product::getProductCategories($product->id|intval)) and !in_array(293,Product::getProductCategories($product->id|intval))}
     <div class="ckc-stores-stock-block {if $victime_succes}stock-special victime-succes{elseif $fin_de_vie || $fin_de_vie_national}stock-special fin-de-vie{/if}"
          data-stock-state="{if $victime_succes}victime_succes{elseif $fin_de_vie}fin_de_vie{elseif $fin_de_vie_national}fin_de_vie_national{else}normal{/if}"
          data-total-quantity="{$total_quantity}"
@@ -25,7 +25,7 @@
                 {/if}
             </div>
         </div>
-        <button type="button" id="selectShop" style="text-align: start; text-decoration: underline;" class="d-block small text-black bg-transparent font-weight-semibold text-underline" {if $fin_de_vie || $fin_de_vie_national || $victime_succes}style="display: none;"{/if}>Voir les stocks par magasin {*<svg
+        <button type="button" id="selectShop" style="text-align: start; text-decoration: underline;{if $victime_succes} display: none;{/if}" class="d-block small text-black bg-transparent font-weight-semibold text-underline ckc-stores-stock-block__cta">Voir les stocks par magasin {*<svg
                         xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
                         class="lucide lucide-move-right ml-2">
