@@ -191,6 +191,18 @@ function updateStockDisplay(resp) {
         ? state.stock(resp.total_quantity, resp.seuil, resp.platform_stock) 
         : state.stock;
     $(".stock-display").text(stockText);
+
+    // Packs: le "stock principal" doit dépendre de tous les composants
+    // Règle: "En stock" si chaque produit du pack est en stock (national), sinon "Arrivage en cours"
+    const isPackPage = ($('#is_pack').val() == '1') || ($('#is_pack').length > 0) || (Array.isArray(window.ckcPackList) && window.ckcPackList.length);
+    const packItemsForMain = (Array.isArray(resp && resp.pack_items) && resp.pack_items.length)
+        ? resp.pack_items
+        : (isPackPage ? ckcLastPackItems : null);
+
+    if (isPackPage && stateName === 'normal' && Array.isArray(packItemsForMain) && packItemsForMain.length) {
+        const packIsInStockNational = packItemsForMain.every(item => Number(item.total_quantity || 0) > 0);
+        $(".stock-display").text(packIsInStockNational ? "En stock" : "Arrivage en cours");
+    }
     
     // Appliquer la couleur
     if (state.color) {
@@ -312,7 +324,6 @@ function updateStockDisplay(resp) {
     updateStoreDisplay(resp);
     
     // Mise à jour des stocks par magasin
-    const isPackPage = ($('#is_pack').val() == '1') || ($('#is_pack').length > 0) || (Array.isArray(window.ckcPackList) && window.ckcPackList.length);
     if (Array.isArray(resp && resp.pack_items) && resp.pack_items.length) {
         ckcLastPackItems = resp.pack_items;
     }
@@ -414,10 +425,12 @@ function updateStoresModal(stores, isFinDeVie, packItems = null) {
                     </div>
                 `;
             }).join('');
-            $("#modalProductStock-" + store.id).html(lines);
+            const $el = $("#modalProductStock-" + store.id);
+            $el.addClass('ckc-modal-product-stock--pack').html(lines);
         } else {
             const stockText = store.stock > 0 && store.seuil ? `${store.stock} en stock` : "Arrivage en cours";
-            $("#modalProductStock-" + store.id).html(getStockSvg(stockText));
+            const $el = $("#modalProductStock-" + store.id);
+            $el.removeClass('ckc-modal-product-stock--pack').html(getStockSvg(stockText));
         }
         
         if (store.selected) {

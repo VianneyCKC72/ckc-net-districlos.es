@@ -18,6 +18,12 @@
 	display: flex;
     flex-direction: column;
     align-items: center;
+	justify-content: space-between;
+	gap: 5px;
+}
+
+.ckc-stores-stock-block__icon {
+    width: 20%;
 }
 
 .agenceShop {
@@ -142,11 +148,27 @@
 	#modalSelectShop .store-description .btn {
 		padding: 18px 20px !important;
 	}
+	.ckc-stores-stock-block {
+		width: 100%;
+		flex-direction: row;
+	}
+	.blockDeliveryDisplayStock {
+		flex-direction: row !important;
+		gap: 10px !important;
+		width: 50%;
+	}
+	.ckc-stores-stock-block__icon {
+		width: 20%;
+	}
+	.ckc-stores-stock-block__text {
+		text-align: left !important;
+	}
 }
 
 .blockDeliveryDisplayStock {
 	min-height: 50px;
 	flex-direction: column;
+	gap: 5px;
 }
 
 #showDelivery:hover {
@@ -233,6 +255,16 @@
 
 body.ckc-shop-drawer-open {
 	overflow: hidden;
+}
+
+/* Stock ligne (produit normal) dans la card magasin */
+#modalSelectShop .ckc-modal-product-stock {
+	display: flex;
+	align-items: flex-start;
+}
+
+#modalSelectShop .ckc-modal-product-stock.ckc-modal-product-stock--pack {
+	display: block;
 }
 
 /* Icône loupe dans l'input code postal */
