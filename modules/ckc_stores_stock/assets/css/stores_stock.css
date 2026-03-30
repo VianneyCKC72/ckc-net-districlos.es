@@ -10,6 +10,36 @@
     }
 }
 
+.ckc-stores-stock-block {
+	width: 50%;
+	background-color: #F6F2EB;
+	border-radius: 5px;
+	padding: 10px;
+	display: flex;
+    flex-direction: column;
+    align-items: center;
+	justify-content: space-between;
+	gap: 5px;
+}
+
+.ckc-stores-stock-block__icon {
+    width: 20%;
+}
+
+.agenceShop {
+	background-color: #F6F2EB;
+    padding: 15px 10px;
+    border-radius: 20px;
+}
+
+.inputSelectShop {
+	border-radius: 10px;
+	background-color: #F6F2EB;
+	padding: 10px;
+	border: none;
+	width: 100%;
+}
+
 .quantity-limit-message {
     animation: slideIn 0.3s ease-out;
 }
@@ -109,7 +139,7 @@
 	}
 }
 @media screen and (max-width: 768px) {
-	#modalSelectShop .modal-body {
+	#modalSelectShop .ckc-shop-drawer__body {
 		padding: 0;
 	}
 	#modalSelectShop .store-description {
@@ -118,10 +148,27 @@
 	#modalSelectShop .store-description .btn {
 		padding: 18px 20px !important;
 	}
+	.ckc-stores-stock-block {
+		width: 100%;
+		flex-direction: row;
+	}
+	.blockDeliveryDisplayStock {
+		flex-direction: row !important;
+		gap: 10px !important;
+		width: 50%;
+	}
+	.ckc-stores-stock-block__icon {
+		width: 20%;
+	}
+	.ckc-stores-stock-block__text {
+		text-align: left !important;
+	}
 }
 
 .blockDeliveryDisplayStock {
 	min-height: 50px;
+	flex-direction: column;
+	gap: 5px;
 }
 
 #showDelivery:hover {
@@ -130,6 +177,118 @@
 
 #selectShop:hover {
 	opacity: 0.8;
+}
+
+
+
+/* Volet latéral (remplace la modale Bootstrap) */
+#modalSelectShop.ckc-shop-drawer {
+	position: fixed;
+	inset: 0;
+	z-index: 999999;
+	display: none;
+}
+
+#modalSelectShop.ckc-shop-drawer.is-open {
+	display: block;
+}
+
+#modalSelectShop .ckc-shop-drawer__overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.45);
+}
+
+#modalSelectShop .ckc-shop-drawer__panel {
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 100%;
+	width: min(30rem, 92vw);
+	background: #fff;
+	transform: translateX(100%);
+	transition: transform 220ms ease;
+	display: flex;
+	flex-direction: column;
+	box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
+}
+
+#modalSelectShop.ckc-shop-drawer.is-open .ckc-shop-drawer__panel {
+	transform: translateX(0);
+}
+
+#modalSelectShop .ckc-shop-drawer__header {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: flex-start;
+	gap: 12px;
+	padding: 12px 16px;
+	background-color: #026473;
+}
+
+#modalSelectShop .ckc-shop-drawer__header-top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+#modalSelectShop .ckc-shop-drawer__title {
+	margin: 0;
+	color: #fff;
+	font-size: 20px;
+	font-weight: 500;
+	padding-left: 15px;
+}
+
+#modalSelectShop .ckc-shop-drawer__close {
+	font-size: 40px;
+	cursor: pointer;
+	color: #fff;
+	background: transparent;
+}
+
+#modalSelectShop .ckc-shop-drawer__body {
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+	padding: 16px;
+}
+
+body.ckc-shop-drawer-open {
+	overflow: hidden;
+}
+
+/* Stock ligne (produit normal) dans la card magasin */
+#modalSelectShop .ckc-modal-product-stock {
+	display: flex;
+	align-items: flex-start;
+}
+
+#modalSelectShop .ckc-modal-product-stock.ckc-modal-product-stock--pack {
+	display: block;
+}
+
+/* Icône loupe dans l'input code postal */
+#modalSelectShop .ckc-cp-search {
+	position: relative;
+	width: 100%;
+}
+
+#modalSelectShop .ckc-cp-search__icon {
+	position: absolute;
+	left: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+	color: #6f6f6f;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+}
+
+#modalSelectShop #cp.inputSelectShop {
+	padding-left: 34px;
 }
 
 /* Styles de base pour états spéciaux (fin de vie et victime de succès) */
@@ -152,3 +311,4 @@
 .stock-special.victime-succes .stock-display {
 	color: #ff144e !important;
 }
+

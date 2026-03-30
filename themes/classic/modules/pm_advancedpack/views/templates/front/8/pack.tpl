@@ -327,6 +327,11 @@
                                         {if file_exists($smarty.const._PS_MODULE_DIR_|cat:'ckc_shipping_estimator/views/templates/front/product/shipping_estimator.tpl')}
                                             {include file="module:ckc_shipping_estimator/views/templates/front/product/shipping_estimator.tpl"}
                                         {/if}
+                                        {assign var=ckc_id_product_attribute value=($product.id_product_attribute|default:0)|intval}
+                                        {if $ckc_id_product_attribute <= 0}
+                                            {assign var=ckc_id_product_attribute value=Product::getDefaultAttribute($product.id)|intval}
+                                        {/if}
+                                        {hook h="displayStockButton" product=['id_product' => $product.id|intval, 'id_product_attribute' => $ckc_id_product_attribute]}
                                     </div>
                                     {* End - Inté static *}
 
@@ -638,6 +643,21 @@
                 }, 300);
             });
         });
+    </script>
+
+    {* Exposer la liste des composants du kit au JS (test ckc_stores_stock) *}
+    <script>
+        window.ckcPackList = [
+        {foreach from=$productsPackUnique item=productPack name=ckc_pack_list}
+            {
+                key: "{$productPack.id_product|intval}:{($productPack.id_product_attribute|default:0)|intval}",
+                id_product: {$productPack.id_product|intval},
+                id_product_attribute: {($productPack.id_product_attribute|default:0)|intval},
+                qty_in_pack: {$productPack.quantity|default:1|intval},
+                name: "{$productPack.presentation.name|escape:'javascript'}"
+            }{if !$smarty.foreach.ckc_pack_list.last},{/if}
+        {/foreach}
+        ];
     </script>
 
 

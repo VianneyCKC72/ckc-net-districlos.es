@@ -120,7 +120,7 @@ class StockManager extends Module
             }
         }
 
-        return [
+        $response = [
             'quantity' => $quantity_by_store,
             'total_quantity' => $total_quantity,
             'platform_stock' => $platform_stock,
@@ -134,6 +134,92 @@ class StockManager extends Module
             'stock_threshold' => $stock_threshold,
             'victime_succes' => $victime_succes,
         ];
+
+        // Mode "pack détaillé" (test) : renvoyer le stock national par composant
+        if (!empty($packList) && is_array($packList)) {
+            $packItems = [];
+            $packPossibleNational = null;
+            $packPossiblePlatform = null;
+
+            foreach ($packList as $item) {
+                if (!is_array($item)) {
+                    continue;
+                }
+
+                $itemProductId = isset($item['id_product']) ? (int) $item['id_product'] : 0;
+                if ($itemProductId <= 0) {
+                    continue;
+                }
+
+                $itemAttrId = isset($item['id_product_attribute']) ? (int) $item['id_product_attribute'] : 0;
+                if ($itemAttrId <= 0) {
+                    $itemAttrId = (int) Product::getDefaultAttribute($itemProductId);
+                }
+
+                $qtyInPack = isset($item['qty_in_pack']) ? (int) $item['qty_in_pack'] : 1;
+                if ($qtyInPack <= 0) {
+                    $qtyInPack = 1;
+                }
+
+                $itemStores = $this->getStoresData($itemProductId, $itemAttrId);
+                $itemTotal = array_sum(array_map(function($store) {
+                    return $store['id'] == 19 ? 0 : $store['stock'];
+                }, $itemStores));
+
+                // Stock possible national (min des composants / qty dans le pack)
+                $possibleForItemNational = (int) floor($itemTotal / $qtyInPack);
+                $packPossibleNational = ($packPossibleNational === null) ? $possibleForItemNational : min($packPossibleNational, $possibleForItemNational);
+
+                // Stock possible plateforme (store 18) (min des composants / qty dans le pack)
+                $platformRow = null;
+                foreach ($itemStores as $s) {
+                    if ((int)$s['id'] === 18) {
+                        $platformRow = $s;
+                        break;
+                    }
+                }
+                $itemPlatformQty = $platformRow ? (int)$platformRow['stock'] : 0;
+                $possibleForItemPlatform = (int) floor($itemPlatformQty / $qtyInPack);
+                $packPossiblePlatform = ($packPossiblePlatform === null) ? $possibleForItemPlatform : min($packPossiblePlatform, $possibleForItemPlatform);
+
+                $packItems[] = [
+                    'key' => isset($item['key']) ? (string) $item['key'] : ($itemProductId . ':' . $itemAttrId),
+                    'id_product' => $itemProductId,
+                    'id_product_attribute' => $itemAttrId,
+                    'qty_in_pack' => $qtyInPack,
+                    'name' => isset($item['name']) ? (string) $item['name'] : ('Produit #' . $itemProductId),
+                    'total_quantity' => (int) $itemTotal,
+                    'stores' => array_map(function ($store) {
+                        return [
+                            'id' => (int) $store['id'],
+                            'stock' => (int) $store['stock'],
+                            'seuil' => (bool) $store['seuil'],
+                        ];
+                    }, $itemStores),
+                ];
+            }
+
+            $response['pack_items'] = $packItems;
+            $response['pack_summary'] = [
+                'stock_pack_possible_national' => (int) ($packPossibleNational ?? 0),
+                'stock_pack_possible_platform' => (int) ($packPossiblePlatform ?? 0),
+            ];
+
+            // Appliquer la règle "victime de son succès" sur les packs via stock possible du pack
+            if ($stock_threshold !== null) {
+                if ($fin_de_vie) {
+                    // fin de vie -> comparaison sur plateforme (store 18)
+                    $response['platform_stock'] = (int) ($packPossiblePlatform ?? 0);
+                    $response['victime_succes'] = ((int) ($packPossiblePlatform ?? 0) <= (int) $stock_threshold);
+                } elseif ($fin_de_vie_national) {
+                    // fin de vie national -> comparaison sur national (tous magasins)
+                    $response['total_quantity'] = (int) ($packPossibleNational ?? 0);
+                    $response['victime_succes'] = ((int) ($packPossibleNational ?? 0) <= (int) $stock_threshold);
+                }
+            }
+        }
+
+        return $response;
     }
 
     public function getStoresData($id_product, $id_product_attribute)
