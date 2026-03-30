@@ -179,6 +179,18 @@ let ckcLastPackItems = null;
 function updateStockDisplay(resp) {
     const $container = $('.blockDeliveryDisplayStock').parent();
     
+    // Si le backend fournit une UI calculée, on l'utilise (fallback sinon)
+    const ui = resp && resp.ui ? resp.ui : null;
+    const i18n = (resp && resp.i18n) ? resp.i18n : {};
+    const TXT = {
+        inStock: i18n.in_stock || "En stock",
+        arrival: i18n.arrival || "Arrivage en cours",
+        soldOut: i18n.sold_out || "Produit épuisé",
+        changeStore: i18n.change_store || "Changer de magasin",
+        available10Days: i18n.available_10_days || "Disponible sous 10 jours",
+        productInStock: i18n.product_in_stock || "produit(s) en stock",
+    };
+
     // Déterminer l'état
     let stateName = resp.victime_succes ? 'victime_succes' 
         : (resp.fin_de_vie ? 'fin_de_vie' 
@@ -193,6 +205,10 @@ function updateStockDisplay(resp) {
         ? packItemsForMain.every(item => Number(item.total_quantity || 0) > 0)
         : false;
 
+    if (ui && ui.state) {
+        stateName = ui.state;
+    }
+
     const state = STOCK_STATES[stateName];
     
     // Appliquer les classes CSS (même style que produits normaux)
@@ -202,37 +218,42 @@ function updateStockDisplay(resp) {
     }
     
     // Mettre à jour les textes
-    $(".style_findevie").text(state.title);
-    $(".style_findevie_thin").text(state.subtitle);
+    $(".style_findevie").text(ui ? ui.title : state.title);
+    $(".style_findevie_thin").text(ui ? ui.subtitle : state.subtitle);
     
-    const stockText = typeof state.stock === 'function' 
-        ? state.stock(resp.total_quantity, resp.seuil, resp.platform_stock) 
-        : state.stock;
+    const stockText = ui
+        ? ui.stock
+        : (typeof state.stock === 'function' 
+            ? state.stock(resp.total_quantity, resp.seuil, resp.platform_stock) 
+            : state.stock);
     $(".stock-display").text(stockText);
 
-    // Packs: adapter le "stock principal" (texte uniquement)
-    if (isPackPage && Array.isArray(packItemsForMain) && packItemsForMain.length) {
+    // Packs: adapter le "stock principal" (texte uniquement) - fallback si pas de ui backend
+    if (!ui && isPackPage && Array.isArray(packItemsForMain) && packItemsForMain.length) {
         if (stateName === 'normal') {
-            $(".stock-display").text(packIsInStockNational ? "En stock" : "Arrivage en cours");
+            $(".stock-display").text(packIsInStockNational ? TXT.inStock : TXT.arrival);
         } else if (stateName === 'fin_de_vie' || stateName === 'fin_de_vie_national') {
-            $(".stock-display").text(packIsInStockNational ? "En stock" : "Arrivage en cours");
+            $(".stock-display").text(packIsInStockNational ? TXT.inStock : TXT.arrival);
         } else if (stateName === 'victime_succes') {
-            $(".stock-display").text("Produit épuisé");
+            $(".stock-display").text(TXT.soldOut);
         }
     }
     
     // Appliquer la couleur (même style que produits normaux)
-    if (state.color) {
-        $(".stock-display").removeClass('text-secondary').attr('style', 'color: ' + state.color + ' !important;');
+    const uiColor = ui ? ui.color : state.color;
+    if (uiColor) {
+        $(".stock-display").removeClass('text-secondary').attr('style', 'color: ' + uiColor + ' !important;');
     } else {
         $(".stock-display").addClass('text-secondary').removeAttr('style');
     }
     
     // Mettre à jour l'image
-    $(".blockDeliveryDisplayStock img").attr('src', '/modules/ckc_stores_stock/assets/img/' + state.image);
+    const uiImage = ui ? ui.image : state.image;
+    $(".blockDeliveryDisplayStock img").attr('src', '/modules/ckc_stores_stock/assets/img/' + uiImage);
     
     // Gérer le bouton "Voir magasin"
-    if (state.showStoreButton) {
+    const showStoreButton = ui ? !!ui.showStoreButton : state.showStoreButton;
+    if (showStoreButton) {
         $("#selectShop").css('display', 'block');
         $(".remove_findevie").css('display', 'block');
     } else {
@@ -241,7 +262,8 @@ function updateStockDisplay(resp) {
     }
     
     // Gérer le bouton "Ajouter au panier"
-    if (state.disableCart) {
+    const disableCart = ui ? !!ui.disableCart : state.disableCart;
+    if (disableCart) {
         disableAddToCartButton();
     } else {
         enableAddToCartButton();
@@ -251,7 +273,11 @@ function updateStockDisplay(resp) {
     const $input = $('input[name="qty"], #quantity_wanted');
     const $buttons = $('.bootstrap-touchspin-up, .bootstrap-touchspin-down, .btn-touchspin, button.js-touchspin, .input-group-btn-vertical button, .product-quantity button, .qty button');
     
-    if (state.blockQuantity) {
+    const blockQuantity = ui ? !!ui.blockQuantity : state.blockQuantity;
+    const limitToPlatformStock = ui ? !!ui.limitToPlatformStock : state.limitToPlatformStock;
+    const limitToTotalStock = ui ? !!ui.limitToTotalStock : state.limitToTotalStock;
+
+    if (blockQuantity) {
         // Bloquer complètement pour victime de succès
         $input.attr('max', 0).val(0).prop('disabled', true);
         $buttons.prop('disabled', true).addClass('disabled').css({'pointer-events': 'none', 'opacity': '0.5'});
@@ -260,7 +286,7 @@ function updateStockDisplay(resp) {
             e.stopPropagation();
             return false;
         });
-    } else if (state.limitToPlatformStock && resp.platform_stock) {
+    } else if (limitToPlatformStock && resp.platform_stock) {
         // Limiter au stock de la plateforme pour les produits fin de vie
         $input.attr('max', resp.platform_stock).prop('disabled', false);
         $buttons.prop('disabled', false).removeClass('disabled').css({'pointer-events': 'auto', 'opacity': '1'});
@@ -295,7 +321,7 @@ function updateStockDisplay(resp) {
                 }, 500); // Attendre 500ms après la dernière saisie
             }
         });
-    } else if (state.limitToTotalStock && resp.total_quantity) {
+    } else if (limitToTotalStock && resp.total_quantity) {
         // Limiter au stock total national pour les produits fin de vie national
         $input.attr('max', resp.total_quantity).prop('disabled', false);
         $buttons.prop('disabled', false).removeClass('disabled').css({'pointer-events': 'auto', 'opacity': '1'});
@@ -351,17 +377,11 @@ function updateStockDisplay(resp) {
         ? resp.pack_items
         : (isPackPage ? ckcLastPackItems : null);
 
-    updateStoresModal(resp.stores, resp.fin_de_vie || resp.fin_de_vie_national, packItemsForStores);
+    const isFinDeVieForStores = ui && ui.state
+        ? (ui.state === 'fin_de_vie' || ui.state === 'fin_de_vie_national')
+        : (resp.fin_de_vie || resp.fin_de_vie_national);
 
-    // Détail du kit (test)
-    if (Array.isArray(resp && resp.pack_items)) {
-        updatePackBreakdown(resp.pack_items, resp.pack_summary);
-    } else {
-        // Sur une page pack, un second refresh "non-pack" peut arriver et ne doit pas masquer le détail déjà rendu.
-        if (!isPackPage) {
-            updatePackBreakdown(null, null);
-        }
-    }
+    updateStoresModal(resp.stores, isFinDeVieForStores, packItemsForStores, (resp && resp.i18n) ? resp.i18n : {});
 }
 
 // Fonctions utilitaires pour le panier
@@ -405,13 +425,18 @@ function showQuantityLimitMessage(maxQty) {
 
 // Fonction pour gérer l'affichage du magasin sélectionné
 function updateStoreDisplay(resp) {
+    const i18n = (resp && resp.i18n) ? resp.i18n : {};
+    const TXT = {
+        arrival: i18n.arrival || "Arrivage en cours",
+        productInStock: i18n.product_in_stock || "produit(s) en stock",
+    };
     if (resp.id_store) {
         $(".store-selected").show();
         $(".store-selected .nameStore").html(
             '<img src="/modules/ckc_stores_stock/assets/img/nameStore.webp" alt="Magasin" style="width: 50px; height: 50px;">' +
             '<span class="font-weight-normal">Votre magasin</span> <span class="font-weight-bold">Districlos ' + resp.store_name.replace('DISTRICLOS ', '').replace('Districlos ', '') + '</span><br>'
         );
-        $(".store-selected .productQuantity").html(resp.quantity > 0 ? `${resp.quantity} produit(s) en stock` : "Arrivage en cours");
+        $(".store-selected .productQuantity").html(resp.quantity > 0 ? `${resp.quantity} ${TXT.productInStock}` : TXT.arrival);
         $("#modalProductStock-" + resp.id_store).html(getStockSvg(resp.quantity));
     } else {
         $(".store-selected").hide();
@@ -419,9 +444,11 @@ function updateStoreDisplay(resp) {
 }
 
 // Fonction pour gérer la modal des magasins
-function updateStoresModal(stores, isFinDeVie, packItems = null) {
+function updateStoresModal(stores, isFinDeVie, packItems = null, i18n = {}) {
     const hasPackItems = Array.isArray(packItems) && packItems.length > 0;
-    const outOfStockLabel = isFinDeVie ? "Disponible sous 10 jours" : "Arrivage en cours";
+    const outOfStockLabel = isFinDeVie
+        ? (i18n.available_10_days || "Disponible sous 10 jours")
+        : (i18n.arrival || "Arrivage en cours");
 
     stores.forEach(store => {
         if (hasPackItems) {
@@ -459,7 +486,7 @@ function updateStoresModal(stores, isFinDeVie, packItems = null) {
             // (les textes fin de vie / victime / packs sont gérés par updateStockDisplay)
             
             if (!isFinDeVie) {
-                $('#selectShop').text('Changer de magasin');
+                $('#selectShop').text(i18n.change_store || 'Changer de magasin');
             }
         }
     });
@@ -472,33 +499,6 @@ function getStockSvg(text) {
     </svg> ${text}`;
 }
 
-function updatePackBreakdown(packItems, packSummary) {
-    const $container = $('#ckc-pack-stock-breakdown');
-    const $list = $('#ckc-pack-stock-breakdown-list');
-
-    if (!$container.length || !$list.length) return;
-
-    if (!Array.isArray(packItems) || packItems.length === 0) {
-        $container.hide();
-        $list.empty();
-        return;
-    }
-
-    let html = '';
-    if (packSummary && typeof packSummary.stock_pack_possible_national !== 'undefined') {
-        html += `<div class="small text-secondary" style="margin-bottom: 8px;">Stock kit possible (national) : <b>${packSummary.stock_pack_possible_national}</b></div>`;
-    }
-    html += '<ul style="margin:0; padding-left: 18px;">';
-    packItems.forEach(item => {
-        const name = item.name || 'Produit';
-        const qty = typeof item.total_quantity !== 'undefined' ? item.total_quantity : 0;
-        html += `<li><b>${name}</b> : ${qty} en stock</li>`;
-    });
-    html += '</ul>';
-
-    $list.html(html);
-    $container.show();
-}
 
 $(document).ready(function () {
     // Initialiser les contrôles au chargement
