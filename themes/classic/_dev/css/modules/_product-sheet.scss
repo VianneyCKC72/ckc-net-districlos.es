@@ -1754,8 +1754,9 @@
     }
     .shipping-block-product-info {
       justify-content: center;
-      margin-top: 30px;
-      gap: 30px;
+      margin-top: 15px;
+      gap: 5px;
+      flex-direction: column;
     }
   }
   @media (max-width: 480px) {

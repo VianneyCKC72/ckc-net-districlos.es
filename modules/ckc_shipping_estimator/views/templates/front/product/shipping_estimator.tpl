@@ -1,10 +1,9 @@
-<div style="width: 50%;">
-    <div class="d-flex align-items-center mb-2">
-        <img src="/modules/ckc_shipping_estimator/assets/img/delivery.svg" loading="lazy" alt="Icone livraison">
-        <div class="small ml-4">
-            Livraison à domicile<br>
+<div class="ckc-shipping-estimator-block">
+    <div class="ckc-shipping-estimator-product-block d-flex flex_cln align-items-center">
+        <img class="ckc-shipping-estimator-product-block__icon" src="/modules/ckc_shipping_estimator/assets/img/camion.png" loading="lazy" alt="Icone livraison">
+        <div class="small d-flex flex-column text-center ckc-shipping-estimator-product-block__text">
+            Livraison à domicile
             {hook h='displayPromoImpactFranco'}
-            <br>
             {if in_array(294,Product::getProductCategories($product->id|intval)) or in_array(295,Product::getProductCategories($product->id|intval)) or in_array(293,Product::getProductCategories($product->id|intval))}
                 <span class="thin">Sous 3 à 4 semaines.</span>
 

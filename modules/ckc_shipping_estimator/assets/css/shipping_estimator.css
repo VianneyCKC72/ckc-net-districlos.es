@@ -23,6 +23,26 @@
     color: inherit !important;
 }
 
+.ckc-shipping-estimator-block {
+	width: 50%;
+	background-color: #F6F2EB;
+	border-radius: 5px;
+	padding: 10px;
+	display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.ckc-shipping-estimator-product-block {
+    gap: 5px;
+}
+
+.ckc-shipping-estimator-product-block__icon {
+    width: 25%;
+}
+
 .text-line-through{
     text-decoration:line-through;
 }
@@ -288,6 +308,21 @@ a.estimate-shipping-cost-btn {
    }
    .zipcode-input-container {
        width: auto !important;
+   }
+   .ckc-shipping-estimator-block {
+    width: 100%;
+    flex-direction: row;
+   }
+   .ckc-shipping-estimator-product-block {
+    flex-direction: row;
+    gap: 10px;
+    width: 50%;
+   }
+   .ckc-shipping-estimator-product-block__icon {
+    width: 20%;
+   }
+   .ckc-shipping-estimator-product-block__text {
+    text-align: left !important;
    }
 }
 
