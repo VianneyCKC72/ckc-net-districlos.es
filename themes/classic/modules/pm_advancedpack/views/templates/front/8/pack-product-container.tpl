@@ -1,0 +1,23 @@
+{foreach from=$productsPackUnique item=productPack name=productPack_list}
+    <div class="row mb-5" style="border-bottom: 1px solid #DBDBDB;padding-bottom: 50px;">
+        <div class="col-md-2 position-relative d-flex" style="justify-content: center;">
+            {assign var=productPackImageIds value="`$productPack.id_product`-`$productPack.image.id_image`"}
+            <div class="pack-product-image-box d-flex" style="padding: 20px;border-radius: 4px;border: 1px solid #DBDBDB;width: 100%;">
+                <img src="{$pmlink->getImageLink($productPack.presentation.link_rewrite, $productPackImageIds, $imageFormatProductSlideshow)}" alt="{$productPack.image.legend}" style="width: auto;max-height: 190px;max-width: 100%;margin: auto;">
+            </div>
+            <div class="position-absolute w-100 d-flex" style="bottom: -16px !important;">
+                <span class="text-center m-auto bg-secondary text-white font-weight-semibold" style="padding: 5px 10px;border-radius: 20px;font-size: 17px;">x{$productPack.quantity}</span>
+            </div>
+        </div>
+        <div class="col-md-10 content-kit-description">
+            <h3 class="h5 text-uppercase fs-16">{$productPack.presentation.name}</h3>
+            <div class="product-description">{$productPack.presentation.description_short nofilter}</div>
+            <div class="mt-10">
+                <a class="btn btn-primary add_to_cart" href="{$productPack.presentation.link}">Voir le produit</a>
+            </div>
+            {block name='product_reviews'}
+                {hook h='displayProductListReviews' product=$productPack.presentation}
+            {/block}
+        </div>
+    </div>
+{/foreach}

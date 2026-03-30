@@ -147,10 +147,119 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
      */
     public function renderModal($id_product, $id_product_attribute, $id_customization, $isPack, $packContent)
     {
+        // Fallback pack éclaté AP5 : sur certains ajouts (notamment qty>1),
+        // ps_shoppingcart/ajax ne reçoit pas id_product_attribute (Tools::getValue => false).
+        // On doit quand même afficher une modale complète à partir de l'id_pack (= id_product).
+        $isMissingIdProductAttribute = ($id_product_attribute === false || $id_product_attribute === null || $id_product_attribute === '' || $id_product_attribute === 0);
+        if (!$isPack && $isMissingIdProductAttribute && Module::isInstalled('pm_advancedpack') && AdvancedPack::isValidPack((int) $id_product)) {
+            $data = $this->getPresentedCart();
+
+            $idLang = (int) $this->context->language->id;
+            $idShop = (int) $this->context->shop->id;
+
+            $packObj = new Product((int) $id_product, false, $idLang, $idShop);
+            $product = array_merge(
+                $packObj->getFields(),
+                $packObj->getFieldsLang()[$idLang] ?? []
+            );
+
+            // Image
+            $cover = Product::getCover((int) $id_product);
+            if ($cover) {
+                $image = new Image((int) $cover['id_image']);
+                $imagePath = $image->getExistingImgPath();
+                $product['default_image'] = [
+                    'medium' => ['url' => _PS_BASE_URL_ . _THEME_PROD_DIR_ . $imagePath . '-medium_default.jpg'],
+                    'large' => ['url' => _PS_BASE_URL_ . _THEME_PROD_DIR_ . $imagePath . '-large_default.jpg'],
+                    'legend' => $image->legend[$idLang] ?? '',
+                ];
+            }
+
+            // Contenu pack + quantité pack calculée depuis le panier
+            $ap5Module = Module::getInstanceByName('pm_advancedpack');
+            if ($ap5Module instanceof pm_advancedpack && $ap5Module->active) {
+                $packProducts = AdvancedPack::getPackContent((int) $id_product);
+                if (!empty($packProducts)) {
+                    $packContent = $ap5Module->displayPackContent(
+                        (int) $id_product,
+                        false,
+                        pm_advancedpack::PACK_CONTENT_SHOPPING_CART,
+                        $packProducts
+                    );
+
+                    $firstComp = reset($packProducts);
+                    $qtyPerPack = !empty($firstComp['quantity']) ? max(1, (int) $firstComp['quantity']) : 1;
+                    $packQty = 1;
+                    foreach ($data['products'] as $p) {
+                        if (!empty($firstComp['id_product']) && (int) $p['id_product'] === (int) $firstComp['id_product']) {
+                            $packQty = max(1, (int) round(((int) $p['cart_quantity']) / $qtyPerPack));
+                            break;
+                        }
+                    }
+                    $product['cart_quantity'] = $packQty;
+                }
+            }
+
+            // Prix pack (affichage) : on garde la valeur existante du thème (string formatée)
+            $useTax = !((int) Group::getCurrent()->price_display_method);
+            $packPrice = AdvancedPack::getPackPrice((int) $id_product, $useTax, true, true, 6, [], [], [], true);
+            $product['price'] = Tools::displayPrice($packPrice);
+            $product['has_discount'] = false;
+
+            // Forcer le template standard (modal-part.tpl) à afficher nom+prix+contenu+qty
+            $isPack = false;
+
+            $this->smarty->assign([
+                'product' => $product,
+                'cart' => $data,
+                'cart_url' => $this->getCartSummaryURL(),
+                'is_pack' => $isPack,
+                'pack_content' => $packContent,
+            ]);
+
+            return $this->fetch('module:ps_shoppingcart/modal.tpl');
+        }
+
+        // Détection automatique du contenu d'un pack AP5 standard (qty > 1)
+        // quand le contenu n'est pas déjà fourni (cas pack éclaté géré séparément).
+        // Module::isInstalled() utilise le cache mémoire PS → vérification quasi-gratuite.
+        if (!$isPack && empty($packContent) && (int) $id_product_attribute > 0
+            && Module::isInstalled('pm_advancedpack')
+        ) {
+            $ap5Module = Module::getInstanceByName('pm_advancedpack');
+            if ($ap5Module instanceof pm_advancedpack && $ap5Module->active) {
+                if (AdvancedPack::isValidPack((int) $id_product)) {
+                    $packContent = $ap5Module->displayPackContent(
+                        (int) $id_product,
+                        (int) $id_product_attribute,
+                        pm_advancedpack::PACK_CONTENT_SHOPPING_CART
+                    );
+                }
+            }
+        }
+
         $data = $this->getPresentedCart();
         $product = null;
         
         if ($isPack) {
+            // Cas pack éclaté AP5 : on reçoit parfois id_product_attribute sous forme de tableau
+            // (ex: {cq, idpal, ...}) mais sans pack_content. On reconstruit les infos nécessaires
+            // et on force ensuite le rendu standard (is_pack=false) pour afficher quantité + prix + contenu.
+            if (empty($packContent) && is_array($id_product_attribute) && Module::isInstalled('pm_advancedpack') && AdvancedPack::isValidPack((int) $id_product)) {
+                $ap5Module = Module::getInstanceByName('pm_advancedpack');
+                if ($ap5Module instanceof pm_advancedpack && $ap5Module->active) {
+                    $packProducts = AdvancedPack::getPackContent((int) $id_product, null, true, $id_product_attribute['idpal'] ?? []);
+                    if (!empty($packProducts)) {
+                        $packContent = $ap5Module->displayPackContent(
+                            (int) $id_product,
+                            false,
+                            pm_advancedpack::PACK_CONTENT_SHOPPING_CART,
+                            $packProducts
+                        );
+                    }
+                }
+            }
+
             $id_lang = 1;
             $product = new Product($id_product, false, $id_lang, $id_shop);
             
@@ -188,7 +297,33 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
                     'legend' => '',
                 ];
             }
-        }else{
+
+            // Quantité ajoutée : si on a cq dans les données pack éclaté, on l'utilise
+            if (is_array($id_product_attribute) && isset($id_product_attribute['cq']) && is_numeric($id_product_attribute['cq'])) {
+                $product['cart_quantity'] = max(1, (int) $id_product_attribute['cq']);
+            }
+
+            // Prix du pack : on le calcule pour éviter un affichage vide (",") et garantir le symbole de devise
+            if (Module::isInstalled('pm_advancedpack') && AdvancedPack::isValidPack((int) $id_product)) {
+                $useTax = !((int) Group::getCurrent()->price_display_method); // 0=TTC, 1=HT
+                $idpal = (is_array($id_product_attribute) && isset($id_product_attribute['idpal']) && is_array($id_product_attribute['idpal']))
+                    ? $id_product_attribute['idpal']
+                    : [];
+                $ql = (is_array($id_product_attribute) && isset($id_product_attribute['ql']) && is_array($id_product_attribute['ql']))
+                    ? $id_product_attribute['ql']
+                    : [];
+                $pel = (is_array($id_product_attribute) && isset($id_product_attribute['pel']) && is_array($id_product_attribute['pel']))
+                    ? $id_product_attribute['pel']
+                    : [];
+
+                $packPrice = AdvancedPack::getPackPrice((int) $id_product, $useTax, true, true, 6, $idpal, $ql, $pel, true);
+                $product['price'] = Tools::displayPrice($packPrice);
+                $product['has_discount'] = false;
+            }
+
+            // Forcer la branche standard de modal-part.tpl (affiche quantité + prix + contenu)
+            $isPack = false;
+        } else {
             foreach ($data['products'] as $p) {
                 if ((int) $p['id_product'] == $id_product &&
                     (int) $p['id_product_attribute'] == $id_product_attribute &&

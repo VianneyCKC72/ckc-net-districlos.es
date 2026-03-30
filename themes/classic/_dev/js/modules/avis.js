@@ -74,7 +74,7 @@ $(document).ready(function () {
                                             
                                                 <path data-name="Tracé 1" d="m977.223 685.241-7.775 7.8 2.031 10.988-9.836-5.168-9.678 5.211 1.7-11-8.012-7.767 10.885-1.628 4.726-10.011 5.031 9.99z" transform="translate(-945.648 -673.671)" fill="url(#skeepers-31-linearGradient-100)"></path>
                                             </svg>
-                                            ${note} avis
+                                            ${note}
                                         </span>
                                     </a>
                                 </li>

@@ -43,8 +43,13 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
         if ($this->quantity <= 0) {
             $this->quantity = 1;
         }
-        $idProductAttributeList = Tools::getValue('id_product_attribute_list');
-        $idProductAttributeList = (array)json_decode($idProductAttributeList);
+        $ap5RawIdPal = Tools::getValue('id_product_attribute_list');
+
+        $idProductAttributeList = $ap5RawIdPal;
+        if (is_string($idProductAttributeList)) {
+            $idProductAttributeList = json_decode($idProductAttributeList);
+        }
+        $idProductAttributeList = (array) $idProductAttributeList;
         if (!is_array($idProductAttributeList)) {
             $this->idProductAttributeList = [];
         } else {
@@ -53,6 +58,51 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
                     continue;
                 } else {
                     $this->idProductAttributeList[(int)$idProductPack] = (int)$idProductAttribute;
+                }
+            }
+        }
+
+        // Fallback runtime (qty>1): si le champ id_product_attribute_list n'est pas envoyé,
+        // on reconstruit les déclinaisons via les champs group_<id_product>_<id_attribute_group>.
+        if (!count($this->idProductAttributeList)) {
+            $byProductId = [];
+            foreach ($_POST as $k => $v) {
+                if (!is_string($k) || strpos($k, 'group_') !== 0) {
+                    continue;
+                }
+                // format attendu: group_<id_product>_<id_attribute_group>
+                $parts = explode('_', $k);
+                if (count($parts) < 3) {
+                    continue;
+                }
+                $idProduct = (int) $parts[1];
+                $idAttribute = (int) $v;
+                if ($idProduct > 0 && $idAttribute > 0) {
+                    $byProductId[$idProduct][] = $idAttribute;
+                }
+            }
+
+            if (count($byProductId)) {
+                $packProducts = AdvancedPack::getPackContent($this->idPack);
+                $productIdToPackRow = [];
+                if (is_array($packProducts)) {
+                    foreach ($packProducts as $pp) {
+                        if (!empty($pp['id_product']) && !empty($pp['id_product_pack'])) {
+                            $productIdToPackRow[(int) $pp['id_product']] = (int) $pp['id_product_pack'];
+                        }
+                    }
+                }
+
+                foreach ($byProductId as $idProduct => $attrIds) {
+                    $idProductPackRow = $productIdToPackRow[(int) $idProduct] ?? null;
+                    if (!$idProductPackRow) {
+                        continue;
+                    }
+                    // Résoudre la combinaison depuis la liste d'attributs
+                    $idProductAttribute = (int) Product::getIdProductAttributeByIdAttributes((int) $idProduct, $attrIds, true);
+                    if ($idProductAttribute > 0) {
+                        $this->idProductAttributeList[(int) $idProductPackRow] = $idProductAttribute;
+                    }
                 }
             }
         }
@@ -145,10 +195,26 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
     }
     public function displayAjax()
     {
-        if (!count($this->productPackExclude) && !$this->packHasEditedQuantity) {
-            AdvancedPack::addPackToCart($this->idPack, $this->quantity, $this->idProductAttributeList, $this->productPackCustomizationList, true, true);
-        } else {
-            AdvancedPack::addExplodedPackToCart($this->idPack, $this->quantity, $this->idProductAttributeList, $this->productPackCustomizationList, $this->productPackQuantityList, $this->productPackExclude);
+
+        AdvancedPack::addExplodedPackToCart($this->idPack, $this->quantity, $this->idProductAttributeList, $this->productPackCustomizationList, $this->productPackQuantityList, $this->productPackExclude);
+
+        // Ajouter les accessoires Multi Accessories Pro (HSMA)
+        $idAccessories = trim(Tools::getValue('id_accessories', ''));
+        $idAccessoriesAttributes = trim(Tools::getValue('id_accesories_attributes', ''));
+        $customQty = trim(Tools::getValue('custom_qty', ''));
+
+        if ($idAccessories !== '' && $idAccessories !== false) {
+            $ids = array_map('intval', array_filter(explode(',', $idAccessories)));
+            $attrs = $idAccessoriesAttributes !== '' ? array_map('intval', array_filter(explode(',', $idAccessoriesAttributes))) : array_fill(0, count($ids), 0);
+            $qtys = $customQty !== '' ? array_map('intval', array_filter(explode(',', $customQty))) : array_fill(0, count($ids), 1);
+            foreach ($ids as $i => $idProduct) {
+                if ($idProduct <= 0) {
+                    continue;
+                }
+                $idProductAttribute = isset($attrs[$i]) ? $attrs[$i] : 0;
+                $quantity = isset($qtys[$i]) && $qtys[$i] > 0 ? $qtys[$i] : 1;
+                $this->context->cart->updateQty($quantity, $idProduct, $idProductAttribute, null, 'up');
+            }
         }
     }
     public function initContent()

@@ -528,28 +528,36 @@ class Accessory extends ProductFactory
         
         if ($id_product == 2231 && $isComposite && !empty(self::$session->height)) {
             $height = self::$session->height;
+            $isScellementEnTerre = (self::$session->installation === 'scellement');
             
             // Mapping direct des hauteurs composites vers les IDs de déclinaisons du produit 2231
             if (in_array($height, ['0m53', '0m70'])) {
                 return 11839452; // 1m05
             } elseif ($height == '0m87') {
                 return 11839453; // 1m40
-            } elseif (in_array($height, ['1m04', '1m21', '1m38'])) {
+            } elseif ($height == '1m04') {
+                return $isScellementEnTerre ? 11839454 : 11839453; // scellement en terre: 1m85, sinon: 1m40
+            } elseif (in_array($height, ['1m21', '1m38'])) {
                 return 11839454; // 1m85
-            } elseif (in_array($height, ['1m55', '1m72'])) {
+            } elseif ($height == '1m55') {
+                return $isScellementEnTerre ? 11839455 : 11839454; // scellement en terre: 2m30, sinon: 1m85
+            } elseif ($height == '1m72') {
                 return 11839455; // 2m30
             }
         }
         
         if ($id_product == 2225 && $isComposite && !empty(self::$session->height)) {
             $height = self::$session->height;
+            $isScellementEnTerre = (self::$session->installation === 'scellement');
             
             // Mapping direct des hauteurs composites vers les IDs de déclinaisons du produit 2225
             if (in_array($height, ['0m53', '0m70'])) {
                 return 11840868; // 1m05
             } elseif ($height == '0m87') {
                 return 11840869; // 1m40
-            } elseif (in_array($height, ['1m04', '1m21', '1m38', '1m55', '1m72'])) {
+            } elseif ($height == '1m04') {
+                return $isScellementEnTerre ? 11845843 : 11840869; // scellement en terre: 1m85/2m30, sinon: 1m40
+            } elseif (in_array($height, ['1m21', '1m38', '1m55', '1m72'])) {
                 return 11845843; // 1m85/2m30
             }
         }

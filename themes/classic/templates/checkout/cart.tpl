@@ -67,12 +67,7 @@
                     <div class="container cart-summary-inside">
                         <div>
                             <p class="h3 mb-4">Récapitulatif</p>
-
-                                {include file='checkout/_partials/cart-summary-top.tpl' cart=$cart}
-
-                            {if file_exists($smarty.const._PS_MODULE_DIR_|cat:'ckc_shipping_estimator/views/templates/front/cart/shipping_estimator.tpl')}
-                                {include file="module:ckc_shipping_estimator/views/templates/front/cart/shipping_estimator.tpl"}
-                            {/if}
+                            {include file='checkout/_partials/cart-summary-top.tpl' cart=$cart}
                         </div>
 
                         {block name='hook_shopping_cart'}
@@ -83,14 +78,30 @@
                             {block name='cart_totals'}
                                 {include file='checkout/_partials/cart-detailed-totals.tpl' cart=$cart}
                             {/block}
+
+                            {if file_exists($smarty.const._PS_MODULE_DIR_|cat:'ckc_shipping_estimator/views/templates/front/cart/shipping_estimator.tpl')}
+                                {include file="module:ckc_shipping_estimator/views/templates/front/cart/shipping_estimator.tpl"}
+                            {/if}
+
                             {hook h='displayAfterCartDetailedActions'}
-                            {block name='cart_actions'}
-                                {include file='checkout/_partials/cart-detailed-actions.tpl' cart=$cart}
+
+                            {block name='cart_voucher'}
+                                {include file='checkout/_partials/cart-voucher.tpl'}
                             {/block}
+
+                            <div class="cart-detailed-totals">
+                                {block name='cart_summary_totals'}
+                                    {include file='checkout/_partials/cart-summary-totals.tpl' cart=$cart}
+                                {/block}
+                            </div>
                         </div>
 
+                        {block name='cart_actions'}
+                            {include file='checkout/_partials/cart-detailed-actions.tpl' cart=$cart}
+                        {/block}
+
                         <div class="action_sticky">
-                            {block name='cart_actions'}
+                            {block name='cart_actions_sticky'}
                                 {include file='checkout/_partials/cart-detailed-actions.tpl' cart=$cart}
                             {/block}
                         </div>
@@ -109,8 +120,6 @@
                         {*                            {/if}*}
                         {*                        </div>*}
 
-                        {include file='checkout/_partials/cart-moyen-paiement.tpl'}
-
                     </div>
                     {/block}
 
@@ -119,6 +128,8 @@
                     {/block} *}
 
                 </div>
+
+                {include file='checkout/_partials/cart-moyen-paiement.tpl'}
             </div>
         </div>
 

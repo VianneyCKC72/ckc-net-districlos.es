@@ -788,6 +788,27 @@ class ckc_espacepro extends Module
                     'controller' => 'guidesfiches'
                 ]
             ],
+            'lp_pro_rendez_vous' => [
+                'rule' => 'lp-pro-rendez-vous',
+                'controller' => 'lprendezvous',
+                'keywords' => [],
+                'params' => [
+                    'module' => $this->name,
+                    'fc' => 'module',
+                    'controller' => 'lprendezvous'
+                ]
+            ],
+            'lp_pro_rendez_vous_merci' => [
+                'rule' => 'lp-pro-rendez-vous/remerciements',
+                'controller' => 'lprendezvous',
+                'keywords' => [],
+                'params' => [
+                    'module' => $this->name,
+                    'fc' => 'module',
+                    'controller' => 'lprendezvous',
+                    'remerciements' => '1'
+                ]
+            ],
         ];
     }
 

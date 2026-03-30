@@ -1,16 +1,19 @@
 <?php
 class ckc_shipping_estimatorproductshippingestimatorModuleFrontController extends ModuleFrontController
 {
+    private const TEMP_ADDRESS_ALIAS_PREFIX = 'temp_shipping_estimator';
+
     public function initContent()
     {
         parent::initContent();
 
-        $postalCode           = (int)Tools::getValue('postal_code');
+        $postalCode           = (string) Tools::getValue('postal_code');
         $id_product           = (int)Tools::getValue('id_product');
         $id_product_attribute = (int)Tools::getValue('id_product_attribute');
         $quantity             = (int)Tools::getValue('quantity', 1);
         header('Content-Type: application/json');
-        if (!$postalCode) {
+        $postalCode = trim($postalCode);
+        if ($postalCode === '') {
             echo json_encode([
                 'success' => false,
                 'message' => 'Postal code is required'
@@ -51,17 +54,13 @@ class ckc_shipping_estimatorproductshippingestimatorModuleFrontController extend
 
         $originalAddressId = $this->context->cart->id_address_delivery;
 
-        $tempAddress              = new Address();
-        $tempAddress->alias       = 'temp';
-        $tempAddress->firstname   = 'temp';
-        $tempAddress->lastname    = 'temp';
-        $tempAddress->address1    = 'temp';
-        $tempAddress->postcode    = $postalCode;
-        $tempAddress->city        = 'temp';
-        $tempAddress->id_customer = Context::getContext()->cookie->id_customer;
-        $tempAddress->id_country  = 8;
-        $tempAddress->deleted     = 1;
-        $tempAddress->save();
+        $tempAddress = $this->getOrCreateTempAddress((string) $postalCode);
+        if (!Validate::isLoadedObject($tempAddress)) {
+            $this->clearCart();
+            $this->restoreCartContent($savedCart);
+
+            return [];
+        }
 
         $this->context->cart->updateAddressId($this->context->cart->id_address_delivery, $tempAddress->id);
 
@@ -78,12 +77,10 @@ class ckc_shipping_estimatorproductshippingestimatorModuleFrontController extend
 
         $carriers_available = [];
         $priceFormatter     = new \PrestaShop\PrestaShop\Adapter\Product\PriceFormatter();
-        if (substr($postalCode, 0, 1) == 0) {
-            $postalCode = substr($postalCode, 1);
-        }
+        $postalCodeNumeric = (int) ltrim((string) $postalCode, '0');
         $sql     = 'SELECT *
 					FROM `' . _DB_PREFIX_ . 'zip_code_zone` z
-					WHERE "' . $postalCode . '" BETWEEN z.`min` AND z.`max`';
+					WHERE "' . (int) $postalCodeNumeric . '" BETWEEN z.`min` AND z.`max`';
         $result  = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
         if (isset($delivery_option_list[$this->context->cart->id_address_delivery]) && $result && isset($result['id_zone'])) {
             $id_zone = $result['id_zone'];
@@ -118,40 +115,35 @@ class ckc_shipping_estimatorproductshippingestimatorModuleFrontController extend
                                 ORDER BY r.`delimiter1` ASC';
                                 $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
                             }
-                            if ($result) {
-                                $price = $result['price'];
-                                if ($this->isFreeShipping($this->context->cart, $carriers_list) && (!$price || (float)$price == 0)) {
-                                    $carrier['price'] = $this->translator->trans('Free', [], 'Shop.Theme.Checkout');
-                                }
-                                else {
-                                    if ($include_taxes) {
-                                        $carrier['reduc'] = $priceFormatter->format(ceil(($carriers_list['total_price_with_tax'] + ($price * (1 + 20 / 100))) * 2));
-                                        $carrier['price'] = $priceFormatter->format($carriers_list['total_price_with_tax'] + ($price * (1 + 20 / 100)));
-                                        if ($display_taxes_label) {
-                                            $carrier['price'] = $this->translator->trans('%price% tax incl.', ['%price%' => $carrier['price']], 'Shop.Theme.Checkout');
-                                        }
+                            $price = $result ? $result['price'] : 0;
+                            if ($this->isFreeShipping($this->context->cart, $carriers_list) && (!$price || (float)$price == 0)) {
+                                $carrier['price'] = $this->translator->trans('Free', [], 'Shop.Theme.Checkout');
+                            } else {
+                                if ($include_taxes) {
+                                    $carrier['reduc'] = $priceFormatter->format(ceil(($carriers_list['total_price_with_tax'] + ($price * (1 + 20 / 100))) * 2));
+                                    $carrier['price'] = $priceFormatter->format($carriers_list['total_price_with_tax'] + ($price * (1 + 20 / 100)));
+                                    if ($display_taxes_label) {
+                                        $carrier['price'] = $this->translator->trans('%price% tax incl.', ['%price%' => $carrier['price']], 'Shop.Theme.Checkout');
                                     }
-                                    else {
-                                        $carrier['reduc'] = $priceFormatter->format(ceil(($carriers_list['total_price_without_tax'] + $price) * 2));
-                                        $carrier['price'] = $priceFormatter->format($carriers_list['total_price_without_tax'] + $price);
-                                        if ($display_taxes_label) {
-                                            $carrier['price'] = $this->translator->trans('%price% tax excl.', ['%price%' => $carrier['price']], 'Shop.Theme.Checkout');
-                                        }
+                                } else {
+                                    $carrier['reduc'] = $priceFormatter->format(ceil(($carriers_list['total_price_without_tax'] + $price) * 2));
+                                    $carrier['price'] = $priceFormatter->format($carriers_list['total_price_without_tax'] + $price);
+                                    if ($display_taxes_label) {
+                                        $carrier['price'] = $this->translator->trans('%price% tax excl.', ['%price%' => $carrier['price']], 'Shop.Theme.Checkout');
                                     }
                                 }
-                                if (count($carriers) > 1) {
-                                    $carrier['label'] = $carrier['price'];
-                                }
-                                else {
-                                    $carrier['label'] = $carrier['name'] . ' - ' . $carrier['delay'] . ' - ' . $carrier['price'];
-                                }
-                                if ($carrier['is_module']) {
-                                    if ($moduleId = Module::getModuleIdByName($carrier['external_module_name'])) {
-                                        $carrier['extraContent'] = Hook::exec('displayCarrierExtraContent', ['carrier' => $carrier], $moduleId);
-                                    }
-                                }
-                                $carriers_available[$id_carriers_list] = $carrier;
                             }
+                            if (count($carriers) > 1) {
+                                $carrier['label'] = $carrier['price'];
+                            } else {
+                                $carrier['label'] = $carrier['name'] . ' - ' . $carrier['delay'] . ' - ' . $carrier['price'];
+                            }
+                            if ($carrier['is_module']) {
+                                if ($moduleId = Module::getModuleIdByName($carrier['external_module_name'])) {
+                                    $carrier['extraContent'] = Hook::exec('displayCarrierExtraContent', ['carrier' => $carrier], $moduleId);
+                                }
+                            }
+                            $carriers_available[$id_carriers_list] = $carrier;
                         }
                     }
                 }
@@ -162,6 +154,46 @@ class ckc_shipping_estimatorproductshippingestimatorModuleFrontController extend
         $this->context->cart->updateAddressId($tempAddress->id, $originalAddressId);
 
         return $carriers_available;
+    }
+
+    private function getOrCreateTempAddress(string $postalCode): Address
+    {
+        $context = Context::getContext();
+        $idCustomer = (int) ($context->cookie->id_customer ?? 0);
+        $idGuest = (int) ($context->cookie->id_guest ?? 0);
+        $alias = self::TEMP_ADDRESS_ALIAS_PREFIX;
+
+        // For guests, scope the alias to the guest id when available.
+        if ($idCustomer <= 0 && $idGuest > 0) {
+            $alias .= '_' . $idGuest;
+        }
+
+        $existingId = (int) Db::getInstance()->getValue(
+            'SELECT a.`id_address`
+            FROM `' . _DB_PREFIX_ . 'address` a
+            WHERE a.`id_customer` = ' . (int) $idCustomer . '
+            AND a.`alias` = "' . pSQL($alias) . '"
+            ORDER BY a.`id_address` DESC'
+        );
+
+        $address = $existingId > 0 ? new Address($existingId) : new Address();
+
+        $address->alias = $alias;
+        $address->firstname = 'temp';
+        $address->lastname = 'temp';
+        $address->address1 = 'temp';
+        $address->postcode = $postalCode;
+        $address->city = 'temp';
+        $address->id_customer = $idCustomer;
+        $address->id_country = 8;
+        $address->deleted = 1;
+
+        $saved = $existingId > 0 ? $address->update() : $address->add();
+        if (!$saved || !Validate::isLoadedObject($address)) {
+            return new Address();
+        }
+
+        return $address;
     }
 
     private function isFreeShipping($cart, array $carrier)

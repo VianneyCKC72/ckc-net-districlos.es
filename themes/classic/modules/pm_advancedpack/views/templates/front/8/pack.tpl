@@ -119,21 +119,131 @@
 
                         {if isset($packMlChoose) && $packMlChoose}
                             <style>
-                                #quantity_ml::placeholder {
-                                    color: #666 !important;
+                                .ap5-ml-field .group-name {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                    margin: 0 0 10px;
+                                }
+
+                                .ap5-ml-field {
+                                    background: #F5F5F5;
+                                    border-radius: 4px;
+                                    padding: 14px 16px;
+                                }
+
+                                .ap5-ml-help {
+                                    position: relative;
+                                    display: inline-flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    width: 20px;
+                                    height: 20px;
+                                    border-radius: 0;
+                                    background: transparent;
+                                    color: #79c046;
+                                    font-size: 0;
+                                    font-weight: 400;
+                                    line-height: 1;
+                                    cursor: help;
+                                }
+
+                                .ap5-ml-help svg {
+                                    display: block;
+                                }
+
+                                .ap5-ml-help-tooltip {
+                                    position: absolute;
+                                    left: 50%;
+                                    top: 28px;
+                                    transform: translateX(-50%);
+                                    min-width: 190px;
+                                    max-width: 260px;
+                                    padding: 8px 10px;
+                                    background: #FFFFFF;
+                                    border: 1px solid #bdbdbd;
+                                    color: #6f6f6f;
+                                    font-size: 12px;
+                                    font-weight: 400;
+                                    line-height: 1.3;
+                                    text-align: left;
+                                    visibility: hidden;
+                                    opacity: 0;
+                                    z-index: 15;
+                                    transition: opacity 0.2s ease;
+                                }
+
+                                .ap5-ml-help:hover .ap5-ml-help-tooltip,
+                                .ap5-ml-help:focus .ap5-ml-help-tooltip {
+                                    visibility: visible;
                                     opacity: 1;
                                 }
+
+                                .ap5-ml-field #quantity_ml {
+                                    display: block;
+                                    width: 100%;
+                                    background: transparent !important;
+                                    border: 0 !important;
+                                    border-bottom: 1px solid #a6a6a6 !important;
+                                    border-radius: 0 !important;
+                                    padding: 0 0 8px !important;
+                                    margin: 0;
+                                    height: auto;
+                                    min-height: 0;
+                                    line-height: 1.2;
+                                    color: #222;
+                                    box-shadow: none !important;
+                                    outline: none;
+                                }
+
+                                .ap5-ml-field #quantity_ml::placeholder {
+                                    color: #8a8a8a !important;
+                                    opacity: 1;
+                                }
+
+                                .ap5-ml-field #quantity_ml:focus {
+                                    border-bottom: 1px solid #7e7e7e !important;
+                                    box-shadow: none !important;
+                                }
+
+                                .ap5-ml-field #quantity_ml.ap5-ml-invalid {
+                                    color: #f33 !important;
+                                    border-bottom: 2px solid #f33 !important;
+                                }
+
+                                .ap5-ml-error {
+                                    display: none;
+                                    margin-top: 6px;
+                                    color: #f33;
+                                    font-size: 13px;
+                                    text-align: right;
+                                }
+
+                                .ap5-ml-error.ap5-ml-error-visible {
+                                    display: block;
+                                }
                             </style>
-                            <div class="ap5-attributes" style="margin-bottom: 1rem;">
+                            <div class="ap5-attributes ap5-ml-field" style="margin-bottom: 1rem;">
                                 <div class="clearfix hiddenlabel">
-                                    <p class="font-weight-bold group-name">Choisissez la longueur en mètres linéaires</p>
+                                    <p class="font-weight-bold group-name">
+                                        Choisissez la longueur en mètres linéaires
+                                        <span class="ap5-ml-help" tabindex="0" aria-label="Aide sur le calcul des mètres linéaires">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                            </svg>
+                                            <span class="ap5-ml-help-tooltip">Calcul mètres linéaires : addition de toutes les longueurs en mètres</span>
+                                        </span>
+                                    </p>
                                     <div class="select_wrap">
                                         <div class="clearfix dis_flex">
                                                     <span class="input-group-btn-vertical dis_flex">
-                                                        <input type="number" id="quantity_ml" value="" class="form-control" min="1" step="1" style="display: block;" placeholder="Renseignez votre longueur (en m)">
+                                                        <input type="number" id="quantity_ml" value="" class="form-control" min="1" step="1" placeholder="Renseignez votre longueur (en mètres linéaires)" required>
                                                     </span>
                                         </div>
                                     </div>
+                                    <p id="quantity_ml_error" class="ap5-ml-error">Veuillez renseigner ce champ</p>
                                 </div>
                             </div>
                         {/if}
@@ -213,7 +323,7 @@
                                     {/block}
 
                                     {* Start - Inté static *}
-                                    <div class="d-flex flex-wrap gap-16 shipping-block-product-info">
+                                    <div class="d-flex gap-16 shipping-block-product-info">
                                         {if file_exists($smarty.const._PS_MODULE_DIR_|cat:'ckc_shipping_estimator/views/templates/front/product/shipping_estimator.tpl')}
                                             {include file="module:ckc_shipping_estimator/views/templates/front/product/shipping_estimator.tpl"}
                                         {/if}
@@ -346,14 +456,14 @@
                                 <div class="tab-pane active js-product-tab-active" id="kit_content" role="tabpanel">
                                     <div id="ap5-pack-product-container">
                                         {foreach from=$productsPackUnique item=productPack name=productPack_list}
-                                            <div class="row mb-5">
+                                            <div class="row mb-5" style="border-bottom: 1px solid #DBDBDB;padding-bottom: 50px;">
                                                 <div class="col-md-2 position-relative d-flex">
                                                     {assign var=productPackImageIds value="`$productPack.id_product`-`$productPack.image.id_image`"}
-                                                    <div style="padding: 20px;box-shadow: 0 10px 20px #0000000d;width: 100%;" class="d-flex">
+                                                    <div style="padding: 20px;border-radius: 4px;border: 1px solid #DBDBDB;width: 100%;" class="d-flex">
                                                         <img src="{$pmlink->getImageLink($productPack.presentation.link_rewrite, $productPackImageIds, $imageFormatProductSlideshow)}" alt="{$productPack.image.legend}" style="width: auto;max-height: 190px;max-width: 100%;margin: auto;">
                                                     </div>
                                                     <div class="position-absolute w-100 d-flex" style="bottom: -16px !important;">
-                                                        <span class="text-center m-auto" style="padding: 5px 20px;background-color: #79C144;width: 83px;color: #fff;font-weight: 600;font-size: 16px;">x{$productPack.quantity}</span>
+                                                        <span class="text-center m-auto" style="padding: 5px;background-color: #79C144;border-radius: 20px;color: #fff;font-weight: 600;font-size: 17px;">x{$productPack.quantity}</span>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-10 content-kit-description">

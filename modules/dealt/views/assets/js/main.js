@@ -529,10 +529,6 @@ $(function () {
 
     if($("#cart").length){
 
-        let availables_services_id = [];
-        let all_products_cart_id = [];
-        dealt_cart_services.map((product) => availables_services_id.push(product.service_product_id))
-
         $(".custom-quantity-selector").each(function (){
             if($(this).find("input#quantity_wanted").data('product-id') == localStorage.getItem('dealt_service_product_id')){
                 $(this).css('display', 'none');
@@ -540,28 +536,12 @@ $(function () {
                     $(this).css('display', 'none');
                 });
             }
-            all_products_cart_id.push($(this).find("input#quantity_wanted").data('product-id'))
         })
 
-        const intersection = availables_services_id.filter(element => all_products_cart_id.includes(element));
-
-        const localMatch = all_products_cart_id.includes(parseInt(localStorage.getItem('dealt_service_product_id'), 10));
-
-        // Toujours activer les boutons dans .dealt-tva-notice--cartline (produits services déjà dans le panier)
-        $(".dealt-tva-notice--cartline .btn-add.dealt-tva-open-popup").css('pointer-events', 'auto')
-        $(".dealt-tva-notice--cartline .btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box')
-
-        if(!intersection.length && !localMatch){
-            // Désactiver uniquement les autres boutons (ceux du footer)
-            $(".btn-add.dealt-tva-open-popup").not(".dealt-tva-notice--cartline .btn-add").css('pointer-events', 'none')
-            $(".btn-add.dealt-tva-open-popup").not(".dealt-tva-notice--cartline .btn-add").css('background', '#b6c7a8 0% 0% no-repeat padding-box')
-            $("#tva-submit-btn").attr('disabled', true)
-        } else {
-            // Activer tous les boutons
-            $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'auto')
-            $(".btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box')
-            $("#tva-submit-btn").attr('disabled', false)
-        }
+        /* Bouton « Ajouter la réduction » toujours actif */
+        $(".btn-add.dealt-tva-open-popup").css('pointer-events', 'auto')
+        $(".btn-add.dealt-tva-open-popup").css('background', '#7CBA49 0% 0% no-repeat padding-box')
+        $("#tva-submit-btn").attr('disabled', false)
     }
 
 });

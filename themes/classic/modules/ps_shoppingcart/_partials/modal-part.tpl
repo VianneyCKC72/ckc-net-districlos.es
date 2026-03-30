@@ -22,11 +22,15 @@
                 </div>
                 {hook h='displayProductPriceBlock' product=$product type="unit_price"}
                 <div class="small">
-                    {foreach from=$product.attributes item="property_value" key="property"}
-                        <span
-                                class="{$property|lower}">{l s='%label%:' sprintf=['%label%' => $property] d='Shop.Theme.Global'}<strong>
+                    {if isset($pack_content) && $pack_content}
+                        {$pack_content nofilter}
+                    {else}
+                        {foreach from=$product.attributes item="property_value" key="property"}
+                            <span
+                                    class="{$property|lower}">{l s='%label%:' sprintf=['%label%' => $property] d='Shop.Theme.Global'}<strong>
       {$property_value}</strong></span><br>
-                    {/foreach}
+                        {/foreach}
+                    {/if}
                 </div>
                 <span
                         class="product-quantity small">{l s='Quantity:' d='Shop.Theme.Checkout'}&nbsp;<strong>{$product.cart_quantity}</strong></span>

@@ -5,6 +5,12 @@ if (!defined('_PS_VERSION_')) {
 
 class Ckc_Stores_Stock extends Module
 {
+    /**
+     * Évite l'exception Smarty: "Plugin tag 'checkVictimeSucces' already registered"
+     * quand le module est instancié plusieurs fois dans le même request.
+     */
+    private static bool $smartyPluginRegistered = false;
+
     public function __construct()
     {
         $this->name = 'ckc_stores_stock';
@@ -17,6 +23,21 @@ class Ckc_Stores_Stock extends Module
 
         $this->displayName = $this->l('Stocks par magasin');
         $this->description = $this->l('Affiche les stocks par magasin sur la fiche produit.');
+        
+        // Enregistrer la fonction Smarty dès le constructeur, mais une seule fois par request.
+        if (!self::$smartyPluginRegistered && class_exists('Context') && Context::getContext()->smarty) {
+            try {
+                Context::getContext()->smarty->registerPlugin(
+                    'function',
+                    'checkVictimeSucces',
+                    [$this, 'smartyCheckVictimeSucces']
+                );
+                self::$smartyPluginRegistered = true;
+            } catch (\Throwable $e) {
+                // Smarty peut throw en cas de double register : on ignore pour éviter un 500 bloquant.
+                self::$smartyPluginRegistered = true;
+            }
+        }
     }
 
     public function install()
@@ -38,6 +59,38 @@ class Ckc_Stores_Stock extends Module
     {
         $this->context->controller->addJS($this->_path . 'assets/js/stores_stock.js');
         $this->context->controller->addCSS($this->_path . 'assets/css/stores_stock.css');
+    }
+    
+    /**
+     * Fonction Smarty personnalisée pour vérifier le statut "victime de son succès"
+     * Usage dans le template : {checkVictimeSucces id_product=$accessory.id_accessory id_product_attribute=$accessory.default_id_product_attribute assign="victime_succes"}
+     */
+    public function smartyCheckVictimeSucces($params, &$smarty)
+    {
+        $id_product = isset($params['id_product']) ? (int)$params['id_product'] : 0;
+        $id_product_attribute = isset($params['id_product_attribute']) ? (int)$params['id_product_attribute'] : 0;
+        $assign_var = isset($params['assign']) ? $params['assign'] : 'victime_succes';
+        
+        $victime_succes = false;
+        
+        if ($id_product > 0) {
+            // Si pas de déclinaison, récupérer la déclinaison par défaut
+            if ($id_product_attribute == 0) {
+                $id_product_attribute = (int)Product::getDefaultAttribute($id_product);
+            }
+            
+            if ($id_product_attribute > 0) {
+                require_once _PS_MODULE_DIR_ . 'ckc_stores_stock/classes/StockManager.php';
+                $stockManager = new StockManager();
+                $stockData = $stockManager->getStockData($id_product, $id_product_attribute, null);
+                $victime_succes = isset($stockData['victime_succes']) ? (bool)$stockData['victime_succes'] : false;
+            }
+        }
+        
+        // Assigner la variable à Smarty
+        $smarty->assign($assign_var, $victime_succes);
+        
+        return '';
     }
 
     public function hookDisplayAdminOrder($params)
@@ -132,4 +185,5 @@ class Ckc_Stores_Stock extends Module
 
         return $this->fetch('module:ckc_stores_stock/views/templates/hook/displayStockCheckout.tpl');
     }
+
 }

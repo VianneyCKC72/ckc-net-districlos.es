@@ -569,10 +569,20 @@ class DealtHookHelper
 
         if(!empty($longueur) && count($serviceIds)){
             foreach ($serviceIds as $serviceId) {
-                $serviceIdSql = Db::getInstance()->executeS('SELECT p.id_product FROM ' . _DB_PREFIX_ . 'product p
-                LEFT JOIN ' . _DB_PREFIX_ . 'dealt_service ds ON ds.reference = p.reference
-                WHERE '.$longueur.' >= ds.longueur_min AND '.$longueur.' <= ds.longueur_max 
-                AND p.id_product = '.$serviceId);
+                $checkIncludesLength = Db::getInstance()->getValue('SELECT d.includes_length FROM ' . _DB_PREFIX_ . 'dealt_service d
+                LEFT JOIN ' . _DB_PREFIX_ . 'product p ON p.reference = d.reference 
+                WHERE p.id_product = ' . $serviceId);
+
+                if((int)$checkIncludesLength){
+                    $serviceIdSql = Db::getInstance()->executeS('SELECT p.id_product FROM ' . _DB_PREFIX_ . 'product p
+                    LEFT JOIN ' . _DB_PREFIX_ . 'dealt_service ds ON ds.reference = p.reference
+                    WHERE '.$longueur.' >= ds.longueur_min AND '.$longueur.' <= ds.longueur_max 
+                    AND p.id_product = '.$serviceId);
+                } else {
+                    $serviceIdSql = Db::getInstance()->executeS('SELECT p.id_product FROM ' . _DB_PREFIX_ . 'product p
+                    LEFT JOIN ' . _DB_PREFIX_ . 'dealt_service ds ON ds.reference = p.reference
+                    WHERE p.id_product = '.$serviceId);
+                }
 
                 if(!empty($serviceIdSql[0]['id_product'])){
                     $idService = $serviceIdSql[0]['id_product'];
@@ -591,10 +601,19 @@ class DealtHookHelper
                 $product = new \Product($idService, false, (int)$ctx->language->id);
 
                 $servicePriceTtc = null;
+                $servicePriceTtcBefore = null;
                 if ($idService) {
-                    $priceTtc = \Product::getPriceStatic($idService, true);
-                    if ($priceTtc > 0) {
-                        $servicePriceTtc = self::formatPrice($ctx, $priceTtc);
+                    // Prix TTC final (avec remises PrestaShop) + prix TTC avant remise
+                    $priceTtcFinal = (float) \Product::getPriceStatic($idService, true, null, 6, null, false, true);
+                    $priceTtcBefore = (float) \Product::getPriceStatic($idService, true, null, 6, null, false, false);
+
+                    if ($priceTtcFinal > 0) {
+                        $servicePriceTtc = self::formatPrice($ctx, $priceTtcFinal);
+                    }
+
+                    // On ne renvoie un "avant" que s'il est strictement supérieur (donc remise réelle)
+                    if ($priceTtcBefore > 0 && $priceTtcFinal > 0 && $priceTtcBefore > $priceTtcFinal) {
+                        $servicePriceTtcBefore = self::formatPrice($ctx, $priceTtcBefore);
                     }
                 }
 
@@ -603,6 +622,7 @@ class DealtHookHelper
                 $data[] = [
                     'dealt_service_title' => $product->name ?: \Configuration::get('DEALT_SERVICE_TITLE_DEFAULT'),
                     'dealt_service_price' => $servicePriceTtc ?: '939 €',
+                    'dealt_service_price_before' => $servicePriceTtcBefore,
                     'dealt_service_url' => self::getServiceUrl(),
                     'dealt_product_id' => $idProduct,
                     'dealt_service_product_id' => $idService,
@@ -781,7 +801,11 @@ class DealtHookHelper
                 $priceTtc = \Product::getPriceStatic($sid, true);
                 $serviceRow = self::getServiceRowByProductId($sid) ?: [];
 
-                if($length <= $serviceRow['longueur_max'] && $length >= $serviceRow['longueur_min']){
+                $checkIncludesLength = Db::getInstance()->getValue('SELECT d.includes_length FROM ' . _DB_PREFIX_ . 'dealt_service d
+                LEFT JOIN ' . _DB_PREFIX_ . 'product p ON p.reference = d.reference 
+                WHERE p.id_product = ' . $sid);
+
+                if($length <= $serviceRow['longueur_max'] && $length >= $serviceRow['longueur_min'] OR !(int)$checkIncludesLength){
                     $services[] = [
                         // Contexte main
                         'main_product_id'   => $checkIfPack && !empty($idPackMainProduct[0]['id_product']) && $mainId == $idPackMainProduct[0]['id_product'] && !empty($idPack) ? $idPack : $mainId,
