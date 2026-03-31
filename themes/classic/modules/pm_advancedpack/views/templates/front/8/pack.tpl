@@ -651,6 +651,7 @@
         {foreach from=$productsPackUnique item=productPack name=ckc_pack_list}
             {
                 key: "{$productPack.id_product|intval}:{($productPack.id_product_attribute|default:0)|intval}",
+                id_product_pack: {($productPack.id_product_pack|default:0)|intval},
                 id_product: {$productPack.id_product|intval},
                 id_product_attribute: {($productPack.id_product_attribute|default:0)|intval},
                 qty_in_pack: {$productPack.quantity|default:1|intval},

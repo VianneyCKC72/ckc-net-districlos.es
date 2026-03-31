@@ -205,6 +205,10 @@ class StockManager extends Module
                 'stock_pack_possible_platform' => (int) ($packPossiblePlatform ?? 0),
             ];
 
+            // Exposer aussi ces valeurs au niveau root (utile pour l'affichage, sans utiliser le stock du pack)
+            $response['stock_pack_possible_national'] = (int) ($packPossibleNational ?? 0);
+            $response['stock_pack_possible_platform'] = (int) ($packPossiblePlatform ?? 0);
+
             // Appliquer la règle "victime de son succès" sur les packs via stock possible du pack
             if ($stock_threshold !== null) {
                 if ($fin_de_vie) {
@@ -218,6 +222,107 @@ class StockManager extends Module
                 }
             }
         }
+
+        // i18n: centraliser les textes renvoyés au front (évite duplications PHP/JS)
+        $i18n = [
+            'stock_in_store' => $this->l('Stock en magasin'),
+            'fin_de_serie' => $this->l('Fin de série !'),
+            'order_fast_low_stock' => $this->l('Commandez vite, stock bas !'),
+            'victime_succes' => $this->l('Victime de son succès'),
+            'not_available' => $this->l('Ce produit n\'est plus disponible'),
+            'sold_out' => $this->l('Produit épuisé'),
+            'in_stock' => $this->l('En stock'),
+            'arrival' => $this->l('Arrivage en cours'),
+            'available_10_days' => $this->l('Disponible sous 10 jours'),
+            'change_store' => $this->l('Changer de magasin'),
+            'product_in_stock' => $this->l('produit(s) en stock'),
+        ];
+
+        // UI "source de vérité" (sans casser la logique existante côté JS)
+        $uiState = $response['victime_succes']
+            ? 'victime_succes'
+            : ($response['fin_de_vie']
+                ? 'fin_de_vie'
+                : ($response['fin_de_vie_national'] ? 'fin_de_vie_national' : 'normal'));
+
+        $isPackRequest = !empty($response['pack_items']) && is_array($response['pack_items']);
+        $packIsInStockNational = false;
+        if ($isPackRequest) {
+            // Stock pack possible national: min(floor(stock_item_national / qty_in_pack))
+            $packIsInStockNational = ((int)($response['stock_pack_possible_national'] ?? 0)) > 0;
+        }
+
+        $uiTitle = $i18n['stock_in_store'];
+        $uiSubtitle = '';
+        $uiStock = $response['total_quantity'] . ' en stock national';
+        $uiColor = null;
+        $uiImage = 'delivery.png';
+        $uiShowStoreButton = true;
+        $uiDisableCart = false;
+        $uiBlockQuantity = false;
+        $uiLimitToPlatformStock = false;
+        $uiLimitToTotalStock = false;
+
+        if ($uiState === 'victime_succes') {
+            $uiTitle = $i18n['victime_succes'];
+            $uiStock = $i18n['sold_out'];
+            $uiSubtitle = $i18n['not_available'];
+            $uiColor = '#ff144e';
+            $uiImage = 'deliveryFinDeVie.png';
+            $uiShowStoreButton = false;
+            $uiDisableCart = true;
+            $uiBlockQuantity = true;
+        } elseif ($uiState === 'fin_de_vie') {
+            $uiTitle = $i18n['fin_de_serie'];
+            $uiSubtitle = $i18n['order_fast_low_stock'];
+            $uiColor = '#ff144e';
+            $uiImage = 'deliveryFinDeVie.png';
+            $uiShowStoreButton = true;
+            $uiLimitToPlatformStock = true;
+
+            if ($isPackRequest) {
+                $uiStock = $packIsInStockNational ? $i18n['in_stock'] : $i18n['arrival'];
+            } else {
+                $uiStock = ((int)($response['platform_stock'] ?? 0)) . ' produits en stock';
+            }
+        } elseif ($uiState === 'fin_de_vie_national') {
+            $uiTitle = $i18n['fin_de_serie'];
+            $uiSubtitle = $i18n['order_fast_low_stock'];
+            $uiColor = '#ff144e';
+            $uiImage = 'deliveryFinDeVie.png';
+            $uiShowStoreButton = true;
+            $uiLimitToTotalStock = true;
+
+            if ($isPackRequest) {
+                $uiStock = $packIsInStockNational ? $i18n['in_stock'] : $i18n['arrival'];
+            } else {
+                $uiStock = ((int)($response['total_quantity'] ?? 0)) . ' produits en stock';
+            }
+        } else {
+            // normal
+            if ($isPackRequest) {
+                $uiStock = $packIsInStockNational ? $i18n['in_stock'] : $i18n['arrival'];
+            } else {
+                $uiStock = ((int)($response['total_quantity'] ?? 0) > 0 && !empty($response['seuil']))
+                    ? ((int)$response['total_quantity']) . ' en stock national'
+                    : $i18n['arrival'];
+            }
+        }
+
+        $response['i18n'] = $i18n;
+        $response['ui'] = [
+            'state' => $uiState,
+            'title' => $uiTitle,
+            'stock' => $uiStock,
+            'subtitle' => $uiSubtitle,
+            'color' => $uiColor,
+            'image' => $uiImage,
+            'showStoreButton' => (bool)$uiShowStoreButton,
+            'disableCart' => (bool)$uiDisableCart,
+            'blockQuantity' => (bool)$uiBlockQuantity,
+            'limitToPlatformStock' => (bool)$uiLimitToPlatformStock,
+            'limitToTotalStock' => (bool)$uiLimitToTotalStock,
+        ];
 
         return $response;
     }

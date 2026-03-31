@@ -275,6 +275,66 @@ body.ckc-shop-drawer-open {
 	width: 100%;
 }
 
+#modalSelectShop .ckc-cp-search--row {
+	display: flex;
+}
+
+#modalSelectShop .ckc-shop-drawer__cp-panel {
+	margin-bottom: 1rem;
+	padding-left: 15px;
+}
+
+#modalSelectShop .ckc-shop-drawer__stores-title {
+	margin-left: 15px;
+	font-weight: 500;
+}
+
+#modalSelectShop .ckc-shop-card {
+	border: 0;
+}
+
+#modalSelectShop .ckc-shop-card__title {
+	font-size: 14px;
+	text-align: left;
+	text-decoration: underline;
+	margin-bottom: 5px;
+}
+
+#modalSelectShop .ckc-shop-card__hint {
+	font-size: 14px;
+}
+
+#modalSelectShop .ckc-shop-card__stock {
+	color: #79c046;
+	font-weight: 200;
+	font-family: Roboto Thin, sans-serif;
+}
+
+#modalSelectShop .ckc-shop-card__stock-icon {
+	width: 20px;
+	margin-right: 1rem;
+}
+
+#modalSelectShop .ckc-shop-card__address {
+	font-size: 14px;
+	margin-bottom: 0;
+	display: none;
+}
+
+#modalSelectShop .ckc-shop-card__actions {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 5px;
+}
+
+#modalSelectShop .ckc-shop-card__btn {
+	font-size: 10px;
+}
+
+#modalSelectShop .ckc-shop-card__btn--hidden {
+	display: none;
+}
+
 #modalSelectShop .ckc-cp-search__icon {
 	position: absolute;
 	left: 10px;
