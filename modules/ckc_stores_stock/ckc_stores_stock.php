@@ -164,6 +164,8 @@ class Ckc_Stores_Stock extends Module
             'fin_de_vie' => $stockData['fin_de_vie'],
             'fin_de_vie_national' => isset($stockData['fin_de_vie_national']) ? $stockData['fin_de_vie_national'] : false,
             'victime_succes' => isset($stockData['victime_succes']) ? $stockData['victime_succes'] : false,
+            'ui' => isset($stockData['ui']) ? $stockData['ui'] : null,
+            'i18n' => isset($stockData['i18n']) ? $stockData['i18n'] : null,
         ]);
 
         return $this->fetch('module:ckc_stores_stock/views/templates/hook/displayStock.tpl');

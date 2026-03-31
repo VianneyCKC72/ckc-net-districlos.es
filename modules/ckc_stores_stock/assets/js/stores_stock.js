@@ -81,6 +81,50 @@ function NosMagasins() {
 // Variable pour stocker le timeout du debounce
 let fetchStockTimeout;
 
+/** Pack AP5 : #idCombination = JSON { id_product_pack: id_product_attribute } ; ckcPackList doit avoir id_product_pack (pack.tpl). */
+function getPackListFromIdCombination(fallbackPackList) {
+    const base = Array.isArray(fallbackPackList)
+        ? fallbackPackList
+        : (Array.isArray(window.ckcPackList) ? window.ckcPackList : []);
+
+    const $el = $('#idCombination');
+    if (!$el.length) return base;
+
+    let raw = ($el.val() || $el.attr('value') || '').toString().trim();
+    if (!raw) return base;
+    if (raw.includes('&quot;')) raw = raw.replaceAll('&quot;', '"');
+    if (raw.includes('&#34;')) raw = raw.replaceAll('&#34;', '"');
+
+    let comboMap;
+    try {
+        comboMap = JSON.parse(raw);
+    } catch (e) {
+        return base;
+    }
+    if (!comboMap || typeof comboMap !== 'object') return base;
+
+    return base.map(function (item) {
+        const pid = String(item.id_product);
+        const packLineKey = (item.id_product_pack != null && String(item.id_product_pack) !== '' && Number(item.id_product_pack) > 0)
+            ? String(item.id_product_pack)
+            : null;
+        let newIdpa = null;
+        if (packLineKey && Object.prototype.hasOwnProperty.call(comboMap, packLineKey)) {
+            newIdpa = comboMap[packLineKey];
+        } else if (Object.prototype.hasOwnProperty.call(comboMap, pid)) {
+            newIdpa = comboMap[pid];
+        }
+        const finalIdpa = (typeof newIdpa !== 'undefined' && newIdpa !== null)
+            ? Number(newIdpa)
+            : Number(item.id_product_attribute || 0);
+        return {
+            ...item,
+            id_product_attribute: finalIdpa,
+            key: `${Number(item.id_product)}:${finalIdpa}`,
+        };
+    });
+}
+
 function fetchStockData(isPack = false, packList = {}) {
     // Annuler l'appel précédent s'il existe
     clearTimeout(fetchStockTimeout);
@@ -92,12 +136,12 @@ function fetchStockData(isPack = false, packList = {}) {
         let dataProduct = $("#product-details").data('product');
         const isPackPage = ($('#is_pack').val() == '1') || ($('#is_pack').length > 0) || (Array.isArray(window.ckcPackList) && window.ckcPackList.length);
 
-        // Sur une page pack, toujours envoyer packList pour éviter un refresh "normal" qui écrase l'état pack
         if (isPackPage) {
             isPack = true;
-            if ((Array.isArray(window.ckcPackList) && window.ckcPackList.length) && (!Array.isArray(packList) || packList.length === 0)) {
-                packList = window.ckcPackList;
-            }
+            const base = (Array.isArray(packList) && packList.length)
+                ? packList
+                : (Array.isArray(window.ckcPackList) ? window.ckcPackList : []);
+            packList = $('#idCombination').length ? getPackListFromIdCombination(base) : base;
         }
 
         // Sur certaines pages (ex: pack advancedpack), #product-details n'a pas data('product').
@@ -113,7 +157,7 @@ function fetchStockData(isPack = false, packList = {}) {
         if (!dataProduct && !hasPackList) {
             return;
         }
-        
+
         $.post('/modules/ckc_stores_stock/ajax.php', {
             ajax: 1,
             id_product,
@@ -127,89 +171,13 @@ function fetchStockData(isPack = false, packList = {}) {
     }, 100);
 }
 
-// Configuration centralisée des états de stock
-const STOCK_STATES = {
-    victime_succes: {
-        title: "Victime de son succès",
-        subtitle: "Ce produit n'est plus disponible",
-        stock: "Produit épuisé",
-        color: "#ff144e",
-        image: 'deliveryFinDeVie.png',
-        showStoreButton: false,
-        disableCart: true,
-        blockQuantity: true
-    },
-    fin_de_vie: {
-        title: "Fin de série !",
-        subtitle: "Commandez vite, stock bas !",
-        stock: (qty, seuil, platformStock) => `${platformStock || 0} produits en stock`,
-        color: "#ff144e",
-        image: 'deliveryFinDeVie.png',
-        showStoreButton: true,
-        disableCart: false,
-        blockQuantity: false,
-        limitToPlatformStock: true
-    },
-    fin_de_vie_national: {
-        title: "Fin de série !",
-        subtitle: "Commandez vite, stock bas !",
-        stock: (qty, seuil, platformStock) => `${qty || 0} produits en stock`,
-        color: "#ff144e",
-        image: 'deliveryFinDeVie.png',
-        showStoreButton: true,
-        disableCart: false,
-        blockQuantity: false,
-        limitToTotalStock: true
-    },
-    normal: {
-        title: "Stock en magasin",
-        subtitle: "",
-        stock: (qty, seuil) => qty > 0 && seuil ? `${qty} en stock national` : "Arrivage en cours",
-        color: null,
-        image: 'delivery.png',
-        showStoreButton: true,
-        disableCart: false,
-        blockQuantity: false
-    }
-};
-
-// Cache du détail kit (sert à éviter qu'un refresh "non-pack" écrase l'affichage pack)
-let ckcLastPackItems = null;
-
 function updateStockDisplay(resp) {
     const $container = $('.blockDeliveryDisplayStock').parent();
     
-    // Si le backend fournit une UI calculée, on l'utilise (fallback sinon)
-    const ui = resp && resp.ui ? resp.ui : null;
-    const i18n = (resp && resp.i18n) ? resp.i18n : {};
-    const TXT = {
-        inStock: i18n.in_stock || "En stock",
-        arrival: i18n.arrival || "Arrivage en cours",
-        soldOut: i18n.sold_out || "Produit épuisé",
-        changeStore: i18n.change_store || "Changer de magasin",
-        available10Days: i18n.available_10_days || "Disponible sous 10 jours",
-        productInStock: i18n.product_in_stock || "produit(s) en stock",
-    };
-
-    // Déterminer l'état
-    let stateName = resp.victime_succes ? 'victime_succes' 
-        : (resp.fin_de_vie ? 'fin_de_vie' 
-        : (resp.fin_de_vie_national ? 'fin_de_vie_national' 
-        : 'normal'));
-
-    const isPackPage = ($('#is_pack').val() == '1') || ($('#is_pack').length > 0) || (Array.isArray(window.ckcPackList) && window.ckcPackList.length);
-    const packItemsForMain = (Array.isArray(resp && resp.pack_items) && resp.pack_items.length)
-        ? resp.pack_items
-        : (isPackPage ? ckcLastPackItems : null);
-    const packIsInStockNational = (isPackPage && Array.isArray(packItemsForMain) && packItemsForMain.length)
-        ? packItemsForMain.every(item => Number(item.total_quantity || 0) > 0)
-        : false;
-
-    if (ui && ui.state) {
-        stateName = ui.state;
-    }
-
-    const state = STOCK_STATES[stateName];
+    // Source de vérité unique: PHP (ui + i18n)
+    const ui = resp.ui;
+    const i18n = resp.i18n;
+    const stateName = ui.state;
     
     // Appliquer les classes CSS (même style que produits normaux)
     $container.removeClass('stock-special fin-de-vie victime-succes');
@@ -218,42 +186,23 @@ function updateStockDisplay(resp) {
     }
     
     // Mettre à jour les textes
-    $(".style_findevie").text(ui ? ui.title : state.title);
-    $(".style_findevie_thin").text(ui ? ui.subtitle : state.subtitle);
+    $(".style_findevie").text(ui.title);
+    $(".style_findevie_thin").text(ui.subtitle);
     
-    const stockText = ui
-        ? ui.stock
-        : (typeof state.stock === 'function' 
-            ? state.stock(resp.total_quantity, resp.seuil, resp.platform_stock) 
-            : state.stock);
-    $(".stock-display").text(stockText);
-
-    // Packs: adapter le "stock principal" (texte uniquement) - fallback si pas de ui backend
-    if (!ui && isPackPage && Array.isArray(packItemsForMain) && packItemsForMain.length) {
-        if (stateName === 'normal') {
-            $(".stock-display").text(packIsInStockNational ? TXT.inStock : TXT.arrival);
-        } else if (stateName === 'fin_de_vie' || stateName === 'fin_de_vie_national') {
-            $(".stock-display").text(packIsInStockNational ? TXT.inStock : TXT.arrival);
-        } else if (stateName === 'victime_succes') {
-            $(".stock-display").text(TXT.soldOut);
-        }
-    }
+    $(".stock-display").text(ui.stock);
     
     // Appliquer la couleur (même style que produits normaux)
-    const uiColor = ui ? ui.color : state.color;
-    if (uiColor) {
-        $(".stock-display").removeClass('text-secondary').attr('style', 'color: ' + uiColor + ' !important;');
+    if (ui.color) {
+        $(".stock-display").removeClass('text-secondary').attr('style', 'color: ' + ui.color + ' !important;');
     } else {
         $(".stock-display").addClass('text-secondary').removeAttr('style');
     }
     
     // Mettre à jour l'image
-    const uiImage = ui ? ui.image : state.image;
-    $(".blockDeliveryDisplayStock img").attr('src', '/modules/ckc_stores_stock/assets/img/' + uiImage);
+    $(".blockDeliveryDisplayStock img").attr('src', '/modules/ckc_stores_stock/assets/img/' + ui.image);
     
     // Gérer le bouton "Voir magasin"
-    const showStoreButton = ui ? !!ui.showStoreButton : state.showStoreButton;
-    if (showStoreButton) {
+    if (!!ui.showStoreButton) {
         $("#selectShop").css('display', 'block');
         $(".remove_findevie").css('display', 'block');
     } else {
@@ -262,8 +211,7 @@ function updateStockDisplay(resp) {
     }
     
     // Gérer le bouton "Ajouter au panier"
-    const disableCart = ui ? !!ui.disableCart : state.disableCart;
-    if (disableCart) {
+    if (!!ui.disableCart) {
         disableAddToCartButton();
     } else {
         enableAddToCartButton();
@@ -273,9 +221,9 @@ function updateStockDisplay(resp) {
     const $input = $('input[name="qty"], #quantity_wanted');
     const $buttons = $('.bootstrap-touchspin-up, .bootstrap-touchspin-down, .btn-touchspin, button.js-touchspin, .input-group-btn-vertical button, .product-quantity button, .qty button');
     
-    const blockQuantity = ui ? !!ui.blockQuantity : state.blockQuantity;
-    const limitToPlatformStock = ui ? !!ui.limitToPlatformStock : state.limitToPlatformStock;
-    const limitToTotalStock = ui ? !!ui.limitToTotalStock : state.limitToTotalStock;
+    const blockQuantity = !!ui.blockQuantity;
+    const limitToPlatformStock = !!ui.limitToPlatformStock;
+    const limitToTotalStock = !!ui.limitToTotalStock;
 
     if (blockQuantity) {
         // Bloquer complètement pour victime de succès
@@ -368,20 +316,14 @@ function updateStockDisplay(resp) {
     // Gestion magasin sélectionné
     updateStoreDisplay(resp);
     
-    // Mise à jour des stocks par magasin
-    if (Array.isArray(resp && resp.pack_items) && resp.pack_items.length) {
-        ckcLastPackItems = resp.pack_items;
-    }
-
-    const packItemsForStores = (Array.isArray(resp && resp.pack_items) && resp.pack_items.length)
-        ? resp.pack_items
-        : (isPackPage ? ckcLastPackItems : null);
+    const isPackPage = ($('#is_pack').val() == '1') || ($('#is_pack').length > 0) || (Array.isArray(window.ckcPackList) && window.ckcPackList.length);
+    const packItemsForStores = (Array.isArray(resp && resp.pack_items) && resp.pack_items.length) ? resp.pack_items : null;
 
     const isFinDeVieForStores = ui && ui.state
         ? (ui.state === 'fin_de_vie' || ui.state === 'fin_de_vie_national')
         : (resp.fin_de_vie || resp.fin_de_vie_national);
 
-    updateStoresModal(resp.stores, isFinDeVieForStores, packItemsForStores, (resp && resp.i18n) ? resp.i18n : {});
+    updateStoresModal(resp.stores, isFinDeVieForStores, packItemsForStores, i18n);
 }
 
 // Fonctions utilitaires pour le panier
@@ -425,18 +367,14 @@ function showQuantityLimitMessage(maxQty) {
 
 // Fonction pour gérer l'affichage du magasin sélectionné
 function updateStoreDisplay(resp) {
-    const i18n = (resp && resp.i18n) ? resp.i18n : {};
-    const TXT = {
-        arrival: i18n.arrival || "Arrivage en cours",
-        productInStock: i18n.product_in_stock || "produit(s) en stock",
-    };
+    const i18n = resp.i18n;
     if (resp.id_store) {
         $(".store-selected").show();
         $(".store-selected .nameStore").html(
             '<img src="/modules/ckc_stores_stock/assets/img/nameStore.webp" alt="Magasin" style="width: 50px; height: 50px;">' +
             '<span class="font-weight-normal">Votre magasin</span> <span class="font-weight-bold">Districlos ' + resp.store_name.replace('DISTRICLOS ', '').replace('Districlos ', '') + '</span><br>'
         );
-        $(".store-selected .productQuantity").html(resp.quantity > 0 ? `${resp.quantity} ${TXT.productInStock}` : TXT.arrival);
+        $(".store-selected .productQuantity").html(resp.quantity > 0 ? `${resp.quantity} ${i18n.product_in_stock}` : i18n.arrival);
         $("#modalProductStock-" + resp.id_store).html(getStockSvg(resp.quantity));
     } else {
         $(".store-selected").hide();
@@ -447,18 +385,25 @@ function updateStoreDisplay(resp) {
 function updateStoresModal(stores, isFinDeVie, packItems = null, i18n = {}) {
     const hasPackItems = Array.isArray(packItems) && packItems.length > 0;
     const outOfStockLabel = isFinDeVie
-        ? (i18n.available_10_days || "Disponible sous 10 jours")
-        : (i18n.arrival || "Arrivage en cours");
+        ? i18n.available_10_days
+        : i18n.arrival;
 
     stores.forEach(store => {
         if (hasPackItems) {
+            // Stock pack possible par magasin = min(floor(stock_item_magasin / qty_in_pack))
+            let packPossibleStore = null;
             const lines = packItems.map(item => {
                 const itemStore = Array.isArray(item.stores)
                     ? item.stores.find(s => Number(s.id) === Number(store.id))
                     : null;
                 const itemQty = itemStore ? Number(itemStore.stock) : 0;
                 const itemSeuil = itemStore ? !!itemStore.seuil : true;
-                const itemStatus = (itemQty > 0 && itemSeuil) ? `${itemQty} en stock` : outOfStockLabel;
+                const qtyInPack = Number(item.qty_in_pack || 1) > 0 ? Number(item.qty_in_pack || 1) : 1;
+                const possibleForItemStore = (itemQty > 0 && itemSeuil) ? Math.floor(itemQty / qtyInPack) : 0;
+                packPossibleStore = (packPossibleStore === null) ? possibleForItemStore : Math.min(packPossibleStore, possibleForItemStore);
+
+                // Afficher le stock pack possible pour ce composant (stock / qty du pack)
+                const itemStatus = (possibleForItemStore > 0) ? `${possibleForItemStore} en stock` : outOfStockLabel;
                 const itemName = (item.name || 'Produit').trim() || 'Produit';
                 return `
                     <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
@@ -473,7 +418,9 @@ function updateStoresModal(stores, isFinDeVie, packItems = null, i18n = {}) {
                 `;
             }).join('');
             const $el = $("#modalProductStock-" + store.id);
-            $el.addClass('ckc-modal-product-stock--pack').html(lines);
+            $el.addClass('ckc-modal-product-stock--pack').html(
+                lines
+            );
         } else {
             const stockText = store.stock > 0 && store.seuil ? `${store.stock} en stock` : outOfStockLabel;
             const $el = $("#modalProductStock-" + store.id);
@@ -486,7 +433,7 @@ function updateStoresModal(stores, isFinDeVie, packItems = null, i18n = {}) {
             // (les textes fin de vie / victime / packs sont gérés par updateStockDisplay)
             
             if (!isFinDeVie) {
-                $('#selectShop').text(i18n.change_store || 'Changer de magasin');
+                $('#selectShop').text(i18n.change_store);
             }
         }
     });
@@ -501,58 +448,6 @@ function getStockSvg(text) {
 
 
 $(document).ready(function () {
-    // Initialiser les contrôles au chargement
-    const $container = $('.blockDeliveryDisplayStock').parent();
-    const stockState = $container.data('stock-state');
-    const maxStock = parseInt($container.data('total-quantity'));
-    const platformStock = parseInt($container.data('platform-stock'));
-    
-    if (stockState && STOCK_STATES[stockState]) {
-        const state = STOCK_STATES[stockState];
-        const $input = $('input[name="qty"], #quantity_wanted');
-        const $buttons = $('.bootstrap-touchspin-up, .bootstrap-touchspin-down, .btn-touchspin, button.js-touchspin, .input-group-btn-vertical button, .product-quantity button, .qty button');
-        
-        // Appliquer les contrôles initiaux
-        if (state.disableCart) {
-            disableAddToCartButton();
-        }
-        
-        if (state.blockQuantity) {
-            // Bloquer complètement pour victime de succès
-            $input.attr('max', 0).val(0).prop('disabled', true);
-            $buttons.prop('disabled', true).addClass('disabled').css({'pointer-events': 'none', 'opacity': '0.5'});
-        } else if (state.limitToPlatformStock && platformStock) {
-            // Limiter au stock de la plateforme pour les produits fin de vie
-            $input.attr('max', platformStock);
-            
-            // Corriger si la quantité actuelle dépasse
-            const currentQty = parseInt($input.val());
-            if (currentQty > platformStock) {
-                $input.val(platformStock);
-                $input.trigger('change');
-                showQuantityLimitMessage(platformStock);
-            }
-            
-            // Ajouter un écouteur pour bloquer les saisies au-dessus du max avec debounce
-            let initInputTimeout;
-            $input.off('input.platformLimit').on('input.platformLimit', function() {
-                const $this = $(this);
-                const val = parseInt($this.val());
-                
-                if (val > platformStock) {
-                    $this.val(platformStock);
-                    showQuantityLimitMessage(platformStock);
-                    
-                    // Déclencher 'change' avec debounce pour éviter les rafraîchissements excessifs
-                    clearTimeout(initInputTimeout);
-                    initInputTimeout = setTimeout(function() {
-                        $this.trigger('change');
-                    }, 500); // Attendre 500ms après la dernière saisie
-                }
-            });
-        }
-    }
-    
     fetchStockData();
 
     prestashop.on('updatedProduct', function () {
@@ -591,6 +486,19 @@ $(document).ready(function () {
         fetchStockData(true, window.ckcPackList);
     }
 });
+
+// Pack: après changement de déclinaison, laisser AP5 mettre à jour #idCombination puis fetch (rebuild dans fetchStockData)
+function schedulePackStockRefreshFromCombination() {
+    const isPack = ($('#is_pack').val() == '1') || ($('#is_pack').length > 0);
+    if (!isPack) return;
+    requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+            fetchStockData(true, window.ckcPackList);
+        });
+    });
+}
+
+$(document).on('change input', '#idCombination, .ap5-attribute-select, select.product-combination', schedulePackStockRefreshFromCombination);
 
 
 // Icône info pour productLimit avec wrapper pour tooltip

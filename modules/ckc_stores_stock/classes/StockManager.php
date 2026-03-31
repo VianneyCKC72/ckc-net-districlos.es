@@ -205,6 +205,10 @@ class StockManager extends Module
                 'stock_pack_possible_platform' => (int) ($packPossiblePlatform ?? 0),
             ];
 
+            // Exposer aussi ces valeurs au niveau root (utile pour l'affichage, sans utiliser le stock du pack)
+            $response['stock_pack_possible_national'] = (int) ($packPossibleNational ?? 0);
+            $response['stock_pack_possible_platform'] = (int) ($packPossiblePlatform ?? 0);
+
             // Appliquer la règle "victime de son succès" sur les packs via stock possible du pack
             if ($stock_threshold !== null) {
                 if ($fin_de_vie) {
@@ -244,13 +248,8 @@ class StockManager extends Module
         $isPackRequest = !empty($response['pack_items']) && is_array($response['pack_items']);
         $packIsInStockNational = false;
         if ($isPackRequest) {
-            $packIsInStockNational = true;
-            foreach ($response['pack_items'] as $pi) {
-                if ((int)($pi['total_quantity'] ?? 0) <= 0) {
-                    $packIsInStockNational = false;
-                    break;
-                }
-            }
+            // Stock pack possible national: min(floor(stock_item_national / qty_in_pack))
+            $packIsInStockNational = ((int)($response['stock_pack_possible_national'] ?? 0)) > 0;
         }
 
         $uiTitle = $i18n['stock_in_store'];
