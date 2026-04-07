@@ -29,7 +29,7 @@
     </style>
     <section id="main">
         <meta content="{$product.url}">
-
+        {hook h='CETemplate' id=43}
         <div class="product-container js-product-container">
             <div class="row mb-5">
                 <div class="col-12">

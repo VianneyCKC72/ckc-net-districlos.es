@@ -351,20 +351,28 @@ where ord.id_order='$id_order'";
 
         //ajout produit customisation 09-02-23
         $monProduit = $row["product_id"];
-        $sql = "SELECT GROUP_CONCAT(CONCAT(OP.`name`,':', OP.`value`, ' / ', OP.`secondary_value`)) AS CustomValue, PO.`price` AS CustomPrice
+        $sql = "SELECT 
+            GROUP_CONCAT(CONCAT(OP.`name`,':', OP.`value`, ' / ', OP.`secondary_value`)) AS CustomValue,
+            COALESCE(
+                MAX(CASE WHEN OP.`name` = 'prix_sur_mesure' THEN OP.`value` END),
+                MAX(PO.`price`)
+            ) AS CustomPrice
         FROM ps_cart_product AS CP 
         INNER JOIN ps_dynamicproduct_input AS PO ON PO.`id_customization` = CP.`id_customization`
         INNER JOIN ps_dynamicproduct_input_field AS OP ON OP.`id_input` = PO.`id_input`
         LEFT JOIN ps_orders AS OA ON OA.`id_cart` = CP.`id_cart`
         WHERE (
-            (CP.`id_product` IN (1288, 1289, 1290) AND OP.`type` IN ('1', '12', '16', '8')) 
-            OR 
-            (CP.`id_product` NOT IN (1288, 1289, 1290) AND OP.`type` IN ('1', '12', '16'))
+            OP.`name` IN ('prix_sur_mesure', 'prix_final')
+            OR (
+                (CP.`id_product` IN (1288, 1289, 1290) AND OP.`type` IN ('1', '12', '16', '8')) 
+                OR 
+                (CP.`id_product` NOT IN (1288, 1289, 1290) AND OP.`type` IN ('1', '12', '16'))
+            )
         )
         AND OP.`id_field` != '0' 
         AND OA.`id_order` = '$id_order'
         AND CP.`id_product` = '$monProduit'
-        GROUP BY CP.`id_cart`, PO.`price`";
+        GROUP BY CP.`id_cart`";
 
         $nameProductCustom = Db::getInstance()->getRow($sql);
 
