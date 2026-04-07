@@ -163,6 +163,9 @@
 	.ckc-stores-stock-block__text {
 		text-align: left !important;
 	}
+	.ckc-stores-stock-block__cta {
+		text-align: center !important;
+	}
 }
 
 .blockDeliveryDisplayStock {
