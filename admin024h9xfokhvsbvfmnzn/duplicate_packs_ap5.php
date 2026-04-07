@@ -38,6 +38,13 @@ echo count($packs)." packs trouvés.\n\n";
 // On force les index à 0,1,2... pour éviter les tableaux "troués"
 $packs = array_values($packs);
 
+$simple_kits = [2299,2298,2296,2295,2297,2291,1390,1389,1356,1355,1354,1353,1352,1351,1350,1349,1348,1347,1953,2247,1956,2248,1957,1958,2249,2250,
+    2237,2239,2238,2240,2241,2242,2244,2245,2246,2252,2254,2255,2256,2257,2258,2259,2260,2261,22622263,2264,2265,2266,2267,2268,2269,2271,2224,2226,2227,2228,2235,2231,2225,2230,2234,2229,2232,2233,2287,
+    1936,1938,1939,1940,1941,1942,1944,1945,1946,1947,1948,1949,2272,2274,2276,2279,2280,2281,2273,2275,2277,2282,2283,2284];
+
+$cloture_composite = $db->executeS("SELECT id_product FROM ps_category_product WHERE id_category = 438");
+$cloture_alum_en_kit = $db->executeS("SELECT id_product FROM ps_category_product WHERE id_category = 216");
+
 echo "DEBUG KEYS: ";
 print_r(array_keys($packs));
 
@@ -271,6 +278,25 @@ function duplicateProductData($id_product, $shop_target, $shop_source){
     }
 }
 
+function duplicateProductImages($id_product, $shop_target, $shop_source){
+    $db = Db::getInstance();
+    $sourceShopImages = $db->executeS("SELECT id_image, cover FROM ps_image_shop WHERE id_product=".(int)$id_product." AND id_shop=".(int)$shop_source);
+
+    if(isset($sourceShopImages[0]['id_image'])){
+        foreach ($sourceShopImages as $sourceShopImage) {
+            $checkIfExists = $db->getValue("SELECT COUNT(*) FROM ps_image_shop WHERE id_product = ".(int)$id_product." AND id_shop=".(int)$shop_target." AND id_image=".(int)$sourceShopImage['id_image']);
+            if(!$checkIfExists){
+                echo "Image Create Info : image_id = ". $sourceShopImage['id_image'].'. Product : '.$id_product;
+                $sql = "INSERT INTO `ps_image_shop` (`id_product`, `id_image`, `id_shop`, `cover`) 
+                            VALUES ('".$id_product."', '".$sourceShopImage['id_image']."', '".$shop_target."', NULLIF(".(int)$sourceShopImage['cover'].",0))";
+                $create = Db::getInstance()->execute($sql);
+            } else {
+                echo "Image Exists : image_id = ". $sourceShopImage['id_image'].'. Product : '.$id_product;
+            }
+        }
+    }
+}
+
 function duplicateProductAttributes($id_product, $shop_target, $shop_source){
     $db = Db::getInstance();
     $sourceShopAttributes = $db->executeS("SELECT * FROM ps_product_attribute_shop WHERE id_product=".(int)$id_product." AND id_shop=".(int)$shop_source);
@@ -281,21 +307,15 @@ function duplicateProductAttributes($id_product, $shop_target, $shop_source){
             AND id_product_attribute=".(int)$sourceShopAttribute['id_product_attribute']);
             if(!$checkIfExists){
                 echo 'ProductAttribute Create INFO : '.$sourceShopAttribute['id_product_attribute'].' . Product : '.$id_product. '. Shop : '. $shop_target;
-                $createProductAttribute = Db::getInstance()->insert("product_attribute_shop", [
-                    'id_product'          => (int)$id_product,
-                    'id_product_attribute'      => (int)$sourceShopAttribute['id_product_attribute'],
-                    'id_shop' => (int)$shop_target,
-                    'wholesale_price' => (float)$sourceShopAttribute['wholesale_price'],
-                    'price' => (float)$sourceShopAttribute['price'],
-                    'ecotax' => (float)$sourceShopAttribute['ecotax'],
-                    'weight' => (float)$sourceShopAttribute['weight'],
-                    'unit_price_impact' => (float)$sourceShopAttribute['unit_price_impact'],
-                    'default_on' => (int)$sourceShopAttribute['default_on'],
-                    'minimal_quantity' => (int)$sourceShopAttribute['minimal_quantity'],
-                    'low_stock_threshold' => (int)$sourceShopAttribute['low_stock_threshold'],
-                    'low_stock_alert' => (int)$sourceShopAttribute['low_stock_alert'],
-                    'available_date' => pSQL($sourceShopAttribute['available_date'])
-                ]);
+
+                $sql = "INSERT INTO ps_product_attribute_shop (`id_product`, `id_product_attribute`, `id_shop`, `wholesale_price`, `price`, `ecotax`, `weight`, `unit_price_impact`, `default_on`,
+                        `minimal_quantity`, `low_stock_threshold`, `low_stock_alert`, `available_date`) 
+                        VALUES (".(int)$id_product.", ".(int)$sourceShopAttribute['id_product_attribute'].", ".(int)$shop_target.", ".(float)$sourceShopAttribute['wholesale_price'].",
+                        ".(float)$sourceShopAttribute['price'].", ".(float)$sourceShopAttribute['ecotax'].", ".(float)$sourceShopAttribute['weight'].", ".(float)$sourceShopAttribute['unit_price_impact'].",
+                        NULLIF(".(int)$sourceShopAttribute['default_on'].",0), ".(int)$sourceShopAttribute['minimal_quantity'].", NULLIF(".(int)$sourceShopAttribute['low_stock_threshold'].",0), 
+                        ".(int)$sourceShopAttribute['low_stock_alert'].", ".pSQL($sourceShopAttribute['available_date']).")";
+
+                $createProductAttribute = Db::getInstance()->execute($sql);
                 echo 'ProductAttribute Create : '.json_encode($createProductAttribute);
             } else {
                 echo 'ProductAttribute exists : '.$sourceShopAttribute['id_product_attribute'].' . Product : '.$id_product;
@@ -326,7 +346,7 @@ for ($i = 0; $i < count($packs); $i++) {
         duplicateProductToShop($id_product, $shop_target);
         duplicateSpecificPrices($id_product, $shop_target, $shop_source);
         duplicateProductData($id_product, $shop_target, $shop_source);
-        /*duplicateProductAttributes($id_product, $shop_target, $shop_source);*/
+        duplicateProductAttributes($id_product, $shop_target, $shop_source);
         duplicateAP5Data($id_pack_source, $id_product, $shop_target);
         /*duplicateAP5Products($id_pack_source, $id_product);*/
 
@@ -340,5 +360,84 @@ for ($i = 0; $i < count($packs); $i++) {
     }
 }
 
+foreach ($simple_kits as $product){
+
+    $id_product = (int)$product;
+
+    echo "-------------------------------\n";
+    echo "KIT (product $id_product)\n";
+    echo "-------------------------------\n";
+
+    try {
+        $db->execute("START TRANSACTION");
+
+        duplicateProductToShop($id_product, $shop_target);
+        duplicateSpecificPrices($id_product, $shop_target, $shop_source);
+        duplicateProductData($id_product, $shop_target, $shop_source);
+        duplicateProductImages($id_product, $shop_target, $shop_source);
+        duplicateProductAttributes($id_product, $shop_target, $shop_source);
+
+        $db->execute("COMMIT");
+
+        echo ">>> PACK $id_pack_source OK\n\n";
+
+    } catch (Exception $e) {
+        $db->execute("ROLLBACK");
+        echo "!!! ERREUR : ".$e->getMessage()."\n\n";
+    }
+
+}
+
+foreach ($cloture_composite as $product){
+    $id_product = (int)$product['id_product'];
+
+    echo "-------------------------------\n";
+    echo "KIT (product $id_product)\n";
+    echo "-------------------------------\n";
+
+    try {
+        $db->execute("START TRANSACTION");
+
+        duplicateProductToShop($id_product, $shop_target);
+        duplicateSpecificPrices($id_product, $shop_target, $shop_source);
+        duplicateProductData($id_product, $shop_target, $shop_source);
+        duplicateProductImages($id_product, $shop_target, $shop_source);
+        duplicateProductAttributes($id_product, $shop_target, $shop_source);
+
+        $db->execute("COMMIT");
+
+        echo ">>> KIT $id_product OK\n\n";
+
+    } catch (Exception $e) {
+        $db->execute("ROLLBACK");
+        echo "!!! ERREUR : ".$e->getMessage()."\n\n";
+    }
+}
+
+foreach ($cloture_alum_en_kit as $product){
+    $id_product = (int)$product['id_product'];
+
+    echo "-------------------------------\n";
+    echo "KIT (product $id_product)\n";
+    echo "-------------------------------\n";
+
+    try {
+        $db->execute("START TRANSACTION");
+
+        duplicateProductToShop($id_product, $shop_target);
+        duplicateSpecificPrices($id_product, $shop_target, $shop_source);
+        duplicateProductData($id_product, $shop_target, $shop_source);
+        duplicateProductImages($id_product, $shop_target, $shop_source);
+        duplicateProductAttributes($id_product, $shop_target, $shop_source);
+
+        $db->execute("COMMIT");
+
+        echo ">>> KIT $id_product OK\n\n";
+
+    } catch (Exception $e) {
+        $db->execute("ROLLBACK");
+        echo "!!! ERREUR : ".$e->getMessage()."\n\n";
+    }
+}
 echo "=== TERMINÉ ===\n";
 echo "</pre>";
