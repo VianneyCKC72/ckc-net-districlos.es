@@ -3689,12 +3689,22 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             Context::getContext()->currency->precision
         );
 
+        $useTax = (Product::getTaxCalculationMethod((int)($this->context->customer->id ?? 0)) != PS_TAX_EXC);
+        $packPriceWithReduction = AdvancedPack::getPackPrice($idPack, $useTax, true, true, _PS_PRICE_DISPLAY_PRECISION_, $packAttributesList, $packQuantityList, $packExcludeList, true);
+        $packPriceWithoutReduction = AdvancedPack::getPackPrice($idPack, $useTax, false, true, _PS_PRICE_DISPLAY_PRECISION_, $packAttributesList, $packQuantityList, $packExcludeList, true);
+
+        $productPresentation['price_amount'] = Tools::ps_round($packPriceWithReduction, Context::getContext()->currency->precision);
         $productPresentation['price'] = number_format(Tools::ps_round(
-            ($productPresentation['price_amount'] * $productPresentation['quantity_wanted']),
+            ($packPriceWithReduction * $quantityWanted),
             Context::getContext()->currency->precision
         ), 2, ',', ' '). ' €';
+        $productPresentation['regular_price'] = number_format(Tools::ps_round(
+            ($packPriceWithoutReduction * $quantityWanted),
+            Context::getContext()->currency->precision
+        ), 2, ',', ' '). ' €';
+        $productPresentation['has_discount'] = ($packPriceWithoutReduction > $packPriceWithReduction);
         $productPresentation['unit_price_full'] = Tools::ps_round(
-                ($productPresentation['price_amount']),
+                $packPriceWithReduction,
                 Context::getContext()->currency->precision
             ). ' €';
         $productPack->ecotax = AdvancedPack::getPackEcoTax($idPack, $packAttributesList);
