@@ -408,9 +408,14 @@ where ord.id_order='$id_order'";
                 $champs = $champs . $maCustomisation;
 
             }
-            // Si customisation : prends prix custom
+            // Si customisation : prends prix custom (recalcule le HT selon le taux de taxe de la ligne)
             if ($l == 'product_price' || $l == 'unit_price_tax_excl') {
-                $champs = number_format((float)($maCustomisationPrice / 1.2),3, '.', '');
+                $lineTaxRate = isset($row['tax_rate']) ? (float) $row['tax_rate'] : 20.0;
+                $divisor = 1 + ($lineTaxRate / 100);
+                if ($divisor <= 0) {
+                    $divisor = 1.2;
+                }
+                $champs = number_format((float) ($maCustomisationPrice / $divisor), 3, '.', '');
             }
             // SI TTC
             if ($l == 'unit_price_tax_incl') { // SI TTC

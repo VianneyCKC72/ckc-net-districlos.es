@@ -2386,6 +2386,11 @@ class AdvancedPack extends Product
                 }
 
                 self::addPackSpecificPrice($idPack, null, $idProductAttributeList);
+
+                Product::resetStaticCache();
+                SpecificPrice::flushCache();
+                Configuration::updateValue('CKC_SP_CACHE_NS_VERSION', (int)Configuration::get('CKC_SP_CACHE_NS_VERSION', 1) + 1);
+
                 pm_advancedpack::$_preventInfiniteLoop = false;
                 $jsonCartContent = [];
                 $jsonCartContent['id_product'] = (int) $idPack;

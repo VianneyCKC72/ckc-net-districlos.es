@@ -230,14 +230,14 @@ class ckc_shipping_estimatorcartshippingestimatorModuleFrontController extends M
                                 $carrier['price'] = $this->translator->trans('Free', [], 'Shop.Theme.Checkout');
                             } else {
                                 if ($include_taxes) {
-                                    $carrier['reduc'] = $priceFormatter->format(ceil(($carrier['price_with_tax'])) * 2);
-                                    $carrier['price'] = $priceFormatter->format($carrier['price_with_tax']);
+                                    $carrier['reduc'] = $priceFormatter->format(ceil(($carriers_list['total_price_with_tax'] + ($price * (1 + 20 / 100))) * 2));
+                                    $carrier['price'] = $priceFormatter->format($carriers_list['total_price_with_tax'] + ($price * (1 + 20 / 100)));
                                     if ($display_taxes_label) {
                                         $carrier['price'] = $this->translator->trans('%price% tax incl.', ['%price%' => $carrier['price']], 'Shop.Theme.Checkout');
                                     }
                                 } else {
-                                    $carrier['reduc'] = $priceFormatter->format(ceil(($carrier['price_without_tax'])) * 2);
-                                    $carrier['price'] = $priceFormatter->format($carrier['price_without_tax']);
+                                    $carrier['reduc'] = $priceFormatter->format(ceil(($carriers_list['total_price_without_tax'] + $price) * 2));
+                                    $carrier['price'] = $priceFormatter->format($carriers_list['total_price_without_tax'] + $price);
                                     if ($display_taxes_label) {
                                         $carrier['price'] = $this->translator->trans('%price% tax excl.', ['%price%' => $carrier['price']], 'Shop.Theme.Checkout');
                                     }
