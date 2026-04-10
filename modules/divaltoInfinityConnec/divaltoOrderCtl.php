@@ -185,14 +185,6 @@ where ord.id_order='$id_order'";
     $code_naf = $datas['code'];
     $code_sans_points = str_replace('.', '', $code_naf);
 
-    // Modification du payment pour MARKETPLACE LEROYMERLIN
-    $payment = $datas['payment'];
-    $carriername = $datas['carriername'];
-    if ($datas['carriername'] == 'MARKETPLACE LEROYMERLIN') {
-        $payment = 'Marketplace';
-        $carriername = 'Marketplace';
-    }
-
     $code_ldd = ($datas['Ref_Carrier_Divalto'] == 'LAD') ? 'LDD' : '';
 
     // ligne produits
@@ -319,7 +311,7 @@ where ord.id_order='$id_order'";
         $datas['other'], $datas['phoneliv'], $datas['mobileliv'], $datas['paysliv'],
         $datasi['aliasi'], $datasi['companyi'], $datasi['firstlivi'], $datasi['lastlivi'], $datasi['address1'], $datasi['address2'], $datasi['postcode'], $datasi['city'],
         $datasi['otheri'], $datasi['phonelivi'], $datasi['mobilelivi'], $datasi['payslivi'],
-        $datas['date_add'], "", "", $payment, $datas['cusemail'], $total_shipping_tax_excl, $carriername,
+        $datas['date_add'], "", "", $datas['payment'], $datas['cusemail'], $total_shipping_tax_excl, $datas['carriername'],
         $datas['total_discounts_tax_excl'], $datas['total_wrapping_tax_excl'],
         $diva_dossier, $datas['invoice_number'], $datas['invoice_date'],
         $datas['delivery_number'], $datas['delivery_date'], $datas['current_state'],
