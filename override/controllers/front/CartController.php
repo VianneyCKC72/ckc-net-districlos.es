@@ -1,5 +1,6 @@
 <?php
 use PrestaShop\PrestaShop\Adapter\Presenter\Cart\CartPresenter;
+use PrestaShop\PrestaShop\Core\Domain\Product\Stock\ValueObject\OutOfStockType;
 
 class CartController extends CartControllerCore
 {
@@ -68,6 +69,11 @@ class CartController extends CartControllerCore
 
         ) {
             if (Tools::getIsset('add') || Tools::getIsset('update')) {
+                // Blocage serveur instantané pour "victime de son succès"
+                // (évite la fenêtre de clic avant le retour AJAX du module ckc_stores_stock).
+                if ($this->shouldBlockAddToCartForVictimeSucces()) {
+                    return;
+                }
                 $this->processChangeProductInCart();
             } elseif (Tools::getIsset('delete')) {
                 $this->processDeleteProductInCart();
@@ -118,6 +124,73 @@ class CartController extends CartControllerCore
         } elseif (!$this->isTokenValid() && Tools::getValue('action') !== 'show' && !Tools::getValue('ajax')) {
             Tools::redirect('index.php');
         }
+    }
+
+    private function shouldBlockAddToCartForVictimeSucces(): bool
+    {
+        // Ne bloquer que les opérations "up" (ajout/augmentation) — jamais les suppressions.
+        $op = (string) Tools::getValue('op', 'up');
+        if ($op !== 'up') {
+            return false;
+        }
+
+        $idProduct = (int) $this->id_product;
+        if ($idProduct <= 0) {
+            return false;
+        }
+
+        // Déterminer une déclinaison si nécessaire (même logique que le core).
+        $idProductAttribute = (int) $this->id_product_attribute;
+        $product = new Product($idProduct, true, (int) $this->context->language->id);
+        if (!Validate::isLoadedObject($product) || !$product->active) {
+            return false;
+        }
+
+        if ($idProductAttribute === 0 && $product->hasAttributes()) {
+            $minimumQuantity = ($product->out_of_stock == OutOfStockType::OUT_OF_STOCK_DEFAULT)
+                ? !Configuration::get('PS_ORDER_OUT_OF_STOCK')
+                : !$product->out_of_stock;
+            $idProductAttribute = (int) Product::getDefaultAttribute($product->id, (int) $minimumQuantity);
+        }
+
+        if ($idProductAttribute <= 0) {
+            // Produit sans déclinaison ou déclinaison introuvable -> on laisse le core gérer.
+            return false;
+        }
+
+        // Vérifier l'état côté module (source de vérité métier pour "victime de succès").
+        $moduleFile = _PS_MODULE_DIR_ . 'ckc_stores_stock/classes/StockManager.php';
+        if (!is_file($moduleFile)) {
+            return false;
+        }
+        require_once $moduleFile;
+
+        try {
+            $stockManager = new StockManager();
+            $stockData = $stockManager->getStockData($idProduct, $idProductAttribute, null);
+        } catch (\Throwable $e) {
+            // Ne jamais bloquer le panier sur une erreur de calcul stock.
+            return false;
+        }
+
+        $isVictimeSucces = !empty($stockData['victime_succes'])
+            || (!empty($stockData['ui']) && !empty($stockData['ui']['disableCart']));
+
+        if (!$isVictimeSucces) {
+            return false;
+        }
+
+        $message = null;
+        if (!empty($stockData['i18n']['not_available'])) {
+            $message = (string) $stockData['i18n']['not_available'];
+        } elseif (!empty($stockData['i18n']['victime_succes'])) {
+            $message = (string) $stockData['i18n']['victime_succes'];
+        } else {
+            $message = 'Ce produit n\'est plus disponible';
+        }
+
+        $this->errors[] = $this->trans($message, [], 'Shop.Notifications.Error');
+        return true;
     }
     public function initContent()
     {
