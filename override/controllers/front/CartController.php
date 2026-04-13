@@ -1,6 +1,5 @@
 <?php
 use PrestaShop\PrestaShop\Adapter\Presenter\Cart\CartPresenter;
-use PrestaShop\PrestaShop\Core\Domain\Product\Stock\ValueObject\OutOfStockType;
 
 class CartController extends CartControllerCore
 {
@@ -139,20 +138,14 @@ class CartController extends CartControllerCore
             return false;
         }
 
-        // Déterminer une déclinaison si nécessaire (même logique que le core).
+        // Déterminer rapidement une déclinaison si nécessaire.
         $idProductAttribute = (int) $this->id_product_attribute;
-        $product = new Product($idProduct, true, (int) $this->context->language->id);
-        if (!Validate::isLoadedObject($product) || !$product->active) {
-            return false;
+        if ($idProductAttribute === 0) {
+            $idProductAttribute = (int) Tools::getValue('id_product_attribute', Tools::getValue('ipa', 0));
         }
-
-        if ($idProductAttribute === 0 && $product->hasAttributes()) {
-            $minimumQuantity = ($product->out_of_stock == OutOfStockType::OUT_OF_STOCK_DEFAULT)
-                ? !Configuration::get('PS_ORDER_OUT_OF_STOCK')
-                : !$product->out_of_stock;
-            $idProductAttribute = (int) Product::getDefaultAttribute($product->id, (int) $minimumQuantity);
+        if ($idProductAttribute === 0) {
+            $idProductAttribute = (int) Product::getDefaultAttribute($idProduct);
         }
-
         if ($idProductAttribute <= 0) {
             // Produit sans déclinaison ou déclinaison introuvable -> on laisse le core gérer.
             return false;
@@ -173,8 +166,7 @@ class CartController extends CartControllerCore
             return false;
         }
 
-        $isVictimeSucces = !empty($stockData['victime_succes'])
-            || (!empty($stockData['ui']) && !empty($stockData['ui']['disableCart']));
+        $isVictimeSucces = !empty($stockData['victime_succes']);
 
         if (!$isVictimeSucces) {
             return false;
