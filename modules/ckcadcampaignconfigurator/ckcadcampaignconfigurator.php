@@ -2134,7 +2134,7 @@ class Ckcadcampaignconfigurator extends Module
                     $promoFrancoImpact = number_format($campaign['franco_impact'], 0, '.', ' ');
                     break;
                 }
-            } else if ($customerGroupId == 10 && isset($campaign['franco_impact_pro']) && $checkDate && $campaign['active']){
+            } else if ($customerGroupId == 10 && isset($campaign['franco_impact_pro']) && $campaign['active']){
                 $promoFrancoImpact = number_format($campaign['franco_impact_pro'], 0, '.', ' ');
                 break;
             }
