@@ -2087,7 +2087,7 @@ class Ckcadcampaignconfigurator extends Module
 
         $today = date("Y-m-d H:i:s");
 
-        $getCampaigns =  Db::getInstance()->executeS('SELECT id, logo_path, id_client_group, active FROM ' . _DB_PREFIX_ . 'ckccampaign_config_list
+        $getCampaigns =  Db::getInstance()->executeS('SELECT id, logo_path, id_client_group, active FROM ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl
         WHERE ccl.date_start <= "'.$today.'" AND ccl.date_end > "'.$today.'" AND ccl.active = 1
         ORDER BY id ASC');
 
@@ -2112,7 +2112,7 @@ class Ckcadcampaignconfigurator extends Module
 
         $today = date("Y-m-d H:i:s");
 
-        $getCampaigns =  Db::getInstance()->executeS('SELECT id, franco_impact, franco_impact_pro, id_client_group, active FROM ' . _DB_PREFIX_ . 'ckccampaign_config_list 
+        $getCampaigns =  Db::getInstance()->executeS('SELECT id, franco_impact, franco_impact_pro, id_client_group, active FROM ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl
         WHERE ccl.date_start <= "'.$today.'" AND ccl.date_end > "'.$today.'" AND ccl.active = 1
         ORDER BY id ASC');
 
