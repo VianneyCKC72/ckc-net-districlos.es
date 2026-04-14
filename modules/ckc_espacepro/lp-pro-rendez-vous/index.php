@@ -75,6 +75,7 @@ function _lp_pro_send_mail(
     $recipients = [
         'commercial@districlos.com' => 'Commercial Districlos',
         'webmaster@districlos.com'  => 'Webmaster Districlos',
+        'jeremy.brochard@districlos.com' => 'Jeremy Brochard',
     ];
 
     $from     = 'formulaire@cloture-discount.fr';
