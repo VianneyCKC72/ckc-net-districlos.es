@@ -1697,17 +1697,18 @@ class Ckcadcampaignconfigurator extends Module
     {
         $customerGroupId = Context::getContext()->customer->id_default_group;
 
+        $today = date("Y-m-d H:i:s");
+
         $cartPromosSql = Db::getInstance()->executeS('SELECT ccc.*, ccl.id_client_group FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_cart ccc
-        LEFT JOIN ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccc.id_campaign');
+        LEFT JOIN ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccc.id_campaign 
+        WHERE ccl.date_start <= "'.$today.'" AND ccl.date_end > "'.$today.'" AND ccl.active = 1');
 
         $cartPromos = [];
 
         if (isset($cartPromosSql)){
             foreach ($cartPromosSql as $cartPromo){
 
-                $dateCheck = $this->checkPromoDate($cartPromo['id_campaign']);
-
-                if($cartPromo['active'] && in_array($customerGroupId, explode(',',$cartPromo['id_client_group'])) && $dateCheck){
+                if($cartPromo['active'] && in_array($customerGroupId, explode(',',$cartPromo['id_client_group']))){
                     $promoText = $cartPromo['text'];
 
                     if($cartPromo['is_fixed'] == 1){
@@ -1892,17 +1893,18 @@ class Ckcadcampaignconfigurator extends Module
 
         $product = Context::getContext()->controller->getTemplateVarProduct();
 
+        $today = date("Y-m-d H:i:s");
+
         $productPromosSql = Db::getInstance()->executeS('SELECT ccp.*, ccl.id_client_group FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_product ccp
-        LEFT JOIN ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccp.id_campaign');
+        LEFT JOIN ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccp.id_campaign 
+        WHERE ccl.date_start <= "'.$today.'" AND ccl.date_end > "'.$today.'" AND ccl.active = 1 AND ccp.active = 1');
 
         $productPromos = [];
 
         if(isset($productPromosSql)){
             foreach($productPromosSql as $productPromo){
 
-                $dateCheck = $this->checkPromoDate($productPromo['id_campaign']);
-
-                if($productPromo['active'] && in_array($customerGroupId, explode(',',$productPromo['id_client_group'])) && $dateCheck){
+                if(in_array($customerGroupId, explode(',',$productPromo['id_client_group']))){
                     if($productPromo['show_all']){
                         $productPromos[] = $productPromo;
                     } else {
@@ -1934,18 +1936,19 @@ class Ckcadcampaignconfigurator extends Module
 
         $categoryId = Context::getContext()->controller->getCategory()->id;
 
+        $today = date("Y-m-d H:i:s");
+
         $categoryPromosSql = Db::getInstance()->executeS('SELECT ccc.id, ccc.id_campaign, ccl.id_client_group, ccc.text as categoryText, ccc.background_color as categoryColor, ccc.active as categoryActive,ccc.show_all as categoryShowAll
         FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_category ccc
-        LEFT JOIN ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccc.id_campaign');
+        LEFT JOIN ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccc.id_campaign 
+        WHERE ccl.date_start <= "'.$today.'" AND ccl.date_end > "'.$today.'" AND ccl.active = 1');
 
         $categoryPromos = [];
 
         if(isset($categoryPromosSql)){
             foreach($categoryPromosSql as $categoryPromo){
 
-                $dateCheck = $this->checkPromoDate($categoryPromo['id_campaign']);
-
-                if($categoryPromo['categoryActive'] && in_array($customerGroupId, explode(',',$categoryPromo['id_client_group'])) && $dateCheck){
+                if($categoryPromo['categoryActive'] && in_array($customerGroupId, explode(',',$categoryPromo['id_client_group']))){
                     if($categoryPromo['categoryShowAll']){
                         $categoryPromos[] = $categoryPromo;
                     } else {
@@ -1975,15 +1978,17 @@ class Ckcadcampaignconfigurator extends Module
     {
         $customerGroupId = Context::getContext()->customer->id_default_group;
 
+        $today = date("Y-m-d H:i:s");
+
         $queryMenu = Db::getInstance()->executeS('SELECT ccm.id as idMenu, ccm.id_campaign, ccl.id_client_group, ccm.img_path as imgMenuPath, ccm.active as menuActive, ccm.link as menuLink FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_menu ccm
-        LEFT JOIN  ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccm.id_campaign');
+        LEFT JOIN  ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccm.id_campaign 
+        WHERE ccl.date_start <= "'.$today.'" AND ccl.date_end > "'.$today.'" AND ccl.active = 1');
 
         $menuPromos = [];
 
         if(isset($queryMenu)){
             foreach ($queryMenu as $menuPromo){
-                $dateCheck = $this->checkPromoDate($menuPromo['id_campaign']);
-                if($menuPromo['menuActive'] && in_array($customerGroupId, explode(',',$menuPromo['id_client_group'])) && $dateCheck){
+                if($menuPromo['menuActive'] && in_array($customerGroupId, explode(',',$menuPromo['id_client_group']))){
                     $menuPromos[] = $menuPromo;
                 }
             }
@@ -2003,15 +2008,17 @@ class Ckcadcampaignconfigurator extends Module
     {
         $customerGroupId = Context::getContext()->customer->id_default_group;
 
+        $today = date("Y-m-d H:i:s");
+
         $queryDevis = Db::getInstance()->executeS('SELECT ccd.id as idDevis, ccd.text as textDevis, ccd.id_campaign, ccl.id_client_group, ccd.background_color as colorDevis FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_devis ccd
-        LEFT JOIN  ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccd.id_campaign');
+        LEFT JOIN  ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccd.id_campaign 
+        WHERE ccl.date_start <= "'.$today.'" AND ccl.date_end > "'.$today.'" AND ccl.active = 1');
 
         $devisPromos = [];
 
         if(isset($queryDevis)){
             foreach($queryDevis as $devisPromo){
-                $dateCheck = $this->checkPromoDate($devisPromo['id_campaign']);
-                if(in_array($customerGroupId, explode(',',$devisPromo['id_client_group'])) && $dateCheck){
+                if(in_array($customerGroupId, explode(',',$devisPromo['id_client_group']))){
                     $devisPromos[] = $devisPromo;
                 }
             }
@@ -2030,15 +2037,17 @@ class Ckcadcampaignconfigurator extends Module
     {
         $customerGroupId = Context::getContext()->customer->id_default_group;
 
+        $today = date("Y-m-d H:i:s");
+
         $queryPromoPage = Db::getInstance()->executeS('SELECT ccpp.id as idPromoPage, ccpp.id_campaign, ccl.id_client_group, ccpp.text as promoPageText FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_promopage ccpp
-        LEFT JOIN  ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccpp.id_campaign');
+        LEFT JOIN  ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccpp.id_campaign 
+        WHERE ccl.date_start <= "'.$today.'" AND ccl.date_end > "'.$today.'" AND ccl.active = 1');
 
         $promoPagePromos = [];
 
         if(isset($queryPromoPage)){
             foreach($queryPromoPage as $promoPagePromo){
-                $dateCheck = $this->checkPromoDate($promoPagePromo['id_campaign']);
-                if(in_array($customerGroupId, explode(',',$promoPagePromo['id_client_group'])) && $dateCheck){
+                if(in_array($customerGroupId, explode(',',$promoPagePromo['id_client_group']))){
                     $promoPagePromos[] = $promoPagePromo;
                 }
             }
@@ -2076,14 +2085,15 @@ class Ckcadcampaignconfigurator extends Module
 
         $customerGroupId = Context::getContext()->customer->id_default_group;
 
+        $today = date("Y-m-d H:i:s");
+
         $getCampaigns =  Db::getInstance()->executeS('SELECT id, logo_path, id_client_group, active FROM ' . _DB_PREFIX_ . 'ckccampaign_config_list
+        WHERE ccl.date_start <= "'.$today.'" AND ccl.date_end > "'.$today.'" AND ccl.active = 1
         ORDER BY id ASC');
 
         foreach($getCampaigns as $campaign){
 
-            $checkDate = $this->checkPromoDate($campaign['id']);
-
-            if(in_array($customerGroupId, explode(',',$campaign['id_client_group'])) && $checkDate && $campaign['active'] && isset($campaign['logo_path']) && $campaign['logo_path'] != ""){
+            if(in_array($customerGroupId, explode(',',$campaign['id_client_group'])) && $campaign['active'] && isset($campaign['logo_path']) && $campaign['logo_path'] != ""){
 
                 Media::addJsDef(
                     array(
@@ -2100,16 +2110,17 @@ class Ckcadcampaignconfigurator extends Module
     public function hookDisplayPromoImpactFranco(){
         $customerGroupId = Context::getContext()->customer->id_default_group;
 
-        $getCampaigns =  Db::getInstance()->executeS('SELECT id, franco_impact, franco_impact_pro, id_client_group, active FROM ' . _DB_PREFIX_ . 'ckccampaign_config_list
+        $today = date("Y-m-d H:i:s");
+
+        $getCampaigns =  Db::getInstance()->executeS('SELECT id, franco_impact, franco_impact_pro, id_client_group, active FROM ' . _DB_PREFIX_ . 'ckccampaign_config_list 
+        WHERE ccl.date_start <= "'.$today.'" AND ccl.date_end > "'.$today.'" AND ccl.active = 1
         ORDER BY id ASC');
 
         $promoFrancoImpact = "1 499";
 
         foreach($getCampaigns as $campaign){
 
-            $checkDate = $this->checkPromoDate($campaign['id']);
-
-            if(in_array($customerGroupId, explode(',',$campaign['id_client_group'])) && $checkDate && $campaign['active'] && isset($campaign['franco_impact'])){
+            if(in_array($customerGroupId, explode(',',$campaign['id_client_group'])) && $campaign['active'] && isset($campaign['franco_impact'])){
 
                 if(in_array(10, explode(',',$campaign['id_client_group']))){
                     if($customerGroupId == 10 && isset($campaign['franco_impact_pro'])){
