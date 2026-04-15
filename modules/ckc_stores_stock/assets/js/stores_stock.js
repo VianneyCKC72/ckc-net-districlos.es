@@ -448,6 +448,12 @@ function getStockSvg(text) {
 
 
 $(document).ready(function () {
+    // UX: désactiver immédiatement si l'état est déjà rendu côté Smarty,
+    // sans attendre le debounce + l'appel AJAX.
+    const initialState = $('.ckc-stores-stock-block').data('stock-state');
+    if (String(initialState) === 'victime_succes') {
+        disableAddToCartButton();
+    }
     fetchStockData();
 
     prestashop.on('updatedProduct', function () {
