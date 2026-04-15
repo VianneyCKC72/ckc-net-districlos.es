@@ -38,7 +38,9 @@ class ckc_label extends Module
 
     private function createDatabaseTables()
     {
-        $sql = "CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . "ckc_labels` (
+
+        $sqls = [];
+        $sqls[] = "CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . "ckc_labels` (
             `id_label` INT(11) NOT NULL AUTO_INCREMENT,
             `color` VARCHAR(7) NOT NULL,
             `background_color` VARCHAR(7) NOT NULL,
@@ -46,24 +48,48 @@ class ckc_label extends Module
             `start_date` DATETIME DEFAULT NULL,
             `end_date` DATETIME DEFAULT NULL,
             `apply_to` VARCHAR(50) NOT NULL DEFAULT 'all',
-            `product_ids` TEXT DEFAULT NULL,
-            `category_ids` TEXT DEFAULT NULL,
             `active` TINYINT(1) NOT NULL DEFAULT 1,
             PRIMARY KEY (`id_label`)
         ) ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8;";
 
-        return Db::getInstance()->execute($sql);
+        $sqls[] ="CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . "ckc_labels_product`
+        (`id_label_product` INT(11) NOT NULL AUTO_INCREMENT,
+        `id_label` INT(11) NOT NULL,
+        `id_product` INT(11) NOT NULL,
+         PRIMARY KEY (`id_label_product`))
+        ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8;";
+
+        $sqls[] ="CREATE TABLE IF NOT EXISTS `" . _DB_PREFIX_ . "ckc_labels_category`
+        (`id_label_category` INT(11) NOT NULL AUTO_INCREMENT,
+        `id_label` INT(11) NOT NULL,
+        `id_category` INT(11) NOT NULL,
+        PRIMARY KEY (`id_label_category`))
+        ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8;";
+
+        foreach ($sqls as $sql){
+            $result = Db::getInstance()->execute($sql);
+        }
+
+        return $result;
     }
 
     private function deleteDatabaseTables()
     {
-        $sql = "DROP TABLE IF EXISTS `" . _DB_PREFIX_ . "ckc_labels`;";
+        $sqls = [];
+        $sqls[] = "DROP TABLE IF EXISTS `" . _DB_PREFIX_ . "ckc_labels`;";
+        $sqls[] = "DROP TABLE IF EXISTS `" . _DB_PREFIX_ . "ckc_labels_product`;";
+        $sqls[] = "DROP TABLE IF EXISTS `" . _DB_PREFIX_ . "ckc_labels_category`;";
 
-        return Db::getInstance()->execute($sql);
+        foreach ($sqls as $sql){
+            $result = Db::getInstance()->execute($sql);
+        }
+
+        return $result;
     }
 
     public function getContent()
     {
+
         $output = '';
 
         if (Tools::isSubmit('submitCkcLabelConfig')) {
@@ -282,6 +308,19 @@ class ckc_label extends Module
             $id_label = Tools::getValue('id_label');
             $label = Db::getInstance()->getRow('SELECT * FROM ' . _DB_PREFIX_ . 'ckc_labels WHERE id_label = ' . (int) $id_label);
 
+            if($label['apply_to'] == 'products'){
+                $product_ids_sql = Db::getInstance()->executeS('SELECT GROUP_CONCAT(DISTINCT `id_product` SEPARATOR ",") as id_product FROM ' . _DB_PREFIX_ . 'ckc_labels_product WHERE id_label = ' . (int) $id_label);
+                $product_ids = $product_ids_sql[0]['id_product'];
+                $category_ids = '';
+            } else if ($label['apply_to'] == 'categories'){
+                $product_ids = '';
+                $category_ids_sql = Db::getInstance()->executeS('SELECT GROUP_CONCAT(DISTINCT `id_category` SEPARATOR ",") as id_category FROM ' . _DB_PREFIX_ . 'ckc_labels_category WHERE id_label = ' . (int) $id_label);
+                $category_ids = $category_ids_sql[0]['id_category'];
+            } else {
+                $product_ids = '';
+                $category_ids = '';
+            }
+
             return [
                 'color' => $label['color'],
                 'background_color' => $label['background_color'],
@@ -290,8 +329,8 @@ class ckc_label extends Module
                 'end_date' => $label['end_date'],
                 'active' => $label['active'],
                 'apply_to' => $label['apply_to'],
-                'product_ids[]' => explode(',', $label['product_ids']),
-                'category_ids[]' => explode(',', $label['category_ids']),
+                'product_ids[]' => explode(',', $product_ids),
+                'category_ids[]' => explode(',', $category_ids),
             ];
         }
     }
@@ -345,6 +384,8 @@ class ckc_label extends Module
         foreach ($categories as $category) {
             $categoriesArray[] = $category[0];
         }
+
+
         $data = [
             'color' => Tools::getValue('color'),
             'background_color' => Tools::getValue('background_color'),
@@ -363,10 +404,65 @@ class ckc_label extends Module
             return $errors;
         }
 
+        $data = [
+            'color' => Tools::getValue('color'),
+            'background_color' => Tools::getValue('background_color'),
+            'text' => Tools::getValue('text'),
+            'start_date' => Tools::getValue('start_date'),
+            'end_date' => Tools::getValue('end_date'),
+            'active' => (int) Tools::getValue('active'),
+            'apply_to' => Tools::getValue('apply_to'),
+        ];
+
         if ($id_label) {
             Db::getInstance()->update('ckc_labels', $data, 'id_label = ' . (int) $id_label);
         } else {
             Db::getInstance()->insert('ckc_labels', $data);
+        }
+
+        $new_label = false;
+
+        if(!$id_label) {
+            $new_label = true;
+            $id_label_sql = Db::getInstance()->executeS('SELECT `id_label` FROM  `' . _DB_PREFIX_ . 'ckc_labels` 
+            WHERE `color` LIKE "'.$data["color"].'" AND 
+            `background_color` LIKE "'.$data["background_color"].'" AND
+            `text` LIKE "'.$data["text"].'" AND 
+            `start_date` LIKE "'.$data["start_date"].'" AND 
+            `end_date` LIKE "'.$data["end_date"].'" AND 
+            `apply_to` LIKE "'.$data["apply_to"].'"
+            ');
+
+            $id_label = $id_label_sql[0]['id_label'];
+        }
+
+        if(count($categoriesArray)){
+
+            if(!$new_label) {
+                Db::getInstance()->delete('ckc_labels_category', 'id_label = '.$id_label);
+            }
+            foreach(array_unique($categoriesArray) as $id_category){
+                $dataCategory = [
+                    'id_label' => $id_label,
+                    'id_category' => $id_category
+                ];
+                Db::getInstance()->insert('ckc_labels_category', $dataCategory);
+            }
+        }
+
+        $productsArray = array_unique(Tools::getValue('product_ids', []));
+        if(count($productsArray)){
+            if(!$new_label) {
+                Db::getInstance()->delete('ckc_labels_product', 'id_label = '.$id_label);
+            }
+
+            foreach($productsArray as $id_product){
+                $dataProduct = [
+                    'id_label' => $id_label,
+                    'id_product' => $id_product
+                ];
+                Db::getInstance()->insert('ckc_labels_product', $dataProduct);
+            }
         }
 
         return [];
@@ -375,18 +471,61 @@ class ckc_label extends Module
     private function deleteLabel($id_label)
     {
         Db::getInstance()->delete('ckc_labels', 'id_label = ' . (int) $id_label);
+        Db::getInstance()->delete('ckc_labels_product', 'id_label = ' . (int) $id_label);
+        Db::getInstance()->delete('ckc_labels_category', 'id_label = ' . (int) $id_label);
     }
 
     private function copyLabel($id_label){
 
         $labelInfo = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckc_labels WHERE id_label = ' . (int) $id_label);
+        $labelInfoProducts = Db::getInstance()->executeS('SELECT GROUP_CONCAT(DISTINCT `id_product` SEPARATOR ",") as id_product FROM ' . _DB_PREFIX_ . 'ckc_labels_product WHERE id_label = ' . (int) $id_label);
+        $labelInfoCategories = Db::getInstance()->executeS('SELECT GROUP_CONCAT(DISTINCT `id_category` SEPARATOR ",") as id_category FROM ' . _DB_PREFIX_ . 'ckc_labels_category WHERE id_label = ' . (int) $id_label);
 
         $date = date('Y-m-d H:i:s');
 
         $update = Db::getInstance()->execute('INSERT INTO ' . _DB_PREFIX_ . 'ckc_labels (`id_label`, `color`, `background_color`, `text`,
-         `start_date`, `end_date`, `apply_to`, `product_ids`, `category_ids`, `active`)
+         `start_date`, `end_date`, `apply_to`, `active`)
         VALUES (NULL, \'' . $labelInfo[0]['color'] . '\', \'' . $labelInfo[0]['background_color'] . '\', \'' . $labelInfo[0]['text'] . ' copie '.$date.'\',
-        \'' . $labelInfo[0]['start_date'] . '\', \'' . $labelInfo[0]['end_date'] . '\', \'' . $labelInfo[0]['apply_to'] . '\', \'' . $labelInfo[0]['product_ids'] . '\', \'' . $labelInfo[0]['category_ids'] . '\', 0)');
+        \'' . $labelInfo[0]['start_date'] . '\', \'' . $labelInfo[0]['end_date'] . '\', \'' . $labelInfo[0]['apply_to'] . '\', 0)');
+
+        $id_label_new_sql = Db::getInstance()->executeS('SELECT `id_label` FROM  `' . _DB_PREFIX_ . 'ckc_labels` 
+            WHERE `color` LIKE "'.$labelInfo[0]["color"].'" AND 
+            `background_color` LIKE "'.$labelInfo[0]["background_color"].'" AND
+            `text` LIKE "'.$labelInfo[0]['text'] . ' copie '.$date.'" AND 
+            `start_date` LIKE "'.$labelInfo[0]["start_date"].'" AND 
+            `end_date` LIKE "'.$labelInfo[0]["end_date"].'" AND 
+            `apply_to` LIKE "'.$labelInfo[0]["apply_to"].'"
+            ');
+
+        $id_label_new = $id_label_new_sql[0]['id_label'];
+
+        if(isset($labelInfoCategories[0]['id_category'])){
+            $categoriesArray = explode(',', $labelInfoCategories[0]['id_category']);
+
+            if(count(array_unique($categoriesArray))){
+                foreach(array_unique($categoriesArray) as $id_category){
+                    $dataCategory = [
+                        'id_label' => $id_label_new,
+                        'id_category' => $id_category
+                    ];
+                    Db::getInstance()->insert('ckc_labels_category', $dataCategory);
+                }
+            }
+        }
+
+        if(isset($labelInfoProducts[0]['id_product'])){
+            $productsArray = explode(',', $labelInfoProducts[0]['id_product']);
+
+            if(count(array_unique($productsArray))){
+                foreach(array_unique($productsArray) as $id_product){
+                    $dataProduct = [
+                        'id_label' => $id_label_new,
+                        'id_product' => $id_product
+                    ];
+                    Db::getInstance()->insert('ckc_labels_product', $dataProduct);
+                }
+            }
+        }
 
     }
 
@@ -413,19 +552,38 @@ class ckc_label extends Module
         $currentDate = date('Y-m-d H:i:s');
         $idProduct = (int) $product['id_product'];
         $idCategory = (int) $product['id_category_default'];
-        $sql = 'SELECT * 
-        FROM ' . _DB_PREFIX_ . 'ckc_labels 
-        WHERE active = 1
-          AND (
-              (apply_to = "products" AND FIND_IN_SET(' . $idProduct . ', product_ids)) 
-              OR 
-              (apply_to = "categories" AND FIND_IN_SET(' . $idCategory . ', category_ids))
-              OR
-              (apply_to = "all")
+        // $sql = 'SELECT *
+        // FROM ' . _DB_PREFIX_ . 'ckc_labels
+        // WHERE active = 1
+        //   AND (
+        //       (apply_to = "products" AND FIND_IN_SET(' . $idProduct . ', product_ids))
+        //       OR
+        //       (apply_to = "categories" AND FIND_IN_SET(' . $idCategory . ', category_ids))
+        //       OR
+        //       (apply_to = "all")
+        //   )
+        //   AND (start_date IS NULL OR start_date <= "' . pSQL($currentDate) . '")
+        //   AND (end_date IS NULL OR end_date >= "' . pSQL($currentDate) . '
+        //   LIMIT 1")';
+
+
+        $sql = 'SELECT l.*, p.id_product, c.id_category
+        FROM ' . _DB_PREFIX_ . 'ckc_labels l
+        LEFT JOIN ' . _DB_PREFIX_ . 'ckc_labels_product p ON p.id_label = l.id_label
+        LEFT JOIN ' . _DB_PREFIX_ . 'ckc_labels_category c ON c.id_label = l.id_label
+        WHERE l.active = 1 
+        AND (
+          (apply_to = "products" AND p.id_product = ' . $idProduct . ') 
+          OR 
+          (apply_to = "categories" AND c.id_category = ' . $idCategory . ')
+          OR
+          (apply_to = "all")
           )
           AND (start_date IS NULL OR start_date <= "' . pSQL($currentDate) . '")
           AND (end_date IS NULL OR end_date >= "' . pSQL($currentDate) . ' 
           LIMIT 1")';
+
+
         $labels = Db::getInstance()->executeS($sql);
 
         if ($env_pro) {
