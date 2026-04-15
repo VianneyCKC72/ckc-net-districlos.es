@@ -26,8 +26,8 @@
                         <span class="dealt-offer-title">
                             Besoin d'une pose ?
                         </span>
-                        <span class="dealt-offer-badge" aria-label="Promotion pose -5%" style="padding: 5px; border-radius: 20px; background: #ff144e; color: #ffffff; font-weight: 700; font-size: 12px; line-height: 1;">
-                            -5%
+                        <span class="dealt-offer-badge" aria-label="Promotion pose -10%" style="padding: 5px; border-radius: 20px; background: #ff144e; color: #ffffff; font-weight: 700; font-size: 12px; line-height: 1;">
+                            -10%
                         </span>
                         {if !empty($service.dealt_service_url)}
                             <a href="{$service.dealt_service_url|escape:'html':'UTF-8'}"

@@ -1067,6 +1067,11 @@ class Dealt extends Module
      */
     public function hookDisplayProductPromoInstallation($params)
     {
+        // Espace PRO : ne jamais afficher la promo "pose"
+        if ((int)$this->context->shop->id === 2) {
+            return '';
+        }
+
         $idProduct = isset($params['product']['id_product'])
             ? (int)$params['product']['id_product']
             : (int)Tools::getValue('id_product');

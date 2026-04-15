@@ -7,12 +7,14 @@ use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 class CkcProductReviews extends Module implements WidgetInterface
 {
     const CONFIG_MIN_RATING = 'CKC_REVIEWS_MIN_RATING';
+    const AV_BRAND_REVIEWS_URL = 'https://api.skeepers.io/verified-reviews/v1/published/brands/reviews';
+    const CACHE_TTL = 21600;
 
     public function __construct()
     {
         $this->name = 'ckcproductreviews';
         $this->author = 'Vianney - CKC NET';
-        $this->version = '1.0.0';
+        $this->version = '1.1.0';
         $this->bootstrap = true;
         $this->tab = 'front_office_features';
         $this->need_instance = true;
@@ -149,37 +151,48 @@ class CkcProductReviews extends Module implements WidgetInterface
 
     public function hookDisplayHome($params)
     {
-        $minRating = (int) Configuration::get(self::CONFIG_MIN_RATING);
         $enableCarousel = (int) Configuration::get('CKC_REVIEWS_ENABLE_CAROUSEL');
 
-
-        $sql = "SELECT DISTINCT *
-            FROM "._DB_PREFIX_."av_products_reviews
-            WHERE rate >= $minRating
-                        GROUP BY horodate_order
-            ORDER BY horodate DESC
-            LIMIT 10";
-
-        $results = Db::getInstance()->executeS($sql);
-
-        $infoTotal = file_get_contents("https://cl.avis-verifies.com/fr/cache/0/8/4/084cf537-ed41-0a34-15e7-e45715e81af8/AWS/084cf537-ed41-0a34-15e7-e45715e81af8_infosite.txt");
-
-        if(!empty($infoTotal)){
-            $infoArr = explode(";", $infoTotal);
-            $nb_reviews_12_months = $infoArr[0];
-        } else {
-            $nb_reviews_12_months = '';
+        $minRating = (int) Configuration::get(self::CONFIG_MIN_RATING);
+        if ($minRating < 1) {
+            $minRating = 4;
         }
 
-        // Préparation des avis
+        $allReviews = $this->getBrandReviewsFromApi();
+
+        // Dédoublonnage par référence commande + filtrage par note minimum
+        $seen = [];
         $reviews = [];
-        foreach ($results as $row) {
-            $row['customer_name'] = urldecode($row['customer_name']);
-            $row['date_experience'] = $row['horodate_order']; // On ajoute la date de commande avec un nom plus parlant
-            $reviews[] = $row;
+        foreach ($allReviews as $r) {
+            if ((int) ($r['review_rate'] ?? 0) < $minRating) {
+                continue;
+            }
+
+            $orderRef = $r['order_reference'] ?? '';
+            if (!empty($orderRef) && isset($seen[$orderRef])) {
+                continue;
+            }
+            $seen[$orderRef] = true;
+
+            $firstname = $r['author_firstname'] ?? '';
+            $lastname = $r['author_lastname'] ?? '';
+
+            $reviews[] = [
+                'rate' => $r['review_rate'],
+                // Le template applique urldecode() à l'affichage, on encode ici pour rester compatible
+                'review' => urlencode($r['review_content'] ?? ''),
+                'customer_name' => trim($firstname . ' ' . mb_substr($lastname, 0, 1) . '.'),
+                'horodate' => $r['publish_date'] ?? '',
+                'horodate_order' => $r['order_date'] ?? '',
+                'date_experience' => $r['order_date'] ?? '',
+            ];
+
+            if (count($reviews) >= 10) {
+                break;
+            }
         }
 
-
+        $nb_reviews_12_months = $this->getSiteReviewCount();
 
         $this->context->controller->addCSS($this->_path_assets.'ckcproductreviews.css');
         $this->context->controller->addJS($this->_path_assets.'ckcproductreviews.js');
@@ -190,6 +203,106 @@ class CkcProductReviews extends Module implements WidgetInterface
         ]);
 
         return $this->display(__FILE__, 'views/templates/hook/displayProductReviews.tpl');
+    }
+
+    /** Récupère les avis site/marque via la Published API Skeepers, avec cache fichier 6h. */
+    private function getBrandReviewsFromApi(): array
+    {
+        $cacheDir = _PS_MODULE_DIR_ . $this->name . '/cache/';
+        $cacheFile = $cacheDir . 'reviews_homepage.json';
+
+        if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < self::CACHE_TTL) {
+            $data = json_decode(file_get_contents($cacheFile), true);
+            if (is_array($data)) {
+                return $data;
+            }
+        }
+
+        $token = $this->getOAuthToken();
+        if ($token === null) {
+            return [];
+        }
+
+        $ch = curl_init(self::AV_BRAND_REVIEWS_URL . '?sort=review_date&desc=review_date&limit=30');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $token, 'Content-Type: application/json'],
+        ]);
+        $resp = curl_exec($ch);
+        $ok = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE) === 200;
+        curl_close($ch);
+
+        $reviews = ($ok && is_string($resp)) ? json_decode($resp, true) : null;
+        if (!is_array($reviews)) {
+            return [];
+        }
+
+        if (!is_dir($cacheDir)) {
+            @mkdir($cacheDir, 0755, true);
+        }
+        @file_put_contents($cacheFile, json_encode($reviews));
+        return $reviews;
+    }
+
+    /** Récupère le token OAuth depuis le cache dtc_skeepers ou le demande avec ses credentials. */
+    private function getOAuthToken(): ?string
+    {
+        $cached = Configuration::get('DTC_SKEEPERS_TOKEN');
+        $ts = (int) Configuration::get('DTC_SKEEPERS_TOKEN_TIMESTAMP');
+        if (!empty($cached) && $ts > 0 && (time() - $ts) < 240) {
+            return $cached;
+        }
+
+        // Credentials dtc_skeepers en priorité, sinon fallback sur ceux de netreviews
+        $apiKey = Configuration::get('DTC_SKEEPERS_API_KEY');
+        $apiSecret = Configuration::get('DTC_SKEEPERS_API_SECRET');
+        $authUrl = Configuration::get('DTC_SKEEPERS_AUTH_URL');
+
+        if (empty($apiKey) || empty($apiSecret)) {
+            $apiKey = Configuration::get('AV_CLIENTID');
+            $apiSecret = Configuration::get('AV_SECRETAPI');
+            $authUrl = 'https://auth.skeepers.io/am/oauth2/alpha/access_token';
+        }
+        if (empty($apiKey) || empty($apiSecret) || empty($authUrl)) {
+            return null;
+        }
+
+        $ch = curl_init($authUrl);
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_POSTFIELDS => http_build_query(['grant_type' => 'client_credentials', 'audience' => 'verified-reviews']),
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Basic ' . base64_encode($apiKey . ':' . $apiSecret),
+                'Content-Type: application/x-www-form-urlencoded',
+            ],
+        ]);
+        $resp = curl_exec($ch);
+        $ok = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE) === 200;
+        curl_close($ch);
+
+        $data = ($ok && is_string($resp)) ? json_decode($resp, true) : null;
+        if (empty($data['access_token'])) {
+            return null;
+        }
+
+        Configuration::updateValue('DTC_SKEEPERS_TOKEN', $data['access_token'], true);
+        Configuration::updateValue('DTC_SKEEPERS_TOKEN_TIMESTAMP', time(), true);
+        return $data['access_token'];
+    }
+
+    private function getSiteReviewCount(): string
+    {
+        $id = Configuration::get('DTC_SKEEPERS_WEBSITE_ID') ?: Configuration::get('AV_IDWEBSITE');
+        if (empty($id)) {
+            return '';
+        }
+        $p = str_split($id, 1);
+        $url = sprintf('https://cl.avis-verifies.com/fr/cache/%s/%s/%s/%s/AWS/%s_infosite.txt', $p[0], $p[1], $p[2], $id, $id);
+        $info = @file_get_contents($url);
+        return !empty($info) ? explode(';', $info)[0] : '';
     }
 
     public function hookActionProductSearchAfter(array &$params)

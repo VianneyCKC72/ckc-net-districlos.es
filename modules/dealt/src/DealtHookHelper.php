@@ -19,8 +19,18 @@ class DealtHookHelper
 {
 
     private const SERVICES_PARENT_CATEGORY_ID = 369;
+    private const PRO_SHOP_ID = 2;
 
     /* ============ PUBLIC: appelés par dealt.php ============ */
+
+    /**
+     * Règle métier simple : la "pose" (services Dealt) ne doit pas être proposée sur l'Espace PRO.
+     * (Le filtrage par catégories/groupes n'est pas appliqué par les requêtes SQL de ce module.)
+     */
+    private static function isProShop(Context $ctx): bool
+    {
+        return (int)($ctx->shop->id ?? 0) === self::PRO_SHOP_ID;
+    }
 
     public static function applyTvaOnPresentedCartProduct(Context $ctx, array &$p): void
     {
@@ -310,6 +320,11 @@ class DealtHookHelper
 
     public static function getServiceProductIds(\Context $ctx, ?int $mainProductId = null, int $serviceParentCategoryId = 369): array
     {
+        // Ne jamais proposer de services Dealt sur l'espace PRO
+        if (self::isProShop($ctx)) {
+            return [];
+        }
+
         // 1) Déduire l'id du produit principal
         $idMain = $mainProductId ?: self::resolveMainProductId($ctx);
         if (!$idMain) {
