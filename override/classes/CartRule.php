@@ -21,6 +21,9 @@
 
 class CartRule extends CartRuleCore
 {
+    // Cache statique pour les requêtes cart_product répétées
+    private static $cart_products_cache = [];
+
     /*
     * module: ets_promotion
     * date: 2025-04-03 10:54:57
@@ -123,5 +126,28 @@ class CartRule extends CartRuleCore
 
         // Fusionner les erreurs
         return array_merge($errors, $parentErrors);
+    }
+
+    /**
+     * Override de checkProductRestrictionsFromCart avec cache pour optimiser les requêtes cart_product
+     * Cette méthode est appelée plusieurs fois avec les mêmes paramètres pendant le checkout
+     */
+    public function checkProductRestrictionsFromCart(CartCore $cart, $returnProducts = false, $displayError = true, $alreadyInCart = false)
+    {
+        // Clé de cache basée sur les paramètres de la méthode
+        $cache_key = $cart->id . '_' . $this->id . '_' . (int)$returnProducts . '_' . (int)$displayError . '_' . (int)$alreadyInCart;
+
+        // Vérifier si le résultat est déjà en cache
+        if (isset(self::$cart_products_cache[$cache_key])) {
+            return self::$cart_products_cache[$cache_key];
+        }
+
+        // Appeler la méthode parente qui contient les requêtes SQL
+        $result = parent::checkProductRestrictionsFromCart($cart, $returnProducts, $displayError, $alreadyInCart);
+
+        // Mettre en cache le résultat
+        self::$cart_products_cache[$cache_key] = $result;
+
+        return $result;
     }
 }
