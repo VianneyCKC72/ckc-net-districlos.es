@@ -85,4 +85,22 @@ class Product extends ProductCore
             return $packProducts;
         }
     }
+
+    /**
+     * Override de getProductsProperties pour pré-charger les stocks en masse
+     * Réduit drastiquement les requêtes SQL stock_available (1000+ → 1)
+     */
+    public static function getProductsProperties($id_lang, $query_result)
+    {
+        // Extraire tous les id_product de la liste pour pré-charger les stocks
+        if (is_array($query_result) && !empty($query_result)) {
+            $product_ids = array_unique(array_column($query_result, 'id_product'));
+
+            // Pré-charger TOUS les stocks en UNE SEULE requête groupée
+            StockAvailable::preloadQuantitiesForProducts($product_ids);
+        }
+
+        // Appeler la méthode parente qui utilisera le cache pré-rempli
+        return parent::getProductsProperties($id_lang, $query_result);
+    }
 }

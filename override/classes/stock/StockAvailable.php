@@ -17,6 +17,44 @@ class StockAvailable extends StockAvailableCore
     private static $quantity_cache = [];
 
     /**
+     * Pré-charge les stocks pour plusieurs produits en UNE SEULE requête groupée
+     * À appeler avant de charger une liste de produits pour optimiser massivement
+     *
+     * @param array $product_ids Array de id_product
+     * @param int|null $id_shop Shop ID
+     */
+    public static function preloadQuantitiesForProducts(array $product_ids, $id_shop = null)
+    {
+        if (empty($product_ids)) {
+            return;
+        }
+
+        // Normaliser les IDs
+        $product_ids = array_map('intval', $product_ids);
+        $id_shop = $id_shop ?: (int)Context::getContext()->shop->id;
+
+        // Récupérer TOUS les stocks en une seule requête
+        $query = new DbQuery();
+        $query->select('id_product, id_product_attribute, SUM(quantity) as quantity');
+        $query->from('stock_available');
+        $query->where('id_product IN (' . implode(',', $product_ids) . ')');
+        $query = self::addSqlShopRestriction($query, $id_shop);
+        $query->groupBy('id_product, id_product_attribute');
+
+        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+
+        // Pré-remplir le cache statique
+        foreach ($results as $row) {
+            $static_key = (int)$row['id_product'] . '_' . (int)$row['id_product_attribute'] . '_' . $id_shop;
+            self::$quantity_cache[$static_key] = (int)$row['quantity'];
+
+            // Pré-remplir aussi le cache PrestaShop
+            $cache_id = 'StockAvailable::getQuantityAvailableByProduct_' . (int)$row['id_product'] . '-' . (int)$row['id_product_attribute'] . '-' . $id_shop;
+            Cache::store($cache_id, (int)$row['quantity']);
+        }
+    }
+
+    /**
      * Override de getQuantityAvailableByProduct avec double cache (statique + PrestaShop)
      * Requête appelée massivement depuis Product::getProductsProperties et modules
      */
