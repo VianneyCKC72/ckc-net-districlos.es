@@ -7,6 +7,12 @@ if (file_exists(_PS_MODULE_DIR_.'pm_advancedpack/AdvancedPack.php')) {
 }
 class DealtEligibilityModuleFrontController extends ModuleFrontController
 {
+    /**
+     * Cache statique pour éviter les vérifications répétées de l'installation de pm_advancedpack
+     * Remplace les requêtes SHOW TABLES LIKE coûteuses
+     */
+    private static $pm_advancedpack_installed = null;
+
     public function initContent()
     {
         parent::initContent();
@@ -161,12 +167,16 @@ class DealtEligibilityModuleFrontController extends ModuleFrontController
         }
     }
     public function checkIfPack($id_product){
-        $ifTable = Db::getInstance()->execute('SHOW TABLES LIKE "'._DB_PREFIX_.'pm_advancedpack"');
-        if(!$ifTable){
-            return false;
-        } else {
-            $check = Db::getInstance()->executeS('SELECT * FROM `'._DB_PREFIX_.'pm_advancedpack` WHERE `id_pack` = '.(int)$id_product.' AND id_shop = '.(int)Context::getContext()->shop->id);
-            return !empty($check[0]);
+        // Cache statique pour éviter de vérifier l'installation à chaque appel
+        if (self::$pm_advancedpack_installed === null) {
+            self::$pm_advancedpack_installed = Module::isInstalled('pm_advancedpack');
         }
+
+        if (!self::$pm_advancedpack_installed) {
+            return false;
+        }
+
+        $check = Db::getInstance()->executeS('SELECT * FROM `'._DB_PREFIX_.'pm_advancedpack` WHERE `id_pack` = '.(int)$id_product.' AND id_shop = '.(int)Context::getContext()->shop->id);
+        return !empty($check[0]);
     }
 }

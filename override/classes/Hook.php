@@ -24,6 +24,38 @@ class Hook extends HookScalizyOverride
      */
     private static $hooksManaged;
 
+<<<<<<< HEAD
+=======
+    /**
+     * Cache statique pour getAllHookIds - évite appels répétés au cache PrestaShop
+     * @var array
+     */
+    private static $all_hook_ids_cache = [];
+
+    /**
+     * Override de getAllHookIds avec cache statique pour optimiser les 40+ appels répétés
+     * Requête UNION lourde appelée massivement (232ms pour 40 appels)
+     */
+    private static function getAllHookIds(bool $withAliases = false, bool $refreshCache = false): array
+    {
+        // Clé de cache statique
+        $static_key = $withAliases ? 'with_aliases' : 'no_aliases';
+
+        // Vérifier le cache statique en mémoire (ultra-rapide)
+        if (!$refreshCache && isset(self::$all_hook_ids_cache[$static_key])) {
+            return self::$all_hook_ids_cache[$static_key];
+        }
+
+        // Appeler la méthode parente qui utilise déjà Cache::store/retrieve
+        $result = parent::getAllHookIds($withAliases, $refreshCache);
+
+        // Stocker dans le cache statique pour les appels suivants dans la même requête HTTP
+        self::$all_hook_ids_cache[$static_key] = $result;
+
+        return $result;
+    }
+
+>>>>>>> origin/dev
     public static function coreCallHook($module, $method, $params)
     {
         $timeStart = microtime(true);
