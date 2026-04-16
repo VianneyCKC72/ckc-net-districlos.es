@@ -24,8 +24,6 @@ class Hook extends HookScalizyOverride
      */
     private static $hooksManaged;
 
-<<<<<<< HEAD
-=======
     /**
      * Cache statique pour getAllHookIds - évite appels répétés au cache PrestaShop
      * @var array
@@ -55,7 +53,6 @@ class Hook extends HookScalizyOverride
         return $result;
     }
 
->>>>>>> origin/dev
     public static function coreCallHook($module, $method, $params)
     {
         $timeStart = microtime(true);
