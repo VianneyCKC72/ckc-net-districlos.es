@@ -357,12 +357,15 @@ class StockManager extends Module
 
         // Récupérer le magasin favori une seule fois
         $id_store = null;
-        if (!$this->context->customer->isLogged()) {
-            $id_store = $this->context->cookie->__get('favorite_store');
-        } else {
-            $id_store = Db::getInstance()->getValue('SELECT id_store FROM '._DB_PREFIX_.'ckc_favorite_stores WHERE id_customer = '.(int)$this->context->customer->id);
-            if (!$id_store) {
-                $id_store = null;
+        $context = $this->context ?? Context::getContext();
+        if ($context && isset($context->customer)) {
+            if (!$context->customer->isLogged()) {
+                $id_store = $context->cookie->__get('favorite_store');
+            } else {
+                $id_store = Db::getInstance()->getValue('SELECT id_store FROM '._DB_PREFIX_.'ckc_favorite_stores WHERE id_customer = '.(int)$context->customer->id);
+                if (!$id_store) {
+                    $id_store = null;
+                }
             }
         }
 
