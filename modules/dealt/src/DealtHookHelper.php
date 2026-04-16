@@ -17,6 +17,11 @@ use Tools;
 
 class DealtHookHelper
 {
+    /**
+     * Cache statique pour éviter les vérifications répétées de l'installation de pm_advancedpack
+     * Remplace les requêtes SHOW TABLES LIKE coûteuses
+     */
+    private static $pm_advancedpack_installed = null;
 
     private const SERVICES_PARENT_CATEGORY_ID = 369;
     private const PRO_SHOP_ID = 2;
@@ -226,10 +231,9 @@ class DealtHookHelper
 
     private static function isTvaAttestedForCart(int $idCart): bool
     {
+        // Table dealt_tva_attestation existe car le module est installé
+        // Pas besoin de SHOW TABLES LIKE à chaque appel
         $table = _DB_PREFIX_ . 'dealt_tva_attestation';
-        $exists = Db::getInstance()->executeS("SHOW TABLES LIKE '" . pSQL($table) . "'");
-        if (!$exists) return false;
-
         $sql = 'SELECT COUNT(*) FROM `' . bqSQL($table) . '` WHERE id_cart=' . (int)$idCart . ' AND is_validated=1';
         return (int)Db::getInstance()->getValue($sql) > 0;
     }
@@ -868,22 +872,26 @@ class DealtHookHelper
     }
 
     public static function checkIfPack($id_pack,$cart){
-        $ifTable = Db::getInstance()->execute('SHOW TABLES LIKE "'._DB_PREFIX_.'pm_advancedpack"');
-        if(!$ifTable){
+        // Cache statique pour éviter de vérifier l'installation à chaque appel
+        if (self::$pm_advancedpack_installed === null) {
+            self::$pm_advancedpack_installed = \Module::isInstalled('pm_advancedpack');
+        }
+
+        if (!self::$pm_advancedpack_installed) {
             return false;
-        } else {
-            $check = Db::getInstance()->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'pm_advancedpack` WHERE `id_pack` = ' . (int)$id_pack . ' AND id_shop = ' . (int)Context::getContext()->shop->id);
-            if(!empty($check[0])){
-                $packProducts = Db::getInstance()->executeS('SELECT pap.id_product FROM `'._DB_PREFIX_.'pm_advancedpack_products` pap WHERE pap.id_pack = '.(int)$id_pack);
-                $packProductsArr = array_map(fn($value) => $value['id_product'], $packProducts);
-                $cartProductsArr = array_map(fn($value) => $value['id_product'], $cart->getProducts());
-                $array_check = array_intersect($cartProductsArr, $packProductsArr);
-                if(count($array_check) == count($packProductsArr)){
-                    return true;
-                }
-            } else {
-                return false;
+        }
+
+        $check = Db::getInstance()->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'pm_advancedpack` WHERE `id_pack` = ' . (int)$id_pack . ' AND id_shop = ' . (int)Context::getContext()->shop->id);
+        if(!empty($check[0])){
+            $packProducts = Db::getInstance()->executeS('SELECT pap.id_product FROM `'._DB_PREFIX_.'pm_advancedpack_products` pap WHERE pap.id_pack = '.(int)$id_pack);
+            $packProductsArr = array_map(fn($value) => $value['id_product'], $packProducts);
+            $cartProductsArr = array_map(fn($value) => $value['id_product'], $cart->getProducts());
+            $array_check = array_intersect($cartProductsArr, $packProductsArr);
+            if(count($array_check) == count($packProductsArr)){
+                return true;
             }
+        } else {
+            return false;
         }
         return false;
     }
