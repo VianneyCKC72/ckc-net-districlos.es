@@ -1,6 +1,7 @@
 <?php
 abstract class Module extends ModuleCore
 {
+
     // Cache statique en mémoire pour éviter même les appels au système de cache PrestaShop
     private static $module_id_by_name_cache = [];
 
@@ -26,11 +27,11 @@ abstract class Module extends ModuleCore
 
         return $result;
     }
-
+    
     /*
     * module: scalizy
-    * date: 2026-04-15 14:47:53
-    * version: 3.16.0
+    * date: 2026-04-16 13:06:36
+    * version: 3.16.2
     */
     public function installOverrides()
     {
@@ -41,8 +42,8 @@ abstract class Module extends ModuleCore
     }
     /*
     * module: scalizy
-    * date: 2026-04-15 14:47:53
-    * version: 3.16.0
+    * date: 2026-04-16 13:06:36
+    * version: 3.16.2
     */
     public function uninstallOverrides()
     {
@@ -53,8 +54,8 @@ abstract class Module extends ModuleCore
     }
     /*
     * module: scalizy
-    * date: 2026-04-15 14:47:53
-    * version: 3.16.0
+    * date: 2026-04-16 13:06:36
+    * version: 3.16.2
     */
     public function addOverride($classname)
     {
@@ -68,8 +69,8 @@ abstract class Module extends ModuleCore
     }
     /*
     * module: scalizy
-    * date: 2026-04-15 14:47:53
-    * version: 3.16.0
+    * date: 2026-04-16 13:06:36
+    * version: 3.16.2
     */
     public function removeOverride($classname)
     {

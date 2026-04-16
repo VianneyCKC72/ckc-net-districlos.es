@@ -4,14 +4,14 @@ class DbPDO extends DbPDOCore
     
     /*
     * module: scalizy
-    * date: 2026-04-15 14:47:53
-    * version: 3.16.0
+    * date: 2026-04-16 13:06:36
+    * version: 3.16.2
     */
     private static $databaseStreamer = false;
     /*
     * module: scalizy
-    * date: 2026-04-15 14:47:53
-    * version: 3.16.0
+    * date: 2026-04-16 13:06:36
+    * version: 3.16.2
     */
     protected function _query($sql)
     {
@@ -38,8 +38,8 @@ class DbPDO extends DbPDOCore
      */
     /*
     * module: scalizy
-    * date: 2026-04-15 14:47:53
-    * version: 3.16.0
+    * date: 2026-04-16 13:06:36
+    * version: 3.16.2
     */
     public function executeS($sql, $array = true, $use_cache = true)
     {
@@ -56,8 +56,8 @@ class DbPDO extends DbPDOCore
      */
     /*
     * module: scalizy
-    * date: 2026-04-15 14:47:53
-    * version: 3.16.0
+    * date: 2026-04-16 13:06:36
+    * version: 3.16.2
     */
     private function getDatabaseStreamer(): ?Softizy\Module\Scalizy\Service\Profiler\Component\Database
     {
