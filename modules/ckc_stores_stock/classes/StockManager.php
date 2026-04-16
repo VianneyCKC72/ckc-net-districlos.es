@@ -18,6 +18,9 @@ class StockManager extends Module
         1079,
     ];
 
+    // Cache statique pour éviter les requêtes répétées
+    private static $stores_data_cache = [];
+
     public function getStockData($id_product, $id_product_attribute, $id_store, $packList = [])
     {
         // Charger le mapping de références pour les produits fin de vie
@@ -329,34 +332,58 @@ class StockManager extends Module
 
     public function getStoresData($id_product, $id_product_attribute)
     {
+        // Clé de cache basée sur le produit et sa déclinaison
+        $cache_key = $id_product . '_' . $id_product_attribute;
+
+        // Vérifier si les données sont déjà en cache
+        if (isset(self::$stores_data_cache[$cache_key])) {
+            return self::$stores_data_cache[$cache_key];
+        }
+
         $shops = Db::getInstance()->executeS('SELECT id_store, name FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
+
+        // Récupérer tous les stocks en UNE SEULE requête au lieu d'une par magasin
+        $stocks_by_store = [];
+        $stock_results = Db::getInstance()->executeS(
+            'SELECT id_store, quantity
+            FROM ' . _DB_PREFIX_ . 'ckcstockstores_stocks
+            WHERE id_product = ' . (int)$id_product . '
+            AND id_product_attribute = ' . (int)$id_product_attribute
+        );
+
+        foreach ($stock_results as $stock) {
+            $stocks_by_store[$stock['id_store']] = (int)$stock['quantity'];
+        }
+
+        // Récupérer le magasin favori une seule fois
+        $id_store = null;
+        if (!$this->context->customer->isLogged()) {
+            $id_store = $this->context->cookie->__get('favorite_store');
+        } else {
+            $id_store = Db::getInstance()->getValue('SELECT id_store FROM '._DB_PREFIX_.'ckc_favorite_stores WHERE id_customer = '.(int)$this->context->customer->id);
+            if (!$id_store) {
+                $id_store = null;
+            }
+        }
+
+        // Vérifier si la table ckcstorespresentation existe (une seule fois)
+        $table_exists = count(Db::getInstance()->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . 'ckcstorespresentation"')) > 0;
+
         $stores = [];
 
         foreach ($shops as $shop) {
             // Mapping spécial : Store Essonne (19) utilise le stock du Store Seine et Marne (14) pour l'affichage dans la modal
             $store_id_for_stock = ($shop['id_store'] == 19) ? 14 : $shop['id_store'];
-            $quantity_by_store = Db::getInstance()->getValue('SELECT quantity FROM ' . _DB_PREFIX_ . 'ckcstockstores_stocks WHERE id_product = ' . (int)$id_product . ' AND id_product_attribute = ' . (int)$id_product_attribute . ' AND id_store = ' . (int)$store_id_for_stock);
-            // Gérer les valeurs null/false
-            $quantity_by_store = ($quantity_by_store !== false && $quantity_by_store !== null) ? (int)$quantity_by_store : 0;
-
-            $id_store = null;
-            if (!$this->context->customer->isLogged()) {
-                $id_store = $this->context->cookie->__get('favorite_store');
-            }else{
-                $id_store = Db::getInstance()->getValue('SELECT id_store FROM '._DB_PREFIX_.'ckc_favorite_stores WHERE id_customer = '.(int)$this->context->customer->id);
-                if (!$id_store) {
-                    $id_store = null;
-                }
-            }
+            $quantity_by_store = isset($stocks_by_store[$store_id_for_stock]) ? $stocks_by_store[$store_id_for_stock] : 0;
 
             $selected = $id_store && $id_store == $shop['id_store'];
 
             $address = '';
             $zip_code = '';
             $ville = '';
-            $result = Db::getInstance()->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . 'ckcstorespresentation"');
-            if (count($result) > 0) {
-                $storePresentation = Db::getInstance()->getRow('SELECT * FROM ' . _DB_PREFIX_ . 'ckcstorespresentation WHERE id_multiboutique = ' . (int)$shop['id_store']);
+
+            if ($table_exists) {
+                $storePresentation = Db::getInstance()->getRow('SELECT adresse, code_postal, ville FROM ' . _DB_PREFIX_ . 'ckcstorespresentation WHERE id_multiboutique = ' . (int)$shop['id_store']);
                 if ($storePresentation) {
                     $address = $storePresentation['adresse'].'<br>'.$storePresentation['code_postal'].' '.$storePresentation['ville'];
                     $ville = $storePresentation['ville'];
@@ -377,6 +404,9 @@ class StockManager extends Module
                 'ville' => $ville,
             ];
         }
+
+        // Mettre en cache le résultat
+        self::$stores_data_cache[$cache_key] = $stores;
 
         return $stores;
     }
