@@ -13,6 +13,37 @@ if (!defined('_PS_VERSION_')) {
 
 class StockAvailable extends StockAvailableCore
 {
+    // Cache statique en mémoire pour éviter même les appels au système de cache PrestaShop
+    private static $quantity_cache = [];
+
+    /**
+     * Override de getQuantityAvailableByProduct avec double cache (statique + PrestaShop)
+     * Requête appelée massivement depuis Product::getProductsProperties et modules
+     */
+    public static function getQuantityAvailableByProduct($id_product = null, $id_product_attribute = null, $id_shop = null)
+    {
+        // Normaliser id_product_attribute
+        if ($id_product_attribute === null) {
+            $id_product_attribute = 0;
+        }
+
+        // Clé de cache statique
+        $static_key = (int)$id_product . '_' . (int)$id_product_attribute . '_' . (int)$id_shop;
+
+        // Vérifier le cache statique en mémoire (ultra-rapide)
+        if (isset(self::$quantity_cache[$static_key])) {
+            return self::$quantity_cache[$static_key];
+        }
+
+        // Appeler la méthode parente qui utilise déjà Cache::store/retrieve
+        $result = parent::getQuantityAvailableByProduct($id_product, $id_product_attribute, $id_shop);
+
+        // Stocker dans le cache statique pour les appels suivants dans la même requête HTTP
+        self::$quantity_cache[$static_key] = $result;
+
+        return $result;
+    }
+
     public static function getStockAvailableIdByProductId($id_product, $id_product_attribute = null, $id_shop = null)
     {
         if (!Validate::isUnsignedId($id_product)) {
