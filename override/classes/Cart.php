@@ -11,6 +11,8 @@ if (!defined('_PS_VERSION_')) {
 }
 class Cart extends CartCore
 {
+    // Cache statique pour éviter les requêtes répétées de getProductQuantity
+    private static $product_quantity_cache = [];
 
     public function __construct($id = null, $id_lang = null, $id_currency = null)
     {
@@ -207,5 +209,36 @@ class Cart extends CartCore
         );
 
         return $cache[$idCart];
+    }
+
+    /**
+     * Override de getProductQuantity avec cache pour optimiser les performances
+     * Cette requête est appelée massivement (434ms × centaines de fois)
+     *
+     * @param int $idProduct Product ID
+     * @param int $idProductAttribute Product Attribute ID
+     * @param int|bool $idCustomization Customization ID
+     * @param int $idAddressDelivery Delivery Address ID
+     *
+     * @return array quantity index: number of product in cart without counting those of pack in cart
+     *               deep_quantity index: number of product in cart counting those of pack in cart
+     */
+    public function getProductQuantity($idProduct, $idProductAttribute = 0, $idCustomization = 0, $idAddressDelivery = 0)
+    {
+        // Clé de cache basée sur tous les paramètres
+        $cache_key = $this->id . '_' . (int)$idProduct . '_' . (int)$idProductAttribute . '_' . (int)$idCustomization . '_' . (int)$idAddressDelivery;
+
+        // Vérifier si les données sont déjà en cache
+        if (isset(self::$product_quantity_cache[$cache_key])) {
+            return self::$product_quantity_cache[$cache_key];
+        }
+
+        // Appeler la méthode parente (requête SQL complexe)
+        $result = parent::getProductQuantity($idProduct, $idProductAttribute, $idCustomization, $idAddressDelivery);
+
+        // Mettre en cache le résultat
+        self::$product_quantity_cache[$cache_key] = $result;
+
+        return $result;
     }
 }
