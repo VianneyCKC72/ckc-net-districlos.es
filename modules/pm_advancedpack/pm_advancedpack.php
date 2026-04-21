@@ -768,6 +768,14 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
         if (self::DEBUG) {
             $params['order']->delete();
         }
+
+        Db::getInstance()->execute(
+            'UPDATE `' . _DB_PREFIX_ . 'pm_advancedpack_cart_products`
+            SET `id_order`=' . (int) $order->id . '
+            WHERE `id_cart`=' . (int) $cart->id . '
+            AND `id_order` IS NULL'
+        );
+
         $orderHasPack = $outOfStock = $orderHasNoTaxPack = $orderHasPackWithEcotax = false;
         list($vatAddress, $useTax) = AdvancedPack::getAddressInstance();
         $vatAddress = new Address((int)$order->{Configuration::get('PS_TAX_ADDRESS_TYPE')});

@@ -2313,16 +2313,42 @@ class AdvancedPack extends Product
         if (self::isValidPack($idPack, true, $packExcludeList)) {
             self::checkCustomizationErrors($idPack, $customizationList, $moduleInstance, true, $packExcludeList);
             $resPackAdd = true;
+            $context = Context::getContext();
+            if (!count($idProductAttributeList)) {
+                $idProductAttributeList = self::getIdProductAttributeListByIdPack((int)$idPack);
+            }
+            ksort($idProductAttributeList);
+
+            if (is_array($quantityList)) {
+                ksort($quantityList);
+            }
+            if (is_array($customizationList)) {
+                ksort($customizationList);
+            }
+            if (is_array($packExcludeList)) {
+                sort($packExcludeList);
+            }
+
+            $packUniqueHash = md5(
+                (int) $context->cookie->id_cart
+                . '-' . (int) $idPack
+                . '-' . serialize($idProductAttributeList)
+                . (count($customizationList) ? serialize($customizationList) : '')
+                . (count($quantityList) ? serialize($quantityList) : '')
+                . (count($packExcludeList) ? serialize($packExcludeList) : '')
+            );
+            $idProductAttributePack = self::addCustomPackProductAttribute((int)$idPack, $idProductAttributeList, $packUniqueHash);
+
             $packProducts = self::getPackContent($idPack, null, true, [], $quantityList);
             $totalPackPrice = 0;
             $reductionAmountTable = $reductionPercentageTable = [];
             $forceReductionByAmount = false;
             if (AdvancedPackCoreClass::_isFilledArray($packProducts)) {
-                $context = Context::getContext();
                 $useTax = (Product::getTaxCalculationMethod($context->customer->id) != PS_TAX_EXC);
                 $explodedProductList = [];
                 $idAddressDelivery = (int)Tools::getValue('id_address_delivery');
                 pm_advancedpack::$_preventInfiniteLoop = true;
+                $acpValues = [];
                 foreach ($packProducts as $k => &$packProduct) {
                     if (in_array((int)$packProduct['id_product_pack'], $packExcludeList)) {
                         unset($packProducts[$k]);
@@ -2330,6 +2356,17 @@ class AdvancedPack extends Product
                     }
                     $productPackIdAttribute = (isset($idProductAttributeList[(int)$packProduct['id_product_pack']]) ? $idProductAttributeList[(int)$packProduct['id_product_pack']] : (int)$packProduct['default_id_product_attribute']);
                     $packProduct['id_product_attribute'] = $productPackIdAttribute;
+                    $packCustomizationList = (isset($customizationList[(int)$packProduct['id_product_pack']]) ? $customizationList[(int)$packProduct['id_product_pack']] : null);
+                    $acpValues[] = '('
+                        . (int) $context->cookie->id_cart . ', '
+                        . (int) $context->shop->id . ', '
+                        . (int) $idPack . ', '
+                        . (int) $packProduct['id_product_pack'] . ', '
+                        . (int) $idProductAttributePack . ', '
+                        . (int) $productPackIdAttribute . ', "'
+                        . pSQL($packUniqueHash) . '", '
+                        . (AdvancedPackCoreClass::_isFilledArray($packCustomizationList) ? '"' . pSQL(json_encode($packCustomizationList)) . '"' : 'NULL')
+                        . ')';
                     if (isset($customizationList[(int)$packProduct['id_product_pack']])) {
                         foreach ($customizationList[(int)$packProduct['id_product_pack']] as $idCustomizationField => $customizationValue) {
                             if (!Tools::strlen($customizationValue)) {
@@ -2383,6 +2420,14 @@ class AdvancedPack extends Product
                         $sp->price = -1;
                         $sp->add();
                     }
+                }
+
+                if (AdvancedPackCoreClass::_isFilledArray($acpValues)) {
+                    $resPackAdd &= Db::getInstance()->execute(
+                        'INSERT IGNORE INTO `' . _DB_PREFIX_ . 'pm_advancedpack_cart_products`
+                        (`id_cart`, `id_shop`, `id_pack`, `id_product_pack`, `id_product_attribute_pack`, `id_product_attribute`, `unique_hash`, `customization_infos`)
+                        VALUES ' . implode(',', $acpValues)
+                    );
                 }
 
                 self::addPackSpecificPrice($idPack, null, $idProductAttributeList);
