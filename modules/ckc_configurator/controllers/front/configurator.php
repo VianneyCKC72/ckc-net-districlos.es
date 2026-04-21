@@ -236,10 +236,10 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
                     if(count($services)){
                         foreach ($services as $key => $service) {
                             if(!empty($service['dealt_service_product_id'])){
-                                $serviceId = $service['dealt_service_product_id'];
+                                /*$serviceId = $service['dealt_service_product_id'];
                                 $serviceTitleSQL = Db::getInstance()->executeS('SELECT pl.name FROM `' . _DB_PREFIX_ . 'product_lang` pl
-                            WHERE pl.`id_product` = ' . $serviceId);
-                                $serviceTitle = $serviceTitleSQL[0]['name'];
+                                    WHERE pl.`id_product` = ' . $serviceId);*/
+                                $serviceTitle = $service['dealt_service_title'];
                                 $serviceTitles[$key] = $serviceTitle;
                             }
                         }
@@ -362,10 +362,10 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
             if(count($services)){
                 foreach ($services as $key => $service) {
                     if(!empty($service['dealt_service_product_id'])){
-                        $serviceId = $service['dealt_service_product_id'];
+                        /*$serviceId = $service['dealt_service_product_id'];
                         $serviceTitleSQL = Db::getInstance()->executeS('SELECT pl.name FROM `' . _DB_PREFIX_ . 'product_lang` pl
-                            WHERE pl.`id_product` = ' . $serviceId);
-                        $serviceTitle = $serviceTitleSQL[0]['name'];
+                            WHERE pl.`id_product` = ' . $serviceId);*/
+                        $serviceTitle = $service['dealt_service_title'];
                         $serviceTitles[$key] = $serviceTitle;
                     }
                 }
@@ -592,10 +592,10 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
 
             if(!empty($service)){
                 if(!empty($service['dealt_service_product_id'])){
-                    $serviceId = $service['dealt_service_product_id'];
+                    /*$serviceId = $service['dealt_service_product_id'];
                     $serviceTitleSQL = Db::getInstance()->executeS('SELECT pl.name FROM `' . _DB_PREFIX_ . 'product_lang` pl
-                            WHERE pl.`id_product` = ' . $serviceId);
-                    $serviceTitle = $serviceTitleSQL[0]['name'];
+                            WHERE pl.`id_product` = ' . $serviceId);*/
+                    $serviceTitle = $service['dealt_service_title'];
                 } else {
                     $serviceTitle = null;
                 }
