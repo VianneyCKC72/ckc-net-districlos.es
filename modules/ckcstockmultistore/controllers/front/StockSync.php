@@ -15,8 +15,8 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
 
     private function syncStockSetBased()
     {
-        $username = 'districlos_refonte';
-        $password = 'TXM1qjk9teu_cfb9wxv';
+        $username = 'districlos_admin';
+        $password = 'dgebVGHet67SFEGDtfgev7856R5';
         $database1 = 'districlos_refonte';
         $database2 = 'districlostools';
 
@@ -31,7 +31,7 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
         $brutReferences = array_unique(array_values($referenceMapping));
 
         $pdo = new PDO(
-            "mysql:host=87.98.141.171;dbname={$database1};charset=utf8mb4",
+            "mysql:host=localhost;dbname={$database1};charset=utf8mb4",
             $username,
             $password,
             [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
