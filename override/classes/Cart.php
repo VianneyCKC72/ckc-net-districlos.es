@@ -159,7 +159,7 @@ class Cart extends CartCore
 
             $packages = [];
 
-            if(!empty($id_address_delivery)){
+            if(!empty($id_address_delivery) && isset($package_list[$id_address_delivery]) && is_array($package_list[$id_address_delivery])){
                 foreach ($package_list[$id_address_delivery] as $package) {
                     $package10 = [];
                     $package20 = [];
