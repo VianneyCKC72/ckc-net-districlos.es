@@ -45,6 +45,7 @@ class ckc_label extends Module
             `color` VARCHAR(7) NOT NULL,
             `background_color` VARCHAR(7) NOT NULL,
             `text` VARCHAR(255) NOT NULL,
+            `show_discount_percent` TINYINT(1) NOT NULL DEFAULT 1,
             `start_date` DATETIME DEFAULT NULL,
             `end_date` DATETIME DEFAULT NULL,
             `apply_to` VARCHAR(50) NOT NULL DEFAULT 'all',
@@ -211,6 +212,24 @@ class ckc_label extends Module
                         'required' => true,
                     ],
                     [
+                        'type' => 'switch',
+                        'label' => $this->l('Afficher le pourcentage de réduction (ex. -10%)'),
+                        'name' => 'show_discount_percent',
+                        'is_bool' => true,
+                        'values' => [
+                            [
+                                'id' => 'show_discount_percent_on',
+                                'value' => 1,
+                                'label' => $this->l('Activé'),
+                            ],
+                            [
+                                'id' => 'show_discount_percent_off',
+                                'value' => 0,
+                                'label' => $this->l('Désactivé'),
+                            ],
+                        ],
+                    ],
+                    [
                         'type' => 'datetime',
                         'label' => $this->l('Date et heure de début'),
                         'name' => 'start_date',
@@ -325,6 +344,7 @@ class ckc_label extends Module
                 'color' => $label['color'],
                 'background_color' => $label['background_color'],
                 'text' => $label['text'],
+                'show_discount_percent' => (int) ($label['show_discount_percent'] ?? 1),
                 'start_date' => $label['start_date'],
                 'end_date' => $label['end_date'],
                 'active' => $label['active'],
@@ -390,6 +410,7 @@ class ckc_label extends Module
             'color' => Tools::getValue('color'),
             'background_color' => Tools::getValue('background_color'),
             'text' => Tools::getValue('text'),
+            'show_discount_percent' => (int) Tools::getValue('show_discount_percent', 1),
             'start_date' => Tools::getValue('start_date'),
             'end_date' => Tools::getValue('end_date'),
             'active' => (int) Tools::getValue('active'),
@@ -408,6 +429,7 @@ class ckc_label extends Module
             'color' => Tools::getValue('color'),
             'background_color' => Tools::getValue('background_color'),
             'text' => Tools::getValue('text'),
+            'show_discount_percent' => (int) Tools::getValue('show_discount_percent', 1),
             'start_date' => Tools::getValue('start_date'),
             'end_date' => Tools::getValue('end_date'),
             'active' => (int) Tools::getValue('active'),
@@ -428,6 +450,7 @@ class ckc_label extends Module
             WHERE `color` LIKE "'.$data["color"].'" AND 
             `background_color` LIKE "'.$data["background_color"].'" AND
             `text` LIKE "'.$data["text"].'" AND 
+            `show_discount_percent` = ' . (int) $data['show_discount_percent'] . ' AND 
             `start_date` LIKE "'.$data["start_date"].'" AND 
             `end_date` LIKE "'.$data["end_date"].'" AND 
             `apply_to` LIKE "'.$data["apply_to"].'"
@@ -483,15 +506,17 @@ class ckc_label extends Module
 
         $date = date('Y-m-d H:i:s');
 
-        $update = Db::getInstance()->execute('INSERT INTO ' . _DB_PREFIX_ . 'ckc_labels (`id_label`, `color`, `background_color`, `text`,
+        $update = Db::getInstance()->execute('INSERT INTO ' . _DB_PREFIX_ . 'ckc_labels (`id_label`, `color`, `background_color`, `text`, `show_discount_percent`,
          `start_date`, `end_date`, `apply_to`, `active`)
         VALUES (NULL, \'' . $labelInfo[0]['color'] . '\', \'' . $labelInfo[0]['background_color'] . '\', \'' . $labelInfo[0]['text'] . ' copie '.$date.'\',
+        ' . (int) ($labelInfo[0]['show_discount_percent'] ?? 1) . ',
         \'' . $labelInfo[0]['start_date'] . '\', \'' . $labelInfo[0]['end_date'] . '\', \'' . $labelInfo[0]['apply_to'] . '\', 0)');
 
         $id_label_new_sql = Db::getInstance()->executeS('SELECT `id_label` FROM  `' . _DB_PREFIX_ . 'ckc_labels` 
             WHERE `color` LIKE "'.$labelInfo[0]["color"].'" AND 
             `background_color` LIKE "'.$labelInfo[0]["background_color"].'" AND
             `text` LIKE "'.$labelInfo[0]['text'] . ' copie '.$date.'" AND 
+            `show_discount_percent` = ' . (int) ($labelInfo[0]['show_discount_percent'] ?? 1) . ' AND 
             `start_date` LIKE "'.$labelInfo[0]["start_date"].'" AND 
             `end_date` LIKE "'.$labelInfo[0]["end_date"].'" AND 
             `apply_to` LIKE "'.$labelInfo[0]["apply_to"].'"
