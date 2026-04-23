@@ -831,6 +831,7 @@ class Dealt extends Module
                 }
             }
             if($ifContainsService){
+                $storeId = '';
                 // Vérifier si une mission pour la commande est déjà créé ou pas
                 $ifMissionExists = Db::getInstance()->getValue('SELECT id_mission FROM ' . _DB_PREFIX_ . 'dealt_missions dm 
                 WHERE dm.id_order LIKE "'.$order_id.'"');
