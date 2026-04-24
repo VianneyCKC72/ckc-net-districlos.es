@@ -15,12 +15,11 @@ class Ckc_Favorite_StoresFavoriteStoreModuleFrontController extends ModuleFrontC
             }
             
             if ($this->context->customer->isLogged()) {
-                Db::getInstance()->delete('ckc_favorite_stores', 'id_customer=' . (int) $this->context->customer->id);
-                Db::getInstance()->insert('ckc_favorite_stores', [
-                    'id_customer' => (int) $this->context->customer->id,
-                    'id_store' => $id_store,
-                    'date_add' => date('Y-m-d H:i:s')
-                ]);
+                Db::getInstance()->execute(
+                    'INSERT INTO `' . _DB_PREFIX_ . 'ckc_favorite_stores` (id_customer, id_store, date_add)
+                    VALUES (' . (int)$this->context->customer->id . ', ' . (int)$id_store . ', NOW())
+                    ON DUPLICATE KEY UPDATE id_store = ' . (int)$id_store
+                );
             } else {
                 $this->context->cookie->__set('favorite_store', $id_store);
             }
