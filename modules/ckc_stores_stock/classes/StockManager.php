@@ -20,16 +20,23 @@ class StockManager extends Module
 
     // Cache statique pour éviter les requêtes répétées
     private static $stores_data_cache = [];
+    private static $referenceMappingCache = null;
+    private static $seuilCategoriesCache  = null;
+    private static $packIdListCache       = null;
 
     public function getStockData($id_product, $id_product_attribute, $id_store, $packList = [])
     {
         // Charger le mapping de références pour les produits fin de vie
-        $mappingFile = _PS_MODULE_DIR_ . 'dtc_productendoflife/reference_mapping.json';
-        $referenceMapping = [];
-        if (file_exists($mappingFile)) {
-            $mappingData = json_decode(file_get_contents($mappingFile), true);
-            $referenceMapping = $mappingData['mappings'] ?? [];
+        if (self::$referenceMappingCache === null) {
+            $mappingFile = _PS_MODULE_DIR_ . 'dtc_productendoflife/reference_mapping.json';
+            if (file_exists($mappingFile)) {
+                $mappingData = json_decode(file_get_contents($mappingFile), true);
+                self::$referenceMappingCache = $mappingData['mappings'] ?? [];
+            } else {
+                self::$referenceMappingCache = [];
+            }
         }
+        $referenceMapping = self::$referenceMappingCache;
 
         // Récupérer la référence du produit actuel
         $currentReference = Db::getInstance()->getValue('SELECT reference FROM ' . _DB_PREFIX_ . 'product_attribute WHERE id_product_attribute = ' . (int)$id_product_attribute);
@@ -63,8 +70,15 @@ class StockManager extends Module
         $quantity_by_store = ($quantity_by_store !== false && $quantity_by_store !== null) ? (int)$quantity_by_store : 0;
         $quantity = ($quantity !== false && $quantity !== null) ? (int)$quantity : 0;
 
-        $seuilCategories = json_decode(file_get_contents(_PS_MODULE_DIR_ . 'ckc_stores_stock/assets/js/seuilCategories.json'), true);
-        $packIdList = AdvancedPack::getIdsPacks(true);
+        if (self::$seuilCategoriesCache === null) {
+            self::$seuilCategoriesCache = json_decode(file_get_contents(_PS_MODULE_DIR_ . 'ckc_stores_stock/assets/js/seuilCategories.json'), true) ?? [];
+        }
+        $seuilCategories = self::$seuilCategoriesCache;
+
+        if (self::$packIdListCache === null) {
+            self::$packIdListCache = AdvancedPack::getIdsPacks(true);
+        }
+        $packIdList = self::$packIdListCache;
         $isKit = in_array((int)$id_product, $packIdList);
 
         $seuilOk = true;
