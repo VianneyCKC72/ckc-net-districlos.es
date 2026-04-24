@@ -241,6 +241,9 @@ function wp_delete_post($postid, $force_delete = false)
 
 function get_post_meta($id, $key = '', $single = false)
 {
+    // Cache statique pour éviter les requêtes SQL répétées
+    static $cache = [];
+
     if (false === $id) {
         return $id;
     }
@@ -250,6 +253,19 @@ function get_post_meta($id, $key = '', $single = false)
         _doing_it_wrong(__FUNCTION__, 'Id must be numeric!');
     }
     if (!$key) {
+        // Cache pour toutes les meta d'un id
+        $cache_key_all = 'all_' . $id;
+
+        // Vérifier si invalidé par update_post_meta
+        if (isset($GLOBALS['_ce_meta_cache_invalidate'][$cache_key_all])) {
+            unset($cache[$cache_key_all]);
+            unset($GLOBALS['_ce_meta_cache_invalidate'][$cache_key_all]);
+        }
+
+        if (isset($cache[$cache_key_all])) {
+            return $cache[$cache_key_all];
+        }
+
         $res = [];
         $rows = \Db::getInstance()->executeS(
             'SELECT `name`, `value` FROM ' . _DB_PREFIX_ . 'ce_meta WHERE `id` = ' . pSQL($id)
@@ -264,16 +280,34 @@ function get_post_meta($id, $key = '', $single = false)
             }
         }
 
+        $cache[$cache_key_all] = $res;
         return $res;
     }
     if (!$single) {
         throw new \RuntimeException('TODO');
     }
+
+    // Cache pour une meta spécifique
+    $cache_key = $id . '_' . $key . '_1';
+
+    // Vérifier si invalidé par update_post_meta
+    if (isset($GLOBALS['_ce_meta_cache_invalidate'][$cache_key])) {
+        unset($cache[$cache_key]);
+        unset($GLOBALS['_ce_meta_cache_invalidate'][$cache_key]);
+    }
+
+    if (isset($cache[$cache_key])) {
+        return $cache[$cache_key];
+    }
+
     $val = \Db::getInstance()->getValue(
         'SELECT `value` FROM ' . _DB_PREFIX_ . 'ce_meta WHERE `id` = ' . pSQL($id) . ' AND `name` = "' . pSQL($key) . '"'
     );
 
-    return $val && ('{' === $val[0] || '[' === $val[0] || '"' === $val[0]) ? json_decode($val, true) : $val;
+    $result = $val && ('{' === $val[0] || '[' === $val[0] || '"' === $val[0]) ? json_decode($val, true) : $val;
+    $cache[$cache_key] = $result;
+
+    return $result;
 }
 
 function update_post_meta($id, $key, $value, $prev_value = '')
@@ -281,6 +315,17 @@ function update_post_meta($id, $key, $value, $prev_value = '')
     if ($prev_value) {
         throw new \RuntimeException('TODO');
     }
+
+    // Invalider le cache statique de get_post_meta pour cet id/key
+    static $invalidate_cache;
+    if (!isset($invalidate_cache)) {
+        $invalidate_cache = function($id, $key) {
+            // Accès au cache via une closure pour l'invalider
+            $GLOBALS['_ce_meta_cache_invalidate'][$id . '_' . $key . '_1'] = true;
+            $GLOBALS['_ce_meta_cache_invalidate']['all_' . $id] = true;
+        };
+    }
+
     $db = \Db::getInstance();
     $res = true;
     $ids = ($uid = UId::parse($id)) ? $uid->getListByShopContext() : (array) $id;
@@ -301,6 +346,9 @@ function update_post_meta($id, $key, $value, $prev_value = '')
             $type = \Db::INSERT;
         }
         $res &= $db->insert('ce_meta', $data, false, true, $type);
+
+        // Marquer pour invalidation (sera pris en compte au prochain appel de get_post_meta)
+        $invalidate_cache($id, $key);
     }
 
     return $res;
