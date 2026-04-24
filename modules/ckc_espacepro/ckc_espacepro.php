@@ -12,6 +12,8 @@ class ckc_espacepro extends Module
     public $error   = [];
     public $success = [];
     public $info    = [];
+    private static ?array $codeNafCache = null;
+    private static ?array $proGroupIdsCache = null;
 
     protected $tabs = [
         'Professionnels' => [
@@ -570,10 +572,9 @@ class ckc_espacepro extends Module
             $naf = Tools::getValue('naf', '');
 
             $row = [];
+            $formMinEp = (int)Configuration::get('CKC_FORM_MIN_EP');
 
-
-
-            if ((int)Configuration::get('CKC_FORM_MIN_EP') === 0) {
+            if ($formMinEp === 0) {
                 $row['fileUpload'] = $this->context->cookie->__get('kbis_tmp') ?? null;
                 $row['rib'] = $this->context->cookie->__get('rib_tmp') ?? null;
 
@@ -584,11 +585,11 @@ class ckc_espacepro extends Module
             $row += [
                 'pays' => $this->escapeForSQL((string)$customer_country),
                 'tva' => $this->escapeForSQL((string)$customer_tva),
-                'adresse' => (int)Configuration::get('CKC_FORM_MIN_EP') === 0 ? $this->escapeForSQL($customer_address) : '...',
+                'adresse' => $formMinEp === 0 ? $this->escapeForSQL($customer_address) : '...',
                 'adresse2' => $this->escapeForSQL($customer_address2),
                 'cp' => $this->escapeForSQL($customer_cp),
                 'tel' => $this->escapeForSQL($customer_tel),
-                'ville' => (int)Configuration::get('CKC_FORM_MIN_EP') === 0 ? $this->escapeForSQL($customer_city) : '...',
+                'ville' => $formMinEp === 0 ? $this->escapeForSQL($customer_city) : '...',
                 'active' => 1,
                 'id_default_group' => $gidProticulier,
                 'naf' => $naf,
@@ -937,7 +938,12 @@ class ckc_espacepro extends Module
     /** Référentiel NAF */
     public function getCodeNaf(): array
     {
-        return (array)Db::getInstance()->executeS('SELECT code, description FROM `' . _DB_PREFIX_ . 'code_naf`');
+        if (self::$codeNafCache === null) {
+            self::$codeNafCache = (array)Db::getInstance()->executeS(
+                'SELECT code, description FROM `' . _DB_PREFIX_ . 'code_naf`'
+            );
+        }
+        return self::$codeNafCache;
     }
 
     /** Petitéch : retire les quotes pour SQL brut */
@@ -1210,11 +1216,14 @@ class ckc_espacepro extends Module
     /** ID groupe PRO (fallback) */
     private function getProGroupIds(): array
     {
-        $ids = json_decode(Configuration::get('CKC_GROUP_PRO_IDS', '[]'), true);
-        if (!is_array($ids) || empty($ids)) {
-            $ids = [(int)Configuration::get('CKC_GROUP_PRO_ID', 10)];
+        if (self::$proGroupIdsCache === null) {
+            $ids = json_decode(Configuration::get('CKC_GROUP_PRO_IDS', '[]'), true);
+            if (!is_array($ids) || empty($ids)) {
+                $ids = [(int)Configuration::get('CKC_GROUP_PRO_ID', 10)];
+            }
+            self::$proGroupIdsCache = array_map('intval', $ids);
         }
-        return array_map('intval', $ids);
+        return self::$proGroupIdsCache;
     }
 
     /** ID groupe Proticulier (fallback) */
