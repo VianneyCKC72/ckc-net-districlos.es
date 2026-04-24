@@ -217,8 +217,10 @@ class AdvancedPack extends Product
     public static function getPackContent($idPack, $idProductAttribute = null, $withFrontDatas = false, $attributesList = [], $quantityList = [])
     {
         $idLang = (int)self::getContext()->language->id;
-        $cacheId = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idProductAttribute . (int)$withFrontDatas . serialize($attributesList) . serialize($quantityList), true);
-        $cacheIdWithoutFront = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idProductAttribute . serialize($quantityList));
+        $idShop = (int) self::getContext()->shop->id;
+
+        $cacheId = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idShop . (int)$idProductAttribute . (int)$withFrontDatas . serialize($attributesList) . serialize($quantityList), true);
+        $cacheIdWithoutFront = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idShop . (int)$idProductAttribute . serialize($quantityList));
 
         if (!self::isInCache($cacheId)) {
             if (!self::isInCache($cacheIdWithoutFront)) {
@@ -233,6 +235,20 @@ class AdvancedPack extends Product
                 $productsPack = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
                 if (AdvancedPackCoreClass::_isFilledArray($productsPack)) {
                     $productsAttributesPack = self::getPackProductAttributeList($idPack);
+
+                    // Global reduction per shop (price rule #1)
+                    static $ap5GlobalReductionCache = [];
+                    $discountKey = (int) $idPack . ':' . $idShop;
+                    if (!array_key_exists($discountKey, $ap5GlobalReductionCache)) {
+                        $discountRow = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                            'SELECT `reduction_type`, `reduction_amount`
+                             FROM `' . _DB_PREFIX_ . 'pm_advancedpack_pack_shop_discount`
+                             WHERE `id_pack`=' . (int) $idPack . ' AND `id_shop`=' . (int) $idShop
+                        );
+                        $ap5GlobalReductionCache[$discountKey] = $discountRow ?: null;
+                    }
+                    $globalReduction = $ap5GlobalReductionCache[$discountKey];
+
                     foreach ($productsPack as &$packProduct) {
                         if (isset($quantityList[$packProduct['id_product_pack']]) && is_numeric($quantityList[$packProduct['id_product_pack']])) {
                             $packProduct['quantity'] = (int)$quantityList[$packProduct['id_product_pack']];
@@ -249,6 +265,16 @@ class AdvancedPack extends Product
                         }
                         if (isset($productsAttributesPack[$packProduct['id_product_pack']])) {
                             $packProduct['combinationsInformations'] = $productsAttributesPack[$packProduct['id_product_pack']];
+                        }
+
+                        // Apply global per-shop reduction in memory (keeps pm_advancedpack_products multi-shop safe)
+                        if (
+                            $globalReduction
+                            && $globalReduction['reduction_type'] === 'percentage'
+                            && (float) $globalReduction['reduction_amount'] > 0
+                        ) {
+                            $packProduct['reduction_type'] = 'percentage';
+                            $packProduct['reduction_amount'] = (float) $globalReduction['reduction_amount'];
                         }
                     }
                 }
