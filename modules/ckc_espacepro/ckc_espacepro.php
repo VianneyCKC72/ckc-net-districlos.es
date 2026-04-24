@@ -474,11 +474,15 @@ class ckc_espacepro extends Module
 
         if ((int)Configuration::get('CAPTCHA_ENABLE_ACCOUNT') === 1) {
             $themes = [0 => 'light', 1 => 'dark'];
+            $captchaVersion = Configuration::get('CAPTCHA_VERSION');
+            $publicKey      = Configuration::get('CAPTCHA_PUBLIC_KEY');
+            $forceLang      = Configuration::get('CAPTCHA_FORCE_LANG');
+            $captchaTheme   = $themes[(int)Configuration::get('CAPTCHA_THEME')];
             $this->context->smarty->assign([
-                'captchaVersion' => Configuration::get('CAPTCHA_VERSION'),
-                'publicKey' => Configuration::get('CAPTCHA_PUBLIC_KEY'),
-                'captchaforcelang' => Configuration::get('CAPTCHA_FORCE_LANG'),
-                'captchatheme' => $themes[(int)Configuration::get('CAPTCHA_THEME')],
+                'captchaVersion'    => $captchaVersion,
+                'publicKey'         => $publicKey,
+                'captchaforcelang'  => $forceLang,
+                'captchatheme'      => $captchaTheme,
             ]);
         }
 
