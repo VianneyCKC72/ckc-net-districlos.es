@@ -340,7 +340,7 @@ class StockManager extends Module
             return self::$stores_data_cache[$cache_key];
         }
 
-        $shops = Db::getInstance()->executeS('SELECT id_store, name FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
+        $shops = Db::getInstance()->executeS('SELECT id_store, name, zip_codes FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
 
         // Récupérer tous les stocks en UNE SEULE requête au lieu d'une par magasin
         $stocks_by_store = [];
@@ -372,6 +372,15 @@ class StockManager extends Module
         // Vérifier si la table ckcstorespresentation existe (une seule fois)
         $table_exists = count(Db::getInstance()->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . 'ckcstorespresentation"')) > 0;
 
+        // Pré-charger toutes les présentations en une seule requête
+        $presentations = [];
+        if ($table_exists) {
+            $rows = Db::getInstance()->executeS('SELECT id_multiboutique, adresse, code_postal, ville FROM ' . _DB_PREFIX_ . 'ckcstorespresentation');
+            foreach ($rows as $row) {
+                $presentations[(int)$row['id_multiboutique']] = $row;
+            }
+        }
+
         $stores = [];
 
         foreach ($shops as $shop) {
@@ -382,18 +391,14 @@ class StockManager extends Module
             $selected = $id_store && $id_store == $shop['id_store'];
 
             $address = '';
-            $zip_code = '';
+            $zip_code = $shop['zip_codes'];
             $ville = '';
 
-            if ($table_exists) {
-                $storePresentation = Db::getInstance()->getRow('SELECT adresse, code_postal, ville FROM ' . _DB_PREFIX_ . 'ckcstorespresentation WHERE id_multiboutique = ' . (int)$shop['id_store']);
-                if ($storePresentation) {
-                    $address = $storePresentation['adresse'].'<br>'.$storePresentation['code_postal'].' '.$storePresentation['ville'];
-                    $ville = $storePresentation['ville'];
-                }
+            if (isset($presentations[(int)$shop['id_store']])) {
+                $p = $presentations[(int)$shop['id_store']];
+                $address = $p['adresse'] . '<br>' . $p['code_postal'] . ' ' . $p['ville'];
+                $ville = $p['ville'];
             }
-
-            $zip_code = Db::getInstance()->getValue('SELECT zip_codes FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores WHERE id_store = ' . (int)$shop['id_store']);
 
             $stores[] = [
                 'id' => $shop['id_store'],
@@ -461,10 +466,26 @@ class StockManager extends Module
 
         if ($storesDelivery) {
             $products = $this->context->cart->getProducts();
+
+            // Pré-charger le statut fin de série pour tous les produits du panier en une seule requête
+            $paIds = array_filter(array_map(function ($p) {
+                return (int)($p['id_product_attribute'] ?? 0);
+            }, $products));
+            $finSerieMap = [];
+            if (!empty($paIds)) {
+                $rows = Db::getInstance()->executeS(
+                    'SELECT id_product_attribute, end_of_life FROM `' . _DB_PREFIX_ . 'product_attribute_end_of_life`
+                    WHERE id_product_attribute IN (' . implode(',', $paIds) . ')'
+                );
+                foreach ($rows as $row) {
+                    $finSerieMap[(int)$row['id_product_attribute']] = (bool)$row['end_of_life'];
+                }
+            }
+
             foreach ($products as $product) {
                 // Vérifier si le produit est en fin de série
                 $id_product_attribute = isset($product['id_product_attribute']) ? (int)$product['id_product_attribute'] : 0;
-                $isFinSerie = $this->isProductFinSerie($id_product_attribute);
+                $isFinSerie = $finSerieMap[$id_product_attribute] ?? false;
 
                 if ($isFinSerie) {
                     $hasFinSerieProducts = true;
