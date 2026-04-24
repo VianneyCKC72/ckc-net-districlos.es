@@ -91,42 +91,58 @@ class Ckcgrouppricecomparator extends Module
             $cron_url_track = Tools::getHttpHost(true) . __PS_BASE_URI__ . 'module/ckcgrouppricecomparator/checkProPrices?token='.substr(Tools::encrypt('ckcgrouppricecomparator/checkProPrices'), 0, 10);
         }
 
-        $allproducts = Db::getInstance()->executeS('SELECT id_product FROM '._DB_PREFIX_.'product');
-
-        $id_shop = Context::getContext()->shop->id;
+        $id_shop     = Context::getContext()->shop->id;
         $id_currency = Context::getContext()->currency->id;
-        $id_country = Context::getContext()->country->id;
-        $id_lang = Context::getContext()->language->id;
+        $id_country  = Context::getContext()->country->id;
+        $id_lang     = Context::getContext()->language->id;
+
+        // Prix et nom récupérés directement — évite new Product() dans la boucle
+        $allproducts = Db::getInstance()->executeS(
+            'SELECT p.id_product, p.price, pl.name
+            FROM ' . _DB_PREFIX_ . 'product p
+            LEFT JOIN ' . _DB_PREFIX_ . 'product_lang pl
+                ON pl.id_product = p.id_product AND pl.id_lang = ' . (int)$id_lang . ' AND pl.id_shop = ' . (int)$id_shop
+        );
+
+        $specificPrice = new SpecificPrice(); // Une seule instance hors boucle
         $productsResult = [];
 
-        foreach($allproducts as $key => $product) {
-            $specificPrice = new SpecificPrice();
+        foreach ($allproducts as $key => $product) {
             $pricePro = $specificPrice->getSpecificPrice($product['id_product'], $id_shop, $id_currency, $id_country, 10, 1, null);
             // dump($pricePro);
-            $productInstance = new Product($product['id_product']);
 
-            if(isset($pricePro['id_product_attribute']) && $pricePro['id_product_attribute'] != 0) {
-                $combination = new CombinationCore($pricePro['id_product_attribute']);
-                $productVariantPrice = $productInstance->price + $combination->price;
-                if(null != $pricePro && $pricePro['price'] > $productVariantPrice && $pricePro['id_group'] == 10) {
+            if (isset($pricePro['id_product_attribute']) && $pricePro['id_product_attribute'] != 0) {
+                // Prix de la combinaison via requête directe — évite new CombinationCore()
+                $combinationPrice = (float)Db::getInstance()->getValue(
+                    'SELECT price FROM ' . _DB_PREFIX_ . 'product_attribute WHERE id_product_attribute = ' . (int)$pricePro['id_product_attribute']
+                );
+                $productVariantPrice = (float)$product['price'] + $combinationPrice;
+
+                if (null != $pricePro && $pricePro['price'] > $productVariantPrice && $pricePro['id_group'] == 10) {
                     $productsResult[$key]['id_product'] = $product['id_product'];
-                    $productsResult[$key]['pricePro'] = number_format($pricePro['price'], 2);
-                    $attributes = $combination->getAttributesName($id_lang);
-                    $tempName = $productInstance->name[$id_lang];
-                        foreach($attributes as $attribute) {
-                            $tempName = $tempName.' - '.$attribute["name"];
-                        }
-                        $productsResult[$key]['name'] = $tempName;
-                        $productsResult[$key]['priceStandard'] = number_format($productInstance->price + $combination->price, 2);
-                        $productsResult[$key]['reduction'] = number_format(($pricePro['price'] - $productInstance->price - $combination->price), 2);
+                    $productsResult[$key]['pricePro']   = number_format($pricePro['price'], 2);
+
+                    $attributes = Db::getInstance()->executeS(
+                        'SELECT al.name FROM ' . _DB_PREFIX_ . 'attribute_lang al
+                        INNER JOIN ' . _DB_PREFIX_ . 'product_attribute_combination pac ON pac.id_attribute = al.id_attribute
+                        WHERE pac.id_product_attribute = ' . (int)$pricePro['id_product_attribute'] . '
+                        AND al.id_lang = ' . (int)$id_lang
+                    );
+                    $tempName = $product['name'];
+                    foreach ($attributes as $attribute) {
+                        $tempName .= ' - ' . $attribute['name'];
                     }
+                    $productsResult[$key]['name']          = $tempName;
+                    $productsResult[$key]['priceStandard'] = number_format($productVariantPrice, 2);
+                    $productsResult[$key]['reduction']     = number_format($pricePro['price'] - $productVariantPrice, 2);
+                }
             } else {
-                if(null != $pricePro && $pricePro['price'] > $productInstance->price && $pricePro['id_group'] == 10) {
-                    $productsResult[$key]['id_product'] = $product['id_product'];
-                    $productsResult[$key]['pricePro'] = number_format($pricePro['price'], 2);
-                    $productsResult[$key]['name'] = $productInstance->name[$id_lang];
-                    $productsResult[$key]['priceStandard'] = number_format($productInstance->price, 2);
-                    $productsResult[$key]['reduction'] = number_format(($pricePro['price'] - $productInstance->price), 2);
+                if (null != $pricePro && $pricePro['price'] > (float)$product['price'] && $pricePro['id_group'] == 10) {
+                    $productsResult[$key]['id_product']    = $product['id_product'];
+                    $productsResult[$key]['pricePro']      = number_format($pricePro['price'], 2);
+                    $productsResult[$key]['name']          = $product['name'];
+                    $productsResult[$key]['priceStandard'] = number_format((float)$product['price'], 2);
+                    $productsResult[$key]['reduction']     = number_format($pricePro['price'] - (float)$product['price'], 2);
                 }
             }
         }
