@@ -172,5 +172,15 @@
     </div>
 
   </div>
+{else}
+  <div class="product-prices js-product-prices mb-4">
+    <a
+      class="btn btn-secondary"
+      href="{$urls.pages.authentication}?back={$urls.current_url|urlencode}"
+      rel="nofollow"
+    >
+      {l s='Sign in' d='Shop.Theme.Actions'}
+    </a>
+  </div>
 {/if}
 {/if}

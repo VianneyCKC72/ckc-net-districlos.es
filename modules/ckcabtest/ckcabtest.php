@@ -31,6 +31,7 @@ if (!defined('_PS_VERSION_')) {
 class Ckcabtest extends Module
 {
     protected $config_form = false;
+    private const TIME_PATTERN = '/^(?:[01]\d|2[0-3]):[0-5]\d$/';
 
     public function __construct()
     {
@@ -61,6 +62,8 @@ class Ckcabtest extends Module
         Configuration::updateValue('CKCABTEST_ABLYFT_ID', '50855186.js'); // valeur par défaut
         Configuration::updateValue('CKCABTEST_DATE_START', '');          // vide = pas de restriction
         Configuration::updateValue('CKCABTEST_DATE_END', '');            // vide = pas de restriction
+        Configuration::updateValue('CKCABTEST_TIME_START', '00:00');     // HH:MM
+        Configuration::updateValue('CKCABTEST_TIME_END', '23:59');       // HH:MM
 
         return parent::install()
                && $this->registerHook('displayHeader')
@@ -77,6 +80,8 @@ class Ckcabtest extends Module
         Configuration::deleteByName('CKCABTEST_ABLYFT_ID');
         Configuration::deleteByName('CKCABTEST_DATE_START');
         Configuration::deleteByName('CKCABTEST_DATE_END');
+        Configuration::deleteByName('CKCABTEST_TIME_START');
+        Configuration::deleteByName('CKCABTEST_TIME_END');
 
         return parent::uninstall();
     }
@@ -177,11 +182,29 @@ class Ckcabtest extends Module
                     ),
 
                     array(
+                        'type'        => 'text',
+                        'label'       => $this->l('Heure de début'),
+                        'name'        => 'CKCABTEST_TIME_START',
+                        'placeholder' => 'HH:MM',
+                        'desc'        => $this->l('Format HH:MM (ex : 08:30). Utilisé uniquement si une date de début est renseignée.'),
+                        'col'         => 2,
+                    ),
+
+                    array(
                         'type'  => 'date',
                         'label' => $this->l('Date de fin'),
                         'name'  => 'CKCABTEST_DATE_END',
                         'desc'  => $this->l('Format AAAA-MM-JJ. Laisser vide = pas de fin.'),
                         'col'   => 3,
+                    ),
+
+                    array(
+                        'type'        => 'text',
+                        'label'       => $this->l('Heure de fin'),
+                        'name'        => 'CKCABTEST_TIME_END',
+                        'placeholder' => 'HH:MM',
+                        'desc'        => $this->l('Format HH:MM (ex : 18:00). Utilisé uniquement si une date de fin est renseignée.'),
+                        'col'         => 2,
                     ),
 
                     array(
@@ -208,6 +231,8 @@ class Ckcabtest extends Module
             'CKCABTEST_ABLYFT_ID'   => (string)Configuration::get('CKCABTEST_ABLYFT_ID', '50855186.js'),
             'CKCABTEST_DATE_START'  => (string)Configuration::get('CKCABTEST_DATE_START', ''),
             'CKCABTEST_DATE_END'    => (string)Configuration::get('CKCABTEST_DATE_END', ''),
+            'CKCABTEST_TIME_START'  => (string)Configuration::get('CKCABTEST_TIME_START', '00:00'),
+            'CKCABTEST_TIME_END'    => (string)Configuration::get('CKCABTEST_TIME_END', '23:59'),
         );
     }
 
@@ -215,9 +240,33 @@ class Ckcabtest extends Module
     {
         $form_values = $this->getConfigFormValues();
 
+        $timeStart = trim((string) Tools::getValue('CKCABTEST_TIME_START', '00:00'));
+        $timeEnd = trim((string) Tools::getValue('CKCABTEST_TIME_END', '23:59'));
+
+        if ($timeStart === '') {
+            $timeStart = '00:00';
+        }
+        if ($timeEnd === '') {
+            $timeEnd = '23:59';
+        }
+
+        if (!preg_match(self::TIME_PATTERN, $timeStart)) {
+            $this->context->controller->errors[] = $this->l('Le format de "Heure de début" est invalide. Utilisez HH:MM (ex : 08:30).');
+        }
+        if (!preg_match(self::TIME_PATTERN, $timeEnd)) {
+            $this->context->controller->errors[] = $this->l('Le format de "Heure de fin" est invalide. Utilisez HH:MM (ex : 18:00).');
+        }
+
+        if (!empty($this->context->controller->errors)) {
+            return;
+        }
+
         foreach (array_keys($form_values) as $key) {
             Configuration::updateValue($key, Tools::getValue($key));
         }
+
+        Configuration::updateValue('CKCABTEST_TIME_START', $timeStart);
+        Configuration::updateValue('CKCABTEST_TIME_END', $timeEnd);
     }
 
     public function hookDisplayBackOfficeHeader()
@@ -241,6 +290,8 @@ class Ckcabtest extends Module
         $idRaw      = trim(Configuration::get('CKCABTEST_ABLYFT_ID'));
         $dateStart  = trim(Configuration::get('CKCABTEST_DATE_START'));
         $dateEnd    = trim(Configuration::get('CKCABTEST_DATE_END'));
+        $timeStart  = trim(Configuration::get('CKCABTEST_TIME_START', '00:00'));
+        $timeEnd    = trim(Configuration::get('CKCABTEST_TIME_END', '23:59'));
         $customJs   = Configuration::get('CKCABTEST_SCRIPT');
 
         if ($idRaw === '') {
@@ -249,21 +300,27 @@ class Ckcabtest extends Module
 
         $scriptUrl = 'https://cdn.ablyft.com/s/'.$idRaw;
 
-        $now = date('Y-m-d');
-
         $inDateWindow = true;
 
         if ($dateStart !== '') {
-            // actif que si now >= start
-            if ($now < $dateStart) {
-                $inDateWindow = false;
+            $startTime = preg_match(self::TIME_PATTERN, $timeStart) ? $timeStart : '00:00';
+            $startDt = \DateTime::createFromFormat('Y-m-d H:i', $dateStart . ' ' . $startTime);
+            if ($startDt instanceof \DateTime) {
+                $now = new \DateTime('now');
+                if ($now->getTimestamp() < $startDt->getTimestamp()) {
+                    $inDateWindow = false;
+                }
             }
         }
 
         if ($dateEnd !== '') {
-            // actif que si now <= end
-            if ($now > $dateEnd) {
-                $inDateWindow = false;
+            $endTime = preg_match(self::TIME_PATTERN, $timeEnd) ? $timeEnd : '23:59';
+            $endDt = \DateTime::createFromFormat('Y-m-d H:i', $dateEnd . ' ' . $endTime);
+            if ($endDt instanceof \DateTime) {
+                $now = isset($now) && $now instanceof \DateTime ? $now : new \DateTime('now');
+                if ($now->getTimestamp() > $endDt->getTimestamp()) {
+                    $inDateWindow = false;
+                }
             }
         }
 
