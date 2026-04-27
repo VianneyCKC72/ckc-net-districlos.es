@@ -2502,6 +2502,30 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                     ];
                     $hasAlwaysUseReducEntries &= $packInformations[$idProductPack]['use_reduc'];
                 }
+
+                // Price rule #1 (global percentage): store per shop (id_pack, id_shop) and keep
+                // pm_advancedpack_products clean from a shared value.
+                $idShop = (int) $this->context->shop->id;
+                if ((int) Tools::getValue('ap5_price_rules') === 1) {
+                    $globalDiscountPct = (float) str_replace(',', '.', (string) Tools::getValue('ap5_global_percentage_discount'));
+                    $reductionAmount = $globalDiscountPct / 100;
+
+                    Db::getInstance()->execute(
+                        'REPLACE INTO `' . _DB_PREFIX_ . 'pm_advancedpack_pack_shop_discount` (`id_pack`, `id_shop`, `reduction_type`, `reduction_amount`)
+                         VALUES (' . (int) $idPack . ', ' . $idShop . ", 'percentage', " . (float) $reductionAmount . ')'
+                    );
+
+                    foreach ($packInformations as &$row) {
+                        $row['reduction_type'] = 'percentage';
+                        $row['reduction_amount'] = 0;
+                    }
+                    unset($row);
+                } else {
+                    Db::getInstance()->execute(
+                        'DELETE FROM `' . _DB_PREFIX_ . 'pm_advancedpack_pack_shop_discount`
+                         WHERE `id_pack`=' . (int) $idPack . ' AND `id_shop`=' . $idShop
+                    );
+                }
                 if ($hasAlwaysUseReducEntries && Tools::getIsset('ap5_price_rules') && Tools::getValue('ap5_price_rules') == 4 && Tools::getIsset('ap5_allow_remove_product') && Tools::getValue('ap5_allow_remove_product') == 1 && count($packInformations) >= 2) {
                     $packSettings['allowRemoveProduct'] = (bool)Tools::getValue('ap5_allow_remove_product');
                 }
@@ -2930,6 +2954,20 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 $packPriceRules = 2;
             }
         }
+
+        // Override price rule #1 from per-shop table (pm_advancedpack_pack_shop_discount)
+        if (Validate::isLoadedObject($product) && AdvancedPack::isValidPack($product->id)) {
+            $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                'SELECT `reduction_type`, `reduction_amount`
+                 FROM `' . _DB_PREFIX_ . 'pm_advancedpack_pack_shop_discount`
+                 WHERE `id_pack`=' . (int) $product->id . ' AND `id_shop`=' . (int) $this->context->shop->id
+            );
+
+            if (!empty($row) && $row['reduction_type'] === 'percentage' && (float) $row['reduction_amount'] > 0) {
+                $packPriceRules = 1;
+                $reductionPercentageTable = [(float) $row['reduction_amount']];
+            }
+        }
         $config = $this->_getModuleConfiguration();
         $packIdGroupList = [];
         $defaultGroups = [];
@@ -2958,7 +2996,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             'packFixedPrice' => $packFixedPrice,
             'packIdGroupList' => $packIdGroupList,
             'packIdGroupDefault' => (int)Configuration::get('PS_CUSTOMER_GROUP'),
-            'packFixedPercentage' => ($packPriceRules == 1 && count($reductionPercentageTable) == 1 ? current($reductionPercentageTable) * 100 : 0),
+            'packFixedPercentage' => ($packPriceRules == 1 && count($reductionPercentageTable) == 1 ? (float) current($reductionPercentageTable) * 100 : 0),
             'packAllowRemoveProduct' => (Validate::isLoadedObject($product) && AdvancedPack::isValidPack($product->id) && AdvancedPack::getPackAllowRemoveProduct($product->id) && $packPriceRules == 4 && $hasAlwaysUseReducEntries && count($packContent) >= 2),
             'packAutoChoose' => AdvancedPack::getPackAutoChoose($product->id),
             'packMlChoose' => AdvancedPack::getPackMlChoose($product->id),

@@ -217,8 +217,10 @@ class AdvancedPack extends Product
     public static function getPackContent($idPack, $idProductAttribute = null, $withFrontDatas = false, $attributesList = [], $quantityList = [])
     {
         $idLang = (int)self::getContext()->language->id;
-        $cacheId = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idProductAttribute . (int)$withFrontDatas . serialize($attributesList) . serialize($quantityList), true);
-        $cacheIdWithoutFront = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idProductAttribute . serialize($quantityList));
+        $idShop = (int) self::getContext()->shop->id;
+
+        $cacheId = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idShop . (int)$idProductAttribute . (int)$withFrontDatas . serialize($attributesList) . serialize($quantityList), true);
+        $cacheIdWithoutFront = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idShop . (int)$idProductAttribute . serialize($quantityList));
 
         if (!self::isInCache($cacheId)) {
             if (!self::isInCache($cacheIdWithoutFront)) {
@@ -233,6 +235,20 @@ class AdvancedPack extends Product
                 $productsPack = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
                 if (AdvancedPackCoreClass::_isFilledArray($productsPack)) {
                     $productsAttributesPack = self::getPackProductAttributeList($idPack);
+
+                    // Global reduction per shop (price rule #1)
+                    static $ap5GlobalReductionCache = [];
+                    $discountKey = (int) $idPack . ':' . $idShop;
+                    if (!array_key_exists($discountKey, $ap5GlobalReductionCache)) {
+                        $discountRow = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                            'SELECT `reduction_type`, `reduction_amount`
+                             FROM `' . _DB_PREFIX_ . 'pm_advancedpack_pack_shop_discount`
+                             WHERE `id_pack`=' . (int) $idPack . ' AND `id_shop`=' . (int) $idShop
+                        );
+                        $ap5GlobalReductionCache[$discountKey] = $discountRow ?: null;
+                    }
+                    $globalReduction = $ap5GlobalReductionCache[$discountKey];
+
                     foreach ($productsPack as &$packProduct) {
                         if (isset($quantityList[$packProduct['id_product_pack']]) && is_numeric($quantityList[$packProduct['id_product_pack']])) {
                             $packProduct['quantity'] = (int)$quantityList[$packProduct['id_product_pack']];
@@ -249,6 +265,16 @@ class AdvancedPack extends Product
                         }
                         if (isset($productsAttributesPack[$packProduct['id_product_pack']])) {
                             $packProduct['combinationsInformations'] = $productsAttributesPack[$packProduct['id_product_pack']];
+                        }
+
+                        // Apply global per-shop reduction in memory (keeps pm_advancedpack_products multi-shop safe)
+                        if (
+                            $globalReduction
+                            && $globalReduction['reduction_type'] === 'percentage'
+                            && (float) $globalReduction['reduction_amount'] > 0
+                        ) {
+                            $packProduct['reduction_type'] = 'percentage';
+                            $packProduct['reduction_amount'] = (float) $globalReduction['reduction_amount'];
                         }
                     }
                 }
@@ -532,6 +558,17 @@ class AdvancedPack extends Product
                         $productPackPrice -= Tools::ps_round($packReductionAmount, 6);
                         $productPackPriceWt -= Tools::ps_round($useTax ? $productTaxCalculator->addTaxes($packReductionAmount) : $packReductionAmount, 6);
                     } elseif ($packReductionType == 'percentage') {
+                        if ((float) $packReductionAmount <= 0 && !empty($packProduct['use_reduc'])) {
+                            $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                                'SELECT `reduction_type`, `reduction_amount`
+                                 FROM `' . _DB_PREFIX_ . 'pm_advancedpack_pack_shop_discount`
+                                 WHERE `id_pack`=' . (int) $idPack . ' AND `id_shop`=' . (int) self::getContext()->shop->id
+                            );
+
+                            if (!empty($row) && $row['reduction_type'] === 'percentage') {
+                                $packReductionAmount = (float) $row['reduction_amount'];
+                            }
+                        }
                         $productPackPrice *= (1 - $packReductionAmount);
                         $productPackPriceWt *= (1 - $packReductionAmount);
                     }
@@ -1952,25 +1989,37 @@ class AdvancedPack extends Product
         }
         return $res;
     }
-    public static function getPackIdShop($idPack)
+    public static function getPackIdShop($idPack, $idShop = null)
     {
-        $cacheId = self::getPMCacheId(__METHOD__ . (int)$idPack, true);
-        $idShop = false;
-        if (!self::isInCache($cacheId)) {
-            $sql = new DbQuery();
-            $sql->select('ap.`id_shop`');
-            $sql->from('pm_advancedpack', 'ap');
-            $sql->where('ap.`id_pack`=' . (int)$idPack);
-            $idShop = (int)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
-        } else {
-            return self::getFromCache($cacheId);
+        $idPack = (int) $idPack;
+        $idShop = $idShop === null ? (int) self::getContext()->shop->id : (int) $idShop;
+
+        $cacheId = self::getPMCacheId(__METHOD__ . $idPack . '_' . $idShop, true);
+        if (self::isInCache($cacheId)) {
+            return (int) self::getFromCache($cacheId);
         }
-        self::storeInCache($cacheId, $idShop);
-        return $idShop;
+
+        $sql = new DbQuery();
+        $sql->select('ap.`id_shop`');
+        $sql->from('pm_advancedpack', 'ap');
+        $sql->where('ap.`id_pack`=' . $idPack);
+        $sql->where('ap.`id_shop`=' . $idShop);
+        $shopFound = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+
+        if (!$shopFound) {
+            $sql = new DbQuery();
+            $sql->select('MIN(ap.`id_shop`)');
+            $sql->from('pm_advancedpack', 'ap');
+            $sql->where('ap.`id_pack`=' . $idPack);
+            $shopFound = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        }
+
+        self::storeInCache($cacheId, $shopFound);
+        return $shopFound;
     }
     public static function isFromShop($idPack, $idShop)
     {
-        return self::getPackIdShop($idPack) == $idShop;
+        return (int) self::getPackIdShop((int) $idPack, (int) $idShop) === (int) $idShop;
     }
     public static function combinationExists($idProductPack, $attributesList, $findAlternative = false)
     {

@@ -122,6 +122,10 @@ class CkcProductReviews extends Module implements WidgetInterface
 
     public function renderWidget($hookName = null, array $configuration = [])
     {
+        if (!(int) Configuration::get('CKC_REVIEWS_ENABLE_CAROUSEL')) {
+            return '';
+        }
+
         $minRating = (int) Configuration::get(self::CONFIG_MIN_RATING);
 
         $sql = "SELECT customer_name, rating, review, date_add 
@@ -208,13 +212,18 @@ class CkcProductReviews extends Module implements WidgetInterface
     /** Récupère les avis site/marque via la Published API Skeepers, avec cache fichier 6h. */
     private function getBrandReviewsFromApi(): array
     {
+        static $memoryCache = null;
+        if ($memoryCache !== null) {
+            return $memoryCache;
+        }
+
         $cacheDir = _PS_MODULE_DIR_ . $this->name . '/cache/';
         $cacheFile = $cacheDir . 'reviews_homepage.json';
 
         if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < self::CACHE_TTL) {
             $data = json_decode(file_get_contents($cacheFile), true);
             if (is_array($data)) {
-                return $data;
+                return $memoryCache = $data;
             }
         }
 
@@ -242,7 +251,7 @@ class CkcProductReviews extends Module implements WidgetInterface
             @mkdir($cacheDir, 0755, true);
         }
         @file_put_contents($cacheFile, json_encode($reviews));
-        return $reviews;
+        return $memoryCache = $reviews;
     }
 
     /** Récupère le token OAuth depuis le cache dtc_skeepers ou le demande avec ses credentials. */
@@ -311,27 +320,35 @@ class CkcProductReviews extends Module implements WidgetInterface
             return;
         }
 
+        $productIds = array_values(array_filter(array_map(function ($p) {
+            return (int)($p['id_product'] ?? 0);
+        }, $params['products'])));
+
+        if (empty($productIds)) {
+            return;
+        }
+
+        // Une seule requête pour tous les produits de la liste
+        $rows = Db::getInstance()->executeS(
+            'SELECT ref_product, AVG(rate) AS avg_rate, COUNT(*) AS total_rate
+            FROM ' . _DB_PREFIX_ . 'av_products_reviews
+            WHERE ref_product IN (' . implode(',', $productIds) . ')
+            GROUP BY ref_product'
+        );
+
+        $ratingsMap = [];
+        foreach ($rows as $row) {
+            $ratingsMap[(int)$row['ref_product']] = [
+                'avg_rate'   => (float)round($row['avg_rate'], 2),
+                'total_rate' => (int)$row['total_rate'],
+            ];
+        }
+
         foreach ($params['products'] as &$product) {
-            $idProduct = (int) ($product['id_product'] ?? 0);
-            if ($idProduct <= 0) {
-                continue;
-            }
-
-            $sql = 'SELECT 
-                    AVG(rate) AS avg_rate, 
-                    COUNT(*) AS total_rate
-                FROM '._DB_PREFIX_.'av_products_reviews
-                WHERE ref_product = '.(int) $idProduct;
-
-            $results = Db::getInstance()->executeS($sql);
-
-            $row = $results[0] ?? null;
-
-            $grade = isset($row['avg_rate']) ? (float) round($row['avg_rate'], 2) : 0;
-            $nbComments = isset($row['total_rate']) ? (int) $row['total_rate'] : 0;
-
-            $product['avg_rate'] = $grade;
-            $product['total_rate'] = $nbComments;
+            $idProduct = (int)($product['id_product'] ?? 0);
+            $rating = $ratingsMap[$idProduct] ?? null;
+            $product['avg_rate']   = $rating ? $rating['avg_rate'] : 0;
+            $product['total_rate'] = $rating ? $rating['total_rate'] : 0;
         }
     }
 }

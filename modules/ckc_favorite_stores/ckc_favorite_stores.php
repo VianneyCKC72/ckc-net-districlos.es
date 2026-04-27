@@ -24,7 +24,6 @@ class Ckc_Favorite_Stores extends Module
         return parent::install()
             && $this->registerHook('displayHeader')
             && $this->registerHook('displayCustomerAccount')
-            && $this->registerHook('displayCustomerAccount')
             && $this->installDb();
     }
 
@@ -40,7 +39,9 @@ class Ckc_Favorite_Stores extends Module
                 `id_favorite_store` INT AUTO_INCREMENT PRIMARY KEY,
                 `id_customer` INT NOT NULL,
                 `id_store` int(11) NOT NULL,
-                `date_add` DATETIME DEFAULT CURRENT_TIMESTAMP
+                `date_add` DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE KEY `idx_customer_unique` (`id_customer`),
+                KEY `idx_store` (`id_store`)
             ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8mb4;
         ');
     }
@@ -61,6 +62,6 @@ class Ckc_Favorite_Stores extends Module
 
     public function hookDisplayCustomerAccount()
     {
-        return $this->fetch('module:ckc_favorite_stores/views/templates/front/favorite_store.tpl');
+        return '';
     }
 }

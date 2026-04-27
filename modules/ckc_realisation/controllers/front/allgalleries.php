@@ -19,31 +19,37 @@ class Ckc_realisationAllgalleriesModuleFrontController extends ModuleFrontContro
 
         $allgalleries = [];
 
+        // Pré-charger les infos clients en une seule requête (évite N+1)
+        $customerIds = array_unique(array_filter(array_column($allimages, 'id_customer'), function ($id) {
+            return (int)$id !== 0;
+        }));
+        $customersMap = [];
+        if (!empty($customerIds)) {
+            $rows = Db::getInstance()->executeS(
+                'SELECT pc.id_customer, pc.firstname, pc.lastname, pa.city
+                FROM `' . _DB_PREFIX_ . 'customer` pc
+                LEFT JOIN `' . _DB_PREFIX_ . 'address` pa ON pa.id_customer = pc.id_customer
+                WHERE pc.id_customer IN (' . implode(',', array_map('intval', $customerIds)) . ')
+                AND pc.id_shop = ' . (int)$id_shop
+            );
+            foreach ($rows as $row) {
+                if (!isset($customersMap[(int)$row['id_customer']])) {
+                    $customersMap[(int)$row['id_customer']] = $row;
+                }
+            }
+        }
 
         foreach($allimages as $image){
-            $fileInfo = getimagesize(Tools::getHttpHost(true) . __PS_BASE_URI__ .'modules/ckc_realisation/uploads/'.$id_shop.'/'.$image['filename']);
-            $image['width'] = $fileInfo[0];
-            $image['height'] = $fileInfo[1];
-            if($image['id_customer'] != 0){
-                $clientInfo = Db::getInstance()->executeS('SELECT pc.firstname, pc.lastname, pa.city FROM `'._DB_PREFIX_.'customer` pc 
-                LEFT JOIN `'._DB_PREFIX_.'address` pa on pa.id_customer = pc.id_customer
-                WHERE pc.id_customer = '.$image['id_customer'].' 
-            AND pc.id_shop = '.$id_shop);
-                if(!empty($clientInfo[0]['firstname'])){
-                    $image['firstname'] = $clientInfo[0]['firstname'];
-                    $image['lastname'] = $clientInfo[0]['lastname'];
-                    $image['city'] = $clientInfo[0]['city'];
-                } else {
-                    $image['firstname'] = '';
-                    $image['lastname'] = '';
-                    $image['city'] = '';
-                }
-            } else {
-                $image['firstname'] = '';
-                $image['lastname'] = '';
-                $image['city'] = '';
-            }
+            // Lecture locale (évite 1 requête HTTP par image)
+            $localPath = _PS_MODULE_DIR_ . 'ckc_realisation/uploads/' . $id_shop . '/' . $image['filename'];
+            $fileInfo = @getimagesize($localPath);
+            $image['width']  = $fileInfo ? $fileInfo[0] : 0;
+            $image['height'] = $fileInfo ? $fileInfo[1] : 0;
 
+            $client = $image['id_customer'] != 0 ? ($customersMap[(int)$image['id_customer']] ?? null) : null;
+            $image['firstname'] = $client['firstname'] ?? '';
+            $image['lastname']  = $client['lastname']  ?? '';
+            $image['city']      = $client['city']      ?? '';
 
             $allgalleries[$image['id_category_default']][] = $image;
         }
