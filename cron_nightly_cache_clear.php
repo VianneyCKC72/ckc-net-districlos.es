@@ -20,7 +20,7 @@ $log = static function (string $msg): void {
 // --- 1. Cache PrestaShop principal ---
 $log('Vidage Cache::getInstance()->resetCache()...');
 try {
-    Cache::getInstance()->resetCache();
+    Cache::getInstance()->flush();
     $log('Cache principal vidé.');
 } catch (Throwable $e) {
     $log('ERREUR cache principal : ' . $e->getMessage());
