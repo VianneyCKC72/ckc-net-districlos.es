@@ -58,3 +58,12 @@ CREATE TABLE IF NOT EXISTS `PREFIX_pm_advancedpack_products_customization` (
   `id_customization_field` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id_product_pack`, `id_customization_field`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `PREFIX_pm_advancedpack_pack_shop_discount` (
+  `id_pack` int(10) unsigned NOT NULL,
+  `id_shop` int(10) unsigned NOT NULL,
+  `reduction_type` enum('amount','percentage') NOT NULL DEFAULT 'percentage',
+  `reduction_amount` decimal(20,6) unsigned NOT NULL DEFAULT '0.000000',
+  PRIMARY KEY (`id_pack`, `id_shop`),
+  INDEX `id_shop_pack` (`id_shop`, `id_pack`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
