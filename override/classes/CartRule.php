@@ -75,10 +75,13 @@ class CartRule extends CartRuleCore
     }
 
     /**
-     * Override pour retirer automatiquement les promos expirées des paniers
+     * Override pour retirer automatiquement les promos désactivées, expirées
+     * ou dont la période de validité n'a pas commencé.
      *
-     * Cette méthode ajoute une vérification de l'expiration avant les autres contrôles
-     * pour s'assurer que les promos expirées sont retirées du panier.
+     * Le core PrestaShop ignore volontairement ces contrôles lorsque la règle est
+     * déjà présente dans le panier (cf. CartRuleCore::checkValidity, $alreadyInCart=true).
+     * Cet override force la vérification afin que les règles désactivées par l'admin
+     * ou expirées soient retirées des paniers existants.
      *
      * @param Context|null $context Contexte PrestaShop
      * @param bool $useOrderPrice Utiliser les prix de commande
@@ -97,33 +100,35 @@ class CartRule extends CartRuleCore
 
         $errors = [];
         $currentTime = time();
-        $hasExpiredRules = false;
+        $hasInvalidRules = false;
 
-        // Vérification spécifique pour les promos expirées
-        // On parcourt toutes les règles du panier
         foreach ($context->cart->getCartRules(CartRule::FILTER_ACTION_ALL, true, $useOrderPrice) as $cart_rule) {
+            /** @var CartRule $cartRuleObj */
             $cartRuleObj = $cart_rule['obj'];
 
-            // Vérifier si la promo est expirée
-            if ($cartRuleObj->date_to && strtotime($cartRuleObj->date_to) < $currentTime) {
-                // Retirer la promo expirée du panier
+            $invalidReason = null;
+
+            if (!$cartRuleObj->active) {
+                $invalidReason = $cartRuleObj->trans('This voucher is disabled', [], 'Shop.Notifications.Error');
+            } elseif ($cartRuleObj->date_to && strtotime($cartRuleObj->date_to) < $currentTime) {
+                $invalidReason = $cartRuleObj->trans('This voucher has expired', [], 'Shop.Notifications.Error');
+            } elseif ($cartRuleObj->date_from && strtotime($cartRuleObj->date_from) > $currentTime) {
+                $invalidReason = $cartRuleObj->trans('This voucher is not valid yet', [], 'Shop.Notifications.Error');
+            }
+
+            if ($invalidReason !== null) {
                 $context->cart->removeCartRule($cartRuleObj->id, $useOrderPrice);
-                $hasExpiredRules = true;
-                // Ajouter le message d'erreur
-                $errors[] = $cartRuleObj->trans('This voucher has expired', [], 'Shop.Notifications.Error');
+                $hasInvalidRules = true;
+                $errors[] = $invalidReason;
             }
         }
 
-        // Mettre à jour le panier une seule fois après toutes les suppressions
-        if ($hasExpiredRules) {
+        if ($hasInvalidRules) {
             $context->cart->update();
         }
 
-        // Appeler la méthode parent pour les autres vérifications
-        // (montant minimum, transporteur, quantité, etc.)
         $parentErrors = parent::autoRemoveFromCart($context, $useOrderPrice);
 
-        // Fusionner les erreurs
         return array_merge($errors, $parentErrors);
     }
 
