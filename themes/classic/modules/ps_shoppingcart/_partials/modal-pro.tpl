@@ -63,7 +63,7 @@
             <div class="cart-pro-row">
                 <div class="cart-pro-label">Sous-total panier HT</div>
                 <div class="cart-pro-value">
-                    {if isset($cart.subtotals.products.value)}{$cart.subtotals.products.value}{/if}
+                    {if isset($cart.totals.total_excluding_tax.value)}{$cart.totals.total_excluding_tax.value}{/if}
                 </div>
             </div>
 
