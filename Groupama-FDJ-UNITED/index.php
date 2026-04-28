@@ -203,7 +203,7 @@ $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/Gr
     </div>
   </div>
 
-  <script src="/modules/dtc_popup_gift/views/js/wheel.js" defer></script>
+  <script src="<?= htmlspecialchars($basePath, ENT_QUOTES) ?>/wheel.js" defer></script>
   <script src="<?= htmlspecialchars($basePath, ENT_QUOTES) ?>/landing.min.js" defer></script>
 </body>
 </html>

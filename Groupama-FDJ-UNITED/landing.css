@@ -322,10 +322,6 @@ body {
   pointer-events: none;
 }
 
-.gfu-spin-top.disabled {
-  opacity: 0.55;
-}
-
 .gfu-wheel-slot {
   position: relative;
   width: min(100%, 360px);
