@@ -21,7 +21,7 @@
             <div class="modal-body">
                 <div class="row">
 
-                    {if $pro.env == 1}
+                    {* {if $pro.env == 1} *}
 
                         {include file='module:ps_shoppingcart/_partials/modal-pro.tpl'
                         product=$product
@@ -30,7 +30,7 @@
                         urls=$urls
                         }
 
-                    {else}
+                    {* {else}
 
                         {include file='module:ps_shoppingcart/_partials/modal-part.tpl'
                         product=$product
@@ -39,7 +39,7 @@
                         urls=$urls
                         }
 
-                    {/if}
+                    {/if} *}
                 </div>
             </div>
 
