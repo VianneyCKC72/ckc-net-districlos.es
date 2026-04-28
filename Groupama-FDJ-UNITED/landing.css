@@ -1,0 +1,753 @@
+/* Landing Districlos x Groupama-FDJ United */
+
+:root {
+  --gfu-teal: #026473;
+  --gfu-green: #79C046;
+  --gfu-beige: #F6F2EB;
+  --gfu-red: #FF144E;
+  --gfu-text: #000000;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Poppins, sans-serif;
+  font-weight: 400;
+  color: var(--gfu-text);
+  background: #fff;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.gfu-wrap {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.gfu-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.gfu-header h1 {
+  font: normal 700 30px/1.3 Poppins, sans-serif;
+  margin: 0 0 0.5rem;
+  color: #000;
+}
+
+.gfu-header .gfu-tagline {
+  font: normal normal normal 35px/75px Professor, "Segoe Script", cursive;
+  margin: 0 0 1rem;
+  color: #000;
+}
+
+@media (max-width: 768px) {
+  .gfu-header .gfu-tagline {
+    font-size: 36px;
+    line-height: 1.2;
+    padding: 0 0.5rem;
+  }
+}
+
+.gfu-header .gfu-stat {
+  font: normal 600 16px/1.4 Poppins, sans-serif;
+  color: var(--gfu-green);
+  margin: 0;
+}
+
+.gfu-jeu-wrap {
+  position: relative;
+}
+
+.gfu-jeu-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gfu-teal);
+  color: #fff;
+  font: 600 24px/1 Poppins, sans-serif;
+  text-transform: uppercase;
+  padding: 1.15rem 2.2rem;
+  margin-left: -1.75rem;
+  border-radius: 0 8px 8px 0;
+  z-index: 1;
+}
+
+.gfu-jeu-card {
+  background: var(--gfu-beige);
+  border-radius: 12px;
+  padding: 1.75rem 1.75rem 1.75rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem 2rem;
+  align-items: stretch;
+}
+
+@media (min-width: 960px) {
+  .gfu-jeu-card {
+    grid-template-columns: 3fr 2fr;
+  }
+
+  .gfu-jeu-card-head {
+    grid-column: 1 / -1;
+  }
+}
+
+.gfu-jeu-card-head {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .gfu-jeu-badge {
+    font-size: 18px;
+    padding: 0.95rem 1.6rem;
+  }
+}
+
+.gfu-jeu-left {
+  min-width: 0;
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 960px) {
+  .gfu-prize-title {
+    font-size: 24px;
+  }
+}
+
+.gfu-trophy-block {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.gfu-trophy-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 0.85rem;
+  border-radius: 50%;
+  background: var(--gfu-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gfu-trophy-icon img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  display: block;
+}
+
+.gfu-prize-title {
+  font: 700 22px/1.35 Poppins, sans-serif;
+  margin: 0 auto 0.5rem;
+  max-width: 26ch;
+}
+
+.gfu-prize-detail {
+  font: 400 16px/1.5 Poppins, sans-serif;
+  margin: 0;
+}
+
+.gfu-prize-banner {
+  display: inline-block;
+  background: var(--gfu-green);
+  color: #fff;
+  font: 600 16px/1.3 Poppins, sans-serif;
+  text-align: center;
+  padding: 8px 32px;
+  border-radius: 6px;
+  margin: 0 auto 118px;
+  max-width: 520px;
+  @media (max-width: 768px) {
+    margin: 0 auto 48px;
+  }
+}
+
+.gfu-cyclist-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: stretch;
+  margin-top: 0.75rem;
+  width: 100%;
+}
+
+.gfu-cyclist-cell {
+  flex: 1 1 50%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.gfu-cyclist-row img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .gfu-cyclist-row {
+    gap: 0.75rem;
+  }
+
+  .gfu-cyclist-cell {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+.gfu-jeu-right {
+  --gfu-right-pad: 1.25rem;
+  min-width: 0;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  background: var(--gfu-teal);
+  border-radius: 12px;
+  padding: 1.25rem var(--gfu-right-pad) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.gfu-drawer-grip {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .gfu-wrap {
+    padding-bottom: calc(4rem + 140px);
+  }
+
+  @keyframes gfuDrawerBounce {
+    0%, 65%, 100% { transform: translate3d(-50%, calc(100% - var(--gfu-drawer-peek)), 0); }
+    75% { transform: translate3d(-50%, calc(100% - var(--gfu-drawer-peek) - 10px), 0); }
+    85% { transform: translate3d(-50%, calc(100% - var(--gfu-drawer-peek)), 0); }
+    92% { transform: translate3d(-50%, calc(100% - var(--gfu-drawer-peek) - 6px), 0); }
+  }
+
+  .gfu-jeu-right.gfu-drawer {
+    position: fixed;
+    left: 50%;
+    bottom: 14px;
+    z-index: 1000;
+    width: min(calc(100% - 28px), 560px);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+    transition: transform 240ms ease;
+    will-change: transform;
+    padding-top: 14px;
+    max-height: min(86vh, 780px);
+    overflow: hidden;
+    --gfu-drawer-peek: 140px;
+  }
+
+  .gfu-jeu-right.gfu-drawer--closed {
+    transform: translate3d(-50%, calc(100% - var(--gfu-drawer-peek)), 0);
+    animation: gfuDrawerBounce 2.8s ease-in-out infinite;
+  }
+
+  .gfu-jeu-right.gfu-drawer--open {
+    transform: translate3d(-50%, 0, 0);
+    animation: none;
+  }
+
+  .gfu-drawer-grip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 26px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .gfu-drawer-grip::before {
+    content: "";
+    width: 66px;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.45);
+  }
+
+  .gfu-jeu-right.gfu-drawer--open {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gfu-jeu-right.gfu-drawer--closed {
+      animation: none;
+    }
+
+    .gfu-jeu-right.gfu-drawer {
+      transition: none;
+    }
+  }
+}
+
+.gfu-jeu-dates {
+  font: 500 14px/1.4 Poppins, sans-serif;
+  color: #fff;
+  margin: 0 0 0.75rem;
+  opacity: 0.95;
+}
+
+.gfu-spin-top {
+  width: 100%;
+  background: var(--gfu-green);
+  color: #fff;
+  font: 700 24px/1.25 Poppins, sans-serif;
+  padding: 18px 16px;
+  border-radius: 8px;
+  margin: 0 0 18px;
+  border: none;
+  cursor: default;
+  pointer-events: none;
+}
+
+.gfu-wheel-slot {
+  position: relative;
+  width: min(100%, 360px);
+  max-width: 360px;
+  margin: 0.25rem auto 0.75rem;
+  aspect-ratio: 1 / 1;
+}
+
+.gfu-jeu-right #wheel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #fff;
+  border-radius: 50%;
+}
+
+#wheel[hidden] {
+  display: none;
+}
+
+.gfu-win {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+}
+
+.gfu-win[hidden] {
+  display: none;
+}
+
+.gfu-win-banner {
+  width: 100%;
+  max-width: 320px;
+  margin: 0;
+  padding: 18px 16px;
+  border-radius: 12px;
+  background: var(--gfu-red);
+  color: #fff;
+  font: 700 20px/1.2 Poppins, sans-serif;
+  text-transform: uppercase;
+}
+
+.gfu-jeu-right--victory {
+  justify-content: center;
+  padding-bottom: 26px;
+}
+
+.gfu-jeu-right--victory .gfu-spin-top {
+  display: none;
+}
+
+.gfu-jeu-right--victory .gfu-wheel-slot {
+  aspect-ratio: auto;
+  margin: 12px auto 10px;
+}
+
+.gfu-jeu-right--victory .gfu-win {
+  position: static;
+  inset: auto;
+  padding: 0;
+}
+
+.gfu-jeu-right--victory .gfu-win-banner {
+  max-width: none;
+  padding: 18px 20px;
+  font-size: 22px;
+  line-height: 1.15;
+  border-radius: 10px;
+}
+
+.gfu-jeu-right--victory .gfu-wheel-mention {
+  margin-top: 8px;
+  margin-bottom: 14px;
+}
+
+.gfu-jeu-right--victory .gfu-devis-btn {
+  width: fit-content;
+  max-width: 100%;
+  align-self: center;
+  margin: 0;
+  padding: 14px 34px;
+  border-radius: 999px;
+  background: var(--gfu-green);
+}
+
+.gfu-wheel-mention {
+  font: 400 14px/1.35 Poppins, sans-serif;
+  color: #fff;
+  opacity: 0.95;
+  margin: 0.25rem 0 1rem;
+  padding: 0 0.25rem;
+}
+
+.gfu-devis-btn {
+  width: calc(100% + (var(--gfu-right-pad) * 2));
+  max-width: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.15rem 1rem;
+  border-radius: 0 0 12px 12px;
+  background: var(--gfu-red);
+  color: #fff;
+  font: 700 18px/1.2 Poppins, sans-serif;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  margin-top: auto;
+  margin-left: calc(var(--gfu-right-pad) * -1);
+  margin-right: calc(var(--gfu-right-pad) * -1);
+}
+
+.gfu-devis-btn:hover,
+.gfu-cta-pill:hover,
+.gfu-impact-cta:hover {
+  filter: brightness(1.03);
+}
+
+@media (max-width: 768px) {
+  .gfu-spin-top {
+    font-size: 20px;
+  }
+
+  .gfu-devis-btn {
+    font-size: 16px;
+  }
+}
+
+.gfu-below {
+  margin-top: 3rem;
+  min-height: 2rem;
+}
+
+.gfu-categories-title {
+  font: 700 22px/1.35 Poppins, sans-serif;
+  color: var(--gfu-teal);
+  text-align: center;
+  margin: 0 0 28px;
+}
+
+.gfu-categories-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.gfu-category-card {
+  background: #F1EBE4;
+  border-radius: 8px;
+  padding: 12px 12px 16px;
+  text-align: center;
+}
+
+.gfu-category-thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.gfu-category-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.gfu-category-label {
+  font: 700 14px/1.25 Poppins, sans-serif;
+  margin: 10px 0 0;
+  color: #000;
+}
+
+.gfu-categories-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 26px;
+}
+
+.gfu-cta-pill,
+.gfu-impact-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: var(--gfu-red);
+  color: #fff;
+  font: 700 14px/1.2 Poppins, sans-serif;
+  text-decoration: none;
+}
+
+.gfu-impact-cta {
+  display: flex;
+  width: fit-content;
+  margin: 14px auto 0;
+}
+
+@media (max-width: 1100px) {
+  .gfu-categories-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .gfu-categories-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.gfu-partner {
+  padding: 64px 0 0;
+}
+
+.gfu-partner-top {
+  display: grid;
+  grid-template-columns: 520px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.gfu-partner-card {
+  background: var(--gfu-teal);
+  color: #fff;
+  border-radius: 70px 15px 15px 15px;
+  padding: 26px 28px;
+  font: 600 30px Poppins, sans-serif;
+  max-width: 520px;
+}
+
+.gfu-partner-text {
+  font: 400 14px/1.45 Poppins, sans-serif;
+  color: #000;
+  margin: 6px 0 0;
+  max-width: 720px;
+}
+
+.gfu-partner-media {
+  margin-top: -82px;
+  display: flex;
+  justify-content: center;
+}
+
+.gfu-partner-media img {
+  width: min(100%, 520px);
+  border-radius: 15px 15px 70px 15px;
+  object-fit: cover;
+  display: block;
+}
+
+.gfu-benefits {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px 56px;
+  margin: 60px auto 0;
+  padding-bottom: 10px;
+  max-width: 980px;
+  justify-items: start;
+}
+
+.gfu-benefit {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.gfu-benefit-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  background: #F1EBE4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gfu-benefit-icon img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  display: block;
+}
+
+.gfu-benefit-title {
+  font: 700 16px/1.25 Poppins, sans-serif;
+  margin: 2px 0 4px;
+  color: #000;
+}
+
+.gfu-benefit-desc {
+  font: 400 13px/1.35 Poppins, sans-serif;
+  margin: 0;
+  color: #000;
+  opacity: 0.8;
+}
+
+.gfu-impact {
+  padding: 68px 0 0;
+}
+
+.gfu-impact-top {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 26px;
+  align-items: start;
+}
+
+.gfu-impact-right {
+  display: flex;
+}
+
+.gfu-impact-title {
+  font: 700 26px/1.2 Poppins, sans-serif;
+  margin: 0 0 12px;
+  color: #000;
+}
+
+.gfu-impact-text {
+  font: 400 16px/1.45 Poppins, sans-serif;
+  margin: 0 0 8px;
+  color: #000;
+  opacity: 0.8;
+  max-width: 560px;
+}
+
+.gfu-impact-photos {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 12px;
+  align-items: stretch;
+  width: 100%;
+  height: 260px;
+}
+
+.gfu-impact-photo {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+@media (max-width: 1100px) {
+  .gfu-impact-photos {
+    height: 230px;
+  }
+}
+
+@media (max-width: 900px) {
+  .gfu-impact-photos {
+    grid-template-columns: 2fr 1fr;
+    height: 200px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    gap: 10px;
+  }
+
+  .gfu-impact-photo {
+    height: 100%;
+  }
+}
+
+.gfu-impact-photo img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.gfu-impact-banner {
+  margin-top: 22px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.gfu-impact-banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.gfu-values {
+  padding: 66px 0 0;
+}
+
+.gfu-values-title {
+  font: 700 26px/1.2 Poppins, sans-serif;
+  margin: 0 0 16px;
+  color: #000;
+}
+
+.gfu-values-text {
+  font: 400 19px/1.5 Poppins, sans-serif;
+  margin: 0;
+  color: #000;
+  opacity: 0.85;
+  max-width: 1400px;
+}
+
+@media (max-width: 900px) {
+  .gfu-partner-top {
+    grid-template-columns: 1fr;
+  }
+
+  .gfu-partner-card {
+    max-width: none;
+    width: 100%;
+  }
+
+  .gfu-partner-media {
+    margin-top: 10px;
+    justify-content: flex-start;
+  }
+
+  .gfu-benefits {
+    grid-template-columns: 1fr;
+    max-width: 560px;
+  }
+
+  .gfu-impact-top {
+    grid-template-columns: 1fr;
+  }
+}
