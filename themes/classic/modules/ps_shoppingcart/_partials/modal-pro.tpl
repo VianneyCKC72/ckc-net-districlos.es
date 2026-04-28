@@ -37,11 +37,7 @@
             <div class="cart-pro-row">
                 <div class="cart-pro-label">Prix unitaire HT</div>
                 <div class="cart-pro-value">
-                    {if isset($product.price_ht_formatted)}
-                        {$product.price_ht_formatted}
-                    {elseif isset($product.price_tax_exc)}
-                        {$product.price_tax_exc} €
-                    {/if}
+                    {if isset($product.price_tax_exc)}{$product.price_tax_exc} €{/if}
                 </div>
             </div>
 
@@ -57,11 +53,7 @@
             <div class="cart-pro-row">
                 <div class="cart-pro-label">Total HT</div>
                 <div class="cart-pro-value">
-                    {if isset($product.total_ht_formatted)}
-                        {$product.total_ht_formatted}
-                    {elseif isset($product.total)}
-                        {$product.total}
-                    {/if}
+                    {if isset($product.total)}{$product.total}{/if}
                 </div>
             </div>
 
