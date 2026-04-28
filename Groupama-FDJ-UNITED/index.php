@@ -46,7 +46,8 @@ $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/Gr
           </div>
         </div>
 
-        <div class="gfu-jeu-right">
+        <div class="gfu-jeu-right" id="gfu-mobile-drawer">
+          <button class="gfu-drawer-grip" type="button" aria-label="Ouvrir / fermer le menu du jeu concours"></button>
           <p class="gfu-jeu-dates">Du 29 avril au 2 juin</p>
           <div class="gfu-spin-top" id="spin" aria-hidden="true">Tournez la roue pour tenter votre chance&nbsp;!*</div>
           <div class="gfu-wheel-slot" aria-live="polite">
@@ -56,7 +57,7 @@ $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/Gr
             </div>
           </div>
           <p class="gfu-wheel-mention">*Votre participation sera prise en compte lors de la validation de votre commande Districlos. R&eacute;serv&eacute; aux particuliers.</p>
-          <a class="gfu-devis-btn" href="#">Demander un devis</a>
+          <a class="gfu-devis-btn" href="/module/opartdevis/simplequotation">Demander un devis</a>
         </div>
       </section>
     </div>
@@ -110,7 +111,7 @@ $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/Gr
         </div>
 
         <div class="gfu-categories-cta">
-          <a class="gfu-cta-pill" href="#">Demander un devis</a>
+          <a class="gfu-cta-pill" href="/module/opartdevis/simplequotation">Demander un devis</a>
         </div>
       </section>
 
@@ -173,7 +174,7 @@ $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/Gr
             <h2 class="gfu-impact-title">Concrètement, qu&rsquo;est-ce que ça change pour vous&nbsp;?</h2>
             <p class="gfu-impact-text">Avec des millions de visiteurs sur notre site et des milliers de projets r&eacute;alis&eacute;s chaque ann&eacute;e, Districlos accompagne particuliers et professionnels dans leurs am&eacute;nagements ext&eacute;rieurs.</p>
             <p class="gfu-impact-text">Notre objectif&nbsp;: vous proposer des solutions simples, esth&eacute;tiques et durables pour s&eacute;curiser et valoriser votre maison&nbsp;!</p>
-            <a class="gfu-impact-cta" href="#">Demander un devis</a>
+            <a class="gfu-impact-cta" href="/module/opartdevis/simplequotation">Demander un devis</a>
           </div>
 
           <div class="gfu-impact-right" aria-label="Illustrations">
@@ -203,48 +204,6 @@ $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/Gr
   </div>
 
   <script src="/modules/dtc_popup_gift/views/js/wheel.js" defer></script>
-  <script>
-    (function () {
-      function updateGfuWinState() {
-        const wheel = document.getElementById('wheel');
-        const win = document.getElementById('gfu-win');
-        if (!wheel || !win) { return; }
-        const isVictory = (localStorage.getItem('dtc_popup_gift_wheel_victory') === '1');
-        wheel.hidden = isVictory;
-        win.hidden = !isVictory;
-        const right = wheel.closest('.gfu-jeu-right');
-        if (right) {
-          right.classList.toggle('gfu-jeu-right--victory', isVictory);
-        }
-      }
-
-      document.addEventListener('DOMContentLoaded', function () {
-        updateGfuWinState();
-
-        const spin = document.getElementById('spin');
-        const wheel = document.getElementById('wheel');
-        if (wheel && spin) {
-          wheel.style.cursor = 'pointer';
-          wheel.addEventListener('click', function () {
-            if (spin.classList.contains('disabled')) { return; }
-            if (localStorage.getItem('dtc_popup_gift_wheel_played') === '1') { return; }
-            spin.click();
-          });
-        }
-
-        if (spin) {
-          spin.addEventListener('click', function () {
-            const start = Date.now();
-            const timer = window.setInterval(function () {
-              updateGfuWinState();
-              if (localStorage.getItem('dtc_popup_gift_wheel_victory') === '1' || (Date.now() - start) > 6000) {
-                window.clearInterval(timer);
-              }
-            }, 150);
-          });
-        }
-      });
-    })();
-  </script>
+  <script src="<?= htmlspecialchars($basePath, ENT_QUOTES) ?>/landing.min.js" defer></script>
 </body>
 </html>
