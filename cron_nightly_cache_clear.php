@@ -1,6 +1,6 @@
 <?php
 /**
- * Cron nightly - vide le cache PrestaShop et les fichiers ckcspcache > 1 jour
+ * Cron nightly - vide le cache APC/APCu et les fichiers ckcspcache > 1 jour
  * Usage : php cron_nightly_cache_clear.php
  * Cron  : 0 3 * * * php /var/www/html/cron_nightly_cache_clear.php >> /var/log/cron_cache.log 2>&1
  */
@@ -9,25 +9,25 @@ if (php_sapi_name() !== 'cli') {
     exit('CLI uniquement' . PHP_EOL);
 }
 
-define('_PS_ADMIN_DIR_', __DIR__ . '/admin');
-
-include __DIR__ . '/config/config.inc.php';
-
 $log = static function (string $msg): void {
     echo '[' . date('Y-m-d H:i:s') . '] ' . $msg . PHP_EOL;
 };
 
-// --- 1. Cache PrestaShop principal ---
-$log('Vidage Cache::getInstance()->resetCache()...');
-try {
-    Cache::getInstance()->flush();
-    $log('Cache principal vidé.');
-} catch (Throwable $e) {
-    $log('ERREUR cache principal : ' . $e->getMessage());
+// --- 1. Cache APC/APCu (driver PrestaShop actif en prod) ---
+$log('Vidage cache APC/APCu...');
+if (extension_loaded('apcu')) {
+    apcu_clear_cache();
+    $log('APCu vidé.');
+} elseif (extension_loaded('apc')) {
+    apc_clear_cache();
+    apc_clear_cache('user');
+    $log('APC vidé.');
+} else {
+    $log('AVERTISSEMENT : ni APCu ni APC disponible, cache non vidé.');
 }
 
 // --- 2. Fichiers ckcspcache > 1 jour ---
-$cacheDir = _PS_MODULE_DIR_ . 'ckcspcache/cache/sp';
+$cacheDir = __DIR__ . '/modules/ckcspcache/cache/sp';
 $log('Nettoyage ckcspcache : ' . $cacheDir);
 
 if (!is_dir($cacheDir)) {
