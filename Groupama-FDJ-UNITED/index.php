@@ -2,6 +2,8 @@
 header('Content-Type: text/html; charset=utf-8');
 
 $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/Groupama-FDJ-UNITED/index.php')), '/');
+$devisTypeformUrl = 'https://form.typeform.com/to/yOwTEWUh';
+$devisTypeformId = 'yOwTEWUh';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -57,7 +59,7 @@ $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/Gr
             </div>
           </div>
           <p class="gfu-wheel-mention">*Votre participation sera prise en compte lors de la validation de votre commande Districlos. R&eacute;serv&eacute; aux particuliers.</p>
-          <a class="gfu-devis-btn" href="/module/opartdevis/simplequotation">Demander un devis</a>
+          <a class="gfu-devis-btn" href="<?= htmlspecialchars($devisTypeformUrl, ENT_QUOTES) ?>" data-tf-popup="<?= htmlspecialchars($devisTypeformId, ENT_QUOTES) ?>" data-tf-size="70" data-tf-opacity="100" data-tf-keep-session="true">Demander un devis</a>
         </div>
       </section>
     </div>
@@ -111,7 +113,7 @@ $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/Gr
         </div>
 
         <div class="gfu-categories-cta">
-          <a class="gfu-cta-pill" href="/module/opartdevis/simplequotation">Demander un devis</a>
+          <a class="gfu-cta-pill" href="<?= htmlspecialchars($devisTypeformUrl, ENT_QUOTES) ?>" data-tf-popup="<?= htmlspecialchars($devisTypeformId, ENT_QUOTES) ?>" data-tf-size="70" data-tf-opacity="100" data-tf-keep-session="true">Demander un devis</a>
         </div>
       </section>
 
@@ -174,7 +176,7 @@ $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/Gr
             <h2 class="gfu-impact-title">Concrètement, qu&rsquo;est-ce que ça change pour vous&nbsp;?</h2>
             <p class="gfu-impact-text">Avec des millions de visiteurs sur notre site et des milliers de projets r&eacute;alis&eacute;s chaque ann&eacute;e, Districlos accompagne particuliers et professionnels dans leurs am&eacute;nagements ext&eacute;rieurs.</p>
             <p class="gfu-impact-text">Notre objectif&nbsp;: vous proposer des solutions simples, esth&eacute;tiques et durables pour s&eacute;curiser et valoriser votre maison&nbsp;!</p>
-            <a class="gfu-impact-cta" href="/module/opartdevis/simplequotation">Demander un devis</a>
+            <a class="gfu-impact-cta" href="<?= htmlspecialchars($devisTypeformUrl, ENT_QUOTES) ?>" data-tf-popup="<?= htmlspecialchars($devisTypeformId, ENT_QUOTES) ?>" data-tf-size="70" data-tf-opacity="100" data-tf-keep-session="true">Demander un devis</a>
           </div>
 
           <div class="gfu-impact-right" aria-label="Illustrations">
@@ -205,5 +207,6 @@ $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/Gr
 
   <script src="<?= htmlspecialchars($basePath, ENT_QUOTES) ?>/wheel.js" defer></script>
   <script src="<?= htmlspecialchars($basePath, ENT_QUOTES) ?>/landing.min.js" defer></script>
+  <script src="//embed.typeform.com/next/embed.js" defer></script>
 </body>
 </html>
