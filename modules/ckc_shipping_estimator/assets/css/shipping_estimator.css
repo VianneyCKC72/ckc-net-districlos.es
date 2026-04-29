@@ -309,6 +309,19 @@ a.estimate-shipping-cost-btn {
    .zipcode-input-container {
        width: auto !important;
    }
+   .modal-shipping-content .container {
+    padding: 2rem;
+    }
+    .modal-shipping-content {
+        overflow-y: auto;
+    }
+    .form-shipping {
+        width: 100%;
+    }
+    .close-shipping-btn {
+        position: sticky;
+        float: right;
+    }
    .ckc-shipping-estimator-block {
     width: 100%;
     flex-direction: row;
