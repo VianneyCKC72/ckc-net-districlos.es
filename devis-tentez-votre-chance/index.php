@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
 
-$basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/Groupama-FDJ-UNITED/index.php')), '/');
+$basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/devis-tentez-votre-chance/index.php')), '/');
 $devisTypeformUrl = 'https://form.typeform.com/to/yOwTEWUh';
 $devisTypeformId = 'yOwTEWUh';
 ?>
