@@ -155,7 +155,7 @@ function getQuotesForExport(): array
         }
         $row['nom_employee'] = extractEmployeeFirstname($row['name'] ?? '');
         $row['montant_ttc'] = number_format($montantTtc, 2, ',', ' ');
-        unset($row['id_cart'], $row['name'], $row['id_customer']);
+        unset($row['name'], $row['id_customer']);
 
         $result[] = $row;
     }
@@ -176,8 +176,8 @@ function writeCsv(string $filepath, array $rows): bool
     // BOM UTF-8 pour Excel
     fwrite($handle, "\xEF\xBB\xBF");
 
-    $columns = ['nom', 'prenom', 'tel', 'date_devis', 'nom_employee', 'montant_ttc'];
-    $headers = ['Nom', 'Prénom', 'Tel', 'Date devis', 'Nom de l\'employee', 'Montant TTC'];
+    $columns = ['nom', 'prenom', 'tel', 'date_devis', 'nom_employee', 'montant_ttc', 'id_opartdevis', 'id_cart'];
+    $headers = ['Nom', 'Prénom', 'Tel', 'Date devis', 'Nom de l\'employee', 'Montant TTC', 'ID devis', 'ID panier'];
     fputcsv($handle, $headers, ';');
 
     foreach ($rows as $row) {
