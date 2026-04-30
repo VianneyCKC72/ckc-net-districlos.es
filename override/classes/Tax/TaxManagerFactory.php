@@ -98,9 +98,9 @@ class TaxManagerFactory extends TaxManagerFactoryCore
                     if ($pid && $pid !== $serviceId) return $pid; // premier non-service
                 }
                 return 0;*/
-        $id_main_product = Db::getInstance()->executeS('SELECT id_main_product FROM '._DB_PREFIX_.'dealt_tva_attestation 
+        $id_main_product = Db::getInstance()->executeS('SELECT id_main_product FROM '._DB_PREFIX_.'dealt_tva_attestation
         WHERE id_cart = '.$cart->id);
-        return $id_main_product[0]['id_main_product'];
+        return (int) ($id_main_product[0]['id_main_product'] ?? 0);
     }
 
     protected static function getSelectedCarrierId(Cart $cart): int
