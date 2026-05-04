@@ -896,6 +896,96 @@ class DealtHookHelper
         return false;
     }
 
+    /**
+     * IDs des produits « service Dealt » encore justifiés par au moins une ligne
+     * produit non-service du panier.
+     *
+     * @return array<int, true>
+     */
+    private static function collectEligibleDealtServiceProductIdsForCart(Context $ctx, \Cart $cart): array
+    {
+        $eligible = [];
+        $idLang = (int) $ctx->language->id;
+
+        $checkIfPack = false;
+        $idPack = null;
+        $idPackMainProduct = null;
+
+        if (isset($ctx->cookie->cart_packs)) {
+            $cookiePack = json_decode($ctx->cookie->cart_packs);
+            if (!empty($cookiePack->id_cart) && !empty($cookiePack->id_pack)) {
+                if ((int) $cookiePack->id_cart === (int) $cart->id) {
+                    $checkIfPack = self::checkIfPack((int) $cookiePack->id_pack, $cart);
+                    if ($checkIfPack) {
+                        $idPack = (int) $cookiePack->id_pack;
+                        $idPackMainProduct = Db::getInstance()->executeS(
+                            'SELECT pap.id_product, pap.default_id_product_attribute FROM `' . _DB_PREFIX_ . 'pm_advancedpack_products` pap
+                             WHERE pap.id_pack = ' . (int) $idPack . ' AND pap.position = 0'
+                        );
+                    }
+                }
+            }
+        }
+
+        foreach ($cart->getProducts() as $row) {
+            $mainId = (int) $row['id_product'];
+            $main = new \Product($mainId, false, $idLang);
+            if (!empty($main->reference) && self::isServiceReference((string) $main->reference)) {
+                continue;
+            }
+
+            if ($checkIfPack && !empty($idPackMainProduct[0]['id_product']) && $mainId === (int) $idPackMainProduct[0]['id_product'] && $idPack) {
+                $serviceIds = self::getServiceProductIds($ctx, $idPack);
+            } else {
+                $serviceIds = self::getServiceProductIds($ctx, $mainId);
+            }
+
+            foreach ($serviceIds as $sid) {
+                $eligible[(int) $sid] = true;
+            }
+        }
+
+        return $eligible;
+    }
+
+    /**
+     * Retire les lignes panier dont la référence est un service Dealt mais pour lesquelles
+     * aucun produit principal du panier ne propose encore ce service.
+     */
+    public static function removeOrphanDealtServicesFromCart(\Context $ctx, \Cart $cart): void
+    {
+        if (!$cart || !(int) $cart->id) {
+            return;
+        }
+        if (self::isProShop($ctx)) {
+            return;
+        }
+
+        $idLang = (int) $ctx->language->id;
+        $eligible = self::collectEligibleDealtServiceProductIdsForCart($ctx, $cart);
+
+        $toRemove = [];
+        foreach ($cart->getProducts() as $row) {
+            $pid = (int) $row['id_product'];
+            $prod = new \Product($pid, false, $idLang);
+            if (empty($prod->reference) || !self::isServiceReference((string) $prod->reference)) {
+                continue;
+            }
+            if (isset($eligible[$pid])) {
+                continue;
+            }
+            $toRemove[] = $row;
+        }
+
+        foreach ($toRemove as $row) {
+            $pid = (int) $row['id_product'];
+            $idAttr = (int) ($row['id_product_attribute'] ?? 0);
+            $idCust = (int) ($row['id_customization'] ?? 0);
+            $idAddr = (int) ($row['id_address_delivery'] ?? 0);
+            $cart->updateQty(0, $pid, $idAttr, $idCust > 0 ? $idCust : false, 'up', $idAddr);
+        }
+    }
+
     public static function getAttributesInformationsByProduct($id_product, $id_product_attribute)
     {
         $sql = '
@@ -928,7 +1018,7 @@ class DealtHookHelper
 
         $length = (float)$length - 0.5;
 
-        // Récupère les ids services via les catégories "enfants de 369"
+        // Récupère les ids services via les catégories "enfants de 369" 
         $serviceIds = self::getServiceProductIds($ctx, $mainId);
         foreach ($serviceIds as $sid) {
             $srv = new \Product($sid, false, $idLang);
