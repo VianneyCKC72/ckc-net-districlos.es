@@ -1622,12 +1622,19 @@ class AdvancedPack extends Product
     {
         $idProductAttribute = false;
         $combinationObj = null;
+        $ctx = self::getContext();
+        $idCartForLookup = 0;
+        if (Validate::isLoadedObject($ctx->cart) && (int) $ctx->cart->id > 0) {
+            $idCartForLookup = (int) $ctx->cart->id;
+        } elseif (isset($ctx->cookie->id_cart) && (int) $ctx->cookie->id_cart > 0) {
+            $idCartForLookup = (int) $ctx->cookie->id_cart;
+        }
         if ($packUniqueHash !== false) {
-            $idProductAttribute = (int)Db::getInstance()->getValue('SELECT `id_product_attribute_pack` FROM `' . _DB_PREFIX_ . 'pm_advancedpack_cart_products` WHERE `id_order` IS NULL AND `unique_hash` = "' . pSQL($packUniqueHash) . '" AND `id_pack` = ' . (int)$idPack . ' AND `id_cart` = ' . (int)self::getContext()->cookie->id_cart);
+            $idProductAttribute = (int)Db::getInstance()->getValue('SELECT `id_product_attribute_pack` FROM `' . _DB_PREFIX_ . 'pm_advancedpack_cart_products` WHERE `id_order` IS NULL AND `unique_hash` = "' . pSQL($packUniqueHash) . '" AND `id_pack` = ' . (int)$idPack . ' AND `id_cart` = ' . $idCartForLookup);
             if ($idProductAttribute) {
                 $combinationObj = new Combination($idProductAttribute);
                 if (!Validate::isLoadedObject($combinationObj)) {
-                    Db::getInstance()->getValue('DELETE FROM `' . _DB_PREFIX_ . 'pm_advancedpack_cart_products` WHERE `id_product_attribute_pack`=' . (int)$idProductAttribute . ' AND `id_order` IS NULL AND `unique_hash` = "' . pSQL($packUniqueHash) . '" AND `id_pack` = ' . (int)$idPack . ' AND `id_cart` = ' . (int)self::getContext()->cookie->id_cart);
+                    Db::getInstance()->getValue('DELETE FROM `' . _DB_PREFIX_ . 'pm_advancedpack_cart_products` WHERE `id_product_attribute_pack`=' . (int)$idProductAttribute . ' AND `id_order` IS NULL AND `unique_hash` = "' . pSQL($packUniqueHash) . '" AND `id_pack` = ' . (int)$idPack . ' AND `id_cart` = ' . $idCartForLookup);
                     $idProductAttribute = false;
                 }
             }
@@ -2378,8 +2385,15 @@ class AdvancedPack extends Product
                 sort($packExcludeList);
             }
 
+            $idCartForTrace = 0;
+            if (Validate::isLoadedObject($context->cart) && (int) $context->cart->id > 0) {
+                $idCartForTrace = (int) $context->cart->id;
+            } elseif (isset($context->cookie->id_cart) && (int) $context->cookie->id_cart > 0) {
+                $idCartForTrace = (int) $context->cookie->id_cart;
+            }
+
             $packUniqueHash = md5(
-                (int) $context->cookie->id_cart
+                $idCartForTrace
                 . '-' . (int) $idPack
                 . '-' . serialize($idProductAttributeList)
                 . (count($customizationList) ? serialize($customizationList) : '')
@@ -2407,7 +2421,7 @@ class AdvancedPack extends Product
                     $packProduct['id_product_attribute'] = $productPackIdAttribute;
                     $packCustomizationList = (isset($customizationList[(int)$packProduct['id_product_pack']]) ? $customizationList[(int)$packProduct['id_product_pack']] : null);
                     $acpValues[] = '('
-                        . (int) $context->cookie->id_cart . ', '
+                        . $idCartForTrace . ', '
                         . (int) $context->shop->id . ', '
                         . (int) $idPack . ', '
                         . (int) $packProduct['id_product_pack'] . ', '
@@ -2471,7 +2485,7 @@ class AdvancedPack extends Product
                     }
                 }
 
-                if (AdvancedPackCoreClass::_isFilledArray($acpValues)) {
+                if ($idCartForTrace > 0 && AdvancedPackCoreClass::_isFilledArray($acpValues)) {
                     $resPackAdd &= Db::getInstance()->execute(
                         'INSERT IGNORE INTO `' . _DB_PREFIX_ . 'pm_advancedpack_cart_products`
                         (`id_cart`, `id_shop`, `id_pack`, `id_product_pack`, `id_product_attribute_pack`, `id_product_attribute`, `unique_hash`, `customization_infos`)
