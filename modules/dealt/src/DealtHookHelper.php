@@ -22,6 +22,8 @@ class DealtHookHelper
      * Remplace les requêtes SHOW TABLES LIKE coûteuses
      */
     private static $pm_advancedpack_installed = null;
+    /** @var array<int, array{ok:bool,packId:int,main:?array}> Cache contexte pack par id_cart */
+    private static $packCtxCache = [];
 
     private const SERVICES_PARENT_CATEGORY_ID = 369;
     private const PRO_SHOP_ID = 2;
@@ -896,93 +898,59 @@ class DealtHookHelper
         return false;
     }
 
-    /**
-     * IDs des produits « service Dealt » encore justifiés par au moins une ligne
-     * produit non-service du panier.
-     *
-     * @return array<int, true>
-     */
-    private static function collectEligibleDealtServiceProductIdsForCart(Context $ctx, \Cart $cart): array
+    /** Contexte pack (cookie) pour le panier courant — une seule requête, mis en cache. */
+    private static function packCtx(Context $ctx, \Cart $cart): array
     {
+        $cid = (int)$cart->id;
+        if (isset(self::$packCtxCache[$cid])) {
+            return self::$packCtxCache[$cid];
+        }
+        $def = ['ok' => false, 'packId' => 0, 'main' => null];
+        $c = isset($ctx->cookie->cart_packs) ? json_decode($ctx->cookie->cart_packs) : null;
+        if (!$c || empty($c->id_cart) || (int)$c->id_cart !== $cid || empty($c->id_pack) || !self::checkIfPack((int)$c->id_pack, $cart)) {
+            return self::$packCtxCache[$cid] = $def;
+        }
+        return self::$packCtxCache[$cid] = [
+            'ok' => true, 'packId' => (int)$c->id_pack,
+            'main' => Db::getInstance()->executeS('SELECT pap.id_product, pap.default_id_product_attribute FROM `' . _DB_PREFIX_ . 'pm_advancedpack_products` pap WHERE pap.id_pack = ' . (int)$c->id_pack . ' AND pap.position = 0'),
+        ];
+    }
+
+    /** @return array<int,true> IDs des produits du panier dont la référence est dans dealt_service */
+    private static function dealtServiceIdsInCart(array $rows): array
+    {
+        $ids = implode(',', array_map(fn($r) => (int)$r['id_product'], $rows));
+        $found = Db::getInstance()->executeS(
+            'SELECT p.id_product FROM `' . _DB_PREFIX_ . 'product` p INNER JOIN `' . _DB_PREFIX_ . 'dealt_service` ds ON ds.reference = p.reference WHERE p.id_product IN (' . $ids . ')'
+        ) ?: [];
+
+        return array_fill_keys(array_column($found, 'id_product'), true);
+    }
+
+    /** Retire du panier les poses Dealt dont le produit principal a été supprimé. */
+    public static function removeOrphanDealtServicesFromCart(\Context $ctx, \Cart $cart): void
+    {
+        if (!$cart || !(int)$cart->id || self::isProShop($ctx) || !($rows = $cart->getProducts())) {
+            return;
+        }
+        $dealt  = self::dealtServiceIdsInCart($rows);
+        $pack   = self::packCtx($ctx, $cart);
+        $m0     = (int)($pack['main'][0]['id_product'] ?? 0);
         $eligible = [];
-        $idLang = (int) $ctx->language->id;
-
-        $checkIfPack = false;
-        $idPack = null;
-        $idPackMainProduct = null;
-
-        if (isset($ctx->cookie->cart_packs)) {
-            $cookiePack = json_decode($ctx->cookie->cart_packs);
-            if (!empty($cookiePack->id_cart) && !empty($cookiePack->id_pack)) {
-                if ((int) $cookiePack->id_cart === (int) $cart->id) {
-                    $checkIfPack = self::checkIfPack((int) $cookiePack->id_pack, $cart);
-                    if ($checkIfPack) {
-                        $idPack = (int) $cookiePack->id_pack;
-                        $idPackMainProduct = Db::getInstance()->executeS(
-                            'SELECT pap.id_product, pap.default_id_product_attribute FROM `' . _DB_PREFIX_ . 'pm_advancedpack_products` pap
-                             WHERE pap.id_pack = ' . (int) $idPack . ' AND pap.position = 0'
-                        );
-                    }
+        foreach ($rows as $r) {
+            $mid = (int)$r['id_product'];
+            if (!isset($dealt[$mid])) {
+                $lookupId = ($pack['ok'] && $m0 && $mid === $m0) ? $pack['packId'] : $mid;
+                foreach (self::getServiceProductIds($ctx, $lookupId) as $s) {
+                    $eligible[$s] = true;
                 }
             }
         }
-
-        foreach ($cart->getProducts() as $row) {
-            $mainId = (int) $row['id_product'];
-            $main = new \Product($mainId, false, $idLang);
-            if (!empty($main->reference) && self::isServiceReference((string) $main->reference)) {
-                continue;
+        foreach ($rows as $r) {
+            $pid = (int)$r['id_product'];
+            if (isset($dealt[$pid]) && !isset($eligible[$pid])) {
+                $cart->updateQty(0, $pid, (int)($r['id_product_attribute'] ?? 0), (int)($r['id_customization'] ?? 0) ?: false, 'up', (int)($r['id_address_delivery'] ?? 0));
             }
-
-            if ($checkIfPack && !empty($idPackMainProduct[0]['id_product']) && $mainId === (int) $idPackMainProduct[0]['id_product'] && $idPack) {
-                $serviceIds = self::getServiceProductIds($ctx, $idPack);
-            } else {
-                $serviceIds = self::getServiceProductIds($ctx, $mainId);
-            }
-
-            foreach ($serviceIds as $sid) {
-                $eligible[(int) $sid] = true;
-            }
-        }
-
-        return $eligible;
-    }
-
-    /**
-     * Retire les lignes panier dont la référence est un service Dealt mais pour lesquelles
-     * aucun produit principal du panier ne propose encore ce service.
-     */
-    public static function removeOrphanDealtServicesFromCart(\Context $ctx, \Cart $cart): void
-    {
-        if (!$cart || !(int) $cart->id) {
-            return;
-        }
-        if (self::isProShop($ctx)) {
-            return;
-        }
-
-        $idLang = (int) $ctx->language->id;
-        $eligible = self::collectEligibleDealtServiceProductIdsForCart($ctx, $cart);
-
-        $toRemove = [];
-        foreach ($cart->getProducts() as $row) {
-            $pid = (int) $row['id_product'];
-            $prod = new \Product($pid, false, $idLang);
-            if (empty($prod->reference) || !self::isServiceReference((string) $prod->reference)) {
-                continue;
-            }
-            if (isset($eligible[$pid])) {
-                continue;
-            }
-            $toRemove[] = $row;
-        }
-
-        foreach ($toRemove as $row) {
-            $pid = (int) $row['id_product'];
-            $idAttr = (int) ($row['id_product_attribute'] ?? 0);
-            $idCust = (int) ($row['id_customization'] ?? 0);
-            $idAddr = (int) ($row['id_address_delivery'] ?? 0);
-            $cart->updateQty(0, $pid, $idAttr, $idCust > 0 ? $idCust : false, 'up', $idAddr);
         }
     }
 
