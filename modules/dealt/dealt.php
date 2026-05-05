@@ -14,7 +14,6 @@ class Dealt extends Module
      * Remplace les requêtes SHOW TABLES LIKE coûteuses
      */
     private static $pm_advancedpack_installed = null;
-    private static $dealtOrphanServiceCleanupLock = false;
 
     public function __construct()
     {
@@ -509,16 +508,6 @@ class Dealt extends Module
                     }
                 }
 
-            }
-        }
-
-        $cart = $params['cart'] ?? Context::getContext()->cart;
-        if ($cart && (int) $cart->id && !self::$dealtOrphanServiceCleanupLock) {
-            self::$dealtOrphanServiceCleanupLock = true;
-            try {
-                \Dealt\DealtHookHelper::removeOrphanDealtServicesFromCart(Context::getContext(), $cart);
-            } finally {
-                self::$dealtOrphanServiceCleanupLock = false;
             }
         }
     }
