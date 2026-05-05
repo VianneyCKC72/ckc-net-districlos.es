@@ -1212,7 +1212,11 @@ class ProductControllerCore extends ProductPresentingFrontControllerCore
 
         $product_full = Product::getProductProperties($this->context->language->id, $product, $this->context);
 
-        $product_full = $this->addProductCustomizationData($product_full);
+        if (!is_array($product_full)) {
+            $product_full = $product;
+        } else {
+            $product_full = $this->addProductCustomizationData($product_full);
+        }
 
         $product_full['show_quantities'] = (bool) (
             Configuration::get('PS_DISPLAY_QTIES')

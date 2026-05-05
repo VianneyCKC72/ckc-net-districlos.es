@@ -11,12 +11,15 @@ class TaxManagerFactory extends TaxManagerFactoryCore
         // Conditions globales : panier + FR + attestation
         if ($cart && $cart->id && self::isFr($address) && self::isAttested((int)$cart->id)) {
 
+            $serviceId      = self::getServiceProductId();
+            $serviceInCart  = $serviceId ? self::isProductInCart($cart, $serviceId) : false;
+            $mgr10          = self::buildFixedRateManager(10.0);
+
             // --- 1) PRODUIT SERVICE => 10 %
-            $serviceId = self::getServiceProductId();
-            if ($serviceId) {
+            if ($serviceId && $serviceInCart) {
                 $serviceTRG = (int)Product::getIdTaxRulesGroupByIdProduct($serviceId, $ctx);
-                if ($serviceTRG && (int)$type === $serviceTRG && self::isProductInCart($cart, $serviceId)) {
-                    if ($mgr = self::buildFixedRateManager(10.0)) return $mgr;
+                if ($serviceTRG && (int)$type === $serviceTRG && $mgr10) {
+                    return $mgr10;
                 }
             }
 
@@ -24,19 +27,18 @@ class TaxManagerFactory extends TaxManagerFactoryCore
             $mainId = self::getMainProductId($cart, $serviceId);
             if ($mainId) {
                 $mainTRG = (int)Product::getIdTaxRulesGroupByIdProduct($mainId, $ctx);
-                if ($mainTRG && (int)$type === $mainTRG) {
-                    if ($mgr = self::buildFixedRateManager(10.0)) return $mgr;
+                if ($mainTRG && (int)$type === $mainTRG && $mgr10) {
+                    return $mgr10;
                 }
             }
 
             // --- 3) TRANSPORTEUR => 10 % si service présent
-            if ($serviceId && self::isProductInCart($cart, $serviceId)) {
-                /*                $carrierId = self::getSelectedCarrierId($cart);*/
+            if ($serviceId && $serviceInCart) {
                 $carrierId = $cart->id_carrier;
                 if ($carrierId) {
                     $carrierTRG = (int)Carrier::getIdTaxRulesGroupByIdCarrier($carrierId);
-                    if ($carrierTRG && (int)$type === $carrierTRG) {
-                        if ($mgr = self::buildFixedRateManager(10.0)) return $mgr;
+                    if ($carrierTRG && (int)$type === $carrierTRG && $mgr10) {
+                        return $mgr10;
                     }
                 }
             }
@@ -70,17 +72,20 @@ class TaxManagerFactory extends TaxManagerFactoryCore
 
     protected static function getServiceProductId(): int
     {
-        $serviceId = Db::getInstance()->executeS('SELECT cp.id_product FROM '._DB_PREFIX_.'cart_product cp
-        LEFT JOIN '._DB_PREFIX_.'product p ON p.id_product = cp.id_product
-        WHERE p.id_category_default = 369 AND cp.id_cart = '.Context::getContext()->cart->id);
-        /*        // Idéalement: référence configurable en BO
-                $ref = '6846df4980a710f6d4b755c7';
-                return (int)Product::getIdByReference($ref);*/
-        if(!empty($serviceId[0]['id_product'])){
-            return $serviceId[0]['id_product'];
-        } else {
-            return 0;
+        static $cache = [];
+
+        $idCart = (int)Context::getContext()->cart->id;
+        if (isset($cache[$idCart])) {
+            return $cache[$idCart];
         }
+
+        $rows = Db::getInstance()->executeS(
+            'SELECT cp.id_product FROM '._DB_PREFIX_.'cart_product cp
+             LEFT JOIN '._DB_PREFIX_.'product p ON p.id_product = cp.id_product
+             WHERE p.id_category_default = 369 AND cp.id_cart = '.$idCart
+        );
+
+        return $cache[$idCart] = (int)($rows[0]['id_product'] ?? 0);
     }
 
     protected static function isProductInCart(Cart $cart, int $idProduct): bool
@@ -98,9 +103,9 @@ class TaxManagerFactory extends TaxManagerFactoryCore
                     if ($pid && $pid !== $serviceId) return $pid; // premier non-service
                 }
                 return 0;*/
-        $id_main_product = Db::getInstance()->executeS('SELECT id_main_product FROM '._DB_PREFIX_.'dealt_tva_attestation 
+        $id_main_product = Db::getInstance()->executeS('SELECT id_main_product FROM '._DB_PREFIX_.'dealt_tva_attestation
         WHERE id_cart = '.$cart->id);
-        return $id_main_product[0]['id_main_product'];
+        return (int) ($id_main_product[0]['id_main_product'] ?? 0);
     }
 
     protected static function getSelectedCarrierId(Cart $cart): int
@@ -122,13 +127,20 @@ class TaxManagerFactory extends TaxManagerFactoryCore
      */
     protected static function buildFixedRateManager(float $rate)
     {
+        static $cache = [];
+
+        $key = (string)$rate;
+        if (array_key_exists($key, $cache)) {
+            return $cache[$key];
+        }
+
         // Charger la classe du manager du module si nécessaire
         if (!class_exists('\Dealt\Tax\DealtFixedRateTaxManager')) {
             $path = _PS_MODULE_DIR_.'dealt/src/Tax/DealtFixedRateTaxManager.php';
             if (file_exists($path)) require_once $path;
         }
         if (!class_exists('\Dealt\Tax\DealtFixedRateTaxManager')) {
-            return null;
+            return $cache[$key] = null;
         }
 
         $idTax = (int)Db::getInstance()->getValue(
@@ -141,10 +153,12 @@ class TaxManagerFactory extends TaxManagerFactoryCore
         if (!$idTax && (int)$rate === 10) {
             $idTax = self::ensureTva10TaxId();
         }
-        if ($idTax <= 0) return null;
+        if ($idTax <= 0) {
+            return $cache[$key] = null;
+        }
 
         $calc = new TaxCalculator([new Tax((int)$idTax)]);
-        return new \Dealt\Tax\DealtFixedRateTaxManager($calc);
+        return $cache[$key] = new \Dealt\Tax\DealtFixedRateTaxManager($calc);
     }
 
     /**

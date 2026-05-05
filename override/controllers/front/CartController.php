@@ -197,7 +197,7 @@ class CartController extends CartControllerCore
         $prices = [];
         $price_ttc = number_format(round(0, 2), 2, ',', ' ').' €';
         foreach ($presented_cart['products'] as $key => $product) {
-            $price = $product->total_wt / $product->quantity;
+            $price = $product->quantity > 0 ? $product->total_wt / $product->quantity : 0;
             if ($product->id_customization) {
                 $cust_data = Db::getInstance()->getRow('SELECT *
                 FROM `' . _DB_PREFIX_ . 'customized_data`
