@@ -36,7 +36,7 @@
                         <source srcset="{$product.default_image.bySize.cart_default.sources.webp}"
                                 type="image/webp">{/if}
                     <img src="{$product.default_image.bySize.cart_default.url}" alt="{$product.name|escape:'quotes'}"
-                         loading="lazy">
+                         loading="lazy" width="125" height="125">
                 </picture>
             {else}
                 <picture>
@@ -46,7 +46,7 @@
                     {if !empty($urls.no_picture_image.bySize.cart_default.sources.webp)}
                         <source srcset="{$urls.no_picture_image.bySize.cart_default.sources.webp}"
                                 type="image/webp">{/if}
-                    <img src="{$urls.no_picture_image.bySize.cart_default.url}" loading="lazy"/>
+                    <img src="{$urls.no_picture_image.bySize.cart_default.url}" loading="lazy" width="125" height="125"/>
                 </picture>
             {/if}
 

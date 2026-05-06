@@ -24,7 +24,7 @@
  *}
 {block name='header_nav'}
   <nav class="header-nav">
-    <div class="container" style="margin-bottom: 50px;">
+    <div class="container">
       <div class="row">
         <div class="col-md-6 hidden-sm-down" id="_desktop_logo">
 {*            {renderLogo}*}
@@ -58,7 +58,7 @@
           </div>
         </div>
       </div>
-      <div id="mobile_top_menu_wrapper" class="row hidden-md-up" style="display:none;">
+      <div id="mobile_top_menu_wrapper" class="row hidden-md-up">
         <div class="js-top-menu mobile" id="_mobile_top_menu"></div>
         <div class="js-top-menu-bottom">
           <div id="_mobile_currency_selector"></div>

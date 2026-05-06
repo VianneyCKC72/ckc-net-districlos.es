@@ -49,12 +49,12 @@
                         <source srcset="{$product.default_image.medium.sources.avif}" type="image/avif">{/if}
                         {if !empty($product.default_image.medium.sources.webp)}
                             <source srcset="{$product.default_image.medium.sources.webp}" type="image/webp">{/if}
-                    <img src="{$product.default_image.medium.url}" loading="lazy"/>
+                    <img src="{$product.default_image.medium.url}" loading="lazy" width="452" height="452"/>
                   </picture>
 
 {else}
 
-                    <img src="{$urls.no_picture_image.bySize.medium_default.url}" loading="lazy"/>
+                    <img src="{$urls.no_picture_image.bySize.medium_default.url}" loading="lazy" width="452" height="452"/>
                 {/if}
               </span>
                             </div>

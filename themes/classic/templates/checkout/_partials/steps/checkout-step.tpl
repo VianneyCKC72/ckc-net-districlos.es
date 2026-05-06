@@ -44,8 +44,8 @@
     </h1>
 
     {* Barre de progression dynamique *}
-    <div class="progress-container">
-      <div class="progress-bar" style="width: {($position * 25)}%;"></div>
+    <div class="progress-container" style="--step-progress: {($position * 25)}%;">
+      <div class="progress-bar"></div>
     </div>
 
     <div class="content mt-3">
