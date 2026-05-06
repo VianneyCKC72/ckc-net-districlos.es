@@ -734,32 +734,30 @@ class Dealt extends Module
 
             $orders = Db::getInstance()->executeS('SELECT id_order FROM `' . _DB_PREFIX_ . 'orders` WHERE id_cart = ' . $params['cart']->id);
 
-            // retrouver une commande avec un service si attestation TVA = 1
-            $order_with_service = 0;
+            // Une seule passe : instanciation + getProducts() une fois par commande
+            $order_with_service = null;
+            $ordersData = [];
             foreach ($orders as $orderId) {
                 $order = new Order((int)$orderId['id_order']);
                 $products = $order->getProducts();
+                $has_service = false;
                 foreach ($products as $key => $product) {
-                    if((int)$products[$key]['id_category_default'] == 369){
-                        $order_with_service = $order;
+                    if ((int)$products[$key]['id_category_default'] == 369) {
+                        $has_service = true;
+                        if ($order_with_service === null) {
+                            $order_with_service = $order;
+                        }
                         break;
                     }
                 }
+                $ordersData[] = ['order' => $order, 'has_service' => $has_service];
             }
 
-            foreach ($orders as $orderId) {
-                $is_order_with_service = 0;
-                $order = new Order((int)$orderId['id_order']);
-                $products = $order->getProducts();
-                foreach ($products as $key => $product) {
-                    if((int)$products[$key]['id_category_default'] == 369){
-                        $is_order_with_service = 1;
-                        break;
-                    }
-                }
+            foreach ($ordersData as $data) {
+                $order = $data['order'];
 
                 // mise à jour du transporteur de la commande sans service (20%)
-                if(!$is_order_with_service){
+                if (!$data['has_service']){
 
                     $order->id_carrier = (int)$order_with_service->id_carrier;
                     $order->total_paid = $order->total_products_wt;

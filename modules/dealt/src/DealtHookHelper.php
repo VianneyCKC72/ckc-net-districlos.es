@@ -723,12 +723,11 @@ class DealtHookHelper
         $cartProducts = $cart->getProducts();
 
         // Services déjà dans le panier (pour ne pas les re-proposer)
+        // $row['reference'] est déjà fourni par getProducts() — pas besoin de new Product()
         $serviceIdsInCart = [];
         foreach ($cartProducts as $row) {
-            $pid  = (int)$row['id_product'];
-            $prod = new \Product($pid, false, $idLang);
-            if (!empty($prod->reference) && self::isServiceReference((string)$prod->reference)) {
-                $serviceIdsInCart[$pid] = true;
+            if (!empty($row['reference']) && self::isServiceReference((string)$row['reference'])) {
+                $serviceIdsInCart[(int)$row['id_product']] = true;
             }
         }
 
@@ -798,7 +797,12 @@ class DealtHookHelper
                     $lengthPerUnit = $main->width / 100;
                     $length = $lengthPerUnit * (int)$row['quantity'];
                 } else {
-                    $features = Product::getFrontFeaturesStatic(Context::getContext()->language->id, (int)$row['id_product']);
+                    static $featuresCache = [];
+                    $fCacheKey = (int)$row['id_product'] . '_' . (int)Context::getContext()->language->id;
+                    if (!isset($featuresCache[$fCacheKey])) {
+                        $featuresCache[$fCacheKey] = \Product::getFrontFeaturesStatic(Context::getContext()->language->id, (int)$row['id_product']);
+                    }
+                    $features = $featuresCache[$fCacheKey];
                     foreach ($features as $feature){
                         if($feature['name'] == 'Longueur'){
                             if(preg_match('/mm/', $feature['value']) OR preg_match('/MM/', $feature['value'])){
