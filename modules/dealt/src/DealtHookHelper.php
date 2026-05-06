@@ -709,6 +709,8 @@ class DealtHookHelper
     /** Données pour displayShoppingCartFooter (panier) */
     public static function buildCartFooterData(Context $ctx): array
     {
+        static $cache = [];
+
         $cart   = $ctx->cart;
         $idLang = (int)$ctx->language->id;
 
@@ -717,6 +719,11 @@ class DealtHookHelper
                 'dealt_cart_services' => [],
                 'dealt_tva_enabled'   => false,
             ];
+        }
+
+        $cacheKey = (int)$cart->id . '_' . $idLang;
+        if (isset($cache[$cacheKey])) {
+            return $cache[$cacheKey];
         }
 
         // Appel unique à getProducts() pour tout buildCartFooterData
@@ -888,9 +895,9 @@ class DealtHookHelper
             'dealt_toggle_tva_url' => $ctx->link->getModuleLink('dealt', 'tvaToggle'),
         ];
 
-        \Media::addJsDef($data); // si ton JS lit ces données
+        \Media::addJsDef($data);
 
-        return $data;
+        return $cache[$cacheKey] = $data;
     }
 
     public static function checkIfPack($id_pack,$cart){
