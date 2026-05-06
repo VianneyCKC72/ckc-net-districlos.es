@@ -961,11 +961,16 @@ class Dealt extends Module
 
         // S'assurer que id_category_default est présent dans les données du produit
         if (!isset($product['id_category_default']) && isset($product['id_product'])) {
-            $product['id_category_default'] = (int)Db::getInstance()->getValue(
-                'SELECT id_category_default FROM ' . _DB_PREFIX_ . 'product_shop 
-                WHERE id_product = ' . (int)$product['id_product'] . ' 
-                AND id_shop = ' . (int)$this->context->shop->id
-            );
+            static $categoryDefaultCache = [];
+            $pid = (int)$product['id_product'];
+            if (!array_key_exists($pid, $categoryDefaultCache)) {
+                $categoryDefaultCache[$pid] = (int)Db::getInstance()->getValue(
+                    'SELECT id_category_default FROM ' . _DB_PREFIX_ . 'product_shop
+                    WHERE id_product = ' . $pid . '
+                    AND id_shop = ' . (int)$this->context->shop->id
+                );
+            }
+            $product['id_category_default'] = $categoryDefaultCache[$pid];
         }
 
         DealtHookHelper::applyTvaOnPresentedCartProduct($this->context, $product); // passe par référence
