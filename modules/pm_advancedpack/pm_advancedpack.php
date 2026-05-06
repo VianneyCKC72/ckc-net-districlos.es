@@ -2413,7 +2413,21 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             return;
         }
         $combination = $params['object'];
-        Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'pm_advancedpack_cart_products` WHERE `cleaned`=0 AND `id_product_attribute_pack`=' . (int)$combination->id);
+        // Do not delete ordered history: keep rows with id_order, mark them cleaned instead.
+        // Only delete rows that are still linked to an un-ordered cart.
+        Db::getInstance()->execute(
+            'DELETE FROM `' . _DB_PREFIX_ . 'pm_advancedpack_cart_products`
+            WHERE `id_order` IS NULL
+            AND `cleaned`=0
+            AND `id_product_attribute_pack`=' . (int)$combination->id
+        );
+        Db::getInstance()->execute(
+            'UPDATE `' . _DB_PREFIX_ . 'pm_advancedpack_cart_products`
+            SET `cleaned`=1
+            WHERE `id_order` IS NOT NULL
+            AND `cleaned`=0
+            AND `id_product_attribute_pack`=' . (int)$combination->id
+        );
         Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'pm_advancedpack_products_attributes` WHERE `id_product_attribute`=' . (int)$combination->id);
         $sql = new DbQuery();
         $sql->select('DISTINCT `id_product_attribute_pack`, `id_pack`');

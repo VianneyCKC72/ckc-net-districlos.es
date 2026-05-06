@@ -248,6 +248,13 @@
                             </div>
                         {/if}
 
+                        {*
+                          AP5 pack content (variants of pack items).
+                          Ne pas dépendre de $groups (qui concerne les déclinaisons du PRODUIT pack),
+                          sinon le bloc disparaît et ne revient qu'après une sauvegarde BO qui peut recréer des groupes.
+                        *}
+                        {include file='module:pm_advancedpack/views/templates/front/8/pack-product-list.tpl'}
+
                         {if $product.is_customizable && count($product.customizations.fields)}
 
                             {block name='product_customization'}
@@ -275,15 +282,6 @@
                                     <input type="hidden" name="is_pack" value="1" id="is_pack">
                                     <input type="hidden" name="id_customization" value="{$product.id_customization}"
                                            id="product_customization_id" class="js-product-customization-id">
-
-                                    {if isset($groups) && $groups|count > 0}
-
-                                        {block name='product_variants'}
-                                            {include file='module:pm_advancedpack/views/templates/front/8/pack-product-list.tpl'}
-                                        {/block}
-
-                                    {/if}
-
 
                                     {block name='product_pack'}
 
