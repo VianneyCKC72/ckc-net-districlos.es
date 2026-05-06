@@ -107,11 +107,11 @@
             <h3 style="margin-bottom:0!important" class="title_descr"><strong>Vous avez du talent !</strong></h3>
           </div>
           <div class="contenair-img">
-            <img src="/img/cms/auth/occultante.JPG" alt="occultante">
-            <img src="/img/cms/auth/panneau_rigide.jpg" alt="panneau rigide">
-            <img src="/img/cms/auth/pente.jpg" alt="pente">
-            <img src="/img/cms/auth/portail.jpg" alt="portail">
-            <img src="/img/cms/auth/toile.jpg" alt="toile">
+            <picture><source srcset="/img/cms/auth/occultante.webp" type="image/webp"><img src="/img/cms/auth/occultante.JPG" alt="occultante" loading="lazy"></picture>
+            <picture><source srcset="/img/cms/auth/panneau_rigide.webp" type="image/webp"><img src="/img/cms/auth/panneau_rigide.jpg" alt="panneau rigide" loading="lazy"></picture>
+            <picture><source srcset="/img/cms/auth/pente.webp" type="image/webp"><img src="/img/cms/auth/pente.jpg" alt="pente" loading="lazy"></picture>
+            <picture><source srcset="/img/cms/auth/portail.webp" type="image/webp"><img src="/img/cms/auth/portail.jpg" alt="portail" loading="lazy"></picture>
+            <picture><source srcset="/img/cms/auth/toile.webp" type="image/webp"><img src="/img/cms/auth/toile.jpg" alt="toile" loading="lazy"></picture>
           </div>
         </div>
       </div>

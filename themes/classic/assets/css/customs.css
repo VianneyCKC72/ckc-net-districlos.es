@@ -1,0 +1,56 @@
+/* ==========================================================================
+   checkout/_partials/header.tpl
+   ========================================================================== */
+.header-nav .container {
+    margin-bottom: 50px;
+}
+
+#mobile_top_menu_wrapper {
+    display: none;
+}
+
+/* ==========================================================================
+   cart.tpl / checkout.tpl — lien "Retour à la boutique"
+   ========================================================================== */
+.exitCart {
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+.exitCart svg {
+    max-width: 15px;
+}
+
+/* ==========================================================================
+   cart.tpl — bloc réassurance bas de page
+   ========================================================================== */
+.reassu-cart {
+    margin-top: 70px;
+    margin-bottom: 70px;
+}
+
+/* ==========================================================================
+   checkout/_partials/alert-exit-cart.tpl
+   ========================================================================== */
+#confirmModal .modal-dialog {
+    margin: 50px auto;
+}
+
+/* ==========================================================================
+   checkout/_partials/cart-voucher.tpl
+   ========================================================================== */
+.collapse-toggle,
+.chevron-toggle {
+    cursor: pointer;
+}
+
+.chevron-toggle {
+    transition: transform 0.3s;
+}
+
+/* ==========================================================================
+   checkout/_partials/steps/checkout-step.tpl — barre de progression
+   ========================================================================== */
+.progress-container .progress-bar {
+    width: var(--step-progress, 0%);
+}
