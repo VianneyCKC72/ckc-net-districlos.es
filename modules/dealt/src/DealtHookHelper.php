@@ -277,6 +277,7 @@ class DealtHookHelper
             'longueur_min' => ['longueur_min'],
             'longueur_max' => ['longueur_max'],
             'reference' => ['reference'],
+            'includes_length' => ['includes_length'],
         ];
 
         $selectParts = [];
@@ -839,12 +840,9 @@ class DealtHookHelper
                 $srv = new \Product($sid, false, $idLang);
                 $priceTtc = \Product::getPriceStatic($sid, true);
                 $serviceRow = self::getServiceRowByProductId($sid) ?: [];
+                $checkIncludesLength = (int)($serviceRow['includes_length'] ?? 0);
 
-                $checkIncludesLength = Db::getInstance()->getValue('SELECT d.includes_length FROM ' . _DB_PREFIX_ . 'dealt_service d
-                LEFT JOIN ' . _DB_PREFIX_ . 'product p ON p.reference = d.reference 
-                WHERE p.id_product = ' . $sid);
-
-                if($length <= $serviceRow['longueur_max'] && $length >= $serviceRow['longueur_min'] OR !(int)$checkIncludesLength){
+                if($length <= $serviceRow['longueur_max'] && $length >= $serviceRow['longueur_min'] OR !$checkIncludesLength){
                     $services[] = [
                         // Contexte main
                         'main_product_id'   => $checkIfPack && !empty($idPackMainProduct[0]['id_product']) && $mainId == $idPackMainProduct[0]['id_product'] && !empty($idPack) ? $idPack : $mainId,

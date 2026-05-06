@@ -574,11 +574,22 @@ class Dealt extends Module
                 $offerId = '';
                 $storeId = '';
 
+                // Batch : une seule requête pour toutes les catégories des produits de la commande
+                $orderProductIds = array_unique(array_map(fn($d) => (int)$d['product_id'], $orderDetails));
+                $categoryDefaultMap = [];
+                if ($orderProductIds) {
+                    $catRows = Db::getInstance()->executeS(
+                        'SELECT id_product, id_category_default FROM `' . _DB_PREFIX_ . 'product`
+                        WHERE id_product IN (' . implode(',', $orderProductIds) . ')'
+                    );
+                    foreach ($catRows as $catRow) {
+                        $categoryDefaultMap[(int)$catRow['id_product']] = (int)$catRow['id_category_default'];
+                    }
+                }
+
                 foreach ($orderDetails as $orderDetail) {
                     $containsService = false;
-                    $defaultCategory = Db::getInstance()->executeS('SELECT id_category_default FROM `' . _DB_PREFIX_ . 'product`
-                WHERE `id_product` = ' . (int)$orderDetail['product_id']);
-                    if ($defaultCategory[0]['id_category_default'] == 369) {
+                    if (($categoryDefaultMap[(int)$orderDetail['product_id']] ?? 0) == 369) {
                         $taxPercentage = 100 + (int)$orderDetail['tax_rate'];
                         $servicePrice = $orderDetail['product_price'] / 100 * $taxPercentage;
                         $serviceProduct = new \Product($orderDetail['product_id'], false, $idlang);
