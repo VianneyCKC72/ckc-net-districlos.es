@@ -39,7 +39,7 @@
           <source srcset="{$urls.no_picture_image.bySize.small_default.sources.avif}" type="image/avif">{/if}
           {if !empty($urls.no_picture_image.bySize.small_default.sources.webp)}
           <source srcset="{$urls.no_picture_image.bySize.small_default.sources.webp}" type="image/webp">{/if}
-          <img src="{$urls.no_picture_image.bySize.small_default.url}" loading="lazy" width="98" height="98" />
+          <img src="{$urls.no_picture_image.bySize.small_default.url}" alt="{l s='No picture' d='Shop.Theme.Catalog'}" loading="lazy" width="98" height="98" />
         </picture>
       {/if}
     </a>

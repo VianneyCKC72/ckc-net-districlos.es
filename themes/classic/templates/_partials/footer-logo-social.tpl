@@ -1,7 +1,12 @@
 <div class="footer-logo-social">
     <div class="footer-logo">
-        <a href="{$urls.base_url}" title="{$shop.name}">
-            {renderLogo}
+        <a href="{$urls.pages.index}" class="d-flex logos_container">
+            <img class="logo img-fluid"
+                 src="{$shop.logo_details.src}"
+                 alt="{$shop.name}"
+                 loading="lazy"
+                 width="{$shop.logo_details.width}"
+                 height="{$shop.logo_details.height}">
         </a>
         <p class="footer-description">Districlos, votre expert clôtures, portails et brise-vues vous accompagne dans vos projets depuis plus de 15 ans.</p>
     </div>
