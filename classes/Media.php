@@ -468,7 +468,7 @@ class MediaCore
         }
 
         // get compressed css file infos
-        $version = (int) Configuration::get('PS_CCCCSS_VERSION');
+        $version = static::readCccCssVersion();
         foreach ($compressedCssFilesInfos as $media => &$info) {
             $key = md5($info['key'] . $protocolLink);
             $filename = $cachePath . 'v_' . $version . '_' . $key . '_' . $media . '.css';
@@ -482,7 +482,8 @@ class MediaCore
         foreach ($cssFilesByMedia as $media => $mediaInfos) {
             if ($mediaInfos['date'] > $compressedCssFilesInfos[$media]['date']) {
                 if ($compressedCssFilesInfos[$media]['date']) {
-                    Configuration::updateValue('PS_CCCCSS_VERSION', ++$version);
+                    ++$version;
+                    static::writeCccCssVersion($version);
 
                     break;
                 }
@@ -590,14 +591,15 @@ class MediaCore
 
         // get compressed js file infos
         $compressedJsFilename = md5($compressedJsFilename);
-        $version = (int) Configuration::get('PS_CCCJS_VERSION');
+        $version = static::readCccJsVersion();
         $compressedJsPath = $cachePath . 'v_' . $version . '_' . $compressedJsFilename . '.js';
         $compressedJsFileDate = (int) @filemtime($compressedJsPath);
 
         // aggregate and compress js files content, write new caches files
         if ($jsFilesDate > $compressedJsFileDate) {
             if ($compressedJsFileDate) {
-                Configuration::updateValue('PS_CCCJS_VERSION', ++$version);
+                ++$version;
+                static::writeCccJsVersion($version);
             }
 
             $compressedJsPath = $cachePath . 'v_' . $version . '_' . $compressedJsFilename . '.js';
@@ -637,6 +639,38 @@ class MediaCore
         return array_merge([$protocolLink . Tools::getMediaServer($url) . $url], $jsExternalFiles);
     }
 
+    private static function readCccCssVersion(): int
+    {
+        $f = _PS_CACHE_DIR_ . 'ccc_css_version';
+        if (file_exists($f)) {
+            return (int) file_get_contents($f);
+        }
+        $v = (int) Configuration::get('PS_CCCCSS_VERSION');
+        @file_put_contents($f, (string) $v);
+        return $v;
+    }
+
+    private static function writeCccCssVersion(int $v): void
+    {
+        @file_put_contents(_PS_CACHE_DIR_ . 'ccc_css_version', (string) $v);
+    }
+
+    private static function readCccJsVersion(): int
+    {
+        $f = _PS_CACHE_DIR_ . 'ccc_js_version';
+        if (file_exists($f)) {
+            return (int) file_get_contents($f);
+        }
+        $v = (int) Configuration::get('PS_CCCJS_VERSION');
+        @file_put_contents($f, (string) $v);
+        return $v;
+    }
+
+    private static function writeCccJsVersion(int $v): void
+    {
+        @file_put_contents(_PS_CACHE_DIR_ . 'ccc_js_version', (string) $v);
+    }
+
     /**
      * Clear theme cache.
      */
@@ -653,10 +687,8 @@ class MediaCore
             }
         }
 
-        $version = (int) Configuration::get('PS_CCCJS_VERSION');
-        Configuration::updateValue('PS_CCCJS_VERSION', ++$version);
-        $version = (int) Configuration::get('PS_CCCCSS_VERSION');
-        Configuration::updateValue('PS_CCCCSS_VERSION', ++$version);
+        static::writeCccJsVersion(static::readCccJsVersion() + 1);
+        static::writeCccCssVersion(static::readCccCssVersion() + 1);
     }
 
     /**

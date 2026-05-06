@@ -196,12 +196,28 @@ class CartController extends CartControllerCore
         $presented_cart = $presenter->present($this->context->cart, $shouldSeparateGifts = true);
         $prices = [];
         $price_ttc = number_format(round(0, 2), 2, ',', ' ').' €';
+        // Batch-load toutes les données de customisation en une seule requête
+        $custIds = [];
+        foreach ($presented_cart['products'] as $product) {
+            if ($product->id_customization) {
+                $custIds[] = (int)$product->id_customization;
+            }
+        }
+        $custDataMap = [];
+        if ($custIds) {
+            $custRows = Db::getInstance()->executeS(
+                'SELECT `id_customization`, `price` FROM `' . _DB_PREFIX_ . 'customized_data`
+                WHERE `id_customization` IN (' . implode(',', $custIds) . ')'
+            );
+            foreach ($custRows as $row) {
+                $custDataMap[(int)$row['id_customization']] = $row;
+            }
+        }
+
         foreach ($presented_cart['products'] as $key => $product) {
             $price = $product->quantity > 0 ? $product->total_wt / $product->quantity : 0;
             if ($product->id_customization) {
-                $cust_data = Db::getInstance()->getRow('SELECT *
-                FROM `' . _DB_PREFIX_ . 'customized_data`
-                WHERE `id_customization` = ' . (int) $product->id_customization);
+                $cust_data = $custDataMap[(int)$product->id_customization] ?? null;
                 $price_ttc = $cust_data['price'] * (1 + ($product->rate / 100));
                 if ($product->discount_percentage_absolute) {
                     $total_ttc = $price_ttc - ($price_ttc * ((float) str_replace('%', '', $product->discount_percentage_absolute) / 100));

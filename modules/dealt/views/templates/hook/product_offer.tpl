@@ -10,10 +10,6 @@
          data-store-id="{$service.dealt_store_id|escape:'html':'UTF-8'}"
          data-eligibility-url="{$service.dealt_check_availability_url|escape:'html':'UTF-8'}">
 
-        {*<div class="picto">
-            {include file="module:dealt/views/templates/hook/svg/cle_molette.tpl"}
-        </div>*}
-
         <div class="dealt-offer-content">
             {* Titre cliquable pour déplier/replier le contenu *}
             <button type="button" 

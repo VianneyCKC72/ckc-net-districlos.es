@@ -15,6 +15,17 @@ class Dealt extends Module
      */
     private static $pm_advancedpack_installed = null;
 
+    private static function isPreprod(): bool
+    {
+        $host = $_SERVER['HTTP_HOST'] ?? '';
+        foreach (['dev.', 'vianney.', 'theo.', 'damien.', 'yan.'] as $prefix) {
+            if (strncmp($host, $prefix, strlen($prefix)) === 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function __construct()
     {
         $this->name = 'dealt';
@@ -132,6 +143,7 @@ class Dealt extends Module
 
     public function hookDisplayCheckoutSummaryTop($params)
     {
+        if (static::isPreprod()) return '';
         $cart = $this->context->cart;
         if (!$cart || !$cart->id) return '';
 
@@ -188,6 +200,7 @@ class Dealt extends Module
 
     public function hookDisplayHeader()
     {
+        if (static::isPreprod()) return;
         $this->context->controller->registerStylesheet(
             'module-dealt-css',
             'modules/' . $this->name . '/views/assets/css/main.css',
@@ -283,6 +296,7 @@ class Dealt extends Module
 
     public function hookDisplayProductAdditionalInfo($params)
     {
+        if (static::isPreprod()) return '';
         $dealt_product_length = null;
         $combinations = [];
 
@@ -457,6 +471,7 @@ class Dealt extends Module
     }
 
     public function hookActionCartSave($params){
+        if (static::isPreprod()) return;
         $idProduct = (int)Tools::getValue('id_product');
         if(isset(Context::getContext()->cookie->cart_packs)){
             $cookiePack = json_decode(Context::getContext()->cookie->cart_packs);
@@ -528,6 +543,7 @@ class Dealt extends Module
 
     public function hookDisplayShoppingCartFooter($params)
     {
+        if (static::isPreprod()) return '';
         $data = \Dealt\DealtHookHelper::buildCartFooterData($this->context) ?: [];
 
         $safe = array_merge([
@@ -558,6 +574,7 @@ class Dealt extends Module
 
     public function hookActionValidateOrder($params)
     {
+        if (static::isPreprod()) return;
         // À compléter : appeler ApiService::submitMission()
         PrestaShopLogger::addLog('Hook Launched', 1, null, 'dealt', "0", true);
 
@@ -574,11 +591,22 @@ class Dealt extends Module
                 $offerId = '';
                 $storeId = '';
 
+                // Batch : une seule requête pour toutes les catégories des produits de la commande
+                $orderProductIds = array_unique(array_map(fn($d) => (int)$d['product_id'], $orderDetails));
+                $categoryDefaultMap = [];
+                if ($orderProductIds) {
+                    $catRows = Db::getInstance()->executeS(
+                        'SELECT id_product, id_category_default FROM `' . _DB_PREFIX_ . 'product`
+                        WHERE id_product IN (' . implode(',', $orderProductIds) . ')'
+                    );
+                    foreach ($catRows as $catRow) {
+                        $categoryDefaultMap[(int)$catRow['id_product']] = (int)$catRow['id_category_default'];
+                    }
+                }
+
                 foreach ($orderDetails as $orderDetail) {
                     $containsService = false;
-                    $defaultCategory = Db::getInstance()->executeS('SELECT id_category_default FROM `' . _DB_PREFIX_ . 'product`
-                WHERE `id_product` = ' . (int)$orderDetail['product_id']);
-                    if ($defaultCategory[0]['id_category_default'] == 369) {
+                    if (($categoryDefaultMap[(int)$orderDetail['product_id']] ?? 0) == 369) {
                         $taxPercentage = 100 + (int)$orderDetail['tax_rate'];
                         $servicePrice = $orderDetail['product_price'] / 100 * $taxPercentage;
                         $serviceProduct = new \Product($orderDetail['product_id'], false, $idlang);
@@ -694,6 +722,7 @@ class Dealt extends Module
 
     public function hookActionValidateOrderAfter($params)
     {
+        if (static::isPreprod()) return;
         $order_list = $params['orders'];
 
         // vérifier si une commande contient produit + service avec attestation Tva validée
@@ -705,32 +734,30 @@ class Dealt extends Module
 
             $orders = Db::getInstance()->executeS('SELECT id_order FROM `' . _DB_PREFIX_ . 'orders` WHERE id_cart = ' . $params['cart']->id);
 
-            // retrouver une commande avec un service si attestation TVA = 1
-            $order_with_service = 0;
+            // Une seule passe : instanciation + getProducts() une fois par commande
+            $order_with_service = null;
+            $ordersData = [];
             foreach ($orders as $orderId) {
                 $order = new Order((int)$orderId['id_order']);
                 $products = $order->getProducts();
+                $has_service = false;
                 foreach ($products as $key => $product) {
-                    if((int)$products[$key]['id_category_default'] == 369){
-                        $order_with_service = $order;
+                    if ((int)$products[$key]['id_category_default'] == 369) {
+                        $has_service = true;
+                        if ($order_with_service === null) {
+                            $order_with_service = $order;
+                        }
                         break;
                     }
                 }
+                $ordersData[] = ['order' => $order, 'has_service' => $has_service];
             }
 
-            foreach ($orders as $orderId) {
-                $is_order_with_service = 0;
-                $order = new Order((int)$orderId['id_order']);
-                $products = $order->getProducts();
-                foreach ($products as $key => $product) {
-                    if((int)$products[$key]['id_category_default'] == 369){
-                        $is_order_with_service = 1;
-                        break;
-                    }
-                }
+            foreach ($ordersData as $data) {
+                $order = $data['order'];
 
                 // mise à jour du transporteur de la commande sans service (20%)
-                if(!$is_order_with_service){
+                if (!$data['has_service']){
 
                     $order->id_carrier = (int)$order_with_service->id_carrier;
                     $order->total_paid = $order->total_products_wt;
@@ -794,6 +821,7 @@ class Dealt extends Module
 
     public function hookActionOrderStatusPostUpdate($params)
     {
+        if (static::isPreprod()) return;
         $orderStatus = $params['newOrderStatus'];
         $order_id = $params['id_order'];
 
@@ -955,17 +983,23 @@ class Dealt extends Module
 
     public function hookActionPresentCartProduct(array $params)
     {
+        if (static::isPreprod()) return;
         if (empty($params['product']) || !is_array($params['product'])) return;
 
         $product = &$params['product']; // Référence pour modifier directement
 
         // S'assurer que id_category_default est présent dans les données du produit
         if (!isset($product['id_category_default']) && isset($product['id_product'])) {
-            $product['id_category_default'] = (int)Db::getInstance()->getValue(
-                'SELECT id_category_default FROM ' . _DB_PREFIX_ . 'product_shop 
-                WHERE id_product = ' . (int)$product['id_product'] . ' 
-                AND id_shop = ' . (int)$this->context->shop->id
-            );
+            static $categoryDefaultCache = [];
+            $pid = (int)$product['id_product'];
+            if (!array_key_exists($pid, $categoryDefaultCache)) {
+                $categoryDefaultCache[$pid] = (int)Db::getInstance()->getValue(
+                    'SELECT id_category_default FROM ' . _DB_PREFIX_ . 'product_shop
+                    WHERE id_product = ' . $pid . '
+                    AND id_shop = ' . (int)$this->context->shop->id
+                );
+            }
+            $product['id_category_default'] = $categoryDefaultCache[$pid];
         }
 
         DealtHookHelper::applyTvaOnPresentedCartProduct($this->context, $product); // passe par référence
@@ -973,6 +1007,7 @@ class Dealt extends Module
 
     public function hookActionPresentCart(array $params)
     {
+        if (static::isPreprod()) return;
         if(!empty($this->context->cart->id)){
             $isTVAAttested = Db::getInstance()->getValue('SELECT is_validated FROM ' . _DB_PREFIX_ . 'dealt_tva_attestation 
             WHERE id_cart = '.$this->context->cart->id);
@@ -1040,6 +1075,7 @@ class Dealt extends Module
      */
     public function hookDisplayCartProductLine($params)
     {
+        if (static::isPreprod()) return '';
         if (!isset($params['product']['id_category_default'])) {
             return '';
         }
@@ -1081,6 +1117,7 @@ class Dealt extends Module
      */
     public function hookDisplayProductPromoInstallation($params)
     {
+        if (static::isPreprod()) return '';
         // Espace PRO : ne jamais afficher la promo "pose"
         if ((int)$this->context->shop->id === 2) {
             return '';

@@ -1,34 +1,23 @@
-{**
- * Template personnalisé pour l'affichage des produits Dealt (services) dans le panier
- * Catégorie 369 - Services de pose
- *}
-
 <div class="product-line-grid dealt-service-product">
-    <!--  product line left content: image personnalisée-->
     <div class="product-line-grid-left" style="width: 70%;">
         <div class="product-details d-flex flex-column">
-            {* Titre du produit *}
             <div class="product-line-info">
                 <a class="h4 text-black d-block m-0" data-id_customization="{$product.id_customization|intval}" data-product-id-dealt="{$product_id_dealt}">
                     {$product.name}
                 </a>
             </div>
-
             {foreach from=$product.attributes key="attribute" item="value"}
                 <div class="product-line-info {$attribute|lower}">
                     <span class="label">{$attribute} </span>
                     <span class="value">{$value}</span>
                 </div>
             {/foreach}
-
             <div class="product-line-info prix-unitaire">
                 <span class="label">Prix unitaire {if $pro.env == 1}HT{else}TTC{/if} </span>
                 <span class="value dealt-service-unit-price">{$product.price}</span>
             </div>
         </div>
     </div>
-
-    <!--  product line right content: actions (quantity, delete), price -->
     <div class="product-line-grid-right product-line-actions">
         <div class="d-flex gap-16 align-items-center w-100">
             <div class="price">

@@ -2798,6 +2798,12 @@ class ProductCore extends ObjectModel
             $id_lang = Context::getContext()->language->id;
         }
 
+        static $cache = [];
+        $cacheKey = (int) $this->id . '_' . (int) $id_lang . '_' . (int) $groupByIdAttributeGroup;
+        if (isset($cache[$cacheKey])) {
+            return $cache[$cacheKey];
+        }
+
         $sql = 'SELECT pa.*, product_attribute_shop.*, ag.`id_attribute_group`, ag.`is_color_group`, agl.`name` AS group_name, al.`name` AS attribute_name, ' .
             'a.`id_attribute`, stock.location ' .
             'FROM `' . _DB_PREFIX_ . 'product_attribute` pa ' .
@@ -2828,7 +2834,7 @@ class ProductCore extends ObjectModel
             $res[$key]['quantity'] = Cache::retrieve($cache_key);
         }
 
-        return $res;
+        return $cache[$cacheKey] = $res;
     }
 
     /**
