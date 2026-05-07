@@ -122,15 +122,25 @@
     flex-wrap: wrap;
 }
 
+#footer .footer-nav .col-md-4,
+#footer .footer-nav > div {
+    flex: 0 0 33.333%;
+    max-width: 33.333%;
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+
 #footer .footer-nav .elementor-heading-title {
     color: #fff;
     font-size: 15px;
     font-weight: 700;
     line-height: 21px;
     margin-bottom: 15px;
+    display: block;
 }
 
-#footer .footer-nav .elementor-page-link {
+#footer .footer-nav .elementor-page-link,
+#footer .footer-nav .custom-page-link {
     color: #fff;
     font-size: 12px;
     font-weight: 500;
@@ -139,36 +149,60 @@
     display: block;
 }
 
-#footer .footer-nav .elementor-page-link:hover {
+#footer .footer-nav .elementor-page-link:hover,
+#footer .footer-nav .custom-page-link:hover {
     color: #7cba49;
 }
 
+/* Liens dans block_content */
 #footer .footer-nav .block_content {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: block;
 }
 
 #footer .footer-nav .block_content li {
     margin-bottom: 0;
 }
 
+/* Le collapse des liens est visible par défaut sur desktop */
+#footer .footer-nav .collapse {
+    display: block !important;
+}
+
 /* Titre accordéon mobile */
-#footer .title.h3.block_title.hidden-lg-up {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: none;
-    padding-left: 0;
-    margin-bottom: 0;
-    color: #fff;
+#footer .title.h3.block_title {
+    display: none;
+}
+
+#footer .navbar-toggler.collapse-icons {
+    background: none;
+    border: none;
+    padding: 0;
     cursor: pointer;
 }
 
 #footer .navbar-toggler.collapse-icons svg {
     stroke: #fff;
     fill: #fff;
+}
+
+/* Par défaut : icône - masquée, icône + visible */
+#footer .navbar-toggler.collapse-icons .remove {
+    display: none;
+}
+#footer .navbar-toggler.collapse-icons .add {
+    display: inline;
+}
+/* Quand ouvert */
+#footer .navbar-toggler[aria-expanded="true"] .collapse-icons .remove,
+#footer [aria-expanded="true"] .collapse-icons .remove {
+    display: inline;
+}
+#footer .navbar-toggler[aria-expanded="true"] .collapse-icons .add,
+#footer [aria-expanded="true"] .collapse-icons .add {
+    display: none;
 }
 
 /* Barre copyright */
@@ -190,62 +224,118 @@
     color: #7cba49;
 }
 
-/* Desktop — disposition colonnes */
+/* Desktop ≥768px — disposition colonnes */
 @media (min-width: 768px) {
     #footer .footer-inner {
         display: flex;
         flex-wrap: wrap;
         align-items: flex-start;
+        padding-top: 20px;
+        padding-bottom: 20px;
     }
 
     #footer .footer-logo-social {
         width: 24.408%;
         padding-right: 20px;
+        flex-shrink: 0;
     }
 
     #footer .footer-nav {
         width: 75.257%;
     }
 
-    #footer .footer-nav .col-md-4 {
-        padding-left: 15px;
+    #footer .footer-nav .col-md-4,
+    #footer .footer-nav > div {
+        flex: 0 0 33.333%;
+        max-width: 33.333%;
     }
 
-    .elementor-2170101 .elementor-element.elementor-element-c901329 .navbar-toggler.collapse-icons {
-        display: none;
+    #footer .title.h3.block_title {
+        display: none !important;
     }
 }
 
-/* Mobile ≤768px */
-@media (max-width: 768px) {
-    #footer .footer-logo-social,
-    #footer .footer-nav {
-        width: 100%;
+/* Mobile <768px */
+@media (max-width: 767px) {
+    #footer .footer-inner {
+        padding: 15px 0;
     }
 
     #footer .footer-logo-social {
-        margin-left: 20px;
+        width: 100%;
+        padding: 0 20px;
+    }
+
+    #footer .footer-nav {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    #footer .footer-nav .col-md-4,
+    #footer .footer-nav > div {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding: 0;
+    }
+
+    /* Afficher le titre accordéon sur mobile */
+    #footer .title.h3.block_title {
+        display: flex !important;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        margin: 0;
+        border-bottom: 1px solid rgba(255,255,255,.2);
+        color: #fff;
+        cursor: pointer;
+    }
+
+    /* Masquer le h3 desktop */
+    #footer .footer-nav .hidden-md-down {
+        display: none !important;
+    }
+
+    /* Collapse masqué par défaut sur mobile */
+    #footer .footer-nav .collapse {
+        display: none !important;
+    }
+
+    #footer .footer-nav .collapse.in,
+    #footer .footer-nav .collapse.show {
+        display: block !important;
+    }
+
+    #footer .footer-nav .block_content {
+        padding: 10px 15px;
+        background-color: rgba(0,0,0,.15);
     }
 
     #footer .footer-social-icons {
-        margin-left: 18px;
-        margin-top: 40px;
-        margin-bottom: 0;
-    }
-
-    #footer .footer-copyright {
-        margin-left: 30px;
-        margin-bottom: 30px;
+        margin: 20px 20px 0;
     }
 
     #footer .footer-description {
         font-size: 15px;
+        max-width: 100%;
     }
 
     #footer .footer-nav .elementor-heading-title {
-        font-size: 20px;
-        line-height: 140%;
-        font-weight: 500;
+        font-size: 16px;
+        line-height: 1.4;
+        font-weight: 600;
         margin-bottom: 0;
+        color: #fff;
+    }
+
+    #footer .footer-copyright {
+        padding: 15px 20px 30px;
+    }
+}
+
+/* Masquer heading desktop sur ≤991px tablette */
+@media (max-width: 991px) and (min-width: 768px) {
+    #footer .footer-nav .navbar-toggler.collapse-icons {
+        display: none;
     }
 }
