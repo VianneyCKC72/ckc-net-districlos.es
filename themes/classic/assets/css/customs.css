@@ -54,3 +54,198 @@
 .progress-container .progress-bar {
     width: var(--step-progress, 0%);
 }
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+#footer {
+    padding-top: 2.5rem;
+    background-color: #026473;
+    color: #fff;
+}
+
+#product #footer {
+    padding-bottom: 5rem;
+}
+
+/* Logo + description */
+#footer .footer-logo {
+    margin-bottom: 15px;
+}
+
+#footer .footer-logo img {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 10px;
+}
+
+#footer .footer-description {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 17px;
+    max-width: 380px;
+    margin-bottom: 10px;
+}
+
+/* Icônes sociales */
+#footer .footer-social-icons {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+#footer .footer-social-icons li a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #026473;
+    border: 1px solid rgba(255,255,255,.4);
+    border-radius: 10px;
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    color: #fff;
+    text-decoration: none;
+}
+
+#footer .footer-social-icons li a:hover {
+    background-color: #fff;
+    color: #026473;
+}
+
+/* Colonnes de navigation */
+#footer .footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#footer .footer-nav .elementor-heading-title {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 21px;
+    margin-bottom: 15px;
+}
+
+#footer .footer-nav .elementor-page-link {
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 24px;
+    text-decoration: none;
+    display: block;
+}
+
+#footer .footer-nav .elementor-page-link:hover {
+    color: #7cba49;
+}
+
+#footer .footer-nav .block_content {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#footer .footer-nav .block_content li {
+    margin-bottom: 0;
+}
+
+/* Titre accordéon mobile */
+#footer .title.h3.block_title.hidden-lg-up {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: none;
+    padding-left: 0;
+    margin-bottom: 0;
+    color: #fff;
+    cursor: pointer;
+}
+
+#footer .navbar-toggler.collapse-icons svg {
+    stroke: #fff;
+    fill: #fff;
+}
+
+/* Barre copyright */
+#footer .footer-copyright {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 17px;
+    color: #fff;
+    padding: 20px 0;
+}
+
+#footer .footer-copyright p,
+#footer .footer-copyright a {
+    color: #fff;
+    font-size: 12px;
+}
+
+#footer .footer-copyright a:hover {
+    color: #7cba49;
+}
+
+/* Desktop — disposition colonnes */
+@media (min-width: 768px) {
+    #footer .footer-inner {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    #footer .footer-logo-social {
+        width: 24.408%;
+        padding-right: 20px;
+    }
+
+    #footer .footer-nav {
+        width: 75.257%;
+    }
+
+    #footer .footer-nav .col-md-4 {
+        padding-left: 15px;
+    }
+
+    .elementor-2170101 .elementor-element.elementor-element-c901329 .navbar-toggler.collapse-icons {
+        display: none;
+    }
+}
+
+/* Mobile ≤768px */
+@media (max-width: 768px) {
+    #footer .footer-logo-social,
+    #footer .footer-nav {
+        width: 100%;
+    }
+
+    #footer .footer-logo-social {
+        margin-left: 20px;
+    }
+
+    #footer .footer-social-icons {
+        margin-left: 18px;
+        margin-top: 40px;
+        margin-bottom: 0;
+    }
+
+    #footer .footer-copyright {
+        margin-left: 30px;
+        margin-bottom: 30px;
+    }
+
+    #footer .footer-description {
+        font-size: 15px;
+    }
+
+    #footer .footer-nav .elementor-heading-title {
+        font-size: 20px;
+        line-height: 140%;
+        font-weight: 500;
+        margin-bottom: 0;
+    }
+}
