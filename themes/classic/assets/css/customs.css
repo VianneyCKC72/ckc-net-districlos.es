@@ -56,38 +56,170 @@
 }
 
 /* ==========================================================================
-   Footer
+   Footer — reproduit exactement le rendu prod (fond teal sur desktop + mobile)
    ========================================================================== */
+
+/* Fond teal global — le theme.css le fait seulement en mobile, on surcharge */
 #footer {
-    padding-top: 2.5rem;
-    background-color: #026473;
+    background-color: #026473 !important;
+    color: #fff !important;
+}
+
+/* Lien du footer en blanc */
+#footer a {
     color: #fff;
 }
-
-#product #footer {
-    padding-bottom: 5rem;
+#footer a:hover {
+    color: #7cba49;
 }
 
-/* Logo + description */
+/* ------------------------------------------------------------------
+   Layout desktop : logo-social (24%) | nav colonnes (75%)
+   ------------------------------------------------------------------ */
+@media (min-width: 768px) {
+    #footer .footer-inner {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        padding: 30px 0 20px;
+    }
+
+    #footer .footer-logo-social {
+        flex: 0 0 24.408%;
+        max-width: 24.408%;
+        padding-right: 30px;
+        margin-left: 20px;
+    }
+
+    #footer .footer-nav {
+        flex: 0 0 75.257%;
+        max-width: 75.257%;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    #footer .footer-nav .col-md-4 {
+        flex: 0 0 33.333%;
+        max-width: 33.333%;
+        padding: 0 15px;
+    }
+
+    /* Collapse toujours visible sur desktop */
+    #footer .footer-nav .collapse {
+        display: block !important;
+        height: auto !important;
+    }
+
+    /* Masquer le toggle accordéon sur desktop */
+    #footer .title.h3.block_title,
+    #footer .hidden-lg-up {
+        display: none !important;
+    }
+}
+
+/* ------------------------------------------------------------------
+   Layout mobile : empilement vertical + accordéon
+   ------------------------------------------------------------------ */
+@media (max-width: 767px) {
+    #footer .footer-inner {
+        display: block;
+        padding: 20px 0 0;
+    }
+
+    #footer .footer-logo-social {
+        padding: 0 20px;
+        margin-bottom: 10px;
+    }
+
+    #footer .footer-nav {
+        display: block;
+    }
+
+    #footer .footer-nav .col-md-4 {
+        width: 100%;
+        padding: 0;
+    }
+
+    /* Afficher le toggle accordéon, masquer le h3 desktop */
+    #footer .footer-nav .hidden-md-down {
+        display: none !important;
+    }
+
+    #footer .title.h3.block_title {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        margin: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+    }
+
+    /* Liens cachés par défaut — révélés par Bootstrap collapse */
+    #footer .footer-nav .block_content.collapse {
+        display: none !important;
+    }
+    #footer .footer-nav .block_content.collapse.in,
+    #footer .footer-nav .block_content.collapse.show {
+        display: block !important;
+    }
+
+    #footer .footer-nav .block_content {
+        padding: 8px 15px 12px;
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    #footer .footer-social-icons {
+        margin-top: 20px;
+    }
+
+    #footer .footer-copyright {
+        padding: 15px 20px 30px;
+    }
+}
+
+/* Tablette 768–991px : masquer le toggle */
+@media (min-width: 768px) and (max-width: 991px) {
+    #footer .footer-nav .navbar-toggler.collapse-icons {
+        display: none;
+    }
+}
+
+/* ------------------------------------------------------------------
+   Logo
+   ------------------------------------------------------------------ */
 #footer .footer-logo {
     margin-bottom: 15px;
 }
 
 #footer .footer-logo img {
-    width: 100%;
     max-width: 100%;
+    height: auto;
     margin-bottom: 10px;
 }
 
+/* ------------------------------------------------------------------
+   Description
+   ------------------------------------------------------------------ */
 #footer .footer-description {
     font-size: 12px;
     font-weight: 400;
     line-height: 17px;
     max-width: 380px;
     margin-bottom: 10px;
+    color: #fff;
 }
 
-/* Icônes sociales */
+@media (max-width: 767px) {
+    #footer .footer-description {
+        font-size: 15px;
+        max-width: 100%;
+    }
+}
+
+/* ------------------------------------------------------------------
+   Icônes sociales
+   ------------------------------------------------------------------ */
 #footer .footer-social-icons {
     list-style: none;
     padding: 0;
@@ -97,85 +229,80 @@
     gap: 7px;
 }
 
+#footer .footer-social-icons li {
+    margin: 0;
+}
+
 #footer .footer-social-icons li a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: #026473;
-    border: 1px solid rgba(255,255,255,.4);
-    border-radius: 10px;
     width: 36px;
     height: 36px;
-    font-size: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
     color: #fff;
     text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 #footer .footer-social-icons li a:hover {
-    background-color: #fff;
-    color: #026473;
-}
-
-/* Colonnes de navigation */
-#footer .footer-nav {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-#footer .footer-nav .col-md-4,
-#footer .footer-nav > div {
-    flex: 0 0 33.333%;
-    max-width: 33.333%;
-    padding: 0 15px;
-    box-sizing: border-box;
-}
-
-#footer .footer-nav .elementor-heading-title {
+    background-color: rgba(255, 255, 255, 0.15);
     color: #fff;
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+#footer .footer-social-icons svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ------------------------------------------------------------------
+   Navigation colonnes — titres et liens
+   ------------------------------------------------------------------ */
+#footer .footer-nav .elementor-heading-title {
     font-size: 15px;
     font-weight: 700;
     line-height: 21px;
+    color: #fff !important;
     margin-bottom: 15px;
     display: block;
 }
 
-#footer .footer-nav .elementor-page-link,
-#footer .footer-nav .custom-page-link {
-    color: #fff;
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 24px;
-    text-decoration: none;
-    display: block;
+@media (max-width: 767px) {
+    #footer .footer-nav .elementor-heading-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 0;
+    }
 }
 
-#footer .footer-nav .elementor-page-link:hover,
-#footer .footer-nav .custom-page-link:hover {
-    color: #7cba49;
-}
-
-/* Liens dans block_content */
 #footer .footer-nav .block_content {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: block;
 }
 
 #footer .footer-nav .block_content li {
     margin-bottom: 0;
 }
 
-/* Le collapse des liens est visible par défaut sur desktop */
-#footer .footer-nav .collapse {
-    display: block !important;
+#footer .footer-nav .elementor-page-link,
+#footer .footer-nav .custom-page-link {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 24px;
+    color: #fff !important;
+    text-decoration: none;
 }
 
-/* Titre accordéon mobile */
-#footer .title.h3.block_title {
-    display: none;
+#footer .footer-nav .elementor-page-link:hover,
+#footer .footer-nav .custom-page-link:hover {
+    color: #7cba49 !important;
 }
 
+/* Toggle accordion */
 #footer .navbar-toggler.collapse-icons {
     background: none;
     border: none;
@@ -188,154 +315,30 @@
     fill: #fff;
 }
 
-/* Par défaut : icône - masquée, icône + visible */
-#footer .navbar-toggler.collapse-icons .remove {
-    display: none;
-}
-#footer .navbar-toggler.collapse-icons .add {
-    display: inline;
-}
-/* Quand ouvert */
-#footer .navbar-toggler[aria-expanded="true"] .collapse-icons .remove,
-#footer [aria-expanded="true"] .collapse-icons .remove {
-    display: inline;
-}
-#footer .navbar-toggler[aria-expanded="true"] .collapse-icons .add,
-#footer [aria-expanded="true"] .collapse-icons .add {
-    display: none;
-}
+#footer .navbar-toggler.collapse-icons .remove { display: none; }
+#footer .navbar-toggler.collapse-icons .add    { display: inline; }
+#footer [aria-expanded="true"] .collapse-icons .remove { display: inline; }
+#footer [aria-expanded="true"] .collapse-icons .add    { display: none; }
 
-/* Barre copyright */
+/* ------------------------------------------------------------------
+   Copyright
+   ------------------------------------------------------------------ */
 #footer .footer-copyright {
     font-size: 12px;
     font-weight: 400;
     line-height: 17px;
     color: #fff;
     padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 #footer .footer-copyright p,
 #footer .footer-copyright a {
     color: #fff;
     font-size: 12px;
+    margin: 0;
 }
 
 #footer .footer-copyright a:hover {
     color: #7cba49;
-}
-
-/* Desktop ≥768px — disposition colonnes */
-@media (min-width: 768px) {
-    #footer .footer-inner {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: flex-start;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
-
-    #footer .footer-logo-social {
-        width: 24.408%;
-        padding-right: 20px;
-        flex-shrink: 0;
-    }
-
-    #footer .footer-nav {
-        width: 75.257%;
-    }
-
-    #footer .footer-nav .col-md-4,
-    #footer .footer-nav > div {
-        flex: 0 0 33.333%;
-        max-width: 33.333%;
-    }
-
-    #footer .title.h3.block_title {
-        display: none !important;
-    }
-}
-
-/* Mobile <768px */
-@media (max-width: 767px) {
-    #footer .footer-inner {
-        padding: 15px 0;
-    }
-
-    #footer .footer-logo-social {
-        width: 100%;
-        padding: 0 20px;
-    }
-
-    #footer .footer-nav {
-        width: 100%;
-        flex-direction: column;
-    }
-
-    #footer .footer-nav .col-md-4,
-    #footer .footer-nav > div {
-        flex: 0 0 100%;
-        max-width: 100%;
-        padding: 0;
-    }
-
-    /* Afficher le titre accordéon sur mobile */
-    #footer .title.h3.block_title {
-        display: flex !important;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 15px;
-        margin: 0;
-        border-bottom: 1px solid rgba(255,255,255,.2);
-        color: #fff;
-        cursor: pointer;
-    }
-
-    /* Masquer le h3 desktop */
-    #footer .footer-nav .hidden-md-down {
-        display: none !important;
-    }
-
-    /* Collapse masqué par défaut sur mobile */
-    #footer .footer-nav .collapse {
-        display: none !important;
-    }
-
-    #footer .footer-nav .collapse.in,
-    #footer .footer-nav .collapse.show {
-        display: block !important;
-    }
-
-    #footer .footer-nav .block_content {
-        padding: 10px 15px;
-        background-color: rgba(0,0,0,.15);
-    }
-
-    #footer .footer-social-icons {
-        margin: 20px 20px 0;
-    }
-
-    #footer .footer-description {
-        font-size: 15px;
-        max-width: 100%;
-    }
-
-    #footer .footer-nav .elementor-heading-title {
-        font-size: 16px;
-        line-height: 1.4;
-        font-weight: 600;
-        margin-bottom: 0;
-        color: #fff;
-    }
-
-    #footer .footer-copyright {
-        padding: 15px 20px 30px;
-    }
-}
-
-/* Masquer heading desktop sur ≤991px tablette */
-@media (max-width: 991px) and (min-width: 768px) {
-    #footer .footer-nav .navbar-toggler.collapse-icons {
-        display: none;
-    }
 }
