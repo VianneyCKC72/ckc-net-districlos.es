@@ -189,52 +189,94 @@
     }
 
     .socialIconFooter {
-      margin-left: 18px;
-      margin-top: 40px;
+      margin-left: 0;
+      margin-top: 24px;
       margin-bottom: 0;
+      text-align: center;
+
+      .elementor-social-icons-wrapper {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .elementor-social-icon {
+        background-color: rgba($white, 0.15);
+        font-size: 20px;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
     }
 
     .copyrightFooter {
-      margin-left: 30px;
+      margin-left: 0;
       margin-bottom: 30px;
+      text-align: center;
 
       p:not(#e) {
-        color: $white;
+        color: rgba($white, 0.7);
+        font-size: 11px;
 
         a {
-          color: $white;
+          color: rgba($white, 0.7);
         }
       }
     }
 
     .linksBlockFooter {
-      margin-left: 15px;
+      margin-left: 0;
+      padding: 0 20px;
+
+      .col-md-4 {
+        border-bottom: 1px solid rgba($white, 0.15);
+      }
+
+      // Override desktop specificity — force white on mobile
+      .elementor-heading-title {
+        color: $white !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        line-height: 140% !important;
+        margin-bottom: 0 !important;
+      }
 
       .elementor-page-link:not(#e) {
-        color: $white;
+        color: rgba($white, 0.85);
+        font-size: 13px;
 
         &::after {
           background-color: $white;
         }
 
         &:hover {
-          color: rgba($white, 0.75);
+          color: $white;
 
           &::after {
-            background-color: rgba($white, 0.75);
+            background-color: $white;
           }
         }
+      }
+
+      .block_content {
+        padding-bottom: 12px;
       }
     }
 
     .elementor-element-61f6f1a {
-      margin-left: 20px;
+      margin-left: 0;
+      padding: 30px 20px 10px;
     }
 
     .elementor-heading-title {
-      font-weight: 500;
-      font-size: 20px;
-      line-height: 140%;
       color: $white;
       margin-bottom: 0;
     }
@@ -245,8 +287,9 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: none;
-      padding-left: 0;
+      padding: 14px 0;
       margin-bottom: 0;
+      cursor: pointer;
     }
 
     .navbar-toggler.collapse-icons {
@@ -257,7 +300,7 @@
     }
 
     .logoFooterContainer {
-      margin-bottom: 15px;
+      margin-bottom: 12px;
     }
 
     .elementor-2170101 .elementor-element.elementor-element-b1a5e08 {
@@ -266,13 +309,17 @@
     }
 
     .textFooterDescription {
+      font-size: 14px;
+      line-height: 1.5;
+      color: rgba($white, 0.85);
+
       p {
         span:last-child {
           font-weight: 400;
-          font-size: 17px;
+          font-size: 14px;
           line-height: 140%;
           @media (max-width: 380px) {
-            font-size: 15px;
+            font-size: 13px;
           }
         }
       }
