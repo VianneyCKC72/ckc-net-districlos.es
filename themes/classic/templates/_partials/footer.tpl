@@ -6,5 +6,4 @@
     {include file='_partials/footer-bottom.tpl'}
 </div>
 
-{hook h='displayFooter'}
 {hook h='displayFooterAfter'}
