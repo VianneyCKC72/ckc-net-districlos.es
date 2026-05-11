@@ -41,8 +41,9 @@
 
 .elementor-2170101 .elementor-element-61f6f1a .elementor-widget-wrap {
   display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: flex-start;
 }
 
 .elementor-2170101 .elementor-element.elementor-element-7c993ab {
