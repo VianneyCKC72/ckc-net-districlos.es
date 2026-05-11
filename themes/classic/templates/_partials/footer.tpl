@@ -2,8 +2,4 @@
     {include file='_partials/footer-logo-social.tpl'}
     {include file='_partials/footer-nav.tpl'}
 </div>
-<div class="container">
-    {include file='_partials/footer-bottom.tpl'}
-</div>
-
 {hook h='displayFooterAfter'}
