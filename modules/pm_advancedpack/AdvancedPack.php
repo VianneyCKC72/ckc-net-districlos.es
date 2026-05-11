@@ -2595,6 +2595,11 @@ class AdvancedPack extends Product
         if (empty($idCart)) {
             return;
         }
+        static $alreadyDoneForCart = [];
+        if (isset($alreadyDoneForCart[(int)$idCart])) {
+            return;
+        }
+        $alreadyDoneForCart[(int)$idCart] = true;
         $sql = new DbQuery();
         $sql->select('DISTINCT `id_pack`, `id_product_attribute_pack`');
         $sql->from('pm_advancedpack_cart_products', 'acp');
