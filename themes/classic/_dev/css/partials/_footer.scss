@@ -13,10 +13,23 @@
 }
 
 .elementor-2170101 .elementor-element.elementor-element-7c993ab {
+  .elementor-social-icons-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
   .elementor-social-icon {
     background-color: #026473;
     font-size: 24px;
     color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
   }
 
   .elementor-icon {
