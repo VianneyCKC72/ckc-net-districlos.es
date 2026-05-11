@@ -178,3 +178,22 @@
         </div>
     </div>
 </div>
+
+<script>
+(function () {
+  function initFooterCollapse() {
+    document.querySelectorAll('#footer [data-toggle="collapse"]').forEach(function (trigger) {
+      trigger.addEventListener('click', function () {
+        var target = document.querySelector(this.getAttribute('data-target'));
+        if (!target) return;
+        target.classList.toggle('show');
+      });
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFooterCollapse);
+  } else {
+    initFooterCollapse();
+  }
+}());
+</script>

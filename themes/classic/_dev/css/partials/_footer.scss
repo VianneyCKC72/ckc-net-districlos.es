@@ -75,6 +75,9 @@
 
 
 @media (min-width: 768px) {
+  #footer .hidden-lg-up { display: none !important; }
+  #footer .block_content.collapse { display: block !important; }
+
   .footer-inner.elementor-2170101 {
     display: flex;
     flex-wrap: nowrap;
@@ -135,6 +138,28 @@
     font-size: 12px;
     font-weight: 500;
     line-height: 24px;
+    position: relative;
+    display: inline-block;
+    transition: color 0.22s ease;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 1px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background-color: #026473;
+      transition: width 0.25s ease;
+    }
+
+    &:hover {
+      color: #026473;
+
+      &::after {
+        width: 100%;
+      }
+    }
   }
 }
 
@@ -151,6 +176,10 @@
 }
 
 @media (max-width: 767px) {
+  #footer .hidden-md-down { display: none !important; }
+  #footer .block_content.collapse:not(.show) { display: none; }
+  #footer .block_content.collapse.show { display: block; }
+
   #footer {
     background-color: $primary-color;
     color: $white;
@@ -183,6 +212,18 @@
 
       .elementor-page-link:not(#e) {
         color: $white;
+
+        &::after {
+          background-color: $white;
+        }
+
+        &:hover {
+          color: rgba($white, 0.75);
+
+          &::after {
+            background-color: rgba($white, 0.75);
+          }
+        }
       }
     }
 
