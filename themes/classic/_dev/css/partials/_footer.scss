@@ -39,22 +39,15 @@
   display: flex;
 }
 
-.elementor-2170101 .elementor-element.elementor-element-61f6f1a {
-  display: flex;
-  flex-direction: column;
-}
-
 .elementor-2170101 .elementor-element-61f6f1a .elementor-widget-wrap {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex-wrap: nowrap;
 }
 
 .elementor-2170101 .elementor-element.elementor-element-7c993ab {
-  margin-top: auto;
-
   > .elementor-widget-container {
-    margin: 0 0 20px 0;
+    margin: 10px 0 0 0;
   }
 }
 
@@ -74,7 +67,7 @@
   .footer-inner.elementor-2170101 {
     display: flex;
     flex-wrap: nowrap;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
   .elementor-column {
