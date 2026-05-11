@@ -22,9 +22,25 @@
   }
 }
 
+.elementor-widget-wrap {
+  position: relative;
+  width: 100%;
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+
+.elementor-html .elementor-widget-wrap,
+.elementor:not(.elementor-bc-flex-widget) .elementor-widget-wrap {
+  display: flex;
+}
+
 .elementor-2170101 .elementor-element-61f6f1a .elementor-widget-wrap {
   display: flex;
   flex-direction: column;
+}
+
+.elementor-2170101 .elementor-element.elementor-element-7c993ab > .elementor-widget-container {
+  margin: 0 0 20px 0;
 }
 
 .elementor-2170101 .elementor-element.elementor-element-b1a5e08 {
