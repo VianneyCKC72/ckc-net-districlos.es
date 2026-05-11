@@ -87,7 +87,7 @@
 }
 
 
-@media (min-width: 768px) {
+@media (min-width: 1025px) {
   #footer .hidden-lg-up { display: none !important; }
   #footer .block_content.collapse { display: block !important; }
 
@@ -188,7 +188,7 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
   #footer .hidden-md-down { display: none !important; }
   #footer .block_content.collapse:not(.show) { display: none; }
   #footer .block_content.collapse.show { display: block; }
