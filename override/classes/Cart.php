@@ -276,6 +276,22 @@ class Cart extends CartCore
         foreach ($map as $k => $data) {
             self::$product_quantity_cache[$k] = $data;
         }
+
+        // Agrégation "toutes customizations" pour servir les appels avec $idCustomization === false
+        $aggregated = [];
+        foreach ($map as $k => $data) {
+            $parts = explode('_', $k);
+            // cartId_idProduct_idAttr_idCustom_idAddr
+            $aggKey = $parts[0] . '_' . $parts[1] . '_' . $parts[2] . '_all_' . $parts[4];
+            if (!isset($aggregated[$aggKey])) {
+                $aggregated[$aggKey] = ['quantity' => 0, 'deep_quantity' => 0];
+            }
+            $aggregated[$aggKey]['quantity'] += $data['quantity'];
+            $aggregated[$aggKey]['deep_quantity'] += $data['deep_quantity'];
+        }
+        foreach ($aggregated as $k => $data) {
+            self::$product_quantity_cache[$k] = $data;
+        }
     }
 
     /**
@@ -304,15 +320,12 @@ class Cart extends CartCore
      */
     public function getProductQuantity($idProduct, $idProductAttribute = 0, $idCustomization = 0, $idAddressDelivery = 0)
     {
-        // Le cas idCustomization=false (filtre désactivé) ne peut pas être préchargé — fallback direct
-        if ($idCustomization === false) {
-            return parent::getProductQuantity($idProduct, $idProductAttribute, $idCustomization, $idAddressDelivery);
-        }
-
         // Préchargement de tout le panier en 2 requêtes (exécuté une seule fois par requête HTTP)
         $this->preloadQuantityCache();
 
-        $cache_key = $this->id . '_' . (int)$idProduct . '_' . (int)$idProductAttribute . '_' . (int)$idCustomization . '_' . (int)$idAddressDelivery;
+        // $idCustomization === false signifie "toutes customizations confondues"
+        $customizationKey = ($idCustomization === false) ? 'all' : (int)$idCustomization;
+        $cache_key = $this->id . '_' . (int)$idProduct . '_' . (int)$idProductAttribute . '_' . $customizationKey . '_' . (int)$idAddressDelivery;
 
         if (isset(self::$product_quantity_cache[$cache_key])) {
             return self::$product_quantity_cache[$cache_key];
