@@ -3,14 +3,14 @@
         <div class="elementor-widget-container">
             <div class="elementor-image">
                 <a href="https://www.cloture-discount.fr/">
-                    <img src="/img/logo-1744701147.svg" alt="Districlos">
+                    <img width="144px" src="/img/logo-1744701147.svg" alt="Districlos">
                 </a>
             </div>
         </div>
     </div>
     <div class="elementor-element elementor-element-b1a5e08 textFooterDescription">
         <div class="elementor-widget-container">
-            <p>Districlos, votre expert clôtures, portails et brise-vues vous accompagne dans vos projets depuis plus de 15 ans.</p>
+            <p>Districlos, votre expert clôtures, portails <br>et brise-vues vous accompagne <br>dans vos projets depuis plus de 15 ans.</p>
         </div>
     </div>
     <div class="elementor-element elementor-element-7c993ab socialIconFooter elementor-shape-rounded">

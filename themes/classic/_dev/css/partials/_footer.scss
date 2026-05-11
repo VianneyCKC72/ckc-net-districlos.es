@@ -37,16 +37,20 @@
 .elementor-2170101 .elementor-element-61f6f1a .elementor-widget-wrap {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
-.elementor-2170101 .elementor-element.elementor-element-7c993ab > .elementor-widget-container {
-  margin: 0 0 20px 0;
+.elementor-2170101 .elementor-element.elementor-element-7c993ab {
+  margin-top: auto;
+
+  > .elementor-widget-container {
+    margin: 0 0 20px 0;
+  }
 }
 
 .elementor-2170101 .elementor-element.elementor-element-b1a5e08 {
   width: 100%;
   white-space-collapse: preserve;
-  margin-bottom: 60px;
 }
 
 .elementor-2170101 .elementor-element.elementor-element-918d6ea {
@@ -57,7 +61,7 @@
   .footer-inner.elementor-2170101 {
     display: flex;
     flex-wrap: nowrap;
-    align-items: flex-start;
+    align-items: stretch;
   }
 
   .elementor-column {
