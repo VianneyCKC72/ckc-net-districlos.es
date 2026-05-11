@@ -75,6 +75,10 @@
                     <a class="view-order-details-link" href="{$order.details.details_url}" data-link-action="view-order-details">
                       {l s='Details' d='Shop.Theme.Customeraccount'}
                     </a>
+                    <span class="mx-1 text-muted" aria-hidden="true">|</span>
+                    <a class="follow-order-link" href="{$link->getModuleLink('dtc_ordertracking','track',['ref'=>$order.details.reference], true)|escape:'htmlall':'UTF-8'}">
+                      {l s='Suivre' mod='dtc_ordertracking'}
+                    </a>
                     {if $order.details.reorder_url}
                       <a class="reorder-link" href="{$order.details.reorder_url}">{l s='Reorder' d='Shop.Theme.Actions'}</a>
                     {/if}
@@ -104,7 +108,12 @@
                     <div class="col-xs-2 text-xs-right">
                       <div>
                         <a href="{$order.details.details_url}" data-link-action="view-order-details" title="{l s='Details' d='Shop.Theme.Customeraccount'}">
-                          <i class="material-icons">&#xE8B6;</i>
+                          <i class="material-icons">Détails</i>
+                        </a>
+                      </div>
+                      <div>
+                        <a href="{$link->getModuleLink('dtc_ordertracking','track',['ref'=>$order.details.reference], true)|escape:'htmlall':'UTF-8'}" title="{l s='Suivre' mod='dtc_ordertracking'}">
+                          <i class="material-icons">Suivre</i>
                         </a>
                       </div>
                       {if $order.details.reorder_url}
