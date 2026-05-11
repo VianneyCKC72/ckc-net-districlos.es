@@ -1,6 +1,11 @@
 .elementor-2170101 .elementor-element.elementor-element-918d6ea {
   text-align: left;
 
+  > .elementor-widget-container {
+    max-width: 200px;
+    margin: 0 0 10px 0;
+  }
+
   .elementor-image img {
     width: 100%;
     max-width: 100%;
@@ -56,11 +61,14 @@
 .elementor-2170101 .elementor-element.elementor-element-b1a5e08 {
   width: 100%;
   white-space-collapse: preserve;
+
+  p { margin: 0; }
 }
 
-.elementor-2170101 .elementor-element.elementor-element-918d6ea {
-  margin-bottom: 20px;
+.elementor-2170101 .elementor-element.elementor-element-d79a163 {
+  p { margin: 0; }
 }
+
 
 @media (min-width: 768px) {
   .footer-inner.elementor-2170101 {
