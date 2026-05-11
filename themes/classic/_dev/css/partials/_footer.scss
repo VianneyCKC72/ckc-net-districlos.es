@@ -4,6 +4,16 @@
 }
 
 @media (min-width: 768px) {
+  .footer-inner.elementor-2170101 {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+  }
+
+  .elementor-column {
+    flex-shrink: 0;
+  }
+
   .elementor-2170101 .elementor-element.elementor-element-61f6f1a {
     width: 24.408%;
   }
