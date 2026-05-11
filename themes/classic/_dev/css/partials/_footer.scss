@@ -1,3 +1,20 @@
+#footer .linksBlockFooter {
+  .elementor-heading-title {
+    color: #000;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 21px;
+    margin-bottom: 15px;
+  }
+
+  .elementor-page-link:not(#e) {
+    color: #000;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+}
+
 @media only screen and (max-width: 1620px) {
   .elementor-2170101 .elementor-element.elementor-element-d744fa0 .elementor-social-icon {
     font-size: 18px;
