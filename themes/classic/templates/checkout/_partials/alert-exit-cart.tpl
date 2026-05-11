@@ -1,5 +1,5 @@
 <div class="modal fade" tabindex="-1" role="dialog" id="confirmModal">
-    <div class="modal-dialog" role="document" style="margin: 50px auto;">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header dis_flex">
                 <h5 class="modal-title">Êtes-vous sûr ?</h5>

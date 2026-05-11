@@ -28,13 +28,13 @@
         <div class="block block-contact">
             <span class="email">
                 <a href="mailto:bourgogne@districlos.com" itemprop="email">
-                    <img src="/themes/classic/assets/img/magasins/email.png" alt="email" width="14" height="10">
+                    <picture><source srcset="/themes/classic/assets/img/magasins/email.webp" type="image/webp"><img src="/themes/classic/assets/img/magasins/email.png" alt="email" width="14" height="10"></picture>
                     bourgogne@districlos.com
                 </a>
             </span>
             <span class="telephone">
                 <a href="tel:+33385482568" itemprop="telephone">
-                    <img src="/themes/classic/assets/img/magasins/telephone.png" alt="telephone" width="14" height="12">
+                    <picture><source srcset="/themes/classic/assets/img/magasins/telephone.webp" type="image/webp"><img src="/themes/classic/assets/img/magasins/telephone.png" alt="telephone" width="14" height="12"></picture>
                     03 85 48 25 68
                 </a>
             </span>

@@ -22,8 +22,11 @@
         </div>
         <div class="row">
             <div class="image col-sm-6">
-                <img src="/themes/classic/assets/img/espace-pro/carte-france.png" alt="carte de france"
-                     class="img-responsive">
+                <picture>
+                    <source srcset="/themes/classic/assets/img/espace-pro/carte-france.webp" type="image/webp">
+                    <img src="/themes/classic/assets/img/espace-pro/carte-france.png" alt="carte de france"
+                         class="img-responsive" loading="lazy">
+                </picture>
             </div>
             <div class="texte col-sm-6">
                 <h3 class="picto_rond_title france_rond">Un réseau d'installateur qui communique</h3>

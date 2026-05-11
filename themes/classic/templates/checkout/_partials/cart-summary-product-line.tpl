@@ -31,7 +31,7 @@
           <source srcset="{$product.default_image.small.sources.avif}" type="image/avif">{/if}
           {if !empty($product.default_image.small.sources.webp)}
           <source srcset="{$product.default_image.small.sources.webp}" type="image/webp">{/if}
-          <img class="media-object" src="{$product.default_image.small.url}" alt="{$product.name}" loading="lazy">
+          <img class="media-object" src="{$product.default_image.small.url}" alt="{$product.name}" loading="lazy" width="98" height="98">
         </picture>
       {else}
         <picture>
@@ -39,7 +39,7 @@
           <source srcset="{$urls.no_picture_image.bySize.small_default.sources.avif}" type="image/avif">{/if}
           {if !empty($urls.no_picture_image.bySize.small_default.sources.webp)}
           <source srcset="{$urls.no_picture_image.bySize.small_default.sources.webp}" type="image/webp">{/if}
-          <img src="{$urls.no_picture_image.bySize.small_default.url}" loading="lazy" />
+          <img src="{$urls.no_picture_image.bySize.small_default.url}" alt="{l s='No picture' d='Shop.Theme.Catalog'}" loading="lazy" width="98" height="98" />
         </picture>
       {/if}
     </a>

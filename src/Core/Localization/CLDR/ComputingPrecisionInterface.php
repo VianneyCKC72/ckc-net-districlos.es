@@ -40,5 +40,5 @@ interface ComputingPrecisionInterface
      *
      * @return int
      */
-    public function getPrecision(int $displayPrecision);
+    public function getPrecision(?int $displayPrecision);
 }

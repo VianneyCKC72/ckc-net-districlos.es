@@ -38,10 +38,10 @@ final class ComputingPrecision implements ComputingPrecisionInterface
     /**
      * {@inheritdoc}
      */
-    public function getPrecision(int $displayPrecision)
+    public function getPrecision(?int $displayPrecision)
     {
         // the MULTIPLIER attribute is set to 1 for now, so that it matches display precision
-        $computingPrecision = $displayPrecision * self::MULTIPLIER;
+        $computingPrecision = ($displayPrecision ?? self::MINIMAL_VALUE) * self::MULTIPLIER;
 
         return ($computingPrecision < self::MINIMAL_VALUE) ? self::MINIMAL_VALUE : $computingPrecision;
     }

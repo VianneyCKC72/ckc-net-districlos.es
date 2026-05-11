@@ -36,7 +36,7 @@
                         <source srcset="{$product.default_image.bySize.cart_default.sources.webp}"
                                 type="image/webp">{/if}
                     <img src="{$product.default_image.bySize.cart_default.url}" alt="{$product.name|escape:'quotes'}"
-                         loading="lazy">
+                         loading="lazy" width="125" height="125">
                 </picture>
             {else}
                 <picture>
@@ -46,7 +46,7 @@
                     {if !empty($urls.no_picture_image.bySize.cart_default.sources.webp)}
                         <source srcset="{$urls.no_picture_image.bySize.cart_default.sources.webp}"
                                 type="image/webp">{/if}
-                    <img src="{$urls.no_picture_image.bySize.cart_default.url}" loading="lazy"/>
+                    <img src="{$urls.no_picture_image.bySize.cart_default.url}" alt="{l s='No picture' d='Shop.Theme.Catalog'}" loading="lazy" width="125" height="125"/>
                 </picture>
             {/if}
 
@@ -113,7 +113,7 @@
                                                             {$field.text}
                                                         {/if}
                                                     {elseif $field.type == 'image'}
-                                                        <img src="{$field.image.small.url}" loading="lazy">
+                                                        <img src="{$field.image.small.url}" alt="{$field.name|default:''}" loading="lazy">
                                                     {/if}
                                                 </div>
                                             </div>
@@ -136,11 +136,11 @@
                     <span class="gift-quantity">{$product.quantity}</span>
                 {else}
                     <div class="custom-quantity-selector">
-                        <button type="button" class="btn-quantity decrease">
+                        <button type="button" class="btn-quantity decrease" aria-label="{l s='Decrease quantity' d='Shop.Theme.Actions'}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                  fill="none"
                                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                                 class="lucide lucide-minus">
+                                 class="lucide lucide-minus" aria-hidden="true">
                                 <path d="M5 12h14"/>
                             </svg>
                         </button>
@@ -156,11 +156,11 @@
                                 {else}
                                value="1" min="1" {/if} class="quantity-input js-cart-line-product-quantity"
                                aria-label="{l s='Quantity' d='Shop.Theme.Actions'}">
-                        <button type="button" class="btn-quantity increase">
+                        <button type="button" class="btn-quantity increase" aria-label="{l s='Increase quantity' d='Shop.Theme.Actions'}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                  fill="none"
                                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                                 class="lucide lucide-plus">
+                                 class="lucide lucide-plus" aria-hidden="true">
                                 <path d="M5 12h14"/>
                                 <path d="M12 5v14"/>
                             </svg>
