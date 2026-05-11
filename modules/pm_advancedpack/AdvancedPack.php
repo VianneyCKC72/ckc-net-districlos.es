@@ -2463,7 +2463,7 @@ class AdvancedPack extends Product
                             $forceReductionByAmount = true;
                         }
                     }
-                    if ($packProduct['reduction_amount'] > 0 || $packProduct['reduction_percentage'] > 0) {
+                    if (!empty($packProduct['reduction_amount']) || !empty($packProduct['reduction_percentage'])) {
                         $sp = new SpecificPrice();
                         $sp->id_product = $packProduct['id_product'];
                         $sp->id_cart = self::getContext()->cart->id;
