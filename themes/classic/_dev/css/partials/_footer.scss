@@ -45,6 +45,10 @@
   flex-direction: row;
   flex-wrap: wrap;
   align-content: flex-start;
+
+  > .elementor-element {
+    width: 100%;
+  }
 }
 
 .elementor-2170101 .elementor-element.elementor-element-7c993ab {
