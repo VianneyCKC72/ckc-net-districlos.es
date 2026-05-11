@@ -1,6 +1,29 @@
-.elementor-2170101 .elementor-element.elementor-element-918d6ea .elementor-image img {
-  width: 100%;
-  max-width: 100%;
+.elementor-2170101 .elementor-element.elementor-element-918d6ea {
+  text-align: left;
+
+  .elementor-image img {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+.elementor-2170101 .elementor-element.elementor-element-7c993ab {
+  .elementor-social-icon {
+    background-color: #026473;
+    font-size: 24px;
+  }
+
+  .elementor-icon {
+    border-radius: 10px;
+  }
+
+  .elementor-social-icon:not(:last-child) {
+    margin-right: 7px;
+  }
+}
+
+.elementor-2170101 .elementor-element.elementor-element-b1a5e08 {
+  white-space-collapse: preserve;
 }
 
 @media (min-width: 768px) {
