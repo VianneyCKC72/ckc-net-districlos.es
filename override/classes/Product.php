@@ -91,10 +91,14 @@ class Product extends ProductCore
 
     public function add($autoDate = true, $nullValues = false)
     {
+        $db = Db::getInstance();
+        // Nettoie les lignes orphelines id=0 laissées par des tentatives précédentes
+        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_shop` WHERE `id_product` = 0');
+        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_lang` WHERE `id_product` = 0');
+
         $result = parent::add($autoDate, $nullValues);
 
         if ($result && (empty($this->id) || (int)$this->id === 0)) {
-            $db = Db::getInstance();
             $realId = (int)$db->getValue(
                 'SELECT MAX(`id_product`) FROM `' . _DB_PREFIX_ . 'product` WHERE `id_product` > 0'
             );
