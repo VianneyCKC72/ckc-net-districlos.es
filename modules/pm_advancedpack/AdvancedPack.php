@@ -1782,7 +1782,42 @@ class AdvancedPack extends Product
                     }
                 }
                 unset($packProducts);
-                if (!$combinationObj->save() || !$combinationObj->setAttributes([$idAttribute])) {
+                try {
+                    $combSaveResult = $combinationObj->save();
+                } catch (\Throwable $e) {
+                    $combSaveResult = false;
+                }
+
+                // Workaround: Insert_ID()=0 sur certains environnements — même bug que pour attribute.
+                if (empty($combinationObj->id) || (int)$combinationObj->id === 0) {
+                    $db = Db::getInstance();
+                    if ($combSaveResult) {
+                        // save() a réussi mais id=0 : la ligne existe dans product_attribute, récupérer le bon id.
+                        $recoveredCombId = (int)$db->getValue(
+                            'SELECT MAX(`id_product_attribute`) FROM `' . _DB_PREFIX_ . 'product_attribute`
+                             WHERE `id_product` = ' . (int)$combinationObj->id_product . '
+                               AND `id_product_attribute` > 0'
+                        );
+                        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute_shop` WHERE `id_product_attribute` = 0');
+                        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute_combination` WHERE `id_product_attribute` = 0');
+                        if ($recoveredCombId > 0) {
+                            $combinationObj->id = $recoveredCombId;
+                            $db->insert('product_attribute_shop', [
+                                'id_product_attribute' => $recoveredCombId,
+                                'id_shop' => (int)Context::getContext()->shop->id,
+                            ], false, true, Db::INSERT_IGNORE);
+                        } else {
+                            $combSaveResult = false;
+                        }
+                    } else {
+                        // save() a échoué : nettoyage des orphelins id=0
+                        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute` WHERE `id_product_attribute` = 0');
+                        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute_shop` WHERE `id_product_attribute` = 0');
+                        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute_combination` WHERE `id_product_attribute` = 0');
+                    }
+                }
+
+                if (!$combSaveResult || empty($combinationObj->id) || !$combinationObj->setAttributes([$idAttribute])) {
                     return false;
                 }
                 if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $idWarehouse) {
