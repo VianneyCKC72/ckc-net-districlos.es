@@ -125,6 +125,39 @@ class Cart extends CartCore
         return $result;
     }
 
+    /**
+     * Invalide le cache des quantités avant d'appeler parent::updateQty
+     * pour garantir que la décision UPDATE vs INSERT dans CartCore se base sur l'état réel de la DB.
+     */
+    public function updateQty(
+        $quantity,
+        $id_product,
+        $id_product_attribute = null,
+        $id_customization = false,
+        $operation = 'up',
+        $id_address_delivery = 0,
+        Shop $shop = null,
+        $auto_add_cart_rule = true,
+        $skipAvailabilityCheckOutOfStock = false,
+        $preserveGiftRemoval = true,
+        $useOrderPrices = false
+    ) {
+        $this->invalidateQuantityCache();
+        return parent::updateQty(
+            $quantity,
+            $id_product,
+            $id_product_attribute,
+            $id_customization,
+            $operation,
+            $id_address_delivery,
+            $shop,
+            $auto_add_cart_rule,
+            $skipAvailabilityCheckOutOfStock,
+            $preserveGiftRemoval,
+            $useOrderPrices
+        );
+    }
+
     /*
     * module: orderfees_shipping
     * date: 2025-02-24 17:50:29
@@ -325,13 +358,17 @@ class Cart extends CartCore
 
         // $idCustomization === false signifie "toutes customizations confondues"
         $customizationKey = ($idCustomization === false) ? 'all' : (int)$idCustomization;
-        $cache_key = $this->id . '_' . (int)$idProduct . '_' . (int)$idProductAttribute . '_' . $customizationKey . '_' . (int)$idAddressDelivery;
+        // En non-multishipping, le query SQL d'origine ignore id_address_delivery → on force 0 pour matcher le préchargement
+        $multishipping = (bool) Configuration::get('PS_ALLOW_MULTISHIPPING') && $this->isMultiAddressDelivery();
+        $addrKey = $multishipping ? (int)$idAddressDelivery : 0;
+        $cache_key = $this->id . '_' . (int)$idProduct . '_' . (int)$idProductAttribute . '_' . $customizationKey . '_' . $addrKey;
 
         if (isset(self::$product_quantity_cache[$cache_key])) {
             return self::$product_quantity_cache[$cache_key];
         }
 
-        // Cache miss résiduel (combinaison absente du panier) — retourner zéro directement
-        return self::$product_quantity_cache[$cache_key] = ['quantity' => 0, 'deep_quantity' => 0];
+        // Sécurité : si le cache n'a pas l'entrée, on fait un fallback parent pour éviter toute incohérence
+        // (le préchargement peut ne pas refléter l'état après un updateQty/add récent)
+        return self::$product_quantity_cache[$cache_key] = parent::getProductQuantity($idProduct, $idProductAttribute, $idCustomization, $idAddressDelivery);
     }
 }
