@@ -33,12 +33,6 @@
                                        class="service-link">
                                         Détails et conditions du service
                                     </a>
-
-                                    {* {if $s.main_product_name|default:''}
-                                        <small class="text-muted" style="display:block;margin-top:.25rem;">
-                                            Pour : {$s.main_product_name|escape:'html':'UTF-8'}
-                                        </small>
-                                    {/if} *}
                                 </div>
 
                                 <div class="block-right">
@@ -133,9 +127,6 @@
                 </div>
             {/if}
         {/foreach}
-
-        {* TVA réduite déplacée dans cart_product_line_dealt.tpl (ligne produit) *}
-
     </div>
 
 

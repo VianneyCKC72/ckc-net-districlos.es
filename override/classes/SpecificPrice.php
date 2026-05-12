@@ -19,11 +19,28 @@ class SpecificPrice extends SpecificPriceCore
             return [];
         }
 
-        require_once __DIR__ . '/../../modules/ckcspcache/classes/SpecificPriceCache.php';
-        require_once __DIR__ . '/../../modules/ckcspcache/classes/CacheStorageFile.php';
+        $cacheClass = _PS_MODULE_DIR_ . 'ckcspcache/classes/SpecificPriceCache.php';
+        $storageClass = _PS_MODULE_DIR_ . 'ckcspcache/classes/CacheStorageFile.php';
 
+        if (!file_exists($cacheClass) || !file_exists($storageClass)) {
+            return SpecificPriceCore::getSpecificPrice(
+                $id_product, $id_shop, $id_currency, $id_country, $id_group,
+                $quantity, $id_product_attribute, $id_customer, $id_cart, $real_quantity
+            );
+        }
 
-        $cache = new SpecificPriceCache(Module::getInstanceByName('ckcspcache'));
+        require_once $cacheClass;
+        require_once $storageClass;
+
+        $module = Module::getInstanceByName('ckcspcache');
+        if (!$module) {
+            return SpecificPriceCore::getSpecificPrice(
+                $id_product, $id_shop, $id_currency, $id_country, $id_group,
+                $quantity, $id_product_attribute, $id_customer, $id_cart, $real_quantity
+            );
+        }
+
+        $cache = new SpecificPriceCache($module);
 
         // 1) feature active / couldHaveSpecificPrice : tu peux laisser le core décider
         if (!SpecificPriceCore::isFeatureActive()) {

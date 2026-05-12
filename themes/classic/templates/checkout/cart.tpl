@@ -54,8 +54,8 @@
             <div class="cart-grid-right">
 
                 <div class="text-right">
-                    <a class="exitCart" style="margin-bottom:5px; font-size:12px;" href="/">
-                        <svg style="max-width: 15px" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                    <a class="exitCart" href="/">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                              stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left">
                             <path d="m15 18-6-6 6-6"/>
@@ -144,7 +144,7 @@
             {hook h='displayCrossSellingShoppingCart'}
         </div>
 
-        <div class="col-12 reassu-cart" style="margin-top: 70px; margin-bottom: 70px;">
+        <div class="col-12 reassu-cart">
             {hook h='CETemplate' id=1}
         </div>
 

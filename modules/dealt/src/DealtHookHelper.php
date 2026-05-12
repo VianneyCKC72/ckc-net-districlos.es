@@ -17,11 +17,19 @@ use Tools;
 
 class DealtHookHelper
 {
-    /**
-     * Cache statique pour éviter les vérifications répétées de l'installation de pm_advancedpack
-     * Remplace les requêtes SHOW TABLES LIKE coûteuses
-     */
     private static $pm_advancedpack_installed = null;
+
+    /** @var array<int, bool> */
+    private static $tvaCacheByCart = [];
+
+    /** @var array<string, bool> */
+    private static $serviceReferenceCache = [];
+
+    /** @var string[]|null colonnes de ps_dealt_service (SHOW COLUMNS exécuté une seule fois) */
+    private static $dealtServiceColumns = null;
+
+    /** @var array<int, array<mixed>|null> */
+    private static $serviceRowCache = [];
 
     private const SERVICES_PARENT_CATEGORY_ID = 369;
     private const PRO_SHOP_ID = 2;
@@ -231,29 +239,36 @@ class DealtHookHelper
 
     private static function isTvaAttestedForCart(int $idCart): bool
     {
-        // Table dealt_tva_attestation existe car le module est installé
-        // Pas besoin de SHOW TABLES LIKE à chaque appel
-        $table = _DB_PREFIX_ . 'dealt_tva_attestation';
-        $sql = 'SELECT COUNT(*) FROM `' . bqSQL($table) . '` WHERE id_cart=' . (int)$idCart . ' AND is_validated=1';
-        return (int)Db::getInstance()->getValue($sql) > 0;
+        if (!array_key_exists($idCart, self::$tvaCacheByCart)) {
+            $table = _DB_PREFIX_ . 'dealt_tva_attestation';
+            $sql = 'SELECT COUNT(*) FROM `' . bqSQL($table) . '` WHERE id_cart=' . (int)$idCart . ' AND is_validated=1';
+            self::$tvaCacheByCart[$idCart] = (int)Db::getInstance()->getValue($sql) > 0;
+        }
+        return self::$tvaCacheByCart[$idCart];
     }
 
     private static function getServiceRowByProductId(int $serviceProductId): ?array
     {
-        // 0) Récupérer la référence depuis l'objet Product (pas de JOIN SQL)
+        if (array_key_exists($serviceProductId, self::$serviceRowCache)) {
+            return self::$serviceRowCache[$serviceProductId];
+        }
+
         $prod = new \Product($serviceProductId);
         $ref = trim((string)$prod->reference);
         if ($ref === '') {
-            return null;
+            return self::$serviceRowCache[$serviceProductId] = null;
         }
 
         $db = \Db::getInstance();
 
-        // 1) Colonnes existantes (optionnel, garde l'auto-détection/alias propre)
-        $colsRows = $db->executeS('SHOW COLUMNS FROM `' . _DB_PREFIX_ . 'dealt_service`');
-        $cols = $colsRows ? array_map(static function ($r) {
-            return (string)$r['Field'];
-        }, $colsRows) : [];
+        // SHOW COLUMNS exécuté une seule fois par requête PHP
+        if (self::$dealtServiceColumns === null) {
+            $colsRows = $db->executeS('SHOW COLUMNS FROM `' . _DB_PREFIX_ . 'dealt_service`');
+            self::$dealtServiceColumns = $colsRows ? array_map(static function ($r) {
+                return (string)$r['Field'];
+            }, $colsRows) : [];
+        }
+        $cols = self::$dealtServiceColumns;
 
         $wanted = [
             'eligibility_conditions' => ['eligibility_conditions', 'egibility_conditions'],
@@ -262,6 +277,7 @@ class DealtHookHelper
             'longueur_min' => ['longueur_min'],
             'longueur_max' => ['longueur_max'],
             'reference' => ['reference'],
+            'includes_length' => ['includes_length'],
         ];
 
         $selectParts = [];
@@ -284,7 +300,7 @@ class DealtHookHelper
         $q->from('dealt_service', 'ds');
         $q->where("ds.`reference` = '" . pSQL($ref) . "'");
 
-        return $db->getRow($q) ?: null;
+        return self::$serviceRowCache[$serviceProductId] = $db->getRow($q) ?: null;
     }
 
 
@@ -414,9 +430,11 @@ class DealtHookHelper
         if ($reference === '') {
             return false;
         }
-        $sql = 'SELECT 1 FROM `' . _DB_PREFIX_ . 'dealt_service`
-            WHERE `reference` = \'' . pSQL($reference) . '\'';
-        return (bool)\Db::getInstance()->getValue($sql);
+        if (!array_key_exists($reference, self::$serviceReferenceCache)) {
+            $sql = 'SELECT 1 FROM `' . _DB_PREFIX_ . 'dealt_service` WHERE `reference` = \'' . pSQL($reference) . '\'';
+            self::$serviceReferenceCache[$reference] = (bool)\Db::getInstance()->getValue($sql);
+        }
+        return self::$serviceReferenceCache[$reference];
     }
 
     /**
@@ -691,6 +709,8 @@ class DealtHookHelper
     /** Données pour displayShoppingCartFooter (panier) */
     public static function buildCartFooterData(Context $ctx): array
     {
+        static $cache = [];
+
         $cart   = $ctx->cart;
         $idLang = (int)$ctx->language->id;
 
@@ -701,13 +721,20 @@ class DealtHookHelper
             ];
         }
 
+        $cacheKey = (int)$cart->id . '_' . $idLang;
+        if (isset($cache[$cacheKey])) {
+            return $cache[$cacheKey];
+        }
+
+        // Appel unique à getProducts() pour tout buildCartFooterData
+        $cartProducts = $cart->getProducts();
+
         // Services déjà dans le panier (pour ne pas les re-proposer)
+        // $row['reference'] est déjà fourni par getProducts() — pas besoin de new Product()
         $serviceIdsInCart = [];
-        foreach ($cart->getProducts() as $row) {
-            $pid  = (int)$row['id_product'];
-            $prod = new \Product($pid, false, $idLang);
-            if (!empty($prod->reference) && self::isServiceReference((string)$prod->reference)) {
-                $serviceIdsInCart[$pid] = true;
+        foreach ($cartProducts as $row) {
+            if (!empty($row['reference']) && self::isServiceReference((string)$row['reference'])) {
+                $serviceIdsInCart[(int)$row['id_product']] = true;
             }
         }
 
@@ -734,7 +761,7 @@ class DealtHookHelper
         }
 
         // Pour chaque produit non-service du panier, proposer ses services liés
-        foreach ($cart->getProducts() as $row) {
+        foreach ($cartProducts as $row) {
             $mainId = (int)$row['id_product'];
             $main   = new \Product($mainId, false, $idLang);
             $lengthPerUnit = null;
@@ -777,7 +804,12 @@ class DealtHookHelper
                     $lengthPerUnit = $main->width / 100;
                     $length = $lengthPerUnit * (int)$row['quantity'];
                 } else {
-                    $features = Product::getFrontFeaturesStatic(Context::getContext()->language->id, (int)$row['id_product']);
+                    static $featuresCache = [];
+                    $fCacheKey = (int)$row['id_product'] . '_' . (int)Context::getContext()->language->id;
+                    if (!isset($featuresCache[$fCacheKey])) {
+                        $featuresCache[$fCacheKey] = \Product::getFrontFeaturesStatic(Context::getContext()->language->id, (int)$row['id_product']);
+                    }
+                    $features = $featuresCache[$fCacheKey];
                     foreach ($features as $feature){
                         if($feature['name'] == 'Longueur'){
                             if(preg_match('/mm/', $feature['value']) OR preg_match('/MM/', $feature['value'])){
@@ -819,12 +851,9 @@ class DealtHookHelper
                 $srv = new \Product($sid, false, $idLang);
                 $priceTtc = \Product::getPriceStatic($sid, true);
                 $serviceRow = self::getServiceRowByProductId($sid) ?: [];
+                $checkIncludesLength = (int)($serviceRow['includes_length'] ?? 0);
 
-                $checkIncludesLength = Db::getInstance()->getValue('SELECT d.includes_length FROM ' . _DB_PREFIX_ . 'dealt_service d
-                LEFT JOIN ' . _DB_PREFIX_ . 'product p ON p.reference = d.reference 
-                WHERE p.id_product = ' . $sid);
-
-                if($length <= $serviceRow['longueur_max'] && $length >= $serviceRow['longueur_min'] OR !(int)$checkIncludesLength){
+                if($length <= $serviceRow['longueur_max'] && $length >= $serviceRow['longueur_min'] OR !$checkIncludesLength){
                     $services[] = [
                         // Contexte main
                         'main_product_id'   => $checkIfPack && !empty($idPackMainProduct[0]['id_product']) && $mainId == $idPackMainProduct[0]['id_product'] && !empty($idPack) ? $idPack : $mainId,
@@ -866,9 +895,9 @@ class DealtHookHelper
             'dealt_toggle_tva_url' => $ctx->link->getModuleLink('dealt', 'tvaToggle'),
         ];
 
-        \Media::addJsDef($data); // si ton JS lit ces données
+        \Media::addJsDef($data);
 
-        return $data;
+        return $cache[$cacheKey] = $data;
     }
 
     public static function checkIfPack($id_pack,$cart){

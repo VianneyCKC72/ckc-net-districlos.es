@@ -10,10 +10,6 @@
          data-store-id="{$service.dealt_store_id|escape:'html':'UTF-8'}"
          data-eligibility-url="{$service.dealt_check_availability_url|escape:'html':'UTF-8'}">
 
-        {*<div class="picto">
-            {include file="module:dealt/views/templates/hook/svg/cle_molette.tpl"}
-        </div>*}
-
         <div class="dealt-offer-content">
             {* Titre cliquable pour déplier/replier le contenu *}
             <button type="button" 
@@ -25,9 +21,6 @@
                     <div class="dealt-title-row">
                         <span class="dealt-offer-title">
                             Besoin d'une pose ?
-                        </span>
-                        <span class="dealt-offer-badge" aria-label="Promotion pose -10%" style="padding: 5px; border-radius: 20px; background: #ff144e; color: #ffffff; font-weight: 700; font-size: 12px; line-height: 1;">
-                            -10%
                         </span>
                         {if !empty($service.dealt_service_url)}
                             <a href="{$service.dealt_service_url|escape:'html':'UTF-8'}"

@@ -295,7 +295,9 @@ class UpdateCombinationCommand
      */
     public function setImpactOnWeight(string $impactOnWeight): self
     {
-        $this->impactOnWeight = new DecimalNumber($impactOnWeight);
+        if ($impactOnWeight !== '') {
+            $this->impactOnWeight = new DecimalNumber($impactOnWeight);
+        }
 
         return $this;
     }
@@ -315,7 +317,9 @@ class UpdateCombinationCommand
      */
     public function setImpactOnPrice(string $impactOnPrice): self
     {
-        $this->impactOnPrice = new DecimalNumber($impactOnPrice);
+        if ($impactOnPrice !== '') {
+            $this->impactOnPrice = new DecimalNumber($impactOnPrice);
+        }
 
         return $this;
     }
@@ -335,7 +339,9 @@ class UpdateCombinationCommand
      */
     public function setEcoTax(string $ecoTax): self
     {
-        $this->ecoTax = new DecimalNumber($ecoTax);
+        if ($ecoTax !== '') {
+            $this->ecoTax = new DecimalNumber($ecoTax);
+        }
 
         return $this;
     }
@@ -355,7 +361,9 @@ class UpdateCombinationCommand
      */
     public function setImpactOnUnitPrice(string $impactOnUnitPrice): self
     {
-        $this->impactOnUnitPrice = new DecimalNumber($impactOnUnitPrice);
+        if ($impactOnUnitPrice !== '') {
+            $this->impactOnUnitPrice = new DecimalNumber($impactOnUnitPrice);
+        }
 
         return $this;
     }
@@ -375,7 +383,9 @@ class UpdateCombinationCommand
      */
     public function setWholesalePrice(string $wholesalePrice): self
     {
-        $this->wholesalePrice = new DecimalNumber($wholesalePrice);
+        if ($wholesalePrice !== '') {
+            $this->wholesalePrice = new DecimalNumber($wholesalePrice);
+        }
 
         return $this;
     }

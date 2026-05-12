@@ -65,7 +65,7 @@ class Ckc_Stores_Stock extends Module
      * Fonction Smarty personnalisée pour vérifier le statut "victime de son succès"
      * Usage dans le template : {checkVictimeSucces id_product=$accessory.id_accessory id_product_attribute=$accessory.default_id_product_attribute assign="victime_succes"}
      */
-    public function smartyCheckVictimeSucces($params, &$smarty)
+    public function smartyCheckVictimeSucces($params, $smarty)
     {
         $id_product = isset($params['id_product']) ? (int)$params['id_product'] : 0;
         $id_product_attribute = isset($params['id_product_attribute']) ? (int)$params['id_product_attribute'] : 0;

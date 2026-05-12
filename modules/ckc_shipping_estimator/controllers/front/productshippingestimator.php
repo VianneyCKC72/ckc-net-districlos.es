@@ -63,11 +63,17 @@ class ckc_shipping_estimatorproductshippingestimatorModuleFrontController extend
         }
 
         $this->context->cart->updateAddressId($this->context->cart->id_address_delivery, $tempAddress->id);
+        // On lie l'adresse au panier pour que les frais de livraison soient calculés correctement.
+        $this->context->cart->id_address_delivery = (int) $tempAddress->id;
+        $this->context->cart->save();
 
-        if (Context::getContext()->cookie->id_customer) {
-            foreach ($this->context->cart->getProducts() as $product) {
-                $this->context->cart->setProductAddressDelivery($product['id_product'], $product['id_product_attribute'], $product['id_address_delivery'], $tempAddress->id);
-            }
+        foreach ($this->context->cart->getProducts() as $product) {
+            $this->context->cart->setProductAddressDelivery(
+                (int) $product['id_product'],
+                (int) $product['id_product_attribute'],
+                (int) $product['id_address_delivery'],
+                (int) $tempAddress->id
+            );
         }
 
         $delivery_option_list = $this->context->cart->getDeliveryOptionList(null, true);

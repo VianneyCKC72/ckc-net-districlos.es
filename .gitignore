@@ -260,6 +260,8 @@ modules/*
 modules/ckcstorespresentation/uploads/*
 !modules/creativeelements
 !modules/everpspopup
+modules/ckcerrorreporter/
+modules/ckc_espacepro_invisible/
 #override/*
 themes/*/
 !themes/classic/
@@ -458,3 +460,16 @@ modules/ckc_realisation/uploads/2/
 /modules/pm_advancedpack/cache/*
 !/modules/dealt/
 /modules/ckcspcache/
+
+/EDI_TARIF_DV_WEB
+/demande-encours/
+/ekonsilio/
+override/classes/cache/
+override/classes/db/
+themes/classic/assets/js/theme.js.map
+/callback.php
+/license_query_cache.txt
+config/defines_uri.inc.php
+modules/ckc*/config_fr.xml
+modules/ckcproductreviews/cache/
+themes/classic/assets/css/theme.css.map

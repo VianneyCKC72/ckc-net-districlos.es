@@ -2463,7 +2463,7 @@ class AdvancedPack extends Product
                             $forceReductionByAmount = true;
                         }
                     }
-                    if ($packProduct['reduction_amount'] > 0 || $packProduct['reduction_percentage'] > 0) {
+                    if (!empty($packProduct['reduction_amount']) || !empty($packProduct['reduction_percentage'])) {
                         $sp = new SpecificPrice();
                         $sp->id_product = $packProduct['id_product'];
                         $sp->id_cart = self::getContext()->cart->id;
@@ -2497,7 +2497,12 @@ class AdvancedPack extends Product
 
                 Product::resetStaticCache();
                 SpecificPrice::flushCache();
-                Configuration::updateValue('CKC_SP_CACHE_NS_VERSION', (int)Configuration::get('CKC_SP_CACHE_NS_VERSION', 1) + 1);
+                // Invalide le cache fichier ckcspcache sans écrire dans ps_configuration
+                $ckcNsFile = _PS_MODULE_DIR_ . 'ckcspcache/cache/ns_version';
+                if (is_dir(dirname($ckcNsFile))) {
+                    $v = is_file($ckcNsFile) ? (int) file_get_contents($ckcNsFile) : 1;
+                    file_put_contents($ckcNsFile, (string) ($v + 1));
+                }
 
                 pm_advancedpack::$_preventInfiniteLoop = false;
                 $jsonCartContent = [];
@@ -2984,9 +2989,6 @@ class AdvancedPack extends Product
         self::setContext($oldContext);
         self::$forceUseOfAnotherContext = false;
         if (count($spToAdd)) {
-            if (!SpecificPrice::isFeatureActive()) {
-                Configuration::updateGlobalValue('PS_SPECIFIC_PRICE_FEATURE_ACTIVE', '1');
-            }
             $columnList = '`' . implode('`, `', $fieldsList) . '`';
             foreach (array_chunk($spToAdd, 1000) as $spChunckToAdd) {
                 $saveResult &= Db::getInstance()->execute('INSERT INTO `' . _DB_PREFIX_ . 'specific_price` (' . $columnList . ') VALUES ' . implode(',', $spChunckToAdd));

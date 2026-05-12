@@ -68,10 +68,10 @@ class Grillage extends ProductFactory
                 }
 
                 $quantities = ($isPleines)
-                    ? self::ALU_QUANTITIES_PLEINES[$installationKey][$legacyHeight]
-                    : self::ALU_QUANTITIES_AJOURES[$installationKey][$legacyHeight];
+                    ? (self::ALU_QUANTITIES_PLEINES[$installationKey][$legacyHeight] ?? null)
+                    : (self::ALU_QUANTITIES_AJOURES[$installationKey][$legacyHeight] ?? null);
 
-                $lengthKeys = array_keys($quantities);
+                $lengthKeys = array_keys($quantities ?? []);
                 $position = array_search($length, $lengthKeys);
                 $coefficient = 1;
                 if ($position !== false) {

@@ -125,7 +125,7 @@ class ContextCore
     protected $translator = null;
 
     /** @var int */
-    protected $priceComputingPrecision = null;
+    public $priceComputingPrecision = null;
 
     /**
      * Mobile device of the customer.
@@ -554,7 +554,9 @@ class ContextCore
     {
         if ($this->priceComputingPrecision === null) {
             $computingPrecision = new ComputingPrecision();
-            $this->priceComputingPrecision = $computingPrecision->getPrecision($this->currency->precision);
+            $this->priceComputingPrecision = $computingPrecision->getPrecision(
+                $this->currency !== null ? $this->currency->precision : 2
+            );
         }
 
         return $this->priceComputingPrecision;
