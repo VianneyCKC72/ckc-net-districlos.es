@@ -1645,6 +1645,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     }
     protected function duplicatePack(Product $originalPack, $newIdPack)
     {
+        dump('[CKC DUPPACK 1] start | originalPack->id=' . $originalPack->id . ' | newIdPack=' . $newIdPack);
         $res = Db::getInstance()->delete('specific_price', '`id_product`=' . (int)$newIdPack);
         $productPack = new Product((int)$newIdPack);
         $combinationList = $productPack->getAttributeCombinations($this->context->language->id);
@@ -1667,25 +1668,33 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             }
         }
         $packRows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'pm_advancedpack` WHERE `id_pack`=' . (int)$originalPack->id);
+        dump('[CKC DUPPACK 2] packRows count=' . count($packRows));
         foreach ($packRows as $packRow) {
             $packRow['id_pack'] = (int)$newIdPack;
-            $res &= Db::getInstance()->insert('pm_advancedpack', $packRow, true);
+            $insertResult = Db::getInstance()->insert('pm_advancedpack', $packRow, true);
+            dump('[CKC DUPPACK 3] insert pm_advancedpack | result=' . var_export($insertResult, true) . ' | error=' . Db::getInstance()->getMsgError());
+            $res &= $insertResult;
         }
         $packProductsRows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'pm_advancedpack_products` WHERE `id_pack`=' . (int)$originalPack->id);
+        dump('[CKC DUPPACK 4] packProductsRows count=' . count($packProductsRows));
         foreach ($packProductsRows as $packProductsRow) {
             $packProductsRow['id_pack'] = (int)$newIdPack;
             $oldIdProductPack = (int)$packProductsRow['id_product_pack'];
             unset($packProductsRow['id_product_pack']);
-            $res &= Db::getInstance()->insert('pm_advancedpack_products', $packProductsRow, true);
+            $insertResult2 = Db::getInstance()->insert('pm_advancedpack_products', $packProductsRow, true);
             $idProductPack = (int)Db::getInstance()->Insert_ID();
+            dump('[CKC DUPPACK 5] insert pm_advancedpack_products | oldId=' . $oldIdProductPack . ' | result=' . var_export($insertResult2, true) . ' | Insert_ID=' . $idProductPack . ' | error=' . Db::getInstance()->getMsgError());
+            $res &= $insertResult2;
             if (empty($idProductPack)) {
                 $res = false;
                 continue;
             }
             $packProductsAttributesRows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'pm_advancedpack_products_attributes` WHERE `id_product_pack`=' . (int)$oldIdProductPack);
+            dump('[CKC DUPPACK 6] packProductsAttributesRows count=' . count($packProductsAttributesRows) . ' | newIdProductPack=' . $idProductPack);
             foreach ($packProductsAttributesRows as $packProductsAttributesRow) {
                 $packProductsAttributesRow['id_product_pack'] = (int)$idProductPack;
-                Db::getInstance()->insert('pm_advancedpack_products_attributes', $packProductsAttributesRow, true);
+                $insertResult3 = Db::getInstance()->insert('pm_advancedpack_products_attributes', $packProductsAttributesRow, true);
+                dump('[CKC DUPPACK 7] insert pm_advancedpack_products_attributes | result=' . var_export($insertResult3, true) . ' | row=' . json_encode($packProductsAttributesRow) . ' | error=' . Db::getInstance()->getMsgError());
             }
             $packProductsCustomizationRows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'pm_advancedpack_products_customization` WHERE `id_product_pack`=' . (int)$oldIdProductPack);
             foreach ($packProductsCustomizationRows as $packProductsCustomizationRow) {
@@ -1693,7 +1702,9 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 Db::getInstance()->insert('pm_advancedpack_products_customization', $packProductsCustomizationRow, true);
             }
         }
+        dump('[CKC DUPPACK 8] calling _updatePackFields');
         $res &= $this->_updatePackFields($newIdPack);
+        dump('[CKC DUPPACK 9] done | res=' . var_export($res, true));
         return $res;
     }
     public function hookActionProductAdd($params)
