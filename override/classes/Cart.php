@@ -318,7 +318,16 @@ class Cart extends CartCore
             return self::$product_quantity_cache[$cache_key];
         }
 
-        // Cache miss résiduel (combinaison absente du panier) — retourner zéro directement
-        return self::$product_quantity_cache[$cache_key] = ['quantity' => 0, 'deep_quantity' => 0];
+        // Cache miss : on requête directement (produit ajouté après le préchargement)
+        return self::$product_quantity_cache[$cache_key] = parent::getProductQuantity($idProduct, $idProductAttribute, $idCustomization, $idAddressDelivery);
+    }
+
+    public function updateQty($quantity, $id_product, $id_product_attribute = null, $id_customization = false, $operator = 'up', $id_address_delivery = 0, Shop $shop = null, $auto_add_cart_rule = true, $skipAvailabilityCheckIfVirtual = false)
+    {
+        // Invalider le cache avant ET après la mise à jour pour éviter les doublons
+        $this->invalidateQuantityCache();
+        $result = parent::updateQty($quantity, $id_product, $id_product_attribute, $id_customization, $operator, $id_address_delivery, $shop, $auto_add_cart_rule, $skipAvailabilityCheckIfVirtual);
+        $this->invalidateQuantityCache();
+        return $result;
     }
 }
