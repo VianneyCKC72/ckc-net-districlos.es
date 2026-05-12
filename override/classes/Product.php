@@ -89,6 +89,25 @@ class Product extends ProductCore
         }
     }
 
+    public function add($autoDate = true, $nullValues = false)
+    {
+        $result = parent::add($autoDate, $nullValues);
+
+        if ($result && (empty($this->id) || (int)$this->id === 0)) {
+            $db = Db::getInstance();
+            $realId = (int)$db->getValue(
+                'SELECT MAX(`id_product`) FROM `' . _DB_PREFIX_ . 'product` WHERE `id_product` > 0'
+            );
+            if ($realId > 0) {
+                $this->id = $realId;
+                $db->execute('UPDATE `' . _DB_PREFIX_ . 'product_shop` SET `id_product` = ' . $realId . ' WHERE `id_product` = 0');
+                $db->execute('UPDATE `' . _DB_PREFIX_ . 'product_lang` SET `id_product` = ' . $realId . ' WHERE `id_product` = 0');
+            }
+        }
+
+        return $result;
+    }
+
     /**
      * Override de getProductsProperties pour pré-charger les stocks en masse
      * Réduit drastiquement les requêtes SQL stock_available (1000+ → 1)
