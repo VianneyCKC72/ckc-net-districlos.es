@@ -1685,41 +1685,73 @@ class AdvancedPack extends Product
                 $saveResult = false;
             }
 
-            // Fallback: sur certains environnements MySQL, Insert_ID() renvoie 0 après save().
-            // On récupère l'id manuellement et on insère les entrées shop/lang si nécessaire.
-            if (!$saveResult || empty($attributeObj->id) || (int)$attributeObj->id === 0) {
+            // Workaround: sur certains environnements MySQL/PDO, Insert_ID() renvoie 0 après save()
+            // alors que la ligne a bien été insérée dans `attribute`. Dans ce cas save() retourne
+            // true mais $attributeObj->id vaut 0, et les entrées shop/lang ont été créées avec id=0.
+            // On distingue deux cas pour éviter de créer un doublon dans `attribute`.
+            if (empty($attributeObj->id) || (int)$attributeObj->id === 0) {
                 $db = Db::getInstance();
-                // Nettoyage des éventuels enregistrements orphelins id=0 dans les 3 tables
-                $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute` WHERE `id_attribute` = 0');
-                $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_shop` WHERE `id_attribute` = 0');
-                $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_lang` WHERE `id_attribute` = 0');
-                $resultMain = $db->insert('attribute', [
-                    'id_attribute_group' => (int)$attributeObj->id_attribute_group,
-                    'color' => '',
-                    'position' => 0,
-                ]);
-                $insertId = (int)$db->Insert_ID();
-                // Si Insert_ID() retourne toujours 0, on récupère via MAX(id_attribute)
-                if ($resultMain && $insertId === 0) {
-                    $insertId = (int)$db->getValue(
+
+                if ($saveResult) {
+                    // Cas 1 : save() a réussi mais Insert_ID() était 0.
+                    // L'attribute principal existe déjà avec le bon id — on le récupère.
+                    $recoveredId = (int)$db->getValue(
                         'SELECT MAX(`id_attribute`) FROM `' . _DB_PREFIX_ . 'attribute`
-                         WHERE `id_attribute_group` = ' . (int)$attributeObj->id_attribute_group
+                         WHERE `id_attribute_group` = ' . (int)$attributeObj->id_attribute_group . '
+                           AND `id_attribute` > 0'
                     );
-                }
-                if ($resultMain && $insertId > 0) {
-                    $attributeObj->id = $insertId;
-                    $db->insert('attribute_shop', [
-                        'id_attribute' => $insertId,
-                        'id_shop' => (int)Context::getContext()->shop->id,
-                    ]);
-                    foreach (Language::getLanguages(false) as $lang) {
-                        $db->insert('attribute_lang', [
-                            'id_attribute' => $insertId,
-                            'id_lang' => (int)$lang['id_lang'],
-                            'name' => pSQL($uniqueId),
-                        ]);
+                    // Supprimer les orphelins id=0 créés par save() avec le mauvais id
+                    $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_shop` WHERE `id_attribute` = 0');
+                    $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_lang` WHERE `id_attribute` = 0');
+                    if ($recoveredId > 0) {
+                        $attributeObj->id = $recoveredId;
+                        $db->insert('attribute_shop', [
+                            'id_attribute' => $recoveredId,
+                            'id_shop' => (int)Context::getContext()->shop->id,
+                        ], false, true, Db::INSERT_IGNORE);
+                        foreach (Language::getLanguages(false) as $lang) {
+                            $db->insert('attribute_lang', [
+                                'id_attribute' => $recoveredId,
+                                'id_lang' => (int)$lang['id_lang'],
+                                'name' => pSQL($uniqueId),
+                            ], false, true, Db::INSERT_IGNORE);
+                        }
+                    } else {
+                        $saveResult = false;
                     }
-                    $saveResult = true;
+                } else {
+                    // Cas 2 : save() a échoué — nettoyer et insérer manuellement.
+                    $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute` WHERE `id_attribute` = 0');
+                    $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_shop` WHERE `id_attribute` = 0');
+                    $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_lang` WHERE `id_attribute` = 0');
+                    $resultMain = $db->insert('attribute', [
+                        'id_attribute_group' => (int)$attributeObj->id_attribute_group,
+                        'color' => '',
+                        'position' => 0,
+                    ]);
+                    $insertId = (int)$db->Insert_ID();
+                    if ($resultMain && $insertId === 0) {
+                        $insertId = (int)$db->getValue(
+                            'SELECT MAX(`id_attribute`) FROM `' . _DB_PREFIX_ . 'attribute`
+                             WHERE `id_attribute_group` = ' . (int)$attributeObj->id_attribute_group . '
+                               AND `id_attribute` > 0'
+                        );
+                    }
+                    if ($resultMain && $insertId > 0) {
+                        $attributeObj->id = $insertId;
+                        $db->insert('attribute_shop', [
+                            'id_attribute' => $insertId,
+                            'id_shop' => (int)Context::getContext()->shop->id,
+                        ]);
+                        foreach (Language::getLanguages(false) as $lang) {
+                            $db->insert('attribute_lang', [
+                                'id_attribute' => $insertId,
+                                'id_lang' => (int)$lang['id_lang'],
+                                'name' => pSQL($uniqueId),
+                            ]);
+                        }
+                        $saveResult = true;
+                    }
                 }
             }
 
