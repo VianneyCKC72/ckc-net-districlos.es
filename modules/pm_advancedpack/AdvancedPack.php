@@ -1679,37 +1679,41 @@ class AdvancedPack extends Product
                 $attributeObj->name[$lang['id_lang']] = $uniqueId;
             }
 
-            // === DEBUG: comparer getFields() vs INSERT manuel ===
-            $fieldsCommon = $attributeObj->getFields();
-            $fieldsShopGen = $attributeObj->getFieldsShop();
-            $fieldsLangGen = $attributeObj->getFieldsLang();
-
-            PrestaShopLogger::addLog(
-                '[CKC DEBUG GETFIELDS] uniqueId=' . $uniqueId
-                . ' | getFields()=' . json_encode($fieldsCommon)
-                . ' | getFieldsShop()=' . json_encode($fieldsShopGen)
-                . ' | getFieldsLang()=' . json_encode($fieldsLangGen)
-                . ' | id_shop_list=' . json_encode($attributeObj->id_shop_list ?? null)
-                . ' | get_shop_from_context=' . var_export($attributeObj->get_shop_from_context ?? null, true),
-                1, null, 'ProductAttribute', 0, true
-            );
-
             try {
                 $saveResult = $attributeObj->save();
-                $saveError = null;
             } catch (\Throwable $e) {
                 $saveResult = false;
-                $saveError = $e->getMessage() . ' | trace=' . $e->getFile() . ':' . $e->getLine();
             }
 
-            PrestaShopLogger::addLog(
-                '[CKC DEBUG SAVE RESULT] uniqueId=' . $uniqueId
-                . ' | saveResult=' . var_export($saveResult, true)
-                . ' | $attributeObj->id=' . var_export($attributeObj->id ?? null, true)
-                . ' | Db::Insert_ID()=' . (int) Db::getInstance()->Insert_ID()
-                . ' | saveError=' . var_export($saveError, true),
-                ($saveResult ? 1 : 3), null, 'ProductAttribute', 0, true
-            );
+            // Fallback: sur certains environnements MySQL, Insert_ID() renvoie 0 après save().
+            // On récupère l'id manuellement et on insère les entrées shop/lang si nécessaire.
+            if (!$saveResult || empty($attributeObj->id) || (int)$attributeObj->id === 0) {
+                $db = Db::getInstance();
+                // Nettoyage des éventuels enregistrements orphelins id=0
+                $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_shop` WHERE `id_attribute` = 0');
+                $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_lang` WHERE `id_attribute` = 0');
+                $resultMain = $db->insert('attribute', [
+                    'id_attribute_group' => (int)$attributeObj->id_attribute_group,
+                    'color' => '',
+                    'position' => 0,
+                ]);
+                $insertId = (int)$db->Insert_ID();
+                if ($resultMain && $insertId > 0) {
+                    $attributeObj->id = $insertId;
+                    $db->insert('attribute_shop', [
+                        'id_attribute' => $insertId,
+                        'id_shop' => (int)Context::getContext()->shop->id,
+                    ]);
+                    foreach (Language::getLanguages(false) as $lang) {
+                        $db->insert('attribute_lang', [
+                            'id_attribute' => $insertId,
+                            'id_lang' => (int)$lang['id_lang'],
+                            'name' => pSQL($uniqueId),
+                        ]);
+                    }
+                    $saveResult = true;
+                }
+            }
 
             if ($saveResult) {
                 $idAttribute = $attributeObj->id;
