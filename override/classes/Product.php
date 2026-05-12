@@ -15,9 +15,12 @@ class Product extends ProductCore
     {
         $ctx  = Context::getContext();
         $cart = $ctx->cart;
-        $address = new Address((int) $cart->id_address_delivery, (int) Context::getContext()->language->id);
 
-        if ($cart && $cart->id && self::isFr($address) && self::isAttested((int)$cart->id)) {
+        if ($cart && $cart->id) {
+            $address = new Address((int) $cart->id_address_delivery, (int) $ctx->language->id);
+        }
+
+        if ($cart && $cart->id && isset($address) && self::isFr($address) && self::isAttested((int)$cart->id)) {
             $id_main_product = Db::getInstance()->getValue('SELECT id_main_product FROM '._DB_PREFIX_.'dealt_tva_attestation 
             WHERE id_cart = '.$cart->id);
             $serviceId = Db::getInstance()->getValue('SELECT cp.id_product FROM '._DB_PREFIX_.'cart_product cp
