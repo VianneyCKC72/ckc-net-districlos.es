@@ -471,9 +471,9 @@ class AdvancedPack extends Product
         $excludeVATCase = false;
         list($address) = self::getAddressInstance();
         if (!$packIdTaxRulesGroup
-        && !empty($address->vat_number)
-        && $address->id_country != Configuration::get('VATNUMBER_COUNTRY')
-        && Configuration::get('VATNUMBER_MANAGEMENT')) {
+            && !empty($address->vat_number)
+            && $address->id_country != Configuration::get('VATNUMBER_COUNTRY')
+            && Configuration::get('VATNUMBER_MANAGEMENT')) {
             $excludeVATCase = true;
         } elseif (!$packIdTaxRulesGroup && Validate::isLoadedObject(self::getContext()->customer) && self::getContext()->customer->id != self::PACK_FAKE_CUSTOMER_ID) {
             $excludeVATCase = (Product::getTaxCalculationMethod(self::getContext()->customer->id) == 0);
@@ -1679,7 +1679,39 @@ class AdvancedPack extends Product
                 $attributeObj->name[$lang['id_lang']] = $uniqueId;
             }
 
-            if ($attributeObj->save()) {
+            // === DEBUG: comparer getFields() vs INSERT manuel ===
+            $fieldsCommon = $attributeObj->getFields();
+            $fieldsShopGen = $attributeObj->getFieldsShop();
+            $fieldsLangGen = $attributeObj->getFieldsLang();
+
+            PrestaShopLogger::addLog(
+                '[CKC DEBUG GETFIELDS] uniqueId=' . $uniqueId
+                . ' | getFields()=' . json_encode($fieldsCommon)
+                . ' | getFieldsShop()=' . json_encode($fieldsShopGen)
+                . ' | getFieldsLang()=' . json_encode($fieldsLangGen)
+                . ' | id_shop_list=' . json_encode($attributeObj->id_shop_list ?? null)
+                . ' | get_shop_from_context=' . var_export($attributeObj->get_shop_from_context ?? null, true),
+                1, null, 'ProductAttribute', 0, true
+            );
+
+            try {
+                $saveResult = $attributeObj->save();
+                $saveError = null;
+            } catch (\Throwable $e) {
+                $saveResult = false;
+                $saveError = $e->getMessage() . ' | trace=' . $e->getFile() . ':' . $e->getLine();
+            }
+
+            PrestaShopLogger::addLog(
+                '[CKC DEBUG SAVE RESULT] uniqueId=' . $uniqueId
+                . ' | saveResult=' . var_export($saveResult, true)
+                . ' | $attributeObj->id=' . var_export($attributeObj->id ?? null, true)
+                . ' | Db::Insert_ID()=' . (int) Db::getInstance()->Insert_ID()
+                . ' | saveError=' . var_export($saveError, true),
+                ($saveResult ? 1 : 3), null, 'ProductAttribute', 0, true
+            );
+
+            if ($saveResult) {
                 $idAttribute = $attributeObj->id;
                 $combinationObj = new Combination();
                 $combinationObj->id_product = (int)$idPack;
@@ -2657,7 +2689,7 @@ class AdvancedPack extends Product
         $sp->id_product = $idPack;
         $sp->id_cart = 0;
         $sp->id_product_attribute = $idProductAttribute;
-/*        $sp->id_shop = AdvancedPack::getPackIdShop($idPack);*/
+        /*        $sp->id_shop = AdvancedPack::getPackIdShop($idPack);*/
         $sp->id_shop = Context::getContext()->shop->id;
         $sp->id_shop_group = 0;
         $sp->id_currency = ($idProductAttribute && Validate::isLoadedObject(self::getContext()->currency) ? self::getContext()->currency->id : 0);
@@ -3239,8 +3271,8 @@ class AdvancedPack extends Product
                 $id_attributes = Db::getInstance()->executeS('
                 SELECT pac2.`id_attribute`
                 FROM `' . _DB_PREFIX_ . 'product_attribute_combination` pac2' .
-                ($hideUnavailableAttributes ? ' INNER JOIN `' . _DB_PREFIX_ . 'stock_available` pa ON pa.`id_product_attribute` = pac2.`id_product_attribute` WHERE pa.`quantity` > 0 AND ' : ' WHERE ') .
-                'pac2.`id_product_attribute` IN (' . implode(',', array_map('intval', $id_product_attributes)) . ')
+                    ($hideUnavailableAttributes ? ' INNER JOIN `' . _DB_PREFIX_ . 'stock_available` pa ON pa.`id_product_attribute` = pac2.`id_product_attribute` WHERE pa.`quantity` > 0 AND ' : ' WHERE ') .
+                    'pac2.`id_product_attribute` IN (' . implode(',', array_map('intval', $id_product_attributes)) . ')
                 AND pac2.`id_attribute` NOT IN (' . implode(',', array_map('intval', $current_selected_attributes)) . ')');
                 foreach ($id_attributes as $k => $row) {
                     $id_attributes[$k] = (int)$row['id_attribute'];
