@@ -1645,8 +1645,6 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     }
     protected function duplicatePack(Product $originalPack, $newIdPack)
     {
-        $ckc_log = function($msg) { file_put_contents(__DIR__ . '/ckc_duppack.log', date('H:i:s') . ' [duplicatePack] ' . $msg . "\n", FILE_APPEND); };
-        $ckc_log('[1] start | originalPack->id=' . $originalPack->id . ' | newIdPack=' . $newIdPack);
         $res = Db::getInstance()->delete('specific_price', '`id_product`=' . (int)$newIdPack);
         $productPack = new Product((int)$newIdPack);
         $combinationList = $productPack->getAttributeCombinations($this->context->language->id);
@@ -1669,33 +1667,25 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             }
         }
         $packRows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'pm_advancedpack` WHERE `id_pack`=' . (int)$originalPack->id);
-        $ckc_log('[2] packRows count=' . count($packRows));
         foreach ($packRows as $packRow) {
             $packRow['id_pack'] = (int)$newIdPack;
-            $insertResult = Db::getInstance()->insert('pm_advancedpack', $packRow, true);
-            $ckc_log('[3] insert pm_advancedpack | result=' . var_export($insertResult, true) . ' | error=' . Db::getInstance()->getMsgError());
-            $res &= $insertResult;
+            $res &= Db::getInstance()->insert('pm_advancedpack', $packRow, true);
         }
         $packProductsRows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'pm_advancedpack_products` WHERE `id_pack`=' . (int)$originalPack->id);
-        $ckc_log('[4] packProductsRows count=' . count($packProductsRows));
         foreach ($packProductsRows as $packProductsRow) {
             $packProductsRow['id_pack'] = (int)$newIdPack;
             $oldIdProductPack = (int)$packProductsRow['id_product_pack'];
             unset($packProductsRow['id_product_pack']);
-            $insertResult2 = Db::getInstance()->insert('pm_advancedpack_products', $packProductsRow, true);
+            $res &= Db::getInstance()->insert('pm_advancedpack_products', $packProductsRow, true);
             $idProductPack = (int)Db::getInstance()->Insert_ID();
-            $ckc_log('[5] insert pm_advancedpack_products | oldId=' . $oldIdProductPack . ' | result=' . var_export($insertResult2, true) . ' | Insert_ID=' . $idProductPack . ' | error=' . Db::getInstance()->getMsgError());
-            $res &= $insertResult2;
             if (empty($idProductPack)) {
                 $res = false;
                 continue;
             }
             $packProductsAttributesRows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'pm_advancedpack_products_attributes` WHERE `id_product_pack`=' . (int)$oldIdProductPack);
-            $ckc_log('[6] packProductsAttributesRows count=' . count($packProductsAttributesRows) . ' | newIdProductPack=' . $idProductPack);
             foreach ($packProductsAttributesRows as $packProductsAttributesRow) {
                 $packProductsAttributesRow['id_product_pack'] = (int)$idProductPack;
-                $insertResult3 = Db::getInstance()->insert('pm_advancedpack_products_attributes', $packProductsAttributesRow, true);
-                $ckc_log('[7] insert pm_advancedpack_products_attributes | result=' . var_export($insertResult3, true) . ' | row=' . json_encode($packProductsAttributesRow) . ' | error=' . Db::getInstance()->getMsgError());
+                Db::getInstance()->insert('pm_advancedpack_products_attributes', $packProductsAttributesRow, true);
             }
             $packProductsCustomizationRows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT * FROM `' . _DB_PREFIX_ . 'pm_advancedpack_products_customization` WHERE `id_product_pack`=' . (int)$oldIdProductPack);
             foreach ($packProductsCustomizationRows as $packProductsCustomizationRow) {
@@ -1703,14 +1693,11 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 Db::getInstance()->insert('pm_advancedpack_products_customization', $packProductsCustomizationRow, true);
             }
         }
-        $ckc_log('[8] calling _updatePackFields');
         $res &= $this->_updatePackFields($newIdPack);
-        $ckc_log('[9] done | res=' . var_export($res, true));
         return $res;
     }
     public function hookActionProductAdd($params)
     {
-        file_put_contents(__DIR__ . '/ckc_duppack.log', date('H:i:s') . ' [hookProductAdd] called | preventLoop=' . var_export(self::$_preventInfiniteLoop, true) . "\n", FILE_APPEND);
         if (self::$_preventInfiniteLoop) {
             return;
         }
@@ -3820,7 +3807,6 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     }
     public function _updatePackFields($idPack, $isNewPack = false, $isImportedFromNativePack = false)
     {
-        file_put_contents(__DIR__ . '/ckc_duppack.log', date('H:i:s') . ' [UPF] _updatePackFields start | idPack=' . $idPack . "\n", FILE_APPEND);
         self::$_preventInfiniteLoop = true;
         AdvancedPack::clearAP5Cache();
         $productPack = new Product((int)$idPack, false, null, AdvancedPack::getPackIdShop($idPack));
@@ -3876,7 +3862,6 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 $productPack->id_category_default = (int)$config['bundleDefaultCategory'];
             }
         }
-        file_put_contents(__DIR__ . '/ckc_duppack.log', date('H:i:s') . ' [UPF] before save() | idPack=' . $idPack . "\n", FILE_APPEND);
         if ($productPack->save()) {
             if (!empty($config['postponeUpdatePackSpecificPrice'])) {
                 $idPackList = $this->getPackIdToUpdate();

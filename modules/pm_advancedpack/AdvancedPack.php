@@ -1685,15 +1685,6 @@ class AdvancedPack extends Product
                 $saveResult = false;
             }
 
-            PrestaShopLogger::addLog(
-                '[CKC ATTR A] BEFORE fallback check'
-                . ' | saveResult=' . var_export($saveResult, true)
-                . ' | attributeObj->id=' . var_export($attributeObj->id ?? null, true)
-                . ' | Insert_ID()=' . (int)Db::getInstance()->Insert_ID()
-                . ' | uniqueId=' . $uniqueId,
-                1, null, 'ProductAttribute', 0, true
-            );
-
             if (empty($attributeObj->id) || (int)$attributeObj->id === 0) {
                 $db = Db::getInstance();
 
@@ -1702,25 +1693,10 @@ class AdvancedPack extends Product
                 $langCount0 = (int)$db->getValue('SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'attribute_lang` WHERE `id_attribute` = 0');
                 $maxIdInGroup = (int)$db->getValue('SELECT MAX(`id_attribute`) FROM `' . _DB_PREFIX_ . 'attribute` WHERE `id_attribute_group` = ' . (int)$attributeObj->id_attribute_group . ' AND `id_attribute` > 0');
 
-                PrestaShopLogger::addLog(
-                    '[CKC ATTR B] entering fallback'
-                    . ' | saveResult=' . var_export($saveResult, true)
-                    . ' | attr_id0_count=' . $attrCount0
-                    . ' | shop_id0_count=' . $shopCount0
-                    . ' | lang_id0_count=' . $langCount0
-                    . ' | max_id_in_group=' . $maxIdInGroup
-                    . ' | id_attribute_group=' . (int)$attributeObj->id_attribute_group,
-                    1, null, 'ProductAttribute', 0, true
-                );
-
                 if ($saveResult) {
                     $recoveredId = $maxIdInGroup;
                     $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_shop` WHERE `id_attribute` = 0');
                     $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_lang` WHERE `id_attribute` = 0');
-                    PrestaShopLogger::addLog(
-                        '[CKC ATTR C] cas1 save=true | recoveredId=' . $recoveredId,
-                        1, null, 'ProductAttribute', 0, true
-                    );
                     if ($recoveredId > 0) {
                         $attributeObj->id = $recoveredId;
                         $db->insert('attribute_shop', [
@@ -1738,10 +1714,6 @@ class AdvancedPack extends Product
                         $saveResult = false;
                     }
                 } else {
-                    PrestaShopLogger::addLog(
-                        '[CKC ATTR D] cas2 save=false — INSERT manuel',
-                        1, null, 'ProductAttribute', 0, true
-                    );
                     $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute` WHERE `id_attribute` = 0');
                     $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_shop` WHERE `id_attribute` = 0');
                     $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_lang` WHERE `id_attribute` = 0');
@@ -1751,17 +1723,12 @@ class AdvancedPack extends Product
                         'position' => 0,
                     ]);
                     $insertId = (int)$db->Insert_ID();
-                    PrestaShopLogger::addLog(
-                        '[CKC ATTR E] INSERT attribute | resultMain=' . var_export($resultMain, true) . ' | Insert_ID()=' . $insertId,
-                        1, null, 'ProductAttribute', 0, true
-                    );
                     if ($resultMain && $insertId === 0) {
                         $insertId = (int)$db->getValue(
                             'SELECT MAX(`id_attribute`) FROM `' . _DB_PREFIX_ . 'attribute`
                              WHERE `id_attribute_group` = ' . (int)$attributeObj->id_attribute_group . '
                                AND `id_attribute` > 0'
                         );
-                        PrestaShopLogger::addLog('[CKC ATTR F] recovered via MAX | insertId=' . $insertId, 1, null, 'ProductAttribute', 0, true);
                     }
                     if ($resultMain && $insertId > 0) {
                         $attributeObj->id = $insertId;
