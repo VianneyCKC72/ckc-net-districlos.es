@@ -2463,7 +2463,7 @@ class AdvancedPack extends Product
                             $forceReductionByAmount = true;
                         }
                     }
-                    if ((isset($packProduct['reduction_amount']) && $packProduct['reduction_amount'] > 0) || (isset($packProduct['reduction_percentage']) && $packProduct['reduction_percentage'] > 0)) {
+                    if (!empty($packProduct['reduction_amount']) || !empty($packProduct['reduction_percentage'])) {
                         $sp = new SpecificPrice();
                         $sp->id_product = $packProduct['id_product'];
                         $sp->id_cart = self::getContext()->cart->id;
@@ -2595,11 +2595,6 @@ class AdvancedPack extends Product
         if (empty($idCart)) {
             return;
         }
-        static $alreadyDoneForCart = [];
-        if (isset($alreadyDoneForCart[(int)$idCart])) {
-            return;
-        }
-        $alreadyDoneForCart[(int)$idCart] = true;
         $sql = new DbQuery();
         $sql->select('DISTINCT `id_pack`, `id_product_attribute_pack`');
         $sql->from('pm_advancedpack_cart_products', 'acp');
