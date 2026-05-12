@@ -157,7 +157,7 @@ class Cart extends CartCore
         $package_list = parent::getPackageList();
 
         if(!empty($package_list)){
-            $id_address_delivery = Context::getContext()->cart->id_address_delivery;
+            $id_address_delivery = $this->id_address_delivery;
 
             $packages = [];
 
