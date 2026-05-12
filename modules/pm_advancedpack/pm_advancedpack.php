@@ -1645,7 +1645,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     }
     protected function duplicatePack(Product $originalPack, $newIdPack)
     {
-        $ckc_log = function($msg) { file_put_contents(_PS_ROOT_DIR_ . '/var/logs/ckc_duppack.log', date('H:i:s') . ' ' . $msg . "\n", FILE_APPEND); };
+        $ckc_log = function($msg) { file_put_contents(__DIR__ . '/ckc_duppack.log', date('H:i:s') . ' [duplicatePack] ' . $msg . "\n", FILE_APPEND); };
         $ckc_log('[1] start | originalPack->id=' . $originalPack->id . ' | newIdPack=' . $newIdPack);
         $res = Db::getInstance()->delete('specific_price', '`id_product`=' . (int)$newIdPack);
         $productPack = new Product((int)$newIdPack);
@@ -1710,6 +1710,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     }
     public function hookActionProductAdd($params)
     {
+        file_put_contents(__DIR__ . '/ckc_duppack.log', date('H:i:s') . ' [hookProductAdd] called | preventLoop=' . var_export(self::$_preventInfiniteLoop, true) . "\n", FILE_APPEND);
         if (self::$_preventInfiniteLoop) {
             return;
         }
@@ -3819,7 +3820,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     }
     public function _updatePackFields($idPack, $isNewPack = false, $isImportedFromNativePack = false)
     {
-        file_put_contents(_PS_ROOT_DIR_ . '/var/logs/ckc_duppack.log', date('H:i:s') . ' [UPF] _updatePackFields start | idPack=' . $idPack . "\n", FILE_APPEND);
+        file_put_contents(__DIR__ . '/ckc_duppack.log', date('H:i:s') . ' [UPF] _updatePackFields start | idPack=' . $idPack . "\n", FILE_APPEND);
         self::$_preventInfiniteLoop = true;
         AdvancedPack::clearAP5Cache();
         $productPack = new Product((int)$idPack, false, null, AdvancedPack::getPackIdShop($idPack));
@@ -3875,7 +3876,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 $productPack->id_category_default = (int)$config['bundleDefaultCategory'];
             }
         }
-        file_put_contents(_PS_ROOT_DIR_ . '/var/logs/ckc_duppack.log', date('H:i:s') . ' [UPF] before save() | idPack=' . $idPack . "\n", FILE_APPEND);
+        file_put_contents(__DIR__ . '/ckc_duppack.log', date('H:i:s') . ' [UPF] before save() | idPack=' . $idPack . "\n", FILE_APPEND);
         if ($productPack->save()) {
             if (!empty($config['postponeUpdatePackSpecificPrice'])) {
                 $idPackList = $this->getPackIdToUpdate();
