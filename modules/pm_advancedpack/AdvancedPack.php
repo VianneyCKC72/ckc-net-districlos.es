@@ -1689,7 +1689,8 @@ class AdvancedPack extends Product
             // On récupère l'id manuellement et on insère les entrées shop/lang si nécessaire.
             if (!$saveResult || empty($attributeObj->id) || (int)$attributeObj->id === 0) {
                 $db = Db::getInstance();
-                // Nettoyage des éventuels enregistrements orphelins id=0
+                // Nettoyage des éventuels enregistrements orphelins id=0 dans les 3 tables
+                $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute` WHERE `id_attribute` = 0');
                 $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_shop` WHERE `id_attribute` = 0');
                 $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_lang` WHERE `id_attribute` = 0');
                 $resultMain = $db->insert('attribute', [
@@ -1698,6 +1699,13 @@ class AdvancedPack extends Product
                     'position' => 0,
                 ]);
                 $insertId = (int)$db->Insert_ID();
+                // Si Insert_ID() retourne toujours 0, on récupère via MAX(id_attribute)
+                if ($resultMain && $insertId === 0) {
+                    $insertId = (int)$db->getValue(
+                        'SELECT MAX(`id_attribute`) FROM `' . _DB_PREFIX_ . 'attribute`
+                         WHERE `id_attribute_group` = ' . (int)$attributeObj->id_attribute_group
+                    );
+                }
                 if ($resultMain && $insertId > 0) {
                     $attributeObj->id = $insertId;
                     $db->insert('attribute_shop', [
