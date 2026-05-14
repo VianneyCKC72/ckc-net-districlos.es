@@ -304,7 +304,7 @@
                     </div>
                 </a>
             {else}
-                <a href="{$link->getModuleLink('ckc_configurator', 'configurator')|escape:'htmlall':'UTF-8'}" class="btn-configurateur-mobile">
+                <a href="{$link->getModuleLink('ckcconfigurateurdistriclos', 'configurator')|escape:'htmlall':'UTF-8'}" class="btn-configurateur-mobile">
                 <img width="45px" height="45px" alt="configurer votre clôture" src="themes/classic/assets/img/configurer-icon.svg">
                 <div class="text-btn">
                     <span class="medium-text">Configurez votre clôture</span>
