@@ -247,6 +247,25 @@ class DealtHookHelper
         return self::$tvaCacheByCart[$idCart];
     }
 
+    public static function cartContainsAnyDealtService(\Cart $cart): bool
+    {
+        if (!$cart || !(int)$cart->id) {
+            return false;
+        }
+        foreach ($cart->getProducts(true) as $row) {
+            if (!empty($row['reference']) && self::isServiceReference((string)$row['reference'])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static function clearTvaAttestationCacheForCart(int $idCart): void
+    {
+        unset(self::$tvaCacheByCart[$idCart]);
+    }
+
     private static function getServiceRowByProductId(int $serviceProductId): ?array
     {
         if (array_key_exists($serviceProductId, self::$serviceRowCache)) {
