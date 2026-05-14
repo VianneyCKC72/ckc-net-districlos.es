@@ -26,7 +26,25 @@
 {capture assign="productClasses"}{if !empty($productClass)}{$productClass}{else}col-xs-12 col-sm-6 col-lg-3 col-xl-3{/if}{/capture}
 
 <div class="products{if !empty($cssClass)} {$cssClass}{/if} {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')} list_view {/if}">
-    {foreach from=$products item="product" key="position"}
+    {foreach from=$products item="product" key="position" name=productsList}
         {include file="catalog/_partials/miniatures/product.tpl" product=$product position=$position productClasses=$productClasses}
+
+        {* Bannière catégorie : mobile = après le 1er produit (< md, 2 colonnes) ; desktop = après le 3e (>= lg, 4 colonnes). Première page grille uniquement. *}
+        {if $page.page_name == 'category' && isset($listing.pagination.items_shown_from) && $listing.pagination.items_shown_from == 1 && !isset($smarty.cookies.show_list)}
+            {if $smarty.foreach.productsList.iteration == 1}
+                <div class="category-listing-banner category-listing-banner--mobile col-6 col-sm-6 d-md-none">
+                    <div class="category-listing-banner__inner">
+                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/category-listing-promo.jpg" alt="" loading="lazy" width="400" height="400">
+                    </div>
+                </div>
+            {/if}
+            {if $smarty.foreach.productsList.iteration == 3}
+                <div class="category-listing-banner category-listing-banner--desktop d-none d-lg-block col-lg-3 col-xl-3">
+                    <div class="category-listing-banner__inner">
+                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/category-listing-promo.jpg" alt="" loading="lazy" width="400" height="400">
+                    </div>
+                </div>
+            {/if}
+        {/if}
     {/foreach}
 </div>
