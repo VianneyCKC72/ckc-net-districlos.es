@@ -1,9 +1,9 @@
 <?php
 
-$servername = "87.98.141.171";
+$servername = "localhost";
 $port = 3306;
-$username = "districlos_refonte";
-$password = "TXM1qjk9teu_cfb9wxv";
+$username = "districlos_admin";
+$password = "dgebVGHet67SFEGDtfgev7856R5";
 $db = 'districlos_refonte';
 $dsn = "mysql:host=$servername;port=$port;dbname=$db;charset=utf8";
 
