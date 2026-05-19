@@ -125,6 +125,39 @@ class Cart extends CartCore
         return $result;
     }
 
+    /**
+     * Invalide le cache des quantités avant d'appeler parent::updateQty
+     * pour garantir que la décision UPDATE vs INSERT dans CartCore se base sur l'état réel de la DB.
+     */
+    public function updateQty(
+        $quantity,
+        $id_product,
+        $id_product_attribute = null,
+        $id_customization = false,
+        $operation = 'up',
+        $id_address_delivery = 0,
+        Shop $shop = null,
+        $auto_add_cart_rule = true,
+        $skipAvailabilityCheckOutOfStock = false,
+        $preserveGiftRemoval = true,
+        $useOrderPrices = false
+    ) {
+        $this->invalidateQuantityCache();
+        return parent::updateQty(
+            $quantity,
+            $id_product,
+            $id_product_attribute,
+            $id_customization,
+            $operation,
+            $id_address_delivery,
+            $shop,
+            $auto_add_cart_rule,
+            $skipAvailabilityCheckOutOfStock,
+            $preserveGiftRemoval,
+            $useOrderPrices
+        );
+    }
+
     /*
     * module: orderfees_shipping
     * date: 2025-02-24 17:50:29
@@ -276,6 +309,22 @@ class Cart extends CartCore
         foreach ($map as $k => $data) {
             self::$product_quantity_cache[$k] = $data;
         }
+
+        // Agrégation "toutes customizations" pour servir les appels avec $idCustomization === false
+        $aggregated = [];
+        foreach ($map as $k => $data) {
+            $parts = explode('_', $k);
+            // cartId_idProduct_idAttr_idCustom_idAddr
+            $aggKey = $parts[0] . '_' . $parts[1] . '_' . $parts[2] . '_all_' . $parts[4];
+            if (!isset($aggregated[$aggKey])) {
+                $aggregated[$aggKey] = ['quantity' => 0, 'deep_quantity' => 0];
+            }
+            $aggregated[$aggKey]['quantity'] += $data['quantity'];
+            $aggregated[$aggKey]['deep_quantity'] += $data['deep_quantity'];
+        }
+        foreach ($aggregated as $k => $data) {
+            self::$product_quantity_cache[$k] = $data;
+        }
     }
 
     /**
@@ -304,30 +353,30 @@ class Cart extends CartCore
      */
     public function getProductQuantity($idProduct, $idProductAttribute = 0, $idCustomization = 0, $idAddressDelivery = 0)
     {
-        // Le cas idCustomization=false (filtre désactivé) ne peut pas être préchargé — fallback direct
-        if ($idCustomization === false) {
-            return parent::getProductQuantity($idProduct, $idProductAttribute, $idCustomization, $idAddressDelivery);
-        }
-
         // Préchargement de tout le panier en 2 requêtes (exécuté une seule fois par requête HTTP)
         $this->preloadQuantityCache();
 
-        $cache_key = $this->id . '_' . (int)$idProduct . '_' . (int)$idProductAttribute . '_' . (int)$idCustomization . '_' . (int)$idAddressDelivery;
+        // $idCustomization === false signifie "toutes customizations confondues"
+        $customizationKey = ($idCustomization === false) ? 'all' : (int)$idCustomization;
+        // En non-multishipping, le query SQL d'origine ignore id_address_delivery → on force 0 pour matcher le préchargement
+        $multishipping = (bool) Configuration::get('PS_ALLOW_MULTISHIPPING') && $this->isMultiAddressDelivery();
+        $addrKey = $multishipping ? (int)$idAddressDelivery : 0;
+        $cache_key = $this->id . '_' . (int)$idProduct . '_' . (int)$idProductAttribute . '_' . $customizationKey . '_' . $addrKey;
 
         if (isset(self::$product_quantity_cache[$cache_key])) {
             return self::$product_quantity_cache[$cache_key];
         }
 
-        // Cache miss : on requête directement (produit ajouté après le préchargement)
+// Cache miss : fallback parent (produit ajouté après préchargement ou après updateQty)
         return self::$product_quantity_cache[$cache_key] = parent::getProductQuantity($idProduct, $idProductAttribute, $idCustomization, $idAddressDelivery);
     }
 
     public function updateQty($quantity, $id_product, $id_product_attribute = null, $id_customization = false, $operator = 'up', $id_address_delivery = 0, ?Shop $shop = null, $auto_add_cart_rule = true, $skipAvailabilityCheckOutOfStock = false, bool $preserveGiftRemoval = true, bool $useOrderPrices = false)
     {
-        // Invalider le cache avant ET après la mise à jour pour éviter les doublons
         $this->invalidateQuantityCache();
         $result = parent::updateQty($quantity, $id_product, $id_product_attribute, $id_customization, $operator, $id_address_delivery, $shop, $auto_add_cart_rule, $skipAvailabilityCheckOutOfStock, $preserveGiftRemoval, $useOrderPrices);
         $this->invalidateQuantityCache();
+
         return $result;
     }
 }
