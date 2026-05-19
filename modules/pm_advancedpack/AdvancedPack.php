@@ -1679,37 +1679,74 @@ class AdvancedPack extends Product
                 $attributeObj->name[$lang['id_lang']] = $uniqueId;
             }
 
-            // === DEBUG: comparer getFields() vs INSERT manuel ===
-            $fieldsCommon = $attributeObj->getFields();
-            $fieldsShopGen = $attributeObj->getFieldsShop();
-            $fieldsLangGen = $attributeObj->getFieldsLang();
-
-            PrestaShopLogger::addLog(
-                '[CKC DEBUG GETFIELDS] uniqueId=' . $uniqueId
-                . ' | getFields()=' . json_encode($fieldsCommon)
-                . ' | getFieldsShop()=' . json_encode($fieldsShopGen)
-                . ' | getFieldsLang()=' . json_encode($fieldsLangGen)
-                . ' | id_shop_list=' . json_encode($attributeObj->id_shop_list ?? null)
-                . ' | get_shop_from_context=' . var_export($attributeObj->get_shop_from_context ?? null, true),
-                1, null, 'ProductAttribute', 0, true
-            );
-
             try {
                 $saveResult = $attributeObj->save();
-                $saveError = null;
             } catch (\Throwable $e) {
                 $saveResult = false;
-                $saveError = $e->getMessage() . ' | trace=' . $e->getFile() . ':' . $e->getLine();
             }
 
-            PrestaShopLogger::addLog(
-                '[CKC DEBUG SAVE RESULT] uniqueId=' . $uniqueId
-                . ' | saveResult=' . var_export($saveResult, true)
-                . ' | $attributeObj->id=' . var_export($attributeObj->id ?? null, true)
-                . ' | Db::Insert_ID()=' . (int) Db::getInstance()->Insert_ID()
-                . ' | saveError=' . var_export($saveError, true),
-                ($saveResult ? 1 : 3), null, 'ProductAttribute', 0, true
-            );
+            if (empty($attributeObj->id) || (int)$attributeObj->id === 0) {
+                $db = Db::getInstance();
+
+                $attrCount0 = (int)$db->getValue('SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'attribute` WHERE `id_attribute` = 0');
+                $shopCount0 = (int)$db->getValue('SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'attribute_shop` WHERE `id_attribute` = 0');
+                $langCount0 = (int)$db->getValue('SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'attribute_lang` WHERE `id_attribute` = 0');
+                $maxIdInGroup = (int)$db->getValue('SELECT MAX(`id_attribute`) FROM `' . _DB_PREFIX_ . 'attribute` WHERE `id_attribute_group` = ' . (int)$attributeObj->id_attribute_group . ' AND `id_attribute` > 0');
+
+                if ($saveResult) {
+                    $recoveredId = $maxIdInGroup;
+                    $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_shop` WHERE `id_attribute` = 0');
+                    $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_lang` WHERE `id_attribute` = 0');
+                    if ($recoveredId > 0) {
+                        $attributeObj->id = $recoveredId;
+                        $db->insert('attribute_shop', [
+                            'id_attribute' => $recoveredId,
+                            'id_shop' => (int)Context::getContext()->shop->id,
+                        ], false, true, Db::INSERT_IGNORE);
+                        foreach (Language::getLanguages(false) as $lang) {
+                            $db->insert('attribute_lang', [
+                                'id_attribute' => $recoveredId,
+                                'id_lang' => (int)$lang['id_lang'],
+                                'name' => pSQL($uniqueId),
+                            ], false, true, Db::INSERT_IGNORE);
+                        }
+                    } else {
+                        $saveResult = false;
+                    }
+                } else {
+                    $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute` WHERE `id_attribute` = 0');
+                    $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_shop` WHERE `id_attribute` = 0');
+                    $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_lang` WHERE `id_attribute` = 0');
+                    $resultMain = $db->insert('attribute', [
+                        'id_attribute_group' => (int)$attributeObj->id_attribute_group,
+                        'color' => '',
+                        'position' => 0,
+                    ]);
+                    $insertId = (int)$db->Insert_ID();
+                    if ($resultMain && $insertId === 0) {
+                        $insertId = (int)$db->getValue(
+                            'SELECT MAX(`id_attribute`) FROM `' . _DB_PREFIX_ . 'attribute`
+                             WHERE `id_attribute_group` = ' . (int)$attributeObj->id_attribute_group . '
+                               AND `id_attribute` > 0'
+                        );
+                    }
+                    if ($resultMain && $insertId > 0) {
+                        $attributeObj->id = $insertId;
+                        $db->insert('attribute_shop', [
+                            'id_attribute' => $insertId,
+                            'id_shop' => (int)Context::getContext()->shop->id,
+                        ]);
+                        foreach (Language::getLanguages(false) as $lang) {
+                            $db->insert('attribute_lang', [
+                                'id_attribute' => $insertId,
+                                'id_lang' => (int)$lang['id_lang'],
+                                'name' => pSQL($uniqueId),
+                            ]);
+                        }
+                        $saveResult = true;
+                    }
+                }
+            }
 
             if ($saveResult) {
                 $idAttribute = $attributeObj->id;
@@ -1745,7 +1782,42 @@ class AdvancedPack extends Product
                     }
                 }
                 unset($packProducts);
-                if (!$combinationObj->save() || !$combinationObj->setAttributes([$idAttribute])) {
+                try {
+                    $combSaveResult = $combinationObj->save();
+                } catch (\Throwable $e) {
+                    $combSaveResult = false;
+                }
+
+                // Workaround: Insert_ID()=0 sur certains environnements — même bug que pour attribute.
+                if (empty($combinationObj->id) || (int)$combinationObj->id === 0) {
+                    $db = Db::getInstance();
+                    if ($combSaveResult) {
+                        // save() a réussi mais id=0 : la ligne existe dans product_attribute, récupérer le bon id.
+                        $recoveredCombId = (int)$db->getValue(
+                            'SELECT MAX(`id_product_attribute`) FROM `' . _DB_PREFIX_ . 'product_attribute`
+                             WHERE `id_product` = ' . (int)$combinationObj->id_product . '
+                               AND `id_product_attribute` > 0'
+                        );
+                        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute_shop` WHERE `id_product_attribute` = 0');
+                        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute_combination` WHERE `id_product_attribute` = 0');
+                        if ($recoveredCombId > 0) {
+                            $combinationObj->id = $recoveredCombId;
+                            $db->insert('product_attribute_shop', [
+                                'id_product_attribute' => $recoveredCombId,
+                                'id_shop' => (int)Context::getContext()->shop->id,
+                            ], false, true, Db::INSERT_IGNORE);
+                        } else {
+                            $combSaveResult = false;
+                        }
+                    } else {
+                        // save() a échoué : nettoyage des orphelins id=0
+                        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute` WHERE `id_product_attribute` = 0');
+                        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute_shop` WHERE `id_product_attribute` = 0');
+                        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute_combination` WHERE `id_product_attribute` = 0');
+                    }
+                }
+
+                if (!$combSaveResult || empty($combinationObj->id) || !$combinationObj->setAttributes([$idAttribute])) {
                     return false;
                 }
                 if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $idWarehouse) {
@@ -2495,7 +2567,7 @@ class AdvancedPack extends Product
                             $forceReductionByAmount = true;
                         }
                     }
-                    if (!empty($packProduct['reduction_amount']) || !empty($packProduct['reduction_percentage'])) {
+                    if ((isset($packProduct['reduction_amount']) && $packProduct['reduction_amount'] > 0) || (isset($packProduct['reduction_percentage']) && $packProduct['reduction_percentage'] > 0)) {
                         $sp = new SpecificPrice();
                         $sp->id_product = $packProduct['id_product'];
                         $sp->id_cart = self::getContext()->cart->id;

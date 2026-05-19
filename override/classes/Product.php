@@ -15,9 +15,12 @@ class Product extends ProductCore
     {
         $ctx  = Context::getContext();
         $cart = $ctx->cart;
-        $address = new Address((int) $cart->id_address_delivery, (int) Context::getContext()->language->id);
 
-        if ($cart && $cart->id && self::isFr($address) && self::isAttested((int)$cart->id)) {
+        if ($cart && $cart->id) {
+            $address = new Address((int) $cart->id_address_delivery, (int) $ctx->language->id);
+        }
+
+        if ($cart && $cart->id && isset($address) && self::isFr($address) && self::isAttested((int)$cart->id)) {
             $id_main_product = Db::getInstance()->getValue('SELECT id_main_product FROM '._DB_PREFIX_.'dealt_tva_attestation 
             WHERE id_cart = '.$cart->id);
             $serviceId = Db::getInstance()->getValue('SELECT cp.id_product FROM '._DB_PREFIX_.'cart_product cp
@@ -84,6 +87,29 @@ class Product extends ProductCore
             $packProducts = Db::getInstance()->executeS('SELECT pap.id_product FROM `'._DB_PREFIX_.'pm_advancedpack_products` pap WHERE pap.id_pack = '.(int)$id_pack);
             return $packProducts;
         }
+    }
+
+    public function add($autoDate = true, $nullValues = false)
+    {
+        $db = Db::getInstance();
+        // Nettoie les lignes orphelines id=0 laissées par des tentatives précédentes
+        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_shop` WHERE `id_product` = 0');
+        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_lang` WHERE `id_product` = 0');
+
+        $result = parent::add($autoDate, $nullValues);
+
+        if ($result && (empty($this->id) || (int)$this->id === 0)) {
+            $realId = (int)$db->getValue(
+                'SELECT MAX(`id_product`) FROM `' . _DB_PREFIX_ . 'product` WHERE `id_product` > 0'
+            );
+            if ($realId > 0) {
+                $this->id = $realId;
+                $db->execute('UPDATE `' . _DB_PREFIX_ . 'product_shop` SET `id_product` = ' . $realId . ' WHERE `id_product` = 0');
+                $db->execute('UPDATE `' . _DB_PREFIX_ . 'product_lang` SET `id_product` = ' . $realId . ' WHERE `id_product` = 0');
+            }
+        }
+
+        return $result;
     }
 
     /**

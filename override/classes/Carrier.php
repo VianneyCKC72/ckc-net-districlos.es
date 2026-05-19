@@ -15,9 +15,12 @@ class Carrier extends CarrierCore
     {
         $ctx  = Context::getContext();
         $cart = $ctx->cart;
-        $address = new Address((int) $cart->id_address_delivery, (int) Context::getContext()->language->id);
 
-        if ($cart && $cart->id && self::isFr($address) && self::isAttested((int)$cart->id) && !empty($id_carrier)) {
+        if ($cart && $cart->id && !empty($id_carrier)) {
+            $address = new Address((int) $cart->id_address_delivery, (int) $ctx->language->id);
+        }
+
+        if ($cart && $cart->id && isset($address) && self::isFr($address) && self::isAttested((int)$cart->id) && !empty($id_carrier)) {
             return 2;
         } else {
             return parent::getIdTaxRulesGroupByIdCarrier($id_carrier, $context);
