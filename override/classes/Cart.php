@@ -367,22 +367,16 @@ class Cart extends CartCore
             return self::$product_quantity_cache[$cache_key];
         }
 
-<<<<<<< HEAD
-        // Cache miss : on requête directement (produit ajouté après le préchargement)
+// Cache miss : fallback parent (produit ajouté après préchargement ou après updateQty)
         return self::$product_quantity_cache[$cache_key] = parent::getProductQuantity($idProduct, $idProductAttribute, $idCustomization, $idAddressDelivery);
     }
 
     public function updateQty($quantity, $id_product, $id_product_attribute = null, $id_customization = false, $operator = 'up', $id_address_delivery = 0, ?Shop $shop = null, $auto_add_cart_rule = true, $skipAvailabilityCheckOutOfStock = false, bool $preserveGiftRemoval = true, bool $useOrderPrices = false)
     {
-        // Invalider le cache avant ET après la mise à jour pour éviter les doublons
         $this->invalidateQuantityCache();
         $result = parent::updateQty($quantity, $id_product, $id_product_attribute, $id_customization, $operator, $id_address_delivery, $shop, $auto_add_cart_rule, $skipAvailabilityCheckOutOfStock, $preserveGiftRemoval, $useOrderPrices);
         $this->invalidateQuantityCache();
+
         return $result;
-=======
-        // Sécurité : si le cache n'a pas l'entrée, on fait un fallback parent pour éviter toute incohérence
-        // (le préchargement peut ne pas refléter l'état après un updateQty/add récent)
-        return self::$product_quantity_cache[$cache_key] = parent::getProductQuantity($idProduct, $idProductAttribute, $idCustomization, $idAddressDelivery);
->>>>>>> main
     }
 }
