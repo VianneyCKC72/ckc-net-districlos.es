@@ -35,6 +35,33 @@
     gap: 5px;
 }
 
+/* Bloc promo : bordure rose + ruban coin supérieur gauche */
+.ckc-shipping-estimator-block--ribbon {
+	position: relative;
+	overflow: hidden;
+	border: 2px solid #FF144E;
+}
+
+.ckc-shipping-estimator-block__ribbon {
+	position: absolute;
+	top: 25px;
+	left: -40px;
+	z-index: 2;
+	width: 150px;
+	padding: 3px 0;
+	margin: 0;
+	background-color: #79C046;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+	color: #fff;
+	font-size: 0.625rem;
+	letter-spacing: 0.06em;
+	pointer-events: none;
+	text-align: center;
+	text-transform: uppercase;
+	transform: rotate(-45deg);
+	transform-origin: center center;
+}
+/* Fin Bloc promo */
 .ckc-shipping-estimator-product-block {
     gap: 5px;
 }
@@ -336,6 +363,13 @@ a.estimate-shipping-cost-btn {
    }
    .ckc-shipping-estimator-product-block__text {
     text-align: left !important;
+   }
+
+   /* Ruban promo */
+   .ckc-shipping-estimator-block__ribbon {
+    font-size: 0.425rem;
+    top: 20px;
+    width: 130px;
    }
 }
 

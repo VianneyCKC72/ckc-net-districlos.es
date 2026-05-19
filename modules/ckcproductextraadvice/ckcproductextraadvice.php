@@ -81,14 +81,20 @@ class CkcProductExtraAdvice extends Module
 
     public function hookActionProductUpdate($params)
     {
-        $this->saveExtraFields((int)Tools::getValue('id_product'));
+        $id = isset($params['product']) ? (int)$params['product']->id : (int)Tools::getValue('id_product');
+        if ($id > 0) {
+            $this->saveExtraFields($id);
+        }
     }
-    
+
     public function hookActionProductAdd($params)
     {
-        $this->saveExtraFields((int)Tools::getValue('id_product'));
+        $id = isset($params['product']) ? (int)$params['product']->id : (int)Tools::getValue('id_product');
+        if ($id > 0) {
+            $this->saveExtraFields($id);
+        }
     }
-    
+
     private function saveExtraFields($id_product)
     {
         $fields = [

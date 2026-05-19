@@ -471,9 +471,9 @@ class AdvancedPack extends Product
         $excludeVATCase = false;
         list($address) = self::getAddressInstance();
         if (!$packIdTaxRulesGroup
-        && !empty($address->vat_number)
-        && $address->id_country != Configuration::get('VATNUMBER_COUNTRY')
-        && Configuration::get('VATNUMBER_MANAGEMENT')) {
+            && !empty($address->vat_number)
+            && $address->id_country != Configuration::get('VATNUMBER_COUNTRY')
+            && Configuration::get('VATNUMBER_MANAGEMENT')) {
             $excludeVATCase = true;
         } elseif (!$packIdTaxRulesGroup && Validate::isLoadedObject(self::getContext()->customer) && self::getContext()->customer->id != self::PACK_FAKE_CUSTOMER_ID) {
             $excludeVATCase = (Product::getTaxCalculationMethod(self::getContext()->customer->id) == 0);
@@ -1679,7 +1679,76 @@ class AdvancedPack extends Product
                 $attributeObj->name[$lang['id_lang']] = $uniqueId;
             }
 
-            if ($attributeObj->save()) {
+            try {
+                $saveResult = $attributeObj->save();
+            } catch (\Throwable $e) {
+                $saveResult = false;
+            }
+
+            if (empty($attributeObj->id) || (int)$attributeObj->id === 0) {
+                $db = Db::getInstance();
+
+                $attrCount0 = (int)$db->getValue('SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'attribute` WHERE `id_attribute` = 0');
+                $shopCount0 = (int)$db->getValue('SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'attribute_shop` WHERE `id_attribute` = 0');
+                $langCount0 = (int)$db->getValue('SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'attribute_lang` WHERE `id_attribute` = 0');
+                $maxIdInGroup = (int)$db->getValue('SELECT MAX(`id_attribute`) FROM `' . _DB_PREFIX_ . 'attribute` WHERE `id_attribute_group` = ' . (int)$attributeObj->id_attribute_group . ' AND `id_attribute` > 0');
+
+                if ($saveResult) {
+                    $recoveredId = $maxIdInGroup;
+                    $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_shop` WHERE `id_attribute` = 0');
+                    $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_lang` WHERE `id_attribute` = 0');
+                    if ($recoveredId > 0) {
+                        $attributeObj->id = $recoveredId;
+                        $db->insert('attribute_shop', [
+                            'id_attribute' => $recoveredId,
+                            'id_shop' => (int)Context::getContext()->shop->id,
+                        ], false, true, Db::INSERT_IGNORE);
+                        foreach (Language::getLanguages(false) as $lang) {
+                            $db->insert('attribute_lang', [
+                                'id_attribute' => $recoveredId,
+                                'id_lang' => (int)$lang['id_lang'],
+                                'name' => pSQL($uniqueId),
+                            ], false, true, Db::INSERT_IGNORE);
+                        }
+                    } else {
+                        $saveResult = false;
+                    }
+                } else {
+                    $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute` WHERE `id_attribute` = 0');
+                    $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_shop` WHERE `id_attribute` = 0');
+                    $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'attribute_lang` WHERE `id_attribute` = 0');
+                    $resultMain = $db->insert('attribute', [
+                        'id_attribute_group' => (int)$attributeObj->id_attribute_group,
+                        'color' => '',
+                        'position' => 0,
+                    ]);
+                    $insertId = (int)$db->Insert_ID();
+                    if ($resultMain && $insertId === 0) {
+                        $insertId = (int)$db->getValue(
+                            'SELECT MAX(`id_attribute`) FROM `' . _DB_PREFIX_ . 'attribute`
+                             WHERE `id_attribute_group` = ' . (int)$attributeObj->id_attribute_group . '
+                               AND `id_attribute` > 0'
+                        );
+                    }
+                    if ($resultMain && $insertId > 0) {
+                        $attributeObj->id = $insertId;
+                        $db->insert('attribute_shop', [
+                            'id_attribute' => $insertId,
+                            'id_shop' => (int)Context::getContext()->shop->id,
+                        ]);
+                        foreach (Language::getLanguages(false) as $lang) {
+                            $db->insert('attribute_lang', [
+                                'id_attribute' => $insertId,
+                                'id_lang' => (int)$lang['id_lang'],
+                                'name' => pSQL($uniqueId),
+                            ]);
+                        }
+                        $saveResult = true;
+                    }
+                }
+            }
+
+            if ($saveResult) {
                 $idAttribute = $attributeObj->id;
                 $combinationObj = new Combination();
                 $combinationObj->id_product = (int)$idPack;
@@ -1713,7 +1782,42 @@ class AdvancedPack extends Product
                     }
                 }
                 unset($packProducts);
-                if (!$combinationObj->save() || !$combinationObj->setAttributes([$idAttribute])) {
+                try {
+                    $combSaveResult = $combinationObj->save();
+                } catch (\Throwable $e) {
+                    $combSaveResult = false;
+                }
+
+                // Workaround: Insert_ID()=0 sur certains environnements — même bug que pour attribute.
+                if (empty($combinationObj->id) || (int)$combinationObj->id === 0) {
+                    $db = Db::getInstance();
+                    if ($combSaveResult) {
+                        // save() a réussi mais id=0 : la ligne existe dans product_attribute, récupérer le bon id.
+                        $recoveredCombId = (int)$db->getValue(
+                            'SELECT MAX(`id_product_attribute`) FROM `' . _DB_PREFIX_ . 'product_attribute`
+                             WHERE `id_product` = ' . (int)$combinationObj->id_product . '
+                               AND `id_product_attribute` > 0'
+                        );
+                        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute_shop` WHERE `id_product_attribute` = 0');
+                        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute_combination` WHERE `id_product_attribute` = 0');
+                        if ($recoveredCombId > 0) {
+                            $combinationObj->id = $recoveredCombId;
+                            $db->insert('product_attribute_shop', [
+                                'id_product_attribute' => $recoveredCombId,
+                                'id_shop' => (int)Context::getContext()->shop->id,
+                            ], false, true, Db::INSERT_IGNORE);
+                        } else {
+                            $combSaveResult = false;
+                        }
+                    } else {
+                        // save() a échoué : nettoyage des orphelins id=0
+                        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute` WHERE `id_product_attribute` = 0');
+                        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute_shop` WHERE `id_product_attribute` = 0');
+                        $db->execute('DELETE FROM `' . _DB_PREFIX_ . 'product_attribute_combination` WHERE `id_product_attribute` = 0');
+                    }
+                }
+
+                if (!$combSaveResult || empty($combinationObj->id) || !$combinationObj->setAttributes([$idAttribute])) {
                     return false;
                 }
                 if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $idWarehouse) {
@@ -2463,7 +2567,7 @@ class AdvancedPack extends Product
                             $forceReductionByAmount = true;
                         }
                     }
-                    if (!empty($packProduct['reduction_amount']) || !empty($packProduct['reduction_percentage'])) {
+                    if ((isset($packProduct['reduction_amount']) && $packProduct['reduction_amount'] > 0) || (isset($packProduct['reduction_percentage']) && $packProduct['reduction_percentage'] > 0)) {
                         $sp = new SpecificPrice();
                         $sp->id_product = $packProduct['id_product'];
                         $sp->id_cart = self::getContext()->cart->id;
@@ -2657,7 +2761,7 @@ class AdvancedPack extends Product
         $sp->id_product = $idPack;
         $sp->id_cart = 0;
         $sp->id_product_attribute = $idProductAttribute;
-/*        $sp->id_shop = AdvancedPack::getPackIdShop($idPack);*/
+        /*        $sp->id_shop = AdvancedPack::getPackIdShop($idPack);*/
         $sp->id_shop = Context::getContext()->shop->id;
         $sp->id_shop_group = 0;
         $sp->id_currency = ($idProductAttribute && Validate::isLoadedObject(self::getContext()->currency) ? self::getContext()->currency->id : 0);
@@ -3239,8 +3343,8 @@ class AdvancedPack extends Product
                 $id_attributes = Db::getInstance()->executeS('
                 SELECT pac2.`id_attribute`
                 FROM `' . _DB_PREFIX_ . 'product_attribute_combination` pac2' .
-                ($hideUnavailableAttributes ? ' INNER JOIN `' . _DB_PREFIX_ . 'stock_available` pa ON pa.`id_product_attribute` = pac2.`id_product_attribute` WHERE pa.`quantity` > 0 AND ' : ' WHERE ') .
-                'pac2.`id_product_attribute` IN (' . implode(',', array_map('intval', $id_product_attributes)) . ')
+                    ($hideUnavailableAttributes ? ' INNER JOIN `' . _DB_PREFIX_ . 'stock_available` pa ON pa.`id_product_attribute` = pac2.`id_product_attribute` WHERE pa.`quantity` > 0 AND ' : ' WHERE ') .
+                    'pac2.`id_product_attribute` IN (' . implode(',', array_map('intval', $id_product_attributes)) . ')
                 AND pac2.`id_attribute` NOT IN (' . implode(',', array_map('intval', $current_selected_attributes)) . ')');
                 foreach ($id_attributes as $k => $row) {
                     $id_attributes[$k] = (int)$row['id_attribute'];

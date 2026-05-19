@@ -47,7 +47,7 @@
                 <nav class="header-nav d-flex align-items-center">
                     <div class="displayTop">
                         {hook h='displayTop'}
-                        <a href="{$link->getModuleLink('ckc_configurator', 'configurator')|escape:'htmlall':'UTF-8'}" class="btn btn-primary btn-configurateur">
+                        <a href="{$link->getModuleLink('ckcconfigurateurdistriclos', 'configurator')|escape:'htmlall':'UTF-8'}" class="btn btn-primary btn-configurateur">
                             <div class="text-btn">
                                 <span class="small-text">
                                     Configurez<br>
