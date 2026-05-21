@@ -294,7 +294,7 @@
 }
 
 .dynamic-product {
-  .swiper__product-img__cover {
+  .wrapper__swiper__product-img:has(> .dp-layers:not([style*="display: none"])) .swiper__product-img__cover {
     display: none !important;
   }
 }
