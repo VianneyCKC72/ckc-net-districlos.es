@@ -1,0 +1,130 @@
+.ckc-store-reviews__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ckc-store-reviews__summary {
+    border-radius: 8px;
+    background: #f6f2eb;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+    min-height: 124px;
+    @media (max-width: 767px) {
+        min-height: 44px;
+    }
+}
+
+.ckc-store-reviews__score {
+    line-height: 1;
+}
+
+.ckc-store-reviews__value {
+    font-size: 24px;
+    font-weight: 800;
+    color: #026473;
+    line-height: 1;
+}
+
+.ckc-store-reviews__max {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+}
+
+.ckc-store-reviews__stars {
+    display: flex;
+    gap: 2px;
+    justify-content: center;
+}
+
+.ckc-store-reviews__count {
+    font-size: 12px;
+    font-weight: 500;
+    margin: 0;
+    color: #333;
+}
+
+.ckc-store-reviews__google {
+    margin-left: 2px;
+    padding: 6px 10px;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.ckc-store-reviews__slider {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding: 2px 2px 8px;
+    flex: 1 1 auto;
+}
+
+.ckc-store-reviews__slider::-webkit-scrollbar {
+    height: 6px;
+}
+.ckc-store-reviews__slider::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.18);
+    border-radius: 999px;
+}
+
+.ckc-store-reviews__card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 0 0 auto;
+    width: 260px;
+    max-width: 75vw;
+    scroll-snap-align: start;
+}
+
+.ckc-store-reviews__card-stars {
+    display: flex;
+    gap: 2px;
+}
+
+.ckc-store-reviews__card-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #222;
+    margin: 0;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.ckc-store-reviews__card-meta {
+    font-size: 11px;
+    font-weight: 600;
+    color: #000;
+    margin: 0;
+}
+
+.ckc-store-reviews__empty {
+    font-size: 14px;
+    color: #666;
+}
+
+@media (max-width: 767px) {
+    .ckc-store-reviews__row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .ckc-store-reviews__summary {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}
