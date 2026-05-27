@@ -91,7 +91,7 @@ class SyncGoogleReviewsModuleFrontController extends ModuleFrontController
         die(sprintf('OK — %d magasin(s) | %d avis ajoutés | %d ignorés', count($stores), $stats['added'], $stats['skipped']));
     }
 
-    private function alreadySaved(int $idStore, string $gid, string $author, string $date): bool
+    protected function alreadySaved(int $idStore, string $gid, string $author, string $date): bool
     {
         $db = Db::getInstance();
 
@@ -172,12 +172,10 @@ class SyncGoogleReviewsModuleFrontController extends ModuleFrontController
     }
 }
 
-// Alias exigés par le Dispatcher PrestaShop (nom_module + nom_controleur + ModuleFrontController).
+// PrestaShop attend CkcstorespresentationSyncGoogleReviewsModuleFrontController.
+// On garde SyncGoogleReviewsModuleFrontController comme classe principale et on crée l'alias.
 class_alias(
     SyncGoogleReviewsModuleFrontController::class,
-    'ckcstorespresentation' . 'syncgooglereviews' . 'ModuleFrontController'
+    'CkcstorespresentationSyncGoogleReviewsModuleFrontController'
 );
-class_alias(
-    SyncGoogleReviewsModuleFrontController::class,
-    'ckcstorespresentation' . 'SyncGoogleReviews' . 'ModuleFrontController'
-);
+
