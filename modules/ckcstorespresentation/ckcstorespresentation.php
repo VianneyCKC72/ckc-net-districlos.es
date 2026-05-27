@@ -192,7 +192,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
         ];
         $syncUrl = htmlspecialchars($this->context->link->getModuleLink(
             $this->name,
-            'syncgooglereviews',
+            'SyncGoogleReviews',
             ['token' => substr(Tools::encrypt('ckcstorespresentation/syncgooglereviews'), 0, 10)],
             true
         ), ENT_QUOTES, 'UTF-8');
