@@ -38,11 +38,17 @@ class CkcstorespresentationNosMagasinsModuleFrontController extends ModuleFrontC
     public function initContent()
     {
 
-        $magasins = Db::getInstance()->executeS('SELECT * from `' . _DB_PREFIX_ . 'ckcstorespresentation`');
+        $magasins = Db::getInstance()->executeS(
+            'SELECT s.*, p.`place_id`, p.`google_rating`, p.`google_rating_count`
+            FROM `' . _DB_PREFIX_ . 'ckcstorespresentation` s
+            LEFT JOIN `' . _DB_PREFIX_ . 'presentation_place` p
+                ON p.`id_ckcstorespresentation` = s.`id_ckcstorespresentation`'
+        );
         $this->context->controller->addJquery();
 
         $this->context->smarty->assign(array(
             'magasins' => $magasins,
+            'elements' => $magasins,
             'modulePath' => $this->context->link->getModuleLink('ckcstorespresentation', 'NosMagasins'),
             'lang' => Context::getContext()->language->iso_code,
         ));
@@ -69,15 +75,17 @@ class CkcstorespresentationNosMagasinsModuleFrontController extends ModuleFrontC
             $lng = (float) $lng;
 
             $search = Db::getInstance()->executeS(
-                "SELECT *, (
+                "SELECT s.*, p.`place_id`, p.`google_rating`, p.`google_rating_count`, (
                 6371 * acos(
                     cos(radians(" . pSQL($lat) . ")) * cos(radians(latitude)) *
                     cos(radians(longitude) - radians(" . pSQL($lng) . ")) +
                     sin(radians(" . pSQL($lat) . ")) * sin(radians(latitude))
                 )
             ) AS distance
-            FROM `" . _DB_PREFIX_ . "ckcstorespresentation`
-            WHERE latitude IS NOT NULL AND longitude IS NOT NULL
+            FROM `" . _DB_PREFIX_ . "ckcstorespresentation` s
+            LEFT JOIN `" . _DB_PREFIX_ . "presentation_place` p
+                ON p.`id_ckcstorespresentation` = s.`id_ckcstorespresentation`
+            WHERE s.latitude IS NOT NULL AND s.longitude IS NOT NULL
             ORDER BY distance ASC
             LIMIT 20"
             );
@@ -88,16 +96,19 @@ class CkcstorespresentationNosMagasinsModuleFrontController extends ModuleFrontC
             $querySql = '%' . pSQL($query) . '%';
 
             $search = Db::getInstance()->executeS(
-                "SELECT * FROM `" . _DB_PREFIX_ . "ckcstorespresentation`
-            WHERE id_ckcstorespresentation LIKE '$querySql'
-            OR departement LIKE '$querySql'
-            OR adresse LIKE '$querySql'
-            OR ville LIKE '$querySql'
-            OR code_postal LIKE '$querySql'
-            OR email LIKE '$querySql'
-            OR telephone LIKE '$querySql'
-            OR horaires_jours LIKE '$querySql'
-            OR horaires_heures LIKE '$querySql'"
+                "SELECT s.*, p.`place_id`, p.`google_rating`, p.`google_rating_count`
+                FROM `" . _DB_PREFIX_ . "ckcstorespresentation` s
+                LEFT JOIN `" . _DB_PREFIX_ . "presentation_place` p
+                    ON p.`id_ckcstorespresentation` = s.`id_ckcstorespresentation`
+                WHERE s.id_ckcstorespresentation LIKE '$querySql'
+                OR s.departement LIKE '$querySql'
+                OR s.adresse LIKE '$querySql'
+                OR s.ville LIKE '$querySql'
+                OR s.code_postal LIKE '$querySql'
+                OR s.email LIKE '$querySql'
+                OR s.telephone LIKE '$querySql'
+                OR s.horaires_jours LIKE '$querySql'
+                OR s.horaires_heures LIKE '$querySql'"
             );
         }
 
