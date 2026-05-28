@@ -71,19 +71,22 @@ class Ckcstorespresentation extends Module implements WidgetInterface
     public function install()
     {
         Configuration::updateValue('CKCSTORESPRESENTATION_LIVE_MODE', false);
+        Configuration::updateValue('GOOGLE_API_KEY', '');
+        Configuration::updateValue('CKCSTORESPRESENTATION_CMS_LISTING_ID', 11);
         require_once __DIR__ . '/sql/install.php'; // sql querries
 
         return parent::install() &&
             $this->registerHook('displayFooter') &&
-            $this->registerHook('displayElementor') &&
             $this->registerHook('displayLeftColumn') &&
             $this->registerHook('displayHeader') &&
-            $this->registerHook('displayBackOfficeHeader');
+            $this->registerHook('displayBackOfficeHeader') &&
+            $this->registerStoreReviewsHook();
     }
 
     public function uninstall()
     {
         Configuration::deleteByName('CKCSTORESPRESENTATION_LIVE_MODE');
+        Configuration::deleteByName('GOOGLE_API_KEY');
 
         return parent::uninstall();
     }
@@ -93,6 +96,8 @@ class Ckcstorespresentation extends Module implements WidgetInterface
      */
     public function getContent()
     {
+        $this->registerStoreReviewsHook();
+
         /**
          * If values have been submitted in the form, process.
          */
@@ -115,6 +120,9 @@ class Ckcstorespresentation extends Module implements WidgetInterface
 
             Tools::redirect($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]));
 
+        } elseif (((bool)Tools::isSubmit('submitCkcstorespresentationSettings')) == true) {
+            Configuration::updateValue('GOOGLE_API_KEY', Tools::getValue('GOOGLE_API_KEY'));
+            Tools::redirect($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]));
         } elseif (((bool)Tools::isSubmit('submitCkcstorespresentationModule')) == true) {
 
             $idStore = Tools::getValue('CKCSTORESPRESENTATION_ID') == "" ? null : Tools::getValue('CKCSTORESPRESENTATION_ID');
@@ -145,19 +153,72 @@ class Ckcstorespresentation extends Module implements WidgetInterface
 
             $stores = Db::getInstance()->executeS('SELECT * FROM ' . _DB_PREFIX_ . 'ckcstorespresentation');
 
-            // dump(Context::getContext()->link->getModuleLink($this->name, 'NosMagasins'));
-
-            $this->context->smarty->assign( array(
+            $this->context->smarty->assign([
                 'module_dir' => $this->_path,
                 'stores' => $stores,
                 'current_url' => $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]),
-            ));
+            ]);
 
-            $this->_output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
+            $this->_output = $this->context->smarty->fetch($this->local_path . 'views/templates/admin/configure.tpl');
+            $this->_output .= $this->renderSettingsForm();
         }
 
         return $this->_output;
 
+    }
+
+    public function getGoogleApiKey()
+    {
+        return (string) Configuration::get('GOOGLE_API_KEY', '');
+    }
+
+    protected function renderSettingsForm()
+    {
+        $helper = new HelperForm();
+        $helper->show_toolbar = false;
+        $helper->table = $this->table;
+        $helper->module = $this;
+        $helper->default_form_language = $this->context->language->id;
+        $helper->allow_employee_form_lang = Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG', 0);
+        $helper->identifier = $this->identifier;
+        $helper->submit_action = 'submitCkcstorespresentationSettings';
+        $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
+            . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
+        $helper->token = Tools::getAdminTokenLite('AdminModules');
+        $helper->tpl_vars = [
+            'fields_value' => ['GOOGLE_API_KEY' => $this->getGoogleApiKey()],
+            'languages' => $this->context->controller->getLanguages(),
+            'id_language' => $this->context->language->id,
+        ];
+        $syncUrl = htmlspecialchars($this->context->link->getModuleLink(
+            $this->name,
+            'SyncGoogleReviews',
+            ['token' => substr(Tools::encrypt('ckcstorespresentation/syncgooglereviews'), 0, 10)],
+            true
+        ), ENT_QUOTES, 'UTF-8');
+
+        return $helper->generateForm([[
+            'form' => [
+                'legend' => ['title' => $this->l('Paramètres'), 'icon' => 'icon-cogs'],
+                'input' => [
+                    [
+                        'type' => 'text',
+                        'label' => $this->l('Clé API Google'),
+                        'name' => 'GOOGLE_API_KEY',
+                        'size' => 40,
+                    ],
+                    [
+                        'type' => 'html',
+                        'label' => $this->l('Avis Google'),
+                        'name' => 'sync_google_reviews',
+                        'html_content' => '<a href="' . $syncUrl . '" target="_blank" class="btn btn-default">'
+                            . $this->l('Synchroniser les avis Google') . '</a>'
+                            . '<p class="help-block">' . $this->l('Creative Elements : hook') . ' <code>displayCkcStoreReviews</code></p>',
+                    ],
+                ],
+                'submit' => ['title' => $this->l('Enregistrer')],
+            ],
+        ]]);
     }
 
     /**
@@ -450,10 +511,45 @@ class Ckcstorespresentation extends Module implements WidgetInterface
     }
 
 
+    /** @var array|false|null */
+    private $cmsStoreCache = false;
+
+    protected function getCmsStoreForPage(): ?array
+    {
+        if ($this->cmsStoreCache !== false) {
+            return $this->cmsStoreCache ?: null;
+        }
+        $this->cmsStoreCache = null;
+        if (!($this->context->controller instanceof CmsController) || !isset($this->context->controller->cms->id)) {
+            return null;
+        }
+        $this->cmsStoreCache = Db::getInstance()->getRow(
+            'SELECT s.*, p.`place_id`, p.`google_rating`, p.`google_rating_count`
+            FROM `' . _DB_PREFIX_ . 'ckcstorespresentation` s
+            LEFT JOIN `' . _DB_PREFIX_ . 'presentation_place` p
+                ON p.`id_ckcstorespresentation` = s.`id_ckcstorespresentation`
+            WHERE s.`id_cms_detail` = ' . (int) $this->context->controller->cms->id
+        ) ?: null;
+
+        return $this->cmsStoreCache;
+    }
+
     public function renderWidget($hookName, array $configuration)
     {
-        $key = 'ckcstorespresentation|' . $hookName;
+        $idCms = ($this->context->controller instanceof CmsController && isset($this->context->controller->cms->id))
+            ? (int) $this->context->controller->cms->id : 0;
+        $listingCmsId = (int) Configuration::get('CKCSTORESPRESENTATION_CMS_LISTING_ID') ?: 11;
+        if ($this->getCmsStoreForPage() || $idCms !== $listingCmsId) {
+            return '';
+        }
 
+        static $storeSelectorRendered = false;
+        if ($storeSelectorRendered) {
+            return '';
+        }
+        $storeSelectorRendered = true;
+
+        $key = 'ckcstorespresentation|' . $hookName;
         $template = $this->templateFile;
 
         if (!$this->isCached($template, $this->getCacheId($key))) {
@@ -483,6 +579,28 @@ class Ckcstorespresentation extends Module implements WidgetInterface
 
     public function getCoordinatesFromAddress($address)
     {
+        $googleApiKey = $this->getGoogleApiKey();
+        if (!empty($googleApiKey)) {
+            $url = 'https://maps.googleapis.com/maps/api/geocode/json?address='
+                . urlencode($address)
+                . '&key=' . urlencode($googleApiKey);
+            $response = Tools::file_get_contents($url);
+            if ($response !== false) {
+                $data = json_decode($response, true);
+                if (!empty($data['results'][0]['geometry']['location'])) {
+                    return [
+                        'latitude' => $data['results'][0]['geometry']['location']['lat'],
+                        'longitude' => $data['results'][0]['geometry']['location']['lng'],
+                    ];
+                }
+                if (!empty($data['error_message'])) {
+                    return ['error' => $data['error_message']];
+                }
+            }
+
+            return ['error' => 'Impossible de récupérer les données via Google Geocoding'];
+        }
+
         $url = "https://nominatim.openstreetmap.org/search?format=json&q=" . urlencode($address);
         $options = [
             "http" => [
@@ -672,12 +790,67 @@ class Ckcstorespresentation extends Module implements WidgetInterface
         }
     }
 
-    /**
-     * Add the CSS & JavaScript files you want to be added on the FO.
-     */
     public function hookDisplayHeader()
     {
-        $this->context->controller->addJS($this->_path.'/views/js/front.js');
-        $this->context->controller->addCSS($this->_path.'/views/css/front.css');
+        if ($this->getCmsStoreForPage()) {
+            return;
+        }
+        $idCms = ($this->context->controller instanceof CmsController && isset($this->context->controller->cms->id))
+            ? (int) $this->context->controller->cms->id : 0;
+        if ($idCms === ((int) Configuration::get('CKCSTORESPRESENTATION_CMS_LISTING_ID') ?: 11)
+            || $this->context->controller instanceof CkcstorespresentationNosMagasinsModuleFrontController) {
+            $this->context->controller->addJS($this->_path . 'views/js/front.js');
+            $this->context->controller->addCSS($this->_path . 'views/css/front.css');
+        }
+    }
+
+    /** Creative Elements : widget Module → hook displayCkcStoreReviews */
+    public function hookDisplayCkcStoreReviews(array $params)
+    {
+        $store = $this->getCmsStoreForPage();
+        if (!$store) {
+            return '';
+        }
+        $reviews = Db::getInstance()->executeS(
+            'SELECT * FROM `' . _DB_PREFIX_ . 'presentation_reviews`
+            WHERE `id_ckcstorespresentation` = ' . (int) $store['id_ckcstorespresentation'] . '
+            AND `rating` = 5 ORDER BY `review_date` DESC'
+        ) ?: [];
+        if (!$reviews && empty($store['google_rating'])) {
+            return '';
+        }
+        $placeId = trim((string) ($store['place_id'] ?? ''));
+        $mapsUrl = '';
+        if ($placeId !== '') {
+            $query = trim(($store['departement'] ?? '') . ' ' . ($store['adresse'] ?? '') . ' '
+                . ($store['code_postal'] ?? '') . ' ' . ($store['ville'] ?? ''));
+            $mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode($query !== '' ? $query : $placeId)
+                . '&query_place_id=' . rawurlencode($placeId);
+        }
+        $this->context->controller->addCSS($this->_path . 'views/css/store-reviews.css');
+        $this->context->smarty->assign(['store' => $store, 'reviews' => $reviews, 'maps_url' => $mapsUrl]);
+
+        return $this->fetch('module:ckcstorespresentation/views/templates/hook/store-reviews.tpl');
+    }
+
+    protected function registerStoreReviewsHook(): bool
+    {
+        if (!Hook::getIdByName('displayCkcStoreReviews')) {
+            $hook = new Hook();
+            $hook->name = 'displayCkcStoreReviews';
+            $hook->title = 'Ckc Stores - Avis Google';
+            $hook->position = true;
+            if (!$hook->add()) {
+                return false;
+            }
+        }
+        if (!$this->isRegisteredInHook('displayCkcStoreReviews') && !$this->registerHook('displayCkcStoreReviews')) {
+            return false;
+        }
+        if ($this->isRegisteredInHook('displayCMSDisputeInformation')) {
+            $this->unregisterHook('displayCMSDisputeInformation');
+        }
+
+        return true;
     }
 }
