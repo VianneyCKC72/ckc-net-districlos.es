@@ -568,7 +568,12 @@ class Ckcstorespresentation extends Module implements WidgetInterface
      */
     public function getWidgetVariables($hookName = null, array $configuration = [])
     {
-        $magasins = Db::getInstance()->executeS('SELECT * from `' . _DB_PREFIX_ . 'ckcstorespresentation`');
+        $magasins = Db::getInstance()->executeS(
+            'SELECT s.*, p.`place_id`, p.`google_rating`, p.`google_rating_count`
+            FROM `' . _DB_PREFIX_ . 'ckcstorespresentation` s
+            LEFT JOIN `' . _DB_PREFIX_ . 'presentation_place` p
+                ON p.`id_ckcstorespresentation` = s.`id_ckcstorespresentation`'
+        );
 
         return [
             'modulePath' => $this->context->link->getModuleLink('ckcstorespresentation', 'NosMagasins'),
@@ -801,6 +806,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
             || $this->context->controller instanceof CkcstorespresentationNosMagasinsModuleFrontController) {
             $this->context->controller->addJS($this->_path . 'views/js/front.js');
             $this->context->controller->addCSS($this->_path . 'views/css/front.css');
+            $this->context->controller->addCSS($this->_path . 'views/css/store-rating.css');
         }
     }
 
