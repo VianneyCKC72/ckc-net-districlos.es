@@ -2203,3 +2203,97 @@
     display: none !important;
   }
 }
+
+@media (max-width: 767.98px) {
+  .banner-quick-view {
+    .col-title,
+    .col-price {
+      display: none !important;
+    }
+
+    .banner-quick-view-row {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 10px !important;
+      margin: 0 !important;
+    }
+
+    > .container > .banner-quick-view-content > .banner-quick-view-row > .add-mobile {
+      display: none !important;
+    }
+
+    .col-cart {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex: 1 1 100% !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      padding: 0 !important;
+      text-align: center !important;
+    }
+
+    .col-cart .product-quantity {
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: nowrap !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+      width: 100% !important;
+      margin: 0 !important;
+    }
+
+    .col-cart .product-quantity .qty {
+      display: block !important;
+      flex: 0 0 auto !important;
+    }
+
+    .col-cart .product-quantity .add {
+      display: flex !important;
+      flex: 1 1 auto !important;
+      width: auto !important;
+      margin: 0 !important;
+    }
+
+    .col-cart .custom-quantity-selector {
+      display: flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+    }
+
+    .col-cart .custom-quantity-selector .btn-quantity,
+    .col-cart .custom-quantity-selector input.quantity-input {
+      width: 44px !important;
+      height: 44px !important;
+      padding: 0 !important;
+      font-size: 16px !important;
+    }
+
+    .col-cart .add .btn,
+    .col-cart .add .add-to-cart {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      width: 100% !important;
+      height: 44px !important;
+      padding: 8px 20px !important;
+      white-space: nowrap !important;
+    }
+
+    .col-cart .add .add-to-cart .add-to-cart-text {
+      display: inline-block !important;
+      color: $white !important;
+      font-size: 14px !important;
+      font-weight: 700 !important;
+    }
+
+    .col-cart .skeepers_product__stars,
+    .col-cart .add-mobile.skeepers_product__stars {
+      display: none !important;
+    }
+  }
+}

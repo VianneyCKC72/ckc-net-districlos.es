@@ -1,3 +1,28 @@
+/**
+ * Décale les étiquettes promo sous la pastille « Fabriqué en France ».
+ * Nécessaire sur toutes les pages listant des miniatures (catégories, CMS /promotions, etc.).
+ */
+function offsetDiscountFlagsFromPastilleFr() {
+    $('.product-miniature .thumbnail-top').each(function () {
+        const $container = $(this);
+
+        if ($container.find('.pastille_fr').length === 0) {
+            return;
+        }
+
+        $container.find('.discount_type_flag').each(function () {
+            const $flag = $(this);
+
+            if ($flag.data('pastille-offset')) {
+                return;
+            }
+
+            const top = parseInt($flag.css('top'), 10) || 0;
+            $flag.css('top', (top + 45) + 'px').data('pastille-offset', true);
+        });
+    });
+}
+
 $(document).ready(function () {
     function setCookie(name, value, days) {
         let expires = "";
@@ -136,28 +161,10 @@ $(document).ready(function () {
             `);
         }
     });
-    if ($('body#category').length || $('body#index').length || $('body#product').length) {
-        $('.discount_type_flag').each(function () {
-            let elementFlagParent = $(this).parent()
-            if (elementFlagParent.find(".pastille_fr").length !== 0){
-                let top = parseInt($(this).css("top"), 10)
-                let topNew = top + 45;
-                $(this).css("top", topNew + "px")
-            }
-        });
-    }
+    offsetDiscountFlagsFromPastilleFr();
 
-    prestashop.on('updateProductList', (event) => {
-        if ($('body#category').length) {
-            $('.discount_type_flag').each(function () {
-                let elementFlagParent = $(this).parent()
-                if (elementFlagParent.find(".pastille_fr").length !== 0){
-                    let top = parseInt($(this).css("top"), 10)
-                    let topNew = top + 45;
-                    $(this).css("top", topNew + "px")
-                }
-            });
-        }
+    prestashop.on('updateProductList', () => {
+        offsetDiscountFlagsFromPastilleFr();
     });
 
     if ($('body#category.category-id-3').length && $(".evercontentseo").length){
