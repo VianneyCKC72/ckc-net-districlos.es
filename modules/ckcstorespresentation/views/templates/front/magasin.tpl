@@ -18,6 +18,25 @@
             {/if}
         </div>
 
+        {if isset($magasin.google_rating) && $magasin.google_rating}
+            <div class="ckc-store-rating"
+                 itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
+                <span class="ckc-store-rating__value" itemprop="ratingValue">
+                    {$magasin.google_rating|string_format:"%.1f"}
+                </span>
+                <span class="ckc-store-rating__max">/5</span>
+                <meta itemprop="bestRating" content="5"/>
+                {if isset($magasin.google_rating_count) && $magasin.google_rating_count}
+                    <meta itemprop="reviewCount" content="{$magasin.google_rating_count|intval}"/>
+                {/if}
+                <span class="ckc-store-rating__stars" aria-hidden="true"
+                      style="--rating: {$magasin.google_rating|string_format:"%.2f"}"></span>
+                {if isset($magasin.google_rating_count) && $magasin.google_rating_count}
+                    <span class="ckc-store-rating__count">{$magasin.google_rating_count|intval} avis</span>
+                {/if}
+            </div>
+        {/if}
+
         <address class="block block-adresse" itemprop="address" itemscope
                  itemtype="https://schema.org/PostalAddress">
             {if isset($magasin.adresse) && $magasin.adresse}
