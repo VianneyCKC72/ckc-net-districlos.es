@@ -154,4 +154,39 @@ class CartRule extends CartRuleCore
 
         return $result;
     }
+
+    /*
+     * module: dtc_cartrule
+     * Ajoute la/les conditions custom Districtlos aux règles panier.
+     * Délègue toute la logique aux services du module ; ne touche pas au reste
+     * du comportement natif. Si un service n'est pas disponible (module
+     * désinstallé ou feature non chargée), l'override se comporte comme le parent.
+     *
+     * Override "défensif" : tout est wrappé dans un try/catch silencieux
+     * pour ne jamais empêcher la validation native d'une règle panier
+     * en cas de problème côté module custom.
+     */
+    public function checkValidity(Context $context, $alreadyInCart = false, $display_error = true, $check_carrier = true, $useOrderPrices = false)
+    {
+        try {
+            $minOrdersServicePath = _PS_MODULE_DIR_ . 'dtc_cartrule/classes/CartRuleMinOrdersService.php';
+            if (file_exists($minOrdersServicePath)) {
+                if (!class_exists('CartRuleMinOrdersService', false)) {
+                    require_once $minOrdersServicePath;
+                }
+
+                $idCustomer = ($context && $context->customer) ? (int) $context->customer->id : 0;
+
+                if (!CartRuleMinOrdersService::isAllowedForCustomer((int) $this->id, $idCustomer)) {
+                    return $display_error
+                        ? $this->trans('This voucher requires a minimum number of previous orders.', [], 'Shop.Notifications.Error')
+                        : false;
+                }
+            }
+        } catch (\Throwable $e) {
+            PrestaShopLogger::addLog('dtc_cartrule checkValidity failed: ' . $e->getMessage(), 2);
+        }
+
+        return parent::checkValidity($context, $alreadyInCart, $display_error, $check_carrier, $useOrderPrices);
+    }
 }
