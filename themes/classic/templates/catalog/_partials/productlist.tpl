@@ -25,6 +25,13 @@
 
 {capture assign="productClasses"}{if !empty($productClass)}{$productClass}{else}col-xs-12 col-sm-6 col-lg-3 col-xl-3{/if}{/capture}
 
+{* Catégories affichant la bannière "jours fous" ; les autres gardent category-listing-promo.jpg *}
+{if $page.page_name == 'category' && in_array(Context::getContext()->controller->getCategory()->id, [169,240,243,339,337,323,171,239,241,366,4])}
+    {assign var=category_listing_banner_file value='category-joursfous.png'}
+{else}
+    {assign var=category_listing_banner_file value='category-listing-promo.jpg'}
+{/if}
+
 <div class="products{if !empty($cssClass)} {$cssClass}{/if} {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')} list_view {/if}">
     {foreach from=$products item="product" key="position" name=productsList}
         {include file="catalog/_partials/miniatures/product.tpl" product=$product position=$position productClasses=$productClasses}
@@ -34,14 +41,14 @@
             {if $smarty.foreach.productsList.iteration == 1}
                 <div class="category-listing-banner category-listing-banner--mobile col-6 col-sm-6 d-md-none">
                     <div class="category-listing-banner__inner">
-                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/category-listing-promo.jpg" alt="" loading="lazy" width="400" height="400">
+                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/{$category_listing_banner_file}" alt="" loading="lazy" width="400" height="400">
                     </div>
                 </div>
             {/if}
             {if $smarty.foreach.productsList.iteration == 3}
                 <div class="category-listing-banner category-listing-banner--desktop d-none d-lg-block col-lg-3 col-xl-3">
                     <div class="category-listing-banner__inner">
-                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/category-listing-promo.jpg" alt="" loading="lazy" width="400" height="400">
+                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/{$category_listing_banner_file}" alt="" loading="lazy" width="400" height="400">
                     </div>
                 </div>
             {/if}

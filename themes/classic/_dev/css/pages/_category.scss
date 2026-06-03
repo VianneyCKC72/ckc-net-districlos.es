@@ -184,11 +184,8 @@
 
 .head-top-category {
   display: flex;
-  justify-content: space-between;
-  /* align-items: flex-start; */
-  margin-right: 0;
   margin-bottom: 20px;
-  gap: 30px;
+  flex-direction: column;
 
   .tag-discount, h1.h1 {
     white-space: nowrap;
@@ -711,9 +708,6 @@
 @media (max-width: 767px) {
   #category #category-description .category_inline.description_souscat {
     display: none;
-  }
-  .has-discount {
-    margin-top: 20px;
   }
   .evercontentseo img.cms-banner-desktop {
     display: none;

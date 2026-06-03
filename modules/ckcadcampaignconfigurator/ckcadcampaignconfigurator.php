@@ -89,8 +89,24 @@ class Ckcadcampaignconfigurator extends Module
     /**
      * Load the configuration form
      */
+    protected function ensureProductSchema()
+    {
+        $columnExists = Db::getInstance()->getValue('
+            SELECT COUNT(*) FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = "' . _DB_NAME_ . '"
+            AND TABLE_NAME = "' . _DB_PREFIX_ . 'ckccampaign_config_content_product"
+            AND COLUMN_NAME = "show_above_price"');
+
+        if (!$columnExists) {
+            Db::getInstance()->execute('
+                ALTER TABLE `' . _DB_PREFIX_ . 'ckccampaign_config_content_product`
+                ADD `show_above_price` tinyint NOT NULL DEFAULT 0');
+        }
+    }
+
     public function getContent()
     {
+        $this->ensureProductSchema();
         /**
          * If values have been submitted in the form, process.
          */
@@ -599,12 +615,14 @@ class Ckcadcampaignconfigurator extends Module
         $PRODUCT_ID = Tools::getValue('PRODUCT_ID') == "" ? null : Tools::getValue('PRODUCT_ID');
         $PRODUCT_ACTIVE = Tools::getValue('PRODUCT_ACTIVE') == "" ? 0 : 1;
         $PRODUCT_SHOW_ALL = Tools::getValue('PRODUCT_SHOW_ALL') == "" ? 0 : 1;
+        $PRODUCT_SHOW_ABOVE_PRICE = Tools::getValue('PRODUCT_SHOW_ABOVE_PRICE') == "" ? 0 : 1;
 
         $data = array(
             'ID' => Tools::getValue('ID'),
             'PRODUCT_ID' => $PRODUCT_ID,
             'PRODUCT_ACTIVE' => $PRODUCT_ACTIVE,
             'PRODUCT_SHOW_ALL' => $PRODUCT_SHOW_ALL,
+            'PRODUCT_SHOW_ABOVE_PRICE' => $PRODUCT_SHOW_ABOVE_PRICE,
             'PRODUCT_TEXT' => htmlentities(str_replace("'", "\'", Tools::getValue('PRODUCT_TEXT'))),
             'PRODUCT_SELECTION' => Tools::getValue('PRODUCT_SELECTION')
         );
@@ -1275,6 +1293,25 @@ class Ckcadcampaignconfigurator extends Module
                         ),
                     ),
                     array(
+                        'type' => 'switch',
+                        'label' => $this->l('Afficher au dessus du prix'),
+                        'name' => 'PRODUCT_SHOW_ABOVE_PRICE',
+                        'is_bool' => true,
+                        'desc' => $this->l('Affiche le texte au dessus du prix sur la fiche produit'),
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => true,
+                                'label' => $this->l('Yes')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => false,
+                                'label' => $this->l('No')
+                            )
+                        ),
+                    ),
+                    array(
                         'type' => 'hidden',
                         'name' => 'ID',
                     ),
@@ -1477,6 +1514,7 @@ class Ckcadcampaignconfigurator extends Module
                 'PRODUCT_ACTIVE' => '',
                 'PRODUCT_TEXT' => '',
                 'PRODUCT_SHOW_ALL' => '',
+                'PRODUCT_SHOW_ABOVE_PRICE' => '',
                 'PRODUCT_SELECTION' => ''
             );
         } else {
@@ -1490,6 +1528,7 @@ class Ckcadcampaignconfigurator extends Module
                 'PRODUCT_ACTIVE' => $campaignPromoInfo['active'],
                 'PRODUCT_TEXT' => html_entity_decode($campaignPromoInfo['text']),
                 'PRODUCT_SHOW_ALL' => $campaignPromoInfo['show_all'],
+                'PRODUCT_SHOW_ABOVE_PRICE' => isset($campaignPromoInfo['show_above_price']) ? $campaignPromoInfo['show_above_price'] : 0,
                 'PRODUCT_SELECTION' => ''
             );
         }
@@ -1622,9 +1661,9 @@ class Ckcadcampaignconfigurator extends Module
 
         foreach ($CampaignProductInfos as $productCampaign){
             $createProductPromo = Db::getInstance()->execute(
-                'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_product` 
-                                    (`id`, `id_campaign`, `text`,`active`, `show_all`, `date_add`)
-                            VALUES (NULL, '.$newId.',\''.$productCampaign['text'].'\', '.$productCampaign['active'].','.$productCampaign['show_all'].',CURRENT_TIMESTAMP())'
+                'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_product`
+                                    (`id`, `id_campaign`, `text`,`active`, `show_all`, `show_above_price`, `date_add`)
+                            VALUES (NULL, '.$newId.',\''.$productCampaign['text'].'\', '.$productCampaign['active'].','.$productCampaign['show_all'].','.(isset($productCampaign['show_above_price']) ? (int)$productCampaign['show_above_price'] : 0).',CURRENT_TIMESTAMP())'
             );
             $selectPromoId = Db::getInstance()->executeS('SELECT id FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_product` WHERE `id_campaign` = '.$newId.' AND `text` LIKE \'' .$productCampaign['text'].'\'');
 
@@ -1886,7 +1925,7 @@ class Ckcadcampaignconfigurator extends Module
         ];
     }
 
-    public function hookDisplayPromoProductDescription()
+    public function hookDisplayPromoProductDescription($params = [])
     {
 
         $customerGroupId = Context::getContext()->customer->id_default_group;
@@ -1919,6 +1958,12 @@ class Ckcadcampaignconfigurator extends Module
                     }
                 }
             }
+        }
+
+        if (!empty($params['above_price'])) {
+            $productPromos = array_filter($productPromos, function ($promo) {
+                return !empty($promo['show_above_price']);
+            });
         }
 
         $this->context->smarty->assign(array(
