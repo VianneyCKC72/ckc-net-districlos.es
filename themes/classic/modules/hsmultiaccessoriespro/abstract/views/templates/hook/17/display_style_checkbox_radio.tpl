@@ -112,7 +112,7 @@
                         <span class="forbidden_ordering" title="{$hs_i18n.out_of_stock|escape:'html':'UTF-8'}"></span>
                     {/if}
                     {if sizeof($accessory.cart_rule) > 0}
-                        <span class="color-red">- {$accessory.cart_rule.reduction_percent}%</span>
+                        <span class="accessory-tag-discount">-{$accessory.cart_rule.reduction_percent|intval}%</span>
                     {/if}
                 </p>
                 <div class="ma_block_qty {if !$accessory_configuration_keys.HSMA_SHOW_CUSTOM_QUANTITY}hide{/if}">
