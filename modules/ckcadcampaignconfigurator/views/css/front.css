@@ -36,6 +36,41 @@
 .promo-page-promo-content p{
     margin-bottom: 0;
 }
+/* Badge promo : classe de base + variantes de couleur.
+   --badge-bg     = fond clair du conteneur
+   --badge-accent = couleur forte (pastille + texte) */
+.promo-badge,
+.promo-badge-pink{
+    --badge-bg: #ffe5ef;
+    --badge-accent: #f0005f;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--badge-bg);
+    border-radius: 25px;
+    padding: 4px 14px 4px 4px;
+    line-height: 1;
+}
+.promo-badge__tag,
+.promo-badge-pink__tag{
+    background-color: var(--badge-accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 25px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    margin-left: 5px;
+}
+.promo-badge__text,
+.promo-badge-pink__text{
+    color: var(--badge-accent);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.2;
+}
+
 @media (max-width: 767px){
     .bloc_promo_devis{
         display: block;

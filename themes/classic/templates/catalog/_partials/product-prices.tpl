@@ -26,9 +26,7 @@
 {if Context::getContext()->shop->id != 2 OR (Context::getContext()->shop->id == 2 && Context::getContext()->customer->id)}
   <div class="product-prices js-product-prices mb-4">
     {block name='product_price'}
-      {if !$pro.env}
-        {include file='catalog/_partials/product-prices/has-discount.tpl'}
-      {/if}
+      {hook h='displayPromoProductDescription' above_price=1}
       {include file='catalog/_partials/product-prices/price.tpl'}
       <div id="global-loader-wrapper" style="display:none; position:fixed; top:20px; right:20px; z-index:10000;">
         <svg width="30" height="30" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
@@ -150,7 +148,6 @@
             <div class="col-sm-4 col-12 col-price">
               {block name='product_price'}
                 {include file='catalog/_partials/product-prices/price.tpl'}
-                {include file='catalog/_partials/product-prices/has-discount.tpl'}
               {/block}
             </div>
 

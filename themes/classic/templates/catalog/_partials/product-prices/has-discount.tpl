@@ -1,5 +1,5 @@
 {if $product.has_discount}
-    <div class="product-discount has-discount">
+    <div class="product-discount tag-discount">
         {* Réduction à commentée - si affichage de price_old.tpl pour les SOLDES *}
         <div class="font-weight-bold">
             {if isset($ap5_pack_reduction_percent) && $ap5_pack_reduction_percent > 0}
@@ -15,6 +15,6 @@
                 </span>
             {/if}
         </div>
-        <div class="tag-discount">Promotion</div>
+        {* <div class="tag-discount">Promotion</div> *}
     </div>
 {/if}

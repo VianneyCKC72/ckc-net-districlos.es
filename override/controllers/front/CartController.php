@@ -26,7 +26,7 @@ class CartController extends CartControllerCore
             [
                 'trigger_products' => [self::PRODUCT_ID_MOTEUR_1305, self::PRODUCT_ID_MOTEUR_1306],
                 'missing_product' => self::PRODUCT_ID_CREMALLIERE,
-                'message' => 'Les crémaillères ne sont pas incluses dans ce moteur.',
+                'message' => 'Les crémaillères ne sont pas incluses dans ce moteur.||Portail 3m00 : 4 crémaillères - Portail 3m50 et 4m00 : 5 crémaillères',
             ],
             [
                 'trigger_products' => [self::PRODUCT_ID_POTEAU_1223, self::PRODUCT_ID_POTEAU_1285],
@@ -636,8 +636,14 @@ class CartController extends CartControllerCore
         
         $div_image = '<div class="product-message-img" style="border: 2px solid #dbe6e8;">' . $image_with_link . '</div>';
         
+        $alert_parts = explode('||', $alert_message, 2);
+        $alert_html = htmlspecialchars($alert_parts[0], ENT_QUOTES, 'UTF-8');
+        if (isset($alert_parts[1]) && $alert_parts[1] !== '') {
+            $alert_html .= '<br/><em>' . htmlspecialchars($alert_parts[1], ENT_QUOTES, 'UTF-8') . '</em>';
+        }
+
         $div_text = '<div class="product-message-txt" style="width: 60%;">
-            <span class="text-red">Attention : ' . htmlspecialchars($alert_message, ENT_QUOTES, 'UTF-8') . '</span><br/>
+            <span class="text-red" style="font-size: 14px;">Attention : ' . $alert_html . '</span><br/>
             ' . $name_with_link . '
             ' . $product_data['combination_html'] . '
         </div>';

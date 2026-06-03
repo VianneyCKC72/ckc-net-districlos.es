@@ -40,7 +40,10 @@
         {if $product.has_discount}
             <div class="product-discount">
                 {hook h='displayProductPriceBlock' product=$product type="old_price"}
-                <span class="regular-price">{$product.regular_price}</span>
+                    {if !$pro.env}
+                        {include file='catalog/_partials/product-prices/has-discount.tpl'}
+                    {/if}
+                    <span class="regular-price">{$product.regular_price}</span>
             </div>
         {/if}
     {/block}
