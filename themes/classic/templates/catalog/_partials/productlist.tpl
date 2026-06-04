@@ -27,7 +27,7 @@
 
 {* Catégories affichant la bannière "jours fous" ; les autres gardent category-listing-promo.jpg *}
 {if $page.page_name == 'category' && in_array(Context::getContext()->controller->getCategory()->id, [169,240,243,339,337,323,171,239,241,366,4])}
-    {assign var=category_listing_banner_file value='category-joursfous.png'}
+    {assign var=category_listing_banner_file value='category-joursfous.jpg'}
 {else}
     {assign var=category_listing_banner_file value='category-listing-promo.jpg'}
 {/if}
