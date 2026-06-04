@@ -28,7 +28,7 @@
             {hook h='CETemplate' id=43}
             <div class="head-top-category">
                 <h1 class="h1">{$category.name}</h1>
-                <div class="has-discount d-flex align-items-center">
+                <div class="has-discount d-flex align-items-center" style="flex-direction: column;gap: 5px;align-items: flex-start !important;">
                     {if $page.page_name == "category"}
                         {hook h='displayPromoCategoryDescription'}
                     {/if}
