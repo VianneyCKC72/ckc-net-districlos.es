@@ -79,6 +79,28 @@
                 </ul>
             {/if}
         </div>
+
+        {* Liste des promotions appliquées *}
+        {if $cart.vouchers.added}
+            {block name='cart_voucher_list'}
+                <ul class="applied-vouchers">
+                    {foreach from=$cart.vouchers.added item=voucher}
+                        <li class="applied-voucher">
+                            <span class="applied-voucher__tag">PROMO</span>
+                            <span class="applied-voucher__label">{$voucher.name}</span>
+                            <span class="applied-voucher__value">{$voucher.reduction_formatted}{if $pro.env == 1} HT{/if}</span>
+                            {if isset($voucher.code) && $voucher.code !== ''}
+                                <a href="{$voucher.delete_url}" data-link-action="remove-voucher" class="applied-voucher__remove" aria-label="{l s='Remove' d='Shop.Theme.Actions'}">
+                                    <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3.375 0.5L2.8125 1.15H0.5625C0.225 1.15 0 1.41 0 1.8C0 2.19 0.225 2.45 0.5625 2.45H1.6875H7.3125H8.4375C8.775 2.45 9 2.19 9 1.8C9 1.41 8.775 1.15 8.4375 1.15H6.1875L5.625 0.5H3.375ZM0.5625 3.75V12.2C0.5625 12.915 1.06875 13.5 1.6875 13.5H7.3125C7.93125 13.5 8.4375 12.915 8.4375 12.2V3.75H0.5625ZM2.8125 5.05C3.15 5.05 3.375 5.31 3.375 5.7V11.55C3.375 11.94 3.15 12.2 2.8125 12.2C2.475 12.2 2.25 11.94 2.25 11.55V5.7C2.25 5.31 2.475 5.05 2.8125 5.05ZM6.1875 5.05C6.525 5.05 6.75 5.31 6.75 5.7V11.55C6.75 11.94 6.525 12.2 6.1875 12.2C5.85 12.2 5.625 11.94 5.625 11.55V5.7C5.625 5.31 5.85 5.05 6.1875 5.05Z" fill="currentColor"></path>
+                                    </svg>
+                                </a>
+                            {/if}
+                        </li>
+                    {/foreach}
+                </ul>
+            {/block}
+        {/if}
     </div>
 {/block}
 {*{/if}*}
