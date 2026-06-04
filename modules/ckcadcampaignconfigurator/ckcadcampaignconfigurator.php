@@ -1927,10 +1927,34 @@ class Ckcadcampaignconfigurator extends Module
 
     public function hookDisplayPromoProductDescription($params = [])
     {
+        $controller = Context::getContext()->controller;
+
+        if (method_exists($controller, 'getTemplateVarProduct')) {
+            $product = $controller->getTemplateVarProduct();
+        } else {
+            // Contexte AJAX (ex. refresh prix pack pm_advancedpack) : le contrôleur
+            // n'expose pas getTemplateVarProduct(). On récupère le produit autrement.
+            $smartyProduct = $this->context->smarty->getTemplateVars('product');
+            $isAccessible = is_array($smartyProduct) || $smartyProduct instanceof ArrayAccess;
+
+            if ($isAccessible && isset($smartyProduct['id_product'])) {
+                $product = ['id_product' => (int) $smartyProduct['id_product']];
+            } elseif ($isAccessible && isset($smartyProduct['id'])) {
+                $product = ['id_product' => (int) $smartyProduct['id']];
+            } else {
+                $idProduct = (int) Tools::getValue('id_product', Tools::getValue('idProduct', Tools::getValue('idPack', 0)));
+                if (!$idProduct) {
+                    return '';
+                }
+                $product = ['id_product' => $idProduct];
+            }
+        }
+
+        if (empty($product['id_product'])) {
+            return '';
+        }
 
         $customerGroupId = Context::getContext()->customer->id_default_group;
-
-        $product = Context::getContext()->controller->getTemplateVarProduct();
 
         $today = date("Y-m-d H:i:s");
 
