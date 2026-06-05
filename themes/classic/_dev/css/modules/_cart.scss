@@ -386,6 +386,11 @@ body:has(.sticky-summary) .cart-grid-right .moyen_de_paiement {
   flex-direction: row;
   justify-content: space-between;
 
+  // Masquer la phrase "Vous économisez" dans la banner sticky du bas
+  .cart-savings {
+    display: none !important;
+  }
+
   &.cart-summary {
     .cart-detailed-totals {
       .cart-summary-line {
