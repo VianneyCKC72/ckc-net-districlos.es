@@ -60,8 +60,7 @@ $devisTypeformId = 'yOwTEWUh';
           </div>
         </div>
 
-        <div class="gfu-jeu-right" id="gfu-mobile-drawer">
-          <button class="gfu-drawer-grip" type="button" aria-label="Ouvrir / fermer le menu du jeu concours"></button>
+        <div class="gfu-jeu-right">
           <form class="gfu-form" action="<?= htmlspecialchars($basePath, ENT_QUOTES) ?>/submit.php" method="post" novalidate>
             <p class="gfu-form-head">Remplissez le formulaire<br>pour participer</p>
             <div class="gfu-form-fields">
@@ -225,7 +224,6 @@ $devisTypeformId = 'yOwTEWUh';
     </div>
   </div>
 
-  <script src="<?= htmlspecialchars($basePath, ENT_QUOTES) ?>/landing.min.js" defer></script>
   <script src="//embed.typeform.com/next/embed.js" defer></script>
 </body>
 </html>
