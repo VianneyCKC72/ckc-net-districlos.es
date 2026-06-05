@@ -101,7 +101,7 @@
                     <button class="pro-btn pro-btn--ghost" type="submit" name="submitLogin">Se connecter</button>
 
                     <div class="pro-auth__cta">
-                        <span class="pro-badge-text">100€ offert&nbsp;!</span>
+                        {* <span class="pro-badge-text">100€ offert&nbsp;!</span> *}
                         <a class="pro-btn pro-btn--primary"
                            href="inscription?ep=1">
                             Créer un compte
@@ -140,7 +140,7 @@
         </div>
         <div class="pro-step"><span class="pro-step__num">2</span><span class="pro-step__txt">Mon compte est validé<br>par les équipes Districlos</span>
         </div>
-        <div class="pro-step"><span class="pro-step__num">3</span><span class="pro-step__txt">Je bénéficie de <strong>100€ offerts<br>dès 1&nbsp;000€ d’achat</strong></span>
+        <div class="pro-step"><span class="pro-step__num">3</span><span class="pro-step__txt">Je bénéficie de <strong>150€ offerts<br>dès 1&nbsp;000€ d’achat</strong>sur votre <strong>deuxième commande</strong></span>
         </div>
     </div>
 </div>

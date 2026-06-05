@@ -77,8 +77,6 @@
                 </div>
             {/if}
 
-            <div class="cart-pro-separator"></div>
-
             {* Total TTC *}
             <div class="cart-pro-row cart-pro-total-row">
                 <div class="cart-pro-label cart-pro-total-label">Total TTC</div>
