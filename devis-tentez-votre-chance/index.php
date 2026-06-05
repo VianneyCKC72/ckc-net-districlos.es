@@ -60,18 +60,25 @@ $devisTypeformId = 'yOwTEWUh';
           </div>
         </div>
 
-        <div class="gfu-jeu-right" id="gfu-mobile-drawer">
-          <button class="gfu-drawer-grip" type="button" aria-label="Ouvrir / fermer le menu du jeu concours"></button>
-          <p class="gfu-jeu-dates">Du 29 avril au 2 juin</p>
-          <div class="gfu-spin-top" id="spin" aria-hidden="true">Tournez la roue pour tenter votre chance&nbsp;!*</div>
-          <div class="gfu-wheel-slot" aria-live="polite">
-            <canvas id="wheel" width="360" height="360" aria-label="Roue de la fortune"></canvas>
-            <div class="gfu-win" id="gfu-win" hidden>
-              <p class="gfu-win-banner">BRAVO ! Vous êtes éligible<br>au tirage au sort !*</p>
+        <div class="gfu-jeu-right">
+          <form class="gfu-form" action="<?= htmlspecialchars($basePath, ENT_QUOTES) ?>/submit.php" method="post" novalidate>
+            <p class="gfu-form-head">Remplissez le formulaire<br>pour participer</p>
+            <div class="gfu-form-fields">
+              <label class="gfu-field">
+                <span class="gfu-field-label">Nom</span>
+                <input type="text" name="nom" required autocomplete="family-name">
+              </label>
+              <label class="gfu-field">
+                <span class="gfu-field-label">Pr&eacute;nom</span>
+                <input type="text" name="prenom" required autocomplete="given-name">
+              </label>
+              <label class="gfu-field">
+                <span class="gfu-field-label">Email</span>
+                <input type="email" name="email" required autocomplete="email">
+              </label>
             </div>
-          </div>
-          <p class="gfu-wheel-mention">*Votre participation sera prise en compte lors de la validation de votre commande Districlos. R&eacute;serv&eacute; aux particuliers.</p>
-          <a class="gfu-devis-btn" href="<?= htmlspecialchars($devisTypeformUrl, ENT_QUOTES) ?>" data-tf-popup="<?= htmlspecialchars($devisTypeformId, ENT_QUOTES) ?>" data-tf-size="70" data-tf-opacity="100" data-tf-keep-session="true">Demander un devis</a>
+            <button type="submit" class="gfu-devis-btn">Je confirme ma participation&nbsp;!</button>
+          </form>
         </div>
       </section>
     </div>
@@ -217,8 +224,6 @@ $devisTypeformId = 'yOwTEWUh';
     </div>
   </div>
 
-  <script src="<?= htmlspecialchars($basePath, ENT_QUOTES) ?>/wheel.js" defer></script>
-  <script src="<?= htmlspecialchars($basePath, ENT_QUOTES) ?>/landing.min.js" defer></script>
   <script src="//embed.typeform.com/next/embed.js" defer></script>
 </body>
 </html>
