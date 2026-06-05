@@ -103,7 +103,7 @@
                     <div class="pro-auth__cta">
                         {* <span class="pro-badge-text">100€ offert&nbsp;!</span> *}
                         <a class="pro-btn pro-btn--primary"
-                           href="inscription?ep=1">
+                           href="inscription?ep=1" style="margin-top: 28px;">
                             Créer un compte
                         </a>
                     </div>
