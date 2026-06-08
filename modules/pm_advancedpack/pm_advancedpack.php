@@ -3786,7 +3786,12 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
         if (Module::isEnabled('ckcadcampaignconfigurator')) {
             $campaignModule = Module::getInstanceByName('ckcadcampaignconfigurator');
             if ($campaignModule && method_exists($campaignModule, 'getCampaignProductDiscountForProduct')) {
-                $campaignProductDiscount = $campaignModule->getCampaignProductDiscountForProduct($productPresentation);
+                $campaignDiscountProduct = $productPresentation;
+                $campaignDiscountProduct['price_amount'] = Tools::ps_round(
+                    $packPriceWithReduction * $quantityWanted,
+                    Context::getContext()->currency->precision
+                );
+                $campaignProductDiscount = $campaignModule->getCampaignProductDiscountForProduct($campaignDiscountProduct);
             }
         }
         $this->context->smarty->assign([
