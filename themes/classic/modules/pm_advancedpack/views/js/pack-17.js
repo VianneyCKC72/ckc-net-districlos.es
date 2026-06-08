@@ -796,6 +796,11 @@ $(document).on('keyup', 'input[name=qty], input.ap5-quantity-wanted', function(e
     if (isNaN(currentVal) || currentVal <= 0) {
         $(this).val(1);
     }
+    // Recalcul du prix pack (et remise campagne) lors de la saisie de la quantite globale
+    if ($(this).is('input[name=qty], input#quantity_wanted')) {
+        clearTimeout(ap5Plugin._qtyUpdateTimeout);
+        ap5Plugin._qtyUpdateTimeout = setTimeout(function(){ ap5Plugin.updatePackTable(); }, 400);
+    }
 });
 // Quantity change trigger for pack product
 $(document).on('change', 'input.ap5-quantity-wanted', function(e){
@@ -804,6 +809,11 @@ $(document).on('change', 'input.ap5-quantity-wanted', function(e){
         e.preventDefault();
         $(this).val(parseInt($(this).data('available-quantity')));
     }
+    ap5Plugin.updatePackTable();
+});
+// Quantity change trigger for the global pack quantity (recalcul prix + remise campagne)
+$(document).on('change', 'input#quantity_wanted, input[name=qty]', function(e){
+    clearTimeout(ap5Plugin._qtyUpdateTimeout);
     ap5Plugin.updatePackTable();
 });
 
