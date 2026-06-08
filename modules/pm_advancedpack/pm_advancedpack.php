@@ -3780,6 +3780,20 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             $group_reduction = Group::getReduction((int)$this->context->cookie->id_customer) / 100;
         }
         $config = $this->_getModuleConfiguration();
+        // [districlos] Prix barre "remise panier" sur le rendu AJAX Advanced Pack.
+        // A re-appliquer si pm_advancedpack est mis a jour.
+        $campaignProductDiscount = ['active' => false];
+        if (Module::isEnabled('ckcadcampaignconfigurator')) {
+            $campaignModule = Module::getInstanceByName('ckcadcampaignconfigurator');
+            if ($campaignModule && method_exists($campaignModule, 'getCampaignProductDiscountForProduct')) {
+                $campaignDiscountProduct = $productPresentation;
+                $campaignDiscountProduct['price_amount'] = Tools::ps_round(
+                    $packPriceWithReduction * $quantityWanted,
+                    Context::getContext()->currency->precision
+                );
+                $campaignProductDiscount = $campaignModule->getCampaignProductDiscountForProduct($campaignDiscountProduct);
+            }
+        }
         $this->context->smarty->assign([
             'packDisplayModeAdvanced' => ($config['displayMode'] == self::DISPLAY_ADVANCED),
             'packDisplayModeSimple' => ($config['displayMode'] == self::DISPLAY_SIMPLE),
@@ -3787,6 +3801,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             'productsPackFatalErrors' => $packFatalErrorsList,
             'packAvailableQuantity' => AdvancedPack::getPackAvailableQuantity($idPack, $packAttributesList, $packQuantityList, $packExcludeList),
             'product' => $productPresentation,
+            'campaignProductDiscount' => $campaignProductDiscount,
             'packAttributesList' => $packAttributesList,
             'packQuantityList' => $packQuantityList,
             'packAllowRemoveProduct' => AdvancedPack::getPackAllowRemoveProduct($idPack),
