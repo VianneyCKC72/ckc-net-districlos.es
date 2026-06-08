@@ -2,9 +2,27 @@
 
 class ProductController extends ProductControllerCore
 {
+    private function getCampaignProductDiscount($product)
+    {
+        $defaultDiscount = ['active' => false];
+
+        if (!Module::isEnabled('ckcadcampaignconfigurator')) {
+            return $defaultDiscount;
+        }
+
+        $module = Module::getInstanceByName('ckcadcampaignconfigurator');
+
+        if (!$module || !method_exists($module, 'getCampaignProductDiscountForProduct')) {
+            return $defaultDiscount;
+        }
+
+        return $module->getCampaignProductDiscountForProduct($product);
+    }
+
     public function initContent()
     {
         $product = $this->getTemplateVarProduct();
+        $campaignProductDiscount = $this->getCampaignProductDiscount($product);
 
         $from_europe = true;
         foreach ($product["features"] as $feature) {
@@ -19,6 +37,7 @@ class ProductController extends ProductControllerCore
 
         $this->context->smarty->assign([
             'from_europe'      => $from_europe,
+            'campaignProductDiscount' => $campaignProductDiscount,
         ]);
 
         parent::initContent();
@@ -35,6 +54,7 @@ class ProductController extends ProductControllerCore
         $product['unit_price_full']     = number_format(round((float)$product['price_amount'] / $product['quantity_wanted'], 2), 2, ',', ' ') . '€';
         /*        $product['rounded_display_price'] = round((float)$product['rounded_display_price'] * $product['quantity_wanted'], 2);
                 $product['price_without_reduction'] = round((float)$product['price_without_reduction'] * $product['quantity_wanted'], 2);*/
+        $campaignProductDiscount = $this->getCampaignProductDiscount($product);
 
         $minimalProductQuantity = $this->getProductMinimalQuantity($product);
 
@@ -47,7 +67,8 @@ class ProductController extends ProductControllerCore
         header('Content-Type: application/json');
         $this->ajaxRender(json_encode([
             'product_prices' => $this->render('catalog/_partials/product-prices', [
-                'product' => $product
+                'product' => $product,
+                'campaignProductDiscount' => $campaignProductDiscount,
             ]),
             'product_cover_thumbnails' => $this->render('catalog/_partials/product-cover-thumbnails'),
             'product_customization' => $this->render(

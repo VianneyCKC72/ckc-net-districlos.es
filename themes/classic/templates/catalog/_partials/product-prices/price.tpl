@@ -1,8 +1,16 @@
 <div class="d-flex align-items-center product-prices">
-    {assign var="price_parts" value=","|explode:$product.price}
+    {assign var="has_campaign_discount" value=false}
+    {if isset($campaignProductDiscount) && isset($campaignProductDiscount.active) && $campaignProductDiscount.active && !$product.has_discount}
+        {assign var="has_campaign_discount" value=true}
+    {/if}
+    {if $has_campaign_discount}
+        {assign var="price_parts" value=","|explode:$campaignProductDiscount.price}
+    {else}
+        {assign var="price_parts" value=","|explode:$product.price}
+    {/if}
     {assign var="price_integer" value=$price_parts[0]}
     {assign var="price_decimal" value=$price_parts[1]}
-    <div class="product-price price {if $product.has_discount}has-discount{/if} mr-2" itemprop="price">
+    <div class="product-price price {if $product.has_discount || $has_campaign_discount}has-discount{/if} mr-2" itemprop="price">
         {if isset($initial_pack)}
             <span class="price-loader" style="display: inline-block;"></span>
         {else}
@@ -37,13 +45,24 @@
         </div>
     {/if}
     {block name='product_discount'}
-        {if $product.has_discount}
+        {if $product.has_discount || $has_campaign_discount}
             <div class="product-discount">
                 {hook h='displayProductPriceBlock' product=$product type="old_price"}
+                {if $has_campaign_discount}
+                    {if !$pro.env}
+                        <div class="product-discount tag-discount">
+                            <div class="font-weight-bold">
+                                <span class="discount-value">- {$campaignProductDiscount.percentage}%</span>
+                            </div>
+                        </div>
+                    {/if}
+                    <span class="regular-price">{$campaignProductDiscount.regular_price}</span>
+                {else}
                     {if !$pro.env}
                         {include file='catalog/_partials/product-prices/has-discount.tpl'}
                     {/if}
                     <span class="regular-price">{$product.regular_price}</span>
+                {/if}
             </div>
         {/if}
     {/block}
