@@ -104,6 +104,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckccampaign_config_cont
     `active` tinyint NOT NULL,
     `show_all` tinyint NOT NULL,
     `show_above_price` tinyint NOT NULL DEFAULT 0,
+    `reduction_percent` decimal(5,2) NULL DEFAULT NULL,
     `date_add` datetime NOT NULL,
     PRIMARY KEY  (`id`)
 ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
