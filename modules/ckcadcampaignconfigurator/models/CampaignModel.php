@@ -203,7 +203,8 @@ class CampaignModel extends ObjectModel
             SET `text` = \'' . $data['PRODUCT_TEXT'] . '\',
                 `active` = ' . $data['PRODUCT_ACTIVE'] . ',
                 `show_all` = ' . $data['PRODUCT_SHOW_ALL'] . ',
-                `show_above_price` = ' . (int)$data['PRODUCT_SHOW_ABOVE_PRICE'] . ' 
+                `show_above_price` = ' . (int)$data['PRODUCT_SHOW_ABOVE_PRICE'] . ',
+                `reduction_percent` = NULLIF(' . (float)$data['PRODUCT_REDUCTION_PERCENT'] . ', 0)
                 WHERE `id` = '.$data["PRODUCT_ID"].' AND `id_campaign` = ' .$data["ID"]);
             if(isset($data['PRODUCT_SELECTION'])){
                 $deleteOld = Db::getInstance()->execute('DELETE FROM `' . _DB_PREFIX_ . 'ckccampaign_config_product_show` WHERE `id_product_content` = '.$data["PRODUCT_ID"]);
@@ -224,8 +225,8 @@ class CampaignModel extends ObjectModel
         } elseif (isset($data["ID"])) {
             $createProductPromo = Db::getInstance()->execute(
                 'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_product` 
-                                    (`id`, `id_campaign`, `text`,`active`, `show_all`, `show_above_price`, `date_add`)
-                            VALUES (NULL, '.$data['ID'].',\''.$data['PRODUCT_TEXT'].'\', '.$data['PRODUCT_ACTIVE'].','.$data['PRODUCT_SHOW_ALL'].','.(int)$data['PRODUCT_SHOW_ABOVE_PRICE'].',CURRENT_TIMESTAMP())'
+                                    (`id`, `id_campaign`, `text`,`active`, `show_all`, `show_above_price`, `reduction_percent`, `date_add`)
+                            VALUES (NULL, '.$data['ID'].',\''.$data['PRODUCT_TEXT'].'\', '.$data['PRODUCT_ACTIVE'].','.$data['PRODUCT_SHOW_ALL'].','.(int)$data['PRODUCT_SHOW_ABOVE_PRICE'].',NULLIF(' . (float)$data['PRODUCT_REDUCTION_PERCENT'] . ', 0),CURRENT_TIMESTAMP())'
             );
             if(isset($data['PRODUCT_SELECTION']) && "" !== $data['PRODUCT_SELECTION']){
                 $productsArr = explode(",", $data['PRODUCT_SELECTION']);

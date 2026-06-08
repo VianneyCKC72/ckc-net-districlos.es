@@ -91,16 +91,28 @@ class Ckcadcampaignconfigurator extends Module
      */
     protected function ensureProductSchema()
     {
-        $columnExists = Db::getInstance()->getValue('
+        $showAbovePriceColumnExists = Db::getInstance()->getValue('
             SELECT COUNT(*) FROM information_schema.COLUMNS
             WHERE TABLE_SCHEMA = "' . _DB_NAME_ . '"
             AND TABLE_NAME = "' . _DB_PREFIX_ . 'ckccampaign_config_content_product"
             AND COLUMN_NAME = "show_above_price"');
 
-        if (!$columnExists) {
+        if (!$showAbovePriceColumnExists) {
             Db::getInstance()->execute('
                 ALTER TABLE `' . _DB_PREFIX_ . 'ckccampaign_config_content_product`
                 ADD `show_above_price` tinyint NOT NULL DEFAULT 0');
+        }
+
+        $reductionPercentColumnExists = Db::getInstance()->getValue('
+            SELECT COUNT(*) FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = "' . _DB_NAME_ . '"
+            AND TABLE_NAME = "' . _DB_PREFIX_ . 'ckccampaign_config_content_product"
+            AND COLUMN_NAME = "reduction_percent"');
+
+        if (!$reductionPercentColumnExists) {
+            Db::getInstance()->execute('
+                ALTER TABLE `' . _DB_PREFIX_ . 'ckccampaign_config_content_product`
+                ADD `reduction_percent` decimal(5,2) NULL DEFAULT NULL');
         }
     }
 
@@ -616,6 +628,8 @@ class Ckcadcampaignconfigurator extends Module
         $PRODUCT_ACTIVE = Tools::getValue('PRODUCT_ACTIVE') == "" ? 0 : 1;
         $PRODUCT_SHOW_ALL = Tools::getValue('PRODUCT_SHOW_ALL') == "" ? 0 : 1;
         $PRODUCT_SHOW_ABOVE_PRICE = Tools::getValue('PRODUCT_SHOW_ABOVE_PRICE') == "" ? 0 : 1;
+        $PRODUCT_REDUCTION_PERCENT = (float) str_replace(',', '.', Tools::getValue('PRODUCT_REDUCTION_PERCENT', 0));
+        $PRODUCT_REDUCTION_PERCENT = max(0, min(100, $PRODUCT_REDUCTION_PERCENT));
 
         $data = array(
             'ID' => Tools::getValue('ID'),
@@ -623,6 +637,7 @@ class Ckcadcampaignconfigurator extends Module
             'PRODUCT_ACTIVE' => $PRODUCT_ACTIVE,
             'PRODUCT_SHOW_ALL' => $PRODUCT_SHOW_ALL,
             'PRODUCT_SHOW_ABOVE_PRICE' => $PRODUCT_SHOW_ABOVE_PRICE,
+            'PRODUCT_REDUCTION_PERCENT' => $PRODUCT_REDUCTION_PERCENT,
             'PRODUCT_TEXT' => htmlentities(str_replace("'", "\'", Tools::getValue('PRODUCT_TEXT'))),
             'PRODUCT_SELECTION' => Tools::getValue('PRODUCT_SELECTION')
         );
@@ -1312,6 +1327,13 @@ class Ckcadcampaignconfigurator extends Module
                         ),
                     ),
                     array(
+                        'type' => 'text',
+                        'label' => $this->l('Pourcentage de reduction panier'),
+                        'name' => 'PRODUCT_REDUCTION_PERCENT',
+                        'desc' => $this->l('Optionnel. Affiche un prix barre comme une remise catalogue sur la fiche produit. Exemple : 10 pour -10%.'),
+                        'suffix' => '%',
+                    ),
+                    array(
                         'type' => 'hidden',
                         'name' => 'ID',
                     ),
@@ -1515,6 +1537,7 @@ class Ckcadcampaignconfigurator extends Module
                 'PRODUCT_TEXT' => '',
                 'PRODUCT_SHOW_ALL' => '',
                 'PRODUCT_SHOW_ABOVE_PRICE' => '',
+                'PRODUCT_REDUCTION_PERCENT' => '',
                 'PRODUCT_SELECTION' => ''
             );
         } else {
@@ -1529,6 +1552,7 @@ class Ckcadcampaignconfigurator extends Module
                 'PRODUCT_TEXT' => html_entity_decode($campaignPromoInfo['text']),
                 'PRODUCT_SHOW_ALL' => $campaignPromoInfo['show_all'],
                 'PRODUCT_SHOW_ABOVE_PRICE' => isset($campaignPromoInfo['show_above_price']) ? $campaignPromoInfo['show_above_price'] : 0,
+                'PRODUCT_REDUCTION_PERCENT' => isset($campaignPromoInfo['reduction_percent']) ? (float)$campaignPromoInfo['reduction_percent'] : '',
                 'PRODUCT_SELECTION' => ''
             );
         }
@@ -1662,8 +1686,8 @@ class Ckcadcampaignconfigurator extends Module
         foreach ($CampaignProductInfos as $productCampaign){
             $createProductPromo = Db::getInstance()->execute(
                 'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_product`
-                                    (`id`, `id_campaign`, `text`,`active`, `show_all`, `show_above_price`, `date_add`)
-                            VALUES (NULL, '.$newId.',\''.$productCampaign['text'].'\', '.$productCampaign['active'].','.$productCampaign['show_all'].','.(isset($productCampaign['show_above_price']) ? (int)$productCampaign['show_above_price'] : 0).',CURRENT_TIMESTAMP())'
+                                    (`id`, `id_campaign`, `text`,`active`, `show_all`, `show_above_price`, `reduction_percent`, `date_add`)
+                            VALUES (NULL, '.$newId.',\''.$productCampaign['text'].'\', '.$productCampaign['active'].','.$productCampaign['show_all'].','.(isset($productCampaign['show_above_price']) ? (int)$productCampaign['show_above_price'] : 0).',NULLIF(' . (isset($productCampaign['reduction_percent']) ? (float)$productCampaign['reduction_percent'] : 0) . ', 0),CURRENT_TIMESTAMP())'
             );
             $selectPromoId = Db::getInstance()->executeS('SELECT id FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_product` WHERE `id_campaign` = '.$newId.' AND `text` LIKE \'' .$productCampaign['text'].'\'');
 
@@ -1925,6 +1949,75 @@ class Ckcadcampaignconfigurator extends Module
         ];
     }
 
+    public function getProductPromosForProduct($product)
+    {
+        if (empty($product['id_product'])) {
+            return [];
+        }
+
+        $customerGroupId = Context::getContext()->customer->id_default_group;
+        $today = date("Y-m-d H:i:s");
+
+        $productPromosSql = Db::getInstance()->executeS('SELECT ccp.*, ccl.id_client_group FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_product ccp
+        LEFT JOIN ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccp.id_campaign 
+        WHERE ccl.date_start <= "'.$today.'" AND ccl.date_end > "'.$today.'" AND ccl.active = 1 AND ccp.active = 1');
+
+        $productPromos = [];
+
+        if (isset($productPromosSql)) {
+            foreach ($productPromosSql as $productPromo) {
+                if (in_array($customerGroupId, explode(',', $productPromo['id_client_group']))) {
+                    if ($productPromo['show_all']) {
+                        $productPromos[] = $productPromo;
+                    } else {
+                        $productIdsSQL = Db::getInstance()->executeS('SELECT GROUP_CONCAT(id_product) FROM ' . _DB_PREFIX_ . 'ckccampaign_config_product_show WHERE id_product_content = '.$productPromo['id']);
+                        $productIds = explode(",", $productIdsSQL[0]['GROUP_CONCAT(id_product)']);
+
+                        if (isset($productIds[0])) {
+                            if (in_array($product['id_product'], $productIds)) {
+                                $productPromos[] = $productPromo;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $productPromos;
+    }
+
+    public function getCampaignProductDiscountForProduct($product)
+    {
+        $campaignProductDiscount = [
+            'active' => false,
+        ];
+
+        $productPromos = $this->getProductPromosForProduct($product);
+
+        if (empty($product['has_discount']) && !empty($product['price_amount'])) {
+            foreach ($productPromos as $productPromo) {
+                $reductionPercent = isset($productPromo['reduction_percent']) ? (float)$productPromo['reduction_percent'] : 0;
+
+                if ($reductionPercent <= 0) {
+                    continue;
+                }
+
+                $regularPrice = (float)$product['price_amount'];
+                $discountedPrice = $regularPrice * (1 - ($reductionPercent / 100));
+
+                $campaignProductDiscount = [
+                    'active' => true,
+                    'percentage' => (int)round($reductionPercent),
+                    'price' => Tools::displayPrice($discountedPrice, $this->context->currency),
+                    'regular_price' => Tools::displayPrice($regularPrice, $this->context->currency),
+                ];
+                break;
+            }
+        }
+
+        return $campaignProductDiscount;
+    }
+
     public function hookDisplayPromoProductDescription($params = [])
     {
         $controller = Context::getContext()->controller;
@@ -1954,35 +2047,7 @@ class Ckcadcampaignconfigurator extends Module
             return '';
         }
 
-        $customerGroupId = Context::getContext()->customer->id_default_group;
-
-        $today = date("Y-m-d H:i:s");
-
-        $productPromosSql = Db::getInstance()->executeS('SELECT ccp.*, ccl.id_client_group FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_product ccp
-        LEFT JOIN ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccp.id_campaign 
-        WHERE ccl.date_start <= "'.$today.'" AND ccl.date_end > "'.$today.'" AND ccl.active = 1 AND ccp.active = 1');
-
-        $productPromos = [];
-
-        if(isset($productPromosSql)){
-            foreach($productPromosSql as $productPromo){
-
-                if(in_array($customerGroupId, explode(',',$productPromo['id_client_group']))){
-                    if($productPromo['show_all']){
-                        $productPromos[] = $productPromo;
-                    } else {
-                        $productIdsSQL = Db::getInstance()->executeS('SELECT GROUP_CONCAT(id_product) FROM ' . _DB_PREFIX_ . 'ckccampaign_config_product_show WHERE id_product_content = '.$productPromo['id']);
-                        $productIds = explode(",", $productIdsSQL[0]['GROUP_CONCAT(id_product)']);
-
-                        if(isset($productIds[0])){
-                            if(in_array($product['id_product'], $productIds)){
-                                $productPromos[] = $productPromo;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        $productPromos = $this->getProductPromosForProduct($product);
 
         if (!empty($params['above_price'])) {
             $productPromos = array_filter($productPromos, function ($promo) {
@@ -1992,7 +2057,7 @@ class Ckcadcampaignconfigurator extends Module
 
         $this->context->smarty->assign(array(
             'productId' => $product['id_product'],
-            'productPromos' => $productPromos
+            'productPromos' => $productPromos,
         ));
         // Retourner le template avec le lien à afficher
         return $this->display(__FILE__, 'views/templates/front/hook/promo_content_product.tpl');
