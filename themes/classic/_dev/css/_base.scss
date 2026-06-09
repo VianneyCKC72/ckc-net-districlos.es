@@ -703,6 +703,13 @@ pre code {
   }
 }
 
+// Les popups Connectif ne doivent pas hériter du padding latéral de .container
+.cn_content.cn_content_type_popup {
+  max-width: 100% !important;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+
 .container-fluid::after,
 .container::after,
 .row::after {
