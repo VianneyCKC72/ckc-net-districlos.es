@@ -1,6 +1,7 @@
 <?php
 include_once _PS_ROOT_DIR_ . '/modules/pm_advancedpack/AdvancedPack.php';
 include_once _PS_ROOT_DIR_ . '/modules/pm_advancedpack/AdvancedPackCoreClass.php';
+require_once _PS_MODULE_DIR_ . 'ckcstockmultistore/ckcstockmultistore.php';
 class StockManager extends Module
 {
     protected $exIdsStock = [
@@ -446,10 +447,14 @@ class StockManager extends Module
 
         $isClickAndCollect = strpos($carrier->name, 'Retrait') !== false || strpos($carrier->name, 'Click & Collect') !== false ? true : false;
 
-        $shops = Db::getInstance()->executeS('SELECT id_store, name, zip_codes FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
+        $shops = Db::getInstance()->executeS('SELECT id_store, name, zip_codes, country_codes FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
 
         $storesDelivery = null;
         $address        = new Address($this->context->cart->id_address_delivery);
+        $countryForMatching = Ckcstockmultistore::countryFromZip(
+            $address->postcode,
+            strtoupper(Country::getIsoById((int) $address->id_country))
+        );
 
         if ($id_store) {
             foreach ($shops as $key => $shop) {
@@ -462,15 +467,14 @@ class StockManager extends Module
             }
         }else{
             foreach ($shops as $key => $shop) {
-                $deps = explode(',', $shop['zip_codes']);
-                foreach ($deps as $zip_code) {
-                    if (!$storesDelivery) {
-                        $zip_code = trim($zip_code);
+                if (!Ckcstockmultistore::storeCountryOk($shop, $countryForMatching)) {
+                    continue;
+                }
 
-                        if ($zip_code === $address->postcode || (strpos($zip_code, '*') !== false && preg_match('/^' . str_replace('*', '.*', $zip_code) . '$/', $address->postcode))) {
-                            $storesDelivery = $shop['id_store'];
-                            $store_name = $shop['name'];
-                        }
+                foreach (explode(',', $shop['zip_codes']) as $zip_code) {
+                    if (!$storesDelivery && Ckcstockmultistore::zipOk($address->postcode, $zip_code)) {
+                        $storesDelivery = $shop['id_store'];
+                        $store_name = $shop['name'];
                     }
                 }
             }
