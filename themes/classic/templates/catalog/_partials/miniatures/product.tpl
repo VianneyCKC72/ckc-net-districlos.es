@@ -169,6 +169,10 @@
                                     <div class="product-price-and-shipping flex_cln">
                                         {*                                    {hook h='displayProductPriceBlock' product=$product type="before_price"}*}
 
+                                        {assign var="has_campaign_discount" value=false}
+                                        {if isset($product.campaign_discount) && isset($product.campaign_discount.active) && $product.campaign_discount.active && !$product.has_discount}
+                                            {assign var="has_campaign_discount" value=true}
+                                        {/if}
 
                                         {if $pro.env == 1 && isset($product.discount_qty_slider) }
                                             <span class="price">
@@ -180,7 +184,7 @@
                                             </div>
                                          {else}
                                             <span class="price">
-                                                {$product.price} {if $pro.env == 1}<span class="indice-taxe">HT</span>{/if}
+                                                {if $has_campaign_discount}{$product.campaign_discount.price}{else}{$product.price}{/if} {if $pro.env == 1}<span class="indice-taxe">HT</span>{/if}
                                             </span>
                                          {/if}
                                     </span>
@@ -188,6 +192,8 @@
                                         {if ($product.has_discount && !$pro.env) OR ($product.has_discount && $pro.env == 1 && !isset($product.discount_qty_slider))}
                                             {hook h='displayProductPriceBlock' product=$product type="old_price"}
                                             <span class="regular-price">{$product.regular_price}</span>
+                                        {elseif $has_campaign_discount}
+                                            <span class="regular-price">{$product.campaign_discount.regular_price}</span>
                                         {/if}
 
                                         {*                                    {hook h='displayProductPriceBlock' product=$product type='unit_price'}*}
