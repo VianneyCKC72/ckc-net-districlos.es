@@ -19,6 +19,13 @@ class CategoryController extends CategoryControllerCore
      */
     public function initContent()
     {
+        if (Module::isEnabled('ckcadcampaignconfigurator')) {
+            $campaignModule = Module::getInstanceByName('ckcadcampaignconfigurator');
+            if ($campaignModule && !$campaignModule->isRegisteredInHook('actionPresentProductListing')) {
+                $campaignModule->registerHook('actionPresentProductListing');
+            }
+        }
+
         if(isset($this->category->id)) {
             $links = Db::getInstance()->executeS("SELECT * FROM " . _DB_PREFIX_ . "ckc_category_additional_fields WHERE id_category = " . $this->category->id . " AND category_field_content IS NOT NULL");
 

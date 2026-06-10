@@ -36,6 +36,8 @@ class Ckcadcampaignconfigurator extends Module
     protected $config_form = false;
     protected $_postErrors = [];
     protected $_output = '';
+    private $activeProductPromosCache = null;
+    private $productPromoProductIdsCache = [];
 
     public function __construct()
     {
@@ -76,6 +78,7 @@ class Ckcadcampaignconfigurator extends Module
             $this->registerHook('displayPromoDevisText') &&
             $this->registerHook('displayPromoPageText') &&
             $this->registerHook('displayPromoImpactFranco') &&
+            $this->registerHook('actionPresentProductListing') &&
             $this->registerHook('displayHeader');
     }
 
@@ -1949,37 +1952,64 @@ class Ckcadcampaignconfigurator extends Module
         ];
     }
 
+    private function getActiveProductPromos()
+    {
+        if ($this->activeProductPromosCache !== null) {
+            return $this->activeProductPromosCache;
+        }
+
+        $customerGroupId = (int)Context::getContext()->customer->id_default_group;
+        $today = date('Y-m-d H:i:s');
+        $productPromosSql = Db::getInstance()->executeS('SELECT ccp.*, ccl.id_client_group FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_product ccp
+        LEFT JOIN ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccp.id_campaign
+        WHERE ccl.date_start <= "'.$today.'" AND ccl.date_end > "'.$today.'" AND ccl.active = 1 AND ccp.active = 1');
+
+        $this->activeProductPromosCache = [];
+        if (is_array($productPromosSql)) {
+            foreach ($productPromosSql as $productPromo) {
+                $allowedGroups = array_map('intval', explode(',', $productPromo['id_client_group']));
+                if (in_array($customerGroupId, $allowedGroups)) {
+                    $this->activeProductPromosCache[] = $productPromo;
+                }
+            }
+        }
+
+        return $this->activeProductPromosCache;
+    }
+
+    private function getProductIdsForProductPromo($idProductContent)
+    {
+        $idProductContent = (int)$idProductContent;
+        if (!isset($this->productPromoProductIdsCache[$idProductContent])) {
+            $productIdsSQL = Db::getInstance()->executeS('SELECT GROUP_CONCAT(id_product) AS product_ids FROM ' . _DB_PREFIX_ . 'ckccampaign_config_product_show WHERE id_product_content = '.$idProductContent);
+            $productIds = [];
+            if (!empty($productIdsSQL[0]['product_ids'])) {
+                $productIds = array_map('intval', explode(',', $productIdsSQL[0]['product_ids']));
+            }
+            $this->productPromoProductIdsCache[$idProductContent] = array_flip($productIds);
+        }
+
+        return $this->productPromoProductIdsCache[$idProductContent];
+    }
+
     public function getProductPromosForProduct($product)
     {
         if (empty($product['id_product'])) {
             return [];
         }
 
-        $customerGroupId = Context::getContext()->customer->id_default_group;
-        $today = date("Y-m-d H:i:s");
-
-        $productPromosSql = Db::getInstance()->executeS('SELECT ccp.*, ccl.id_client_group FROM ' . _DB_PREFIX_ . 'ckccampaign_config_content_product ccp
-        LEFT JOIN ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl ON ccl.id = ccp.id_campaign 
-        WHERE ccl.date_start <= "'.$today.'" AND ccl.date_end > "'.$today.'" AND ccl.active = 1 AND ccp.active = 1');
-
+        $idProduct = (int)$product['id_product'];
         $productPromos = [];
 
-        if (isset($productPromosSql)) {
-            foreach ($productPromosSql as $productPromo) {
-                if (in_array($customerGroupId, explode(',', $productPromo['id_client_group']))) {
-                    if ($productPromo['show_all']) {
-                        $productPromos[] = $productPromo;
-                    } else {
-                        $productIdsSQL = Db::getInstance()->executeS('SELECT GROUP_CONCAT(id_product) FROM ' . _DB_PREFIX_ . 'ckccampaign_config_product_show WHERE id_product_content = '.$productPromo['id']);
-                        $productIds = explode(",", $productIdsSQL[0]['GROUP_CONCAT(id_product)']);
+        foreach ($this->getActiveProductPromos() as $productPromo) {
+            if (!empty($productPromo['show_all'])) {
+                $productPromos[] = $productPromo;
+                continue;
+            }
 
-                        if (isset($productIds[0])) {
-                            if (in_array($product['id_product'], $productIds)) {
-                                $productPromos[] = $productPromo;
-                            }
-                        }
-                    }
-                }
+            $productIds = $this->getProductIdsForProductPromo($productPromo['id']);
+            if (isset($productIds[$idProduct])) {
+                $productPromos[] = $productPromo;
             }
         }
 
@@ -1992,30 +2022,47 @@ class Ckcadcampaignconfigurator extends Module
             'active' => false,
         ];
 
+        if (!empty($product['has_discount']) || empty($product['price_amount'])) {
+            return $campaignProductDiscount;
+        }
+
         $productPromos = $this->getProductPromosForProduct($product);
+        foreach ($productPromos as $productPromo) {
+            $reductionPercent = isset($productPromo['reduction_percent']) ? (float)$productPromo['reduction_percent'] : 0;
 
-        if (empty($product['has_discount']) && !empty($product['price_amount'])) {
-            foreach ($productPromos as $productPromo) {
-                $reductionPercent = isset($productPromo['reduction_percent']) ? (float)$productPromo['reduction_percent'] : 0;
-
-                if ($reductionPercent <= 0) {
-                    continue;
-                }
-
-                $regularPrice = (float)$product['price_amount'];
-                $discountedPrice = $regularPrice * (1 - ($reductionPercent / 100));
-
-                $campaignProductDiscount = [
-                    'active' => true,
-                    'percentage' => (int)round($reductionPercent),
-                    'price' => Tools::displayPrice($discountedPrice, $this->context->currency),
-                    'regular_price' => Tools::displayPrice($regularPrice, $this->context->currency),
-                ];
-                break;
+            if ($reductionPercent <= 0) {
+                continue;
             }
+
+            $regularPrice = (float)$product['price_amount'];
+            $discountedPrice = $regularPrice * (1 - ($reductionPercent / 100));
+
+            $campaignProductDiscount = [
+                'active' => true,
+                'percentage' => (int)round($reductionPercent),
+                'price' => Tools::displayPrice($discountedPrice, $this->context->currency),
+                'regular_price' => Tools::displayPrice($regularPrice, $this->context->currency),
+            ];
+            break;
         }
 
         return $campaignProductDiscount;
+    }
+
+    public function hookActionPresentProductListing($params)
+    {
+        if (empty($params['presentedProduct'])) {
+            return;
+        }
+
+        $presentedProduct = $params['presentedProduct'];
+        $campaignProductDiscount = $this->getCampaignProductDiscountForProduct($presentedProduct);
+
+        if (method_exists($presentedProduct, 'offsetSet')) {
+            $presentedProduct->offsetSet('campaign_discount', $campaignProductDiscount, true);
+        } else {
+            $presentedProduct['campaign_discount'] = $campaignProductDiscount;
+        }
     }
 
     public function hookDisplayPromoProductDescription($params = [])
@@ -2214,6 +2261,9 @@ class Ckcadcampaignconfigurator extends Module
     }
 
     public function hookDisplayHeader(){
+        if (!$this->isRegisteredInHook('actionPresentProductListing')) {
+            $this->registerHook('actionPresentProductListing');
+        }
 
         $this->context->controller->addCSS($this->_path.'/views/css/front.css');
 
