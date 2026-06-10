@@ -79,6 +79,7 @@ class Ckcadcampaignconfigurator extends Module
             $this->registerHook('displayPromoPageText') &&
             $this->registerHook('displayPromoImpactFranco') &&
             $this->registerHook('actionPresentProductListing') &&
+            $this->registerHook('displayCkcStorePromoFranco') &&
             $this->registerHook('displayHeader');
     }
 
@@ -2260,10 +2261,14 @@ class Ckcadcampaignconfigurator extends Module
         }
     }
 
-    public function hookDisplayHeader(){
+    public function hookDisplayHeader()
+    {
+
         if (!$this->isRegisteredInHook('actionPresentProductListing')) {
             $this->registerHook('actionPresentProductListing');
         }
+
+        $this->ensureStorePromoFrancoHook();
 
         $this->context->controller->addCSS($this->_path.'/views/css/front.css');
 
@@ -2291,45 +2296,80 @@ class Ckcadcampaignconfigurator extends Module
 
     }
 
-    public function hookDisplayPromoImpactFranco(){
-        $customerGroupId = Context::getContext()->customer->id_default_group;
+    public function getPromoFrancoImpact(): string
+    {
+        $customerGroupId = (int) Context::getContext()->customer->id_default_group;
+        $today = date('Y-m-d H:i:s');
 
-        $today = date("Y-m-d H:i:s");
+        $getCampaigns = Db::getInstance()->executeS(
+            'SELECT id, franco_impact, franco_impact_pro, id_client_group, active
+            FROM ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl
+            WHERE ccl.date_start <= "' . pSQL($today) . '" AND ccl.date_end > "' . pSQL($today) . '" AND ccl.active = 1
+            ORDER BY id ASC'
+        ) ?: [];
 
-        $getCampaigns =  Db::getInstance()->executeS('SELECT id, franco_impact, franco_impact_pro, id_client_group, active FROM ' . _DB_PREFIX_ . 'ckccampaign_config_list ccl
-        WHERE ccl.date_start <= "'.$today.'" AND ccl.date_end > "'.$today.'" AND ccl.active = 1
-        ORDER BY id ASC');
+        $promoFrancoImpact = '1 499';
 
-        $promoFrancoImpact = "1 499";
+        foreach ($getCampaigns as $campaign) {
+            $campaignGroups = array_map('intval', explode(',', $campaign['id_client_group']));
 
-        foreach($getCampaigns as $campaign){
-
-            if(in_array($customerGroupId, explode(',',$campaign['id_client_group'])) && $campaign['active'] && isset($campaign['franco_impact'])){
-
-                if(in_array(10, explode(',',$campaign['id_client_group']))){
-                    if($customerGroupId == 10 && isset($campaign['franco_impact_pro'])){
-                        $promoFrancoImpact = number_format($campaign['franco_impact_pro'], 0, '.', ' ');
-                        break;
-                    } else {
-                        $promoFrancoImpact = number_format($campaign['franco_impact'], 0, '.', ' ');
-                        break;
+            if (in_array($customerGroupId, $campaignGroups, true)
+                && $campaign['active']
+                && isset($campaign['franco_impact'])
+            ) {
+                if (in_array(10, $campaignGroups, true)) {
+                    if ($customerGroupId === 10 && isset($campaign['franco_impact_pro'])) {
+                        return number_format((float) $campaign['franco_impact_pro'], 0, '.', ' ');
                     }
-                } else {
-                    $promoFrancoImpact = number_format($campaign['franco_impact'], 0, '.', ' ');
-                    break;
+
+                    return number_format((float) $campaign['franco_impact'], 0, '.', ' ');
                 }
-            } else if ($customerGroupId == 10 && isset($campaign['franco_impact_pro']) && $campaign['active']){
-                $promoFrancoImpact = number_format($campaign['franco_impact_pro'], 0, '.', ' ');
-                break;
+
+                return number_format((float) $campaign['franco_impact'], 0, '.', ' ');
+            }
+
+            if ($customerGroupId === 10 && isset($campaign['franco_impact_pro']) && $campaign['active']) {
+                return number_format((float) $campaign['franco_impact_pro'], 0, '.', ' ');
             }
         }
 
+        return $promoFrancoImpact;
+    }
 
-        $this->context->smarty->assign(array(
-            'promoFrancoImpact' => $promoFrancoImpact,
-        ));
+    protected function ensureStorePromoFrancoHook(): bool
+    {
+        if (!Hook::getIdByName('displayCkcStorePromoFranco')) {
+            $hook = new Hook();
+            $hook->name = 'displayCkcStorePromoFranco';
+            $hook->title = 'Ckc Campaign - Franco magasin';
+            $hook->position = true;
+            if (!$hook->add()) {
+                return false;
+            }
+        }
 
-        // Retourner le template avec le lien à afficher
+        if (!$this->isRegisteredInHook('displayCkcStorePromoFranco')) {
+            return (bool) $this->registerHook('displayCkcStorePromoFranco');
+        }
+
+        return true;
+    }
+
+    public function hookDisplayPromoImpactFranco()
+    {
+        $this->context->smarty->assign([
+            'promoFrancoImpact' => $this->getPromoFrancoImpact(),
+        ]);
+
         return $this->display(__FILE__, 'views/templates/front/hook/promo_content_franco.tpl');
+    }
+
+    public function hookDisplayCkcStorePromoFranco()
+    {
+        $this->context->smarty->assign([
+            'promoFrancoImpact' => $this->getPromoFrancoImpact(),
+        ]);
+
+        return $this->display(__FILE__, 'views/templates/front/hook/promo_content_franco_magasin.tpl');
     }
 }
