@@ -175,11 +175,12 @@
             </div>
             <div class="price">
                 <div class="product-line-info product-price h5 mb-0">
-                  <span class="product-price">
+                  <span class="product-price" style="display:flex;flex-direction:column;align-items:flex-end;">
                         {if !empty($product.is_gift)}
                             <span class="gift">{l s='Gift' d='Shop.Theme.Checkout'}</span>
                            {else}
                              {if $product.has_discount}
+                                    <span class="regular-price" style="color:#FF144E;font-size:15px;text-decoration:line-through;font-weight:600;">{Tools::displayPrice($product.regular_price_amount * $product.quantity)} {if $pro.env == 1}HT{/if}</span>
                                     <strong>{$product.total} {if $pro.env == 1}HT{/if}</strong>
                               {else}
                                 <strong>{$product.total} {if $pro.env == 1}HT{/if}</strong>
