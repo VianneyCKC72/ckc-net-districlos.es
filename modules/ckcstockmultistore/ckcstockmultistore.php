@@ -365,7 +365,7 @@ class Ckcstockmultistore extends Module
                         'type' => 'text',
                         'label' => $this->l('Codes postaux'),
                         'name' => 'zip_codes',
-                        'desc' => $this->l('Liste des codes postaux séparés par une virgule'),
+                        'desc' => $this->l('Liste des codes postaux séparés par une virgule. Le pays est déduit du code postal : 5 chiffres = France, 4 chiffres = Belgique, Luxembourg ou Suisse (selon le pays de l\'adresse).'),
                         'size' => 50,
                         'required' => true,
                     ),
@@ -544,8 +544,9 @@ class Ckcstockmultistore extends Module
             return;
         }
 
-        $customer_zip_code = pSQL($address->postcode);
+        $customer_zip_code = $address->postcode;
         $customer_country_iso = strtoupper(Country::getIsoById((int) $address->id_country));
+        $country_for_matching = self::countryFromZip($customer_zip_code, $customer_country_iso);
 
         $stores = Db::getInstance()->executeS('SELECT id_store, country_codes, zip_codes, carrier FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores WHERE carrier IS NOT NULL OR carrier != ""');
 
@@ -554,17 +555,13 @@ class Ckcstockmultistore extends Module
 
         $carrier = new Carrier((int)$order->id_carrier);
 
-        // Vérification par PAYS (uniquement pour pays étrangers)
-        if ($customer_country_iso !== 'FR') {
+        // Vérification par PAYS (uniquement pour pays étrangers, pays déduit du code postal si possible)
+        if ($country_for_matching !== 'FR') {
             foreach ($stores as $store) {
-                if (!empty($store['country_codes'])) {
-                    $storeCountryCodes = array_map('strtoupper', array_map('trim', explode(',', $store['country_codes'])));
-                    
-                    if (in_array($customer_country_iso, $storeCountryCodes)) {
-                        $id_store = $store['id_store'];
-                        $attribution_method = 'PAYS ('.$customer_country_iso.')';
-                        break; // Arrêter dès qu'on trouve
-                    }
+                if (self::storeCountryOk($store, $country_for_matching)) {
+                    $id_store = $store['id_store'];
+                    $attribution_method = 'PAYS ('.$country_for_matching.')';
+                    break;
                 }
             }
         }
@@ -581,24 +578,21 @@ class Ckcstockmultistore extends Module
             }
         }
 
-        // Vérification par CODE POSTAL (LOGIQUE ORIGINALE)
+        // Vérification par CODE POSTAL, filtrée par pays déduit du code postal
         if (!$id_store) {
-            $id_store = null;
-
             foreach ($stores as $store) {
-                $zip_codes = explode(',', $store['zip_codes']);
+                if (!self::storeCountryOk($store, $country_for_matching)) {
+                    continue;
+                }
 
-                foreach ($zip_codes as $zip_code) {
-                    $zip_code = trim($zip_code);
-
-                    if ($zip_code === $customer_zip_code || (strpos($zip_code, '*') !== false && preg_match('/^' . str_replace('*', '.*', $zip_code) . '$/', $customer_zip_code))) {
+                foreach (explode(',', $store['zip_codes']) as $zip_code) {
+                    if (self::zipOk($customer_zip_code, $zip_code)) {
                         $id_store = (int) $store['id_store'];
-                        $attribution_method = 'CODE POSTAL ('.$zip_code.')';
+                        $attribution_method = 'CODE POSTAL ('.trim($zip_code).')';
                         break 2;
                     }
                 }
             }
-
         }
 
         if (!$id_store) {
@@ -1095,5 +1089,41 @@ class Ckcstockmultistore extends Module
                 $qbCount->setParameter('selectedStores', $selected, \Doctrine\DBAL\Connection::PARAM_INT_ARRAY);
             }
         }
+    }
+
+    public static function countryFromZip(string $zip, string $fallback): string
+    {
+        $fallback = strtoupper($fallback);
+        $length = strlen(preg_replace('/\D/', '', $zip));
+
+        if ($length === 5) {
+            return 'FR';
+        }
+
+        if ($length === 4) {
+            if (in_array($fallback, ['BE', 'LU', 'CH'], true)) {
+                return $fallback;
+            }
+
+            // CP à 4 chiffres incompatible avec la France (ex. 0200 saisi avec pays FR)
+            return $fallback === 'FR' ? 'BE' : $fallback;
+        }
+
+        return $fallback;
+    }
+
+    public static function storeCountryOk(array $store, string $country): bool
+    {
+        $codes = array_map('strtoupper', array_map('trim', explode(',', $store['country_codes'] ?: 'FR')));
+
+        return in_array(strtoupper($country), $codes, true);
+    }
+
+    public static function zipOk(string $zip, string $pattern): bool
+    {
+        $pattern = trim($pattern);
+
+        return $pattern === $zip
+            || (str_contains($pattern, '*') && preg_match('/^' . str_replace('*', '.*', $pattern) . '$/', $zip));
     }
 }
