@@ -365,7 +365,7 @@ class Ckcstockmultistore extends Module
                         'type' => 'text',
                         'label' => $this->l('Codes postaux'),
                         'name' => 'zip_codes',
-                        'desc' => $this->l('Liste des codes postaux séparés par une virgule. Le pays est déduit automatiquement : 4 chiffres = Belgique, 5 chiffres = France.'),
+                        'desc' => $this->l('Liste des codes postaux séparés par une virgule. Le pays est déduit du code postal : 5 chiffres = France, 4 chiffres = Belgique, Luxembourg ou Suisse (selon le pays de l\'adresse).'),
                         'size' => 50,
                         'required' => true,
                     ),
@@ -544,7 +544,7 @@ class Ckcstockmultistore extends Module
             return;
         }
 
-        $customer_zip_code = trim($address->postcode);
+        $customer_zip_code = $address->postcode;
         $customer_country_iso = strtoupper(Country::getIsoById((int) $address->id_country));
         $country_for_matching = self::countryFromZip($customer_zip_code, $customer_country_iso);
 
@@ -1093,11 +1093,23 @@ class Ckcstockmultistore extends Module
 
     public static function countryFromZip(string $zip, string $fallback): string
     {
-        return match (strlen(preg_replace('/\D/', '', trim($zip)))) {
-            4 => 'BE',
-            5 => 'FR',
-            default => strtoupper($fallback),
-        };
+        $fallback = strtoupper($fallback);
+        $length = strlen(preg_replace('/\D/', '', $zip));
+
+        if ($length === 5) {
+            return 'FR';
+        }
+
+        if ($length === 4) {
+            if (in_array($fallback, ['BE', 'LU', 'CH'], true)) {
+                return $fallback;
+            }
+
+            // CP à 4 chiffres incompatible avec la France (ex. 0200 saisi avec pays FR)
+            return $fallback === 'FR' ? 'BE' : $fallback;
+        }
+
+        return $fallback;
     }
 
     public static function storeCountryOk(array $store, string $country): bool
