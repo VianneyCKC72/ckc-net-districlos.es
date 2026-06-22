@@ -16,7 +16,7 @@
     {* START BANDEAU SOLDES *}
     <div class="bandeau-soldes" role="region" aria-label="Soldes">
         <div class="bandeau-soldes__inner">
-            <a href="/453-soldes" class="bandeau-soldes__link">
+            <a href="/400-soldes" class="bandeau-soldes__link">
                 <span class="bandeau-soldes__badge">
                     <img src="/themes/classic/assets/img/grosses-soldes.png" alt="" width="16" height="16" class="bandeau-soldes__flamme" loading="lazy">
                     SOLDES
