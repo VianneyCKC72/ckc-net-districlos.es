@@ -11,7 +11,7 @@
     width: 100%;
     background-color: white;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 10px 0px;
+    // padding: 10px 0px; // désactivé : créait un bord blanc sous le bandeau soldes au scroll
     z-index: 1000;
     transition: transform 0.3s ease-in-out;
     @media (max-width: 1299px) {
