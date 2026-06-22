@@ -127,6 +127,14 @@ $(document).ready(function () {
                 });
             }
 
+            var $promoBarEl = $("#ckcpromobarre");
+            if($promoBarEl.length) {
+                menuTopObserver.observe($promoBarEl[0], {
+                    attributes: true,
+                    attributeFilter: ["class"],
+                });
+            }
+
             var $megamenuEl = $(".ets_mm_megamenu.sticky_enabled");
             if ($megamenuEl.length) {
                 menuTopObserver.observe($megamenuEl[0], {
