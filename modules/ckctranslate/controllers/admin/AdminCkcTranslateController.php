@@ -81,6 +81,8 @@ class AdminCkcTranslateController extends ModuleAdminController
         $filterType = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_TYPE));
         $filterIds = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_IDS));
         $filterCategoryId = (int) Tools::getValue(CkcTranslate::CONF_FILTER_CATEGORY_ID);
+        $allowedIpsRaw = trim((string) Tools::getValue(CkcTranslate::CONF_ALLOWED_IPS));
+        $allowedIpsNormalized = implode("\n", CkcTranslate::parseAllowedIps($allowedIpsRaw));
 
         if ($sourceLang <= 0 || $targetLang <= 0) {
             $this->errors[] = $this->module->l('Please select valid source and target languages.');
@@ -138,6 +140,7 @@ class AdminCkcTranslateController extends ModuleAdminController
         Configuration::updateValue(CkcTranslate::CONF_FILTER_TYPE, $filterType);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_IDS, $filterIds);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_CATEGORY_ID, $filterCategoryId);
+        Configuration::updateValue(CkcTranslate::CONF_ALLOWED_IPS, $allowedIpsNormalized);
 
         $this->confirmations[] = $this->module->l('Settings updated successfully.');
     }
@@ -145,6 +148,7 @@ class AdminCkcTranslateController extends ModuleAdminController
     protected function renderFormConfig()
     {
         $defaultLang = (int) Configuration::get('PS_LANG_DEFAULT');
+        $currentIp = (string) Tools::getRemoteAddr();
         $modelOptions = array();
 
         foreach ($this->getAvailableModels() as $model) {
@@ -379,6 +383,17 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'readonly' => true,
                         'desc' => $this->module->l('Approximate estimate calculated from the token limit.'),
                     ),
+                    array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Front-office language switcher — allowed IPs'),
+                        'name' => CkcTranslate::CONF_ALLOWED_IPS,
+                        'rows' => 5,
+                        'cols' => 60,
+                        'desc' => sprintf(
+                            $this->module->l('One IP per line. Supports exact IPv4 (e.g. 1.2.3.4), wildcards (e.g. 192.168.1.*) and CIDR (e.g. 10.0.0.0/24). For everyone else, the language selector is hidden and the language is forced to the shop default. Leave empty to hide the selector for all visitors. Your current IP: %s'),
+                            $currentIp !== '' ? $currentIp : $this->module->l('unknown')
+                        ),
+                    ),
                 ),
                 'submit' => array(
                     'title' => $this->module->l('Save'),
@@ -425,6 +440,7 @@ class AdminCkcTranslateController extends ModuleAdminController
             CkcTranslate::CONF_FILTER_TYPE => Configuration::get(CkcTranslate::CONF_FILTER_TYPE),
             CkcTranslate::CONF_FILTER_IDS => Configuration::get(CkcTranslate::CONF_FILTER_IDS),
             CkcTranslate::CONF_FILTER_CATEGORY_ID => (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID),
+            CkcTranslate::CONF_ALLOWED_IPS => Configuration::get(CkcTranslate::CONF_ALLOWED_IPS),
         );
 
         return $helper->generateForm(array($fieldsForm));

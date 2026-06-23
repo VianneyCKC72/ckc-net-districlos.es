@@ -473,3 +473,4 @@ config/defines_uri.inc.php
 modules/ckc*/config_fr.xml
 modules/ckcproductreviews/cache/
 themes/classic/assets/css/theme.css.map
+.claude/

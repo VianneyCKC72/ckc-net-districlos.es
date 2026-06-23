@@ -38,6 +38,8 @@ class CkcTranslate extends Module
     public const CONF_FILTER_IDS = 'CKCTRANSLATE_FILTER_IDS';
     public const CONF_FILTER_CATEGORY_ID = 'CKCTRANSLATE_FILTER_CATEGORY_ID';
 
+    public const CONF_ALLOWED_IPS = 'CKCTRANSLATE_ALLOWED_IPS';
+
     public function __construct()
     {
         $this->name = 'ckctranslate';
@@ -60,6 +62,8 @@ class CkcTranslate extends Module
     public function install()
     {
         return parent::install()
+            && $this->registerHook('displayHeader')
+            && $this->registerHook('actionDispatcher')
             && $this->installTab()
             && $this->installConfiguration()
             && $this->installSql();
@@ -83,6 +87,7 @@ class CkcTranslate extends Module
         }
 
         $this->installSql();
+        $this->ensureFrontHooksRegistered();
 
         $html = '';
         $html .= '<div class="panel">';
@@ -135,7 +140,8 @@ class CkcTranslate extends Module
             && Configuration::updateValue(self::CONF_PROMPT_CMS, 'Translate CMS content with editorial quality, natural language and SEO clarity.')
             && Configuration::updateValue(self::CONF_FILTER_TYPE, 'all')
             && Configuration::updateValue(self::CONF_FILTER_IDS, '')
-            && Configuration::updateValue(self::CONF_FILTER_CATEGORY_ID, 0);
+            && Configuration::updateValue(self::CONF_FILTER_CATEGORY_ID, 0)
+            && Configuration::updateValue(self::CONF_ALLOWED_IPS, '');
     }
 
     protected function uninstallConfiguration()
@@ -165,7 +171,17 @@ class CkcTranslate extends Module
             && Configuration::deleteByName(self::CONF_PROMPT_CMS)
             && Configuration::deleteByName(self::CONF_FILTER_TYPE)
             && Configuration::deleteByName(self::CONF_FILTER_IDS)
-            && Configuration::deleteByName(self::CONF_FILTER_CATEGORY_ID);
+            && Configuration::deleteByName(self::CONF_FILTER_CATEGORY_ID)
+            && Configuration::deleteByName(self::CONF_ALLOWED_IPS);
+    }
+
+    protected function ensureFrontHooksRegistered()
+    {
+        foreach (array('displayHeader', 'actionDispatcher') as $hookName) {
+            if (!Hook::isModuleRegisteredOnHook($this, $hookName, (int) $this->context->shop->id)) {
+                $this->registerHook($hookName);
+            }
+        }
     }
 
     protected function installSql()
@@ -233,5 +249,141 @@ class CkcTranslate extends Module
         $tab = new Tab($idTab);
 
         return (bool) $tab->delete();
+    }
+
+    public function hookActionDispatcher($params)
+    {
+        if (defined('_PS_ADMIN_DIR_')) {
+            return;
+        }
+
+        if (isset($params['controller_type'])
+            && defined('Controller::PREFIX_CONTROLLER_FRONT')
+            && $params['controller_type'] !== Controller::PREFIX_CONTROLLER_FRONT) {
+            return;
+        }
+
+        if ($this->isAllowedIp()) {
+            return;
+        }
+
+        $defaultLang = (int) Configuration::get('PS_LANG_DEFAULT');
+
+        if (isset($_GET['id_lang'])) {
+            unset($_GET['id_lang']);
+        }
+        if (isset($_REQUEST['id_lang'])) {
+            unset($_REQUEST['id_lang']);
+        }
+
+        if (isset($this->context->cookie) && (int) $this->context->cookie->id_lang !== $defaultLang) {
+            $this->context->cookie->id_lang = $defaultLang;
+            $this->context->cookie->write();
+        }
+    }
+
+    public function hookDisplayHeader($params)
+    {
+        if ($this->isAllowedIp()) {
+            return '';
+        }
+
+        return '<style id="ckctranslate-lang-guard">'
+            . '#_desktop_language_selector,'
+            . '#_mobile_language_selector,'
+            . '.language-selector-wrapper{display:none !important;}'
+            . '</style>';
+    }
+
+    public function isAllowedIp()
+    {
+        $allowedRaw = (string) Configuration::get(self::CONF_ALLOWED_IPS);
+        $allowedIps = self::parseAllowedIps($allowedRaw);
+
+        if (empty($allowedIps)) {
+            return false;
+        }
+
+        $clientIp = (string) Tools::getRemoteAddr();
+
+        if ($clientIp === '') {
+            return false;
+        }
+
+        foreach ($allowedIps as $pattern) {
+            if (self::ipMatches($clientIp, $pattern)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static function parseAllowedIps($raw)
+    {
+        $parts = preg_split('/[\s,;]+/', (string) $raw);
+        $result = array();
+
+        if (!is_array($parts)) {
+            return $result;
+        }
+
+        foreach ($parts as $part) {
+            $part = trim($part);
+
+            if ($part === '') {
+                continue;
+            }
+
+            if (filter_var($part, FILTER_VALIDATE_IP)
+                || strpos($part, '/') !== false
+                || strpos($part, '*') !== false) {
+                $result[] = $part;
+            }
+        }
+
+        return $result;
+    }
+
+    public static function ipMatches($clientIp, $pattern)
+    {
+        if ($clientIp === $pattern) {
+            return true;
+        }
+
+        if (strpos($pattern, '/') !== false) {
+            return self::cidrMatch($clientIp, $pattern);
+        }
+
+        if (strpos($pattern, '*') !== false) {
+            $regex = '/^' . str_replace(array('.', '*'), array('\.', '[0-9]+'), $pattern) . '$/';
+
+            return (bool) preg_match($regex, $clientIp);
+        }
+
+        return false;
+    }
+
+    protected static function cidrMatch($ip, $cidr)
+    {
+        $parts = explode('/', $cidr);
+        if (count($parts) !== 2) {
+            return false;
+        }
+
+        list($subnet, $mask) = $parts;
+        $mask = (int) $mask;
+
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)
+            && filter_var($subnet, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)
+            && $mask >= 0 && $mask <= 32) {
+            $ipLong = ip2long($ip);
+            $subnetLong = ip2long($subnet);
+            $maskLong = $mask === 0 ? 0 : (-1 << (32 - $mask));
+
+            return ($ipLong & $maskLong) === ($subnetLong & $maskLong);
+        }
+
+        return false;
     }
 }
