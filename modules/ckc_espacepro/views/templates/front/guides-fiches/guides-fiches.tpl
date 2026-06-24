@@ -3,11 +3,11 @@
 {block name="page_content"}
 
     <section>
-        <h2 class="h2">Nos guides d'installation et fiches techniques</h2>
+        <h2 class="h2">{l s='Nos guides d\'installation et fiches techniques' d='Shop.Theme.Customespacepro'}</h2>
 
         <div id="search_" class="">
             <form action="" method="get" class="" onsubmit="return false;">
-                <input type="text" name="search_query_items" placeholder="Je recherche..."
+                <input type="text" name="search_query_items" placeholder="{l s='Je recherche...' d='Shop.Theme.Customespacepro'}"
                         class="store-search-input"/>
             </form>
         </div>
@@ -35,7 +35,7 @@
 
                                 <a class="btn_sm"
                                 href="{$link->getModuleLink('ckc_espacepro', 'guidesfiches', ['download_product' => $product.id])}">
-                                    Télécharger tous les documents
+                                    {l s='Télécharger tous les documents' d='Shop.Theme.Customespacepro'}
                                 </a>
                             </div>
                         </div>
@@ -46,7 +46,7 @@
     </section>
 
     <div id="no-results" class="no-results" style="display: none; text-align: center; padding: 20px;">
-        <p>Aucun produit ne correspond à votre recherche.</p>
+        <p>{l s='Aucun produit ne correspond à votre recherche.' d='Shop.Theme.Customespacepro'}</p>
     </div>
 
 {/block}
