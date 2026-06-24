@@ -18,7 +18,13 @@ class CartController extends CartControllerCore
     
     // CSS pour les messages de produits manquants (inclus une seule fois)
     private static $product_message_css_included = false;
-    
+
+    // Retourne la version EN si la langue courante est l'anglais, sinon la version FR.
+    private function trMsg($fr, $en)
+    {
+        return ($this->context->language->iso_code === 'en') ? $en : $fr;
+    }
+
     // Configuration des règles de produits manquants
     private function getMissingProductRules()
     {
@@ -26,17 +32,17 @@ class CartController extends CartControllerCore
             [
                 'trigger_products' => [self::PRODUCT_ID_MOTEUR_1305, self::PRODUCT_ID_MOTEUR_1306],
                 'missing_product' => self::PRODUCT_ID_CREMALLIERE,
-                'message' => 'Les crémaillères ne sont pas incluses dans ce moteur.||Portail 3m00 : 4 crémaillères - Portail 3m50 et 4m00 : 5 crémaillères',
+                'message' => $this->trMsg('Les crémaillères ne sont pas incluses dans ce moteur.||Portail 3m00 : 4 crémaillères - Portail 3m50 et 4m00 : 5 crémaillères', 'The racks are not included with this motor.||3m00 gate: 4 racks - 3m50 and 4m00 gate: 5 racks'),
             ],
             [
                 'trigger_products' => [self::PRODUCT_ID_POTEAU_1223, self::PRODUCT_ID_POTEAU_1285],
                 'missing_product' => self::PRODUCT_ID_POTEAU_1224,
-                'message' => 'N\'oubliez pas les bouchons compatibles avec votre poteau.',
+                'message' => $this->trMsg('N\'oubliez pas les bouchons compatibles avec votre poteau.', 'Don\'t forget the caps compatible with your post.'),
             ],
             [
                 'trigger_products' => [self::PRODUCT_ID_151],
                 'missing_product' => self::PRODUCT_ID_422,
-                'message' => 'Ce produit nécessite le produit complémentaire suivant.',
+                'message' => $this->trMsg('Ce produit nécessite le produit complémentaire suivant.', 'This product requires the following complementary product.'),
             ],
         ];
     }
@@ -50,11 +56,11 @@ class CartController extends CartControllerCore
                 'missing_products' => [
                     [
                         'id' => self::PRODUCT_ID_1303,
-                        'message' => 'N\'oubliez vos clips pour votre poteau.',
+                        'message' => $this->trMsg('N\'oubliez vos clips pour votre poteau.', 'Don\'t forget your clips for your post.'),
                     ],
                     [
                         'id' => self::PRODUCT_ID_1304,
-                        'message' => 'N\'oubliez pas la pince à clips pour votre poteau.',
+                        'message' => $this->trMsg('N\'oubliez pas la pince à clips pour votre poteau.', 'Don\'t forget the clip pliers for your post.'),
                     ],
                 ],
             ],
@@ -276,20 +282,20 @@ class CartController extends CartControllerCore
         $has_1285 = isset($product_ids_flipped[1285]);
         
         if ($has_1215 && $has_1214) {
-            $custom_product_message['1215'] = $this->wrapMessageInBlock('<span class="text-red">Attention : Les platines choisies ne sont pas compatibles avec le portillon Jardi.</span>');
+            $custom_product_message['1215'] = $this->wrapMessageInBlock($this->trMsg('<span class="text-red">Attention : Les platines choisies ne sont pas compatibles avec le portillon Jardi.</span>', '<span class="text-red">Warning: The selected base plates are not compatible with the Jardi pedestrian gate.</span>'));
         } elseif ($has_1213 && $has_332) {
-            $custom_product_message['1213'] = $this->wrapMessageInBlock('<span class="text-red">Attention : Les platines choisies ne sont pas compatibles avec le portillon Garden.</span>');
+            $custom_product_message['1213'] = $this->wrapMessageInBlock($this->trMsg('<span class="text-red">Attention : Les platines choisies ne sont pas compatibles avec le portillon Garden.</span>', '<span class="text-red">Warning: The selected base plates are not compatible with the Garden pedestrian gate.</span>'));
         } elseif ($has_1302 && $has_416) {
             foreach ($products as $product) {
                 if ($product['id_product'] == 416 && strpos($product['attributes'], 'encoches') !== false) {
-                    $custom_product_message['1302'] = $this->wrapMessageInBlock('<span class="text-red">Attention : Les poteaux à clip ne sont pas compatibles avec les soubassements à encoche</span>');
+                    $custom_product_message['1302'] = $this->wrapMessageInBlock($this->trMsg('<span class="text-red">Attention : Les poteaux à clip ne sont pas compatibles avec les soubassements à encoche</span>', '<span class="text-red">Warning: Clip posts are not compatible with slotted base panels</span>'));
                     break;
                 }
             }
         } elseif (($has_1223 || $has_1285) && $has_416) {
             foreach ($products as $product) {
                 if ($product['id_product'] == 416 && strpos($product['attributes'], 'clips') !== false) {
-                    $message = $this->wrapMessageInBlock('<span class="text-red">Attention : Les poteaux à encoche ne sont pas compatibles avec le soubassements à clips</span>');
+                    $message = $this->wrapMessageInBlock($this->trMsg('<span class="text-red">Attention : Les poteaux à encoche ne sont pas compatibles avec le soubassements à clips</span>', '<span class="text-red">Warning: Slotted posts are not compatible with clip base panels</span>'));
                     if ($has_1223) {
                         $custom_product_message['1223'] = $message;
                     }
