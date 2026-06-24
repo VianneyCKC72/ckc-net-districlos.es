@@ -28,6 +28,7 @@
         <span>
             <div class="container">
                 <div>
+                    {* START BANDEAU SOLDES - bouton Bons plans temporairement masqué
                     {if Context::getContext()->shop->id == 1}
                         <div class="displayMenu">
                         <a class="link-danger soldes" href="/400-destockage">
@@ -38,6 +39,7 @@
                         </a>
                         </div>
                     {/if}
+                    END BANDEAU SOLDES - bouton Bons plans *}
                     {if $env_pro == 1 OR Tools::getValue("ep") == 1}
                         {if isset($ckcpromobarretextsPro) && !empty($ckcpromobarretextsPro)}
                             {if $ckcpromobarretextsPro|@count > 1}
