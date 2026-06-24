@@ -32,7 +32,7 @@
                         {/if}
                         <div class="position-relative" {if $packMlChoose} style="width: 100%" {/if}>
                             <button class="btn btn-primary add-to-cart-bottom" data-button-action="add-to-cart" type="submit" {if $packMlChoose} style="padding: 11px !important;width: 100%;" {/if}>
-                                Ajouter au panier
+                                {l s='Ajouter au panier' d='Shop.Theme.Custommodules'}
                             </button>
                         </div>
                     </div>
@@ -100,7 +100,7 @@
                                                 {if $flag.type != "out_of_stock"}
                                                     <li class="product-flag {$flag.type}">
                                                         {if $flag.label == "Neuf"}
-                                                            Nouveau
+                                                            {l s='Nouveau' d='Shop.Theme.Custommodules'}
                                                         {else}
                                                             {$flag.label}
                                                         {/if}
@@ -192,11 +192,11 @@
                                 {/block}
 
                                 {if $packMlChoose}
-                                    <span class="bold">Dimensions</span>
+                                    <span class="bold">{l s='Dimensions' d='Shop.Theme.Custommodules'}</span>
 
                                     <div class="product-variants ap5-attributes">
                                         <div class="clearfix hiddenlabel">
-                                            <p class=group-name>Choisissez la longueur en mètres linéaires</p>
+                                            <p class=group-name>{l s='Choisissez la longueur en mètres linéaires' d='Shop.Theme.Custommodules'}</p>
                                             <div class="select_wrap">
                                                 <div class="clearfix dis_flex">
                                                     <span class="input-group-btn-vertical dis_flex">
@@ -248,30 +248,30 @@
     <div class="background_beige">
         {if !$from_europe}
             <div class="div_grid_beige">
-                <div class="image-container"><img src="/themes/auto_store/assets/img/prix_juste/drapeaufr.webp" alt="drapeau de la France" /></div>
-                <div class="text-container"><span class="first_span">Produits fabriqués en France</span> <span class="second_span">Faciles à monter et garantis 10 ans</span></div>
+                <div class="image-container"><img src="/themes/auto_store/assets/img/prix_juste/drapeaufr.webp" alt="{l s='drapeau de la France' d='Shop.Theme.Custommodules'}" /></div>
+                <div class="text-container"><span class="first_span">{l s='Produits fabriqués en France' d='Shop.Theme.Custommodules'}</span> <span class="second_span">{l s='Faciles à monter et garantis 10 ans' d='Shop.Theme.Custommodules'}</span></div>
             </div>
         {else}
             <div class="div_grid_beige">
-                <div class="image-container"><img src="/themes/auto_store/assets/img/prix_juste/drapeaueu.webp" alt="drapeau de l'Europe" style="width:66px;" /></div>
-                <div class="text-container"><span class="first_span">Produits fabriqués en Europe</span> <span class="second_span">Faciles à monter et garantis 10 ans</span></div>
+                <div class="image-container"><img src="/themes/auto_store/assets/img/prix_juste/drapeaueu.webp" alt="{l s='drapeau de l\'Europe' d='Shop.Theme.Custommodules'}" style="width:66px;" /></div>
+                <div class="text-container"><span class="first_span">{l s='Produits fabriqués en Europe' d='Shop.Theme.Custommodules'}</span> <span class="second_span">{l s='Faciles à monter et garantis 10 ans' d='Shop.Theme.Custommodules'}</span></div>
             </div>
         {/if}
         <div class="div_grid_beige">
-            <div class="image-container"><img src="/themes/auto_store/assets/img/prix_juste/france_pin.webp" alt="Pin sur la carte de france" /></div>
-            <div class="text-container"><span class="first_span">16 magasins près de chez vous</span> <span class="second_span">Des experts disponibles dans toute la France</span></div>
+            <div class="image-container"><img src="/themes/auto_store/assets/img/prix_juste/france_pin.webp" alt="{l s='Pin sur la carte de france' d='Shop.Theme.Custommodules'}" /></div>
+            <div class="text-container"><span class="first_span">{l s='16 magasins près de chez vous' d='Shop.Theme.Custommodules'}</span> <span class="second_span">{l s='Des experts disponibles dans toute la France' d='Shop.Theme.Custommodules'}</span></div>
         </div>
         <div class="div_grid_beige">
-            <div class="image-container"><img src="/themes/auto_store/assets/img/prix_juste/carte.webp" alt="carte banquaire" /></div>
-            <div class="text-container"><span class="first_span">Paiement en plusieurs fois gratuit</span> <span class="second_span">3x 4x sans frais et jusqu'à 48x </span></div>
+            <div class="image-container"><img src="/themes/auto_store/assets/img/prix_juste/carte.webp" alt="{l s='carte banquaire' d='Shop.Theme.Custommodules'}" /></div>
+            <div class="text-container"><span class="first_span">{l s='Paiement en plusieurs fois gratuit' d='Shop.Theme.Custommodules'}</span> <span class="second_span">{l s='3x 4x sans frais et jusqu\'à 48x ' d='Shop.Theme.Custommodules'}</span></div>
         </div>
         <div class="div_grid_beige">
-            <div class="image-container"><img src="/themes/auto_store/assets/img/prix_juste/camion.webp" alt="camion" /></div>
-            <div class="text-container"><span class="first_span">Livraison avec nos camions</span> <span class="second_span">Prise de rendez-vous pour la livraison </span></div>
+            <div class="image-container"><img src="/themes/auto_store/assets/img/prix_juste/camion.webp" alt="{l s='camion' d='Shop.Theme.Custommodules'}" /></div>
+            <div class="text-container"><span class="first_span">{l s='Livraison avec nos camions' d='Shop.Theme.Custommodules'}</span> <span class="second_span">{l s='Prise de rendez-vous pour la livraison ' d='Shop.Theme.Custommodules'}</span></div>
         </div>
         <div class="div_grid_beige refund">
-            <div class="image-container"><img src="/themes/auto_store/assets/img/prix_juste/etiquette2.webp" alt="etiquette" /></div>
-            <div class="text-container"><span class="first_span">Garantie les moins chers</span> <span class="second_span appar">On vous rembourse la différence !</span></div>
+            <div class="image-container"><img src="/themes/auto_store/assets/img/prix_juste/etiquette2.webp" alt="{l s='etiquette' d='Shop.Theme.Custommodules'}" /></div>
+            <div class="text-container"><span class="first_span">{l s='Garantie les moins chers' d='Shop.Theme.Custommodules'}</span> <span class="second_span appar">{l s='On vous rembourse la différence !' d='Shop.Theme.Custommodules'}</span></div>
         </div>
     </div>
 </div>
@@ -291,7 +291,7 @@
                                             <li class="nav-item position-relative active">
                                                 <a class="nav-link" href="#kit_content"
                                                    role="tab">
-                                                    Contenu du kit
+                                                    {l s='Contenu du kit' d='Shop.Theme.Custommodules'}
                                                     <span class="arrow_tab"> > </span>
                                                 </a>
                                             </li>
@@ -317,7 +317,7 @@
                                             {/if}
                                             {if isset($have_accessories) && $have_accessories}
                                                 <li class="nav-item position-relative">
-                                                    <a class="nav-link" href="#accessories">Accessoires
+                                                    <a class="nav-link" href="#accessories">{l s='Accessoires' d='Shop.Theme.Custommodules'}
                                                         <span class="arrow_tab"> > </span>
                                                     </a>
                                                 </li>
@@ -326,7 +326,7 @@
                                                 {if $extra.title == 'Avis Vérifiés'}
                                                     <li class="nav-item position-relative" data-tab="false">
                                                         <a class="nav-link" href="#extra-{$extraKey}"
-                                                           aria-controls="extra-{$extraKey}">Avis <span class="arrow_tab"> > </span></a>
+                                                           aria-controls="extra-{$extraKey}">{l s='Avis' d='Shop.Theme.Custommodules'} <span class="arrow_tab"> > </span></a>
                                                     </li>
                                                 {elseif $extra.title != ''}
                                                     <li class="nav-item position-relative">
@@ -364,7 +364,7 @@
                                                                 <h3 class="h5 text-uppercase fs-16">{$productPack.presentation.name}</h3>
                                                                 <div class="product-description">{$productPack.presentation.description_short nofilter}</div>
                                                                 <div class="mt-10">
-                                                                    <a class="btn btn-primary add_to_cart" href="{$productPack.presentation.link}">Voir le produit</a>
+                                                                    <a class="btn btn-primary add_to_cart" href="{$productPack.presentation.link}">{l s='Voir le produit' d='Shop.Theme.Custommodules'}</a>
                                                                 </div>
                                                                 {block name='product_reviews'}
                                                                     {hook h='displayProductListReviews' product=$productPack.presentation}
@@ -460,7 +460,7 @@
                         <section class="product-accessories clearfix">
                             <div id="spe_title_bottom">
                                 <h2 class="h1 products-section-title text-uppercase test">
-                                    {*{l s='You might also like' d='Shop.Theme.Catalog'}*}Dans la même catégorie
+                                    {*{l s='You might also like' d='Shop.Theme.Catalog'}*}{l s='Dans la même catégorie' d='Shop.Theme.Custommodules'}
                                 </h2>
                             </div>
                             <div id="spe_res">

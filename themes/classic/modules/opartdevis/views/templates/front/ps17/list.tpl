@@ -64,7 +64,7 @@
                                 {l s='Expired' mod='opartdevis'}
                             {else}
                                 <a href="{$link->getModuleLink('opartdevis','loadquotation',['opartquotationId'=>$quotation.id_opartdevis])|escape:'htmlall':'UTF-8'}" class="btn btn-outline-primary btn-sm">
-                                    <span class="opartDevisHide">Modifier / Valider</span>
+                                    <span class="opartDevisHide">{l s='Modifier / Valider' d='Shop.Theme.Custommodules'}</span>
                                 </a>
                             {/if}
                         </td>
@@ -88,13 +88,13 @@
         </div>
     {else}
         <p>
-            Vous n'avez pas encore de devis enregistré sur votre compte.
+            {l s='Vous n\'avez pas encore de devis enregistré sur votre compte.' d='Shop.Theme.Custommodules'}
             <br>
             <a href="{$link->getModuleLink('opartdevis', 'simplequotation')}" class="mt-2 btn btn-primary">
-                Faire une demande de devis
+                {l s='Faire une demande de devis' d='Shop.Theme.Custommodules'}
             </a>
         </p>
     {/if}
-    <a href="/identite"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left-icon lucide-move-left"><path d="M6 8L2 12L6 16"/><path d="M2 12H22"/></svg> Mon compte</a>
+    <a href="/identite"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left-icon lucide-move-left"><path d="M6 8L2 12L6 16"/><path d="M2 12H22"/></svg> {l s='Mon compte' d='Shop.Theme.Custommodules'}</a>
 
 {/block}

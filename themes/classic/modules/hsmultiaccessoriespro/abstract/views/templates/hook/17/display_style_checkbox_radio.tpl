@@ -105,7 +105,7 @@
                         {$accessory.name|escape:'htmlall':'UTF-8'}
                     {/if}
                     {if $accessory_victime_succes == true}
-                        <span class="forbidden_ordering" title="Victime de son succès - Produit épuisé"></span>
+                        <span class="forbidden_ordering" title="{l s='Victime de son succès - Produit épuisé' d='Shop.Theme.Custommodules'}"></span>
                     {else if $accessory.is_available_when_out_of_stock && $accessory_configuration_keys.HSMA_SHOW_ICON_OUT_OF_STOCK}
                         <span class="warning_out_of_stock" title="{$accessory.available_later|escape:'html':'UTF-8'}"></span>
                     {else if $accessory.is_available_for_order && $accessory_configuration_keys.HSMA_SHOW_ICON_OUT_OF_STOCK}
