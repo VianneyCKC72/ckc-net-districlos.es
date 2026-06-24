@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="fr-FR" target-language="en-US" datatype="plaintext" original="ShopThemeCustomconfigurator">
+    <body>
+      <trans-unit id="1"><source>(Nous déconseillons la pose sur platine et/ou avec brise-vue pour cette hauteur)</source><target>(We advise against base-plate mounting and/or a privacy screen at this height)</target></trans-unit>
+      <trans-unit id="2"><source>Ajouter au panier</source><target>Add to cart</target></trans-unit>
+      <trans-unit id="3"><source>Attention !</source><target>Warning!</target></trans-unit>
+      <trans-unit id="4"><source>Bienvenue sur notre outil de création de kit de clôture.</source><target>Welcome to our fence kit builder.</target></trans-unit>
+      <trans-unit id="5"><source>Chargement</source><target>Loading</target></trans-unit>
+      <trans-unit id="6"><source>Configurez votre clôture</source><target>Configure your fence</target></trans-unit>
+      <trans-unit id="7"><source>Conserver ces attributs / gammes</source><target>Keep these attributes / ranges</target></trans-unit>
+      <trans-unit id="8"><source>Continuer et changer de gamme</source><target>Continue and change range</target></trans-unit>
+      <trans-unit id="9"><source>Couleur</source><target>Color</target></trans-unit>
+      <trans-unit id="10"><source>Définissez vos besoins</source><target>Define your needs</target></trans-unit>
+      <trans-unit id="11"><source>Définissez vos options</source><target>Define your options</target></trans-unit>
+      <trans-unit id="12"><source>Définissez vos services</source><target>Define your services</target></trans-unit>
+      <trans-unit id="13"><source>Départ du mur</source><target>Wall start</target></trans-unit>
+      <trans-unit id="14"><source>Départ(s) du mur</source><target>Wall start(s)</target></trans-unit>
+      <trans-unit id="15"><source>Espacement des lames</source><target>Slat spacing</target></trans-unit>
+      <trans-unit id="16"><source>Espacement des lames (entre 1cm et 3cm)</source><target>Slat spacing (between 1cm and 3cm)</target></trans-unit>
+      <trans-unit id="17"><source>Ex: 1.8, 2.0, 2.5</source><target>E.g.: 1.8, 2.0, 2.5</target></trans-unit>
+      <trans-unit id="18"><source>Facultatif</source><target>Optional</target></trans-unit>
+      <trans-unit id="19"><source>Hauteur</source><target>Height</target></trans-unit>
+      <trans-unit id="20"><source>Le nombre de fois où votre clôture commence ou termine sur un mur</source><target>The number of times your fence starts or ends against a wall</target></trans-unit>
+      <trans-unit id="21"><source>Longueur</source><target>Length</target></trans-unit>
+      <trans-unit id="22"><source>Longueur (en mètres)</source><target>Length (in meters)</target></trans-unit>
+      <trans-unit id="23"><source>Ma clôture</source><target>My fence</target></trans-unit>
+      <trans-unit id="24"><source>Nombre d'angle</source><target>Number of corners</target></trans-unit>
+      <trans-unit id="25"><source>Nombre d'angle(s)</source><target>Number of corner(s)</target></trans-unit>
+      <trans-unit id="26"><source>Obligatoire</source><target>Required</target></trans-unit>
+      <trans-unit id="27"><source>Occultation</source><target>Privacy screen</target></trans-unit>
+      <trans-unit id="28"><source>Panneau</source><target>Panel</target></trans-unit>
+      <trans-unit id="29"><source>Pas de services pour ce produit.</source><target>No services for this product.</target></trans-unit>
+      <trans-unit id="30"><source>Portillon</source><target>Gate</target></trans-unit>
+      <trans-unit id="31"><source>Produits</source><target>Products</target></trans-unit>
+      <trans-unit id="32"><source>Préservez votre jardin du vis-à-vis à l'aide d'un brise-vue adapté à vos besoins</source><target>Protect your garden from prying eyes with a privacy screen suited to your needs</target></trans-unit>
+      <trans-unit id="33"><source>Récapitulatif</source><target>Summary</target></trans-unit>
+      <trans-unit id="34"><source>Services</source><target>Services</target></trans-unit>
+      <trans-unit id="35"><source>Solidifiez votre clôture, ajoutez-lui une jolie finition ou créez une clôture en escalier grâce au soubassement béton</source><target>Strengthen your fence, give it a nice finish or create a stepped fence with the concrete base panel</target></trans-unit>
+      <trans-unit id="36"><source>Soubassement</source><target>Base panel</target></trans-unit>
+      <trans-unit id="37"><source>Suivez les étapes en cliquant ci-dessous pour configurer votre clôture idéale et personnalisée !</source><target>Follow the steps below to configure your ideal, custom fence!</target></trans-unit>
+      <trans-unit id="38"><source>Sécurisez davantage votre extérieur et facilitez vos déplacements grâce à un portillon de jardin discret et esthétique</source><target>Make your outdoor space more secure and easier to move around with a discreet, attractive garden gate</target></trans-unit>
+      <trans-unit id="39"><source>Total TTC</source><target>Total incl. tax</target></trans-unit>
+      <trans-unit id="40"><source>Type de clôture</source><target>Fence type</target></trans-unit>
+      <trans-unit id="41"><source>Type de grillage</source><target>Mesh type</target></trans-unit>
+      <trans-unit id="42"><source>Type de pose</source><target>Installation type</target></trans-unit>
+      <trans-unit id="43"><source>Type de poteau</source><target>Post type</target></trans-unit>
+      <trans-unit id="44"><source>Voir ma configuration</source><target>View my configuration</target></trans-unit>
+      <trans-unit id="45"><source>Vous souhaitez une pose ? Vérifiez l'éligibilité</source><target>Want installation? Check your eligibility</target></trans-unit>
+    </body>
+  </file>
+</xliff>
