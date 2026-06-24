@@ -21,7 +21,7 @@
     </span>
     <span class="main_menu_label">
         <span class="hidden-condition">
-            Nos
-        </span>produits
+            {l s='Our' d='Shop.Theme.Global'}
+        </span>{l s='products' d='Shop.Theme.Global'}
     </span>
 </div>
