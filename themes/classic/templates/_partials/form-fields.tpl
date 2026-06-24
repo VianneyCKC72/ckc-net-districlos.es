@@ -34,7 +34,7 @@
         {if $field.type !== 'checkbox'}
             {if $field.label == "Alias" && $field.name == "alias"}
                 <label class="form-control-label{if $field.required} required{/if}" for="field-{$field.name}">
-                    Titre de votre adresse
+                    {l s='Titre de votre adresse' d='Shop.Theme.Customglobal'}
                 </label>
             {else}
                 <label class="form-control-label{if $field.required} required{/if}" for="field-{$field.name}">
@@ -85,11 +85,11 @@
                   <span></span>
                 </span>
                                 {if $pro.env == 1 && $label == 'Mademoiselle'}
-                                    Mlle.
+                                    {l s='Mlle.' d='Shop.Theme.Customglobal'}
                                 {elseif $pro.env == 1 && $label == 'Monsieur'}
-                                    M.
+                                    {l s='M.' d='Shop.Theme.Customglobal'}
                                 {elseif $pro.env == 1 && $label == 'Madame'}
-                                    Mme.
+                                    {l s='Mme.' d='Shop.Theme.Customglobal'}
                                 {else}
                                     {$label}
                                 {/if}
@@ -174,7 +174,7 @@
                                 {if $field.required}required{/if}
                         >
 
-                        <button type="button" class="password-toggle" aria-label="Afficher/Masquer le mot de passe">
+                        <button type="button" class="password-toggle" aria-label="{l s='Afficher/Masquer le mot de passe' d='Shop.Theme.Customglobal'}">
                             <!-- Icône œil -->
                             <svg class="icon-eye" xmlns="http://www.w3.org/2000/svg"
                                  width="20" height="20" viewBox="0 0 24 24"

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="fr-FR" target-language="en-US" datatype="plaintext" original="ShopThemeCustomcheckout">
+    <body>
+      <trans-unit id="1" resname="Êtes-vous sûr ?">
+        <source>Êtes-vous sûr ?</source>
+        <target>Are you sure?</target>
+      </trans-unit>
+      <trans-unit id="2" resname="Vous allez quitter la page panier">
+        <source>Vous allez quitter la page panier</source>
+        <target>You are about to leave the cart page</target>
+      </trans-unit>
+      <trans-unit id="3" resname="Quitter">
+        <source>Quitter</source>
+        <target>Leave</target>
+      </trans-unit>
+      <trans-unit id="4" resname="Continuer">
+        <source>Continuer</source>
+        <target>Continue</target>
+      </trans-unit>
+      <trans-unit id="5" resname="PASSER COMMANDE">
+        <source>PASSER COMMANDE</source>
+        <target>PROCEED TO CHECKOUT</target>
+      </trans-unit>
+      <trans-unit id="6" resname="Moyens de paiements">
+        <source>Moyens de paiements</source>
+        <target>Payment methods</target>
+      </trans-unit>
+      <trans-unit id="7" resname="Retour à la boutique">
+        <source>Retour à la boutique</source>
+        <target>Back to the shop</target>
+      </trans-unit>
+      <trans-unit id="8" resname="Récapitulatif">
+        <source>Récapitulatif</source>
+        <target>Summary</target>
+      </trans-unit>
+      <trans-unit id="9" resname="à définir">
+        <source>à définir</source>
+        <target>To be defined</target>
+      </trans-unit>
+      <trans-unit id="10" resname="HT">
+        <source>HT</source>
+        <target>excl. tax</target>
+      </trans-unit>
+      <trans-unit id="11" resname="Vous économisez [1]%amount% €[/1] sur votre commande">
+        <source>Vous économisez [1]%amount% €[/1] sur votre commande</source>
+        <target>You save [1]%amount% €[/1] on your order</target>
+      </trans-unit>
+      <trans-unit id="12" resname="PROMO">
+        <source>PROMO</source>
+        <target>PROMO</target>
+      </trans-unit>
+      <trans-unit id="13" resname="Ou bien...">
+        <source>Ou bien...</source>
+        <target>Or...</target>
+      </trans-unit>
+      <trans-unit id="14" resname="Connexion">
+        <source>Connexion</source>
+        <target>Log in</target>
+      </trans-unit>
+      <trans-unit id="15" resname="Vous avez déjà un compte ?">
+        <source>Vous avez déjà un compte ?</source>
+        <target>Already have an account?</target>
+      </trans-unit>
+      <trans-unit id="16" resname="Connectez-vous">
+        <source>Connectez-vous</source>
+        <target>Log in</target>
+      </trans-unit>
+      <trans-unit id="17" resname="Pas encore de compte ?">
+        <source>Pas encore de compte ?</source>
+        <target>No account yet?</target>
+      </trans-unit>
+      <trans-unit id="18" resname="Créez un compte">
+        <source>Créez un compte</source>
+        <target>Create an account</target>
+      </trans-unit>
+      <trans-unit id="19" resname="étape %step%">
+        <source>étape %step%</source>
+        <target>Step %step%</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

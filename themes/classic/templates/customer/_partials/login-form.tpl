@@ -16,9 +16,9 @@
                     </picture>
                 </div>
                 <div class="inside">
-                    <h2 class="mb-4">Pas encore de compte ?</h2>
+                    <h2 class="mb-4">{l s='Pas encore de compte ?' d='Shop.Theme.Customcustomer'}</h2>
                     <a href="{$urls.pages.register}" class="btn btn-secondary" id="inscription">
-                        Créer un compte
+                        {l s='Créer un compte' d='Shop.Theme.Customcustomer'}
                     </a>
                 </div>
             </div>
@@ -28,7 +28,7 @@
         <div class="inside-login-form my-4">
             {if $pro.env == 0 && (!isset($show_title) || $show_title===false)}
                 {block name='page_title'}
-                    <h1 class="h1 mb-4">Se connecter</h1>
+                    <h1 class="h1 mb-4">{l s='Se connecter' d='Shop.Theme.Customcustomer'}</h1>
                 {/block}
             {/if}
 
@@ -49,7 +49,7 @@
                             {l s='Forgot your password?' d='Shop.Theme.Customeraccount'}
                         </a>
                     </div>
-                    <p class="txt_ou_bien text-center"><strong>Ou bien...</strong></p>
+                    <p class="txt_ou_bien text-center">{l s='[1]Ou bien...[/1]' sprintf=['[1]' => '<strong>', '[/1]' => '</strong>'] d='Shop.Theme.Customcustomer'}</p>
                 </div>
             {else}
                 <div class="forgot-password">

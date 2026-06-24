@@ -87,7 +87,7 @@
                                         {assign var="unit_ht" value=$product.unit_price_tax_excl|floatval}
                                         {assign var="total_ht" value=$product.total_price_tax_excl|floatval}
                                         <div class="col-xs-4 text-sm-center text-xs-left">
-                                            {$product.price_with_reduction_without_tax|number_format:2:',':' '} € HT
+                                            {$product.price_with_reduction_without_tax|number_format:2:',':' '} € {l s='HT' d='Shop.Theme.Customcheckout'}
                                         </div>
                                         <div class="col-xs-4 text-sm-center">
                                             {$product.quantity}

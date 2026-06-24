@@ -1,4 +1,4 @@
-<span class="h6 mb-2">Caractéristiques techniques</span>
+<span class="h6 mb-2">{l s='Caractéristiques techniques' d='Shop.Theme.Customcatalog'}</span>
 
 <div id="product-features-show">
 
@@ -21,6 +21,6 @@
 
 
   <div class="text-left">
-      <a href="#block-description-long" class="text-bold text-right">+ Lire d'avantage</a>
+      <a href="#block-description-long" class="text-bold text-right">+ {l s='Lire d\'avantage' d='Shop.Theme.Customcatalog'}</a>
   </div> 
 </div>

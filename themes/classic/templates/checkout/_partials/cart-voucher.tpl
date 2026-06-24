@@ -86,9 +86,9 @@
                 <ul class="applied-vouchers">
                     {foreach from=$cart.vouchers.added item=voucher}
                         <li class="applied-voucher">
-                            <span class="applied-voucher__tag">PROMO</span>
+                            <span class="applied-voucher__tag">{l s='PROMO' d='Shop.Theme.Customcheckout'}</span>
                             <span class="applied-voucher__label">{$voucher.name}</span>
-                            <span class="applied-voucher__value">{$voucher.reduction_formatted}{if $pro.env == 1} HT{/if}</span>
+                            <span class="applied-voucher__value">{$voucher.reduction_formatted}{if $pro.env == 1} {l s='HT' d='Shop.Theme.Customcheckout'}{/if}</span>
                             {if isset($voucher.code) && $voucher.code !== ''}
                                 <a href="{$voucher.delete_url}" data-link-action="remove-voucher" class="applied-voucher__remove" aria-label="{l s='Remove' d='Shop.Theme.Actions'}">
                                     <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">

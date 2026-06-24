@@ -39,10 +39,10 @@
                                 </span>
                                 <span class="value">
                                     {if $subtotal.type == "shipping"}
-                                        à définir
+                                        {l s='à définir' d='Shop.Theme.Customcheckout'}
                                     {else}
                                         {if 'discount' == $subtotal.type}-&nbsp;{/if}
-                                        {$subtotal.value} {if $subtotal.type != "shipping" && $pro.env == 1}HT{/if}
+                                        {$subtotal.value} {if $subtotal.type != "shipping" && $pro.env == 1}{l s='HT' d='Shop.Theme.Customcheckout'}{/if}
                                     {/if}
                                 </span>
                                 {* --- TVA uniquement pour PRO --- *}
@@ -58,10 +58,10 @@
                                 </span>
                                 <span class="value">
                                     {if $subtotal.type == "shipping"}
-                                        à définir
+                                        {l s='à définir' d='Shop.Theme.Customcheckout'}
                                     {else}
                                         {if 'discount' == $subtotal.type}-&nbsp;{/if}
-                                        {$subtotal.value} {if $subtotal.type != "shipping" && $pro.env == 1}HT{/if}
+                                        {$subtotal.value} {if $subtotal.type != "shipping" && $pro.env == 1}{l s='HT' d='Shop.Theme.Customcheckout'}{/if}
                                     {/if}
                                 </span>
                                 {* --- TVA uniquement pour PRO --- *}

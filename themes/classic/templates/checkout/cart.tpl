@@ -60,13 +60,13 @@
                              stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left">
                             <path d="m15 18-6-6 6-6"/>
                         </svg>
-                        Retour à la boutique</a>
+                        {l s='Retour à la boutique' d='Shop.Theme.Customcheckout'}</a>
                 </div>
                 {block name='cart_summary'}
                 <div class="cart-summary">
                     <div class="container cart-summary-inside">
                         <div>
-                            <p class="h3 mb-4">Récapitulatif</p>
+                            <p class="h3 mb-4">{l s='Récapitulatif' d='Shop.Theme.Customcheckout'}</p>
                             {include file='checkout/_partials/cart-summary-top.tpl' cart=$cart}
                         </div>
 

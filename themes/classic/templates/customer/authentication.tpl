@@ -35,17 +35,13 @@
 
 {block name='page_content'}
   {if $pro.env == 1}
-    <p class="text-center sous-texte-auth">Bienvenue dans votre Espace Professionnel dédié aux experts du bâtiment,
-      aux jardiniers
-      et aux paysagistes passionnés. Chez Districlos, nous comprenons l'importance d'un partenariat solide pour
-      mener à bien vos projets. C'est pourquoi nous avons créé cet espace exclusif, où vous bénéficiez de tarifs
-      avantageux et de remises toute l'année sur nos clôtures, grillages et portails de qualité supérieure.</p>
+    <p class="text-center sous-texte-auth">{l s='Bienvenue dans votre Espace Professionnel dédié aux experts du bâtiment, aux jardiniers et aux paysagistes passionnés. Chez Districlos, nous comprenons l\'importance d\'un partenariat solide pour mener à bien vos projets. C\'est pourquoi nous avons créé cet espace exclusif, où vous bénéficiez de tarifs avantageux et de remises toute l\'année sur nos clôtures, grillages et portails de qualité supérieure.' d='Shop.Theme.Customcustomer'}</p>
   {/if}
   {block name='login_form_container'}
     {if $pro.env == 1}<div class="row">{/if}
     <section class="login-form{if $pro.env == 1} col-6{/if}">
       {if $pro.env == 1}
-        <p class="text-center titreForm"><strong>Je me connecte à mon espace</strong></p>
+        <p class="text-center titreForm"><strong>{l s='Je me connecte à mon espace' d='Shop.Theme.Customcustomer'}</strong></p>
       {/if}
 
       {render file='customer/_partials/login-form.tpl' ui=$login_form  show_title=false}
@@ -62,15 +58,14 @@
 
         <div class="avis">
           <div class="texte">
-            <p>"Mon expérience avec Districlos a été géniale, et je suis convaincu que toute collaboration
-              sera synonyme de succès et de satisfaction"</p>
+            <p>{l s='"Mon expérience avec Districlos a été géniale, et je suis convaincu que toute collaboration sera synonyme de succès et de satisfaction"' d='Shop.Theme.Customcustomer'}</p>
             <br>
-            <p class="light">Thomas - Paysagiste</p>
+            <p class="light">{l s='Thomas - Paysagiste' d='Shop.Theme.Customcustomer'}</p>
           </div>
         </div>
         <div class="block-bas">
-          <p class="green-dark"><strong>100€ offert dès 1 000€ d'achat HT</strong></p>
-          <p class="text-white">pour toute première commande en tant que professionnel !</p>
+          <p class="green-dark"><strong>{l s='100€ offert dès 1 000€ d\'achat HT' d='Shop.Theme.Customcustomer'}</strong></p>
+          <p class="text-white">{l s='pour toute première commande en tant que professionnel !' d='Shop.Theme.Customcustomer'}</p>
         </div>
       </div>
       </div>
@@ -84,16 +79,15 @@
       <div class="steps-container">
         <div class="step">
           <div class="step-number">1</div>
-          <div class="step-text">Je remplis le formulaire<br>d'inscription</div>
+          <div class="step-text">{l s='Je remplis le formulaire%br%d\'inscription' sprintf=['%br%' => '<br>'] d='Shop.Theme.Customcustomer'}</div>
         </div>
         <div class="step">
           <div class="step-number">2</div>
-          <div class="step-text">Mon compte est validé<br> par les équipes Districlos</div>
+          <div class="step-text">{l s='Mon compte est validé%br% par les équipes Districlos' sprintf=['%br%' => '<br>'] d='Shop.Theme.Customcustomer'}</div>
         </div>
         <div class="step">
           <div class="step-number">3</div>
-          <div class="step-text">Je bénéficie de <strong>100€ offert</strong><br><strong>dès 1000€
-              d'achat!</strong></div>
+          <div class="step-text">{l s='Je bénéficie de [1]100€ offert[/1]%br%[2]dès 1000€ d\'achat![/2]' sprintf=['[1]' => '<strong>', '[/1]' => '</strong>', '[2]' => '<strong>', '[/2]' => '</strong>', '%br%' => '<br>'] d='Shop.Theme.Customcustomer'}</div>
         </div>
       </div>
 
@@ -104,7 +98,7 @@
       <div class="row full-width margin-bottom-80">
         <div class="col-sm-12">
           <div class="container">
-            <h3 style="margin-bottom:0!important" class="title_descr"><strong>Vous avez du talent !</strong></h3>
+            <h3 style="margin-bottom:0!important" class="title_descr"><strong>{l s='Vous avez du talent !' d='Shop.Theme.Customcustomer'}</strong></h3>
           </div>
           <div class="contenair-img">
             <picture><source srcset="/img/cms/auth/occultante.webp" type="image/webp"><img src="/img/cms/auth/occultante.JPG" alt="occultante" loading="lazy"></picture>

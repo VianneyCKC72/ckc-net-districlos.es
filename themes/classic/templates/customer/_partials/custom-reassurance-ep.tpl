@@ -1,20 +1,17 @@
 <div id="block-reassurance-custom">
-    <h2 class="picto_rond_title pouce">Les avantages d'être pro chez Districlos</h2>
+    <h2 class="picto_rond_title pouce">{l s='Les avantages d\'être pro chez Districlos' d='Shop.Theme.Customcustomer'}</h2>
     <div class="row">
         <div class="inside">
             <ul class="cont-inside">
                 <li class="item">
                     <picture><source srcset="/img/cms/auth/livraison_home.webp" type="image/webp"><img width="60" height="60" src="/img/cms/auth/livraison_home.png" loading="lazy"/></picture>
-                    <div class="title">Livraison offerte<br>dès 450 €</div>
-                    <p>Directement sur votre <strong>chantier</strong> ou dépôt !<br>
-                        La livraison s'effectue avec <strong>notre propre flotte de camions</strong> pour des <strong>délais</strong><br>et des <strong>coûts
-                            réduits.</strong></p>
+                    <div class="title">{l s='Livraison offerte' d='Shop.Theme.Customcustomer'}<br>{l s='dès 450 €' d='Shop.Theme.Customcustomer'}</div>
+                    <p>{l s='Directement sur votre [1]chantier[/1] ou dépôt !%br%La livraison s\'effectue avec [2]notre propre flotte de camions[/2] pour des [3]délais[/3]%br%et des [4]coûts réduits.[/4]' sprintf=['[1]' => '<strong>', '[/1]' => '</strong>', '[2]' => '<strong>', '[/2]' => '</strong>', '[3]' => '<strong>', '[/3]' => '</strong>', '[4]' => '<strong>', '[/4]' => '</strong>', '%br%' => '<br>'] d='Shop.Theme.Customcustomer'}</p>
                 </li>
                 <li class="item">
                     <picture><source srcset="/img/cms/auth/remise_rond2.webp" type="image/webp"><img width="60" height="60" src="/img/cms/auth/remise_rond2.png" loading="lazy"/></picture>
-                    <div class="title">Mêmes produits<br>au meilleur prix</div>
-                    <p>Obtenez des <strong>tarifs exclusifs</strong><br>professionnels sur la totalité de notre catalogue de
-                        produits !</p>
+                    <div class="title">{l s='Mêmes produits' d='Shop.Theme.Customcustomer'}<br>{l s='au meilleur prix' d='Shop.Theme.Customcustomer'}</div>
+                    <p>{l s='Obtenez des [1]tarifs exclusifs[/1]%br%professionnels sur la totalité de notre catalogue de produits !' sprintf=['[1]' => '<strong>', '[/1]' => '</strong>', '%br%' => '<br>'] d='Shop.Theme.Customcustomer'}</p>
                 </li>
 {*                <li class="item">*}
 {*                    <img width="60" height="60" src="/img/cms/auth/paiement_home.png"/>*}
@@ -26,17 +23,13 @@
 {*                </li>*}
                 <li class="item">
                     <picture><source srcset="/img/cms/auth/remise_rond.webp" type="image/webp"><img width="60" height="60" src="/img/cms/auth/remise_rond.png" loading="lazy"/></picture>
-                    <div class="title">100€ offert dès 1000€</div>
-                    <p>Pour tout nouveau professionnel ! De plus, vous pouvez bénéficier de <strong>remises
-                            exceptionnelles</strong> sur l'ensemble de notre catalogue Districlos.</p>
+                    <div class="title">{l s='100€ offert dès 1000€' d='Shop.Theme.Customcustomer'}</div>
+                    <p>{l s='Pour tout nouveau professionnel ! De plus, vous pouvez bénéficier de [1]remises exceptionnelles[/1] sur l\'ensemble de notre catalogue Districlos.' sprintf=['[1]' => '<strong>', '[/1]' => '</strong>'] d='Shop.Theme.Customcustomer'}</p>
                 </li>
                 <li class="item">
                     <picture><source srcset="/img/cms/auth/carton_rond.webp" type="image/webp"><img width="60" height="60" src="/img/cms/auth/carton_rond.png" loading="lazy"/></picture>
-                    <div class="title">Reprise de marchandise</div>
-                    <p>En bon état et non rayé (hors soubassement). La récupération des produits s'effectue <strong>sous
-                            3
-                            mois
-                            maximum.</strong></p>
+                    <div class="title">{l s='Reprise de marchandise' d='Shop.Theme.Customcustomer'}</div>
+                    <p>{l s='En bon état et non rayé (hors soubassement). La récupération des produits s\'effectue [1]sous 3 mois maximum.[/1]' sprintf=['[1]' => '<strong>', '[/1]' => '</strong>'] d='Shop.Theme.Customcustomer'}</p>
                 </li>
             </ul>
         </div>

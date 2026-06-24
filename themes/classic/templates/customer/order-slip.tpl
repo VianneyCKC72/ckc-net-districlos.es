@@ -25,7 +25,7 @@
 {extends file='customer/page.tpl'}
 
 {block name='page_title'}
-    Mes avoirs
+    {l s='Mes avoirs' d='Shop.Theme.Customcustomer'}
 {/block}
 
 {block name='page_content'}

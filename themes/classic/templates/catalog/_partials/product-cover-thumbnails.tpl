@@ -67,7 +67,7 @@
     <div class="product-images swiper swiper__product-img__cover">
         {if !$product.from_europe}
             <div class="pastille_fr">
-                <img src="/img/pastille_produit_france.svg" alt="Fabriqué en France" class="pastille_fr_icon pastille-fr-icon-page-produit">
+                <img src="/img/pastille_produit_france.svg" alt="{l s='Fabriqué en France' d='Shop.Theme.Customcatalog'}" class="pastille_fr_icon pastille-fr-icon-page-produit">
             </div>
         {/if}
 

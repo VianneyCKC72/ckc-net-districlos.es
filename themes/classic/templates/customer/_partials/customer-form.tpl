@@ -35,7 +35,7 @@
     <div>
       {if !isset($show_title) || $show_title}
         {block name='page_title'}
-          <h1 class="h1 mb-4">Créer un compte</h1>
+          <h1 class="h1 mb-4">{l s='Créer un compte' d='Shop.Theme.Customcustomer'}</h1>
         {/block}
       {/if}
 

@@ -1,8 +1,8 @@
 {if $product.has_discount}
     <div class="product-discount has-discount-header">
-        <div class="tag-discount">Promotion</div>
+        <div class="tag-discount">{l s='Promotion' d='Shop.Theme.Customcatalog'}</div>
         <div class="">
-            Bénéficiez de
+            {l s='Bénéficiez de' d='Shop.Theme.Customcatalog'}
             <span class="font-weight-bold">
                 {if $product.discount_type === 'percentage'}
                     <span class="discount-value">
@@ -14,7 +14,7 @@
                     </span>
                 {/if}
             </span>
-            directement <strong>dans votre panier</strong>
+            {l s='directement [1]dans votre panier[/1]' sprintf=['[1]' => '<strong>', '[/1]' => '</strong>'] d='Shop.Theme.Customcatalog'}
         </div>
 
     </div>

@@ -30,16 +30,16 @@
       </div>
       <div class="text-sm-center">
         <button type="button" class="btn btn-primary disabled"
-          disabled>PASSER COMMANDE</button>
+          disabled>{l s='PASSER COMMANDE' d='Shop.Theme.Customcheckout'}</button>
       </div>
     {elseif empty($cart.products) }
       <div class="text-sm-center">
         <button type="button" class="btn btn-primary disabled"
-          disabled>PASSER COMMANDE</button>
+          disabled>{l s='PASSER COMMANDE' d='Shop.Theme.Customcheckout'}</button>
       </div>
     {else}
       <div class="text-sm-center">
-        <a href="{$urls.pages.order}" class="btn btn-secondary w-100">PASSER COMMANDE</a>
+        <a href="{$urls.pages.order}" class="btn btn-secondary w-100">{l s='PASSER COMMANDE' d='Shop.Theme.Customcheckout'}</a>
         {hook h='displayExpressCheckout'}
       </div>
     {/if}

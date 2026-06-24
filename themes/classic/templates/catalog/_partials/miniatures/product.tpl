@@ -44,7 +44,7 @@
 
                     {if !$product.from_europe}
                         <div class="pastille_fr">
-                            <img src="/img/pastille_produit_france.svg" alt="Fabriqué en France" class="pastille_fr_icon">
+                            <img src="/img/pastille_produit_france.svg" alt="{l s='Fabriqué en France' d='Shop.Theme.Customcatalog'}" class="pastille_fr_icon">
                         </div>
                     {/if}
 
@@ -176,15 +176,15 @@
 
                                         {if $pro.env == 1 && isset($product.discount_qty_slider) }
                                             <span class="price">
-                                                {$product.specific_price_ht} € HT
+                                                {$product.specific_price_ht} € {l s='HT' d='Shop.Theme.Customcatalog'}
                                             </span>
-                                            <small>dès {$product.from_quantity} unités*</small>
+                                            <small>{l s='dès' d='Shop.Theme.Customcatalog'} {$product.from_quantity} {l s='unités' d='Shop.Theme.Customcatalog'}*</small>
                                             <div class="product-price-and-shipping">
-                                                <span class="regular-price">{$product.initial_price_ht} € HT </span>
+                                                <span class="regular-price">{$product.initial_price_ht} € {l s='HT' d='Shop.Theme.Customcatalog'} </span>
                                             </div>
                                          {else}
                                             <span class="price">
-                                                {if $has_campaign_discount}{$product.campaign_discount.price}{else}{$product.price}{/if} {if $pro.env == 1}<span class="indice-taxe">HT</span>{/if}
+                                                {if $has_campaign_discount}{$product.campaign_discount.price}{else}{$product.price}{/if} {if $pro.env == 1}<span class="indice-taxe">{l s='HT' d='Shop.Theme.Customcatalog'}</span>{/if}
                                             </span>
                                          {/if}
                                     </span>
@@ -218,7 +218,7 @@
                         {/block}
                     </div>
                     {if $pro.env == 0 OR ($pro.env == 1 && $page.page_name == 'product') OR ($pro.env == 1 && $page.page_name == 'category')}
-                        <a href="{$product.url}" class="btn btn-primary">Voir le produit</a>
+                        <a href="{$product.url}" class="btn btn-primary">{l s='Voir le produit' d='Shop.Theme.Customcatalog'}</a>
                     {/if}
                 </div>
 

@@ -34,17 +34,17 @@
             {foreach from=$product.quantity_discounts item='quantity_discount' name='quantity_discounts'}
               <tr data-discount-type="{$quantity_discount.reduction_type}" data-discount="{$quantity_discount.real_value}"
                 data-discount-quantity="{$quantity_discount.quantity}">
-                <td>Quantité</td>
+                <td>{l s='Quantité' d='Shop.Theme.Customcatalog'}</td>
                 <td class="text-bold text-right">{$quantity_discount.quantity}</td>
               </tr>
               <tr data-discount-type="{$quantity_discount.reduction_type}" data-discount="{$quantity_discount.real_value}"
                 data-discount-quantity="{$quantity_discount.quantity}">
-                <td>Prix par unité</td>
-                <td class="text-bold text-right">{$quantity_discount.discount} /pièce</td>
+                <td>{l s='Prix par unité' d='Shop.Theme.Customcatalog'}</td>
+                <td class="text-bold text-right">{$quantity_discount.discount} /{l s='pièce' d='Shop.Theme.Customcatalog'}</td>
               </tr>
               <tr data-discount-type="{$quantity_discount.reduction_type}" data-discount="{$quantity_discount.real_value}"
                 data-discount-quantity="{$quantity_discount.quantity}">
-                <td>Économisez</td>
+                <td>{l s='Économisez' d='Shop.Theme.Customcatalog'}</td>
                 <td class="text-bold text-right">{$quantity_discount.save}</td>
             </tr>
             {/foreach}

@@ -94,7 +94,7 @@
 
   {if isset($cart.subtotals.discounts) && $cart.subtotals.discounts.amount > 0}
     <div class="cart-summary-line cart-savings" id="cart-savings" style="justify-content: center; font-size: 14px;margin-top: 10px;">
-      <span class="label">Vous économisez <strong>{$cart.subtotals.discounts.amount|round} €</strong> sur votre commande</span>
+      <span class="label">{l s='Vous économisez [1]%amount% €[/1] sur votre commande' sprintf=['[1]' => '<strong>', '[/1]' => '</strong>', '%amount%' => $cart.subtotals.discounts.amount|round] d='Shop.Theme.Customcheckout'}</span>
     </div>
   {/if}
 {/block}

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="fr-FR" target-language="en-US" datatype="plaintext" original="ShopThemeCustomcustomer">
+    <body>
+      <trans-unit id="1"><source>adresse par défaut</source><target>default address</target></trans-unit>
+      <trans-unit id="2"><source>définir par défaut</source><target>set as default</target></trans-unit>
+      <trans-unit id="3"><source>modifier</source><target>edit</target></trans-unit>
+      <trans-unit id="4"><source>supprimer</source><target>delete</target></trans-unit>
+      <trans-unit id="5"><source>Menu</source><target>Menu</target></trans-unit>
+      <trans-unit id="6"><source>Mon adresse</source><target>My address</target></trans-unit>
+      <trans-unit id="7"><source>Mes commandes</source><target>My orders</target></trans-unit>
+      <trans-unit id="8"><source>Réseaux sociaux</source><target>Social networks</target></trans-unit>
+      <trans-unit id="9"><source>Mes données personnelles</source><target>My personal data</target></trans-unit>
+      <trans-unit id="10"><source>Mes demandes de devis</source><target>My quote requests</target></trans-unit>
+      <trans-unit id="11"><source>Se déconnecter</source><target>Log out</target></trans-unit>
+      <trans-unit id="12"><source>Mon historique d'achat</source><target>My purchase history</target></trans-unit>
+      <trans-unit id="13"><source>Mes avantages</source><target>My benefits</target></trans-unit>
+      <trans-unit id="14"><source>Mes notifications</source><target>My notifications</target></trans-unit>
+      <trans-unit id="15"><source>Déconnexion</source><target>Log out</target></trans-unit>
+      <trans-unit id="16"><source>Mes raccourcis</source><target>My shortcuts</target></trans-unit>
+      <trans-unit id="17"><source>Mes informations</source><target>My information</target></trans-unit>
+      <trans-unit id="18"><source>Mes factures</source><target>My invoices</target></trans-unit>
+      <trans-unit id="19"><source>Mes autres options</source><target>My other options</target></trans-unit>
+      <trans-unit id="20"><source>Mes avoirs</source><target>My credit slips</target></trans-unit>
+      <trans-unit id="21"><source>Détails</source><target>Details</target></trans-unit>
+      <trans-unit id="22"><source>Suivre</source><target>Track</target></trans-unit>
+      <trans-unit id="23"><source>HT</source><target>excl. tax</target></trans-unit>
+      <trans-unit id="24"><source>Formulaire d'inscription</source><target>Registration form</target></trans-unit>
+      <trans-unit id="25"><source>Vous avez déjà un compte ?</source><target>Already have an account?</target></trans-unit>
+      <trans-unit id="26"><source>Je me connecte</source><target>Log in</target></trans-unit>
+      <trans-unit id="27"><source>Créer un compte</source><target>Create an account</target></trans-unit>
+      <trans-unit id="28"><source>Pas encore de compte ?</source><target>No account yet?</target></trans-unit>
+      <trans-unit id="29"><source>Se connecter</source><target>Log in</target></trans-unit>
+      <trans-unit id="30"><source>[1]Ou bien...[/1]</source><target>[1]Or...[/1]</target></trans-unit>
+      <trans-unit id="31"><source>[1]100€ offert ![/1]</source><target>[1]€100 free![/1]</target></trans-unit>
+      <trans-unit id="32"><source>Les avantages d'être pro chez Districlos</source><target>The benefits of being a pro at Districlos</target></trans-unit>
+      <trans-unit id="33"><source>Livraison offerte</source><target>Free delivery</target></trans-unit>
+      <trans-unit id="34"><source>dès 450 €</source><target>from €450</target></trans-unit>
+      <trans-unit id="35"><source>Directement sur votre [1]chantier[/1] ou dépôt !%br%La livraison s'effectue avec [2]notre propre flotte de camions[/2] pour des [3]délais[/3]%br%et des [4]coûts réduits.[/4]</source><target>Delivered straight to your [1]site[/1] or depot!%br%Delivery is handled by [2]our own fleet of trucks[/2] for [3]shorter lead times[/3]%br%and [4]reduced costs.[/4]</target></trans-unit>
+      <trans-unit id="36"><source>Mêmes produits</source><target>Same products</target></trans-unit>
+      <trans-unit id="37"><source>au meilleur prix</source><target>at the best price</target></trans-unit>
+      <trans-unit id="38"><source>Obtenez des [1]tarifs exclusifs[/1]%br%professionnels sur la totalité de notre catalogue de produits !</source><target>Get [1]exclusive rates[/1]%br%for professionals across our entire product catalogue!</target></trans-unit>
+      <trans-unit id="39"><source>100€ offert dès 1000€</source><target>€100 free from €1,000</target></trans-unit>
+      <trans-unit id="40"><source>Pour tout nouveau professionnel ! De plus, vous pouvez bénéficier de [1]remises exceptionnelles[/1] sur l'ensemble de notre catalogue Districlos.</source><target>For every new professional! Plus, you can enjoy [1]exceptional discounts[/1] across our entire Districlos catalogue.</target></trans-unit>
+      <trans-unit id="41"><source>Reprise de marchandise</source><target>Goods buyback</target></trans-unit>
+      <trans-unit id="42"><source>En bon état et non rayé (hors soubassement). La récupération des produits s'effectue [1]sous 3 mois maximum.[/1]</source><target>In good condition and unscratched (excluding base panels). Goods are collected [1]within 3 months maximum.[/1]</target></trans-unit>
+      <trans-unit id="43"><source>Bienvenue dans votre Espace Professionnel dédié aux experts du bâtiment, aux jardiniers et aux paysagistes passionnés. Chez Districlos, nous comprenons l'importance d'un partenariat solide pour mener à bien vos projets. C'est pourquoi nous avons créé cet espace exclusif, où vous bénéficiez de tarifs avantageux et de remises toute l'année sur nos clôtures, grillages et portails de qualité supérieure.</source><target>Welcome to your Professional Area dedicated to building experts, gardeners and passionate landscapers. At Districlos, we understand the importance of a strong partnership to carry out your projects successfully. That's why we created this exclusive area, where you enjoy advantageous rates and year-round discounts on our premium-quality fences, fence panels and gates.</target></trans-unit>
+      <trans-unit id="44"><source>Je me connecte à mon espace</source><target>Log in to my area</target></trans-unit>
+      <trans-unit id="45"><source>"Mon expérience avec Districlos a été géniale, et je suis convaincu que toute collaboration sera synonyme de succès et de satisfaction"</source><target>"My experience with Districlos has been great, and I'm convinced that any collaboration will be synonymous with success and satisfaction"</target></trans-unit>
+      <trans-unit id="46"><source>Thomas - Paysagiste</source><target>Thomas - Landscaper</target></trans-unit>
+      <trans-unit id="47"><source>100€ offert dès 1 000€ d'achat HT</source><target>€100 free from €1,000 spend excl. tax</target></trans-unit>
+      <trans-unit id="48"><source>pour toute première commande en tant que professionnel !</source><target>for any first order as a professional!</target></trans-unit>
+      <trans-unit id="49"><source>Je remplis le formulaire%br%d'inscription</source><target>I fill in the%br%registration form</target></trans-unit>
+      <trans-unit id="50"><source>Mon compte est validé%br% par les équipes Districlos</source><target>My account is approved%br% by the Districlos teams</target></trans-unit>
+      <trans-unit id="51"><source>Je bénéficie de [1]100€ offert[/1]%br%[2]dès 1000€ d'achat![/2]</source><target>I get [1]€100 free[/1]%br%[2]from €1,000 spend![/2]</target></trans-unit>
+      <trans-unit id="52"><source>Vous avez du talent !</source><target>You've got talent!</target></trans-unit>
+      <trans-unit id="53"><source>Qui est concerné ?</source><target>Who is it for?</target></trans-unit>
+      <trans-unit id="54"><source>Notre entreprise s'adresse tout particulièrement [1]aux professionnels de l'aménagement extérieur[/1], englobant une large gamme de métiers tels que [2]les poseurs de clôtures[/2], les paysagistes, les jardiniers, et bien d'autres encore. Que vous soyez un [3]entrepreneur expérimenté[/3] ou un [4]artisan débutant[/4] dans le domaine, nos services sont conçus pour répondre à vos besoins spécifiques. Nous comprenons les défis et les exigences propres à votre secteur, et c'est pourquoi nous nous efforçons de vous offrir des [5]solutions sur mesure[/5] qui facilitent votre travail au quotidien. Que ce soit pour la fourniture de matériaux de qualité, des outils innovants, ou un soutien logistique efficace, notre entreprise s'engage à vous accompagner dans la réussite de vos projets d'aménagement extérieur.</source><target>Our company is aimed particularly at [1]outdoor living professionals[/1], covering a wide range of trades such as [2]fence installers[/2], landscapers, gardeners, and many more. Whether you are an [3]experienced contractor[/3] or a [4]beginner craftsman[/4] in the field, our services are designed to meet your specific needs. We understand the challenges and requirements specific to your sector, which is why we strive to offer you [5]tailor-made solutions[/5] that make your daily work easier. Whether for supplying quality materials, innovative tools, or efficient logistical support, our company is committed to supporting you in the success of your outdoor living projects.</target></trans-unit>
+      <trans-unit id="55"><source>Un réseau d'installateur qui communique</source><target>A connected network of installers</target></trans-unit>
+      <trans-unit id="56"><source>Nous savons qu'il est important pour nos clients de choisir le bon professionnel pour leur projet d'aménagement extérieur. Ainsi, nous leur transmettons la [1]liste des poseurs[/1] proches de leur région.</source><target>We know how important it is for our customers to choose the right professional for their outdoor living project. That's why we share the [1]list of installers[/1] near their area.</target></trans-unit>
+      <trans-unit id="57"><source>En tant que professionnel, vous pouvez être mis en avant sur nos [1]réseaux sociaux[/1] : Facebook, Instagram, LinkedIn mais également sur notre [2]site internet[/2] grâce à une page dédiée. Voilà un peu de visibilité pour une coopération qui fonctionne !</source><target>As a professional, you can be featured on our [1]social networks[/1]: Facebook, Instagram, LinkedIn, as well as on our [2]website[/2] through a dedicated page. That's some great visibility for a partnership that works!</target></trans-unit>
+      <trans-unit id="58"><source>Des interlocuteurs dédiés</source><target>Dedicated contacts</target></trans-unit>
+      <trans-unit id="59"><source>Afin d'être au plus proche de vous, nos [1]16 magasins[/1] couvrent toute la France ! Nos experts sont toujours disponibles pour échanger et vous accompagner sur vos projets.</source><target>To stay as close as possible to you, our [1]16 stores[/1] cover the whole of France! Our experts are always available to talk and support you on your projects.</target></trans-unit>
+      <trans-unit id="60"><source>Sinon, contactez notre [1]service client[/1] au [2]0970716845[/2] constitué de professionnels de la clôture qui seront prêts pour vous aiguiller sur vos démarches professionnelles.</source><target>Otherwise, contact our [1]customer service[/1] at [2]0970716845[/2], a team of fencing professionals ready to guide you through your professional procedures.</target></trans-unit>
+      <trans-unit id="61"><source>100€ offert !</source><target>€100 free!</target></trans-unit>
+    </body>
+  </file>
+</xliff>

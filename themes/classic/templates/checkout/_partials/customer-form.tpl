@@ -45,5 +45,5 @@
           type="submit" value="1">
     {l s='Continue' d='Shop.Theme.Actions'}
   </button>
-  <p class="txt_ou_bien text-center"><strong>Ou bien...</strong></p>
+  <p class="txt_ou_bien text-center"><strong>{l s='Ou bien...' d='Shop.Theme.Customcheckout'}</strong></p>
 {/block}

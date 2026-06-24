@@ -29,7 +29,7 @@
         <div class="address-body">
           <div class="head-addresses">
             <h4>{$address.alias}</h4>
-            <span class="badge badge-green">adresse par défaut</span>
+            <span class="badge badge-green">{l s='adresse par défaut' d='Shop.Theme.Customcustomer'}</span>
           </div>
           <address>
             {if $address.firstname || $address.lastname}
@@ -72,11 +72,11 @@
           <div class="address-footer">
             <a href="{url entity=address id=$address.id}" data-link-action="edit-address">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
-              <span>modifier</span>
+              <span>{l s='modifier' d='Shop.Theme.Customcustomer'}</span>
             </a>
             <a href="{url entity=address id=$address.id params=['delete' => 1, 'token' => $token]}" data-link-action="delete-address">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
-              <span>supprimer</span>
+              <span>{l s='supprimer' d='Shop.Theme.Customcustomer'}</span>
             </a>
           </div>
         {/block}
@@ -127,16 +127,16 @@
         {block name='address_block_item_actions'}
           <div class="address-footer">
             <div>
-              <span class="badge badge-empty-green">définir par défaut</span>
+              <span class="badge badge-empty-green">{l s='définir par défaut' d='Shop.Theme.Customcustomer'}</span>
               <div type="hidden" id="addressId" style="display: none">{$address.id}</div>
             </div>
             <a href="{url entity=address id=$address.id}" data-link-action="edit-address">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
-              <span>modifier</span>
+              <span>{l s='modifier' d='Shop.Theme.Customcustomer'}</span>
             </a>
             <a href="{url entity=address id=$address.id params=['delete' => 1, 'token' => $token]}" data-link-action="delete-address">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
-              <span>supprimer</span>
+              <span>{l s='supprimer' d='Shop.Theme.Customcustomer'}</span>
             </a>
           </div>
         {/block}
@@ -188,16 +188,16 @@
       {block name='address_block_item_actions'}
         <div class="address-footer">
           <div>
-            <span class="badge badge-empty-green">définir par défaut</span>
+            <span class="badge badge-empty-green">{l s='définir par défaut' d='Shop.Theme.Customcustomer'}</span>
             <div type="hidden" id="addressId" style="display: none">{$address.id}</div>
           </div>
           <a href="{url entity=address id=$address.id}" data-link-action="edit-address">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
-            <span>modifier</span>
+            <span>{l s='modifier' d='Shop.Theme.Customcustomer'}</span>
           </a>
           <a href="{url entity=address id=$address.id params=['delete' => 1, 'token' => $token]}" data-link-action="delete-address">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
-            <span>supprimer</span>
+            <span>{l s='supprimer' d='Shop.Theme.Customcustomer'}</span>
           </a>
         </div>
       {/block}

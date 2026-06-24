@@ -31,21 +31,21 @@
             {block name='header_nav'}
                 <nav class="header-nav d-flex align-items-center">
                     <div class="displayMenu">
-                        <a class="link-danger" href="/content/660-les-offres-au-volume">Les offres au volume</a>
+                        <a class="link-danger" href="/content/660-les-offres-au-volume">{l s='Les offres au volume' d='Shop.Theme.Customglobal'}</a>
                     </div>
 
                     <div class="displayTop">
                         {hook h='displayTop'}
                         <a href="/avantages-pro" class="btn btn-primary d-none d-md-block">
                             <div class="fs-6 font-weight-bold">
-                                Mes avantages
+                                {l s='Mes avantages' d='Shop.Theme.Customglobal'}
                             </div>
                         </a>
                         <div class="block-question block-question-header">
                             <img loading="lazy" src="/img/menu-mobile-phone.svg" width="22" height="20" class="ico-question"
-                                 alt="des question?">
+                                 alt="{l s='des question?' d='Shop.Theme.Customglobal'}">
                             <div>
-                                Des questions ?
+                                {l s='Des questions ?' d='Shop.Theme.Customglobal'}
                                 <a href="tel:0422531034"><strong>04 22 53 10 34</strong></a>
                             </div>
                         </div>
