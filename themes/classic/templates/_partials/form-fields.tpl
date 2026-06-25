@@ -84,20 +84,15 @@
                          {if $field.required}required{/if}{if $value eq $field.value} checked {/if}>
                   <span></span>
                 </span>
-                                {if $pro.env == 1 && $label == 'Mademoiselle'}
+                                {assign var="genderLabel" value=$label|trim}
+                                {if $pro.env == 1 && $genderLabel == 'Mademoiselle'}
                                     {l s='Mlle.' d='Shop.Theme.Customglobal'}
-                                {elseif $pro.env == 1 && $label == 'Monsieur'}
+                                {elseif $pro.env == 1 && $genderLabel == 'Monsieur'}
                                     {l s='M.' d='Shop.Theme.Customglobal'}
-                                {elseif $pro.env == 1 && $label == 'Madame'}
+                                {elseif $pro.env == 1 && $genderLabel == 'Madame'}
                                     {l s='Mme.' d='Shop.Theme.Customglobal'}
-                                {elseif $label == 'Monsieur'}
-                                    {l s='Monsieur' d='Shop.Theme.Customglobal'}
-                                {elseif $label == 'Madame'}
-                                    {l s='Madame' d='Shop.Theme.Customglobal'}
-                                {elseif $label == 'Mademoiselle'}
-                                    {l s='Mademoiselle' d='Shop.Theme.Customglobal'}
                                 {else}
-                                    {$label}
+                                    {l s=$genderLabel d='Shop.Theme.Customglobal'}
                                 {/if}
                             </label>
                         {/if}
