@@ -62,6 +62,12 @@ class CkcTranslateJobRunner
                     break;
 
                 default:
+                    $entity = CkcTranslate::getModuleLangEntity($job);
+                    if ($entity !== null) {
+                        $result = $this->runModuleLang($entity);
+                        break;
+                    }
+
                     return array(
                         'success' => false,
                         'message' => $this->module->l('Unknown job.', 'CkcTranslateJobRunner'),
@@ -569,6 +575,121 @@ PROMPT;
 
         return $this->nextResult(sprintf(
             $this->module->l('CMS #%d translated.', 'CkcTranslateJobRunner'),
+            (int) $id
+        ));
+    }
+
+    protected function runModuleLang(array $entity)
+    {
+        $tableName = $entity['table'];
+        $langTableName = $tableName . '_lang';
+        $idCol = $entity['id'];
+        $fields = array_values($entity['fields']);
+        $cookieKey = 'ckctranslate_' . $entity['code'] . '_ids';
+        $indexKey = 'ckctranslate_' . $entity['code'] . '_index';
+
+        $listSql = 'SELECT DISTINCT `' . bqSQL($idCol) . '`
+                    FROM `' . _DB_PREFIX_ . bqSQL($langTableName) . '`
+                    WHERE id_lang = ' . (int) $this->sourceLangId . '
+                    ORDER BY `' . bqSQL($idCol) . '` ASC';
+
+        $id = $this->getNextId($cookieKey, $indexKey, $listSql, $entity['id']);
+
+        if (!$id) {
+            return $this->finishedResult(sprintf(
+                $this->module->l('Module table "%s" translation finished.', 'CkcTranslateJobRunner'),
+                $tableName
+            ));
+        }
+
+        $cols = array();
+        foreach ($fields as $f) {
+            $cols[] = '`' . bqSQL($f) . '`';
+        }
+        $colsSql = implode(', ', $cols);
+
+        $source = Db::getInstance()->getRow(
+            'SELECT ' . $colsSql . '
+             FROM `' . _DB_PREFIX_ . bqSQL($langTableName) . '`
+             WHERE `' . bqSQL($idCol) . '` = ' . (int) $id . ' AND id_lang = ' . (int) $this->sourceLangId
+        );
+
+        if (!is_array($source)) {
+            $this->logHistory($entity['code'], $tableName, (int) $id, 'skipped', $this->module->l('Source row missing.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Source row #%d missing, skipped.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+            $target = Db::getInstance()->getRow(
+                'SELECT ' . $colsSql . '
+                 FROM `' . _DB_PREFIX_ . bqSQL($langTableName) . '`
+                 WHERE `' . bqSQL($idCol) . '` = ' . (int) $id . ' AND id_lang = ' . (int) $this->targetLangId
+            );
+
+            if (is_array($target)) {
+                $allFilled = true;
+                foreach ($fields as $f) {
+                    if (!isset($target[$f]) || trim(strip_tags((string) $target[$f])) === '') {
+                        $allFilled = false;
+                        break;
+                    }
+                }
+
+                if ($allFilled) {
+                    $this->logHistory($entity['code'], $tableName, (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+
+                    return $this->nextResult(sprintf(
+                        $this->module->l('Row #%d already translated, skipped.', 'CkcTranslateJobRunner'),
+                        (int) $id
+                    ));
+                }
+            }
+        }
+
+        $jsonSkeleton = array();
+        $sourceBlock = '';
+        foreach ($fields as $f) {
+            $jsonSkeleton[] = '  "' . $f . '": ""';
+            $sourceBlock .= "\nSource " . $f . ":\n" . (isset($source[$f]) ? (string) $source[$f] : '') . "\n";
+        }
+
+        $systemPrompt = $this->buildSystemPrompt(
+            'You are an expert e-commerce translator. Translate the module content fields naturally. Preserve any HTML tags exactly as in the source.',
+            ''
+        );
+
+        $prompt = "Return ONLY valid JSON:\n{\n" . implode(",\n", $jsonSkeleton) . "\n}\n" . $sourceBlock;
+
+        $data = $this->ai->requestJson($systemPrompt, $prompt);
+
+        if (!$this->isValidFields($data, $fields)) {
+            $this->logHistory($entity['code'], $tableName, (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Invalid AI response for row #%d.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        $update = array();
+        foreach ($fields as $f) {
+            $update[$f] = pSQL((string) $data[$f], true);
+        }
+
+        Db::getInstance()->update(
+            $langTableName,
+            $update,
+            '`' . bqSQL($idCol) . '` = ' . (int) $id . ' AND id_lang = ' . (int) $this->targetLangId
+        );
+
+        $this->logHistory($entity['code'], $tableName, (int) $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
+
+        return $this->nextResult(sprintf(
+            $this->module->l('Row #%d translated.', 'CkcTranslateJobRunner'),
             (int) $id
         ));
     }

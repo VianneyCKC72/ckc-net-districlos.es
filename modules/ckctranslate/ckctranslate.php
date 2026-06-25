@@ -44,7 +44,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.3.0';
+        $this->version = '2.4.0';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -108,6 +108,39 @@ class CkcTranslate extends Module
         $html .= '</div>';
 
         return $html;
+    }
+
+    /**
+     * Registre des tables de module par langue (`*_lang`) traduisibles génériquement.
+     * Ajouter une entrée par entité multilingue de module :
+     *   code   : identifiant unique du job (préfixe modlang_)
+     *   label  : libellé affiché au back-office
+     *   table  : table de base de l'ObjectModel (sans préfixe, le _lang est ajouté)
+     *   id     : clé primaire
+     *   fields : colonnes "lang" à traduire
+     */
+    public static function getModuleLangEntities()
+    {
+        return array(
+            array(
+                'code'   => 'modlang_ckc_realisation',
+                'label'  => 'Module – Réalisations (title, alt)',
+                'table'  => 'ckc_realisation',
+                'id'     => 'id_realisation',
+                'fields' => array('title', 'alt'),
+            ),
+        );
+    }
+
+    public static function getModuleLangEntity($code)
+    {
+        foreach (self::getModuleLangEntities() as $entity) {
+            if ($entity['code'] === $code) {
+                return $entity;
+            }
+        }
+
+        return null;
     }
 
     protected function installConfiguration()

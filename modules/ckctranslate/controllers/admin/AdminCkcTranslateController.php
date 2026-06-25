@@ -495,7 +495,7 @@ class AdminCkcTranslateController extends ModuleAdminController
 
     protected function getJobs()
     {
-        return array(
+        $jobs = array(
             array(
                 'code' => 'product_seo',
                 'label' => $this->module->l('Translate product SEO fields'),
@@ -522,6 +522,16 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'advice' => $this->module->l('Useful for editorial and SEO pages.'),
             ),
         );
+
+        foreach (CkcTranslate::getModuleLangEntities() as $entity) {
+            $jobs[] = array(
+                'code' => $entity['code'],
+                'label' => $entity['label'],
+                'advice' => $this->module->l('Module per-language field translation.'),
+            );
+        }
+
+        return $jobs;
     }
 
     protected function getJobsWithCounters()
@@ -603,10 +613,21 @@ class AdminCkcTranslateController extends ModuleAdminController
                 break;
 
             default:
-                return array(
-                    'total' => 0,
-                    'remaining' => 0,
-                );
+                $entity = CkcTranslate::getModuleLangEntity($jobCode);
+                if ($entity === null) {
+                    return array(
+                        'total' => 0,
+                        'remaining' => 0,
+                    );
+                }
+
+                $sql = 'SELECT COUNT(DISTINCT `' . bqSQL($entity['id']) . '`)
+                        FROM `' . _DB_PREFIX_ . bqSQL($entity['table']) . '_lang`
+                        WHERE id_lang = ' . (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
+                $total = (int) Db::getInstance()->getValue($sql);
+                $cookieKey = 'ckctranslate_' . $entity['code'] . '_ids';
+                $indexKey = 'ckctranslate_' . $entity['code'] . '_index';
+                break;
         }
 
         $cookie = $this->context->cookie;
@@ -643,6 +664,11 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_cms_ids',
             'ckctranslate_cms_index',
         );
+
+        foreach (CkcTranslate::getModuleLangEntities() as $entity) {
+            $keys[] = 'ckctranslate_' . $entity['code'] . '_ids';
+            $keys[] = 'ckctranslate_' . $entity['code'] . '_index';
+        }
 
         foreach ($keys as $key) {
             unset($this->context->cookie->{$key});
