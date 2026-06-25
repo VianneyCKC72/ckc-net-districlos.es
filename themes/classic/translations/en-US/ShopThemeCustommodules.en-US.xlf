@@ -105,6 +105,36 @@
       <trans-unit id="101"><source>Vider</source><target>Clear</target></trans-unit>
       <trans-unit id="102"><source>Panier</source><target>Cart</target></trans-unit>
       <trans-unit id="103"><source>Nos meilleures ventes</source><target>Our best sellers</target></trans-unit>
+      <trans-unit id="104"><source>offerte dès %amount% € TTC</source><target>free from %amount% € incl. tax</target></trans-unit>
+      <trans-unit id="105"><source>Estimez vos frais de livraison</source><target>Estimate your shipping costs</target></trans-unit>
+      <trans-unit id="106"><source>Livraison</source><target>Delivery</target></trans-unit>
+      <trans-unit id="107"><source>sous 10 jours</source><target>within 10 days</target></trans-unit>
+      <trans-unit id="108"><source>Cette simulation prend en compte les produits dans votre panier (ex : produits avec plus-value de transport). Pour confirmer un choix de livraison, vous devez aller jusqu'à l'étape "transport" en appuyant sur le bouton "passer commande".</source><target>This simulation takes into account the products in your cart (e.g. products with a transport surcharge). To confirm a delivery option, you must proceed to the "shipping" step by clicking the "place order" button.</target></trans-unit>
+      <trans-unit id="109"><source>Renseignez votre code postal</source><target>Enter your postal code</target></trans-unit>
+      <trans-unit id="110"><source>Ex : 75000</source><target>E.g. 75000</target></trans-unit>
+      <trans-unit id="111"><source>Transporteur</source><target>Carrier</target></trans-unit>
+      <trans-unit id="112"><source>Durée de livraison</source><target>Delivery time</target></trans-unit>
+      <trans-unit id="113"><source>Informations et délais moyens</source><target>Information and average lead times</target></trans-unit>
+      <trans-unit id="114"><source>Il n'y a aucun choix de livraison pour le code postal renseigné</source><target>There is no delivery option available for the postal code entered</target></trans-unit>
+      <trans-unit id="115"><source>Livraison à domicile</source><target>Home delivery</target></trans-unit>
+      <trans-unit id="116"><source>1. Estimez vos frais de livraison</source><target>1. Estimate your delivery cost</target></trans-unit>
+      <trans-unit id="117"><source>Prix de livraison</source><target>Delivery price</target></trans-unit>
+      <trans-unit id="118"><source>2. Choix de la livraison</source><target>2. Delivery options</target></trans-unit>
+      <trans-unit id="119"><source>[1]Livraison Standard[/1] : directement dans votre jardin ! Nos équipes déchargent la marchandise à l'adresse demandée.</source><target>[1]Standard Delivery[/1]: right into your garden! Our teams unload the goods at the requested address.</target></trans-unit>
+      <trans-unit id="120"><source>[1]Livraison Economique[/1] : pour faire des économies, prêtez main forte à nos livreurs.</source><target>[1]Economy Delivery[/1]: to save money, lend a hand to our delivery drivers.</target></trans-unit>
+      <trans-unit id="121"><source>Certains produits lourds tels que les plaques de soubassement en béton engendrent une majoration des frais de livraison. Veuillez estimer vos frais de port pour en connaître le montant.</source><target>Some heavy products, such as concrete base panels, incur a delivery surcharge. Please estimate your shipping costs to find out the amount.</target></trans-unit>
+      <trans-unit id="122"><source>3. Planifiez votre livraison</source><target>3. Schedule your delivery</target></trans-unit>
+      <trans-unit id="123"><source>Prenez rendez-vous directement avec nos équipes. Choisissez une date et une heure spécifique afin d'être présent lors de la livraison.</source><target>Book an appointment directly with our teams. Choose a specific date and time so you can be present at the delivery.</target></trans-unit>
+      <trans-unit id="124"><source>4. Délai de livraison</source><target>4. Delivery time</target></trans-unit>
+      <trans-unit id="125"><source>Si vous avez choisi la livraison par notre magasin le plus proche, le délai est d'environ de 10 à 15 jours ouvrés (sauf exception).</source><target>If you have chosen delivery from our nearest store, the lead time is approximately 10 to 15 working days (except in special cases).</target></trans-unit>
+      <trans-unit id="126"><source>5. Suivi de la commande</source><target>5. Order tracking</target></trans-unit>
+      <trans-unit id="127"><source>Un e-mail est envoyé à chaque étape du traitement de votre commande. De plus, vous avez l'œil sur le suivi directement dans votre espace client.</source><target>An email is sent at each stage of your order processing. You can also keep an eye on the tracking directly in your customer account.</target></trans-unit>
+      <trans-unit id="128"><source>Sinon, contactez votre magasin ou le service commercial au [1]04 22 53 10 34[/1].</source><target>Otherwise, contact your store or the sales department at [1]04 22 53 10 34[/1].</target></trans-unit>
+      <trans-unit id="129"><source>Retour au produit</source><target>Back to product</target></trans-unit>
+      <trans-unit id="130"><source>OFFRE LIMITÉE</source><target>LIMITED OFFER</target></trans-unit>
+      <trans-unit id="131"><source>Icone livraison</source><target>Delivery icon</target></trans-unit>
+      <trans-unit id="132"><source>Sous 3 à 4 semaines.</source><target>Within 3 to 4 weeks.</target></trans-unit>
+      <trans-unit id="133"><source>Sous 10 jours.</source><target>Within 10 days.</target></trans-unit>
     </body>
   </file>
 </xliff>

@@ -43,7 +43,7 @@ class Ckcadcampaignconfigurator extends Module
     {
         $this->name = 'ckcadcampaignconfigurator';
         $this->tab = 'administration';
-        $this->version = '1.0.0';
+        $this->version = '1.0.1';
         $this->author = 'ckc-net';
         $this->need_instance = 0;
         $this->ps_version  = (bool)version_compare(_PS_VERSION_, '1.7', '>=');
