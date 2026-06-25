@@ -65,6 +65,8 @@
       <trans-unit id="61"><source>recherche</source><target>search</target></trans-unit>
       <trans-unit id="62"><source>telephone</source><target>phone</target></trans-unit>
       <trans-unit id="63"><source>à</source><target>in</target></trans-unit>
+      <trans-unit id="64"><source>Icone livraison</source><target>Delivery icon</target></trans-unit>
+      <trans-unit id="65"><source>Voir les stocks par magasin</source><target>View stock by store</target></trans-unit>
     </body>
   </file>
 </xliff>

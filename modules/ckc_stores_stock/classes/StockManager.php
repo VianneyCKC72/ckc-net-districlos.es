@@ -241,18 +241,20 @@ class StockManager extends Module
         }
 
         // i18n: centraliser les textes renvoyés au front (évite duplications PHP/JS)
+        $ctx = $this->context ?? Context::getContext();
+        $en = ($ctx && isset($ctx->language) && $ctx->language) ? ($ctx->language->iso_code === 'en') : false;
         $i18n = [
-            'stock_in_store' => $this->l('Stock en magasin'),
-            'fin_de_serie' => $this->l('Fin de série !'),
-            'order_fast_low_stock' => $this->l('Commandez vite, stock bas !'),
-            'victime_succes' => $this->l('Victime de son succès'),
-            'not_available' => $this->l('Ce produit n\'est plus disponible'),
-            'sold_out' => $this->l('Produit épuisé'),
-            'in_stock' => $this->l('En stock'),
-            'arrival' => $this->l('Arrivage en cours'),
-            'available_10_days' => $this->l('Disponible sous 10 jours'),
-            'change_store' => $this->l('Changer de magasin'),
-            'product_in_stock' => $this->l('produit(s) en stock'),
+            'stock_in_store' => $en ? 'In-store stock' : $this->l('Stock en magasin'),
+            'fin_de_serie' => $en ? 'End of line!' : $this->l('Fin de série !'),
+            'order_fast_low_stock' => $en ? 'Order soon, low stock!' : $this->l('Commandez vite, stock bas !'),
+            'victime_succes' => $en ? 'High demand' : $this->l('Victime de son succès'),
+            'not_available' => $en ? 'This product is no longer available' : $this->l('Ce produit n\'est plus disponible'),
+            'sold_out' => $en ? 'Out of stock' : $this->l('Produit épuisé'),
+            'in_stock' => $en ? 'In stock' : $this->l('En stock'),
+            'arrival' => $en ? 'Incoming shipment' : $this->l('Arrivage en cours'),
+            'available_10_days' => $en ? 'Available within 10 days' : $this->l('Disponible sous 10 jours'),
+            'change_store' => $en ? 'Change store' : $this->l('Changer de magasin'),
+            'product_in_stock' => $en ? 'product(s) in stock' : $this->l('produit(s) en stock'),
         ];
 
         // UI "source de vérité" (sans casser la logique existante côté JS)

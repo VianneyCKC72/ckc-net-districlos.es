@@ -2,7 +2,7 @@
 <module>
 	<name>ckc_stores_stock</name>
 	<displayName><![CDATA[Stocks par magasin]]></displayName>
-	<version><![CDATA[1.0.1]]></version>
+	<version><![CDATA[1.0.2]]></version>
 	<description><![CDATA[Affiche les stocks par magasin sur la fiche produit.]]></description>
 	<author><![CDATA[ckc-net]]></author>
 	<is_configurable>0</is_configurable>
