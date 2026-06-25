@@ -90,6 +90,12 @@
                                     {l s='M.' d='Shop.Theme.Customglobal'}
                                 {elseif $pro.env == 1 && $label == 'Madame'}
                                     {l s='Mme.' d='Shop.Theme.Customglobal'}
+                                {elseif $label == 'Monsieur'}
+                                    {l s='Monsieur' d='Shop.Theme.Customglobal'}
+                                {elseif $label == 'Madame'}
+                                    {l s='Madame' d='Shop.Theme.Customglobal'}
+                                {elseif $label == 'Mademoiselle'}
+                                    {l s='Mademoiselle' d='Shop.Theme.Customglobal'}
                                 {else}
                                     {$label}
                                 {/if}
