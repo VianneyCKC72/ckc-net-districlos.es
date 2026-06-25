@@ -2,7 +2,7 @@
 <module>
     <name>ckc_espacepro</name>
     <displayName><![CDATA[CKC Espace PRO]]></displayName>
-    <version><![CDATA[1.0.2]]></version>
+    <version><![CDATA[1.0.3]]></version>
     <description><![CDATA[Ce module am&eacute;liore l&#039;espace pro avec gestion des inscriptions et affichage des prix HT pour les clients professionnels, simplifiant la gestion utilisateur.]]></description>
     <author><![CDATA[CKC]]></author>
     <tab><![CDATA[ckcespace]]></tab>
