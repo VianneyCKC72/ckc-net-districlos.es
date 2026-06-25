@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="fr-FR" target-language="en-US" datatype="plaintext" original="ShopThemeCustomckc">
+    <body>
+      <trans-unit id="1"><source>%count% avis</source><target>%count% reviews</target></trans-unit>
+      <trans-unit id="2"><source>%qty% en stock</source><target>%qty% in stock</target></trans-unit>
+      <trans-unit id="3"><source>Arrivage en cours</source><target>Incoming shipment</target></trans-unit>
+      <trans-unit id="4"><source>Avis soumis à un contrôle</source><target>Reviews subject to verification</target></trans-unit>
+      <trans-unit id="5"><source>COORDONNEES</source><target>CONTACT DETAILS</target></trans-unit>
+      <trans-unit id="6"><source>Calculé à partir de</source><target>Calculated from</target></trans-unit>
+      <trans-unit id="7"><source>Ce produit est disponible sur notre plateforme logistique, pour une meilleure disponibilité.</source><target>This product is available at our logistics platform, for better availability.</target></trans-unit>
+      <trans-unit id="8"><source>Choisissez votre magasin</source><target>Choose your store</target></trans-unit>
+      <trans-unit id="9"><source>Clôture pour animaux</source><target>Fence for animals</target></trans-unit>
+      <trans-unit id="10"><source>Clôture rigide</source><target>Rigid fence</target></trans-unit>
+      <trans-unit id="11"><source>Clôture souple</source><target>Soft fence</target></trans-unit>
+      <trans-unit id="12"><source>Disponibilité sous 5 jours ouvrés en magasin, selon stock. Le magasin vous contactera dès que votre commande sera prête.</source><target>Available in store within 5 business days, subject to stock. The store will contact you as soon as your order is ready.</target></trans-unit>
+      <trans-unit id="13"><source>Disponible en magasin</source><target>Available in store</target></trans-unit>
+      <trans-unit id="14"><source>Définir comme favoris</source><target>Set as favorite</target></trans-unit>
+      <trans-unit id="15"><source>En attente de validation</source><target>Pending approval</target></trans-unit>
+      <trans-unit id="16"><source>En stock</source><target>In stock</target></trans-unit>
+      <trans-unit id="17"><source>Favoris</source><target>Favorite</target></trans-unit>
+      <trans-unit id="18"><source>Fermer</source><target>Close</target></trans-unit>
+      <trans-unit id="19"><source>Fermé</source><target>Closed</target></trans-unit>
+      <trans-unit id="20"><source>Forte demande : expédition/retrait sous 10 jours</source><target>High demand: shipping/pickup within 10 days</target></trans-unit>
+      <trans-unit id="21"><source>La livraison se fait sur rendez-vous uniquement. Nous allons vous contacter suite à votre commande pour déterminer cette date.%br%%br%Le délai moyen pour vos produits est de 10 jours.</source><target>Delivery is by appointment only. We will contact you after your order to schedule this date.%br%%br%The average lead time for your products is 10 days.</target></trans-unit>
+      <trans-unit id="22"><source>Liste des magasins</source><target>List of stores</target></trans-unit>
+      <trans-unit id="23"><source>Livraison</source><target>Delivery</target></trans-unit>
+      <trans-unit id="24"><source>Magasin</source><target>Store</target></trans-unit>
+      <trans-unit id="25"><source>Mise en ligne</source><target>Published</target></trans-unit>
+      <trans-unit id="26"><source>Nom du produit ou service évalué</source><target>Name of the rated product or service</target></trans-unit>
+      <trans-unit id="27"><source>Notre magasin vous livre à domicile ou sur votre chantier !</source><target>Our store delivers to your home or worksite!</target></trans-unit>
+      <trans-unit id="28"><source>Pas d'images des réalisations.</source><target>No project photos available.</target></trans-unit>
+      <trans-unit id="29"><source>Passer</source><target>Skip</target></trans-unit>
+      <trans-unit id="30"><source>Point relais à Avrainville.%br%Retrait possible en moyenne en 5 jours ouvrés.</source><target>Pickup point in Avrainville.%br%Pickup available on average within 5 business days.</target></trans-unit>
+      <trans-unit id="31"><source>Pour connaître nos stocks et les délais de livraison, enregistrez votre magasin favori.</source><target>To check our stock and delivery times, save your favorite store.</target></trans-unit>
+      <trans-unit id="32"><source>Quel type de clôture recherchez-vous ?</source><target>Which type of fence are you looking for?</target></trans-unit>
+      <trans-unit id="33"><source>Quelle hauteur de clôture recherchez-vous ?</source><target>What fence height are you looking for?</target></trans-unit>
+      <trans-unit id="34"><source>Recevoir les bons plans et promotions par SMS</source><target>Receive deals and promotions by SMS</target></trans-unit>
+      <trans-unit id="35"><source>Rejetée</source><target>Rejected</target></trans-unit>
+      <trans-unit id="36"><source>Retour</source><target>Back</target></trans-unit>
+      <trans-unit id="37"><source>Retrait disponible</source><target>Pickup available</target></trans-unit>
+      <trans-unit id="38"><source>Réduire</source><target>Collapse</target></trans-unit>
+      <trans-unit id="39"><source>Samedi</source><target>Saturday</target></trans-unit>
+      <trans-unit id="40"><source>Super ! Un ou plusieurs produits sont en stock ( hors plateforme )</source><target>Great! One or more products are in stock (excluding platform)</target></trans-unit>
+      <trans-unit id="41"><source>Trouver mon magasin</source><target>Find my store</target></trans-unit>
+      <trans-unit id="42"><source>Un ou des produits sont en cours de réapprovisionnement ( hors plateforme )</source><target>One or more products are being restocked (excluding platform)</target></trans-unit>
+      <trans-unit id="43"><source>Un ou des produits sont en stock sur plateforme</source><target>One or more products are in stock on the platform</target></trans-unit>
+      <trans-unit id="44"><source>Valider</source><target>Confirm</target></trans-unit>
+      <trans-unit id="45"><source>Ville, région, code postal...</source><target>City, region, postal code...</target></trans-unit>
+      <trans-unit id="46"><source>Voir la page</source><target>View page</target></trans-unit>
+      <trans-unit id="47"><source>Voir tous les avis</source><target>See all reviews</target></trans-unit>
+      <trans-unit id="48"><source>Voir toutes les réalisations</source><target>View all projects</target></trans-unit>
+      <trans-unit id="49"><source>Votre code postal</source><target>Your postal code</target></trans-unit>
+      <trans-unit id="50"><source>Votre magasin</source><target>Your store</target></trans-unit>
+      <trans-unit id="51"><source>Vous pouvez venir récupérer les produits en stock dans votre magasin 2h après votre commande.</source><target>You can pick up in-stock products at your store 2 hours after placing your order.</target></trans-unit>
+      <trans-unit id="52"><source>Vous pouvez venir récupérer les produits en stock dans votre magasin.%br%%br%Pour les produits en cours de réapprovisionnement, nous vous appellerons aussitôt ces derniers disponibles.</source><target>You can pick up in-stock products at your store.%br%%br%For products being restocked, we will call you as soon as they become available.</target></trans-unit>
+      <trans-unit id="53"><source>avis</source><target>reviews</target></trans-unit>
+      <trans-unit id="54"><source>avis depuis le</source><target>reviews since</target></trans-unit>
+      <trans-unit id="55"><source>du magasin</source><target>of the store</target></trans-unit>
+      <trans-unit id="56"><source>email</source><target>email</target></trans-unit>
+      <trans-unit id="57"><source>obtenus sur les 12 derniers mois</source><target>obtained over the last 12 months</target></trans-unit>
+      <trans-unit id="58"><source>option Clôture pour animaux</source><target>animal fence option</target></trans-unit>
+      <trans-unit id="59"><source>option Clôture rigide</source><target>rigid fence option</target></trans-unit>
+      <trans-unit id="60"><source>option Clôture souple</source><target>soft fence option</target></trans-unit>
+      <trans-unit id="61"><source>recherche</source><target>search</target></trans-unit>
+      <trans-unit id="62"><source>telephone</source><target>phone</target></trans-unit>
+      <trans-unit id="63"><source>à</source><target>in</target></trans-unit>
+    </body>
+  </file>
+</xliff>

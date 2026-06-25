@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="fr-FR" target-language="en-US" datatype="plaintext" original="ShopThemeCustomoney">
+    <body>
+      <trans-unit id="1"><source>Aide au financement</source><target>Financing assistance</target></trans-unit>
+      <trans-unit id="2"><source>Paiement gratuit en plusieurs fois</source><target>Free installment payment</target></trans-unit>
+      <trans-unit id="3"><source>Payez en 3 fois sans frais</source><target>Pay in 3 interest-free installments</target></trans-unit>
+      <trans-unit id="4"><source>Payez en 4 fois sans frais</source><target>Pay in 4 interest-free installments</target></trans-unit>
+      <trans-unit id="5"><source>Payez en 10 fois sans frais</source><target>Pay in 10 interest-free installments</target></trans-unit>
+      <trans-unit id="6"><source>Payez en 12 fois sans frais</source><target>Pay in 12 interest-free installments</target></trans-unit>
+      <trans-unit id="7"><source>Financement 24x</source><target>24x financing</target></trans-unit>
+      <trans-unit id="8"><source>Financement 36x</source><target>36x financing</target></trans-unit>
+      <trans-unit id="9"><source>Financement 48x</source><target>48x financing</target></trans-unit>
+      <trans-unit id="10"><source>Option de paiement en 3 fois.</source><target>3-installment payment option.</target></trans-unit>
+      <trans-unit id="11"><source>Option de paiement en 4 fois.</source><target>4-installment payment option.</target></trans-unit>
+      <trans-unit id="12"><source>Option de paiement en 10 fois.</source><target>10-installment payment option.</target></trans-unit>
+      <trans-unit id="13"><source>Option de paiement en 12 fois.</source><target>12-installment payment option.</target></trans-unit>
+      <trans-unit id="14"><source>Option de paiement en 24 fois.</source><target>24-installment payment option.</target></trans-unit>
+      <trans-unit id="15"><source>Option de paiement en 36 fois.</source><target>36-installment payment option.</target></trans-unit>
+      <trans-unit id="16"><source>Option de paiement en 48 fois.</source><target>48-installment payment option.</target></trans-unit>
+      <trans-unit id="17"><source>Un crédit vous engage et doit être remboursé. Vérifiez vos capacités de remboursement avant de vous engager.</source><target>A loan commits you and must be repaid. Check your repayment capacity before committing.</target></trans-unit>
+    </body>
+  </file>
+</xliff>
