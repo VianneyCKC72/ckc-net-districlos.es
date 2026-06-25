@@ -53,6 +53,23 @@ class AdminCkcTranslateController extends ModuleAdminController
         $this->setTemplate('configure.tpl');
     }
 
+    /**
+     * Retourne la valeur de config, ou la valeur par défaut si elle est vide/absente.
+     */
+    protected function configOrDefault($key)
+    {
+        $value = Configuration::get($key);
+
+        if ($value === false || $value === null || $value === '') {
+            $defaults = CkcTranslate::getDefaultConfig();
+            if (array_key_exists($key, $defaults)) {
+                return $defaults[$key];
+            }
+        }
+
+        return $value;
+    }
+
     protected function postProcessConfig()
     {
         $apiKey = trim((string) Tools::getValue(CkcTranslate::CONF_API_KEY));
@@ -84,28 +101,29 @@ class AdminCkcTranslateController extends ModuleAdminController
         $allowedIpsRaw = trim((string) Tools::getValue(CkcTranslate::CONF_ALLOWED_IPS));
         $allowedIpsNormalized = implode("\n", CkcTranslate::parseAllowedIps($allowedIpsRaw));
 
-        if ($sourceLang <= 0 || $targetLang <= 0) {
-            $this->errors[] = $this->module->l('Please select valid source and target languages.');
-            return;
+        $defaults = CkcTranslate::getDefaultConfig();
+
+        // Champs vides/invalides : on applique automatiquement la valeur par défaut
+        // (plutôt que de bloquer l'enregistrement avec une erreur).
+        if ($sourceLang <= 0) {
+            $sourceLang = (int) $defaults[CkcTranslate::CONF_SOURCE_LANG];
+        }
+        if ($targetLang <= 0) {
+            $targetLang = (int) $defaults[CkcTranslate::CONF_TARGET_LANG];
+        }
+        if ($temperature < 0 || $temperature > 1) {
+            $temperature = (float) $defaults[CkcTranslate::CONF_TEMPERATURE];
+        }
+        if ($maxTokens < 100) {
+            $maxTokens = (int) $defaults[CkcTranslate::CONF_MAX_TOKENS];
+        }
+        if ($batchSize < 1) {
+            $batchSize = (int) $defaults[CkcTranslate::CONF_BATCH_SIZE];
         }
 
+        // Seul cas réellement bloquant : langues source et cible identiques.
         if ($sourceLang === $targetLang) {
             $this->errors[] = $this->module->l('Source and target languages must be different.');
-            return;
-        }
-
-        if ($temperature < 0 || $temperature > 1) {
-            $this->errors[] = $this->module->l('Temperature must be between 0 and 1.');
-            return;
-        }
-
-        if ($maxTokens < 100) {
-            $this->errors[] = $this->module->l('Max tokens must be at least 100.');
-            return;
-        }
-
-        if ($batchSize < 1) {
-            $this->errors[] = $this->module->l('Batch size must be at least 1.');
             return;
         }
 
@@ -185,12 +203,14 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'type' => 'text',
                         'label' => $this->module->l('API key'),
                         'name' => CkcTranslate::CONF_API_KEY,
+                        'required' => true,
                         'desc' => $this->module->l('Paste your API key here. Never hardcode it in source files.'),
                     ),
                     array(
                         'type' => 'select',
                         'label' => $this->module->l('Source language'),
                         'name' => CkcTranslate::CONF_SOURCE_LANG,
+                        'required' => true,
                         'options' => array(
                             'query' => Language::getLanguages(false),
                             'id' => 'id_lang',
@@ -202,6 +222,7 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'type' => 'select',
                         'label' => $this->module->l('Target language'),
                         'name' => CkcTranslate::CONF_TARGET_LANG,
+                        'required' => true,
                         'options' => array(
                             'query' => Language::getLanguages(false),
                             'id' => 'id_lang',
@@ -213,6 +234,7 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'type' => 'select',
                         'label' => $this->module->l('Model'),
                         'name' => CkcTranslate::CONF_MODEL,
+                        'required' => true,
                         'options' => array(
                             'query' => $modelOptions,
                             'id' => 'id_option',
@@ -243,6 +265,7 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'type' => 'text',
                         'label' => $this->module->l('Pages / items per launch'),
                         'name' => CkcTranslate::CONF_BATCH_SIZE,
+                        'required' => true,
                         'desc' => $this->module->l('Number of items translated per launch cycle. Example: 10, 20, 50.'),
                     ),
                     array(
@@ -368,12 +391,14 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'type' => 'text',
                         'label' => $this->module->l('Temperature'),
                         'name' => CkcTranslate::CONF_TEMPERATURE,
+                        'required' => true,
                         'desc' => $this->module->l('Recommended: 0.2 to 0.4 for stable SEO translations.'),
                     ),
                     array(
                         'type' => 'text',
                         'label' => $this->module->l('Max tokens'),
                         'name' => CkcTranslate::CONF_MAX_TOKENS,
+                        'required' => true,
                         'desc' => $this->module->l('Recommended: 800 to 1500 depending on content length.'),
                     ),
                     array(
@@ -415,29 +440,29 @@ class AdminCkcTranslateController extends ModuleAdminController
 
         $helper->fields_value = array(
             CkcTranslate::CONF_API_KEY => Configuration::get(CkcTranslate::CONF_API_KEY),
-            CkcTranslate::CONF_SOURCE_LANG => (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG),
-            CkcTranslate::CONF_TARGET_LANG => (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG),
-            CkcTranslate::CONF_MODEL => Configuration::get(CkcTranslate::CONF_MODEL),
-            CkcTranslate::CONF_PROMPT => Configuration::get(CkcTranslate::CONF_PROMPT),
-            CkcTranslate::CONF_TEMPERATURE => Configuration::get(CkcTranslate::CONF_TEMPERATURE),
-            CkcTranslate::CONF_MAX_TOKENS => Configuration::get(CkcTranslate::CONF_MAX_TOKENS),
+            CkcTranslate::CONF_SOURCE_LANG => (int) $this->configOrDefault(CkcTranslate::CONF_SOURCE_LANG),
+            CkcTranslate::CONF_TARGET_LANG => (int) $this->configOrDefault(CkcTranslate::CONF_TARGET_LANG),
+            CkcTranslate::CONF_MODEL => $this->configOrDefault(CkcTranslate::CONF_MODEL),
+            CkcTranslate::CONF_PROMPT => $this->configOrDefault(CkcTranslate::CONF_PROMPT),
+            CkcTranslate::CONF_TEMPERATURE => $this->configOrDefault(CkcTranslate::CONF_TEMPERATURE),
+            CkcTranslate::CONF_MAX_TOKENS => $this->configOrDefault(CkcTranslate::CONF_MAX_TOKENS),
             CkcTranslate::CONF_ESTIMATED_CREDIT => Configuration::get(CkcTranslate::CONF_ESTIMATED_CREDIT),
-            CkcTranslate::CONF_BATCH_SIZE => (int) Configuration::get(CkcTranslate::CONF_BATCH_SIZE),
-            CkcTranslate::CONF_TARGET_COUNTRY => Configuration::get(CkcTranslate::CONF_TARGET_COUNTRY),
+            CkcTranslate::CONF_BATCH_SIZE => (int) $this->configOrDefault(CkcTranslate::CONF_BATCH_SIZE),
+            CkcTranslate::CONF_TARGET_COUNTRY => $this->configOrDefault(CkcTranslate::CONF_TARGET_COUNTRY),
             CkcTranslate::CONF_COUNTRY_KEYWORDS => Configuration::get(CkcTranslate::CONF_COUNTRY_KEYWORDS),
             CkcTranslate::CONF_STYLE_GUIDELINES => Configuration::get(CkcTranslate::CONF_STYLE_GUIDELINES),
             CkcTranslate::CONF_RESTRICTIONS => Configuration::get(CkcTranslate::CONF_RESTRICTIONS),
-            CkcTranslate::CONF_ONLY_MISSING_FIELDS => (int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS),
+            CkcTranslate::CONF_ONLY_MISSING_FIELDS => (int) $this->configOrDefault(CkcTranslate::CONF_ONLY_MISSING_FIELDS),
             CkcTranslate::CONF_GLOSSARY => Configuration::get(CkcTranslate::CONF_GLOSSARY),
-            CkcTranslate::CONF_SEO_META_TITLE_MAX => (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX),
-            CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX => (int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX),
-            CkcTranslate::CONF_SEO_SLUG_MAX => (int) Configuration::get(CkcTranslate::CONF_SEO_SLUG_MAX),
+            CkcTranslate::CONF_SEO_META_TITLE_MAX => (int) $this->configOrDefault(CkcTranslate::CONF_SEO_META_TITLE_MAX),
+            CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX => (int) $this->configOrDefault(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX),
+            CkcTranslate::CONF_SEO_SLUG_MAX => (int) $this->configOrDefault(CkcTranslate::CONF_SEO_SLUG_MAX),
             CkcTranslate::CONF_PROMPT_PRODUCT_SEO => Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_SEO),
             CkcTranslate::CONF_PROMPT_PRODUCT_DESCRIPTION => Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_DESCRIPTION),
             CkcTranslate::CONF_PROMPT_CATEGORY_SEO => Configuration::get(CkcTranslate::CONF_PROMPT_CATEGORY_SEO),
             CkcTranslate::CONF_PROMPT_CATEGORY_DESCRIPTION => Configuration::get(CkcTranslate::CONF_PROMPT_CATEGORY_DESCRIPTION),
             CkcTranslate::CONF_PROMPT_CMS => Configuration::get(CkcTranslate::CONF_PROMPT_CMS),
-            CkcTranslate::CONF_FILTER_TYPE => Configuration::get(CkcTranslate::CONF_FILTER_TYPE),
+            CkcTranslate::CONF_FILTER_TYPE => $this->configOrDefault(CkcTranslate::CONF_FILTER_TYPE),
             CkcTranslate::CONF_FILTER_IDS => Configuration::get(CkcTranslate::CONF_FILTER_IDS),
             CkcTranslate::CONF_FILTER_CATEGORY_ID => (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID),
             CkcTranslate::CONF_ALLOWED_IPS => Configuration::get(CkcTranslate::CONF_ALLOWED_IPS),

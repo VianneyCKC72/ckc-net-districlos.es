@@ -44,7 +44,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.4.0';
+        $this->version = '2.4.1';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -141,6 +141,29 @@ class CkcTranslate extends Module
         }
 
         return null;
+    }
+
+    /**
+     * Valeurs par défaut de configuration, réutilisées pour pré-remplir le formulaire
+     * et pour compléter automatiquement les champs vides/invalides à l'enregistrement.
+     */
+    public static function getDefaultConfig()
+    {
+        return array(
+            self::CONF_SOURCE_LANG => (int) Configuration::get('PS_LANG_DEFAULT'),
+            self::CONF_TARGET_LANG => (int) Language::getIdByIso('en'),
+            self::CONF_MODEL => 'gpt-4.1-mini',
+            self::CONF_PROMPT => 'Translate and adapt e-commerce content with a premium, natural and SEO-friendly tone. Respect HTML. Do not invent facts.',
+            self::CONF_TEMPERATURE => '0.35',
+            self::CONF_MAX_TOKENS => 1200,
+            self::CONF_BATCH_SIZE => 10,
+            self::CONF_TARGET_COUNTRY => 'US',
+            self::CONF_ONLY_MISSING_FIELDS => 1,
+            self::CONF_SEO_META_TITLE_MAX => 60,
+            self::CONF_SEO_META_DESCRIPTION_MAX => 155,
+            self::CONF_SEO_SLUG_MAX => 80,
+            self::CONF_FILTER_TYPE => 'all',
+        );
     }
 
     protected function installConfiguration()
