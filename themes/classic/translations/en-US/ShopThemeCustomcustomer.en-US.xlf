@@ -63,9 +63,9 @@
       <trans-unit id="59"><source>Afin d'être au plus proche de vous, nos [1]16 magasins[/1] couvrent toute la France ! Nos experts sont toujours disponibles pour échanger et vous accompagner sur vos projets.</source><target>To stay as close as possible to you, our [1]16 stores[/1] cover the whole of France! Our experts are always available to talk and support you on your projects.</target></trans-unit>
       <trans-unit id="60"><source>Sinon, contactez notre [1]service client[/1] au [2]0970716845[/2] constitué de professionnels de la clôture qui seront prêts pour vous aiguiller sur vos démarches professionnelles.</source><target>Otherwise, contact our [1]customer service[/1] at [2]0970716845[/2], a team of fencing professionals ready to guide you through your professional procedures.</target></trans-unit>
       <trans-unit id="61"><source>100€ offert !</source><target>€100 free!</target></trans-unit>
-      <trans-unit id="50"><source>LES FACTURES ET DEVIS REALISES EN MAGASIN SERONT BIENTÔT DISPONIBLE DANS VOTRE ESPACE.</source><target>INVOICES AND QUOTES ISSUED IN STORE WILL SOON BE AVAILABLE IN YOUR ACCOUNT.</target></trans-unit>
-      <trans-unit id="51"><source>Vous êtes un professionnel ?</source><target>Are you a professional?</target></trans-unit>
-      <trans-unit id="52"><source>Créer un compte professionnel</source><target>Create a professional account</target></trans-unit>
+      <trans-unit id="62"><source>LES FACTURES ET DEVIS REALISES EN MAGASIN SERONT BIENTÔT DISPONIBLE DANS VOTRE ESPACE.</source><target>INVOICES AND QUOTES ISSUED IN STORE WILL SOON BE AVAILABLE IN YOUR ACCOUNT.</target></trans-unit>
+      <trans-unit id="63"><source>Vous êtes un professionnel ?</source><target>Are you a professional?</target></trans-unit>
+      <trans-unit id="64"><source>Créer un compte professionnel</source><target>Create a professional account</target></trans-unit>
     </body>
   </file>
 </xliff>
