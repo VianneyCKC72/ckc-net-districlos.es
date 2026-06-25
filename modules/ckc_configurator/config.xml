@@ -2,7 +2,7 @@
 <module>
 	<name>ckc_configurator</name>
 	<displayName><![CDATA[Product configurator]]></displayName>
-	<version><![CDATA[1.0.0]]></version>
+	<version><![CDATA[1.0.1]]></version>
 	<description><![CDATA[Product\'s configurator to add multiple product to cart]]></description>
 	<author><![CDATA[CKC NET]]></author>
 	<tab><![CDATA[administration]]></tab>

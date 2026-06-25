@@ -34,7 +34,7 @@ class ckc_espacepro extends Module
         $this->name = 'ckc_espacepro';
         $this->tab = 'administration';
         $this->author = 'CKC';
-        $this->version = '1.0.1';
+        $this->version = '1.0.2';
         $this->need_instance = 0;
 
         parent::__construct();

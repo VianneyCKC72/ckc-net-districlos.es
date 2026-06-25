@@ -2,7 +2,7 @@
 <module>
 	<name>ckc_oney_simulator</name>
 	<displayName><![CDATA[Simulateur Oney]]></displayName>
-	<version><![CDATA[1.0.0]]></version>
+	<version><![CDATA[1.0.1]]></version>
 	<description><![CDATA[Ajoute un simulateur oney dans le panier]]></description>
 	<author><![CDATA[ckc-net]]></author>
 	<is_configurable>0</is_configurable>
