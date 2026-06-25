@@ -41,7 +41,7 @@
           {/block}
           <h6>{l s='Here are the orders you\'ve placed since your account was created.' d='Shop.Theme.Customeraccount'}</h6>
           {if $pro.env}
-            <h6>{l s='LES FACTURES ET DEVIS REALISES EN MAGASIN SERONT BIENTÔT DISPONIBLE DANS VOTRE ESPACE.' d='Shop.Theme.Customeraccount'}</h6>
+            <h6>{l s='LES FACTURES ET DEVIS REALISES EN MAGASIN SERONT BIENTÔT DISPONIBLE DANS VOTRE ESPACE.' d='Shop.Theme.Customcustomer'}</h6>
           {/if}
 
           {if $orders}

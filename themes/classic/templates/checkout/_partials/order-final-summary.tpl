@@ -25,7 +25,7 @@
 <section id="order-summary-content" class="page-content page-order-confirmation">
   <div class="row">
     <div class="col-md-12">
-      <h2 class="h2 black">{l s='Récapitulatif' d='Shop.Theme.Checkout'}</h2>
+      <h2 class="h2 black">{l s='Récapitulatif' d='Shop.Theme.Customcheckout'}</h2>
     </div>
   </div>
 

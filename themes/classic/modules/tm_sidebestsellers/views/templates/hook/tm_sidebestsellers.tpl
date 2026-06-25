@@ -23,8 +23,8 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 <div class="sidebar-bestseller block">
-    <h4 class="block_title hidden-md-down">{l s='Nos meilleures ventes' d='Shop.Theme.Global'}</h4>
-    <h4 class="block_title hidden-lg-up" data-target="#block_bestseller_toggle" data-toggle="collapse">{l s='Nos meilleures ventes' d='Shop.Theme.Global'}
+    <h4 class="block_title hidden-md-down">{l s='Nos meilleures ventes' d='Shop.Theme.Custommodules'}</h4>
+    <h4 class="block_title hidden-lg-up" data-target="#block_bestseller_toggle" data-toggle="collapse">{l s='Nos meilleures ventes' d='Shop.Theme.Custommodules'}
         <span class="pull-xs-right">
       <span class="navbar-toggler collapse-icons">
       <i class="material-icons add">&#xE313;</i>

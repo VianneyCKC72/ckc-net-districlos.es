@@ -80,9 +80,9 @@
             {/if}
             {if isset($pro_registration_url) && !empty($pro_registration_url)}
               <div class="pro-registration-wrapper">
-                <h2 class="pro-registration-title">{l s='Vous êtes un professionnel ?' d='Shop.Theme.Customeraccount'}</h2>
+                <h2 class="pro-registration-title">{l s='Vous êtes un professionnel ?' d='Shop.Theme.Customcustomer'}</h2>
                 <a href="{$pro_registration_url}" class="btn btn-secondary" id="inscription-pro">
-                  {l s='Créer un compte professionnel' d='Shop.Theme.Customeraccount'}
+                  {l s='Créer un compte professionnel' d='Shop.Theme.Customcustomer'}
                 </a>
               </div>
             {/if}
