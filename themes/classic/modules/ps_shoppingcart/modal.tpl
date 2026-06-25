@@ -5,7 +5,7 @@
 
             <div class="modal-header">
                 <h4 class="h4 mb-0" id="myModalLabel">
-                    <img src="/themes/classic/assets/img/ico-panier.svg" alt="Panier">
+                    <img src="/themes/classic/assets/img/ico-panier.svg" alt="{l s='Panier' d='Shop.Theme.Custommodules'}">
                     {l s='Product successfully added to your shopping cart' d='Shop.Theme.Checkout'}
                 </h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="{l s='Close' d='Shop.Theme.Global'}">

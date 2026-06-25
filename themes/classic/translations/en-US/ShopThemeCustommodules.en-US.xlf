@@ -102,6 +102,8 @@
       <trans-unit id="98"><source>drapeau de la France</source><target>flag of France</target></trans-unit>
       <trans-unit id="99"><source>en carte bancaire sans frais</source><target>by credit card with no fees</target></trans-unit>
       <trans-unit id="100"><source>etiquette</source><target>label</target></trans-unit>
+      <trans-unit id="101"><source>Vider</source><target>Clear</target></trans-unit>
+      <trans-unit id="102"><source>Panier</source><target>Cart</target></trans-unit>
     </body>
   </file>
 </xliff>
