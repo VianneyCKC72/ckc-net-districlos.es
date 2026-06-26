@@ -895,37 +895,28 @@ PROMPT;
             return 0;
         }
 
-        if (!isset($cookie->{$cookieKey})) {
-            $rows = Db::getInstance()->executeS($sql);
-            $ids = array();
-
-            if (is_array($rows)) {
-                foreach ($rows as $row) {
-                    if (isset($row[$column])) {
-                        $ids[] = (int) $row[$column];
-                    }
-                }
-            }
-
-            $cookie->{$cookieKey} = json_encode($ids);
-            $cookie->{$indexKey} = 0;
+        // On ne stocke QUE l'index dans le cookie (un petit entier), jamais la liste
+        // complète des IDs : json_encode d'un gros catalogue dépasse la limite RFC de
+        // 4096 octets du cookie et lève une PrestaShopException.
+        $index = isset($cookie->{$indexKey}) ? (int) $cookie->{$indexKey} : 0;
+        if ($index < 0) {
+            $index = 0;
         }
 
-        $ids = json_decode($cookie->{$cookieKey}, true);
-        $index = (int) $cookie->{$indexKey};
+        // Récupère uniquement la ligne à l'offset courant (efficace + cookie-safe).
+        $row = Db::getInstance()->getRow($sql . ' LIMIT ' . (int) $index . ', 1');
 
-        if (!is_array($ids) || !isset($ids[$index])) {
-            unset($cookie->{$cookieKey});
+        if (!is_array($row) || !isset($row[$column])) {
             unset($cookie->{$indexKey});
+            unset($cookie->{$cookieKey}); // nettoie un éventuel ancien cookie surdimensionné
             Tools::clearAllCache();
 
             return 0;
         }
 
-        $currentId = (int) $ids[$index];
         $cookie->{$indexKey} = $index + 1;
 
-        return $currentId;
+        return (int) $row[$column];
     }
 
     protected function isValidFields($data, array $fields)

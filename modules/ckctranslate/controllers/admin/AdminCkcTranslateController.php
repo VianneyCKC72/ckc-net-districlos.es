@@ -657,16 +657,14 @@ class AdminCkcTranslateController extends ModuleAdminController
 
         $cookie = $this->context->cookie;
 
-        if (isset($cookie->{$cookieKey}) && isset($cookie->{$indexKey})) {
-            $ids = json_decode($cookie->{$cookieKey}, true);
+        // Seul l'index est désormais stocké en cookie (plus de liste d'IDs surdimensionnée).
+        if (isset($cookie->{$indexKey})) {
             $index = (int) $cookie->{$indexKey};
 
-            if (is_array($ids)) {
-                return array(
-                    'total' => count($ids),
-                    'remaining' => max(count($ids) - $index, 0),
-                );
-            }
+            return array(
+                'total' => (int) $total,
+                'remaining' => max((int) $total - $index, 0),
+            );
         }
 
         return array(
