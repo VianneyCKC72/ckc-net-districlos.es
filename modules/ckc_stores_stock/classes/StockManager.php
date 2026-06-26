@@ -273,7 +273,7 @@ class StockManager extends Module
 
         $uiTitle = $i18n['stock_in_store'];
         $uiSubtitle = '';
-        $uiStock = $response['total_quantity'] . ' en stock national';
+        $uiStock = $response['total_quantity'] . ($en ? ' in stock nationwide' : ' en stock national');
         $uiColor = null;
         $uiImage = 'delivery.png';
         $uiShowStoreButton = true;
@@ -302,7 +302,7 @@ class StockManager extends Module
             if ($isPackRequest) {
                 $uiStock = $packIsInStockNational ? $i18n['in_stock'] : $i18n['arrival'];
             } else {
-                $uiStock = ((int)($response['platform_stock'] ?? 0)) . ' produits en stock';
+                $uiStock = ((int)($response['platform_stock'] ?? 0)) . ($en ? ' products in stock' : ' produits en stock');
             }
         } elseif ($uiState === 'fin_de_vie_national') {
             $uiTitle = $i18n['fin_de_serie'];
@@ -315,7 +315,7 @@ class StockManager extends Module
             if ($isPackRequest) {
                 $uiStock = $packIsInStockNational ? $i18n['in_stock'] : $i18n['arrival'];
             } else {
-                $uiStock = ((int)($response['total_quantity'] ?? 0)) . ' produits en stock';
+                $uiStock = ((int)($response['total_quantity'] ?? 0)) . ($en ? ' products in stock' : ' produits en stock');
             }
         } else {
             // normal
