@@ -904,7 +904,10 @@ PROMPT;
         }
 
         // Récupère uniquement la ligne à l'offset courant (efficace + cookie-safe).
-        $row = Db::getInstance()->getRow($sql . ' LIMIT ' . (int) $index . ', 1');
+        // NB: on utilise executeS (et non getRow) car getRow ajoute lui-même un
+        // " LIMIT 1" qui entrerait en conflit avec notre "LIMIT offset, 1".
+        $rows = Db::getInstance()->executeS($sql . ' LIMIT ' . (int) $index . ', 1');
+        $row = (is_array($rows) && isset($rows[0])) ? $rows[0] : null;
 
         if (!is_array($row) || !isset($row[$column])) {
             unset($cookie->{$indexKey});
