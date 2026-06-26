@@ -341,7 +341,7 @@
                         <img src="/img/menu-mobile-magasins.svg" alt="magasins" width="19px" height="19px">
                         <p>MAGASINS</p>
                     </a>
-                    <a class="menu-mobile-useful-link" href="/content/657-service-de-pose">
+                    <a class="menu-mobile-useful-link" href="{$link->getCMSLink(657)}">
                         <img src="themes/classic/assets/img/service-de-pose.svg" alt="magasins" width="19px" height="19px">
                         <p style="color: #026473;">SERVICE DE POSE</p>
                     </a>

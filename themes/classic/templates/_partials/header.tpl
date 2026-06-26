@@ -56,7 +56,7 @@
                             </div>
                             <img width="37" height="35" alt="{l s='Configurez votre clôture' d='Shop.Theme.Customglobal'}" src="/themes/classic/assets/img/configurer-icon.svg">
                         </a>
-                        <a href="{$urls.base_url}content/657-service-de-pose" class="ico btn-service-pose" title="{l s='Service de pose' d='Shop.Theme.Customglobal'}">
+                        <a href="{$link->getCMSLink(657)}" class="ico btn-service-pose" title="{l s='Service de pose' d='Shop.Theme.Customglobal'}">
                             <img src="/themes/classic/assets/img/service-de-pose.svg" alt="{l s='Service de pose' d='Shop.Theme.Customglobal'}" width="28" height="28" class="btn-service-pose__icon" loading="lazy">
                             <span>{l s='Service de pose' d='Shop.Theme.Customglobal'}</span>
                         </a>
