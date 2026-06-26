@@ -31,7 +31,7 @@
             {block name='header_nav'}
                 <nav class="header-nav d-flex align-items-center">
                     <div class="displayMenu">
-                        <a class="link-danger" href="/content/660-les-offres-au-volume">{l s='Les offres au volume' d='Shop.Theme.Customglobal'}</a>
+                        <a class="link-danger" href="{$link->getCMSLink(660)}">{l s='Les offres au volume' d='Shop.Theme.Customglobal'}</a>
                     </div>
 
                     <div class="displayTop">

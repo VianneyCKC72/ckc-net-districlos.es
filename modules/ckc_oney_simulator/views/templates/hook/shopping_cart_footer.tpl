@@ -11,8 +11,7 @@
         </div>
         <div class="payment-method">
             <div class="img">
-                <img src="/themes/classic/assets/img/payment-methods/cb.jpg" loading="lazy" alt="Carte Bleue">
-            </div>
+                <img src="/themes/classic/assets/img/payment-methods/cb.jpg" loading="lazy" alt="Carte Bleue"> </div>
             <p>Carte Bleue</p>
         </div>
         <div class="payment-method">

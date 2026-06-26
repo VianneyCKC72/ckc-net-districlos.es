@@ -31,11 +31,11 @@
                             <li><a class="custom-page-link elementor-page-link" href="/suivi-commande-invite">
                                     {l s='Suivi de commande' d='Shop.Theme.Customglobal'}
                                 </a></li>
-                            <li><a class="custom-page-link elementor-page-link" href="/content/2-mentions-legales">
+                            <li><a class="custom-page-link elementor-page-link" href="{$link->getCMSLink(2)}">
                                     {l s='Mentions légales' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link"
-                                   href="/content/3-conditions-generales-de-ventes">
+                                   href="{$link->getCMSLink(3)}">
                                     {l s='Conditions générales de vente' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link"
@@ -43,30 +43,30 @@
                                     Blog
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link"
-                                   href="/content/11-nos-magasins-de-cloture" title="">
+                                   href="{$link->getCMSLink(11)}" title="">
                                     {l s='Nos magasins' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link"
-                                   href="/content/21-carte-des-installateurs-partenaires">
+                                   href="{$link->getCMSLink(21)}">
                                     {l s='Carte des installateurs' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link"
-                                   href="/content/489-politique-de-confidentialite" title="">
+                                   href="{$link->getCMSLink(489)}" title="">
                                     {l s='Politique de confidentialité et de cookies' d='Shop.Theme.Customglobal'}
                                 </a></li>
-                            <li><a class="custom-page-link elementor-page-link" href="/content/490-a-propos">
+                            <li><a class="custom-page-link elementor-page-link" href="{$link->getCMSLink(490)}">
                                     {l s='A propos' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link"
-                                   href="/content/647-les-offres-districlos">
+                                   href="{$link->getCMSLink(647)}">
                                     {l s='Les offres Districlos' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link"
-                                   href="/content/654-districlos-entre-dans-la-course-">
+                                   href="{$link->getCMSLink(654)}">
                                     {l s='Partenaire Equipe Cycliste %brand%' sprintf=['%brand%' => 'Groupama FDJ'] d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link"
-                                   href="/content/655-reglement-du-jeu-concours-la-roue-decouverte-districlos-">
+                                   href="{$link->getCMSLink(655)}">
                                     {l s='Règlement tirage au sort' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link" href="/offres-emploi">
@@ -138,31 +138,31 @@
                         </div>
                         <ul id="footer_sub_menu_56640" class="collapse block_content">
                             <li><a class="custom-page-link elementor-page-link"
-                                   href="/content/469-faq-foire-aux-questions">
+                                   href="{$link->getCMSLink(469)}">
                                     {l s='FAQ - Foire aux questions' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link"
                                    href="https://www.cloture-discount.fr/distriblog/actualites/egalite-hommes-femmes-au-travail-chez-districlos/">
                                     {l s='Egalité Hommes-Femmes au travail à %brand%' sprintf=['%brand%' => 'Districlos'] d='Shop.Theme.Customglobal'}
                                 </a></li>
-                            <li><a class="custom-page-link elementor-page-link" href="/content/20-moyens-de-paiement">
+                            <li><a class="custom-page-link elementor-page-link" href="{$link->getCMSLink(20)}">
                                     {l s='Moyens de paiement' d='Shop.Theme.Customglobal'}
                                 </a></li>
-                            <li><a class="custom-page-link elementor-page-link" href="/content/395-guides-cloture">
+                            <li><a class="custom-page-link elementor-page-link" href="{$link->getCMSLink(395)}">
                                     {l s='Guides de clôture' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link" href="/contactez-nous">
                                     {l s='Contactez-nous' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link"
-                                   href="/content/609-tutoriels-districlos">
+                                   href="{$link->getCMSLink(609)}">
                                     {l s='Tutoriels %brand%' sprintf=['%brand%' => 'Districlos'] d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link"
-                                   href="/content/608-catalogue-districlos">
+                                   href="{$link->getCMSLink(608)}">
                                     {l s='Catalogue %brand%' sprintf=['%brand%' => 'Districlos'] d='Shop.Theme.Customglobal'}
                                 </a></li>
-                            <li><a class="custom-page-link elementor-page-link" href="/content/1-livraison">
+                            <li><a class="custom-page-link elementor-page-link" href="{$link->getCMSLink(1)}">
                                     {l s='Livraison' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link" href="/vos-realisations">
