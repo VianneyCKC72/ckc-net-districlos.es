@@ -135,6 +135,7 @@
       <trans-unit id="131"><source>Icone livraison</source><target>Delivery icon</target></trans-unit>
       <trans-unit id="132"><source>Sous 3 à 4 semaines.</source><target>Within 3 to 4 weeks.</target></trans-unit>
       <trans-unit id="133"><source>Sous 10 jours.</source><target>Within 10 days.</target></trans-unit>
+      <trans-unit id="134"><source>Nos clients ont également acheté</source><target>Our customers also bought</target></trans-unit>
     </body>
   </file>
 </xliff>
