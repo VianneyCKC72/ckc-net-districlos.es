@@ -45,6 +45,7 @@ class AdminCkcTranslateController extends ModuleAdminController
             'jobs' => $this->getJobsWithCounters(),
             'current_url' => self::$currentIndex . '&token=' . $this->token,
             'history_rows' => $this->getHistoryRows(),
+            'preview_rows' => $this->getTranslationPreview(),
             'prompt_example' => $this->getAdvancedPromptExample(),
             'estimated_batch_cost' => $this->getEstimatedBatchCost(),
             'available_models' => $this->getAvailableModels(),
@@ -748,6 +749,124 @@ class AdminCkcTranslateController extends ModuleAdminController
         $rows = Db::getInstance()->executeS($sql);
 
         return is_array($rows) ? $rows : array();
+    }
+
+    /**
+     * Aperçu des traductions réellement produites (source FR -> cible EN),
+     * pour les entités traduites avec succès les plus récentes.
+     */
+    protected function getTranslationPreview($limit = 30)
+    {
+        $sourceLang = (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
+        $targetLang = (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG);
+
+        $rows = Db::getInstance()->executeS(
+            'SELECT entity_type, entity_id, MAX(date_add) AS last_date,
+                    GROUP_CONCAT(DISTINCT job_code SEPARATOR ", ") AS jobs
+             FROM `' . _DB_PREFIX_ . 'ckctranslate_history`
+             WHERE status = "success"
+             GROUP BY entity_type, entity_id
+             ORDER BY last_date DESC
+             LIMIT ' . (int) $limit
+        );
+
+        if (!is_array($rows)) {
+            return array();
+        }
+
+        $preview = array();
+        foreach ($rows as $r) {
+            $fields = $this->getEntityFieldPreview($r['entity_type'], (int) $r['entity_id'], $sourceLang, $targetLang);
+            if (empty($fields)) {
+                continue;
+            }
+            $preview[] = array(
+                'type' => $r['entity_type'],
+                'id' => (int) $r['entity_id'],
+                'jobs' => $r['jobs'],
+                'date' => $r['last_date'],
+                'fields' => $fields,
+            );
+        }
+
+        return $preview;
+    }
+
+    /**
+     * Retourne, pour une entité, la liste [label, source, target] des champs traduisibles.
+     */
+    protected function getEntityFieldPreview($type, $id, $sourceLang, $targetLang)
+    {
+        $fields = array();
+        $defs = array();
+        $sourceObj = null;
+        $targetObj = null;
+
+        if ($type === 'product' && class_exists('Product')) {
+            $sourceObj = new Product($id, false, $sourceLang);
+            $targetObj = new Product($id, false, $targetLang);
+            $defs = array('name', 'meta_title', 'description_short', 'description');
+        } elseif ($type === 'category' && class_exists('Category')) {
+            $sourceObj = new Category($id, $sourceLang);
+            $targetObj = new Category($id, $targetLang);
+            $defs = array('name', 'meta_title', 'description');
+        } elseif ($type === 'cms' && class_exists('CMS')) {
+            $sourceObj = new CMS($id, $sourceLang);
+            $targetObj = new CMS($id, $targetLang);
+            $defs = array('meta_title', 'content');
+        } else {
+            // Table de module par langue (ex. ckc_realisation)
+            foreach (CkcTranslate::getModuleLangEntities() as $entity) {
+                if ($entity['table'] !== $type) {
+                    continue;
+                }
+                $cols = array();
+                foreach ($entity['fields'] as $f) {
+                    $cols[] = '`' . bqSQL($f) . '`';
+                }
+                $base = 'SELECT ' . implode(', ', $cols) . ' FROM `' . _DB_PREFIX_ . bqSQL($entity['table']) . '_lang`'
+                    . ' WHERE `' . bqSQL($entity['id']) . '` = ' . (int) $id . ' AND id_lang = ';
+                $src = Db::getInstance()->getRow($base . (int) $sourceLang);
+                $tgt = Db::getInstance()->getRow($base . (int) $targetLang);
+                foreach ($entity['fields'] as $f) {
+                    $fields[] = array(
+                        'label' => $f,
+                        'source' => $this->previewSnippet(isset($src[$f]) ? $src[$f] : ''),
+                        'target' => $this->previewSnippet(isset($tgt[$f]) ? $tgt[$f] : ''),
+                    );
+                }
+                break;
+            }
+
+            return $fields;
+        }
+
+        if ($sourceObj && Validate::isLoadedObject($sourceObj)) {
+            foreach ($defs as $f) {
+                $sv = isset($sourceObj->{$f}) ? (string) $sourceObj->{$f} : '';
+                $tv = isset($targetObj->{$f}) ? (string) $targetObj->{$f} : '';
+                if (trim(strip_tags($sv)) === '' && trim(strip_tags($tv)) === '') {
+                    continue;
+                }
+                $fields[] = array(
+                    'label' => $f,
+                    'source' => $this->previewSnippet($sv),
+                    'target' => $this->previewSnippet($tv),
+                );
+            }
+        }
+
+        return $fields;
+    }
+
+    protected function previewSnippet($value, $max = 220)
+    {
+        $value = trim(preg_replace('/\s+/', ' ', strip_tags((string) $value)));
+        if (Tools::strlen($value) > $max) {
+            $value = Tools::substr($value, 0, $max) . '…';
+        }
+
+        return $value;
     }
 
     protected function estimateCredit($maxTokens)

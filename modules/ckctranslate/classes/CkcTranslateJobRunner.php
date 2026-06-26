@@ -118,7 +118,7 @@ class CkcTranslateJobRunner
             ));
         }
 
-        if ($this->shouldSkipFilledFields($targetProduct, array('name', 'meta_title', 'meta_description', 'meta_keywords', 'link_rewrite'))) {
+        if ($this->shouldSkipFilledFields($targetProduct, $product, array('name', 'meta_title', 'meta_description', 'meta_keywords', 'link_rewrite'))) {
             $this->logHistory('product_seo', 'product', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -226,7 +226,7 @@ PROMPT;
             ));
         }
 
-        if ($this->shouldSkipFilledFields($targetProduct, array('description_short', 'description'))) {
+        if ($this->shouldSkipFilledFields($targetProduct, $product, array('description_short', 'description'))) {
             $this->logHistory('product_description', 'product', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -315,7 +315,7 @@ PROMPT;
             ));
         }
 
-        if ($this->shouldSkipFilledFields($targetCategory, array('name', 'meta_title', 'meta_description', 'link_rewrite'))) {
+        if ($this->shouldSkipFilledFields($targetCategory, $category, array('name', 'meta_title', 'meta_description', 'link_rewrite'))) {
             $this->logHistory('category_seo', 'category', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -418,7 +418,7 @@ PROMPT;
             ));
         }
 
-        if ($this->shouldSkipFilledFields($targetCategory, array('description', 'additional_description'))) {
+        if ($this->shouldSkipFilledFields($targetCategory, $category, array('description', 'additional_description'))) {
             $this->logHistory('category_description', 'category', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -507,7 +507,7 @@ PROMPT;
             ));
         }
 
-        if ($this->shouldSkipFilledFields($targetCms, array('meta_title', 'meta_description', 'meta_keywords', 'content', 'link_rewrite'))) {
+        if ($this->shouldSkipFilledFields($targetCms, $cms, array('meta_title', 'meta_description', 'meta_keywords', 'content', 'link_rewrite'))) {
             $this->logHistory('cms', 'cms', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -633,8 +633,13 @@ PROMPT;
             if (is_array($target)) {
                 $allFilled = true;
                 foreach ($fields as $f) {
-                    if (!isset($target[$f]) || trim(strip_tags((string) $target[$f])) === '') {
-                        $allFilled = false;
+                    $tv = isset($target[$f]) ? (string) $target[$f] : '';
+                    $sv = isset($source[$f]) ? (string) $source[$f] : '';
+                    if (trim(strip_tags($sv)) === '') {
+                        continue; // source vide : rien à traduire pour ce champ
+                    }
+                    if (trim(strip_tags($tv)) === '' || trim($tv) === trim($sv)) {
+                        $allFilled = false; // cible vide ou copie FR non traduite => à traduire
                         break;
                     }
                 }
@@ -853,14 +858,28 @@ PROMPT;
         return $slug;
     }
 
-    protected function shouldSkipFilledFields($targetObject, array $fields)
+    protected function shouldSkipFilledFields($targetObject, $sourceObject, array $fields)
     {
         if (!(int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
             return false;
         }
 
         foreach ($fields as $field) {
-            if (!isset($targetObject->{$field}) || trim(strip_tags((string) $targetObject->{$field})) === '') {
+            $target = isset($targetObject->{$field}) ? (string) $targetObject->{$field} : '';
+            $source = isset($sourceObject->{$field}) ? (string) $sourceObject->{$field} : '';
+
+            // Source vide : rien à traduire pour ce champ.
+            if (trim(strip_tags($source)) === '') {
+                continue;
+            }
+
+            // Cible vide => à traduire.
+            if (trim(strip_tags($target)) === '') {
+                return false;
+            }
+
+            // Cible identique à la source => simple copie FR non traduite => à traduire.
+            if (trim($target) === trim($source)) {
                 return false;
             }
         }
