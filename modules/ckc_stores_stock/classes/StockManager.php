@@ -323,7 +323,7 @@ class StockManager extends Module
                 $uiStock = $packIsInStockNational ? $i18n['in_stock'] : $i18n['arrival'];
             } else {
                 $uiStock = ((int)($response['total_quantity'] ?? 0) > 0 && !empty($response['seuil']))
-                    ? ((int)$response['total_quantity']) . ' en stock national'
+                    ? ((int)$response['total_quantity']) . ($en ? ' in stock nationwide' : ' en stock national')
                     : $i18n['arrival'];
             }
         }

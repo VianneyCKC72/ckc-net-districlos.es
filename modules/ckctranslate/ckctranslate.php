@@ -44,7 +44,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.5.0';
+        $this->version = '2.5.1';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -128,6 +128,20 @@ class CkcTranslate extends Module
                 'table'  => 'ckc_realisation',
                 'id'     => 'id_realisation',
                 'fields' => array('title', 'alt'),
+            ),
+            array(
+                'code'   => 'modlang_attribute_group',
+                'label'  => 'Attributs – groupes (Couleur, Pose, Hauteur…)',
+                'table'  => 'attribute_group',
+                'id'     => 'id_attribute_group',
+                'fields' => array('name', 'public_name'),
+            ),
+            array(
+                'code'   => 'modlang_attribute',
+                'label'  => 'Attributs – valeurs (Gris 7016, sur platine…)',
+                'table'  => 'attribute',
+                'id'     => 'id_attribute',
+                'fields' => array('name'),
             ),
         );
     }
