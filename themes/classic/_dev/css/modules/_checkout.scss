@@ -141,6 +141,20 @@ body#checkout {
     }
   }
 
+  // HiPay 3x : masquer le bloc additional-information qui ne contient que l'ioBB
+  .js-additional-information:has(> input#ioBB:only-child) {
+    display: none !important;
+  }
+
+  // HiPay Oney 3x/4x : éviter le centrage margin:auto du module sur le widget
+  .js-payment-option-form:has([id^="hipay-oney-"]) {
+    .hipay-form-container {
+      margin: 0;
+      max-width: 100%;
+      width: 100%;
+    }
+  }
+
   #js-checkout-summary {
     margin-bottom: 20px;
   }
