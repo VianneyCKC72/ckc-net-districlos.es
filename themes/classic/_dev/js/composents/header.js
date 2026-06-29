@@ -76,5 +76,75 @@ $(document).ready(function () {
         });
     }
 
+    // START BANDEAU SOLDES
+    function updateSoldesMenuTop() {
+        if (!$(".bandeau-soldes").length || $(window).width() < 991) {
+            document.documentElement.style.removeProperty("--soldes-menu-top");
+            $(".mm_menus_ul, .mm_modal_filter").each(function () {
+                this.style.removeProperty("top");
+            });
+            return;
+        }
+
+        var headerTop = document.querySelector(".header-top");
+        if (!headerTop) {
+            return;
+        }
+
+        var menuTop = Math.ceil(headerTop.getBoundingClientRect().bottom);
+        document.documentElement.style.setProperty("--soldes-menu-top", menuTop + "px");
+
+        $(".mm_menus_ul, .mm_modal_filter").each(function () {
+            this.style.setProperty("top", menuTop + "px", "important");
+        });
+    }
+
+    function scheduleSoldesMenuTopUpdate() {
+        window.requestAnimationFrame(updateSoldesMenuTop);
+    }
+
+    if ($(".bandeau-soldes").length) {
+        updateSoldesMenuTop();
+
+        $(window).on("resize scroll", scheduleSoldesMenuTopUpdate);
+        $(document).on("click", ".ybc-menu-toggle", function () {
+            scheduleSoldesMenuTopUpdate();
+            setTimeout(scheduleSoldesMenuTopUpdate, 100);
+        });
+
+        if (window.MutationObserver) {
+            var menuTopObserver = new MutationObserver(scheduleSoldesMenuTopUpdate);
+            menuTopObserver.observe(document.body, {
+                attributes: true,
+                attributeFilter: ["class"],
+            });
+
+            var $headerEl = $("#header");
+            if ($headerEl.length) {
+                menuTopObserver.observe($headerEl[0], {
+                    attributes: true,
+                    attributeFilter: ["class"],
+                });
+            }
+
+            var $promoBarEl = $("#ckcpromobarre");
+            if($promoBarEl.length) {
+                menuTopObserver.observe($promoBarEl[0], {
+                    attributes: true,
+                    attributeFilter: ["class"],
+                });
+            }
+
+            var $megamenuEl = $(".ets_mm_megamenu.sticky_enabled");
+            if ($megamenuEl.length) {
+                menuTopObserver.observe($megamenuEl[0], {
+                    attributes: true,
+                    attributeFilter: ["class"],
+                });
+            }
+        }
+    }
+    // END BANDEAU SOLDES
+
 });
 
