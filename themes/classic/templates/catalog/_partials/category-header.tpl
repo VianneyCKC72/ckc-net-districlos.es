@@ -41,12 +41,14 @@
             </div>
             <div class="block-category-inner">
                 <div id="category-description">
-                    <div class="category-description" id="description-content">
+                    <div class="category-description{if $category.id == 400} expanded{/if}" id="description-content">
                         {if $category.description}
                             {$category.description nofilter}
                         {/if}
                     </div>
-                    <button class="read-more-btn btn btn-primary" id="toggle-btn">En savoir plus</button>
+                    {if $category.id != 400}
+                        <button class="read-more-btn btn btn-primary" id="toggle-btn">En savoir plus</button>
+                    {/if}
                     {include file='catalog/_partials/link-sub-desc.tpl'}
                 </div>
             </div>
