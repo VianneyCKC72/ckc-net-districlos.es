@@ -57,6 +57,9 @@
         {elseif in_array($_cat_id, [337, 323, 130, 169, 171, 280, 294])}
             {assign var=category_listing_banner_file value='promo_category_pack_portailportillon_alu.png'}
 
+        {elseif in_array($_cat_id, [3, 93, 94, 96, 95, 97, 153, 92, 324])}
+            {assign var=category_listing_banner_file value='promo_category_rigide.jpg'}
+
         {else}
             {* Catégorie sans visuel soldes spécifique → fallback générique *}
             {assign var=category_listing_banner_file value='category-listing-promo.jpg'}
