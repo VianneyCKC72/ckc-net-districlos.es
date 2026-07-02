@@ -34,8 +34,18 @@ class AdminCkcTranslateController extends ModuleAdminController
             $this->clearHistory();
         }
 
+        if (Tools::isSubmit('submitCkcClearCeCache')) {
+            $this->clearCeElementCache();
+        }
+
         if (Tools::getValue('run_job')) {
             $this->runJob((string) Tools::getValue('run_job'));
+
+            return;
+        }
+
+        if (Tools::getValue('ckc_debug_ce')) {
+            $this->debugCreativeElements();
 
             return;
         }
@@ -45,30 +55,12 @@ class AdminCkcTranslateController extends ModuleAdminController
             'jobs' => $this->getJobsWithCounters(),
             'current_url' => self::$currentIndex . '&token=' . $this->token,
             'history_rows' => $this->getHistoryRows(),
-            'preview_rows' => $this->getTranslationPreview(),
             'prompt_example' => $this->getAdvancedPromptExample(),
             'estimated_batch_cost' => $this->getEstimatedBatchCost(),
             'available_models' => $this->getAvailableModels(),
         ));
 
         $this->setTemplate('configure.tpl');
-    }
-
-    /**
-     * Retourne la valeur de config, ou la valeur par défaut si elle est vide/absente.
-     */
-    protected function configOrDefault($key)
-    {
-        $value = Configuration::get($key);
-
-        if ($value === false || $value === null || $value === '') {
-            $defaults = CkcTranslate::getDefaultConfig();
-            if (array_key_exists($key, $defaults)) {
-                return $defaults[$key];
-            }
-        }
-
-        return $value;
     }
 
     protected function postProcessConfig()
@@ -96,35 +88,34 @@ class AdminCkcTranslateController extends ModuleAdminController
         $promptCategorySeo = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CATEGORY_SEO));
         $promptCategoryDescription = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CATEGORY_DESCRIPTION));
         $promptCms = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CMS));
+        $promptCe = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CE));
+        $promptReassurance = trim((string) Tools::getValue('CKCTRANSLATE_PROMPT_REASSURANCE'));
         $filterType = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_TYPE));
         $filterIds = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_IDS));
         $filterCategoryId = (int) Tools::getValue(CkcTranslate::CONF_FILTER_CATEGORY_ID);
-        $allowedIpsRaw = trim((string) Tools::getValue(CkcTranslate::CONF_ALLOWED_IPS));
-        $allowedIpsNormalized = implode("\n", CkcTranslate::parseAllowedIps($allowedIpsRaw));
 
-        $defaults = CkcTranslate::getDefaultConfig();
-
-        // Champs vides/invalides : on applique automatiquement la valeur par défaut
-        // (plutôt que de bloquer l'enregistrement avec une erreur).
-        if ($sourceLang <= 0) {
-            $sourceLang = (int) $defaults[CkcTranslate::CONF_SOURCE_LANG];
-        }
-        if ($targetLang <= 0) {
-            $targetLang = (int) $defaults[CkcTranslate::CONF_TARGET_LANG];
-        }
-        if ($temperature < 0 || $temperature > 1) {
-            $temperature = (float) $defaults[CkcTranslate::CONF_TEMPERATURE];
-        }
-        if ($maxTokens < 100) {
-            $maxTokens = (int) $defaults[CkcTranslate::CONF_MAX_TOKENS];
-        }
-        if ($batchSize < 1) {
-            $batchSize = (int) $defaults[CkcTranslate::CONF_BATCH_SIZE];
+        if ($sourceLang <= 0 || $targetLang <= 0) {
+            $this->errors[] = $this->module->l('Please select valid source and target languages.');
+            return;
         }
 
-        // Seul cas réellement bloquant : langues source et cible identiques.
         if ($sourceLang === $targetLang) {
             $this->errors[] = $this->module->l('Source and target languages must be different.');
+            return;
+        }
+
+        if ($temperature < 0 || $temperature > 1) {
+            $this->errors[] = $this->module->l('Temperature must be between 0 and 1.');
+            return;
+        }
+
+        if ($maxTokens < 100) {
+            $this->errors[] = $this->module->l('Max tokens must be at least 100.');
+            return;
+        }
+
+        if ($batchSize < 1) {
+            $this->errors[] = $this->module->l('Batch size must be at least 1.');
             return;
         }
 
@@ -156,10 +147,11 @@ class AdminCkcTranslateController extends ModuleAdminController
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_CATEGORY_SEO, $promptCategorySeo);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_CATEGORY_DESCRIPTION, $promptCategoryDescription);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_CMS, $promptCms);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_CE, $promptCe);
+        Configuration::updateValue('CKCTRANSLATE_PROMPT_REASSURANCE', $promptReassurance);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_TYPE, $filterType);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_IDS, $filterIds);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_CATEGORY_ID, $filterCategoryId);
-        Configuration::updateValue(CkcTranslate::CONF_ALLOWED_IPS, $allowedIpsNormalized);
 
         $this->confirmations[] = $this->module->l('Settings updated successfully.');
     }
@@ -167,7 +159,6 @@ class AdminCkcTranslateController extends ModuleAdminController
     protected function renderFormConfig()
     {
         $defaultLang = (int) Configuration::get('PS_LANG_DEFAULT');
-        $currentIp = (string) Tools::getRemoteAddr();
         $modelOptions = array();
 
         foreach ($this->getAvailableModels() as $model) {
@@ -204,14 +195,12 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'type' => 'text',
                         'label' => $this->module->l('API key'),
                         'name' => CkcTranslate::CONF_API_KEY,
-                        'required' => true,
                         'desc' => $this->module->l('Paste your API key here. Never hardcode it in source files.'),
                     ),
                     array(
                         'type' => 'select',
                         'label' => $this->module->l('Source language'),
                         'name' => CkcTranslate::CONF_SOURCE_LANG,
-                        'required' => true,
                         'options' => array(
                             'query' => Language::getLanguages(false),
                             'id' => 'id_lang',
@@ -223,7 +212,6 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'type' => 'select',
                         'label' => $this->module->l('Target language'),
                         'name' => CkcTranslate::CONF_TARGET_LANG,
-                        'required' => true,
                         'options' => array(
                             'query' => Language::getLanguages(false),
                             'id' => 'id_lang',
@@ -235,7 +223,6 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'type' => 'select',
                         'label' => $this->module->l('Model'),
                         'name' => CkcTranslate::CONF_MODEL,
-                        'required' => true,
                         'options' => array(
                             'query' => $modelOptions,
                             'id' => 'id_option',
@@ -266,7 +253,6 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'type' => 'text',
                         'label' => $this->module->l('Pages / items per launch'),
                         'name' => CkcTranslate::CONF_BATCH_SIZE,
-                        'required' => true,
                         'desc' => $this->module->l('Number of items translated per launch cycle. Example: 10, 20, 50.'),
                     ),
                     array(
@@ -345,6 +331,22 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'cols' => 60,
                     ),
                     array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Creative Elements'),
+                        'name' => CkcTranslate::CONF_PROMPT_CE,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For page builder blocks (ps_ce_content_lang). Increase max tokens to 3000+ for large pages.'),
+                    ),
+                    array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Reassurance blocks'),
+                        'name' => 'CKCTRANSLATE_PROMPT_REASSURANCE',
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For blockreassurance items (delivery, payment, warranty, etc.).'),
+                    ),
+                    array(
                         'type' => 'select',
                         'label' => $this->module->l('Filter type'),
                         'name' => CkcTranslate::CONF_FILTER_TYPE,
@@ -392,14 +394,12 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'type' => 'text',
                         'label' => $this->module->l('Temperature'),
                         'name' => CkcTranslate::CONF_TEMPERATURE,
-                        'required' => true,
                         'desc' => $this->module->l('Recommended: 0.2 to 0.4 for stable SEO translations.'),
                     ),
                     array(
                         'type' => 'text',
                         'label' => $this->module->l('Max tokens'),
                         'name' => CkcTranslate::CONF_MAX_TOKENS,
-                        'required' => true,
                         'desc' => $this->module->l('Recommended: 800 to 1500 depending on content length.'),
                     ),
                     array(
@@ -408,17 +408,6 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'name' => CkcTranslate::CONF_ESTIMATED_CREDIT,
                         'readonly' => true,
                         'desc' => $this->module->l('Approximate estimate calculated from the token limit.'),
-                    ),
-                    array(
-                        'type' => 'textarea',
-                        'label' => $this->module->l('Front-office language switcher — allowed IPs'),
-                        'name' => CkcTranslate::CONF_ALLOWED_IPS,
-                        'rows' => 5,
-                        'cols' => 60,
-                        'desc' => sprintf(
-                            $this->module->l('One IP per line. Supports exact IPv4 (e.g. 1.2.3.4), wildcards (e.g. 192.168.1.*) and CIDR (e.g. 10.0.0.0/24). For everyone else, the language selector is hidden and the language is forced to the shop default. Leave empty to hide the selector for all visitors. Your current IP: %s'),
-                            $currentIp !== '' ? $currentIp : $this->module->l('unknown')
-                        ),
                     ),
                 ),
                 'submit' => array(
@@ -441,32 +430,33 @@ class AdminCkcTranslateController extends ModuleAdminController
 
         $helper->fields_value = array(
             CkcTranslate::CONF_API_KEY => Configuration::get(CkcTranslate::CONF_API_KEY),
-            CkcTranslate::CONF_SOURCE_LANG => (int) $this->configOrDefault(CkcTranslate::CONF_SOURCE_LANG),
-            CkcTranslate::CONF_TARGET_LANG => (int) $this->configOrDefault(CkcTranslate::CONF_TARGET_LANG),
-            CkcTranslate::CONF_MODEL => $this->configOrDefault(CkcTranslate::CONF_MODEL),
-            CkcTranslate::CONF_PROMPT => $this->configOrDefault(CkcTranslate::CONF_PROMPT),
-            CkcTranslate::CONF_TEMPERATURE => $this->configOrDefault(CkcTranslate::CONF_TEMPERATURE),
-            CkcTranslate::CONF_MAX_TOKENS => $this->configOrDefault(CkcTranslate::CONF_MAX_TOKENS),
+            CkcTranslate::CONF_SOURCE_LANG => (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG),
+            CkcTranslate::CONF_TARGET_LANG => (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG),
+            CkcTranslate::CONF_MODEL => Configuration::get(CkcTranslate::CONF_MODEL),
+            CkcTranslate::CONF_PROMPT => Configuration::get(CkcTranslate::CONF_PROMPT),
+            CkcTranslate::CONF_TEMPERATURE => Configuration::get(CkcTranslate::CONF_TEMPERATURE),
+            CkcTranslate::CONF_MAX_TOKENS => Configuration::get(CkcTranslate::CONF_MAX_TOKENS),
             CkcTranslate::CONF_ESTIMATED_CREDIT => Configuration::get(CkcTranslate::CONF_ESTIMATED_CREDIT),
-            CkcTranslate::CONF_BATCH_SIZE => (int) $this->configOrDefault(CkcTranslate::CONF_BATCH_SIZE),
-            CkcTranslate::CONF_TARGET_COUNTRY => $this->configOrDefault(CkcTranslate::CONF_TARGET_COUNTRY),
+            CkcTranslate::CONF_BATCH_SIZE => (int) Configuration::get(CkcTranslate::CONF_BATCH_SIZE),
+            CkcTranslate::CONF_TARGET_COUNTRY => Configuration::get(CkcTranslate::CONF_TARGET_COUNTRY),
             CkcTranslate::CONF_COUNTRY_KEYWORDS => Configuration::get(CkcTranslate::CONF_COUNTRY_KEYWORDS),
             CkcTranslate::CONF_STYLE_GUIDELINES => Configuration::get(CkcTranslate::CONF_STYLE_GUIDELINES),
             CkcTranslate::CONF_RESTRICTIONS => Configuration::get(CkcTranslate::CONF_RESTRICTIONS),
-            CkcTranslate::CONF_ONLY_MISSING_FIELDS => (int) $this->configOrDefault(CkcTranslate::CONF_ONLY_MISSING_FIELDS),
+            CkcTranslate::CONF_ONLY_MISSING_FIELDS => (int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS),
             CkcTranslate::CONF_GLOSSARY => Configuration::get(CkcTranslate::CONF_GLOSSARY),
-            CkcTranslate::CONF_SEO_META_TITLE_MAX => (int) $this->configOrDefault(CkcTranslate::CONF_SEO_META_TITLE_MAX),
-            CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX => (int) $this->configOrDefault(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX),
-            CkcTranslate::CONF_SEO_SLUG_MAX => (int) $this->configOrDefault(CkcTranslate::CONF_SEO_SLUG_MAX),
+            CkcTranslate::CONF_SEO_META_TITLE_MAX => (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX),
+            CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX => (int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX),
+            CkcTranslate::CONF_SEO_SLUG_MAX => (int) Configuration::get(CkcTranslate::CONF_SEO_SLUG_MAX),
             CkcTranslate::CONF_PROMPT_PRODUCT_SEO => Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_SEO),
             CkcTranslate::CONF_PROMPT_PRODUCT_DESCRIPTION => Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_DESCRIPTION),
             CkcTranslate::CONF_PROMPT_CATEGORY_SEO => Configuration::get(CkcTranslate::CONF_PROMPT_CATEGORY_SEO),
             CkcTranslate::CONF_PROMPT_CATEGORY_DESCRIPTION => Configuration::get(CkcTranslate::CONF_PROMPT_CATEGORY_DESCRIPTION),
             CkcTranslate::CONF_PROMPT_CMS => Configuration::get(CkcTranslate::CONF_PROMPT_CMS),
-            CkcTranslate::CONF_FILTER_TYPE => $this->configOrDefault(CkcTranslate::CONF_FILTER_TYPE),
+            CkcTranslate::CONF_PROMPT_CE => Configuration::get(CkcTranslate::CONF_PROMPT_CE),
+            'CKCTRANSLATE_PROMPT_REASSURANCE' => Configuration::get('CKCTRANSLATE_PROMPT_REASSURANCE'),
+            CkcTranslate::CONF_FILTER_TYPE => Configuration::get(CkcTranslate::CONF_FILTER_TYPE),
             CkcTranslate::CONF_FILTER_IDS => Configuration::get(CkcTranslate::CONF_FILTER_IDS),
             CkcTranslate::CONF_FILTER_CATEGORY_ID => (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID),
-            CkcTranslate::CONF_ALLOWED_IPS => Configuration::get(CkcTranslate::CONF_ALLOWED_IPS),
         );
 
         return $helper->generateForm(array($fieldsForm));
@@ -506,7 +496,16 @@ class AdminCkcTranslateController extends ModuleAdminController
             (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG)
         );
 
-        $result = $runner->run($job);
+        try {
+            $result = $runner->run($job);
+        } catch (Throwable $e) {
+            $result = array(
+                'success' => false,
+                'message' => 'PHP Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine(),
+                'finished' => true,
+            );
+        }
+
         $autoReloadUrl = self::$currentIndex . '&token=' . $this->token . '&run_job=' . urlencode($job);
 
         $this->context->smarty->assign(array(
@@ -521,7 +520,7 @@ class AdminCkcTranslateController extends ModuleAdminController
 
     protected function getJobs()
     {
-        $jobs = array(
+        return array(
             array(
                 'code' => 'product_seo',
                 'label' => $this->module->l('Translate product SEO fields'),
@@ -547,17 +546,22 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'label' => $this->module->l('Translate CMS pages'),
                 'advice' => $this->module->l('Useful for editorial and SEO pages.'),
             ),
+            array(
+                'code' => 'creative_elements',
+                'label' => $this->module->l('Translate Creative Elements themes (ce_theme_lang)'),
+                'advice' => $this->module->l('Translates global theme HTML sections (header/footer builder blocks).'),
+            ),
+            array(
+                'code' => 'ce_meta',
+                'label' => $this->module->l('Translate Creative Elements pages (ce_meta JSON)'),
+                'advice' => $this->module->l('Translates page-specific Elementor JSON content (homepage, product pages, etc.). Run this to fix blank pages in the target language.'),
+            ),
+            array(
+                'code' => 'reassurance',
+                'label' => $this->module->l('Translate reassurance blocks (blockreassurance)'),
+                'advice' => $this->module->l('Translates title and description of reassurance items (delivery, payment, warranty, etc.).'),
+            ),
         );
-
-        foreach (CkcTranslate::getModuleLangEntities() as $entity) {
-            $jobs[] = array(
-                'code' => $entity['code'],
-                'label' => $entity['label'],
-                'advice' => $this->module->l('Module per-language field translation.'),
-            );
-        }
-
-        return $jobs;
     }
 
     protected function getJobsWithCounters()
@@ -638,34 +642,59 @@ class AdminCkcTranslateController extends ModuleAdminController
                 $indexKey = 'ckctranslate_cms_index';
                 break;
 
-            default:
-                $entity = CkcTranslate::getModuleLangEntity($jobCode);
-                if ($entity === null) {
-                    return array(
-                        'total' => 0,
-                        'remaining' => 0,
-                    );
-                }
+            case 'creative_elements':
+                $sourceLangId = (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
+                $sql = 'SELECT COUNT(DISTINCT cl.id_ce_theme)
+                        FROM `' . _DB_PREFIX_ . 'ce_theme_lang` cl
+                        WHERE cl.id_lang = ' . $sourceLangId . '
+                        AND cl.content IS NOT NULL
+                        AND cl.content != \'\'';
 
-                $sql = 'SELECT COUNT(DISTINCT `' . bqSQL($entity['id']) . '`)
-                        FROM `' . _DB_PREFIX_ . bqSQL($entity['table']) . '_lang`
-                        WHERE id_lang = ' . (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
                 $total = (int) Db::getInstance()->getValue($sql);
-                $cookieKey = 'ckctranslate_' . $entity['code'] . '_ids';
-                $indexKey = 'ckctranslate_' . $entity['code'] . '_index';
+                $cookieKey = 'ckctranslate_ce_ids';
+                $indexKey = 'ckctranslate_ce_index';
                 break;
+
+            case 'ce_meta':
+                $sourceLangId = (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
+                $langPad = sprintf('%02d', $sourceLangId);
+                $sql = 'SELECT COUNT(DISTINCT id)
+                        FROM `' . _DB_PREFIX_ . 'ce_meta`
+                        WHERE `name` = \'_elementor_data\'
+                        AND SUBSTRING(CAST(id AS CHAR), LENGTH(CAST(id AS CHAR))-3, 2) = \'' . pSQL($langPad) . '\'';
+
+                $total = (int) Db::getInstance()->getValue($sql);
+                $cookieKey = 'ckctranslate_cemeta_ids';
+                $indexKey = 'ckctranslate_cemeta_index';
+                break;
+
+            case 'reassurance':
+                $sql = 'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'psreassurance` WHERE status = 1';
+
+                $total = (int) Db::getInstance()->getValue($sql);
+                $cookieKey = 'ckctranslate_reassurance_ids';
+                $indexKey = 'ckctranslate_reassurance_index';
+                break;
+
+            default:
+                return array(
+                    'total' => 0,
+                    'remaining' => 0,
+                );
         }
 
         $cookie = $this->context->cookie;
 
-        // Seul l'index est désormais stocké en cookie (plus de liste d'IDs surdimensionnée).
-        if (isset($cookie->{$indexKey})) {
+        if (isset($cookie->{$cookieKey}) && isset($cookie->{$indexKey})) {
+            $ids = json_decode($cookie->{$cookieKey}, true);
             $index = (int) $cookie->{$indexKey};
 
-            return array(
-                'total' => (int) $total,
-                'remaining' => max((int) $total - $index, 0),
-            );
+            if (is_array($ids)) {
+                return array(
+                    'total' => count($ids),
+                    'remaining' => max(count($ids) - $index, 0),
+                );
+            }
         }
 
         return array(
@@ -687,12 +716,13 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_category_desc_index',
             'ckctranslate_cms_ids',
             'ckctranslate_cms_index',
+            'ckctranslate_ce_ids',
+            'ckctranslate_ce_index',
+            'ckctranslate_cemeta_ids',
+            'ckctranslate_cemeta_index',
+            'ckctranslate_reassurance_ids',
+            'ckctranslate_reassurance_index',
         );
-
-        foreach (CkcTranslate::getModuleLangEntities() as $entity) {
-            $keys[] = 'ckctranslate_' . $entity['code'] . '_ids';
-            $keys[] = 'ckctranslate_' . $entity['code'] . '_index';
-        }
 
         foreach ($keys as $key) {
             unset($this->context->cookie->{$key});
@@ -706,6 +736,27 @@ class AdminCkcTranslateController extends ModuleAdminController
     {
         Db::getInstance()->delete('ckctranslate_history', '1 = 1');
         $this->confirmations[] = $this->module->l('Translation history has been cleared.');
+    }
+
+    protected function clearCeElementCache()
+    {
+        $targetLangId = (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG);
+        $langPad = sprintf('%02d', $targetLangId);
+        $deleted = (int) Db::getInstance()->getValue(
+            'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'ce_meta`
+             WHERE `name` = \'_ce_element_cache\'
+             AND SUBSTRING(CAST(id AS CHAR), LENGTH(CAST(id AS CHAR))-3, 2) = \'' . pSQL($langPad) . '\''
+        );
+        Db::getInstance()->execute(
+            'DELETE FROM `' . _DB_PREFIX_ . 'ce_meta`
+             WHERE `name` = \'_ce_element_cache\'
+             AND SUBSTRING(CAST(id AS CHAR), LENGTH(CAST(id AS CHAR))-3, 2) = \'' . pSQL($langPad) . '\''
+        );
+        $this->confirmations[] = sprintf(
+            $this->module->l('CE element cache cleared for target language (lang_id=%d). %d entries deleted.'),
+            $targetLangId,
+            $deleted
+        );
     }
 
     protected function getAvailableModels()
@@ -751,124 +802,6 @@ class AdminCkcTranslateController extends ModuleAdminController
         return is_array($rows) ? $rows : array();
     }
 
-    /**
-     * Aperçu des traductions réellement produites (source FR -> cible EN),
-     * pour les entités traduites avec succès les plus récentes.
-     */
-    protected function getTranslationPreview($limit = 30)
-    {
-        $sourceLang = (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
-        $targetLang = (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG);
-
-        $rows = Db::getInstance()->executeS(
-            'SELECT entity_type, entity_id, MAX(date_add) AS last_date,
-                    GROUP_CONCAT(DISTINCT job_code SEPARATOR ", ") AS jobs
-             FROM `' . _DB_PREFIX_ . 'ckctranslate_history`
-             WHERE status = "success"
-             GROUP BY entity_type, entity_id
-             ORDER BY last_date DESC
-             LIMIT ' . (int) $limit
-        );
-
-        if (!is_array($rows)) {
-            return array();
-        }
-
-        $preview = array();
-        foreach ($rows as $r) {
-            $fields = $this->getEntityFieldPreview($r['entity_type'], (int) $r['entity_id'], $sourceLang, $targetLang);
-            if (empty($fields)) {
-                continue;
-            }
-            $preview[] = array(
-                'type' => $r['entity_type'],
-                'id' => (int) $r['entity_id'],
-                'jobs' => $r['jobs'],
-                'date' => $r['last_date'],
-                'fields' => $fields,
-            );
-        }
-
-        return $preview;
-    }
-
-    /**
-     * Retourne, pour une entité, la liste [label, source, target] des champs traduisibles.
-     */
-    protected function getEntityFieldPreview($type, $id, $sourceLang, $targetLang)
-    {
-        $fields = array();
-        $defs = array();
-        $sourceObj = null;
-        $targetObj = null;
-
-        if ($type === 'product' && class_exists('Product')) {
-            $sourceObj = new Product($id, false, $sourceLang);
-            $targetObj = new Product($id, false, $targetLang);
-            $defs = array('name', 'meta_title', 'description_short', 'description');
-        } elseif ($type === 'category' && class_exists('Category')) {
-            $sourceObj = new Category($id, $sourceLang);
-            $targetObj = new Category($id, $targetLang);
-            $defs = array('name', 'meta_title', 'description');
-        } elseif ($type === 'cms' && class_exists('CMS')) {
-            $sourceObj = new CMS($id, $sourceLang);
-            $targetObj = new CMS($id, $targetLang);
-            $defs = array('meta_title', 'content');
-        } else {
-            // Table de module par langue (ex. ckc_realisation)
-            foreach (CkcTranslate::getModuleLangEntities() as $entity) {
-                if ($entity['table'] !== $type) {
-                    continue;
-                }
-                $cols = array();
-                foreach ($entity['fields'] as $f) {
-                    $cols[] = '`' . bqSQL($f) . '`';
-                }
-                $base = 'SELECT ' . implode(', ', $cols) . ' FROM `' . _DB_PREFIX_ . bqSQL($entity['table']) . '_lang`'
-                    . ' WHERE `' . bqSQL($entity['id']) . '` = ' . (int) $id . ' AND id_lang = ';
-                $src = Db::getInstance()->getRow($base . (int) $sourceLang);
-                $tgt = Db::getInstance()->getRow($base . (int) $targetLang);
-                foreach ($entity['fields'] as $f) {
-                    $fields[] = array(
-                        'label' => $f,
-                        'source' => $this->previewSnippet(isset($src[$f]) ? $src[$f] : ''),
-                        'target' => $this->previewSnippet(isset($tgt[$f]) ? $tgt[$f] : ''),
-                    );
-                }
-                break;
-            }
-
-            return $fields;
-        }
-
-        if ($sourceObj && Validate::isLoadedObject($sourceObj)) {
-            foreach ($defs as $f) {
-                $sv = isset($sourceObj->{$f}) ? (string) $sourceObj->{$f} : '';
-                $tv = isset($targetObj->{$f}) ? (string) $targetObj->{$f} : '';
-                if (trim(strip_tags($sv)) === '' && trim(strip_tags($tv)) === '') {
-                    continue;
-                }
-                $fields[] = array(
-                    'label' => $f,
-                    'source' => $this->previewSnippet($sv),
-                    'target' => $this->previewSnippet($tv),
-                );
-            }
-        }
-
-        return $fields;
-    }
-
-    protected function previewSnippet($value, $max = 220)
-    {
-        $value = trim(preg_replace('/\s+/', ' ', strip_tags((string) $value)));
-        if (Tools::strlen($value) > $max) {
-            $value = Tools::substr($value, 0, $max) . '…';
-        }
-
-        return $value;
-    }
-
     protected function estimateCredit($maxTokens)
     {
         $estimate = ((float) $maxTokens / 1000) * 0.02;
@@ -882,5 +815,166 @@ class AdminCkcTranslateController extends ModuleAdminController
         $ids = array_filter(array_map('intval', $ids));
 
         return array_values(array_unique($ids));
+    }
+
+    protected function debugCreativeElements()
+    {
+        $sourceLangId = (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
+        $db = Db::getInstance();
+        $prefix = _DB_PREFIX_;
+
+        $out = '<div style="font-family:monospace;font-size:13px;padding:20px;background:#f5f5f5">';
+        $out .= '<h2>CKC Translate — Debug Creative Elements</h2>';
+        $out .= '<p><strong>Source lang ID (config):</strong> ' . $sourceLangId . '</p>';
+        $out .= '<p><strong>DB prefix:</strong> ' . $prefix . '</p>';
+
+        // Check all CE tables
+        $tables = array('ce_content', 'ce_content_lang', 'ce_content_shop', 'ce_theme', 'ce_theme_lang', 'ce_theme_shop', 'ce_meta', 'ce_revision', 'ce_template');
+        $out .= '<h3>Toutes les tables CE</h3><ul>';
+        foreach ($tables as $t) {
+            $full = $prefix . $t;
+            $exists = $db->getValue("SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '" . pSQL($full) . "'");
+            $count = $exists ? (int) $db->getValue('SELECT COUNT(*) FROM `' . $full . '`') : '—';
+            $color = ($count > 0) ? 'green' : 'inherit';
+            $out .= '<li><strong>' . $full . '</strong> : ' . ($exists ? 'EXISTS' : '<span style="color:red">MISSING</span>') . ' — <span style="color:' . $color . '">' . $count . ' rows</span></li>';
+        }
+        $out .= '</ul>';
+
+        // ce_theme_lang details
+        $themeRows = $db->executeS('SELECT id_lang, COUNT(*) as nb FROM `' . $prefix . 'ce_theme_lang` GROUP BY id_lang');
+        $out .= '<h3>' . $prefix . 'ce_theme_lang — par langue</h3>';
+        if ($themeRows) {
+            $out .= '<table border="1" cellpadding="4"><tr><th>id_lang</th><th>rows</th><th>content non-vide</th></tr>';
+            foreach ($themeRows as $lr) {
+                $nonEmpty = (int) $db->getValue('SELECT COUNT(*) FROM `' . $prefix . 'ce_theme_lang` WHERE id_lang = ' . (int) $lr['id_lang'] . ' AND content IS NOT NULL AND content != \'\'');
+                $out .= '<tr><td>' . $lr['id_lang'] . '</td><td>' . $lr['nb'] . '</td><td>' . $nonEmpty . '</td></tr>';
+            }
+            $out .= '</table>';
+            $samples = $db->executeS('SELECT id_ce_theme, id_lang, id_shop, title, LEFT(content, 150) as preview FROM `' . $prefix . 'ce_theme_lang` LIMIT 5');
+            $out .= '<table border="1" cellpadding="4"><tr><th>id_ce_theme</th><th>id_lang</th><th>id_shop</th><th>title</th><th>content preview</th></tr>';
+            foreach ($samples as $s) {
+                $out .= '<tr><td>' . $s['id_ce_theme'] . '</td><td>' . $s['id_lang'] . '</td><td>' . $s['id_shop'] . '</td><td>' . htmlspecialchars($s['title']) . '</td><td>' . htmlspecialchars($s['preview']) . '</td></tr>';
+            }
+            $out .= '</table>';
+        } else {
+            $out .= '<p style="color:orange">Vide.</p>';
+        }
+
+        // ce_meta details
+        $metaRows = $db->executeS('SELECT `name`, COUNT(*) as nb FROM `' . $prefix . 'ce_meta` GROUP BY `name` ORDER BY nb DESC LIMIT 10');
+        $out .= '<h3>' . $prefix . 'ce_meta — par clé (top 10)</h3>';
+        if ($metaRows) {
+            $out .= '<table border="1" cellpadding="4"><tr><th>name (clé)</th><th>rows</th></tr>';
+            foreach ($metaRows as $mr) {
+                $out .= '<tr><td>' . htmlspecialchars($mr['name']) . '</td><td>' . $mr['nb'] . '</td></tr>';
+            }
+            $out .= '</table>';
+            $metaSample = $db->executeS('SELECT id, `name`, LEFT(`value`, 200) as val_preview FROM `' . $prefix . 'ce_meta` LIMIT 3');
+            $out .= '<p><strong>Exemples de lignes :</strong></p>';
+            $out .= '<table border="1" cellpadding="4"><tr><th>id</th><th>name</th><th>value (200 chars)</th></tr>';
+            foreach ($metaSample as $ms) {
+                $out .= '<tr><td>' . $ms['id'] . '</td><td>' . htmlspecialchars($ms['name']) . '</td><td>' . htmlspecialchars($ms['val_preview']) . '</td></tr>';
+            }
+            $out .= '</table>';
+        } else {
+            $out .= '<p style="color:orange">Vide.</p>';
+        }
+
+        // Final count — ce_theme_lang
+        $countSql = 'SELECT COUNT(DISTINCT cl.id_ce_theme) FROM `' . $prefix . 'ce_theme_lang` cl WHERE cl.id_lang = ' . $sourceLangId . ' AND cl.content IS NOT NULL AND cl.content != \'\'';
+        $finalCount = (int) $db->getValue($countSql);
+        $out .= '<h3>Compteur CE → ce_theme_lang (source lang ' . $sourceLangId . ')</h3>';
+        $out .= '<p><code>' . htmlspecialchars($countSql) . '</code></p>';
+        $out .= '<p><strong>Résultat : ' . $finalCount . '</strong></p>';
+
+        // ce_meta — lang breakdown from UID
+        $langPad = sprintf('%02d', $sourceLangId);
+        $out .= '<h3>' . $prefix . 'ce_meta — analyse UIDs (_elementor_data)</h3>';
+        $sourceMetaCount = (int) $db->getValue(
+            'SELECT COUNT(*) FROM `' . $prefix . 'ce_meta`
+             WHERE `name` = \'_elementor_data\'
+             AND SUBSTRING(CAST(id AS CHAR), LENGTH(CAST(id AS CHAR))-3, 2) = \'' . pSQL($langPad) . '\''
+        );
+        $out .= '<p>Entries _elementor_data avec lang source (' . $sourceLangId . ') : <strong>' . $sourceMetaCount . '</strong></p>';
+
+        // Sample UIDs for source lang
+        $sampleUids = $db->executeS(
+            'SELECT id FROM `' . $prefix . 'ce_meta`
+             WHERE `name` = \'_elementor_data\'
+             AND SUBSTRING(CAST(id AS CHAR), LENGTH(CAST(id AS CHAR))-3, 2) = \'' . pSQL($langPad) . '\'
+             ORDER BY id ASC LIMIT 10'
+        );
+        if ($sampleUids) {
+            $targetLangId = (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG);
+            $targetLangPad = sprintf('%02d', $targetLangId);
+            $out .= '<table border="1" cellpadding="4"><tr><th>source UID</th><th>decoded (page|type|lang|shop)</th><th>target UID</th><th>target exists?</th></tr>';
+            foreach ($sampleUids as $row) {
+                $uid = (string) $row['id'];
+                $decodedLang = substr($uid, -4, 2);
+                $decodedShop = substr($uid, -2);
+                $decodedType = substr($uid, -6, 2);
+                $decodedPage = substr($uid, 0, -6);
+                $targetUid = substr($uid, 0, -4) . $targetLangPad . substr($uid, -2);
+                $targetExists = (int) $db->getValue(
+                    'SELECT COUNT(*) FROM `' . $prefix . 'ce_meta`
+                     WHERE id = ' . (int) $targetUid . ' AND `name` = \'_elementor_data\''
+                );
+                $out .= '<tr>'
+                    . '<td>' . $uid . '</td>'
+                    . '<td>page=' . $decodedPage . ' type=' . $decodedType . ' lang=' . $decodedLang . ' shop=' . $decodedShop . '</td>'
+                    . '<td>' . $targetUid . '</td>'
+                    . '<td style="color:' . ($targetExists ? 'green' : 'red') . '">' . ($targetExists ? 'OUI' : 'NON') . '</td>'
+                    . '</tr>';
+            }
+            $out .= '</table>';
+        }
+
+        // Deep JSON inspection — first source entry
+        if ($sampleUids) {
+            $firstUid = (int) $sampleUids[0]['id'];
+            $jsonRows = $db->executeS(
+                'SELECT `value` FROM `' . $prefix . 'ce_meta`
+                 WHERE id = ' . $firstUid . ' AND `name` = \'_elementor_data\'
+                 LIMIT 1'
+            );
+            if ($jsonRows && !empty($jsonRows[0]['value'])) {
+                $elements = json_decode($jsonRows[0]['value'], true);
+                $out .= '<h3>Structure JSON (premier UID ' . $firstUid . ')</h3>';
+                if (is_array($elements)) {
+                    $out .= '<p>Nombre d\'éléments racine : <strong>' . count($elements) . '</strong></p>';
+                    $firstEl = $elements[0] ?? array();
+                    $out .= '<p>Clés du premier élément : <code>' . htmlspecialchars(implode(', ', array_keys($firstEl))) . '</code></p>';
+                    $elType = $firstEl['elType'] ?? '(manquant)';
+                    $out .= '<p>elType du premier élément : <strong>' . htmlspecialchars($elType) . '</strong></p>';
+                    // Count elType values at all levels
+                    $elTypes = array();
+                    array_walk_recursive($elements, function ($val, $key) use (&$elTypes) {
+                        if ($key === 'elType') {
+                            $elTypes[$val] = ($elTypes[$val] ?? 0) + 1;
+                        }
+                    });
+                    $out .= '<p>elType présents : <code>' . htmlspecialchars(json_encode($elTypes)) . '</code></p>';
+                    // Count widgetType values
+                    $widgetTypes = array();
+                    array_walk_recursive($elements, function ($val, $key) use (&$widgetTypes) {
+                        if ($key === 'widgetType') {
+                            $widgetTypes[$val] = ($widgetTypes[$val] ?? 0) + 1;
+                        }
+                    });
+                    $out .= '<p>widgetType présents : <code>' . htmlspecialchars(json_encode($widgetTypes)) . '</code></p>';
+                    // Show raw JSON preview
+                    $out .= '<details><summary>JSON brut (1500 chars)</summary><pre>' . htmlspecialchars(substr($jsonRows[0]['value'], 0, 1500)) . '</pre></details>';
+                } else {
+                    $out .= '<p style="color:red">json_decode() a échoué.</p>';
+                }
+            }
+        }
+
+        $backUrl = self::$currentIndex . '&token=' . $this->token;
+        $out .= '<p><a href="' . htmlspecialchars($backUrl) . '">← Retour</a></p>';
+        $out .= '</div>';
+
+        echo $out;
+        exit;
     }
 }

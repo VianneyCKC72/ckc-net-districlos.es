@@ -53,6 +53,13 @@
                     {l s='Clear history' mod='ckctranslate'}
                 </button>
             </form>
+
+            <form method="post" action="{$current_url|escape:'htmlall':'UTF-8'}" style="display:inline-block;">
+                <button type="submit" name="submitCkcClearCeCache" class="btn btn-default" onclick="return confirm('{l s='Clear CE element cache for target language? CE will re-render all translated pages.' mod='ckctranslate' js=1}');">
+                    <i class="icon icon-remove-circle"></i>
+                    {l s='Clear CE cache (target lang)' mod='ckctranslate'}
+                </button>
+            </form>
         </div>
     </div>
 
@@ -120,41 +127,6 @@
             </div>
         {else}
             <p class="ckc-muted">{l s='No history yet.' mod='ckctranslate'}</p>
-        {/if}
-    </div>
-
-    <div class="panel">
-        <h3><i class="icon icon-eye"></i> {l s='Translations preview (source → target)' mod='ckctranslate'}</h3>
-
-        {if $preview_rows|@count}
-            {foreach from=$preview_rows item=row}
-                <div style="margin-bottom:16px;border:1px solid #e0e0e0;border-radius:6px;padding:10px;">
-                    <strong>{$row.type|escape:'htmlall':'UTF-8'} #{$row.id|escape:'htmlall':'UTF-8'}</strong>
-                    <span class="ckc-muted"> — {$row.jobs|escape:'htmlall':'UTF-8'} — {$row.date|escape:'htmlall':'UTF-8'}</span>
-                    <div class="table-responsive">
-                        <table class="table" style="margin-top:8px;">
-                            <thead>
-                            <tr>
-                                <th style="width:140px;">{l s='Field' mod='ckctranslate'}</th>
-                                <th>{l s='Source' mod='ckctranslate'}</th>
-                                <th>{l s='Translation' mod='ckctranslate'}</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {foreach from=$row.fields item=f}
-                                <tr>
-                                    <td><code>{$f.label|escape:'htmlall':'UTF-8'}</code></td>
-                                    <td class="ckc-muted">{$f.source|escape:'htmlall':'UTF-8'}</td>
-                                    <td>{$f.target|escape:'htmlall':'UTF-8'}</td>
-                                </tr>
-                            {/foreach}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            {/foreach}
-        {else}
-            <p class="ckc-muted">{l s='No translation to preview yet.' mod='ckctranslate'}</p>
         {/if}
     </div>
 </div>

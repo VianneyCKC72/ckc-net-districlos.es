@@ -34,7 +34,7 @@ class ckc_espacepro extends Module
         $this->name = 'ckc_espacepro';
         $this->tab = 'administration';
         $this->author = 'CKC';
-        $this->version = '1.0.3';
+        $this->version = '1.0.1';
         $this->need_instance = 0;
 
         parent::__construct();
@@ -677,9 +677,7 @@ class ckc_espacepro extends Module
             return;
         }
 
-        $helper->success[] = ($this->context->language->iso_code === 'en')
-            ? "Your account has been created and you are now logged in."
-            : "Votre compte a bien été créé et vous êtes maintenant connecté.";
+        $helper->success[] = "Votre compte a bien été créé et vous êtes maintenant connecté.";
         $helper->addNotification(
             (isset($backLink) && Tools::urlBelongsToShop($backLink)) ? $backLink : '/'
         );

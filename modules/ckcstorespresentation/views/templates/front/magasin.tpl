@@ -32,7 +32,7 @@
                 <span class="ckc-store-rating__stars" aria-hidden="true"
                       style="--rating: {$magasin.google_rating|string_format:"%.2f"}"></span>
                 {if isset($magasin.google_rating_count) && $magasin.google_rating_count}
-                    <span class="ckc-store-rating__count">{l s='%count% avis' d='Shop.Theme.Customckc' sprintf=['%count%' => $magasin.google_rating_count|intval]}</span>
+                    <span class="ckc-store-rating__count">{$magasin.google_rating_count|intval} avis</span>
                 {/if}
             </div>
         {/if}
@@ -59,7 +59,7 @@
             {if isset($magasin.email) && $magasin.email}
                 <span class="email">
                         <a href="mailto:{$magasin.email}" itemprop="email">
-                            <img src="/themes/classic/assets/img/magasins/email.png" alt="{l s='email' d='Shop.Theme.Customckc'}" width="14" height="10">
+                            <img src="/themes/classic/assets/img/magasins/email.png" alt="email" width="14" height="10">
                             {$magasin.email}
                         </a>
                     </span>
@@ -67,7 +67,7 @@
             {if isset($magasin.telephone) && $magasin.telephone}
                 <span class="telephone">
                         <a href="tel:{$magasin.telephone}" itemprop="telephone">
-                            <img src="/themes/classic/assets/img/magasins/telephone.png" alt="{l s='telephone' d='Shop.Theme.Customckc'}" width="14"
+                            <img src="/themes/classic/assets/img/magasins/telephone.png" alt="telephone" width="14"
                                  height="12">
                             {$magasin.telephone}
                         </a>
@@ -82,11 +82,11 @@
             {if isset($magasin.horaires_heures) && $magasin.horaires_heures}
                 <span class="heures" itemprop="openingHours">{$magasin.horaires_heures}</span>
             {/if}
-            <span class="heures" itemprop="openingHours">{l s='Samedi' d='Shop.Theme.Customckc'}</span>
+            <span class="heures" itemprop="openingHours">Samedi</span>
             {if isset($magasin.horaires_samedi) && $magasin.horaires_samedi}
                 <span class="heures" itemprop="openingHours">{$magasin.horaires_samedi}</span>
             {else}
-                <span class="heures" itemprop="openingHours">{l s='Fermé' d='Shop.Theme.Customckc'}</span>
+                <span class="heures" itemprop="openingHours">Fermé</span>
             {/if}
             {if isset($magasin.horaires_info_suppl) && $magasin.horaires_info_suppl}
                 <span class="heures magasins-info-suppl" itemprop="openingHours">{$magasin.horaires_info_suppl}</span>
@@ -104,7 +104,7 @@
                 </svg>
             </a>
             <a href="{Context::getContext()->link->getCMSLink($magasin.id_cms_detail)}" class="btn btn-primary btn-primary-small" itemprop="url">
-                {l s='Voir la page' d='Shop.Theme.Customckc'} <span class="only-lg">&nbsp;{l s='du magasin' d='Shop.Theme.Customckc'}</span>
+                Voir la page <span class="only-lg">&nbsp;du magasin</span>
             </a>
         </div>
     </div>

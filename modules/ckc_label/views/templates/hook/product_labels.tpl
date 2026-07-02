@@ -15,7 +15,7 @@
                 z-index: 9;">
             <span class="discount-percentage" style="position: unset;display: flex;margin:auto;color: {$label.color};">
                 {$label.text|escape:'html':'UTF-8'}
-                {if $label.show_discount_percent && $ckc_labels_product.has_discount && $ckc_labels_product.discount_type === 'percentage'}
+                {if isset($label.show_discount_percent) && $label.show_discount_percent && $ckc_labels_product.has_discount && $ckc_labels_product.discount_type === 'percentage'}
                     {$ckc_labels_product.discount_percentage}
                 {/if}
             </span>
@@ -37,7 +37,7 @@
             left: 5px;
             z-index: 99;">
             <span class="discount-percentage" style="position: unset;display: flex;margin:auto;">
-                {if $ckc_label_show_discount_percent && $ckc_labels_product.discount_type === 'percentage'}
+                {if isset($ckc_label_show_discount_percent) && $ckc_label_show_discount_percent && $ckc_labels_product.discount_type === 'percentage'}
                     {$ckc_labels_product.discount_percentage}
                 {/if}
             </span>

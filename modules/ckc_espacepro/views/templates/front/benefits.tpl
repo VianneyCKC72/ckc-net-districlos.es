@@ -8,7 +8,7 @@
         <div class="container px-0 z-0">
             <div class="row">
             <div class="col-12">
-                <span class="d-block h2 m-b-3">{l s='Les avantages pro' d='Shop.Theme.Customespacepro'} 222</span>
+                <span class="d-block h2 m-b-3">Les avantages pro 222</span>
             </div>
                 {foreach from=$benefits item=card}
                     <div class="col-12 col-sm-6 col-lg-4 m-b-65">
@@ -24,7 +24,7 @@
         <div class="container px-0">
             <div class="row">
                 <div class="col-12">
-                    <span class="d-block h2 m-b-3">{l s='Les services qu\'on vous propose' d='Shop.Theme.Customespacepro'}</span>
+                    <span class="d-block h2 m-b-3">Les services qu'on vous propose</span>
                 </div>
                 {foreach from=$services item=card}
                     <div class="col-12 col-sm-6 col-lg-4 m-b-65">
@@ -41,7 +41,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <span class="d-block fz-23 font-weight-bold m-b-3 text-white">{l s='Profitez de nos remises sur la quantité !' d='Shop.Theme.Customespacepro'}</span>
+                    <span class="d-block fz-23 font-weight-bold m-b-3 text-white">Profitez de nos remises sur la quantité !</span>
                 </div>
             </div>
             TOTOTOTO
@@ -54,7 +54,7 @@
         <div class="container px-0">
             <div class="row">
                  <div class="col-12">
-                    <span class="d-block h2 m-b-3">{l s='Plus de 4500 produits en stock' d='Shop.Theme.Customespacepro'}</span>
+                    <span class="d-block h2 m-b-3">Plus de 4500 produits en stock</span>
                 </div>
             </div>
             {hook h='CETemplate' id=6}

@@ -2,7 +2,7 @@
 <module>
 	<name>ckcstorespresentation</name>
 	<displayName><![CDATA[Ckc Stores Presentation]]></displayName>
-	<version><![CDATA[1.0.2]]></version>
+	<version><![CDATA[1.0.0]]></version>
 	<description><![CDATA[Ckc Stores Presentation]]></description>
 	<author><![CDATA[ckc-net]]></author>
 	<tab><![CDATA[administration]]></tab>

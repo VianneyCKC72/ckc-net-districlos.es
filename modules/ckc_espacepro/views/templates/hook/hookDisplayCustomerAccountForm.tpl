@@ -6,7 +6,7 @@
     <!-- SIRET -->
     <div class="form-group row">
         <div class="col-md-12">
-            <label class="form-label" for="customer-siret">{l s='Siret*' d='Shop.Theme.Customespacepro'}</label>
+            <label class="form-label" for="customer-siret">Siret*</label>
             <input class="form-control pad20" type="text" name="customer-siret" id="customer-siret"
                    value="{$customer->siret|default:''|escape:'htmlall':'UTF-8'}" required>
         </div>
@@ -16,9 +16,9 @@
         <!-- Code NAF -->
         <div class="form-group row">
             <div class="col-md-12">
-                <label class="form-label" for="nafCodeSelect">{l s='Code NAF*' d='Shop.Theme.Customespacepro'}</label>
+                <label class="form-label" for="nafCodeSelect">Code NAF*</label>
                 <select class="form-control pad20" name="naf" id="nafCodeSelect" required>
-                    <option value="" {if !isset($customer->ape) || empty($customer->ape)}selected{/if}>{l s='Choisir un code NAF' d='Shop.Theme.Customespacepro'}</option>
+                    <option value="" {if !isset($customer->ape) || empty($customer->ape)}selected{/if}>Choisir un code NAF</option>
                     {foreach from=$code_naf item="naf"}
                         <option value="{$naf.code}"
                                 {if isset($customer->ape) && $customer->ape == $naf.code}selected{/if}>
@@ -34,10 +34,10 @@
         <!-- Soumis à la TVA -->
         <div class="form-group row">
             <div class="col-md-12">
-                <label class="form-label" for="customer-tva">{l s='Soumis à la TVA*' d='Shop.Theme.Customespacepro'}</label>
+                <label class="form-label" for="customer-tva">Soumis à la TVA*</label>
                 <select name="customer-tva" id="customer-tva" class="form-control" required>
-                    <option value="0" {if isset($customer->tva) && $customer->tva == 0}selected{/if}>{l s='Non' d='Shop.Theme.Customespacepro'}</option>
-                    <option value="1" {if isset($customer->tva) && $customer->tva == 1}selected{/if}>{l s='Oui' d='Shop.Theme.Customespacepro'}</option>
+                    <option value="0" {if isset($customer->tva) && $customer->tva == 0}selected{/if}>Non</option>
+                    <option value="1" {if isset($customer->tva) && $customer->tva == 1}selected{/if}>Oui</option>
                 </select>
             </div>
         </div>
@@ -46,7 +46,7 @@
         <!-- Numéro de TVA -->
         <div class="form-group row">
             <div class="col-md-12">
-                <label class="form-label" for="customer-vat_number">{l s='Numéro de TVA' d='Shop.Theme.Customespacepro'}</label>
+                <label class="form-label" for="customer-vat_number">Numéro de TVA</label>
                 <input class="form-control pad20" type="text" name="customer-vat_number" id="customer-vat_number"
                        value="{$customer->vat_number|default:''|escape:'htmlall':'UTF-8'}">
             </div>
@@ -55,12 +55,12 @@
         <!-- KBIS (upload) -->
         <div class="form-group row">
             <div class="col-md-12">
-                <label class="form-label" for="file-upload">{l s='Kbis*' d='Shop.Theme.Customespacepro'}</label>
+                <label class="form-label" for="file-upload">Kbis*</label>
                 <div class="file-wrap">
-                    <label for="file-upload" class="custom-file-upload">{l s='Choisir un fichier' d='Shop.Theme.Customespacepro'}</label>
+                    <label for="file-upload" class="custom-file-upload">Choisir un fichier</label>
                     <input style="opacity:0;height:0;width:0;" id="file-upload" class="file-input js-file-input" type="file"
                            name="kbis" accept=".pdf,.jpg,.png">
-                    <span class="file-chosen js-file-name">{l s='Aucun fichier choisi' d='Shop.Theme.Customespacepro'}</span>
+                    <span class="file-chosen js-file-name">Aucun fichier choisi</span>
                 </div>
             </div>
         </div>
@@ -68,12 +68,12 @@
         <!-- RIB (upload) -->
         <div class="form-group row">
             <div class="col-md-12">
-                <label class="form-label" for="rib-upload">{l s='Relevé d\'identité bancaire* (RIB)' d='Shop.Theme.Customespacepro'}</label>
+                <label class="form-label" for="rib-upload">Relevé d'identité bancaire* (RIB)</label>
                 <div class="file-wrap">
-                    <label for="rib-upload" class="custom-file-upload">{l s='Choisir un fichier' d='Shop.Theme.Customespacepro'}</label>
+                    <label for="rib-upload" class="custom-file-upload">Choisir un fichier</label>
                     <input style="opacity:0;height:0;width:0;" id="rib-upload" class="file-input js-file-input" type="file"
                            name="rib" accept=".pdf,.jpg,.png">
-                    <span class="file-chosen js-file-name">{l s='Aucun fichier choisi' d='Shop.Theme.Customespacepro'}</span>
+                    <span class="file-chosen js-file-name">Aucun fichier choisi</span>
                 </div>
             </div>
         </div>
@@ -82,7 +82,7 @@
     <!-- Pays -->
     <div class="form-group row">
         <div class="col-md-12">
-            <label class="form-label" for="customer-pays">{l s='Pays*' d='Shop.Theme.Customespacepro'}</label>
+            <label class="form-label" for="customer-pays">Pays*</label>
             <select name="customer-pays" id="customer-pays" class="form-control pad20" required>
                 {foreach from=$countries item='country'}
                     <option value="{$country.id_country|intval}"
@@ -97,7 +97,7 @@
         <!-- Société -->
         <div class="form-group row">
             <div class="col-md-12">
-                <label class="form-label" for="customer-company">{l s='Société*' d='Shop.Theme.Customespacepro'}</label>
+                <label class="form-label" for="customer-company">Société*</label>
                 <input class="form-control pad20" type="text" name="customer-company" id="customer-company"
                        value="{$customer->company|default:''|escape:'htmlall':'UTF-8'}" required>
             </div>
@@ -105,7 +105,7 @@
         <!-- Ville -->
         <div class="form-group row">
             <div class="col-md-12">
-                <label class="form-label" for="customer-ville">{l s='Ville*' d='Shop.Theme.Customespacepro'}</label>
+                <label class="form-label" for="customer-ville">Ville*</label>
                 <input class="form-control pad20" type="text" name="customer-ville" id="customer-ville"
                        value="{$customer->city|default:''|escape:'htmlall':'UTF-8'}" required>
             </div>
@@ -113,7 +113,7 @@
         <!-- Adresse -->
         <div class="form-group row">
             <div class="col-md-12">
-                <label class="form-label" for="customer-adresse">{l s='Adresse*' d='Shop.Theme.Customespacepro'}</label>
+                <label class="form-label" for="customer-adresse">Adresse*</label>
                 <input class="form-control pad20" type="text" name="customer-adresse" id="customer-adresse"
                        value="{$customer->address1|default:''|escape:'htmlall':'UTF-8'}" required>
             </div>
@@ -121,7 +121,7 @@
         <!-- Complément d'adresse -->
         <div class="form-group row">
             <div class="col-md-12">
-                <label class="form-label" for="customer-adresse2">{l s='Complément d\'adresse' d='Shop.Theme.Customespacepro'}</label>
+                <label class="form-label" for="customer-adresse2">Complément d'adresse</label>
                 <input class="form-control pad20" type="text" name="customer-adresse2" id="customer-adresse2"
                        value="{$customer->address2|default:''|escape:'htmlall':'UTF-8'}">
             </div>
@@ -129,7 +129,7 @@
         <!-- Code Postal -->
         <div class="form-group row">
             <div class="col-md-12">
-                <label class="form-label" for="customer-cp">{l s='Code Postal*' d='Shop.Theme.Customespacepro'}</label>
+                <label class="form-label" for="customer-cp">Code Postal*</label>
                 <input class="form-control pad20" type="text" name="customer-cp" id="customer-cp"
                        value="{$customer->postcode|default:''|escape:'htmlall':'UTF-8'}" required>
             </div>
@@ -137,7 +137,7 @@
         <!-- Téléphone -->
         <div class="form-group row lastfield">
             <div class="col-md-12">
-                <label class="form-label" for="customer-tel">{l s='Téléphone*' d='Shop.Theme.Customespacepro'}</label>
+                <label class="form-label" for="customer-tel">Téléphone*</label>
                 <input class="form-control pad20" type="text" name="customer-tel" id="customer-tel"
                        value="{$customer->phone|default:''|escape:'htmlall':'UTF-8'}" required>
             </div>

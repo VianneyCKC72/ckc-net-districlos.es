@@ -61,13 +61,19 @@ class CkcTranslateJobRunner
                     $result = $this->runCms();
                     break;
 
-                default:
-                    $entity = CkcTranslate::getModuleLangEntity($job);
-                    if ($entity !== null) {
-                        $result = $this->runModuleLang($entity);
-                        break;
-                    }
+                case 'creative_elements':
+                    $result = $this->runCreativeElements();
+                    break;
 
+                case 'ce_meta':
+                    $result = $this->runCreativeElementsMeta();
+                    break;
+
+                case 'reassurance':
+                    $result = $this->runReassurance();
+                    break;
+
+                default:
                     return array(
                         'success' => false,
                         'message' => $this->module->l('Unknown job.', 'CkcTranslateJobRunner'),
@@ -118,7 +124,7 @@ class CkcTranslateJobRunner
             ));
         }
 
-        if ($this->shouldSkipFilledFields($targetProduct, $product, array('name', 'meta_title', 'meta_description', 'meta_keywords', 'link_rewrite'))) {
+        if ($this->shouldSkipFilledFields($targetProduct, array('name', 'meta_title', 'meta_description', 'meta_keywords', 'link_rewrite'))) {
             $this->logHistory('product_seo', 'product', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -226,7 +232,7 @@ PROMPT;
             ));
         }
 
-        if ($this->shouldSkipFilledFields($targetProduct, $product, array('description_short', 'description'))) {
+        if ($this->shouldSkipFilledFields($targetProduct, array('description_short', 'description'))) {
             $this->logHistory('product_description', 'product', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -315,7 +321,7 @@ PROMPT;
             ));
         }
 
-        if ($this->shouldSkipFilledFields($targetCategory, $category, array('name', 'meta_title', 'meta_description', 'link_rewrite'))) {
+        if ($this->shouldSkipFilledFields($targetCategory, array('name', 'meta_title', 'meta_description', 'link_rewrite'))) {
             $this->logHistory('category_seo', 'category', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -418,7 +424,7 @@ PROMPT;
             ));
         }
 
-        if ($this->shouldSkipFilledFields($targetCategory, $category, array('description', 'additional_description'))) {
+        if ($this->shouldSkipFilledFields($targetCategory, array('description', 'additional_description'))) {
             $this->logHistory('category_description', 'category', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -507,7 +513,7 @@ PROMPT;
             ));
         }
 
-        if ($this->shouldSkipFilledFields($targetCms, $cms, array('meta_title', 'meta_description', 'meta_keywords', 'content', 'link_rewrite'))) {
+        if ($this->shouldSkipFilledFields($targetCms, array('meta_title', 'meta_description', 'meta_keywords', 'content', 'link_rewrite'))) {
             $this->logHistory('cms', 'cms', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -579,126 +585,6 @@ PROMPT;
         ));
     }
 
-    protected function runModuleLang(array $entity)
-    {
-        $tableName = $entity['table'];
-        $langTableName = $tableName . '_lang';
-        $idCol = $entity['id'];
-        $fields = array_values($entity['fields']);
-        $cookieKey = 'ckctranslate_' . $entity['code'] . '_ids';
-        $indexKey = 'ckctranslate_' . $entity['code'] . '_index';
-
-        $listSql = 'SELECT DISTINCT `' . bqSQL($idCol) . '`
-                    FROM `' . _DB_PREFIX_ . bqSQL($langTableName) . '`
-                    WHERE id_lang = ' . (int) $this->sourceLangId . '
-                    ORDER BY `' . bqSQL($idCol) . '` ASC';
-
-        $id = $this->getNextId($cookieKey, $indexKey, $listSql, $entity['id']);
-
-        if (!$id) {
-            return $this->finishedResult(sprintf(
-                $this->module->l('Module table "%s" translation finished.', 'CkcTranslateJobRunner'),
-                $tableName
-            ));
-        }
-
-        $cols = array();
-        foreach ($fields as $f) {
-            $cols[] = '`' . bqSQL($f) . '`';
-        }
-        $colsSql = implode(', ', $cols);
-
-        $source = Db::getInstance()->getRow(
-            'SELECT ' . $colsSql . '
-             FROM `' . _DB_PREFIX_ . bqSQL($langTableName) . '`
-             WHERE `' . bqSQL($idCol) . '` = ' . (int) $id . ' AND id_lang = ' . (int) $this->sourceLangId
-        );
-
-        if (!is_array($source)) {
-            $this->logHistory($entity['code'], $tableName, (int) $id, 'skipped', $this->module->l('Source row missing.', 'CkcTranslateJobRunner'));
-
-            return $this->nextResult(sprintf(
-                $this->module->l('Source row #%d missing, skipped.', 'CkcTranslateJobRunner'),
-                (int) $id
-            ));
-        }
-
-        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
-            $target = Db::getInstance()->getRow(
-                'SELECT ' . $colsSql . '
-                 FROM `' . _DB_PREFIX_ . bqSQL($langTableName) . '`
-                 WHERE `' . bqSQL($idCol) . '` = ' . (int) $id . ' AND id_lang = ' . (int) $this->targetLangId
-            );
-
-            if (is_array($target)) {
-                $allFilled = true;
-                foreach ($fields as $f) {
-                    $tv = isset($target[$f]) ? (string) $target[$f] : '';
-                    $sv = isset($source[$f]) ? (string) $source[$f] : '';
-                    if (trim(strip_tags($sv)) === '') {
-                        continue; // source vide : rien à traduire pour ce champ
-                    }
-                    if (trim(strip_tags($tv)) === '' || trim($tv) === trim($sv)) {
-                        $allFilled = false; // cible vide ou copie FR non traduite => à traduire
-                        break;
-                    }
-                }
-
-                if ($allFilled) {
-                    $this->logHistory($entity['code'], $tableName, (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
-
-                    return $this->nextResult(sprintf(
-                        $this->module->l('Row #%d already translated, skipped.', 'CkcTranslateJobRunner'),
-                        (int) $id
-                    ));
-                }
-            }
-        }
-
-        $jsonSkeleton = array();
-        $sourceBlock = '';
-        foreach ($fields as $f) {
-            $jsonSkeleton[] = '  "' . $f . '": ""';
-            $sourceBlock .= "\nSource " . $f . ":\n" . (isset($source[$f]) ? (string) $source[$f] : '') . "\n";
-        }
-
-        $systemPrompt = $this->buildSystemPrompt(
-            'You are an expert e-commerce translator. Translate the module content fields naturally. Preserve any HTML tags exactly as in the source.',
-            ''
-        );
-
-        $prompt = "Return ONLY valid JSON:\n{\n" . implode(",\n", $jsonSkeleton) . "\n}\n" . $sourceBlock;
-
-        $data = $this->ai->requestJson($systemPrompt, $prompt);
-
-        if (!$this->isValidFields($data, $fields)) {
-            $this->logHistory($entity['code'], $tableName, (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
-
-            return $this->nextResult(sprintf(
-                $this->module->l('Invalid AI response for row #%d.', 'CkcTranslateJobRunner'),
-                (int) $id
-            ));
-        }
-
-        $update = array();
-        foreach ($fields as $f) {
-            $update[$f] = pSQL((string) $data[$f], true);
-        }
-
-        Db::getInstance()->update(
-            $langTableName,
-            $update,
-            '`' . bqSQL($idCol) . '` = ' . (int) $id . ' AND id_lang = ' . (int) $this->targetLangId
-        );
-
-        $this->logHistory($entity['code'], $tableName, (int) $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
-
-        return $this->nextResult(sprintf(
-            $this->module->l('Row #%d translated.', 'CkcTranslateJobRunner'),
-            (int) $id
-        ));
-    }
-
     protected function buildSystemPrompt($basePrompt, $jobCode = '')
     {
         $country = (string) Configuration::get(CkcTranslate::CONF_TARGET_COUNTRY);
@@ -744,6 +630,13 @@ PROMPT;
 
             case 'cms':
                 return (string) Configuration::get(CkcTranslate::CONF_PROMPT_CMS);
+
+            case 'creative_elements':
+            case 'ce_meta':
+                return (string) Configuration::get(CkcTranslate::CONF_PROMPT_CE);
+
+            case 'reassurance':
+                return (string) Configuration::get('CKCTRANSLATE_PROMPT_REASSURANCE');
 
             default:
                 return '';
@@ -817,12 +710,549 @@ PROMPT;
                     'column' => 'id_cms',
                 );
 
+            case 'creative_elements':
+                $sql = 'SELECT DISTINCT cl.id_ce_theme
+                        FROM `' . _DB_PREFIX_ . 'ce_theme_lang` cl
+                        WHERE cl.id_lang = ' . (int) $this->sourceLangId . '
+                        AND cl.content IS NOT NULL
+                        AND cl.content != \'\'
+                        ORDER BY cl.id_ce_theme ASC';
+
+                return array(
+                    'sql' => $sql,
+                    'column' => 'id_ce_theme',
+                );
+
+            case 'ce_meta':
+                $langPad = sprintf('%02d', $this->sourceLangId);
+                $sql = 'SELECT id AS source_uid
+                        FROM `' . _DB_PREFIX_ . 'ce_meta`
+                        WHERE `name` = \'_elementor_data\'
+                        AND SUBSTRING(CAST(id AS CHAR), LENGTH(CAST(id AS CHAR))-3, 2) = \'' . pSQL($langPad) . '\'
+                        ORDER BY id ASC';
+
+                return array(
+                    'sql' => $sql,
+                    'column' => 'source_uid',
+                );
+
+            case 'reassurance':
+                $sql = 'SELECT pr.id_psreassurance
+                        FROM `' . _DB_PREFIX_ . 'psreassurance` pr
+                        WHERE pr.status = 1
+                        ORDER BY pr.position ASC';
+
+                return array(
+                    'sql' => $sql,
+                    'column' => 'id_psreassurance',
+                );
+
             default:
                 return array(
                     'sql' => '',
                     'column' => '',
                 );
         }
+    }
+
+    protected function runCreativeElements()
+    {
+        $filtered = $this->getFilteredSql('creative_elements');
+
+        $id = $this->getNextId(
+            'ckctranslate_ce_ids',
+            'ckctranslate_ce_index',
+            $filtered['sql'],
+            $filtered['column']
+        );
+
+        if (!$id) {
+            return $this->finishedResult($this->module->l('Creative Elements translation finished.', 'CkcTranslateJobRunner'));
+        }
+
+        $sourceRows = Db::getInstance()->executeS(
+            'SELECT * FROM `' . _DB_PREFIX_ . 'ce_theme_lang`
+             WHERE id_ce_theme = ' . (int) $id . ' AND id_lang = ' . (int) $this->sourceLangId . '
+             LIMIT 1'
+        );
+        $sourceRow = $sourceRows ? $sourceRows[0] : false;
+
+        if (!$sourceRow || empty($sourceRow['content'])) {
+            $this->logHistory('creative_elements', 'ce_theme', (int) $id, 'skipped', $this->module->l('No source content.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('CE theme #%d has no source content, skipped.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+            $targetRows = Db::getInstance()->executeS(
+                'SELECT content FROM `' . _DB_PREFIX_ . 'ce_theme_lang`
+                 WHERE id_ce_theme = ' . (int) $id . ' AND id_lang = ' . (int) $this->targetLangId . '
+                 LIMIT 1'
+            );
+            $targetContent = ($targetRows && !empty($targetRows[0]['content'])) ? $targetRows[0]['content'] : '';
+
+            if (!empty($targetContent)) {
+                $this->logHistory('creative_elements', 'ce_theme', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+
+                return $this->nextResult(sprintf(
+                    $this->module->l('CE theme #%d already translated, skipped.', 'CkcTranslateJobRunner'),
+                    (int) $id
+                ));
+            }
+        }
+
+        $systemPrompt = $this->buildSystemPrompt(
+            'You are a professional e-commerce page translator. Translate only the visible text content. Never modify HTML tags, attributes, class names, href links, src URLs, data attributes, inline styles, or any non-text content. Keep each translated text the same approximate length as the source to preserve the page layout.',
+            'creative_elements'
+        );
+
+        $content = $sourceRow['content'];
+
+        $prompt = <<<PROMPT
+Return ONLY valid JSON:
+{
+  "content": ""
+}
+
+Translate only the visible text in the HTML below from French to the target language.
+Preserve all HTML tags and attributes exactly. Keep translated text similar in length to the source.
+
+Source HTML:
+{$content}
+PROMPT;
+
+        $data = $this->ai->requestJson($systemPrompt, $prompt);
+
+        if (!$this->isValidFields($data, array('content'))) {
+            $this->logHistory('creative_elements', 'ce_content', (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Invalid AI response for CE content #%d.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        $translatedContent = $data['content'];
+
+        $sourceRows = Db::getInstance()->executeS(
+            'SELECT * FROM `' . _DB_PREFIX_ . 'ce_theme_lang`
+             WHERE id_ce_theme = ' . (int) $id . ' AND id_lang = ' . (int) $this->sourceLangId
+        );
+
+        if (!is_array($sourceRows) || empty($sourceRows)) {
+            $sourceRows = array(array('id_shop' => 1, 'title' => ''));
+        }
+
+        foreach ($sourceRows as $row) {
+            $idShop = (int) ($row['id_shop'] ?? 1);
+
+            $existsRows = Db::getInstance()->executeS(
+                'SELECT id_ce_theme FROM `' . _DB_PREFIX_ . 'ce_theme_lang`
+                 WHERE id_ce_theme = ' . (int) $id . ' AND id_lang = ' . (int) $this->targetLangId . ' AND id_shop = ' . $idShop . '
+                 LIMIT 1'
+            );
+            $exists = !empty($existsRows);
+
+            if ($exists) {
+                Db::getInstance()->update(
+                    'ce_theme_lang',
+                    array('content' => pSQL($translatedContent, true)),
+                    'id_ce_theme = ' . (int) $id . ' AND id_lang = ' . (int) $this->targetLangId . ' AND id_shop = ' . $idShop
+                );
+            } else {
+                Db::getInstance()->insert('ce_theme_lang', array(
+                    'id_ce_theme' => (int) $id,
+                    'id_lang' => (int) $this->targetLangId,
+                    'id_shop' => $idShop,
+                    'title' => pSQL(isset($row['title']) ? $row['title'] : ''),
+                    'content' => pSQL($translatedContent, true),
+                ));
+            }
+        }
+
+        $this->logHistory('creative_elements', 'ce_theme', (int) $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
+
+        return $this->nextResult(sprintf(
+            $this->module->l('CE theme #%d translated.', 'CkcTranslateJobRunner'),
+            (int) $id
+        ));
+    }
+
+    protected function runCreativeElementsMeta()
+    {
+        $filtered = $this->getFilteredSql('ce_meta');
+
+        $sourceUid = $this->getNextId(
+            'ckctranslate_cemeta_ids',
+            'ckctranslate_cemeta_index',
+            $filtered['sql'],
+            $filtered['column']
+        );
+
+        if (!$sourceUid) {
+            return $this->finishedResult($this->module->l('CE meta translation finished.', 'CkcTranslateJobRunner'));
+        }
+
+        $sourceUidStr = (string) $sourceUid;
+
+        $sourceRows = Db::getInstance()->executeS(
+            'SELECT `value` FROM `' . _DB_PREFIX_ . 'ce_meta`
+             WHERE `id` = ' . (int) $sourceUid . ' AND `name` = \'_elementor_data\'
+             LIMIT 1'
+        );
+
+        if (!$sourceRows || empty($sourceRows[0]['value'])) {
+            $this->logHistory('ce_meta', 'ce_meta', (int) $sourceUid, 'skipped', $this->module->l('No source JSON.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('CE meta #%s has no JSON, skipped.', 'CkcTranslateJobRunner'),
+                $sourceUidStr
+            ));
+        }
+
+        $sourceJson = $sourceRows[0]['value'];
+        $elements = json_decode($sourceJson, true);
+
+        if (!is_array($elements)) {
+            $this->logHistory('ce_meta', 'ce_meta', (int) $sourceUid, 'skipped', $this->module->l('Invalid JSON.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('CE meta #%s invalid JSON, skipped.', 'CkcTranslateJobRunner'),
+                $sourceUidStr
+            ));
+        }
+
+        // Build target UID: replace lang portion (chars -4 to -2 from end)
+        $targetUidStr = substr($sourceUidStr, 0, -4) . sprintf('%02d', $this->targetLangId) . substr($sourceUidStr, -2);
+
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+            $existsRows = Db::getInstance()->executeS(
+                'SELECT id FROM `' . _DB_PREFIX_ . 'ce_meta`
+                 WHERE `id` = ' . (int) $targetUidStr . ' AND `name` = \'_elementor_data\'
+                 LIMIT 1'
+            );
+            if (!empty($existsRows)) {
+                $this->logHistory('ce_meta', 'ce_meta', (int) $sourceUid, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+
+                return $this->nextResult(sprintf(
+                    $this->module->l('CE meta #%s already translated, skipped.', 'CkcTranslateJobRunner'),
+                    $sourceUidStr
+                ));
+            }
+        }
+
+        // Extract translatable texts from Elementor JSON
+        $texts = array();
+        $counter = 0;
+        $this->extractTranslatableTexts($elements, $texts, $counter);
+
+        if (empty($texts)) {
+            $this->saveMetaForTarget($targetUidStr, $sourceUid, $sourceJson);
+            $this->logHistory('ce_meta', 'ce_meta', (int) $sourceUid, 'success', $this->module->l('No text, copied.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('CE meta #%s has no translatable text, copied.', 'CkcTranslateJobRunner'),
+                $sourceUidStr
+            ));
+        }
+
+        $systemPrompt = $this->buildSystemPrompt(
+            'You are a professional e-commerce page translator. Translate only the visible text values in the JSON map. Preserve HTML tags within values. Return a JSON object with the exact same keys and translated values.',
+            'ce_meta'
+        );
+
+        $prompt = 'Return ONLY valid JSON with the same keys and translated values:' . "\n" . json_encode($texts, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        $translations = $this->ai->requestJson($systemPrompt, $prompt);
+
+        if (!is_array($translations) || empty($translations)) {
+            // AI failed — save source JSON as fallback so the page is not blank
+            $this->saveMetaForTarget($targetUidStr, $sourceUid, $sourceJson);
+            $this->logHistory('ce_meta', 'ce_meta', (int) $sourceUid, 'error', $this->module->l('Invalid AI response — saved source as fallback.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Invalid AI response for CE meta #%s — source saved as fallback.', 'CkcTranslateJobRunner'),
+                $sourceUidStr
+            ));
+        }
+
+        $translatedElements = $this->injectTranslatedTexts($elements, $translations);
+        $translatedJson = json_encode($translatedElements, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        $this->saveMetaForTarget($targetUidStr, $sourceUid, $translatedJson);
+
+        $this->logHistory('ce_meta', 'ce_meta', (int) $sourceUid, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
+
+        return $this->nextResult(sprintf(
+            $this->module->l('CE meta #%s translated.', 'CkcTranslateJobRunner'),
+            $sourceUidStr
+        ));
+    }
+
+    protected function runReassurance()
+    {
+        $filtered = $this->getFilteredSql('reassurance');
+
+        $id = $this->getNextId(
+            'ckctranslate_reassurance_ids',
+            'ckctranslate_reassurance_index',
+            $filtered['sql'],
+            $filtered['column']
+        );
+
+        if (!$id) {
+            return $this->finishedResult($this->module->l('Reassurance translation finished.', 'CkcTranslateJobRunner'));
+        }
+
+        $sourceRows = Db::getInstance()->executeS(
+            'SELECT title, description FROM `' . _DB_PREFIX_ . 'psreassurance_lang`
+             WHERE id_psreassurance = ' . (int) $id . ' AND id_lang = ' . (int) $this->sourceLangId . '
+             LIMIT 1'
+        );
+        $sourceRow = $sourceRows ? $sourceRows[0] : false;
+
+        if (!$sourceRow || (empty($sourceRow['title']) && empty($sourceRow['description']))) {
+            $this->logHistory('reassurance', 'reassurance', (int) $id, 'skipped', $this->module->l('No source content.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Reassurance #%d has no source content, skipped.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+            $targetRows = Db::getInstance()->executeS(
+                'SELECT title, description FROM `' . _DB_PREFIX_ . 'psreassurance_lang`
+                 WHERE id_psreassurance = ' . (int) $id . ' AND id_lang = ' . (int) $this->targetLangId . '
+                 LIMIT 1'
+            );
+            $targetRow = $targetRows ? $targetRows[0] : false;
+
+            if ($targetRow && (!empty($targetRow['title']) || !empty($targetRow['description']))) {
+                $this->logHistory('reassurance', 'reassurance', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+
+                return $this->nextResult(sprintf(
+                    $this->module->l('Reassurance #%d already translated, skipped.', 'CkcTranslateJobRunner'),
+                    (int) $id
+                ));
+            }
+        }
+
+        $systemPrompt = $this->buildSystemPrompt(
+            'You are an e-commerce copywriter. Translate short reassurance texts (delivery, payment, warranty, etc.). Keep them brief and trustworthy.',
+            'reassurance'
+        );
+
+        $prompt = <<<PROMPT
+Return ONLY valid JSON:
+{
+  "title": "",
+  "description": ""
+}
+
+Source title:
+{$sourceRow['title']}
+
+Source description:
+{$sourceRow['description']}
+PROMPT;
+
+        $data = $this->ai->requestJson($systemPrompt, $prompt);
+
+        if (!$this->isValidFields($data, array('title', 'description'))) {
+            $this->logHistory('reassurance', 'reassurance', (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Invalid AI response for reassurance #%d.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        $existsRows = Db::getInstance()->executeS(
+            'SELECT id_psreassurance FROM `' . _DB_PREFIX_ . 'psreassurance_lang`
+             WHERE id_psreassurance = ' . (int) $id . ' AND id_lang = ' . (int) $this->targetLangId . '
+             LIMIT 1'
+        );
+
+        if (!empty($existsRows)) {
+            Db::getInstance()->update(
+                'psreassurance_lang',
+                array(
+                    'title' => pSQL($data['title']),
+                    'description' => pSQL($data['description'], true),
+                ),
+                'id_psreassurance = ' . (int) $id . ' AND id_lang = ' . (int) $this->targetLangId
+            );
+        } else {
+            Db::getInstance()->insert('psreassurance_lang', array(
+                'id_psreassurance' => (int) $id,
+                'id_lang' => (int) $this->targetLangId,
+                'title' => pSQL($data['title']),
+                'description' => pSQL($data['description'], true),
+            ));
+        }
+
+        $this->logHistory('reassurance', 'reassurance', (int) $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
+
+        return $this->nextResult(sprintf(
+            $this->module->l('Reassurance #%d translated.', 'CkcTranslateJobRunner'),
+            (int) $id
+        ));
+    }
+
+    protected function saveMetaForTarget($targetUidStr, $sourceUid, $elementorDataJson)
+    {
+        $allMeta = Db::getInstance()->executeS(
+            'SELECT `name`, `value` FROM `' . _DB_PREFIX_ . 'ce_meta`
+             WHERE `id` = ' . (int) $sourceUid
+        );
+
+        foreach ($allMeta as $meta) {
+            $metaName = $meta['name'];
+            // Skip compiled cache — CE will regenerate it for the new language
+            if ($metaName === '_ce_element_cache') {
+                continue;
+            }
+            $metaValue = ($metaName === '_elementor_data') ? $elementorDataJson : $meta['value'];
+
+            $existsRows = Db::getInstance()->executeS(
+                'SELECT id FROM `' . _DB_PREFIX_ . 'ce_meta`
+                 WHERE `id` = ' . (int) $targetUidStr . ' AND `name` = \'' . pSQL($metaName) . '\'
+                 LIMIT 1'
+            );
+
+            if (!empty($existsRows)) {
+                Db::getInstance()->update(
+                    'ce_meta',
+                    array('value' => pSQL($metaValue, true)),
+                    '`id` = ' . (int) $targetUidStr . ' AND `name` = \'' . pSQL($metaName) . '\''
+                );
+            } else {
+                Db::getInstance()->insert('ce_meta', array(
+                    'id' => (int) $targetUidStr,
+                    'name' => pSQL($metaName),
+                    'value' => pSQL($metaValue, true),
+                ));
+            }
+        }
+    }
+
+    protected function getTranslatableSettingsKeys()
+    {
+        return array(
+            'title', 'editor', 'description', 'text', 'heading', 'content',
+            'caption', 'inner_text', 'suffix', 'prefix',
+            'tab_title', 'tab_content',
+            'testimonial_content', 'testimonial_name', 'testimonial_job',
+            'button_text', 'html',
+            'slide_heading', 'slide_description', 'slide_button_text',
+            'alert_title', 'alert_description',
+        );
+    }
+
+    protected function extractTranslatableTexts(array $elements, array &$texts, &$counter)
+    {
+        $translatableKeys = $this->getTranslatableSettingsKeys();
+
+        foreach ($elements as $element) {
+            if (!is_array($element)) {
+                continue;
+            }
+
+            $elType = isset($element['elType']) ? $element['elType'] : '';
+            $elId = isset($element['id']) ? $element['id'] : ('el' . $counter++);
+
+            if ($elType === 'widget' && !empty($element['settings'])) {
+                $settings = $element['settings'];
+
+                foreach ($translatableKeys as $key) {
+                    if (isset($settings[$key]) && is_string($settings[$key])) {
+                        if (trim(strip_tags($settings[$key])) !== '') {
+                            $texts[$elId . '__' . $key] = $settings[$key];
+                        }
+                    }
+                }
+
+                // Handle repeater fields (accordion, tabs, slides, etc.)
+                foreach ($settings as $settingKey => $settingValue) {
+                    if (!is_array($settingValue)) {
+                        continue;
+                    }
+
+                    foreach ($settingValue as $itemIdx => $item) {
+                        if (!is_array($item)) {
+                            continue;
+                        }
+
+                        foreach ($translatableKeys as $subKey) {
+                            if (isset($item[$subKey]) && is_string($item[$subKey])) {
+                                if (trim(strip_tags($item[$subKey])) !== '') {
+                                    $texts[$elId . '__' . $settingKey . '_' . $itemIdx . '__' . $subKey] = $item[$subKey];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!empty($element['elements']) && is_array($element['elements'])) {
+                $this->extractTranslatableTexts($element['elements'], $texts, $counter);
+            }
+        }
+    }
+
+    protected function injectTranslatedTexts(array $elements, array $translations)
+    {
+        $translatableKeys = $this->getTranslatableSettingsKeys();
+
+        foreach ($elements as &$element) {
+            if (!is_array($element)) {
+                continue;
+            }
+
+            $elType = isset($element['elType']) ? $element['elType'] : '';
+            $elId = isset($element['id']) ? $element['id'] : '';
+
+            if ($elType === 'widget' && !empty($element['settings']) && $elId !== '') {
+                foreach ($translatableKeys as $key) {
+                    $mapKey = $elId . '__' . $key;
+                    if (isset($translations[$mapKey])) {
+                        $element['settings'][$key] = $translations[$mapKey];
+                    }
+                }
+
+                foreach ($element['settings'] as $settingKey => &$settingValue) {
+                    if (!is_array($settingValue)) {
+                        continue;
+                    }
+
+                    foreach ($settingValue as $itemIdx => &$item) {
+                        if (!is_array($item)) {
+                            continue;
+                        }
+
+                        foreach ($translatableKeys as $subKey) {
+                            $mapKey = $elId . '__' . $settingKey . '_' . $itemIdx . '__' . $subKey;
+                            if (isset($translations[$mapKey])) {
+                                $item[$subKey] = $translations[$mapKey];
+                            }
+                        }
+                    }
+                    unset($item);
+                }
+                unset($settingValue);
+            }
+
+            if (!empty($element['elements']) && is_array($element['elements'])) {
+                $element['elements'] = $this->injectTranslatedTexts($element['elements'], $translations);
+            }
+        }
+        unset($element);
+
+        return $elements;
     }
 
     protected function parseIds($raw)
@@ -858,28 +1288,14 @@ PROMPT;
         return $slug;
     }
 
-    protected function shouldSkipFilledFields($targetObject, $sourceObject, array $fields)
+    protected function shouldSkipFilledFields($targetObject, array $fields)
     {
         if (!(int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
             return false;
         }
 
         foreach ($fields as $field) {
-            $target = isset($targetObject->{$field}) ? (string) $targetObject->{$field} : '';
-            $source = isset($sourceObject->{$field}) ? (string) $sourceObject->{$field} : '';
-
-            // Source vide : rien à traduire pour ce champ.
-            if (trim(strip_tags($source)) === '') {
-                continue;
-            }
-
-            // Cible vide => à traduire.
-            if (trim(strip_tags($target)) === '') {
-                return false;
-            }
-
-            // Cible identique à la source => simple copie FR non traduite => à traduire.
-            if (trim($target) === trim($source)) {
+            if (!isset($targetObject->{$field}) || trim(strip_tags((string) $targetObject->{$field})) === '') {
                 return false;
             }
         }
@@ -914,31 +1330,37 @@ PROMPT;
             return 0;
         }
 
-        // On ne stocke QUE l'index dans le cookie (un petit entier), jamais la liste
-        // complète des IDs : json_encode d'un gros catalogue dépasse la limite RFC de
-        // 4096 octets du cookie et lève une PrestaShopException.
-        $index = isset($cookie->{$indexKey}) ? (int) $cookie->{$indexKey} : 0;
-        if ($index < 0) {
-            $index = 0;
+        if (!isset($cookie->{$cookieKey})) {
+            $rows = Db::getInstance()->executeS($sql);
+            $ids = array();
+
+            if (is_array($rows)) {
+                foreach ($rows as $row) {
+                    if (isset($row[$column])) {
+                        $ids[] = (int) $row[$column];
+                    }
+                }
+            }
+
+            $cookie->{$cookieKey} = json_encode($ids);
+            $cookie->{$indexKey} = 0;
         }
 
-        // Récupère uniquement la ligne à l'offset courant (efficace + cookie-safe).
-        // NB: on utilise executeS (et non getRow) car getRow ajoute lui-même un
-        // " LIMIT 1" qui entrerait en conflit avec notre "LIMIT offset, 1".
-        $rows = Db::getInstance()->executeS($sql . ' LIMIT ' . (int) $index . ', 1');
-        $row = (is_array($rows) && isset($rows[0])) ? $rows[0] : null;
+        $ids = json_decode($cookie->{$cookieKey}, true);
+        $index = (int) $cookie->{$indexKey};
 
-        if (!is_array($row) || !isset($row[$column])) {
+        if (!is_array($ids) || !isset($ids[$index])) {
+            unset($cookie->{$cookieKey});
             unset($cookie->{$indexKey});
-            unset($cookie->{$cookieKey}); // nettoie un éventuel ancien cookie surdimensionné
             Tools::clearAllCache();
 
             return 0;
         }
 
+        $currentId = (int) $ids[$index];
         $cookie->{$indexKey} = $index + 1;
 
-        return (int) $row[$column];
+        return $currentId;
     }
 
     protected function isValidFields($data, array $fields)
