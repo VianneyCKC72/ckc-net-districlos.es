@@ -135,6 +135,21 @@
 									</div>
 								</div>
 							</div>
+
+							<div class="clearfix">
+								<div class="row">
+									<label class="control-label col-lg-6" for="ap5_height_choose">
+														<span class="label-tooltip" data-toggle="{$tooltipToggle}" title="Cochez cette case si vous voulez que la hauteur en front soit sélectionnable par le client">
+															Sélection de la hauteur client
+														</span>
+									</label>
+									<div class="col-lg-1">
+										<div class="input-group">
+											<input type="checkbox"{if $packHeightChoose} checked="checked"{/if} value="1" id="ap5_height_choose" name="ap5_height_choose" />
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 						<div class="col-lg-5">
 							<h4>{l s='Pack price simulation' mod='pm_advancedpack'}</h4>
@@ -169,6 +184,7 @@
 						<ul>
 							<li>[QUANTITY] : Quantité originale du produit (back)</li>
 							<li>[ML] : Nombre de mètres linéaire (front)</li>
+							<li>[HAUTEUR] : Hauteur client en mètres (front)</li>
                             <li>PLAFOND() : Arrondià l'entier supérieur l'élément entre parenthèses</li>
                         </ul>
 					</div>

@@ -363,6 +363,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
 
             $packSettings['autoChoose'] = isset($productFormValues['ap5_auto_choose']);
             $packSettings['mlChoose'] = isset($productFormValues['ap5_ml_choose']);
+            $packSettings['heightChoose'] = isset($productFormValues['ap5_height_choose']);
 
             if (!isset($productFormValues['ap5_productList'])) {
                 $productFormValues['ap5_productList'] = [];
@@ -599,7 +600,8 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                     'fixed_price' => json_encode($fixedPrice),
                     'allow_remove_product' => 0,
                     'auto_choose' => 0,
-                    'ml_choose' => 0
+                    'ml_choose' => 0,
+                    'height_choose' => 0
                 ], true);
                 $productPosition = 0;
                 foreach ($packItems as $packItem) {
@@ -1436,6 +1438,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             'packAllowRemoveProduct' => AdvancedPack::getPackAllowRemoveProduct($idPack),
             'packAutoChoose' => AdvancedPack::getPackAutoChoose($idPack),
             'packMlChoose' => AdvancedPack::getPackMlChoose($idPack),
+            'packHeightChoose' => AdvancedPack::getPackHeightChoose($idPack),
             'packExcludeList' => [],
             'packQuantityList' => [],
             'packShowProductsThumbnails' => (isset($config['showProductsThumbnails']) ? $config['showProductsThumbnails'] : $this->_defaultConfiguration['showProductsThumbnails']),
@@ -2452,7 +2455,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             if (Tools::getIsset('ap5_productList') && self::_isFilledArray(Tools::getValue('ap5_productList'))) {
                 $packInformations = [];
                 $packPositions = [];
-                $packSettings = ['fixedPrice' => null, 'allowRemoveProduct' => false, 'autoChoose' => false, 'mlChoose' => false];
+                $packSettings = ['fixedPrice' => null, 'allowRemoveProduct' => false, 'autoChoose' => false, 'mlChoose' => false, 'heightChoose' => false];
                 $hasAlwaysUseReducEntries = true;
                 if (Tools::getIsset('ap5_pack_positions') && Tools::getValue('ap5_pack_positions')) {
                     $packPositions = explode(',', Tools::getValue('ap5_pack_positions'));
@@ -2546,6 +2549,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
 
                 $packSettings['autoChoose'] = (bool)Tools::getValue('ap5_auto_choose');
                 $packSettings['mlChoose'] = (bool)Tools::getValue('ap5_ml_choose');
+                $packSettings['heightChoose'] = (bool)Tools::getValue('ap5_height_choose');
 
                 $validator = Symfony\Component\Validator\Validation::createValidator();
                 $constraintWithCombinationsDiscount = new Symfony\Component\Validator\Constraints\Collection([
@@ -3014,6 +3018,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             'packAllowRemoveProduct' => (Validate::isLoadedObject($product) && AdvancedPack::isValidPack($product->id) && AdvancedPack::getPackAllowRemoveProduct($product->id) && $packPriceRules == 4 && $hasAlwaysUseReducEntries && count($packContent) >= 2),
             'packAutoChoose' => AdvancedPack::getPackAutoChoose($product->id),
             'packMlChoose' => AdvancedPack::getPackMlChoose($product->id),
+            'packHeightChoose' => AdvancedPack::getPackHeightChoose($product->id),
             'packCheckAllUseReduc' => $hasAlwaysUseReducEntries,
             'packCheckAllExclusive' => $packCheckAllExclusive,
             'packClassicPrice' => 0,
@@ -3459,7 +3464,8 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             'isBundle' => true,
             'bundleDatas' => $bundleDatas,
             'autoChoose' => false,
-            'mlChoose' => false
+            'mlChoose' => false,
+            'heightChoose' => false
         ];
         $packItems = [];
         $itemData = [
@@ -3694,6 +3700,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             'packAllowRemoveProduct' => AdvancedPack::getPackAllowRemoveProduct($idPack),
             'packAutoChoose' => AdvancedPack::getPackAutoChoose($idPack),
             'packMlChoose' => AdvancedPack::getPackMlChoose($idPack),
+            'packHeightChoose' => AdvancedPack::getPackHeightChoose($idPack),
             'packShowProductsQuantityWanted' => (isset($config['showProductsQuantityWanted']) ? $config['showProductsQuantityWanted'] : $this->_defaultConfiguration['showProductsQuantityWanted']),
             'packExcludeList' => $packExcludeList,
             'product' => $productPack,
@@ -3807,6 +3814,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             'packAllowRemoveProduct' => AdvancedPack::getPackAllowRemoveProduct($idPack),
             'packAutoChoose' => AdvancedPack::getPackAutoChoose($idPack),
             'packMlChoose' => AdvancedPack::getPackMlChoose($idPack),
+            'packHeightChoose' => AdvancedPack::getPackHeightChoose($idPack),
             'packExcludeList' => $packExcludeList,
             'priceDisplayPrecision' => _PS_PRICE_DISPLAY_PRECISION_,
             'tax_enabled' => Configuration::get('PS_TAX'),

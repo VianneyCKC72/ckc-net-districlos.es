@@ -30,8 +30,10 @@ class pm_advancedpackupdate_packModuleFrontController extends ModuleFrontControl
     public $display_footer = false;
     public $display_column_left = false;
     public $display_column_right = false;
-    protected $pack_ml = null;
+    protected $pack_ml = false;
+    protected $pack_height = false;
     protected $ml = 0;
+    protected $hauteur = 0;
 
     public function init()
     {
@@ -45,6 +47,10 @@ class pm_advancedpackupdate_packModuleFrontController extends ModuleFrontControl
         if (Tools::getIsset('quantity_ml') && (int)Tools::getValue('quantity_ml') > 0) {
             $this->pack_ml = true;
             $this->ml = (int)Tools::getValue('quantity_ml');
+        }
+        if (Tools::getIsset('quantity_hauteur') && (int)Tools::getValue('quantity_hauteur') > 0) {
+            $this->pack_height = true;
+            $this->hauteur = (int)Tools::getValue('quantity_hauteur');
         }
         if (Tools::getIsset('productPackChoice')) {
             $tmp_productPackChoice = (array)Tools::getValue('productPackChoice');
@@ -79,18 +85,19 @@ class pm_advancedpackupdate_packModuleFrontController extends ModuleFrontControl
                 }
             }
         }
-        if ($this->pack_ml) {
+        if ($this->pack_ml || $this->pack_height) {
             $packProducts = AdvancedPack::getPackContent($this->idPack, null, false, [], $this->productPackQuantityList);
             foreach ($packProducts as $packProduct) {
                 $formula = $packProduct['formula'];
                 if ($formula) {
-                    $quantity = (int)$packProduct['quantity'];
-                    $ml = $this->ml;
-                    $formula = str_replace('[ML]', $ml, $formula);
-                    $formula = str_replace('[QUANTITY]', $quantity, $formula);
-                    $newQuantity = AdvancedPack::evaluateMathExpression($formula);
+                    $newQuantity = AdvancedPack::computePackProductQuantityFromFormula(
+                        $formula,
+                        (int)$packProduct['quantity'],
+                        $this->ml,
+                        $this->hauteur
+                    );
                     $this->productPackQuantityList[(int)$packProduct['id_product_pack']] = (int)$newQuantity;
-                }else{
+                } else {
                     $this->productPackQuantityList[(int)$packProduct['id_product_pack']] = (int)$packProduct['quantity'];
                 }
             }

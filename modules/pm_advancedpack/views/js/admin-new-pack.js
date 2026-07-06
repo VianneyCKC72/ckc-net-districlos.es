@@ -191,7 +191,7 @@ function ap5_initNewPackFields() {
 		return false;
 	});
 
-	$(document).on('change', '#ap5-pack-content-table input[type=text], #ap5-pack-content-table select, #ap5-pack-content-table input.ap5_useReduc, #ap5-pack-content-table input.ap5_exclusive, input.ap5_price_rules, input#ap5_allow_remove_product, input#ap5_auto_choose, input#ap5_ml_choose', function() {
+	$(document).on('change', '#ap5-pack-content-table input[type=text], #ap5-pack-content-table select, #ap5-pack-content-table input.ap5_useReduc, #ap5-pack-content-table input.ap5_exclusive, input.ap5_price_rules, input#ap5_allow_remove_product, input#ap5_auto_choose, input#ap5_ml_choose, input#ap5_height_choose', function() {
 		// Update pack trigger
 		ap5_packUpdated();
 	});

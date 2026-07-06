@@ -20,8 +20,8 @@
                     <div class="price product_header_title js-product-prices">
                         {include file='module:pm_advancedpack/views/templates/front/1.7/pack-price-container.tpl'}
                     </div>
-                    <div class="addProduct" {if isset($packMlChoose) && $packMlChoose} style="display:block" {/if}>
-                        {if !$packMlChoose}
+                    <div class="addProduct" {if (isset($packMlChoose) && $packMlChoose) || (isset($packHeightChoose) && $packHeightChoose)} style="display:block" {/if}>
+                        {if !$packMlChoose && !$packHeightChoose}
                             <div class="clearfix dis_flex" >
                                     <span class="input-group-btn-vertical dis_flex">
                                         <button class="btn btn-touchspin js-touchspin bootstrap-touchspin-down-bottom" type="button"><i class="material-icons touchspin-down"></i></button>
@@ -30,8 +30,8 @@
                                     </span>
                             </div>
                         {/if}
-                        <div class="position-relative" {if $packMlChoose} style="width: 100%" {/if}>
-                            <button class="btn btn-primary add-to-cart-bottom" data-button-action="add-to-cart" type="submit" {if $packMlChoose} style="padding: 11px !important;width: 100%;" {/if}>
+                        <div class="position-relative" {if $packMlChoose || $packHeightChoose} style="width: 100%" {/if}>
+                            <button class="btn btn-primary add-to-cart-bottom" data-button-action="add-to-cart" type="submit" {if $packMlChoose || $packHeightChoose} style="padding: 11px !important;width: 100%;" {/if}>
                                 Ajouter au panier
                             </button>
                         </div>
@@ -167,6 +167,7 @@
                                 <input type="hidden" name="id_product_attribute" id="idCombination" value="{if !empty($packAttributesList)}{$packAttributesList|json_encode}{/if}" />
                                 <input type="hidden" name="auto_choose" id="auto_choose" value="{$packAutoChoose}">
                                 <input type="hidden" name="ml_choose" id="ml_choose" value="{$packMlChoose}">
+                                <input type="hidden" name="height_choose" id="height_choose" value="{$packHeightChoose}">
                                 <input type="hidden" name="is_pack" value="1" id="is_pack">
 
                                 {block name='product_discounts'}
@@ -191,20 +192,36 @@
                                     {/if}
                                 {/block}
 
-                                {if $packMlChoose}
+                                {if $packMlChoose || $packHeightChoose}
                                     <span class="bold">Dimensions</span>
 
                                     <div class="product-variants ap5-attributes">
+                                        {if $packMlChoose}
                                         <div class="clearfix hiddenlabel">
                                             <p class=group-name>Choisissez la longueur en mètres linéaires</p>
                                             <div class="select_wrap">
                                                 <div class="clearfix dis_flex">
                                                     <span class="input-group-btn-vertical dis_flex">
-                                                        <input type="text" name="qty_bis" id="quantity_wanted_ml" value="1" class="form-control" style="display: block;">
+                                                        <input type="number" name="qty_bis" id="quantity_ml" value="" class="form-control" style="display: block;" min="1" step="1" placeholder="Longueur (mètres linéaires)" required>
                                                     </span>
                                                 </div>
                                             </div>
+                                            <p id="quantity_ml_error" class="ap5-ml-error">Veuillez renseigner ce champ</p>
                                         </div>
+                                        {/if}
+                                        {if $packHeightChoose}
+                                        <div class="clearfix hiddenlabel">
+                                            <p class=group-name>Choisissez la hauteur en mètres</p>
+                                            <div class="select_wrap">
+                                                <div class="clearfix dis_flex">
+                                                    <span class="input-group-btn-vertical dis_flex">
+                                                        <input type="number" id="quantity_hauteur" value="" class="form-control" style="display: block;" min="1" step="1" placeholder="Hauteur (mètres)" required>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <p id="quantity_hauteur_error" class="ap5-ml-error">Veuillez renseigner ce champ</p>
+                                        </div>
+                                        {/if}
                                     </div>
                                 {/if}
 

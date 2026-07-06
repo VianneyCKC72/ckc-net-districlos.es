@@ -3,7 +3,7 @@
 {block name='content'}
     {assign var="initial_pack" value="1"}
 
-    {if isset($packMlChoose) && $packMlChoose == 1}
+    {if (isset($packMlChoose) && $packMlChoose == 1) || (isset($packHeightChoose) && $packHeightChoose == 1)}
         <style>
             .qty {
                 display: none !important;
@@ -118,7 +118,7 @@
                             </div>
                         {/block}
 
-                        {if isset($packMlChoose) && $packMlChoose}
+                        {if (isset($packMlChoose) && $packMlChoose) || (isset($packHeightChoose) && $packHeightChoose)}
                             <style>
                                 .ap5-ml-field .group-name {
                                     display: flex;
@@ -180,7 +180,8 @@
                                     opacity: 1;
                                 }
 
-                                .ap5-ml-field #quantity_ml {
+                                .ap5-ml-field #quantity_ml,
+                                .ap5-ml-field #quantity_hauteur {
                                     display: block;
                                     width: 100%;
                                     background: transparent !important;
@@ -197,17 +198,20 @@
                                     outline: none;
                                 }
 
-                                .ap5-ml-field #quantity_ml::placeholder {
+                                .ap5-ml-field #quantity_ml::placeholder,
+                                .ap5-ml-field #quantity_hauteur::placeholder {
                                     color: #8a8a8a !important;
                                     opacity: 1;
                                 }
 
-                                .ap5-ml-field #quantity_ml:focus {
+                                .ap5-ml-field #quantity_ml:focus,
+                                .ap5-ml-field #quantity_hauteur:focus {
                                     border-bottom: 1px solid #7e7e7e !important;
                                     box-shadow: none !important;
                                 }
 
-                                .ap5-ml-field #quantity_ml.ap5-ml-invalid {
+                                .ap5-ml-field #quantity_ml.ap5-ml-invalid,
+                                .ap5-ml-field #quantity_hauteur.ap5-ml-invalid {
                                     color: #f33 !important;
                                     border-bottom: 2px solid #f33 !important;
                                 }
@@ -224,6 +228,7 @@
                                     display: block;
                                 }
                             </style>
+                            {if isset($packMlChoose) && $packMlChoose}
                             <div class="ap5-attributes ap5-ml-field" style="margin-bottom: 1rem;">
                                 <div class="clearfix hiddenlabel">
                                     <p class="font-weight-bold group-name">
@@ -247,6 +252,24 @@
                                     <p id="quantity_ml_error" class="ap5-ml-error">Veuillez renseigner ce champ</p>
                                 </div>
                             </div>
+                            {/if}
+                            {if isset($packHeightChoose) && $packHeightChoose}
+                            <div class="ap5-attributes ap5-ml-field" style="margin-bottom: 1rem;">
+                                <div class="clearfix hiddenlabel">
+                                    <p class="font-weight-bold group-name">
+                                        Choisissez la hauteur en mètres
+                                    </p>
+                                    <div class="select_wrap">
+                                        <div class="clearfix dis_flex">
+                                                    <span class="input-group-btn-vertical dis_flex">
+                                                        <input type="number" id="quantity_hauteur" value="" class="form-control" min="1" step="1" placeholder="Renseignez votre hauteur (en mètres)" required>
+                                                    </span>
+                                        </div>
+                                    </div>
+                                    <p id="quantity_hauteur_error" class="ap5-ml-error">Veuillez renseigner ce champ</p>
+                                </div>
+                            </div>
+                            {/if}
                         {/if}
 
                         {*
@@ -277,6 +300,9 @@
                                     {/if}
                                     {if isset($packMlChoose)}
                                         <input type="hidden" name="ml_choose" id="ml_choose" value="{$packMlChoose}">
+                                    {/if}
+                                    {if isset($packHeightChoose)}
+                                        <input type="hidden" name="height_choose" id="height_choose" value="{$packHeightChoose}">
                                     {/if}
                                     <input type="hidden" name="add" value="1" />
                                     <input type="hidden" name="id_product_attribute" id="idCombination" value="{if !empty($packAttributesList)}{$packAttributesList|json_encode}{/if}" />

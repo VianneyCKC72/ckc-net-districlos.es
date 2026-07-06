@@ -828,6 +828,36 @@ class AdvancedPack extends Product
         self::storeInCache($cacheId, (bool)$packAllowMlChoose);
         return (bool)$packAllowMlChoose;
     }
+
+    public static function getPackHeightChoose($idPack)
+    {
+        $cacheId = self::getPMCacheId(__METHOD__ . (int)$idPack);
+        if (!self::isInCache($cacheId)) {
+            $sql = new DbQuery();
+            $sql->select('ap.`height_choose`');
+            $sql->from('pm_advancedpack', 'ap');
+            $sql->where('ap.`id_pack`=' . (int)$idPack);
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+            $packAllowHeightChoose = (bool)$result;
+        } else {
+            return self::getFromCache($cacheId);
+        }
+        self::storeInCache($cacheId, (bool)$packAllowHeightChoose);
+        return (bool)$packAllowHeightChoose;
+    }
+
+    public static function computePackProductQuantityFromFormula($formula, $baseQuantity, $ml = 0, $hauteur = 0)
+    {
+        if (!$formula) {
+            return null;
+        }
+        $formula = str_replace('[ML]', (int)$ml, $formula);
+        $formula = str_replace('[HAUTEUR]', (int)$hauteur, $formula);
+        $formula = str_replace('[QUANTITY]', (int)$baseQuantity, $formula);
+
+        return (int) self::evaluateMathExpression($formula);
+    }
+
     private static function _getCartProducts()
     {
         $cartContent = [];
@@ -3408,7 +3438,7 @@ class AdvancedPack extends Product
         $res = true;
 
         if ($isNewPack) {
-            $res &= Db::getInstance()->insert('pm_advancedpack', ['id_pack' => $this->id, 'id_shop' => (int)self::getContext()->shop->id, 'fixed_price' => json_encode($packSettings['fixedPrice']), 'allow_remove_product' => (int)$packSettings['allowRemoveProduct'], 'auto_choose' => (int)$packSettings['autoChoose'], 'ml_choose' => (int)$packSettings['mlChoose']], true);
+            $res &= Db::getInstance()->insert('pm_advancedpack', ['id_pack' => $this->id, 'id_shop' => (int)self::getContext()->shop->id, 'fixed_price' => json_encode($packSettings['fixedPrice']), 'allow_remove_product' => (int)$packSettings['allowRemoveProduct'], 'auto_choose' => (int)$packSettings['autoChoose'], 'ml_choose' => (int)$packSettings['mlChoose'], 'height_choose' => (int)$packSettings['heightChoose']], true);
         }
         if (!$isNewPack) {
             $sql = new DbQuery();
@@ -3511,6 +3541,7 @@ class AdvancedPack extends Product
             'allow_remove_product' => (int)$packSettings['allowRemoveProduct'],
             'auto_choose' => (int)$packSettings['autoChoose'],
             'ml_choose' => (int)$packSettings['mlChoose'],
+            'height_choose' => (int)$packSettings['heightChoose'],
         ];
         if (isset($packSettings['isBundle'])) {
             $updateDatas['is_bundle'] = (int)$packSettings['isBundle'];
