@@ -116,9 +116,9 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
             $this->pack_ml = true;
             $this->ml = (int)Tools::getValue('quantity_ml');
         }
-        if (Tools::getIsset('quantity_hauteur') && (int)Tools::getValue('quantity_hauteur') > 0) {
+        if (Tools::getIsset('quantity_hauteur') && (float)Tools::getValue('quantity_hauteur') > 0) {
             $this->pack_height = true;
-            $this->hauteur = (int)Tools::getValue('quantity_hauteur');
+            $this->hauteur = (float)Tools::getValue('quantity_hauteur');
         }
 
         if (Tools::getIsset('productPackQuantityList')) {

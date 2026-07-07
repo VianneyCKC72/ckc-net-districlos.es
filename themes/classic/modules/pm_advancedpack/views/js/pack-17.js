@@ -653,8 +653,8 @@ function ap5GetPackDimensionValues() {
         ml = (isNaN(mlValue) || mlValue <= 0) ? 1 : mlValue;
     }
     if ($('#quantity_hauteur').length) {
-        var hauteurValue = parseInt($('#quantity_hauteur').val());
-        hauteur = (isNaN(hauteurValue) || hauteurValue <= 0) ? 1 : hauteurValue;
+        var hauteurValue = parseFloat($('#quantity_hauteur').val());
+        hauteur = (!isNaN(hauteurValue) && hauteurValue > 0) ? hauteurValue : 0;
     }
 
     return { ml: ml, hauteur: hauteur };
@@ -770,27 +770,26 @@ $(document).on('ap5-CombinationUpdate', function(e){
     ap5Plugin.log('[ap5_Event] Combination update');
     ap5Plugin.updatePackTable();
 });
-$(document).on('change blur', '#quantity_ml, #quantity_hauteur', function(e){
+$(document).on('change blur', '#quantity_ml', function(e){
     e.preventDefault();
 
     var currentVal = ($(this).val() || '').toString().trim();
     if (currentVal !== '' && !isNaN(currentVal) && parseFloat(currentVal) > 0) {
         $(this).val(Math.round(parseFloat(currentVal)));
         $(this).removeClass('ap5-ml-invalid');
-        if ($(this).attr('id') === 'quantity_ml') {
-            $('#quantity_ml_error').removeClass('ap5-ml-error-visible');
-        } else {
-            $('#quantity_hauteur_error').removeClass('ap5-ml-error-visible');
-        }
+        $('#quantity_ml_error').removeClass('ap5-ml-error-visible');
     } else if (currentVal === '') {
         $(this).removeClass('ap5-ml-invalid');
-        if ($(this).attr('id') === 'quantity_ml') {
-            $('#quantity_ml_error').removeClass('ap5-ml-error-visible');
-        } else {
-            $('#quantity_hauteur_error').removeClass('ap5-ml-error-visible');
-        }
+        $('#quantity_ml_error').removeClass('ap5-ml-error-visible');
     }
 
+    ap5Plugin.updatePackTable();
+});
+
+$(document).on('change', '#quantity_hauteur', function(e){
+    e.preventDefault();
+    $(this).removeClass('ap5-ml-invalid');
+    $('#quantity_hauteur_error').removeClass('ap5-ml-error-visible');
     ap5Plugin.updatePackTable();
 });
 // Quantity increment
@@ -887,15 +886,18 @@ $(document).on('submit', '.ap5-customization-form', function(e){
 });
 
 $(document).ready(function() {
-    if ($('#quantity_ml').length || $('#quantity_hauteur').length) {
+    if ($('#quantity_ml').length) {
         var mlValue = $('#quantity_ml').val();
-        var hauteurValue = $('#quantity_hauteur').val();
-        if ((mlValue === '' || isNaN(mlValue) || parseFloat(mlValue) <= 0) &&
-            (hauteurValue === '' || isNaN(hauteurValue) || parseFloat(hauteurValue) <= 0)) {
+        if (mlValue === '' || isNaN(mlValue) || parseFloat(mlValue) <= 0) {
             setTimeout(function() {
                 ap5Plugin.updatePackTable();
             }, 100);
         }
+    }
+    if ($('#quantity_hauteur').length && $('#quantity_hauteur').val() !== '') {
+        setTimeout(function() {
+            ap5Plugin.updatePackTable();
+        }, 100);
     }
     // Detect pack hash on page load
     if (typeof (window.location.hash) == 'string' && window.location.hash.length > 0) {

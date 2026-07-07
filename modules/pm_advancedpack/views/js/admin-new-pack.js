@@ -191,7 +191,7 @@ function ap5_initNewPackFields() {
 		return false;
 	});
 
-	$(document).on('change', '#ap5-pack-content-table input[type=text], #ap5-pack-content-table select, #ap5-pack-content-table input.ap5_useReduc, #ap5-pack-content-table input.ap5_exclusive, input.ap5_price_rules, input#ap5_allow_remove_product, input#ap5_auto_choose, input#ap5_ml_choose, input#ap5_height_choose', function() {
+	$(document).on('change', '#ap5-pack-content-table input[type=text], #ap5-pack-content-table select, #ap5-pack-content-table input.ap5_useReduc, #ap5-pack-content-table input.ap5_exclusive, input.ap5_price_rules, input#ap5_allow_remove_product, input#ap5_auto_choose, input#ap5_ml_choose, input#ap5_height_choose, .ap5_height_value', function() {
 		// Update pack trigger
 		ap5_packUpdated();
 	});
@@ -313,6 +313,7 @@ function ap5_initNewPackFields() {
 	});
 
 	// Update pack trigger
+	ap5_initHeightValuesManagement();
 	ap5_packUpdated(true);
 
 	// Update pack price simulation table
@@ -627,4 +628,38 @@ function ap5_getNbProducts() {
 
 function ap5_disableProductEdit() {
 	$('div.productTabs').parent().remove();
+}
+
+function ap5_toggleHeightValuesWrapper() {
+	if ($('#ap5_height_choose').is(':checked')) {
+		$('#ap5-height-values-wrapper').removeClass('ap5-admin-hide hide');
+	} else {
+		$('#ap5-height-values-wrapper').addClass('ap5-admin-hide hide');
+	}
+}
+
+function ap5_initHeightValuesManagement() {
+	ap5_toggleHeightValuesWrapper();
+
+	$(document).off('change.ap5HeightChoose', '#ap5_height_choose').on('change.ap5HeightChoose', '#ap5_height_choose', function() {
+		ap5_toggleHeightValuesWrapper();
+		ap5_packUpdated();
+	});
+
+	$(document).off('click.ap5AddHeight', '#ap5-add-height-value').on('click.ap5AddHeight', '#ap5-add-height-value', function(e) {
+		e.preventDefault();
+		var $row = $('<div class="ap5-height-value-row" style="display:flex;align-items:center;margin-bottom:8px;">' +
+			'<input type="number" step="0.01" min="0.01" class="form-control ap5_height_value" name="ap5_height_values[]" value="" placeholder="Hauteur en mètres" />' +
+			'<button type="button" class="btn btn-danger ap5-remove-height-value" style="margin-left:8px;">&times;</button>' +
+			'</div>');
+		$('#ap5-height-values-list').append($row);
+		$row.find('input').trigger('focus');
+		ap5_packUpdated();
+	});
+
+	$(document).off('click.ap5RemoveHeight', '.ap5-remove-height-value').on('click.ap5RemoveHeight', '.ap5-remove-height-value', function(e) {
+		e.preventDefault();
+		$(this).closest('.ap5-height-value-row').remove();
+		ap5_packUpdated();
+	});
 }

@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS `PREFIX_pm_advancedpack` (
   `auto_choose` tinyint(3) unsigned DEFAULT 0,
   `ml_choose` tinyint(3) unsigned DEFAULT 0,
   `height_choose` tinyint(3) unsigned DEFAULT 0,
+  `height_values` text NULL DEFAULT NULL,
   `is_bundle` tinyint(1) unsigned DEFAULT 0,
   `bundle_datas` TEXT,
   PRIMARY KEY (`id_pack`, `id_shop`)

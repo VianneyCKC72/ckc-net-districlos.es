@@ -846,14 +846,72 @@ class AdvancedPack extends Product
         return (bool)$packAllowHeightChoose;
     }
 
+    public static function normalizePackHeightValues($values)
+    {
+        if (!is_array($values)) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach ($values as $value) {
+            $value = str_replace(',', '.', trim((string) $value));
+            if ($value === '' || !is_numeric($value) || (float) $value <= 0) {
+                continue;
+            }
+            $normalized[] = (float) $value;
+        }
+
+        sort($normalized, SORT_NUMERIC);
+
+        return array_values(array_unique($normalized));
+    }
+
+    public static function formatPackHeightDisplay($value)
+    {
+        $value = round((float) $value, 2);
+        $meters = (int) floor($value);
+        $centimeters = (int) round(($value - $meters) * 100);
+
+        if ($centimeters >= 100) {
+            ++$meters;
+            $centimeters = 0;
+        }
+
+        return $meters . 'm' . sprintf('%02d', $centimeters);
+    }
+
+    public static function getPackHeightValues($idPack)
+    {
+        $cacheId = self::getPMCacheId(__METHOD__ . (int) $idPack);
+        if (!self::isInCache($cacheId)) {
+            $sql = new DbQuery();
+            $sql->select('ap.`height_values`');
+            $sql->from('pm_advancedpack', 'ap');
+            $sql->where('ap.`id_pack`=' . (int) $idPack);
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+            $heightValues = [];
+            if ($result) {
+                $decoded = json_decode($result, true);
+                if (is_array($decoded)) {
+                    $heightValues = self::normalizePackHeightValues($decoded);
+                }
+            }
+        } else {
+            return self::getFromCache($cacheId);
+        }
+        self::storeInCache($cacheId, $heightValues);
+
+        return $heightValues;
+    }
+
     public static function computePackProductQuantityFromFormula($formula, $baseQuantity, $ml = 0, $hauteur = 0)
     {
         if (!$formula) {
             return null;
         }
-        $formula = str_replace('[ML]', (int)$ml, $formula);
-        $formula = str_replace('[HAUTEUR]', (int)$hauteur, $formula);
-        $formula = str_replace('[QUANTITY]', (int)$baseQuantity, $formula);
+        $formula = str_replace('[ML]', (int) $ml, $formula);
+        $formula = str_replace('[HAUTEUR]', (float) $hauteur, $formula);
+        $formula = str_replace('[QUANTITY]', (int) $baseQuantity, $formula);
 
         return (int) self::evaluateMathExpression($formula);
     }
@@ -3438,7 +3496,7 @@ class AdvancedPack extends Product
         $res = true;
 
         if ($isNewPack) {
-            $res &= Db::getInstance()->insert('pm_advancedpack', ['id_pack' => $this->id, 'id_shop' => (int)self::getContext()->shop->id, 'fixed_price' => json_encode($packSettings['fixedPrice']), 'allow_remove_product' => (int)$packSettings['allowRemoveProduct'], 'auto_choose' => (int)$packSettings['autoChoose'], 'ml_choose' => (int)$packSettings['mlChoose'], 'height_choose' => (int)$packSettings['heightChoose']], true);
+            $res &= Db::getInstance()->insert('pm_advancedpack', ['id_pack' => $this->id, 'id_shop' => (int)self::getContext()->shop->id, 'fixed_price' => json_encode($packSettings['fixedPrice']), 'allow_remove_product' => (int)$packSettings['allowRemoveProduct'], 'auto_choose' => (int)$packSettings['autoChoose'], 'ml_choose' => (int)$packSettings['mlChoose'], 'height_choose' => (int)$packSettings['heightChoose'], 'height_values' => json_encode(isset($packSettings['heightValues']) ? $packSettings['heightValues'] : [])], true);
         }
         if (!$isNewPack) {
             $sql = new DbQuery();
@@ -3542,6 +3600,7 @@ class AdvancedPack extends Product
             'auto_choose' => (int)$packSettings['autoChoose'],
             'ml_choose' => (int)$packSettings['mlChoose'],
             'height_choose' => (int)$packSettings['heightChoose'],
+            'height_values' => json_encode(isset($packSettings['heightValues']) ? $packSettings['heightValues'] : []),
         ];
         if (isset($packSettings['isBundle'])) {
             $updateDatas['is_bundle'] = (int)$packSettings['isBundle'];

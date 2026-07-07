@@ -3,7 +3,7 @@
 {block name='content'}
     {assign var="initial_pack" value="1"}
 
-    {if (isset($packMlChoose) && $packMlChoose == 1) || (isset($packHeightChoose) && $packHeightChoose == 1)}
+    {if (isset($packMlChoose) && $packMlChoose == 1) || (isset($packHeightChoose) && $packHeightChoose == 1 && isset($packHeightValues) && $packHeightValues|@count > 0)}
         <style>
             .qty {
                 display: none !important;
@@ -118,7 +118,7 @@
                             </div>
                         {/block}
 
-                        {if (isset($packMlChoose) && $packMlChoose) || (isset($packHeightChoose) && $packHeightChoose)}
+                        {if (isset($packMlChoose) && $packMlChoose) || (isset($packHeightChoose) && $packHeightChoose && isset($packHeightValues) && $packHeightValues|@count > 0)}
                             <style>
                                 .ap5-ml-field .group-name {
                                     display: flex;
@@ -129,6 +129,7 @@
 
                                 .ap5-ml-field {
                                     background: #F5F5F5;
+                                    border: 1px solid #bdbdbd;
                                     border-radius: 4px;
                                     padding: 14px 16px;
                                 }
@@ -181,10 +182,11 @@
                                 }
 
                                 .ap5-ml-field #quantity_ml,
-                                .ap5-ml-field #quantity_hauteur {
+                                .ap5-ml-field #quantity_hauteur,
+                                .ap5-ml-field select#quantity_hauteur {
                                     display: block;
                                     width: 100%;
-                                    background: transparent !important;
+                                    background: #F5F5F5 !important;
                                     border: 0 !important;
                                     border-bottom: 1px solid #a6a6a6 !important;
                                     border-radius: 0 !important;
@@ -227,9 +229,90 @@
                                 .ap5-ml-error.ap5-ml-error-visible {
                                     display: block;
                                 }
+
+                                .ap5-dimensions-row {
+                                    display: grid !important;
+                                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                                    gap: 16px;
+                                    margin-bottom: 1rem;
+                                    align-items: stretch;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-field {
+                                    margin-bottom: 0 !important;
+                                    display: flex;
+                                    flex-direction: column;
+                                    min-width: 0;
+                                    align-self: stretch;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-field .hiddenlabel {
+                                    display: flex;
+                                    flex-direction: column;
+                                    flex: 0 0 auto;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-field .group-name {
+                                    flex: 0 0 auto;
+                                    min-height: 52px;
+                                    margin-bottom: 10px;
+                                    align-items: flex-start;
+                                }
+
+                                .ap5-dimensions-row:has(> :only-child) {
+                                    grid-template-columns: 1fr;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-field:only-child {
+                                    grid-column: auto;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-field:only-child .group-name {
+                                    min-height: 0;
+                                }
+
+                                .ap5-dimensions-row .select_wrap {
+                                    flex: 0 0 auto;
+                                }
+
+                                .ap5-dimensions-row .clearfix::after {
+                                    display: none;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-field #quantity_ml,
+                                .ap5-dimensions-row .ap5-ml-field #quantity_hauteur,
+                                .ap5-dimensions-row .ap5-ml-field select#quantity_hauteur {
+                                    height: 28px !important;
+                                    min-height: 28px !important;
+                                    max-height: 28px !important;
+                                    padding: 0 0 6px !important;
+                                    line-height: 22px !important;
+                                    box-sizing: border-box;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-field select#quantity_hauteur {
+                                    -webkit-appearance: none;
+                                    appearance: none;
+                                    padding-right: 24px !important;
+                                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+                                    background-repeat: no-repeat !important;
+                                    background-position: right center !important;
+                                    background-size: 16px 16px !important;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-error {
+                                    margin-bottom: 0;
+                                }
+
+                                @media (max-width: 767px) {
+                                    .ap5-dimensions-row {
+                                        grid-template-columns: 1fr;
+                                    }
+                                }
                             </style>
+                            <div class="ap5-dimensions-row">
                             {if isset($packMlChoose) && $packMlChoose}
-                            <div class="ap5-attributes ap5-ml-field" style="margin-bottom: 1rem;">
+                            <div class="ap5-attributes ap5-ml-field ap5-ml-field--length">
                                 <div class="clearfix hiddenlabel">
                                     <p class="font-weight-bold group-name">
                                         Choisissez la longueur en mètres linéaires
@@ -244,8 +327,8 @@
                                     </p>
                                     <div class="select_wrap">
                                         <div class="clearfix dis_flex">
-                                                    <span class="input-group-btn-vertical dis_flex">
-                                                        <input type="number" id="quantity_ml" value="" class="form-control" min="1" step="1" placeholder="Renseignez votre longueur (en mètres linéaires)" required>
+                                                    <span class="input-group-btn-vertical dis_flex w-100">
+                                                        <input type="number" id="quantity_ml" value="" class="form-control" min="1" step="1" placeholder="Renseignez votre longueur" required>
                                                     </span>
                                         </div>
                                     </div>
@@ -253,23 +336,28 @@
                                 </div>
                             </div>
                             {/if}
-                            {if isset($packHeightChoose) && $packHeightChoose}
-                            <div class="ap5-attributes ap5-ml-field" style="margin-bottom: 1rem;">
+                            {if isset($packHeightChoose) && $packHeightChoose && isset($packHeightValues) && $packHeightValues|@count > 0}
+                            <div class="ap5-attributes ap5-ml-field ap5-ml-field--height">
                                 <div class="clearfix hiddenlabel">
                                     <p class="font-weight-bold group-name">
-                                        Choisissez la hauteur en mètres
+                                        Sélectionnez la hauteur
                                     </p>
                                     <div class="select_wrap">
                                         <div class="clearfix dis_flex">
-                                                    <span class="input-group-btn-vertical dis_flex">
-                                                        <input type="number" id="quantity_hauteur" value="" class="form-control" min="1" step="1" placeholder="Renseignez votre hauteur (en mètres)" required>
+                                                    <span class="input-group-btn-vertical dis_flex w-100">
+                                                        <select id="quantity_hauteur" class="form-control" required>
+                                                            {foreach from=$packHeightValues item=heightValue name=heightLoop}
+                                                                <option value="{$heightValue|escape:'html':'UTF-8'}"{if $smarty.foreach.heightLoop.first} selected="selected"{/if}>{AdvancedPack::formatPackHeightDisplay($heightValue)|escape:'html':'UTF-8'}</option>
+                                                            {/foreach}
+                                                        </select>
                                                     </span>
                                         </div>
                                     </div>
-                                    <p id="quantity_hauteur_error" class="ap5-ml-error">Veuillez renseigner ce champ</p>
+                                    <p id="quantity_hauteur_error" class="ap5-ml-error">Veuillez sélectionner une hauteur</p>
                                 </div>
                             </div>
                             {/if}
+                            </div>
                         {/if}
 
                         {*
