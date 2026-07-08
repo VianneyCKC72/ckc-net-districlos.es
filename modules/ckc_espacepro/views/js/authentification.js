@@ -44,15 +44,27 @@ $(document).ready(function () {
     /* ----------------------------------------------------
        3️⃣ Ajustement TVA / Numéro de TVA
     ---------------------------------------------------- */
-    var tvaSelect = $('#customer-tva');
-    var vatNumberInput = $('#customer-vat_number');
-
     function ajusterChampTva() {
-        var isRequired = tvaSelect.val() === "1";
-        vatNumberInput.prop('required', isRequired).attr('placeholder', isRequired ? 'Numéro de TVA*' : 'Numéro de TVA');
+        var isRequired = $('#customer-tva').val() === "1";
+        $('#customer-vat_number')
+            .prop('required', isRequired)
+            .attr('placeholder', isRequired ? 'Numéro de TVA*' : 'Numéro de TVA');
     }
 
-    tvaSelect.change(ajusterChampTva).trigger('change');
+    function bindTvaHandlers() {
+        $('#customer-tva').off('change.tvaPro').on('change.tvaPro', ajusterChampTva).trigger('change');
+    }
+
+    document.addEventListener('ckc:sirene-tva', function (e) {
+        var detail = e.detail || {};
+        if (detail.tva !== undefined) {
+            $('#customer-tva').val(String(detail.tva)).trigger('change');
+        }
+        if (detail.vat_number) {
+            $('#customer-vat_number').val(detail.vat_number);
+        }
+        ajusterChampTva();
+    });
 
     /* ----------------------------------------------------
        4️⃣ Réorganisation du formulaire (comme création compte)
@@ -229,6 +241,7 @@ $(document).ready(function () {
     }
 
     initRegistrationSteps();
+    bindTvaHandlers();
 
     /* ----------------------------------------------------
        5️⃣ Gestion upload fichiers (label dynamique)
