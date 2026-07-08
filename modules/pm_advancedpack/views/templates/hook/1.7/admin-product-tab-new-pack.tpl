@@ -158,10 +158,10 @@
 								</label>
 								<div class="col-lg-6">
 									<div id="ap5-height-values-list">
-										{foreach from=$packHeightValues item=heightItem}
+										{foreach from=$packHeightValues item=heightItem key=heightKey}
 											<div class="ap5-height-value-row" style="display:flex;align-items:center;margin-bottom:8px;">
-												<input type="number" step="0.01" min="0.01" class="form-control ap5_height_value" name="ap5_height_values[][height]" value="{$heightItem.height|escape:'html':'UTF-8'}" placeholder="Hauteur (m)" title="Hauteur affichée en front" />
-												<input type="number" step="0.01" min="0" class="form-control ap5_height_formula_value" name="ap5_height_values[][value]" value="{$heightItem.value|escape:'html':'UTF-8'}" placeholder="Valeur formule" title="Valeur utilisée pour le shortcode [HAUTEUR]" style="margin-left:8px;" />
+												<input type="number" step="0.01" min="0.01" class="form-control ap5_height_value" name="ap5_height_values[{$heightKey}][height]" value="{$heightItem.height|escape:'html':'UTF-8'}" placeholder="Hauteur (m)" title="Hauteur affichée en front" />
+												<input type="number" step="0.01" min="0" class="form-control ap5_height_formula_value" name="ap5_height_values[{$heightKey}][value]" value="{$heightItem.value|escape:'html':'UTF-8'}" placeholder="Valeur formule" title="Valeur utilisée pour le shortcode [HAUTEUR]" style="margin-left:8px;" />
 												<button type="button" class="btn btn-danger ap5-remove-height-value" style="margin-left:8px;">&times;</button>
 											</div>
 										{/foreach}

@@ -638,8 +638,16 @@ function ap5_toggleHeightValuesWrapper() {
 	}
 }
 
+function ap5_reindexHeightValueRows() {
+	$('#ap5-height-values-list .ap5-height-value-row').each(function(index) {
+		$(this).find('.ap5_height_value').attr('name', 'ap5_height_values[' + index + '][height]');
+		$(this).find('.ap5_height_formula_value').attr('name', 'ap5_height_values[' + index + '][value]');
+	});
+}
+
 function ap5_initHeightValuesManagement() {
 	ap5_toggleHeightValuesWrapper();
+	ap5_reindexHeightValueRows();
 
 	$(document).off('change.ap5HeightChoose', '#ap5_height_choose').on('change.ap5HeightChoose', '#ap5_height_choose', function() {
 		ap5_toggleHeightValuesWrapper();
@@ -648,9 +656,10 @@ function ap5_initHeightValuesManagement() {
 
 	$(document).off('click.ap5AddHeight', '#ap5-add-height-value').on('click.ap5AddHeight', '#ap5-add-height-value', function(e) {
 		e.preventDefault();
+		var index = $('#ap5-height-values-list .ap5-height-value-row').length;
 		var $row = $('<div class="ap5-height-value-row" style="display:flex;align-items:center;margin-bottom:8px;">' +
-			'<input type="number" step="0.01" min="0.01" class="form-control ap5_height_value" name="ap5_height_values[][height]" value="" placeholder="Hauteur (m)" title="Hauteur affichée en front" />' +
-			'<input type="number" step="0.01" min="0" class="form-control ap5_height_formula_value" name="ap5_height_values[][value]" value="" placeholder="Valeur formule" title="Valeur utilisée pour le shortcode [HAUTEUR]" style="margin-left:8px;" />' +
+			'<input type="number" step="0.01" min="0.01" class="form-control ap5_height_value" name="ap5_height_values[' + index + '][height]" value="" placeholder="Hauteur (m)" title="Hauteur affichée en front" />' +
+			'<input type="number" step="0.01" min="0" class="form-control ap5_height_formula_value" name="ap5_height_values[' + index + '][value]" value="" placeholder="Valeur formule" title="Valeur utilisée pour le shortcode [HAUTEUR]" style="margin-left:8px;" />' +
 			'<button type="button" class="btn btn-danger ap5-remove-height-value" style="margin-left:8px;">&times;</button>' +
 			'</div>');
 		$('#ap5-height-values-list').append($row);
@@ -661,6 +670,7 @@ function ap5_initHeightValuesManagement() {
 	$(document).off('click.ap5RemoveHeight', '.ap5-remove-height-value').on('click.ap5RemoveHeight', '.ap5-remove-height-value', function(e) {
 		e.preventDefault();
 		$(this).closest('.ap5-height-value-row').remove();
+		ap5_reindexHeightValueRows();
 		ap5_packUpdated();
 	});
 }
