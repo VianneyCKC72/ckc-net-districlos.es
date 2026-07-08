@@ -191,7 +191,7 @@ function ap5_initNewPackFields() {
 		return false;
 	});
 
-	$(document).on('change', '#ap5-pack-content-table input[type=text], #ap5-pack-content-table select, #ap5-pack-content-table input.ap5_useReduc, #ap5-pack-content-table input.ap5_exclusive, input.ap5_price_rules, input#ap5_allow_remove_product, input#ap5_auto_choose, input#ap5_ml_choose, input#ap5_height_choose, .ap5_height_value', function() {
+	$(document).on('change', '#ap5-pack-content-table input[type=text], #ap5-pack-content-table select, #ap5-pack-content-table input.ap5_useReduc, #ap5-pack-content-table input.ap5_exclusive, input.ap5_price_rules, input#ap5_allow_remove_product, input#ap5_auto_choose, input#ap5_ml_choose, input#ap5_height_choose, .ap5_height_value, .ap5_height_formula_value', function() {
 		// Update pack trigger
 		ap5_packUpdated();
 	});
@@ -649,7 +649,8 @@ function ap5_initHeightValuesManagement() {
 	$(document).off('click.ap5AddHeight', '#ap5-add-height-value').on('click.ap5AddHeight', '#ap5-add-height-value', function(e) {
 		e.preventDefault();
 		var $row = $('<div class="ap5-height-value-row" style="display:flex;align-items:center;margin-bottom:8px;">' +
-			'<input type="number" step="0.01" min="0.01" class="form-control ap5_height_value" name="ap5_height_values[]" value="" placeholder="Hauteur en mètres" />' +
+			'<input type="number" step="0.01" min="0.01" class="form-control ap5_height_value" name="ap5_height_values[][height]" value="" placeholder="Hauteur (m)" title="Hauteur affichée en front" />' +
+			'<input type="number" step="0.01" min="0" class="form-control ap5_height_formula_value" name="ap5_height_values[][value]" value="" placeholder="Valeur formule" title="Valeur utilisée pour le shortcode [HAUTEUR]" style="margin-left:8px;" />' +
 			'<button type="button" class="btn btn-danger ap5-remove-height-value" style="margin-left:8px;">&times;</button>' +
 			'</div>');
 		$('#ap5-height-values-list').append($row);

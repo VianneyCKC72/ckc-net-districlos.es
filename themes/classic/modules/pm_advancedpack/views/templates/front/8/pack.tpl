@@ -346,8 +346,8 @@
                                         <div class="clearfix dis_flex">
                                                     <span class="input-group-btn-vertical dis_flex w-100">
                                                         <select id="quantity_hauteur" class="form-control" required>
-                                                            {foreach from=$packHeightValues item=heightValue name=heightLoop}
-                                                                <option value="{$heightValue|escape:'html':'UTF-8'}"{if $smarty.foreach.heightLoop.first} selected="selected"{/if}>{AdvancedPack::formatPackHeightDisplay($heightValue)|escape:'html':'UTF-8'}</option>
+                                                            {foreach from=$packHeightValues item=heightItem name=heightLoop}
+                                                                <option value="{$heightItem.value|escape:'html':'UTF-8'}"{if $smarty.foreach.heightLoop.first} selected="selected"{/if}>{AdvancedPack::formatPackHeightDisplay($heightItem.height)|escape:'html':'UTF-8'}</option>
                                                             {/foreach}
                                                         </select>
                                                     </span>

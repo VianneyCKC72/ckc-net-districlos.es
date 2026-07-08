@@ -854,16 +854,66 @@ class AdvancedPack extends Product
 
         $normalized = [];
         foreach ($values as $value) {
-            $value = str_replace(',', '.', trim((string) $value));
-            if ($value === '' || !is_numeric($value) || (float) $value <= 0) {
+            if (is_numeric($value)) {
+                $height = (float) str_replace(',', '.', (string) $value);
+                if ($height > 0) {
+                    $normalized[] = [
+                        'height' => $height,
+                        'value' => $height,
+                    ];
+                }
                 continue;
             }
-            $normalized[] = (float) $value;
+
+            if (!is_array($value)) {
+                continue;
+            }
+
+            $heightRaw = isset($value['height']) ? $value['height'] : null;
+            $formulaRaw = isset($value['value']) ? $value['value'] : null;
+
+            $heightRaw = str_replace(',', '.', trim((string) $heightRaw));
+            if ($heightRaw === '' || !is_numeric($heightRaw) || (float) $heightRaw <= 0) {
+                continue;
+            }
+
+            $height = (float) $heightRaw;
+            if ($formulaRaw === '' || $formulaRaw === null) {
+                $formulaValue = $height;
+            } else {
+                $formulaRaw = str_replace(',', '.', trim((string) $formulaRaw));
+                if (!is_numeric($formulaRaw) || (float) $formulaRaw < 0) {
+                    continue;
+                }
+                $formulaValue = (float) $formulaRaw;
+            }
+
+            $normalized[] = [
+                'height' => $height,
+                'value' => $formulaValue,
+            ];
         }
 
-        sort($normalized, SORT_NUMERIC);
+        usort($normalized, function ($a, $b) {
+            if ($a['height'] === $b['height']) {
+                return $a['value'] <=> $b['value'];
+            }
 
-        return array_values(array_unique($normalized));
+            return $a['height'] <=> $b['height'];
+        });
+
+        $unique = [];
+        $seen = [];
+        foreach ($normalized as $item) {
+            $key = $item['height'] . '|' . $item['value'];
+            if (isset($seen[$key])) {
+                continue;
+            }
+            $seen[$key] = true;
+            $unique[] = $item;
+        }
+
+        return $unique;
     }
 
     public static function formatPackHeightDisplay($value)

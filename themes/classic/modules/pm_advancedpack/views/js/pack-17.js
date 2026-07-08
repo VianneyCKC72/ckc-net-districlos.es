@@ -654,7 +654,7 @@ function ap5GetPackDimensionValues() {
     }
     if ($('#quantity_hauteur').length) {
         var hauteurValue = parseFloat($('#quantity_hauteur').val());
-        hauteur = (!isNaN(hauteurValue) && hauteurValue > 0) ? hauteurValue : 0;
+        hauteur = (!isNaN(hauteurValue) && hauteurValue >= 0) ? hauteurValue : 0;
     }
 
     return { ml: ml, hauteur: hauteur };
@@ -667,7 +667,8 @@ function ap5ValidatePackDimensionField($field, $error, skipFocus) {
 
     var rawValue = ($field.val() || '').toString().trim();
     var numericValue = parseFloat(rawValue);
-    var isValid = rawValue !== '' && !isNaN(numericValue) && numericValue > 0;
+    var isHeightField = $field.attr('id') === 'quantity_hauteur';
+    var isValid = rawValue !== '' && !isNaN(numericValue) && (isHeightField ? numericValue >= 0 : numericValue > 0);
 
     if (isValid) {
         $field.removeClass('ap5-ml-invalid');

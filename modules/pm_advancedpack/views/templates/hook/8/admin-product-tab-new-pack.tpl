@@ -157,14 +157,16 @@
 								</label>
 								<div class="col-lg-6">
 									<div id="ap5-height-values-list">
-										{foreach from=$packHeightValues item=heightValue}
+										{foreach from=$packHeightValues item=heightItem}
 											<div class="ap5-height-value-row" style="display:flex;align-items:center;margin-bottom:8px;">
-												<input type="number" step="0.01" min="0.01" class="form-control ap5_height_value" name="ap5_height_values[]" value="{$heightValue|escape:'html':'UTF-8'}" placeholder="Hauteur en mètres" />
+												<input type="number" step="0.01" min="0.01" class="form-control ap5_height_value" name="ap5_height_values[][height]" value="{$heightItem.height|escape:'html':'UTF-8'}" placeholder="Hauteur (m)" title="Hauteur affichée en front" />
+												<input type="number" step="0.01" min="0" class="form-control ap5_height_formula_value" name="ap5_height_values[][value]" value="{$heightItem.value|escape:'html':'UTF-8'}" placeholder="Valeur formule" title="Valeur utilisée pour le shortcode [HAUTEUR]" style="margin-left:8px;" />
 												<button type="button" class="btn btn-danger ap5-remove-height-value" style="margin-left:8px;">&times;</button>
 											</div>
 										{/foreach}
 									</div>
 									<button type="button" class="btn btn-default" id="ap5-add-height-value">Ajouter une hauteur</button>
+									<p class="help-block">Hauteur = affichage front (ex. 10,05 → 10m05). Valeur formule = nombre injecté dans [HAUTEUR].</p>
 								</div>
 							</div>
 						</div>
@@ -201,7 +203,7 @@
 						<ul>
 							<li>[QUANTITY] : Quantité originale du produit (back)</li>
 							<li>[ML] : Nombre de mètres linéaire (front)</li>
-							<li>[HAUTEUR] : Hauteur sélectionnée en front</li>
+							<li>[HAUTEUR] : Valeur associée à la hauteur sélectionnée en front</li>
                             <li>PLAFOND() : Arrondià l'entier supérieur l'élément entre parenthèses</li>
                         </ul>
 					</div>
