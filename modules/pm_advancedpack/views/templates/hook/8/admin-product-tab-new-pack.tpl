@@ -135,6 +135,40 @@
 									</div>
 								</div>
 							</div>
+
+							<div class="clearfix">
+								<div class="row">
+									<label class="control-label col-lg-6" for="ap5_height_choose">
+														<span class="label-tooltip" data-toggle="{$tooltipToggle}" title="Cochez cette case si vous voulez proposer un choix de hauteurs en front">
+															Sélection de la hauteur client
+														</span>
+									</label>
+									<div class="col-lg-1">
+										<div class="input-group">
+											<input type="checkbox"{if $packHeightChoose} checked="checked"{/if} value="1" id="ap5_height_choose" name="ap5_height_choose" />
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div id="ap5-height-values-wrapper" class="form-group clearfix{if !$packHeightChoose} ap5-admin-hide hide{/if}">
+								<label class="control-label col-lg-3">
+									Hauteurs disponibles
+								</label>
+								<div class="col-lg-6">
+									<div id="ap5-height-values-list">
+										{foreach from=$packHeightValues item=heightItem key=heightKey}
+											<div class="ap5-height-value-row" style="display:flex;align-items:center;margin-bottom:8px;">
+												<input type="number" step="0.01" min="0.01" class="form-control ap5_height_value" name="ap5_height_values[{$heightKey}][height]" value="{$heightItem.height|escape:'html':'UTF-8'}" placeholder="Hauteur (m)" title="Hauteur affichée en front" />
+												<input type="number" step="0.01" min="0" class="form-control ap5_height_formula_value" name="ap5_height_values[{$heightKey}][value]" value="{$heightItem.value|escape:'html':'UTF-8'}" placeholder="Valeur formule" title="Valeur utilisée pour le shortcode [HAUTEUR]" style="margin-left:8px;" />
+												<button type="button" class="btn btn-danger ap5-remove-height-value" style="margin-left:8px;">&times;</button>
+											</div>
+										{/foreach}
+									</div>
+									<button type="button" class="btn btn-default" id="ap5-add-height-value">Ajouter une hauteur</button>
+									<p class="help-block">Hauteur = affichage front (ex. 10,05 → 10m05). Valeur formule = nombre injecté dans [HAUTEUR].</p>
+								</div>
+							</div>
 						</div>
 						<div class="col-lg-5">
 							<h4>{l s='Pack price simulation' mod='pm_advancedpack'}</h4>
@@ -169,6 +203,7 @@
 						<ul>
 							<li>[QUANTITY] : Quantité originale du produit (back)</li>
 							<li>[ML] : Nombre de mètres linéaire (front)</li>
+							<li>[HAUTEUR] : Valeur associée à la hauteur sélectionnée en front</li>
                             <li>PLAFOND() : Arrondià l'entier supérieur l'élément entre parenthèses</li>
                         </ul>
 					</div>
