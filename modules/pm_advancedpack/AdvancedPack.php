@@ -1142,6 +1142,39 @@ class AdvancedPack extends Product
         }
     }
 
+    public static function fixPackAttributesListForHeightFilter($idPack, array &$packAttributesList)
+    {
+        if (self::$frontHeightFilter === null) {
+            return;
+        }
+
+        $packProducts = Db::getInstance()->executeS(
+            'SELECT `id_product_pack`, `height_impact`, `default_id_product_attribute` FROM `' . _DB_PREFIX_ . 'pm_advancedpack_products` WHERE `id_pack`=' . (int) $idPack
+        );
+        if (!is_array($packProducts)) {
+            return;
+        }
+
+        foreach ($packProducts as $row) {
+            if (empty($row['height_impact'])) {
+                continue;
+            }
+            $idProductPack = (int) $row['id_product_pack'];
+            $allowed = self::getProductAttributeWhiteList($idProductPack);
+            if (!count($allowed) || $allowed === [-1]) {
+                continue;
+            }
+
+            $currentIdAttr = isset($packAttributesList[$idProductPack]) ? (int) $packAttributesList[$idProductPack] : (int) $row['default_id_product_attribute'];
+            if ($currentIdAttr && in_array($currentIdAttr, $allowed, true)) {
+                $packAttributesList[$idProductPack] = $currentIdAttr;
+                continue;
+            }
+
+            $packAttributesList[$idProductPack] = (int) $allowed[0];
+        }
+    }
+
     public static function computePackProductQuantityFromFormula($formula, $baseQuantity, $ml = 0, $hauteur = 0)
     {
         if (!$formula) {

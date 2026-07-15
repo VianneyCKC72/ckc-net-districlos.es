@@ -148,6 +148,7 @@ class pm_advancedpackupdate_packModuleFrontController extends ModuleFrontControl
                 }
                 $packCompleteAttributesList[(int)$idProductPack] = $attributeList;
             }
+            AdvancedPack::fixPackAttributesListForHeightFilter($this->idPack, $this->packAttributesList);
             $packContent = AdvancedPack::getPackContent($this->idPack, null, false, $this->packAttributesList, $this->productPackQuantityList);
             if ($packContent !== false) {
                 foreach ($packContent as $packProduct) {

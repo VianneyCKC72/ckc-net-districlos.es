@@ -1415,7 +1415,15 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 }
             }
         }
+        if ($packContent !== false) {
+            foreach ($packContent as $packProduct) {
+                if (!isset($packAttributesList[$packProduct['id_product_pack']])) {
+                    $packAttributesList[(int) $packProduct['id_product_pack']] = (int) $packProduct['default_id_product_attribute'];
+                }
+            }
+        }
         AdvancedPack::applyFrontHeightFilterForPack($idPack);
+        AdvancedPack::fixPackAttributesListForHeightFilter($idPack, $packAttributesList);
         $packContent = AdvancedPack::getPackContent($idPack, null, true, $packAttributesList);
         $this->_assignSmartyImageTypeVars();
         $currentProduct = $this->getCurrentProduct(true);
@@ -3733,10 +3741,12 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
 
     public function displayPackProductContainer($idPack, $packAttributesList, $packQuantityList = [], $packExcludeList = [], $packErrorsList = [], $packFatalErrorsList = [])
     {
+        AdvancedPack::fixPackAttributesListForHeightFilter($idPack, $packAttributesList);
         $packContent = AdvancedPack::getPackContent($idPack, null, true, $packAttributesList, $packQuantityList);
         $this->context->smarty->assign([
             'productsPackUnique' => AdvancedPack::getPackContentGroupByProduct($packContent),
         ]);
+        $this->_assignSmartyImageTypeVars();
 
         return $this->display(__FILE__, 'views/templates/front/' . $this->getPrestaShopTemplateVersion() . '/pack-product-container.tpl');
     }
