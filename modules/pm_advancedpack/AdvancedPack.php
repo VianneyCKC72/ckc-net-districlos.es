@@ -494,6 +494,9 @@ class AdvancedPack extends Product
                     $priceRounding = new PriceroundingConfiguration();
                 }
                 foreach ($packContent as &$packProduct) {
+                    if (self::isProductPackHiddenByHeightFilter((int) $packProduct['id_product_pack'])) {
+                        continue;
+                    }
                     $productPackIdAttribute = (isset($attributesList[(int)$packProduct['id_product_pack']]) ? $attributesList[(int)$packProduct['id_product_pack']] : (isset($packProduct['id_product_attribute']) && (int)$packProduct['id_product_attribute'] ? (int)$packProduct['id_product_attribute'] : (int)$packProduct['default_id_product_attribute']));
                     $specificPriceOutput = null;
                     $productPackPriceWt = $productClassicPriceWt = self::getPriceStaticPack($packProduct['id_product'], true, $productPackIdAttribute, 6, null, false, (bool)$packProduct['use_reduc'], (int)$packProduct['quantity'], null, null, null, $specificPriceOutput, false, $useGroupReduction);
@@ -701,6 +704,12 @@ class AdvancedPack extends Product
             if($packProducts) {
                 foreach ($packProducts as $packProduct) {
                     if (in_array((int)$packProduct['id_product_pack'], $packExcludeList)) {
+                        continue;
+                    }
+                    if (self::isProductPackHiddenByHeightFilter((int) $packProduct['id_product_pack'])) {
+                        continue;
+                    }
+                    if (!isset($packProduct['priceInfos'])) {
                         continue;
                     }
                     $packClassicPrice += $packProduct['priceInfos']['productClassicPrice'] * (int)$packProduct['quantity'];
@@ -1103,6 +1112,15 @@ class AdvancedPack extends Product
         return $filtered;
     }
 
+    public static function isProductPackHiddenByHeightFilter($idProductPack)
+    {
+        if (self::$frontHeightFilter === null) {
+            return false;
+        }
+
+        return self::getProductAttributeWhiteList((int) $idProductPack) === [-1];
+    }
+
     public static function fixPackChoiceForHeightFilter($idPack, array &$productPackChoice)
     {
         if (self::$frontHeightFilter === null) {
@@ -1122,7 +1140,7 @@ class AdvancedPack extends Product
             }
             $idProductPack = (int) $row['id_product_pack'];
             $allowed = self::getProductAttributeWhiteList($idProductPack);
-            if (!count($allowed)) {
+            if (!count($allowed) || $allowed === [-1]) {
                 continue;
             }
 
@@ -2882,6 +2900,10 @@ class AdvancedPack extends Product
                 $acpValues = [];
                 foreach ($packProducts as $k => &$packProduct) {
                     if (in_array((int)$packProduct['id_product_pack'], $packExcludeList)) {
+                        unset($packProducts[$k]);
+                        continue;
+                    }
+                    if (self::isProductPackHiddenByHeightFilter((int) $packProduct['id_product_pack'])) {
                         unset($packProducts[$k]);
                         continue;
                     }
