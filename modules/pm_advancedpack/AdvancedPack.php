@@ -27,6 +27,7 @@ class AdvancedPack extends Product
     public static $actionRemoveOldPackDataProcessing = false;
     public static $forcePackAttributeList = [];
     public static $forceUseOfAnotherContext = false;
+    public static $frontHeightFilter = null;
     public static function getPriceStaticPack(
         $id_product,
         $usetax = true,
@@ -219,7 +220,11 @@ class AdvancedPack extends Product
         $idLang = (int)self::getContext()->language->id;
         $idShop = (int) self::getContext()->shop->id;
 
-        $cacheId = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idShop . (int)$idProductAttribute . (int)$withFrontDatas . serialize($attributesList) . serialize($quantityList), true);
+        $heightFilterSuffix = '';
+        if ($withFrontDatas && self::$frontHeightFilter !== null) {
+            $heightFilterSuffix = '_hf_' . (int) self::$frontHeightFilter['id_pack'] . '_' . (float) self::$frontHeightFilter['formula_value'];
+        }
+        $cacheId = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idShop . (int)$idProductAttribute . (int)$withFrontDatas . serialize($attributesList) . serialize($quantityList) . $heightFilterSuffix, true);
         $cacheIdWithoutFront = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idShop . (int)$idProductAttribute . serialize($quantityList));
 
         if (!self::isInCache($cacheId)) {
@@ -930,6 +935,45 @@ class AdvancedPack extends Product
         return $meters . 'm' . sprintf('%02d', $centimeters);
     }
 
+    public static function parseCombinationInfoFromRequest($idProductPack, $idProductAttribute, callable $getValue)
+    {
+        $row = [
+            'reduction_amount' => null,
+            'reduction_type' => null,
+            'height_value' => null,
+        ];
+        $reductionType = $getValue('ap5_combinationReductionType-' . $idProductPack . '-' . $idProductAttribute);
+        if ($reductionType) {
+            $amount = $getValue('ap5_combinationReductionAmount-' . $idProductPack . '-' . $idProductAttribute);
+            $row['reduction_amount'] = ($reductionType == 'percentage' ? $amount / 100 : $amount);
+            $row['reduction_type'] = $reductionType;
+        }
+        if ($getValue('ap5_height_impact-' . $idProductPack)) {
+            $heightRaw = $getValue('ap5_combinationHeight-' . $idProductPack . '-' . $idProductAttribute);
+            if ($heightRaw !== '' && $heightRaw !== null && is_numeric(str_replace(',', '.', (string) $heightRaw))) {
+                $row['height_value'] = (float) str_replace(',', '.', (string) $heightRaw);
+            }
+        }
+
+        return $row;
+    }
+
+    public static function applyFrontHeightFilterForPack($idPack, $formulaValue = null)
+    {
+        self::clearFrontHeightFilter();
+        if (!self::getPackHeightChoose($idPack)) {
+            return;
+        }
+        if ($formulaValue === null) {
+            $heightValues = self::getPackHeightValues($idPack);
+            if (!count($heightValues)) {
+                return;
+            }
+            $formulaValue = (float) $heightValues[0]['value'];
+        }
+        self::setFrontHeightFilter($idPack, $formulaValue);
+    }
+
     public static function getPackHeightValues($idPack)
     {
         $cacheId = self::getPMCacheId(__METHOD__ . (int) $idPack);
@@ -952,6 +996,109 @@ class AdvancedPack extends Product
         self::storeInCache($cacheId, $heightValues);
 
         return $heightValues;
+    }
+
+    public static function setFrontHeightFilter($idPack, $formulaValue)
+    {
+        self::$frontHeightFilter = [
+            'id_pack' => (int) $idPack,
+            'formula_value' => (float) $formulaValue,
+        ];
+    }
+
+    public static function clearFrontHeightFilter()
+    {
+        self::$frontHeightFilter = null;
+    }
+
+    public static function resolvePackHeightDisplayValue($idPack, $formulaValue)
+    {
+        foreach (self::getPackHeightValues($idPack) as $item) {
+            if (abs((float) $item['value'] - (float) $formulaValue) < 0.0001) {
+                return (float) $item['height'];
+            }
+        }
+
+        return null;
+    }
+
+    protected static function filterWhiteListByHeightImpact($idProductPack, array $whiteList)
+    {
+        if (self::$frontHeightFilter === null) {
+            return $whiteList;
+        }
+
+        $idPack = (int) self::$frontHeightFilter['id_pack'];
+        $displayHeight = self::resolvePackHeightDisplayValue($idPack, self::$frontHeightFilter['formula_value']);
+        if ($displayHeight === null) {
+            return $whiteList;
+        }
+
+        $heightImpact = (int) Db::getInstance()->getValue(
+            'SELECT `height_impact` FROM `' . _DB_PREFIX_ . 'pm_advancedpack_products` WHERE `id_product_pack`=' . (int) $idProductPack
+        );
+        if (!$heightImpact) {
+            return $whiteList;
+        }
+
+        $packAttrs = self::getPackProductAttributeList($idPack);
+        $productAttrs = isset($packAttrs[$idProductPack]) ? $packAttrs[$idProductPack] : [];
+        $filtered = [];
+
+        foreach ($productAttrs as $idAttr => $info) {
+            if (!isset($info['height_value']) || abs((float) $info['height_value'] - $displayHeight) >= 0.001) {
+                continue;
+            }
+            $idAttr = (int) $idAttr;
+            if (!count($whiteList) || in_array($idAttr, $whiteList, true)) {
+                $filtered[] = $idAttr;
+            }
+        }
+
+        if ($heightImpact) {
+            return count($filtered) ? $filtered : [-1];
+        }
+
+        return $filtered;
+    }
+
+    public static function fixPackChoiceForHeightFilter($idPack, array &$productPackChoice)
+    {
+        if (self::$frontHeightFilter === null) {
+            return;
+        }
+
+        $packProducts = Db::getInstance()->executeS(
+            'SELECT `id_product_pack`, `height_impact` FROM `' . _DB_PREFIX_ . 'pm_advancedpack_products` WHERE `id_pack`=' . (int) $idPack
+        );
+        if (!is_array($packProducts)) {
+            return;
+        }
+
+        foreach ($packProducts as $row) {
+            if (empty($row['height_impact'])) {
+                continue;
+            }
+            $idProductPack = (int) $row['id_product_pack'];
+            $allowed = self::getProductAttributeWhiteList($idProductPack);
+            if (!count($allowed)) {
+                continue;
+            }
+
+            $currentIdAttr = false;
+            if (isset($productPackChoice[$idProductPack])) {
+                list($currentIdAttr) = self::combinationExists($idProductPack, $productPackChoice[$idProductPack], false);
+            }
+            if ($currentIdAttr && in_array((int) $currentIdAttr, $allowed, true)) {
+                continue;
+            }
+
+            $combinations = self::getProductCombinationsByIdProductPack($idProductPack);
+            $newIdAttr = (int) $allowed[0];
+            if (isset($combinations[$newIdAttr])) {
+                $productPackChoice[$idProductPack] = $combinations[$newIdAttr];
+            }
+        }
     }
 
     public static function computePackProductQuantityFromFormula($formula, $baseQuantity, $ml = 0, $hauteur = 0)
@@ -1563,27 +1710,31 @@ class AdvancedPack extends Product
     }
     public static function getProductAttributeWhiteList($idProductPack)
     {
-        $cacheId = self::getPMCacheId(__METHOD__ . (int)$idProductPack);
+        $cacheSuffix = '';
+        if (self::$frontHeightFilter !== null) {
+            $cacheSuffix = '_hf_' . (int) self::$frontHeightFilter['id_pack'] . '_' . (float) self::$frontHeightFilter['formula_value'];
+        }
+        $cacheId = self::getPMCacheId(__METHOD__ . (int) $idProductPack . $cacheSuffix);
         $whiteListFinal = [];
         if (!self::isInCache($cacheId)) {
             $sql = new DbQuery();
             $sql->select('appa.`id_product_attribute`');
             $sql->from('pm_advancedpack_products', 'app');
             $sql->innerJoin('pm_advancedpack_products_attributes', 'appa', 'appa.`id_product_pack`=app.`id_product_pack`');
-            $sql->where('app.`id_product_pack`=' . (int)$idProductPack);
+            $sql->where('app.`id_product_pack`=' . (int) $idProductPack);
             $whiteList = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
             if (AdvancedPackCoreClass::_isFilledArray($whiteList)) {
                 foreach ($whiteList as $whiteListRow) {
-                    $whiteListFinal[] = (int)$whiteListRow['id_product_attribute'];
+                    $whiteListFinal[] = (int) $whiteListRow['id_product_attribute'];
                 }
-                self::storeInCache($cacheId, $whiteListFinal);
-                return $whiteListFinal;
             }
-        } else {
-            return self::getFromCache($cacheId);
+            $whiteListFinal = self::filterWhiteListByHeightImpact($idProductPack, $whiteListFinal);
+            self::storeInCache($cacheId, $whiteListFinal);
+
+            return $whiteListFinal;
         }
-        self::storeInCache($cacheId, $whiteListFinal);
-        return $whiteListFinal;
+
+        return self::getFromCache($cacheId);
     }
     public static function getPackProductAttributeList($idPack)
     {
@@ -1598,9 +1749,10 @@ class AdvancedPack extends Product
             $attributeReductionList = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
             if (AdvancedPackCoreClass::_isFilledArray($attributeReductionList)) {
                 foreach ($attributeReductionList as $attributeReductionListRow) {
-                    $attributeReductionListFinal[(int)$attributeReductionListRow['id_product_pack']][(int)$attributeReductionListRow['id_product_attribute']] = [
+                    $attributeReductionListFinal[(int) $attributeReductionListRow['id_product_pack']][(int) $attributeReductionListRow['id_product_attribute']] = [
                         'reduction_amount' => $attributeReductionListRow['reduction_amount'],
                         'reduction_type' => $attributeReductionListRow['reduction_type'],
+                        'height_value' => isset($attributeReductionListRow['height_value']) ? $attributeReductionListRow['height_value'] : null,
                     ];
                 }
                 self::storeInCache($cacheId, $attributeReductionListFinal);
@@ -3630,9 +3782,10 @@ class AdvancedPack extends Product
             if (AdvancedPackCoreClass::_isFilledArray($packContentRow['combinationsInformations'])) {
                 foreach ($packContentRow['combinationsInformations'] as $idProductAttribute => $combinationRow) {
                     $res &= Db::getInstance()->update('pm_advancedpack_products_attributes', [
-                        'reduction_amount' => (float)$combinationRow['reduction_amount'],
+                        'reduction_amount' => (float) $combinationRow['reduction_amount'],
                         'reduction_type' => (empty($combinationRow['reduction_type']) ? null : $combinationRow['reduction_type']),
-                    ], '`id_product_pack`=' . (int)$packContentRow['id_product_pack'] . ' AND `id_product_attribute`=' . (int)$idProductAttribute, 0, true);
+                        'height_value' => (isset($combinationRow['height_value']) && $combinationRow['height_value'] !== null && $combinationRow['height_value'] !== '' ? (float) $combinationRow['height_value'] : null),
+                    ], '`id_product_pack`=' . (int) $packContentRow['id_product_pack'] . ' AND `id_product_attribute`=' . (int) $idProductAttribute, 0, true);
                 }
             }
             if (AdvancedPackCoreClass::_isFilledArray($packContentRow['customCustomizationField'])) {

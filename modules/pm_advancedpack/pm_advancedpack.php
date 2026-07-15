@@ -377,17 +377,13 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 $customCombinations = (isset($productFormValues['ap5_customCombinations-' . $idProductPack]) && $productFormValues['ap5_customCombinations-' . $idProductPack] ? $productFormValues['ap5_combinationInclude-' . $idProductPack] : []);
                 $combinationsInformations[$idProductPack] = [];
                 foreach ($customCombinations as $idProductAttribute) {
-                    if (!isset($productFormValues['ap5_combinationReductionType-' . $idProductPack . '-' . $idProductAttribute])) {
-                        $combinationsInformations[$idProductPack][$idProductAttribute] = [
-                            'reduction_amount' => null,
-                            'reduction_type' => null,
-                        ];
-                        continue;
-                    }
-                    $combinationsInformations[$idProductPack][$idProductAttribute] = [
-                        'reduction_amount' => ($productFormValues['ap5_combinationReductionType-' . $idProductPack . '-' . $idProductAttribute] == 'percentage' ? $productFormValues['ap5_combinationReductionAmount-' . $idProductPack . '-' . $idProductAttribute] / 100 : $productFormValues['ap5_combinationReductionAmount-' . $idProductPack . '-' . $idProductAttribute]),
-                        'reduction_type' => $productFormValues['ap5_combinationReductionType-' . $idProductPack . '-' . $idProductAttribute],
-                    ];
+                    $combinationsInformations[$idProductPack][$idProductAttribute] = AdvancedPack::parseCombinationInfoFromRequest(
+                        $idProductPack,
+                        $idProductAttribute,
+                        function ($key) use ($productFormValues) {
+                            return isset($productFormValues[$key]) ? $productFormValues[$key] : null;
+                        }
+                    );
                 }
                 $defaultCombinationId = (int)Product::getDefaultAttribute((int)$productFormValues['ap5_originalIdProduct-' . $idProductPack]);
                 if (!empty($productFormValues['ap5_customCombinations-' . $idProductPack]) && !empty($productFormValues['ap5_defaultCombination-' . $idProductPack])) {
@@ -402,6 +398,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                     'reduction_amount' => ($productFormValues['ap5_reductionType-' . $idProductPack] == 'percentage' ? $productFormValues['ap5_reductionAmount-' . $idProductPack] / 100 : $productFormValues['ap5_reductionAmount-' . $idProductPack]),
                     'reduction_type' => $productFormValues['ap5_reductionType-' . $idProductPack],
                     'exclusive' => (isset($productFormValues['ap5_exclusive-' . $idProductPack]) && $productFormValues['ap5_exclusive-' . $idProductPack] ? (int)$productFormValues['ap5_exclusive-' . $idProductPack] : 0),
+                    'height_impact' => (isset($productFormValues['ap5_height_impact-' . $idProductPack]) && $productFormValues['ap5_height_impact-' . $idProductPack] ? 1 : 0),
                     'use_reduc' => (isset($productFormValues['ap5_useReduc-' . $idProductPack]) && $productFormValues['ap5_useReduc-' . $idProductPack] ? (int)$productFormValues['ap5_useReduc-' . $idProductPack] : 0),
                     'default_id_product_attribute' => $defaultCombinationId,
                     'combinationsInformations' => (isset($combinationsInformations[$idProductPack]) ? $combinationsInformations[$idProductPack] : []),
@@ -451,6 +448,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             die(json_encode(['advancedStockManagementAlert' => $advancedStockManagementAlert, 'idTaxRulesGroup' => $finalIdTaxRulesGroup, 'html' => $this->display(__FILE__, 'views/templates/hook/' . $this->getPrestaShopTemplateVersion() . '/admin-product-tab-pack-price-simulation.tpl')]));
         } elseif (Tools::getIsset('adminPackContentUpdate') && Tools::getIsset('addPackLine') && Tools::getValue('addPackLine') && Tools::getIsset('productId') && Tools::getValue('productId')) {
             $idProduct = (int)Tools::getValue('productId');
+            $idPack = (int)Tools::getValue('id_product');
             if (Validate::isUnsignedId($idProduct) && $idProduct > 0) {
                 $productObj = new Product($idProduct, true, $this->context->language->id);
                 if (Validate::isLoadedObject($productObj)) {
@@ -466,6 +464,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                             'productCustomizationFields' => AdvancedPack::getProductPackCustomizationFields($productObj->id),
                             'productCustomizationFieldsWhiteList' => [],
                             'exclusive' => 0,
+                            'height_impact' => 0,
                             'use_reduc' => 0,
                             'quantity' => 1,
                             'reduction_type' => 'percentage',
@@ -479,12 +478,15 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                         'link' => $this->context->link,
                         'defaultCurrency' => Currency::getDefaultCurrency(),
                         'packContent' => $packContent,
+                        'packHeightChoose' => AdvancedPack::getPackHeightChoose($idPack),
+                        'packHeightValues' => AdvancedPack::getPackHeightValues($idPack),
                     ]);
                     die(json_encode(['html' => $this->display(__FILE__, 'views/templates/hook/' . $this->getPrestaShopTemplateVersion() . '/admin-product-tab-pack-table.tpl')]));
                 }
             }
         } elseif (Tools::getIsset('adminPackContentUpdate') && Tools::getIsset('packContent')) {
             $packContent = $packContentJSON = [];
+            $idPack = (int)Tools::getValue('id_product');
             foreach (Tools::getValue('packContent') as $idProductPack => $idProduct) {
                 $productObj = new Product($idProduct, true, $this->context->language->id);
                 $packContentJSON[$idProductPack] = [
@@ -501,6 +503,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                     'productCustomizationFields' => AdvancedPack::getProductPackCustomizationFields($productObj->id),
                     'productCustomizationFieldsWhiteList' => [],
                     'exclusive' => 0,
+                    'height_impact' => 0,
                     'use_reduc' => 0,
                     'quantity' => 0,
                     'reduction_type' => 'percentage',
@@ -513,6 +516,8 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 'link' => $this->context->link,
                 'defaultCurrency' => Currency::getDefaultCurrency(),
                 'packContent' => $packContent,
+                'packHeightChoose' => AdvancedPack::getPackHeightChoose($idPack),
+                'packHeightValues' => AdvancedPack::getPackHeightValues($idPack),
             ]);
             die(json_encode(['packContent' => $packContentJSON, 'html' => $this->display(__FILE__, 'views/templates/hook/' . $this->getPrestaShopTemplateVersion() . '/admin-product-tab-pack-table.tpl')]));
         } elseif (Tools::getIsset('adminProductList') && Tools::getIsset('q')) {
@@ -1410,6 +1415,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 }
             }
         }
+        AdvancedPack::applyFrontHeightFilterForPack($idPack);
         $packContent = AdvancedPack::getPackContent($idPack, null, true, $packAttributesList);
         $this->_assignSmartyImageTypeVars();
         $currentProduct = $this->getCurrentProduct(true);
@@ -2490,17 +2496,13 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                     $customCombinations = (Tools::getIsset('ap5_customCombinations-' . $idProductPack) && Tools::getValue('ap5_customCombinations-' . $idProductPack) ? Tools::getValue('ap5_combinationInclude-' . $idProductPack) : []);
                     $combinationsInformations[$idProductPack] = [];
                     foreach ($customCombinations as $idProductAttribute) {
-                        if (!Tools::getValue('ap5_combinationReductionType-' . $idProductPack . '-' . $idProductAttribute)) {
-                            $combinationsInformations[$idProductPack][$idProductAttribute] = [
-                                'reduction_amount' => null,
-                                'reduction_type' => null,
-                            ];
-                            continue;
-                        }
-                        $combinationsInformations[$idProductPack][$idProductAttribute] = [
-                            'reduction_amount' => (Tools::getValue('ap5_combinationReductionType-' . $idProductPack . '-' . $idProductAttribute) == 'percentage' ? Tools::getValue('ap5_combinationReductionAmount-' . $idProductPack . '-' . $idProductAttribute) / 100 : Tools::getValue('ap5_combinationReductionAmount-' . $idProductPack . '-' . $idProductAttribute)),
-                            'reduction_type' => Tools::getValue('ap5_combinationReductionType-' . $idProductPack . '-' . $idProductAttribute),
-                        ];
+                        $combinationsInformations[$idProductPack][$idProductAttribute] = AdvancedPack::parseCombinationInfoFromRequest(
+                            $idProductPack,
+                            $idProductAttribute,
+                            function ($key) {
+                                return Tools::getValue($key);
+                            }
+                        );
                     }
                     $defaultCombinationId = (int)Product::getDefaultAttribute((int)Tools::getValue('ap5_originalIdProduct-' . $idProductPack));
                     if (Tools::getIsset('ap5_customCombinations-' . $idProductPack) && Tools::getValue('ap5_customCombinations-' . $idProductPack) && Tools::getValue('ap5_defaultCombination-' . $idProductPack)) {
@@ -2515,6 +2517,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                         'reduction_amount' => (Tools::getValue('ap5_reductionType-' . $idProductPack) == 'percentage' ? Tools::getValue('ap5_reductionAmount-' . $idProductPack) / 100 : Tools::getValue('ap5_reductionAmount-' . $idProductPack)),
                         'reduction_type' => Tools::getValue('ap5_reductionType-' . $idProductPack),
                         'exclusive' => (Tools::getIsset('ap5_exclusive-' . $idProductPack) && Tools::getValue('ap5_exclusive-' . $idProductPack) ? (int)Tools::getValue('ap5_exclusive-' . $idProductPack) : 0),
+                        'height_impact' => (Tools::getIsset('ap5_height_impact-' . $idProductPack) && Tools::getValue('ap5_height_impact-' . $idProductPack) ? 1 : 0),
                         'use_reduc' => (Tools::getIsset('ap5_useReduc-' . $idProductPack) && Tools::getValue('ap5_useReduc-' . $idProductPack) ? (int)Tools::getValue('ap5_useReduc-' . $idProductPack) : 0),
                         'position' => array_search($idProductPack, $packPositions),
                         'default_id_product_attribute' => $defaultCombinationId,

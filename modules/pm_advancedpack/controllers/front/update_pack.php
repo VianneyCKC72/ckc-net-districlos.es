@@ -52,6 +52,11 @@ class pm_advancedpackupdate_packModuleFrontController extends ModuleFrontControl
             $this->pack_height = true;
             $this->hauteur = (float) Tools::getValue('quantity_hauteur');
         }
+        if ($this->pack_height) {
+            AdvancedPack::applyFrontHeightFilterForPack($this->idPack, $this->hauteur);
+        } elseif (AdvancedPack::getPackHeightChoose($this->idPack)) {
+            AdvancedPack::applyFrontHeightFilterForPack($this->idPack);
+        }
         if (Tools::getIsset('productPackChoice')) {
             $tmp_productPackChoice = (array)Tools::getValue('productPackChoice');
             if (is_array($tmp_productPackChoice) && count($tmp_productPackChoice)) {
@@ -62,6 +67,9 @@ class pm_advancedpackupdate_packModuleFrontController extends ModuleFrontControl
             unset($tmp_productPackChoice);
             if (!count($this->productPackChoice)) {
                 $this->errors[] = $this->module->getFrontTranslation('errorInvalidPackChoice');
+            }
+            if (AdvancedPack::$frontHeightFilter !== null) {
+                AdvancedPack::fixPackChoiceForHeightFilter($this->idPack, $this->productPackChoice);
             }
             $this->packAttributesList = [];
             foreach ($this->productPackChoice as $idProductPack => $attributeList) {
@@ -125,6 +133,9 @@ class pm_advancedpackupdate_packModuleFrontController extends ModuleFrontControl
             $packErrorsList = [];
             $packFatalErrorsList = [];
             $packForceHideInfoList = [];
+            if (AdvancedPack::$frontHeightFilter !== null && count($this->productPackChoice)) {
+                AdvancedPack::fixPackChoiceForHeightFilter($this->idPack, $this->productPackChoice);
+            }
             foreach ($this->productPackChoice as $idProductPack => $attributeList) {
                 if (in_array($idProductPack, $this->productPackExclude)) {
                     continue;

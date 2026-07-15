@@ -7,9 +7,11 @@
     {if isset($packProduct['combinationsInformations']) && isset($packProduct['combinationsInformations'][$productCombination['id_product_attribute']])}
         {assign var=ap5_combinationReductionAmount value=$packProduct['combinationsInformations'][$productCombination['id_product_attribute']]['reduction_amount']}
         {assign var=ap5_combinationReductionType value=$packProduct['combinationsInformations'][$productCombination['id_product_attribute']]['reduction_type']}
+        {assign var=ap5_combinationHeightValue value=$packProduct['combinationsInformations'][$productCombination['id_product_attribute']]['height_value']}
     {else}
         {assign var=ap5_combinationReductionAmount value=0}
         {assign var=ap5_combinationReductionType value='percentage'}
+        {assign var=ap5_combinationHeightValue value=null}
     {/if}
     <tr id="ap5_combination-{$idProductPack}-{$ap5_idProductAttribute}"
         class="nodrag nodrop{if $ap5_isDefaultCombination} bg-info text-white{/if}">
@@ -47,6 +49,16 @@
                     {$defaultCurrency->sign|escape:'html':'UTF-8'}</option>
             </select>
         </td>
+        {if isset($packHeightChoose) && $packHeightChoose && isset($packHeightValues) && $packHeightValues|@count}
+        <td class="ap5_heightImpactCell{if empty($packProduct['height_impact'])} ap5_inputDisabled{/if}" data-id-product-pack="{$idProductPack}">
+            <select class="ap5_combinationHeight form-control" name="ap5_combinationHeight-{$idProductPack|escape:'html':'UTF-8'}-{$ap5_idProductAttribute}" id="ap5_combinationHeight-{$idProductPack|escape:'html':'UTF-8'}-{$ap5_idProductAttribute}"{if empty($packProduct['height_impact'])} disabled="disabled"{/if}>
+                <option value="">{l s='—' mod='pm_advancedpack'}</option>
+                {foreach from=$packHeightValues item=heightItem}
+                <option value="{$heightItem.height|floatval}"{if $ap5_combinationHeightValue !== null && $ap5_combinationHeightValue|floatval == $heightItem.height|floatval} selected="selected"{/if}>{AdvancedPack::formatPackHeightDisplay($heightItem.height)|escape:'html':'UTF-8'}</option>
+                {/foreach}
+            </select>
+        </td>
+        {/if}
         <td>
             {if !empty($productCombination['reference']) && !empty($productCombination['ean13'])}
                 {$productCombination['reference']|escape:'html':'UTF-8'} - {$productCombination['ean13']|escape:'html':'UTF-8'}
