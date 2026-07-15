@@ -921,6 +921,49 @@ class AdvancedPack extends Product
         return $unique;
     }
 
+    public static function normalizeCombinationHeightValues($raw)
+    {
+        if ($raw === null || $raw === '') {
+            return [];
+        }
+        if (is_array($raw)) {
+            $values = $raw;
+        } elseif (is_string($raw) && ($decoded = json_decode($raw, true)) !== null && is_array($decoded)) {
+            $values = $decoded;
+        } elseif (is_numeric(str_replace(',', '.', (string) $raw))) {
+            $values = [(float) str_replace(',', '.', (string) $raw)];
+        } else {
+            return [];
+        }
+        $normalized = [];
+        foreach ($values as $value) {
+            if (!is_numeric(str_replace(',', '.', (string) $value))) {
+                continue;
+            }
+            $normalized[] = round((float) str_replace(',', '.', (string) $value), 3);
+        }
+
+        return array_values(array_unique($normalized));
+    }
+
+    public static function encodeCombinationHeightValues($raw)
+    {
+        $normalized = self::normalizeCombinationHeightValues($raw);
+
+        return count($normalized) ? json_encode($normalized) : null;
+    }
+
+    public static function combinationHeightMatches($storedHeights, $displayHeight)
+    {
+        foreach (self::normalizeCombinationHeightValues($storedHeights) as $height) {
+            if (abs($height - (float) $displayHeight) < 0.001) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static function formatPackHeightDisplay($value)
     {
         $value = round((float) $value, 2);
@@ -950,9 +993,7 @@ class AdvancedPack extends Product
         }
         if ($getValue('ap5_height_impact-' . $idProductPack)) {
             $heightRaw = $getValue('ap5_combinationHeight-' . $idProductPack . '-' . $idProductAttribute);
-            if ($heightRaw !== '' && $heightRaw !== null && is_numeric(str_replace(',', '.', (string) $heightRaw))) {
-                $row['height_value'] = (float) str_replace(',', '.', (string) $heightRaw);
-            }
+            $row['height_value'] = self::normalizeCombinationHeightValues($heightRaw);
         }
 
         return $row;
@@ -1046,7 +1087,7 @@ class AdvancedPack extends Product
         $filtered = [];
 
         foreach ($productAttrs as $idAttr => $info) {
-            if (!isset($info['height_value']) || abs((float) $info['height_value'] - $displayHeight) >= 0.001) {
+            if (!self::combinationHeightMatches(isset($info['height_value']) ? $info['height_value'] : null, $displayHeight)) {
                 continue;
             }
             $idAttr = (int) $idAttr;
@@ -1752,7 +1793,7 @@ class AdvancedPack extends Product
                     $attributeReductionListFinal[(int) $attributeReductionListRow['id_product_pack']][(int) $attributeReductionListRow['id_product_attribute']] = [
                         'reduction_amount' => $attributeReductionListRow['reduction_amount'],
                         'reduction_type' => $attributeReductionListRow['reduction_type'],
-                        'height_value' => isset($attributeReductionListRow['height_value']) ? $attributeReductionListRow['height_value'] : null,
+                        'height_value' => self::normalizeCombinationHeightValues(isset($attributeReductionListRow['height_value']) ? $attributeReductionListRow['height_value'] : null),
                     ];
                 }
                 self::storeInCache($cacheId, $attributeReductionListFinal);
@@ -3784,7 +3825,7 @@ class AdvancedPack extends Product
                     $res &= Db::getInstance()->update('pm_advancedpack_products_attributes', [
                         'reduction_amount' => (float) $combinationRow['reduction_amount'],
                         'reduction_type' => (empty($combinationRow['reduction_type']) ? null : $combinationRow['reduction_type']),
-                        'height_value' => (isset($combinationRow['height_value']) && $combinationRow['height_value'] !== null && $combinationRow['height_value'] !== '' ? (float) $combinationRow['height_value'] : null),
+                        'height_value' => self::encodeCombinationHeightValues(isset($combinationRow['height_value']) ? $combinationRow['height_value'] : null),
                     ], '`id_product_pack`=' . (int) $packContentRow['id_product_pack'] . ' AND `id_product_attribute`=' . (int) $idProductAttribute, 0, true);
                 }
             }
