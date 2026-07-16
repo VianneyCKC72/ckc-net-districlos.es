@@ -125,6 +125,7 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
         } elseif (AdvancedPack::getPackHeightChoose($this->idPack)) {
             AdvancedPack::applyFrontHeightFilterForPack($this->idPack);
         }
+        AdvancedPack::fixPackAttributesListForHeightFilter($this->idPack, $this->idProductAttributeList);
 
         if (Tools::getIsset('productPackQuantityList')) {
             $tmp_productPackQuantityList = (array)Tools::getValue('productPackQuantityList');
