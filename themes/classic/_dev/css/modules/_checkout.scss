@@ -10,16 +10,6 @@ body#checkout {
       height: 35px;
     }
 
-    .step-number {
-      display: inline-block;
-      font-weight: 700;
-      font-size: 13px;
-      line-height: 100%;
-      letter-spacing: 0;
-      vertical-align: middle;
-
-    }
-
     h2.sous-titre {
       font-weight: 600;
       font-size: 35px;
@@ -44,7 +34,7 @@ body#checkout {
         margin-bottom: 30px;
 
         a {
-          color: $secondary-color;
+          color: $primary-color;
           text-decoration: none;
           cursor: pointer;
           font-weight: 800;
@@ -55,11 +45,32 @@ body#checkout {
 
           &:hover {
             text-decoration: underline;
+            color: $primary-color;
           }
         }
       }
     }
 
+    // Étapes non actives : titres hors écran (cibles clic pour le fil d'Ariane)
+    &:not(.-current) {
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      border-radius: 0;
+      min-height: 0;
+
+      > .step-title {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    }
 
     &.-current {
       .content {
@@ -67,11 +78,29 @@ body#checkout {
         margin-top: 20px;
       }
 
-      h1 {
+      max-width: 520px;
+
+      h1.step-title {
         font-weight: 800;
         font-size: 30px;
         line-height: 100%;
         letter-spacing: 0;
+        padding-bottom: 0;
+        margin-bottom: 28px;
+        border-bottom: none;
+        display: inline-block;
+        max-width: 100%;
+
+        &::after {
+          content: '';
+          display: block;
+          width: 450px;
+          max-width: 100%;
+          height: 4px;
+          margin-top: 14px;
+          background: #ded2c6;
+          border-radius: 2px;
+        }
       }
 
       &.-reachable.-complete {
@@ -83,10 +112,6 @@ body#checkout {
         .content {
           display: block;
         }
-
-        .step-number {
-          display: none;
-        }
       }
     }
 
@@ -95,10 +120,6 @@ body#checkout {
         .done {
           display: inline-block;
           color: $secondary-color;
-        }
-
-        .step-number {
-          display: none;
         }
 
         .step-edit {
@@ -161,29 +182,272 @@ body#checkout {
 
   margin-top: 0;
 
+  .header-nav .container {
+    margin-bottom: 50px;
+  }
+
+  #mobile_top_menu_wrapper {
+    display: none;
+  }
+
   .-current {
     margin-bottom: 30px;
-    margin-top: 20px;
+    margin-top: 0;
+  }
 
+  .checkout-topbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 20px;
+    column-gap: 16px;
+    row-gap: 12px;
 
-    .progress-container {
-      width: 100%;
-      max-width: 480px;
-      height: 6px;
-      background-color: #f6f2eb;
-      border-radius: 3px;
-      margin-top: 20px;
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 30px;
+    .checkout-progress {
+      flex: 1 1 280px;
+      min-width: 0;
+      margin: 0;
+      padding: 0;
     }
 
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background-color: $secondary-color;
-      transition: width 0.5s ease-in-out;
-      border-radius: 3px;
+    .exitCart {
+      margin-bottom: 0;
+      margin-top: 8px;
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    @media (min-width: 992px) {
+      flex-wrap: nowrap;
+
+      .checkout-progress {
+        flex: 1 1 auto;
+      }
+    }
+  }
+
+  .checkout-progress {
+    width: 100%;
+    margin: 0 0 28px;
+    padding: 0 8px;
+
+    &__list {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      position: relative;
+      gap: 8px;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 18px;
+        left: 8%;
+        right: 8%;
+        height: 1px;
+        background: #d9d9d9;
+        z-index: 0;
+      }
+    }
+
+    &__item {
+      flex: 1;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 180px;
+    }
+
+    &__btn {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      background: none;
+      border: 0;
+      padding: 0;
+      color: #6c6c6c;
+      cursor: default;
+      font: inherit;
+      text-align: center;
+      max-width: 100%;
+    }
+
+    &__icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #fff;
+      color: inherit;
+    }
+
+    &__label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.25;
+      color: inherit;
+    }
+
+    &__index {
+      display: block;
+      font-weight: 600;
+    }
+
+    &__name {
+      display: block;
+      font-weight: 500;
+    }
+
+    &__item.-reachable .checkout-progress__btn {
+      cursor: pointer;
+
+      &:hover {
+        color: $primary-color;
+      }
+    }
+
+    &__item.-complete .checkout-progress__btn,
+    &__item.-active .checkout-progress__btn {
+      color: $black;
+    }
+
+    &__item.-active .checkout-progress__label {
+      font-weight: 700;
+    }
+
+    &__item.-active .checkout-progress__name {
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    &__item.-unreachable .checkout-progress__btn {
+      opacity: 0.55;
+    }
+
+    @media (max-width: 767px) {
+      margin-bottom: 20px;
+      padding: 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+
+      &__list {
+        min-width: 520px;
+        gap: 4px;
+
+        &::before {
+          left: 40px;
+          right: 40px;
+        }
+      }
+
+      &__label {
+        font-size: 11px;
+      }
+
+      &__icon {
+        width: 32px;
+        height: 32px;
+
+        svg {
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+  }
+
+  .personal-info-logged {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px 32px;
+    max-width: 520px;
+
+    .identity,
+    .identity-logout {
+      color: $black;
+    }
+
+    .identity a,
+    .identity-logout a {
+      color: $primary-color;
+      font-weight: 700;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+        color: $primary-color;
+      }
+    }
+
+    &__action .continue {
+      border-radius: 999px;
+      padding: 14px 28px;
+      white-space: nowrap;
+      background-color: $primary-color;
+      border-color: $primary-color;
+    }
+  }
+
+  .account-switch a {
+    color: $primary-color !important;
+
+    &:hover {
+      color: $primary-color !important;
+    }
+  }
+
+  .checkout-progress__btn:disabled {
+    opacity: 1;
+    cursor: default;
+  }
+
+  .exitCart {
+    margin-bottom: 5px;
+    font-size: 12px;
+
+    svg {
+      max-width: 15px;
+    }
+  }
+
+  #confirmModal .modal-dialog {
+    margin: 50px auto;
+  }
+
+  .collapse-toggle,
+  .chevron-toggle {
+    cursor: pointer;
+  }
+
+  .chevron-toggle {
+    transition: transform 0.3s;
+  }
+
+  @include media-breakpoint-up(lg) {
+    .cart-grid-body {
+      flex: 0 1 560px;
+      max-width: 560px;
+    }
+
+    .cart-grid-right {
+      flex: 0 0 340px;
+      max-width: 340px;
+      margin-left: auto;
     }
   }
 
@@ -263,12 +527,23 @@ body#checkout {
 
   .cart-grid {
     margin-bottom: 5rem;
+    flex-wrap: wrap;
+
+    .checkout-topbar {
+      flex: 0 0 100%;
+      width: 100%;
+      order: 0;
+    }
     
     // En mobile uniquement, réorganiser l'ordre
     @media (max-width: 991px) {
       display: flex;
       flex-direction: column;
       
+      .checkout-topbar {
+        order: 0;
+      }
+
       .cart-grid-body {
         order: 2; // Les étapes de commande en deuxième position
       }
@@ -413,9 +688,9 @@ body#checkout {
 
   .checkout-step {
     &:not(.js-current-step) {
-      background-color: $sand-light-color;
-      padding: 20px;
-      border-radius: 4px;
+      background-color: transparent;
+      padding: 0;
+      border-radius: 0;
     }
   }
 
