@@ -120,6 +120,12 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
             $this->pack_height = true;
             $this->hauteur = (float) Tools::getValue('quantity_hauteur');
         }
+        if ($this->pack_height) {
+            AdvancedPack::applyFrontHeightFilterForPack($this->idPack, $this->hauteur);
+        } elseif (AdvancedPack::getPackHeightChoose($this->idPack)) {
+            AdvancedPack::applyFrontHeightFilterForPack($this->idPack);
+        }
+        AdvancedPack::fixPackAttributesListForHeightFilter($this->idPack, $this->idProductAttributeList);
 
         if (Tools::getIsset('productPackQuantityList')) {
             $tmp_productPackQuantityList = (array)Tools::getValue('productPackQuantityList');

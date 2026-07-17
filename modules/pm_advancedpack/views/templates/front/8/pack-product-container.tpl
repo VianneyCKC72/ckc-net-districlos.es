@@ -1,4 +1,5 @@
 {foreach from=$productsPackUnique item=productPack name=productPack_list}
+    {if !empty($productPack.attributes.groups)}
     <div class="row mb-5">
         <div class="col-md-2 position-relative d-flex">
             {assign var=productPackImageIds value="`$productPack.id_product`-`$productPack.image.id_image`"}
@@ -11,6 +12,13 @@
         </div>
         <div class="col-md-10 content-kit-description">
             <h3 class="h5 text-uppercase fs-16">{$productPack.presentation.name}</h3>
+            {if !empty($productPack.attributes.groups)}
+                <p class="mb-2 text-muted ap5-kit-combination-label">
+                    {foreach from=$productPack.attributes.groups item=group name=ap5KitAttrGroups}
+                        {if isset($group.default) && isset($group.attributes[$group.default])}{$group.attributes[$group.default].name|escape:'html':'UTF-8'}{if !$smarty.foreach.ap5KitAttrGroups.last}, {/if}{/if}
+                    {/foreach}
+                </p>
+            {/if}
             <div class="product-description">{$productPack.presentation.description_short nofilter}</div>
             <div class="mt-10">
                 <a class="btn btn-primary add_to_cart" href="{$productPack.presentation.link}">Voir le produit</a>
@@ -20,4 +28,5 @@
             {/block}
         </div>
     </div>
+    {/if}
 {/foreach}

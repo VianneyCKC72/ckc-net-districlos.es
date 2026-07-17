@@ -304,6 +304,19 @@ function ap5_initNewPackFields() {
 		ap5_packCombinationDiscountUpdated($(this));
 	});
 
+	function ap5_toggleHeightImpactColumn(idProductPack) {
+		var enabled = $('#ap5_height_impact-' + idProductPack).is(':checked');
+		$('table#ap5-pack-combination-table-' + idProductPack + ' .ap5_heightImpactCell').toggleClass('ap5_inputDisabled', !enabled);
+		$('table#ap5-pack-combination-table-' + idProductPack + ' select.ap5_combinationHeight').prop('disabled', !enabled);
+	}
+	$(document).on('change', 'input.ap5_height_impact', function() {
+		ap5_toggleHeightImpactColumn($(this).attr('data-id-product-pack'));
+		ap5_packUpdated(false);
+	});
+	$('input.ap5_height_impact').each(function() {
+		ap5_toggleHeightImpactColumn($(this).attr('data-id-product-pack'));
+	});
+
 	$(document).on('click', 'tr.ap5_combinationsContainer td.ap5_discountCell', function() {
 		if ($(this).attr('data-id-product-pack')) {
 			if (!$('#ap5_combinationDiscount-' + $(this).attr('data-id-product-pack')).is(':checked')) {
@@ -421,12 +434,16 @@ function ap5_addNewPackLine(productId) {
 		url: ap5_updateUrl,
 		data: {
 			addPackLine: 1,
-			productId: productId
+			productId: productId,
+			id_product: $('#form_id_product').val() || $('input[name="id_product"]').val()
 		},
 		cache: false,
 		success: function(jsonData, textStatus, jqXHR) {
 			if (jsonData != undefined && jsonData.html != undefined) {
 				$('#ap5-pack-content-table>tbody').append(jsonData.html);
+				$('#ap5-pack-content-table>tbody input.ap5_height_impact').each(function() {
+					ap5_toggleHeightImpactColumn($(this).attr('data-id-product-pack'));
+				});
 				// Drag & Drop for ordering pack content
 				ap5_makeTableDnD();
 				// Set new layout settings & fields values

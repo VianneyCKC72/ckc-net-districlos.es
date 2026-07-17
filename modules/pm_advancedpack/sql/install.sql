@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `PREFIX_pm_advancedpack_products` (
   `reduction_amount` decimal(20,6) unsigned DEFAULT '0.000000',
   `reduction_type` enum('amount','percentage') DEFAULT NULL,
   `exclusive` tinyint(3) unsigned DEFAULT '0',
+  `height_impact` tinyint(1) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id_product_pack`),
   INDEX `id_pack` (`id_pack`),
   INDEX `id_product` (`id_product`),
@@ -52,6 +53,7 @@ CREATE TABLE IF NOT EXISTS `PREFIX_pm_advancedpack_products_attributes` (
   `id_product_attribute` int(10) unsigned NOT NULL,
   `reduction_amount` decimal(20,6) unsigned DEFAULT '0.000000',
   `reduction_type` enum('amount','percentage') DEFAULT NULL,
+  `height_value` text NULL DEFAULT NULL,
   PRIMARY KEY (`id_product_pack`, `id_product_attribute`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
