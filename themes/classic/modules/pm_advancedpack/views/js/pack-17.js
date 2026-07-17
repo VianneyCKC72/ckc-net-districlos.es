@@ -164,12 +164,7 @@ var ap5Plugin = {
                 customQties = '';
             }
 
-            if ($('#quantity_ml').length) {
-                var mlValue = parseInt($('#quantity_ml').val());
-                ml = (isNaN(mlValue) || mlValue <= 0) ? 1 : mlValue;
-            } else {
-                ml = 0;
-            }
+            var packDimensions = ap5GetPackDimensionValues();
 
 $.ajax({
                 type: 'POST',
@@ -185,7 +180,8 @@ $.ajax({
                     id_accesories_attributes: idAccesoriesAttributes,
                     custom_qty: customQties,
 ajax: true,
-                    quantity_ml: ml
+                    quantity_ml: packDimensions.ml,
+                    quantity_hauteur: packDimensions.hauteur
                 },
                 dataType: 'json',
                 cache: false,
@@ -448,7 +444,6 @@ ajax: true,
         var productPackChoice = [];
         var productPackQuantityList = [];
         let attributeChanged = null;
-        var ml = 0;
 
         $('.ap5-attributes').each(function (index, element) {
             id_product_pack = $(this).attr('data-id-product-pack');
@@ -466,12 +461,7 @@ ajax: true,
             productPackQuantity = { idProductPack: id_product_pack, quantity: $(this).val() };
             productPackQuantityList.push(productPackQuantity);
         });
-        if ($('#quantity_ml').length) {
-            var mlValue = parseInt($('#quantity_ml').val());
-            ml = (isNaN(mlValue) || mlValue <= 0) ? 1 : mlValue;
-        } else {
-            ml = 0;
-        }
+        var packDimensions = ap5GetPackDimensionValues();
 
         var qty = parseInt($('input#quantity_wanted').val()) || 1;
         if (isNaN(qty) || qty <= 0) { qty = 1; }
@@ -487,7 +477,8 @@ ajax: true,
                 qty: qty,
                 fromQuickView: (typeof(ap5Plugin.fromQuickView) != 'undefined' && ap5Plugin.fromQuickView ? 1 : 0),
                 token: prestashop.static_token,
-                quantity_ml: ml
+                quantity_ml: packDimensions.ml,
+                quantity_hauteur: packDimensions.hauteur
             },
             dataType: 'json',
             cache: false,
@@ -646,41 +637,81 @@ document.addEventListener('click', function(e) {
     }
     var pm_ap5_id_product_attribute_list = $('#idCombination').val();
 
-    if (typeof ap5ValidateMlField === 'function' && !ap5ValidateMlField()) {
+    if (typeof ap5ValidatePackDimensionFields === 'function' && !ap5ValidatePackDimensionFields()) {
         return;
     }
 
     ap5Plugin.addPackToCart(pm_ap5_id_pack, pm_ap5_id_product_attribute_list, $('form.ap5-buy-block'));
 }, true);
 
-function ap5ValidateMlField() {
-    var $mlField = $('#quantity_ml');
-    if (!$mlField.length) {
+function ap5GetPackDimensionValues() {
+    var ml = 0;
+    var hauteur = 0;
+
+    if ($('#quantity_ml').length) {
+        var mlValue = parseInt($('#quantity_ml').val());
+        ml = (isNaN(mlValue) || mlValue <= 0) ? 1 : mlValue;
+    }
+    if ($('#quantity_hauteur').length) {
+        var hauteurValue = parseFloat($('#quantity_hauteur').val());
+        hauteur = (!isNaN(hauteurValue) && hauteurValue >= 0) ? hauteurValue : 0;
+    }
+
+    return { ml: ml, hauteur: hauteur };
+}
+
+function ap5ValidatePackDimensionField($field, $error, skipFocus) {
+    if (!$field.length) {
         return true;
     }
 
-    var rawValue = ($mlField.val() || '').toString().trim();
+    var rawValue = ($field.val() || '').toString().trim();
     var numericValue = parseFloat(rawValue);
-    var isValid = rawValue !== '' && !isNaN(numericValue) && numericValue > 0;
-    var $error = $('#quantity_ml_error');
+    var isHeightField = $field.attr('id') === 'quantity_hauteur';
+    var isValid = rawValue !== '' && !isNaN(numericValue) && (isHeightField ? numericValue >= 0 : numericValue > 0);
 
     if (isValid) {
-        $mlField.removeClass('ap5-ml-invalid');
-        $error.removeClass('ap5-ml-error-visible');
+        $field.removeClass('ap5-ml-invalid');
+        if ($error && $error.length) {
+            $error.removeClass('ap5-ml-error-visible');
+        }
         return true;
     }
 
-    $mlField.addClass('ap5-ml-invalid');
-    $error.addClass('ap5-ml-error-visible');
-    $mlField.trigger('focus');
+    $field.addClass('ap5-ml-invalid');
+    if ($error && $error.length) {
+        $error.addClass('ap5-ml-error-visible');
+    }
+    if (!skipFocus) {
+        $field.trigger('focus');
+    }
     return false;
+}
+
+function ap5ValidatePackDimensionFields() {
+    var $mlField = $('#quantity_ml');
+    var $heightField = $('#quantity_hauteur');
+    var isMlValid = ap5ValidatePackDimensionField($mlField, $('#quantity_ml_error'), true);
+    var isHeightValid = ap5ValidatePackDimensionField($heightField, $('#quantity_hauteur_error'), true);
+
+    if (!isMlValid) {
+        $mlField.trigger('focus');
+    } else if (!isHeightValid) {
+        $heightField.trigger('focus');
+    }
+
+    return isMlValid && isHeightValid;
+}
+
+function ap5ValidateMlField() {
+    return ap5ValidatePackDimensionFields();
 }
 
 // Add pack to cart
 $(document).on('submit', 'form.ap5-buy-block', function(e){
     e.preventDefault();
     e.stopImmediatePropagation();
-    if (!ap5ValidateMlField()) {
+    if (!ap5ValidatePackDimensionFields()) {
         return false;
     }
     // Handle specific bundle case
@@ -753,6 +784,13 @@ $(document).on('change blur', '#quantity_ml', function(e){
         $('#quantity_ml_error').removeClass('ap5-ml-error-visible');
     }
 
+    ap5Plugin.updatePackTable();
+});
+
+$(document).on('change', '#quantity_hauteur', function(e){
+    e.preventDefault();
+    $(this).removeClass('ap5-ml-invalid');
+    $('#quantity_hauteur_error').removeClass('ap5-ml-error-visible');
     ap5Plugin.updatePackTable();
 });
 // Quantity increment
@@ -849,16 +887,18 @@ $(document).on('submit', '.ap5-customization-form', function(e){
 });
 
 $(document).ready(function() {
-    // Initialize quantity_ml field if empty - trigger update to use default value of 1
     if ($('#quantity_ml').length) {
         var mlValue = $('#quantity_ml').val();
         if (mlValue === '' || isNaN(mlValue) || parseFloat(mlValue) <= 0) {
-            // Trigger update to ensure pack is calculated with default value of 1
-            // The field stays empty for placeholder display, but value 1 is used in calculations
             setTimeout(function() {
                 ap5Plugin.updatePackTable();
             }, 100);
         }
+    }
+    if ($('#quantity_hauteur').length && $('#quantity_hauteur').val() !== '') {
+        setTimeout(function() {
+            ap5Plugin.updatePackTable();
+        }, 100);
     }
     // Detect pack hash on page load
     if (typeof (window.location.hash) == 'string' && window.location.hash.length > 0) {
