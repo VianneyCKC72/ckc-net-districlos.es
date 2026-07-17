@@ -1273,6 +1273,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     public function hookActionGetProductPropertiesAfter($params)
     {
         if (is_array($params) && isset($params['product']) && !empty($params['product']['id_product']) && AdvancedPack::isValidPack($params['product']['id_product'])) {
+            $idPack = (int) $params['product']['id_product'];
             $useTax = (Product::getTaxCalculationMethod((int)$this->context->cookie->id_customer) != 1);
             $packQuantityList = [];
             $packExcludeList = [];
@@ -1282,40 +1283,61 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 $packExcludeList = $this->context->controller->getPackExcludeList();
                 $packAttributesList = $this->context->controller->getPackAttributesList();
             }
-            if (empty($packAttributesList) && !empty(AdvancedPack::$forcePackAttributeList[$params['product']['id_product']])) {
-                $packAttributesList = AdvancedPack::$forcePackAttributeList[$params['product']['id_product']];
+            if (empty($packAttributesList) && !empty(AdvancedPack::$forcePackAttributeList[$idPack])) {
+                $packAttributesList = AdvancedPack::$forcePackAttributeList[$idPack];
             }
-            $params['product']['price'] = AdvancedPack::getPackPrice((int)$params['product']['id_product'], true, true, true, 6, $packAttributesList, $packQuantityList, $packExcludeList, true);
-            $params['product']['price_tax_exc'] = AdvancedPack::getPackPrice((int)$params['product']['id_product'], false, true, true, 6, $packAttributesList, $packQuantityList, $packExcludeList, true);
-            $params['product']['classic_pack_price_tax_exc'] = AdvancedPack::getPackPrice((int)$params['product']['id_product'], false, false, true, 6, $packAttributesList, $packQuantityList, $packExcludeList, true);
-            $params['product']['price_without_reduction'] = AdvancedPack::getPackPrice((int)$params['product']['id_product'], $useTax, false, true, 6, $packAttributesList, $packQuantityList, $packExcludeList, true);
+
+            // Listing / fiche : aligner le prix sur la config hauteur par défaut
+            $appliedHeightFilter = false;
+            if (AdvancedPack::$frontHeightFilter === null) {
+                AdvancedPack::applyFrontHeightFilterForPack($idPack);
+                $appliedHeightFilter = true;
+            }
+            if (empty($packAttributesList)) {
+                $packContent = AdvancedPack::getPackContent($idPack, null, false);
+                if ($packContent !== false) {
+                    foreach ($packContent as $packProduct) {
+                        $packAttributesList[(int) $packProduct['id_product_pack']] = (int) $packProduct['default_id_product_attribute'];
+                    }
+                }
+            }
+            AdvancedPack::fixPackAttributesListForHeightFilter($idPack, $packAttributesList);
+
+            $params['product']['price'] = AdvancedPack::getPackPrice($idPack, true, true, true, 6, $packAttributesList, $packQuantityList, $packExcludeList, true);
+            $params['product']['price_tax_exc'] = AdvancedPack::getPackPrice($idPack, false, true, true, 6, $packAttributesList, $packQuantityList, $packExcludeList, true);
+            $params['product']['classic_pack_price_tax_exc'] = AdvancedPack::getPackPrice($idPack, false, false, true, 6, $packAttributesList, $packQuantityList, $packExcludeList, true);
+            $params['product']['price_without_reduction'] = AdvancedPack::getPackPrice($idPack, $useTax, false, true, 6, $packAttributesList, $packQuantityList, $packExcludeList, true);
             if (empty($useTax)) {
                 $params['product']['reduction'] = $params['product']['classic_pack_price_tax_exc'] - $params['product']['price_tax_exc'];
             } else {
                 $params['product']['reduction'] = $params['product']['price_without_reduction'] - $params['product']['price'];
             }
             $params['product']['orderprice'] = $params['product']['price_tax_exc'];
-            $oosMessage = AdvancedPack::getPackOosMessage((int)$params['product']['id_product'], (int)$this->context->language->id, $packAttributesList, $packExcludeList);
+            $oosMessage = AdvancedPack::getPackOosMessage($idPack, (int)$this->context->language->id, $packAttributesList, $packExcludeList);
             if ($oosMessage !== false) {
                 $params['product']['quantity'] = 0;
                 $params['product']['available_later'] = $oosMessage;
                 $params['product']['out_of_stock'] = 1;
                 $params['product']['allow_oosp'] = 1;
             } else {
-                $params['product']['quantity'] = AdvancedPack::getPackAvailableQuantity((int)$params['product']['id_product'], $packAttributesList, $packQuantityList, $packExcludeList);
+                $params['product']['quantity'] = AdvancedPack::getPackAvailableQuantity($idPack, $packAttributesList, $packQuantityList, $packExcludeList);
             }
-            if (empty($packQuantityList) && empty($params['product']['allow_oosp']) && $params['product']['quantity'] <= 0 && AdvancedPack::isPackAvailableInAtLeastCombinations((int)$params['product']['id_product'])) {
+            if (empty($packQuantityList) && empty($params['product']['allow_oosp']) && $params['product']['quantity'] <= 0 && AdvancedPack::isPackAvailableInAtLeastCombinations($idPack)) {
                 $params['product']['quantity_all_versions'] = AdvancedPack::PACK_FAKE_STOCK;
             } else {
                 $params['product']['quantity_all_versions'] = $params['product']['quantity'];
             }
             if ($params['product']['reduction'] == 0 && isset($params['product']['specific_prices']) && is_array($params['product']['specific_prices']) && isset($params['product']['specific_prices']['reduction']) && $params['product']['specific_prices']['reduction'] > 0) {
-                $params['product']['price_without_reduction'] = AdvancedPack::getPackPrice((int)$params['product']['id_product'], $useTax, false, true, 6, $packAttributesList, $packQuantityList, $packExcludeList, false);
+                $params['product']['price_without_reduction'] = AdvancedPack::getPackPrice($idPack, $useTax, false, true, 6, $packAttributesList, $packQuantityList, $packExcludeList, false);
             }
-            $params['product']['ecotax'] = AdvancedPack::getPackEcoTax((int)$params['product']['id_product']);
+            $params['product']['ecotax'] = AdvancedPack::getPackEcoTax($idPack);
             $params['product']['ecotax'] *= (1 + Tax::getProductEcotaxRate() / 100);
             $params['product']['is_ap5_bundle'] = true;
             $params['product']['pack'] = true;
+
+            if ($appliedHeightFilter) {
+                AdvancedPack::clearFrontHeightFilter();
+            }
         }
     }
     private function _assignSmartyImageTypeVars()
@@ -2401,29 +2423,42 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             $useTax = (Product::getTaxCalculationMethod((int)$this->context->cookie->id_customer) != 1);
             foreach ($params['cat_products'] as &$catProduct) {
                 if (empty($catProduct['is_ap5_bundle']) && in_array((int)$catProduct['id_product'], $idPackList)) {
-                    $catProduct['price'] = AdvancedPack::getPackPrice((int)$catProduct['id_product'], true, true, true, 6, [], [], [], true);
-                    $catProduct['price_tax_exc'] = AdvancedPack::getPackPrice((int)$catProduct['id_product'], false, true, true, 6, [], [], [], true);
-                    $catProduct['classic_pack_price_tax_exc'] = AdvancedPack::getPackPrice((int)$catProduct['id_product'], false, false, true, 6, [], [], [], true);
-                    $catProduct['price_without_reduction'] = AdvancedPack::getPackPrice((int)$catProduct['id_product'], $useTax, false, true, 6, [], [], [], true);
+                    $idPack = (int) $catProduct['id_product'];
+                    AdvancedPack::applyFrontHeightFilterForPack($idPack);
+                    $packAttributesList = [];
+                    $packContent = AdvancedPack::getPackContent($idPack, null, false);
+                    if ($packContent !== false) {
+                        foreach ($packContent as $packProduct) {
+                            $packAttributesList[(int) $packProduct['id_product_pack']] = (int) $packProduct['default_id_product_attribute'];
+                        }
+                    }
+                    AdvancedPack::fixPackAttributesListForHeightFilter($idPack, $packAttributesList);
+
+                    $catProduct['price'] = AdvancedPack::getPackPrice($idPack, true, true, true, 6, $packAttributesList, [], [], true);
+                    $catProduct['price_tax_exc'] = AdvancedPack::getPackPrice($idPack, false, true, true, 6, $packAttributesList, [], [], true);
+                    $catProduct['classic_pack_price_tax_exc'] = AdvancedPack::getPackPrice($idPack, false, false, true, 6, $packAttributesList, [], [], true);
+                    $catProduct['price_without_reduction'] = AdvancedPack::getPackPrice($idPack, $useTax, false, true, 6, $packAttributesList, [], [], true);
                     $catProduct['reduction'] = $catProduct['classic_pack_price_tax_exc'] - $catProduct['price_tax_exc'];
                     $catProduct['orderprice'] = $catProduct['price_tax_exc'];
-                    $oosMessage = AdvancedPack::getPackOosMessage((int)$catProduct['id_product'], (int)$this->context->language->id);
+
+                    $oosMessage = AdvancedPack::getPackOosMessage($idPack, (int)$this->context->language->id);
                     if ($oosMessage !== false) {
                         $catProduct['quantity'] = 0;
                         $catProduct['available_later'] = $oosMessage;
                         $catProduct['out_of_stock'] = 1;
                         $catProduct['allow_oosp'] = 1;
                     } else {
-                        $catProduct['quantity'] = AdvancedPack::getPackAvailableQuantity((int)$catProduct['id_product']);
+                        $catProduct['quantity'] = AdvancedPack::getPackAvailableQuantity($idPack, $packAttributesList);
                     }
-                    if (empty($catProduct['allow_oosp']) && $catProduct['quantity'] <= 0 && AdvancedPack::isPackAvailableInAtLeastCombinations((int)$catProduct['id_product'])) {
+                    if (empty($catProduct['allow_oosp']) && $catProduct['quantity'] <= 0 && AdvancedPack::isPackAvailableInAtLeastCombinations($idPack)) {
                         $catProduct['quantity_all_versions'] = AdvancedPack::PACK_FAKE_STOCK;
                     } else {
                         $catProduct['quantity_all_versions'] = $catProduct['quantity'];
                     }
                     if ($catProduct['reduction'] == 0 && isset($catProduct['specific_prices']) && is_array($catProduct['specific_prices']) && isset($catProduct['specific_prices']['reduction']) && $catProduct['specific_prices']['reduction'] > 0) {
-                        $catProduct['price_without_reduction'] = AdvancedPack::getPackPrice((int)$catProduct['id_product'], $useTax, false, true, 6, [], [], [], false);
+                        $catProduct['price_without_reduction'] = AdvancedPack::getPackPrice($idPack, $useTax, false, true, 6, $packAttributesList, [], [], false);
                     }
+                    AdvancedPack::clearFrontHeightFilter();
                 }
             }
             self::$actionProductListModifierProcessing = false;
