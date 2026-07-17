@@ -30,8 +30,10 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
     public $display_footer = false;
     public $display_column_left = false;
     public $display_column_right = false;
-    protected $pack_ml = null;
+    protected $pack_ml = false;
+    protected $pack_height = false;
     protected $ml = 0;
+    protected $hauteur = 0;
 
     public function init()
     {
@@ -114,6 +116,16 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
             $this->pack_ml = true;
             $this->ml = (int)Tools::getValue('quantity_ml');
         }
+        if (Tools::getIsset('quantity_hauteur') && Tools::getValue('quantity_hauteur') !== '' && (float) Tools::getValue('quantity_hauteur') >= 0) {
+            $this->pack_height = true;
+            $this->hauteur = (float) Tools::getValue('quantity_hauteur');
+        }
+        if ($this->pack_height) {
+            AdvancedPack::applyFrontHeightFilterForPack($this->idPack, $this->hauteur);
+        } elseif (AdvancedPack::getPackHeightChoose($this->idPack)) {
+            AdvancedPack::applyFrontHeightFilterForPack($this->idPack);
+        }
+        AdvancedPack::fixPackAttributesListForHeightFilter($this->idPack, $this->idProductAttributeList);
 
         if (Tools::getIsset('productPackQuantityList')) {
             $tmp_productPackQuantityList = (array)Tools::getValue('productPackQuantityList');
@@ -127,14 +139,15 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
                 }
 
                 foreach ($packProducts as $packProduct) {
-                    if ($this->pack_ml) {
+                    if ($this->pack_ml || $this->pack_height) {
                         $formula = $packProduct['formula'];
                         if ($formula) {
-                            $quantity = (int)$packProduct['quantity'];
-                            $ml = $this->ml;
-                            $formula = str_replace('[ML]', $ml, $formula);
-                            $formula = str_replace('[QUANTITY]', $quantity, $formula);
-                            $newQuantity = AdvancedPack::evaluateMathExpression($formula);
+                            $newQuantity = AdvancedPack::computePackProductQuantityFromFormula(
+                                $formula,
+                                (int)$packProduct['quantity'],
+                                $this->ml,
+                                $this->hauteur
+                            );
                             $this->productPackQuantityList[(int)$packProduct['id_product_pack']] = (int)$newQuantity;
                         }
                     }
@@ -146,19 +159,20 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
             }
         }
 
-        if ($this->pack_ml) {
+        if ($this->pack_ml || $this->pack_height) {
             $packProducts = AdvancedPack::getPackContent($this->idPack, null, false, [], $this->productPackQuantityList);
             foreach ($packProducts as $packProduct) {
                 $formula = $packProduct['formula'];
                 if ($formula) {
-                    $quantity = (int)$packProduct['quantity'];
-                    $ml = $this->ml;
-                    $formula = str_replace('[ML]', $ml, $formula);
-                    $formula = str_replace('[QUANTITY]', $quantity, $formula);
-                    $newQuantity = AdvancedPack::evaluateMathExpression($formula);
+                    $newQuantity = AdvancedPack::computePackProductQuantityFromFormula(
+                        $formula,
+                        (int)$packProduct['quantity'],
+                        $this->ml,
+                        $this->hauteur
+                    );
                     $this->productPackQuantityList[(int)$packProduct['id_product_pack']] = (int)$newQuantity;
                     $this->packHasEditedQuantity = true;
-                }else{
+                } else {
                     $this->productPackQuantityList[(int)$packProduct['id_product_pack']] = (int)$packProduct['quantity'];
                 }
             }
