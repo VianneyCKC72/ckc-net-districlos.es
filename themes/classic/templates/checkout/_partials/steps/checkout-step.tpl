@@ -36,7 +36,8 @@
         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check done">
         <path d="M20 6 9 17l-5-5" />
       </svg>
-      {$title}
+      <span class="step-title__index">étape {$position}</span>
+      <span class="step-title__text">{$title}</span>
       <span class="step-edit">
         {l s='Edit' d='Shop.Theme.Actions'}</span>
     </h1>

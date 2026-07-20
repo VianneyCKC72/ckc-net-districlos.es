@@ -38,7 +38,7 @@
           </span>
 
           <span class="checkout-progress__label">
-            <span class="checkout-progress__index">étape {$index + 1}:</span>
+            <span class="checkout-progress__index">étape {$index + 1}</span>
             <span class="checkout-progress__name">{$step.title|escape:'html':'UTF-8'}</span>
           </span>
 
@@ -114,6 +114,29 @@
       title.addEventListener('click', function () {
         setTimeout(syncCheckoutProgress, 0);
       });
+    });
+
+    document.addEventListener('click', function (e) {
+      var prevBtn = e.target.closest('.js-checkout-prev-step');
+      if (!prevBtn) {
+        return;
+      }
+      e.preventDefault();
+      var current = document.querySelector('.checkout-step.js-current-step, .checkout-step.-current');
+      if (!current) {
+        return;
+      }
+      var previous = current.previousElementSibling;
+      while (previous && (!previous.classList || !previous.classList.contains('checkout-step'))) {
+        previous = previous.previousElementSibling;
+      }
+      if (previous && previous.classList.contains('-reachable')) {
+        var prevTitle = previous.querySelector('.js-step-title');
+        if (prevTitle) {
+          prevTitle.click();
+          syncCheckoutProgress();
+        }
+      }
     });
   });
 </script>
