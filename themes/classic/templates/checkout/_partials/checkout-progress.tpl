@@ -13,13 +13,20 @@
         ]|classnames}"
         data-step="{$step.identifier|escape:'html':'UTF-8'}"
       >
+        {if $step.identifier == 'checkout-personal-information-step'}
+          {assign var='progress_label' value={l s='Informations' d='Shop.Theme.Checkout'}}
+        {elseif $step.identifier == 'checkout-delivery-step'}
+          {assign var='progress_label' value={l s='Livraison' d='Shop.Theme.Checkout'}}
+        {else}
+          {assign var='progress_label' value=$step.title}
+        {/if}
         {if $step.is_reachable}
           <button type="button"
             class="checkout-progress__btn{if !$step.is_current} js-checkout-progress-step{/if}"
             data-step-target="{$step.identifier|escape:'html':'UTF-8'}"
             {if $step.is_current}aria-current="step"{/if}
             {if $step.is_current}disabled{/if}
-            aria-label="{$step.title|escape:'html':'UTF-8'}"
+            aria-label="{$progress_label|escape:'html':'UTF-8'}"
           >
         {else}
           <span class="checkout-progress__btn">
@@ -39,7 +46,7 @@
 
           <span class="checkout-progress__label">
             <span class="checkout-progress__index">étape {$index + 1}</span>
-            <span class="checkout-progress__name">{$step.title|escape:'html':'UTF-8'}</span>
+            <span class="checkout-progress__name">{$progress_label|escape:'html':'UTF-8'}</span>
           </span>
 
         {if $step.is_reachable}

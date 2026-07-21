@@ -167,7 +167,7 @@
               </span>
             </span>
             <label class="condition-label" for="conditions_to_approve[{$condition_name}]">
-              {l s='J\'ai lu les conditions générales de vente et j\'y adhère sans réserve.' d='Shop.Theme.Checkout'}*
+              {$condition nofilter}
             </label>
           </li>
         {/foreach}

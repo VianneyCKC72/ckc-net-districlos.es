@@ -24,10 +24,10 @@
  *}
 {block name='address_selector_blocks'}
   {foreach $addresses as $address}
-    <article class="js-address-item address-item{if $address.id == $selected} selected{/if}"
+    <article class="js-address-item address-item{if $address.id == $selected} -selected{/if}"
              id="{$name|classname}-address-{$address.id}">
-      <label class="address-item__card radio-block">
-        <span class="custom-radio">
+      <label class="address-item__card">
+        <span class="custom-radio white">
           <input type="radio" name="{$name}" value="{$address.id}" {if $address.id == $selected}checked{/if}>
           <span></span>
         </span>

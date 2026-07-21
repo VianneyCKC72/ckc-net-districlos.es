@@ -37,8 +37,6 @@
       {block name='checkout_process'}
         {render file='checkout/checkout-process.tpl' ui=$checkout_process}
       {/block}
-      {* Emplacement pour le bloc stock en mobile (après les étapes) *}
-      <div class="cart-grid-stock-mobile"></div>
     </div>
     <div class="cart-grid-right">
       {block name='cart_summary'}
@@ -47,6 +45,8 @@
       {hook h='displayReassurance'}
       {hook h='displayStockCheckout'}
     </div>
+    {* Stock mobile : sous le récap (order CSS) *}
+    <div class="cart-grid-stock-mobile"></div>
     {include file='checkout/_partials/alert-exit-cart.tpl'}
   </section>
 {/block}
