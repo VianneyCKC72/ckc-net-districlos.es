@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `PREFIX_pm_advancedpack` (
   `allow_remove_product` tinyint(3) unsigned DEFAULT 0,
   `auto_choose` tinyint(3) unsigned DEFAULT 0,
   `ml_choose` tinyint(3) unsigned DEFAULT 0,
+  `ml_discount_tiers` text NULL DEFAULT NULL,
   `height_choose` tinyint(3) unsigned DEFAULT 0,
   `height_values` text NULL DEFAULT NULL,
   `is_bundle` tinyint(1) unsigned DEFAULT 0,

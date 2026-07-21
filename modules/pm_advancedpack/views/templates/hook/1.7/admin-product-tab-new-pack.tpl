@@ -34,6 +34,12 @@
 								</label>
 							</div>
 							<div class="radio">
+								<label for="ap5_price_rules_5">
+									<input type="radio" id="ap5_price_rules_5" name="ap5_price_rules" class="ap5_price_rules" value="5"{if $packPriceRules == 5} checked="checked"{/if} />
+									Appliquer une remise globale par tranche de mètres linéaires
+								</label>
+							</div>
+							<div class="radio">
 								<label for="ap5_price_rules_2">
 									<input type="radio" id="ap5_price_rules_2" name="ap5_price_rules" class="ap5_price_rules" value="2"{if $packPriceRules == 2} checked="checked"{/if} />
 									{l s='Apply a custom discount by product' mod='pm_advancedpack'}
@@ -66,6 +72,28 @@
 										</td>
 									</tr>
 								</table>
+							</div>
+
+							<div id="ap5_price_rules_5_configuration" class="ap5-admin-hide hide clearfix">
+								<label class="control-label">Tranches de mètres linéaires</label>
+								<div id="ap5-ml-discount-tiers-list" style="margin-top:8px;">
+									{if isset($packMlDiscountTiers) && $packMlDiscountTiers|@count > 0}
+										{foreach from=$packMlDiscountTiers item=tier key=tierKey}
+											<div class="ap5-ml-discount-tier-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+												<span>De</span>
+												<input type="number" step="0.01" min="0" class="form-control ap5_ml_tier_from" name="ap5_ml_discount_tiers[{$tierKey}][from]" value="{$tier.from|escape:'html':'UTF-8'}" style="width:90px;" placeholder="0" />
+												<span>à</span>
+												<input type="number" step="0.01" min="0" class="form-control ap5_ml_tier_to" name="ap5_ml_discount_tiers[{$tierKey}][to]" value="{if $tier.to !== null}{$tier.to|escape:'html':'UTF-8'}{/if}" style="width:90px;" placeholder="∞" title="Laisser vide = pas de plafond" />
+												<span>ML =</span>
+												<input type="number" step="0.01" min="0" max="100" class="form-control ap5_ml_tier_percent" name="ap5_ml_discount_tiers[{$tierKey}][percent]" value="{$tier.percent|escape:'html':'UTF-8'}" style="width:90px;" placeholder="%" />
+												<span>%</span>
+												<button type="button" class="btn btn-danger ap5-remove-ml-discount-tier">&times;</button>
+											</div>
+										{/foreach}
+									{/if}
+								</div>
+								<button type="button" class="btn btn-default" id="ap5-add-ml-discount-tier">Ajouter une tranche</button>
+								<p class="help-block">Exemple : 0–15 = 20 %, 16–25 = 30 %, 26–38 = 40 %. Champ « à » vide = pas de plafond.</p>
 							</div>
 
 							<div id="ap5_price_rules_3_configuration" class="ap5-admin-hide hide clearfix">

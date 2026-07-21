@@ -301,6 +301,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             ['pm_advancedpack_cart_products', 'cleaned', 'tinyint(3) unsigned DEFAULT 0', 'customization_infos'],
             ['pm_advancedpack', 'is_bundle', 'tinyint(1) unsigned DEFAULT 0'],
             ['pm_advancedpack', 'bundle_datas', 'text'],
+            ['pm_advancedpack', 'ml_discount_tiers', 'text NULL DEFAULT NULL', 'ml_choose'],
         ];
         foreach ($columnsToAdd as $columnInfos) {
             $this->_columnExists($columnInfos[0], $columnInfos[1], true, $columnInfos[2], isset($columnInfos[3]) ? $columnInfos[3] : false);
@@ -367,6 +368,23 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             $packSettings['heightValues'] = AdvancedPack::normalizePackHeightValues(
                 isset($productFormValues['ap5_height_values']) ? $productFormValues['ap5_height_values'] : []
             );
+
+            // Simulation BO : 1re tranche ML pour prévisualiser
+            if (isset($productFormValues['ap5_price_rules']) && (int) $productFormValues['ap5_price_rules'] === 5) {
+                $simTiers = AdvancedPack::normalizePackMlDiscountTiers(
+                    isset($productFormValues['ap5_ml_discount_tiers']) ? $productFormValues['ap5_ml_discount_tiers'] : []
+                );
+                AdvancedPack::$forceMlDiscountTiers = $simTiers;
+                if (count($simTiers)) {
+                    $previewMl = $simTiers[0]['to'] !== null ? $simTiers[0]['to'] : $simTiers[0]['from'];
+                    AdvancedPack::setFrontMl($previewMl);
+                } else {
+                    AdvancedPack::clearFrontMl();
+                }
+            } else {
+                AdvancedPack::$forceMlDiscountTiers = [];
+                AdvancedPack::clearFrontMl();
+            }
 
             if (!isset($productFormValues['ap5_productList'])) {
                 $productFormValues['ap5_productList'] = [];
@@ -609,6 +627,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                     'allow_remove_product' => 0,
                     'auto_choose' => 0,
                     'ml_choose' => 0,
+                    'ml_discount_tiers' => json_encode([]),
                     'height_choose' => 0,
                     'height_values' => json_encode([])
                 ], true);
@@ -2509,7 +2528,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             if (Tools::getIsset('ap5_productList') && self::_isFilledArray(Tools::getValue('ap5_productList'))) {
                 $packInformations = [];
                 $packPositions = [];
-                $packSettings = ['fixedPrice' => null, 'allowRemoveProduct' => false, 'autoChoose' => false, 'mlChoose' => false, 'heightChoose' => false, 'heightValues' => []];
+                $packSettings = ['fixedPrice' => null, 'allowRemoveProduct' => false, 'autoChoose' => false, 'mlChoose' => false, 'mlDiscountTiers' => [], 'heightChoose' => false, 'heightValues' => []];
                 $hasAlwaysUseReducEntries = true;
                 if (Tools::getIsset('ap5_pack_positions') && Tools::getValue('ap5_pack_positions')) {
                     $packPositions = explode(',', Tools::getValue('ap5_pack_positions'));
@@ -2571,11 +2590,19 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                     $hasAlwaysUseReducEntries &= $packInformations[$idProductPack]['use_reduc'];
                 }
 
-                // Price rule #1 (global percentage): store per shop (id_pack, id_shop) and keep
-                // pm_advancedpack_products clean from a shared value.
+                // Price rule #1 / #5 (global percentage / ML tiers): store per shop
                 $idShop = (int) $this->context->shop->id;
-                if ((int) Tools::getValue('ap5_price_rules') === 1) {
-                    $globalDiscountPct = (float) str_replace(',', '.', (string) Tools::getValue('ap5_global_percentage_discount'));
+                $priceRules = (int) Tools::getValue('ap5_price_rules');
+                $mlDiscountTiers = [];
+                if ($priceRules === 1 || $priceRules === 5) {
+                    if ($priceRules === 5) {
+                        $mlDiscountTiers = AdvancedPack::normalizePackMlDiscountTiers(Tools::getValue('ap5_ml_discount_tiers', []));
+                        $globalDiscountPct = count($mlDiscountTiers)
+                            ? ((float) $mlDiscountTiers[0]['amount'] * 100)
+                            : 0;
+                    } else {
+                        $globalDiscountPct = (float) str_replace(',', '.', (string) Tools::getValue('ap5_global_percentage_discount'));
+                    }
                     $reductionAmount = $globalDiscountPct / 100;
 
                     Db::getInstance()->execute(
@@ -2600,6 +2627,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
 
                 $packSettings['autoChoose'] = (bool)Tools::getValue('ap5_auto_choose');
                 $packSettings['mlChoose'] = (bool)Tools::getValue('ap5_ml_choose');
+                $packSettings['mlDiscountTiers'] = $mlDiscountTiers;
                 $packSettings['heightChoose'] = (bool)Tools::getValue('ap5_height_choose');
                 $packSettings['heightValues'] = AdvancedPack::normalizePackHeightValues(Tools::getValue('ap5_height_values', []));
 
@@ -3025,15 +3053,20 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             }
         }
 
-        // Override price rule #1 from per-shop table (pm_advancedpack_pack_shop_discount)
+        // Override price rule #1 / #5 from per-shop table + ML tiers
+        $packMlDiscountTiers = [];
         if (Validate::isLoadedObject($product) && AdvancedPack::isValidPack($product->id)) {
+            $packMlDiscountTiers = AdvancedPack::getPackMlDiscountTiers($product->id);
             $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
                 'SELECT `reduction_type`, `reduction_amount`
                  FROM `' . _DB_PREFIX_ . 'pm_advancedpack_pack_shop_discount`
                  WHERE `id_pack`=' . (int) $product->id . ' AND `id_shop`=' . (int) $this->context->shop->id
             );
 
-            if (!empty($row) && $row['reduction_type'] === 'percentage' && (float) $row['reduction_amount'] > 0) {
+            if (count($packMlDiscountTiers)) {
+                $packPriceRules = 5;
+                $reductionPercentageTable = [(float) $packMlDiscountTiers[0]['amount']];
+            } elseif (!empty($row) && $row['reduction_type'] === 'percentage' && (float) $row['reduction_amount'] > 0) {
                 $packPriceRules = 1;
                 $reductionPercentageTable = [(float) $row['reduction_amount']];
             }
@@ -3070,6 +3103,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             'packAllowRemoveProduct' => (Validate::isLoadedObject($product) && AdvancedPack::isValidPack($product->id) && AdvancedPack::getPackAllowRemoveProduct($product->id) && $packPriceRules == 4 && $hasAlwaysUseReducEntries && count($packContent) >= 2),
             'packAutoChoose' => AdvancedPack::getPackAutoChoose($product->id),
             'packMlChoose' => AdvancedPack::getPackMlChoose($product->id),
+            'packMlDiscountTiers' => isset($packMlDiscountTiers) ? $packMlDiscountTiers : AdvancedPack::getPackMlDiscountTiers($product->id),
             'packHeightChoose' => AdvancedPack::getPackHeightChoose($product->id),
             'packHeightValues' => AdvancedPack::getPackHeightValues($product->id),
             'packCheckAllUseReduc' => $hasAlwaysUseReducEntries,
@@ -3518,6 +3552,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             'bundleDatas' => $bundleDatas,
             'autoChoose' => false,
             'mlChoose' => false,
+            'mlDiscountTiers' => [],
             'heightChoose' => false,
             'heightValues' => []
         ];

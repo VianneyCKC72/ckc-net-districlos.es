@@ -115,6 +115,7 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
         if (Tools::getIsset('quantity_ml') && (int)Tools::getValue('quantity_ml') > 0) {
             $this->pack_ml = true;
             $this->ml = (int)Tools::getValue('quantity_ml');
+            AdvancedPack::setFrontMl($this->ml);
         }
         if (Tools::getIsset('quantity_hauteur') && Tools::getValue('quantity_hauteur') !== '' && (float) Tools::getValue('quantity_hauteur') >= 0) {
             $this->pack_height = true;

@@ -28,6 +28,8 @@ class AdvancedPack extends Product
     public static $forcePackAttributeList = [];
     public static $forceUseOfAnotherContext = false;
     public static $frontHeightFilter = null;
+    public static $frontMl = null;
+    public static $forceMlDiscountTiers = null;
     public static function getPriceStaticPack(
         $id_product,
         $usetax = true,
@@ -224,8 +226,12 @@ class AdvancedPack extends Product
         if ($withFrontDatas && self::$frontHeightFilter !== null) {
             $heightFilterSuffix = '_hf_' . (int) self::$frontHeightFilter['id_pack'] . '_' . (float) self::$frontHeightFilter['formula_value'];
         }
-        $cacheId = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idShop . (int)$idProductAttribute . (int)$withFrontDatas . serialize($attributesList) . serialize($quantityList) . $heightFilterSuffix, true);
-        $cacheIdWithoutFront = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idShop . (int)$idProductAttribute . serialize($quantityList));
+        $mlDiscountSuffix = '';
+        if (count(self::getPackMlDiscountTiers($idPack)) > 0) {
+            $mlDiscountSuffix = '_mlt_' . (self::$frontMl !== null ? (float) self::$frontMl : 'none');
+        }
+        $cacheId = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idShop . (int)$idProductAttribute . (int)$withFrontDatas . serialize($attributesList) . serialize($quantityList) . $heightFilterSuffix . $mlDiscountSuffix, true);
+        $cacheIdWithoutFront = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$idShop . (int)$idProductAttribute . serialize($quantityList) . $mlDiscountSuffix);
 
         if (!self::isInCache($cacheId)) {
             if (!self::isInCache($cacheIdWithoutFront)) {
@@ -273,6 +279,7 @@ class AdvancedPack extends Product
                         }
 
                         // Apply global per-shop reduction in memory (keeps pm_advancedpack_products multi-shop safe)
+                        // Base amount only — ML step is applied later in getPackPriceTable.
                         if (
                             $globalReduction
                             && $globalReduction['reduction_type'] === 'percentage'
@@ -483,7 +490,7 @@ class AdvancedPack extends Product
         } elseif (!$packIdTaxRulesGroup && Validate::isLoadedObject(self::getContext()->customer) && self::getContext()->customer->id != self::PACK_FAKE_CUSTOMER_ID) {
             $excludeVATCase = (Product::getTaxCalculationMethod(self::getContext()->customer->id) == 0);
         }
-        $cacheId = self::getPMCacheId((int)self::$usePackReductionReduction . __METHOD__ . json_encode($packContent) . (float)$packFixedPrice . (int)$packIdTaxRulesGroup . (int)$useTax . (int)$excludeVATCase . (int)$includeEcoTax . (int)$useGroupReduction . serialize($attributesList), true);
+        $cacheId = self::getPMCacheId((int)self::$usePackReductionReduction . __METHOD__ . json_encode($packContent) . (float)$packFixedPrice . (int)$packIdTaxRulesGroup . (int)$useTax . (int)$excludeVATCase . (int)$includeEcoTax . (int)$useGroupReduction . serialize($attributesList) . (self::$frontMl !== null ? (float) self::$frontMl : 'none'), true);
         if (self::$forceUseOfAnotherContext || !self::isInCache($cacheId)) {
             $groupReduction = Group::getReductionByIdGroup($currentIdGroup);
             $totalClassicPriceWithoutTaxes = $totalClassicPriceWithTaxes = $totalEcoTax = 0;
@@ -577,6 +584,8 @@ class AdvancedPack extends Product
                                 $packReductionAmount = (float) $row['reduction_amount'];
                             }
                         }
+                        $packReductionAmount = self::applyMlDiscountTiersToAmount($idPack, $packReductionAmount);
+                        $packProduct['reduction_amount'] = $packReductionAmount;
                         $productPackPrice *= (1 - $packReductionAmount);
                         $productPackPriceWt *= (1 - $packReductionAmount);
                     }
@@ -693,7 +702,11 @@ class AdvancedPack extends Product
     public static function getPackPrice($idPack, $useTax = true, $usePackReduction = true, $includeEcoTax = true, $priceDisplayPrecision = 6, $attributesList = [], $quantityList = [], $packExcludeList = [], $useGroupReduction = false)
     {
         self::$usePackReductionReduction = $usePackReduction;
-        $cacheId = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$useTax . (int)$usePackReduction . (int)$includeEcoTax . (int)$priceDisplayPrecision . serialize($attributesList) . serialize($quantityList) . serialize($packExcludeList) . (int)$useGroupReduction, true);
+        $mlCacheSuffix = '';
+        if (count(self::getPackMlDiscountTiers($idPack)) > 0) {
+            $mlCacheSuffix = '_mlt_' . (self::$frontMl !== null ? (float) self::$frontMl : 'none');
+        }
+        $cacheId = self::getPMCacheId(__METHOD__ . (int)$idPack . (int)$useTax . (int)$usePackReduction . (int)$includeEcoTax . (int)$priceDisplayPrecision . serialize($attributesList) . serialize($quantityList) . serialize($packExcludeList) . (int)$useGroupReduction . $mlCacheSuffix, true);
         if (self::$forceUseOfAnotherContext || !self::isInCache($cacheId)) {
             $packContent = self::getPackContent($idPack, null, false, $attributesList, $quantityList);
             $packFixedPrice = self::getPackFixedPrice($idPack);
@@ -841,6 +854,146 @@ class AdvancedPack extends Product
         }
         self::storeInCache($cacheId, (bool)$packAllowMlChoose);
         return (bool)$packAllowMlChoose;
+    }
+
+    public static function getPackMlDiscountTiers($idPack)
+    {
+        if (self::$forceMlDiscountTiers !== null) {
+            return self::normalizePackMlDiscountTiers(self::$forceMlDiscountTiers);
+        }
+        $cacheId = self::getPMCacheId(__METHOD__ . (int) $idPack);
+        if (!self::isInCache($cacheId)) {
+            $sql = new DbQuery();
+            $sql->select('ap.`ml_discount_tiers`');
+            $sql->from('pm_advancedpack', 'ap');
+            $sql->where('ap.`id_pack`=' . (int) $idPack);
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+            $tiers = [];
+            if ($result) {
+                $decoded = json_decode($result, true);
+                if (is_array($decoded)) {
+                    $tiers = self::normalizePackMlDiscountTiers($decoded);
+                }
+            }
+        } else {
+            return self::getFromCache($cacheId);
+        }
+        self::storeInCache($cacheId, $tiers);
+
+        return $tiers;
+    }
+
+    /**
+     * @param array $values rows with from / to / percent|amount
+     * @return array{from: float, to: float|null, amount: float}[]
+     */
+    public static function normalizePackMlDiscountTiers($values)
+    {
+        if (!is_array($values)) {
+            return [];
+        }
+        $normalized = [];
+        foreach ($values as $value) {
+            if (!is_array($value)) {
+                continue;
+            }
+            $fromRaw = isset($value['from']) ? str_replace(',', '.', trim((string) $value['from'])) : '';
+            if ($fromRaw === '' || !is_numeric($fromRaw) || (float) $fromRaw < 0) {
+                continue;
+            }
+            $from = (float) $fromRaw;
+
+            $to = null;
+            if (isset($value['to']) && $value['to'] !== '' && $value['to'] !== null) {
+                $toRaw = str_replace(',', '.', trim((string) $value['to']));
+                if ($toRaw === '' || !is_numeric($toRaw) || (float) $toRaw < 0) {
+                    continue;
+                }
+                $to = (float) $toRaw;
+                if ($to < $from) {
+                    continue;
+                }
+            }
+
+            if (isset($value['percent'])) {
+                $percentRaw = str_replace(',', '.', trim((string) $value['percent']));
+                if ($percentRaw === '' || !is_numeric($percentRaw)) {
+                    continue;
+                }
+                $amount = (float) $percentRaw / 100;
+            } elseif (isset($value['amount'])) {
+                $amountRaw = str_replace(',', '.', trim((string) $value['amount']));
+                if ($amountRaw === '' || !is_numeric($amountRaw)) {
+                    continue;
+                }
+                $amount = (float) $amountRaw;
+                if ($amount > 1) {
+                    $amount = $amount / 100;
+                }
+            } else {
+                continue;
+            }
+
+            if ($amount < 0) {
+                continue;
+            }
+            $amount = min(1.0, $amount);
+
+            $normalized[] = [
+                'from' => $from,
+                'to' => $to,
+                'amount' => $amount,
+                'percent' => round($amount * 100, 2),
+            ];
+        }
+
+        usort($normalized, function ($a, $b) {
+            if ($a['from'] === $b['from']) {
+                $aTo = $a['to'] === null ? PHP_FLOAT_MAX : $a['to'];
+                $bTo = $b['to'] === null ? PHP_FLOAT_MAX : $b['to'];
+
+                return $aTo <=> $bTo;
+            }
+
+            return $a['from'] <=> $b['from'];
+        });
+
+        return $normalized;
+    }
+
+    /**
+     * Remise par tranche ML : retourne le % (0–1) de la tranche matchée.
+     * Sans tranches configurées → $baseAmount inchangé (remise globale classique).
+     * Avec tranches mais sans ML front → 0%.
+     */
+    public static function applyMlDiscountTiersToAmount($idPack, $baseAmount)
+    {
+        $tiers = self::getPackMlDiscountTiers($idPack);
+        if (!count($tiers)) {
+            return (float) $baseAmount;
+        }
+        if (self::$frontMl === null) {
+            return 0.0;
+        }
+        $ml = (float) self::$frontMl;
+        foreach ($tiers as $tier) {
+            $toOk = $tier['to'] === null || $ml <= (float) $tier['to'];
+            if ($ml >= (float) $tier['from'] && $toOk) {
+                return (float) $tier['amount'];
+            }
+        }
+
+        return 0.0;
+    }
+
+    public static function setFrontMl($ml)
+    {
+        self::$frontMl = $ml === null ? null : (float) $ml;
+    }
+
+    public static function clearFrontMl()
+    {
+        self::$frontMl = null;
     }
 
     public static function getPackHeightChoose($idPack)
@@ -3794,7 +3947,7 @@ class AdvancedPack extends Product
         $res = true;
 
         if ($isNewPack) {
-            $res &= Db::getInstance()->insert('pm_advancedpack', ['id_pack' => $this->id, 'id_shop' => (int)self::getContext()->shop->id, 'fixed_price' => json_encode($packSettings['fixedPrice']), 'allow_remove_product' => (int)$packSettings['allowRemoveProduct'], 'auto_choose' => (int)$packSettings['autoChoose'], 'ml_choose' => (int)$packSettings['mlChoose'], 'height_choose' => (int)$packSettings['heightChoose'], 'height_values' => json_encode(isset($packSettings['heightValues']) ? $packSettings['heightValues'] : [])], true);
+            $res &= Db::getInstance()->insert('pm_advancedpack', ['id_pack' => $this->id, 'id_shop' => (int)self::getContext()->shop->id, 'fixed_price' => json_encode($packSettings['fixedPrice']), 'allow_remove_product' => (int)$packSettings['allowRemoveProduct'], 'auto_choose' => (int)$packSettings['autoChoose'], 'ml_choose' => (int)$packSettings['mlChoose'], 'ml_discount_tiers' => json_encode(isset($packSettings['mlDiscountTiers']) ? $packSettings['mlDiscountTiers'] : []), 'height_choose' => (int)$packSettings['heightChoose'], 'height_values' => json_encode(isset($packSettings['heightValues']) ? $packSettings['heightValues'] : [])], true);
         }
         if (!$isNewPack) {
             $sql = new DbQuery();
@@ -3898,6 +4051,7 @@ class AdvancedPack extends Product
             'allow_remove_product' => (int)$packSettings['allowRemoveProduct'],
             'auto_choose' => (int)$packSettings['autoChoose'],
             'ml_choose' => (int)$packSettings['mlChoose'],
+            'ml_discount_tiers' => json_encode(isset($packSettings['mlDiscountTiers']) ? $packSettings['mlDiscountTiers'] : []),
             'height_choose' => (int)$packSettings['heightChoose'],
             'height_values' => json_encode(isset($packSettings['heightValues']) ? $packSettings['heightValues'] : []),
         ];
