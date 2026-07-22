@@ -112,7 +112,7 @@ export function bindPaymentConditionsEvents(selectDefaultPaymentOption) {
         if ($(this).hasClass('disabled')) {
             return;
         }
-        // PayPal : géré en capture dans paypal-group.js (déclenche le SDK)
+        // PayPal : le clic est pris par l'overlay SDK (paypal-group.js)
         if (isPayPalPaymentSelected()) {
             return;
         }

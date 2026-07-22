@@ -1883,23 +1883,10 @@ body#checkout {
           width: 100%;
         }
 
-        // Boutons SDK PayPal : hors écran (toujours rendus pour le clic programmatique)
-        [paypal-button-container],
-        [paypal-bnpl-button-container],
-        [data-container-express-checkout],
-        [data-container-bnpl] {
-          position: fixed !important;
-          left: 0 !important;
-          bottom: 0 !important;
-          width: 220px !important;
-          height: 45px !important;
-          opacity: 0.01 !important;
-          z-index: 0 !important;
-          overflow: hidden !important;
-        }
-
+        // Conteneurs SDK : positionnés en JS par-dessus PASSER COMMANDE
         [paypal-wrong-button-message],
-        [paypal-ec-wrong-button-message] {
+        [paypal-ec-wrong-button-message],
+        [paypal-mark-container] {
           display: none !important;
         }
       }
