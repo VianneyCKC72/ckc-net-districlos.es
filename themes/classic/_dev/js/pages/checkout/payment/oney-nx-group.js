@@ -34,10 +34,10 @@ function watchMhOneyNxWidgets($group, $card10x, $card12x) {
         var done10 = relocateMhOneyNxWidget($card10x, '10x', $slot10x);
         var done12 = relocateMhOneyNxWidget($card12x, '12x', $slot12x);
 
-        if ((done10 && done12) || attempts >= 40) {
+        if ((done10 && done12) || attempts >= 60) {
             clearInterval(timer);
         }
-    }, 250);
+    }, 500);
 }
 
 export function initMhOneyNxPaymentGroup() {

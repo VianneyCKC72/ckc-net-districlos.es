@@ -39,10 +39,10 @@ function watchMhOneyLongWidgets($group, $card24x, $card36x, $card48x) {
         var done36 = relocateMhOneyNxWidget($card36x, '36x', $slot36x);
         var done48 = relocateMhOneyNxWidget($card48x, '48x', $slot48x);
 
-        if ((done24 && done36 && done48) || attempts >= 40) {
+        if ((done24 && done36 && done48) || attempts >= 60) {
             clearInterval(timer);
         }
-    }, 250);
+    }, 500);
 }
 
 export function initMhOneyLongPaymentGroup() {

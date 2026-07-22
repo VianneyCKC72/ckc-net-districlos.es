@@ -2041,7 +2041,16 @@ body#checkout {
         .oney-group__sources,
         .oney-nx-group__sources,
         .oney-long-group__sources {
-          width: 100%;
+          // Cartes sources hors écran (formulaires / radios réels conservés pour PS)
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
         }
       }
 

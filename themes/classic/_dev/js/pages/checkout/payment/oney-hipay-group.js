@@ -19,11 +19,9 @@ function findHiPayOneyCard(installments) {
 }
 
 function relocateOneyWidgetFromSource($source, role, $slot) {
-    // Flag OK seulement si le widget est réellement présent dans le slot
-    if ($slot.data('oney-widget-moved') && $slot.find('.oney-checkoutSection').length) {
+    if ($slot.data('oney-widget-ready') && $slot.find('.oney-checkoutSection').length) {
         return true;
     }
-    $slot.removeData('oney-widget-moved');
 
     var productCode = role === '3x' ? '3xcb-no-fees' : '4xcb-no-fees';
     var $container = $slot.find('#hipay-oney-' + productCode + '-widget-container');
@@ -33,17 +31,24 @@ function relocateOneyWidgetFromSource($source, role, $slot) {
     if (!$container.length) {
         $container = $source.find('[id*="hipay-oney"][id*="' + productCode + '"]').first();
     }
-    if (!$container.length || (!$container.find('.oney-checkoutSection').length && $container.is('[hidden]'))) {
+    if (!$container.length) {
         return false;
     }
 
+    // Déplacer tôt (même vide / hidden) pour que le SDK HiPay rende dans le slot visible
     $container.removeAttr('hidden');
+    $source.find('.js-payment-option-form').removeClass('ps-hidden').show();
     if (!$slot.find($container).length) {
         $container.appendTo($slot);
     }
-    $slot.find('.oney-checkoutSection__legal-notice, .oney-checkout-legal-notice').remove();
-    $slot.data('oney-widget-moved', true);
-    return true;
+
+    if ($slot.find('.oney-checkoutSection').length) {
+        $slot.find('.oney-checkoutSection__legal-notice, .oney-checkout-legal-notice').remove();
+        $slot.data('oney-widget-ready', true);
+        return true;
+    }
+
+    return false;
 }
 
 function watchOneyWidgets($group, $card3x, $card4x) {
@@ -56,10 +61,11 @@ function watchOneyWidgets($group, $card3x, $card4x) {
         var done3 = relocateOneyWidgetFromSource($card3x, '3x', $slot3x);
         var done4 = relocateOneyWidgetFromSource($card4x, '4x', $slot4x);
 
-        if ((done3 && done4) || attempts >= 40) {
+        // ~30s max (HiPay peut être lent) — sans spam SDK
+        if ((done3 && done4) || attempts >= 60) {
             clearInterval(timer);
         }
-    }, 250);
+    }, 500);
 }
 
 export function initOneyPaymentGroup() {
@@ -141,7 +147,7 @@ export function initOneyPaymentGroup() {
     $group.insertBefore($card3x);
     $group.find('.oney-group__sources').append($card3x).append($card4x);
 
-    $group.find('.--oney-source .js-payment-option-form').removeClass('ps-hidden');
+    $group.find('.--oney-source .js-payment-option-form').removeClass('ps-hidden').show();
     watchOneyWidgets($group, $card3x, $card4x);
 
     function selectOneySub(sub) {
