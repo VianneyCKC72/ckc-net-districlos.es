@@ -20,7 +20,9 @@ abstract class Module extends ModuleCore
     */
     public function installOverrides()
     {
-        if (\Softizy\Module\Scalizy\Service\ScalizyConfiguration::getInstance()->isModuleOverrideInstallationDisabled()) {
+        if (class_exists('\Softizy\Module\Scalizy\Service\ScalizyConfiguration', false)
+            && \Softizy\Module\Scalizy\Service\ScalizyConfiguration::getInstance()->isModuleOverrideInstallationDisabled()
+        ) {
             return true;
         }
         return parent::installOverrides();
@@ -32,7 +34,9 @@ abstract class Module extends ModuleCore
     */
     public function uninstallOverrides()
     {
-        if (\Softizy\Module\Scalizy\Service\ScalizyConfiguration::getInstance()->isModuleOverrideInstallationDisabled()) {
+        if (class_exists('\Softizy\Module\Scalizy\Service\ScalizyConfiguration', false)
+            && \Softizy\Module\Scalizy\Service\ScalizyConfiguration::getInstance()->isModuleOverrideInstallationDisabled()
+        ) {
             return true;
         }
         return parent::uninstallOverrides();
@@ -44,13 +48,20 @@ abstract class Module extends ModuleCore
     */
     public function addOverride($classname)
     {
-        if (\Softizy\Module\Scalizy\Service\ScalizyConfiguration::getInstance()->isModuleOverrideInstallationDisabled()) {
+        if (class_exists('\Softizy\Module\Scalizy\Service\ScalizyConfiguration', false)
+            && \Softizy\Module\Scalizy\Service\ScalizyConfiguration::getInstance()->isModuleOverrideInstallationDisabled()
+        ) {
             return true;
         }
-        \Softizy\Module\Scalizy\Install\OverrideInstaller::removeOverride($classname);
-        $result = parent::addOverride($classname);
-        \Softizy\Module\Scalizy\Install\OverrideInstaller::installOverride($classname);
-        return $result;
+        if (class_exists('\Softizy\Module\Scalizy\Install\OverrideInstaller', false)) {
+            \Softizy\Module\Scalizy\Install\OverrideInstaller::removeOverride($classname);
+            $result = parent::addOverride($classname);
+            \Softizy\Module\Scalizy\Install\OverrideInstaller::installOverride($classname);
+
+            return $result;
+        }
+
+        return parent::addOverride($classname);
     }
     /*
     * module: scalizy
@@ -59,12 +70,19 @@ abstract class Module extends ModuleCore
     */
     public function removeOverride($classname)
     {
-        if (\Softizy\Module\Scalizy\Service\ScalizyConfiguration::getInstance()->isModuleOverrideInstallationDisabled()) {
+        if (class_exists('\Softizy\Module\Scalizy\Service\ScalizyConfiguration', false)
+            && \Softizy\Module\Scalizy\Service\ScalizyConfiguration::getInstance()->isModuleOverrideInstallationDisabled()
+        ) {
             return true;
         }
-        \Softizy\Module\Scalizy\Install\OverrideInstaller::removeOverride($classname);
-        $result = parent::removeOverride($classname);
-        \Softizy\Module\Scalizy\Install\OverrideInstaller::installOverride($classname);
-        return $result;
+        if (class_exists('\Softizy\Module\Scalizy\Install\OverrideInstaller', false)) {
+            \Softizy\Module\Scalizy\Install\OverrideInstaller::removeOverride($classname);
+            $result = parent::removeOverride($classname);
+            \Softizy\Module\Scalizy\Install\OverrideInstaller::installOverride($classname);
+
+            return $result;
+        }
+
+        return parent::removeOverride($classname);
     }
 }

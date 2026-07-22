@@ -1005,26 +1005,19 @@ body.registration-pro {
   }
 }
 
-body#checkout.espace_pro{
-  section.checkout-step .step-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: auto;
-    height: 35px;
-    border-radius: 8px;
-    background-color: $pro-color;
-    color: $white;
-    font-size: 12px;
-    margin-bottom: 10px;
-    position: relative;
-    z-index: 1;
-    padding: 10px;
+body#checkout.espace_pro {
+  .checkout-progress__item.-reachable .checkout-progress__btn:hover,
+  .checkout-progress__item.-active .checkout-progress__btn,
+  .checkout-progress__item.-complete .checkout-progress__btn {
+    color: $pro-color;
   }
-  #checkout-addresses-step .address-item.selected header {
-    background-color: $pro-color;
+
+  .personal-info-logged .identity a,
+  .personal-info-logged .identity-logout a {
+    color: $pro-color;
   }
-  .-current .progress-bar {
+
+  #checkout-addresses-step .address-item.-selected header {
     background-color: $pro-color;
   }
 }
