@@ -635,7 +635,7 @@ body#checkout {
 
       &__label {
         gap: 0;
-        font-size: 10px;
+        font-size: 11px;
         line-height: 1.2;
       }
 
@@ -984,19 +984,28 @@ body#checkout {
       flex-wrap: wrap;
       gap: 12px;
 
-      @media (max-width: 1024px) {
-        flex-direction: column;
-      }
-
       .address-item {
         @extend %checkout-selectable-card;
         margin: 0;
         overflow: hidden;
-        flex: 1 1;
-        width: 100%;
+        // 2 cards max par ligne (gap 12px → moitié moins 6px)
+        flex: 0 0 calc(50% - 6px);
+        max-width: calc(50% - 6px);
+        width: calc(50% - 6px);
+        box-sizing: border-box;
 
         &.-selected .address-alias {
           color: $primary-color;
+        }
+      }
+
+      @media (max-width: 1024px) {
+        flex-direction: column;
+
+        .address-item {
+          flex: 1 1 auto;
+          max-width: 100%;
+          width: 100%;
         }
       }
 
