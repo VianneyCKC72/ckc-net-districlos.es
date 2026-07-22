@@ -988,7 +988,6 @@ body#checkout {
         @extend %checkout-selectable-card;
         margin: 0;
         overflow: hidden;
-        // 2 cards max par ligne (gap 12px → moitié moins 6px)
         flex: 0 0 calc(50% - 6px);
         max-width: calc(50% - 6px);
         width: calc(50% - 6px);
@@ -1882,6 +1881,26 @@ body#checkout {
 
         .paypal-group__sources {
           width: 100%;
+        }
+
+        // Boutons SDK PayPal : hors écran (toujours rendus pour le clic programmatique)
+        [paypal-button-container],
+        [paypal-bnpl-button-container],
+        [data-container-express-checkout],
+        [data-container-bnpl] {
+          position: fixed !important;
+          left: 0 !important;
+          bottom: 0 !important;
+          width: 220px !important;
+          height: 45px !important;
+          opacity: 0.01 !important;
+          z-index: 0 !important;
+          overflow: hidden !important;
+        }
+
+        [paypal-wrong-button-message],
+        [paypal-ec-wrong-button-message] {
+          display: none !important;
         }
       }
 

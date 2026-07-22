@@ -98,15 +98,117 @@ export function initPayPalPaymentGroup() {
     $group.insertBefore($cashCard);
     $group.find('.paypal-group__sources').append($cashCard).append($bnplCard);
 
+    /**
+     * UX Districlos : CTA unique = PASSER COMMANDE.
+     * Les boutons SDK PayPal restent dans le DOM (cachés) et sont déclenchés
+     * quand on clique sur PASSER COMMANDE.
+     */
+    function syncPayPalModuleUi() {
+        if (window.PaypalTools) {
+            if (typeof PaypalTools.hideElementTillChecked === 'function') {
+                PaypalTools.hideElementTillChecked();
+            }
+            if (typeof PaypalTools.showElementsIfChecked === 'function') {
+                PaypalTools.showElementsIfChecked();
+            }
+        }
+
+        var paypalActive = $cashInput.is(':checked') || $bnplInput.is(':checked');
+        var $conf = $('#payment-confirmation');
+
+        // Toujours afficher PASSER COMMANDE (le module PayPal le masque via visibility)
+        $conf.css('visibility', 'visible');
+        $('.js-payment-checkout-actions-clone .payment-confirmation__submit').show();
+
+        // Garder le bon conteneur SDK affiché pour le rendu PayPal, mais hors écran (CSS)
+        if ($cashInput.is(':checked')) {
+            $('[paypal-button-container]').css('display', 'block');
+            $('[paypal-bnpl-button-container]').css('display', 'none');
+        } else if ($bnplInput.is(':checked')) {
+            $('[paypal-bnpl-button-container]').css('display', 'block');
+            $('[paypal-button-container]').css('display', 'none');
+        }
+
+        $('[paypal-wrong-button-message], [paypal-ec-wrong-button-message]').hide();
+
+        if (!paypalActive) {
+            $conf.css('visibility', '');
+        }
+    }
+
+    function getActivePayPalSdkContainer() {
+        if ($bnplInput.is(':checked')) {
+            return document.querySelector('[paypal-bnpl-button-container]');
+        }
+        if ($cashInput.is(':checked')) {
+            return document.querySelector('[paypal-button-container]');
+        }
+        return null;
+    }
+
+    function clickPayPalSdkButton() {
+        var container = getActivePayPalSdkContainer();
+        if (!container) {
+            return false;
+        }
+
+        // S'assurer que le conteneur est rendu (PayPal refuse display:none)
+        container.style.display = 'block';
+
+        var target =
+            container.querySelector('iframe') ||
+            container.querySelector('.paypal-buttons') ||
+            container.querySelector('[role="link"]') ||
+            container.querySelector('[role="button"]') ||
+            container.firstElementChild;
+
+        if (!target) {
+            return false;
+        }
+
+        target.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+        if (typeof target.click === 'function') {
+            target.click();
+        }
+        return true;
+    }
+
+    function onPassOrderClick(event) {
+        var moduleName = ($('input[name="payment-option"]:checked').data('module-name') || '').toString();
+        if (moduleName !== 'paypal' && moduleName !== 'paypal_bnpl') {
+            return;
+        }
+
+        // Empêche l'alerte module « Veuillez cliquer sur le bouton PayPal »
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        var $btn = $(event.currentTarget);
+        if ($btn.hasClass('disabled') || $btn.prop('disabled')) {
+            return;
+        }
+
+        $('[paypal-wrong-button-message], [paypal-ec-wrong-button-message]').hide();
+
+        if (!clickPayPalSdkButton()) {
+            // Fallback : laisser un message discret si le SDK n'est pas prêt
+            window.alert('Le paiement PayPal n\'est pas encore prêt. Réessayez dans une seconde.');
+        }
+    }
+
     function selectPayPalSub(sub) {
         var $target = sub === 'bnpl' ? $bnplInput : $cashInput;
         if (!$target.is(':checked')) {
             $target.prop('checked', true).trigger('change');
+            if ($target[0]) {
+                $target[0].dispatchEvent(new Event('input', { bubbles: true }));
+            }
         }
         $group.find('.paypal-group__sub').removeClass('is-active');
         $group.find('.paypal-group__sub[data-paypal-sub="' + sub + '"]').addClass('is-active');
         $group.find('input[name="paypal-group-sub"][value="' + sub + '"]').prop('checked', true);
         syncPaymentCardSelection();
+        syncPayPalModuleUi();
     }
 
     $group.on('click', '.paypal-group__parent-label, .paypal-group__parent-input', function (e) {
@@ -122,11 +224,40 @@ export function initPayPalPaymentGroup() {
     // Si une option PayPal source est cochée autrement, synchroniser l'UI groupe
     $(document).on('change.paypalGroup', '#' + cashId + ', #' + bnplId, function () {
         if (!$(this).is(':checked')) {
+            syncPayPalModuleUi();
             return;
         }
         var sub = $(this).data('module-name') === 'paypal_bnpl' ? 'bnpl' : 'cash';
         $group.find('.paypal-group__sub').removeClass('is-active');
         $group.find('.paypal-group__sub[data-paypal-sub="' + sub + '"]').addClass('is-active');
         $group.find('input[name="paypal-group-sub"][value="' + sub + '"]').prop('checked', true);
+        syncPayPalModuleUi();
     });
+
+    // Capture : avant les handlers du module PayPal
+    document.addEventListener('click', function (event) {
+        var btn = event.target.closest(
+            '#payment-confirmation button, .payment-confirmation__submit, .js-payment-checkout-actions-clone .payment-confirmation__submit'
+        );
+        if (!btn) {
+            return;
+        }
+        onPassOrderClick({
+            preventDefault: function () { event.preventDefault(); },
+            stopImmediatePropagation: function () {
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+            },
+            currentTarget: btn
+        });
+    }, true);
+
+    $(document).on('paypal-after-init-shortcut-button paypal-after-init-bnpl-button', function () {
+        setTimeout(syncPayPalModuleUi, 50);
+    });
+
+    if ($cashInput.is(':checked') || $bnplInput.is(':checked')) {
+        setTimeout(syncPayPalModuleUi, 100);
+    }
+    setTimeout(syncPayPalModuleUi, 400);
 }

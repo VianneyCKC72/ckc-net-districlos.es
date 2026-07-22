@@ -7,7 +7,12 @@ export function getOriginalPaymentActions() {
         .first();
 }
 
-function syncPaymentActionsToSummary() {
+function isPayPalPaymentSelected() {
+    var moduleName = ($('input[name="payment-option"]:checked').data('module-name') || '').toString();
+    return moduleName === 'paypal' || moduleName === 'paypal_bnpl';
+}
+
+export function syncPaymentActionsToSummary() {
     var $actions = getOriginalPaymentActions();
     var $slot = $('.js-cart-summary-payment-actions');
     if (!$actions.length || !$slot.length) {
@@ -77,14 +82,16 @@ function syncPaymentActionsToSummary() {
     $slot.empty().append($clone).addClass('is-visible');
 }
 
-function syncSummaryCheckboxState() {
+export function syncSummaryCheckboxState() {
     var $actions = getOriginalPaymentActions();
     var $clone = $('.js-payment-checkout-actions-clone');
     if (!$actions.length || !$clone.length) {
         return;
     }
     var $realBtn = $actions.find('.payment-confirmation__submit');
-    $clone.find('.payment-confirmation__submit')
+    var $cloneBtn = $clone.find('.payment-confirmation__submit');
+    $cloneBtn
+        .show()
         .toggleClass('disabled', $realBtn.hasClass('disabled') || $realBtn.prop('disabled'));
     $actions.find('input[type="checkbox"]').each(function (i) {
         $clone.find('input[type="checkbox"]').eq(i).prop('checked', $(this).is(':checked'));
@@ -103,6 +110,10 @@ export function bindPaymentConditionsEvents(selectDefaultPaymentOption) {
     $(document).on('click', '.js-payment-checkout-actions-clone .payment-confirmation__submit', function (e) {
         e.preventDefault();
         if ($(this).hasClass('disabled')) {
+            return;
+        }
+        // PayPal : géré en capture dans paypal-group.js (déclenche le SDK)
+        if (isPayPalPaymentSelected()) {
             return;
         }
         var $realBtn = getOriginalPaymentActions().find('.payment-confirmation__submit');
