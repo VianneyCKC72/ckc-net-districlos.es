@@ -1,3 +1,5 @@
+import { syncApplePayWithCgv } from './apple-pay-cgv';
+
 export function getOriginalPaymentActions() {
     return $('.js-payment-checkout-actions')
         .not('.js-payment-checkout-actions-clone')
@@ -105,6 +107,7 @@ export function bindPaymentConditionsEvents(selectDefaultPaymentOption) {
         if ($original.length) {
             $original.prop('checked', $(this).is(':checked')).trigger('change');
         }
+        setTimeout(syncApplePayWithCgv, 0);
     });
 
     $(document).on('click', '.js-payment-checkout-actions-clone .payment-confirmation__submit', function (e) {

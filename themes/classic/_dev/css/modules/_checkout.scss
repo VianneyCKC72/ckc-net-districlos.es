@@ -291,6 +291,29 @@ body#checkout {
     }
   }
 
+  // Apple Pay : non cliquable tant que les CGV ne sont pas cochées
+  #apple-pay-button.apple-pay-cgv-disabled {
+    position: relative;
+    opacity: 0.45;
+    pointer-events: none !important;
+    cursor: not-allowed;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    apple-pay-button,
+    button,
+    iframe,
+    div {
+      pointer-events: none !important;
+    }
+  }
+
   #js-checkout-summary {
     margin-bottom: 20px;
 
@@ -959,6 +982,12 @@ body#checkout {
     display: flex;
     flex-direction: column;
     row-gap: 0;
+  }
+
+  // Si une modale Oney « En savoir plus » laisse un overlay fantôme,
+  // le checkout doit rester utilisable (filet CSS, le JS retire aussi le nœud).
+  .cart-grid-body {
+    visibility: visible;
   }
 
   .checkout-step {
@@ -2142,6 +2171,11 @@ body#checkout {
       max-height: 40px !important;
       margin: 0 !important;
     }
+  }
+
+  // Contre le inline style visibility:hidden du module PayPal (BNPL / Shortcut)
+  #payment-confirmation.paypal-pass-order-visible {
+    visibility: visible !important;
   }
 
   #payment-confirmation {

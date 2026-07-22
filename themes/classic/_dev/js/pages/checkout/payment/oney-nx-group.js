@@ -71,7 +71,7 @@ export function initMhOneyNxPaymentGroup() {
                     '<span class="payment-option__row">' +
                         '<span class="payment-option__text">' +
                             '<span class="payment-option__title">Payer par <strong>10x</strong> ou <strong>12x</strong> sans frais</span>' +
-                            '<span class="payment-option__desc">Avec Oney</span>' +
+                            '<span class="payment-option__desc">Avec votre carte bancaire</span>' +
                         '</span>' +
                         '<span class="payment-option__logos">' +
                             '<img src="/themes/classic/assets/img/payment/oney-logos.png" alt="Oney" loading="lazy">' +

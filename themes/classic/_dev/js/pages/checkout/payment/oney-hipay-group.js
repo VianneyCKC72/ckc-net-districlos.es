@@ -19,12 +19,17 @@ function findHiPayOneyCard(installments) {
 }
 
 function relocateOneyWidgetFromSource($source, role, $slot) {
-    if ($slot.data('oney-widget-moved')) {
+    // Flag OK seulement si le widget est réellement présent dans le slot
+    if ($slot.data('oney-widget-moved') && $slot.find('.oney-checkoutSection').length) {
         return true;
     }
+    $slot.removeData('oney-widget-moved');
 
     var productCode = role === '3x' ? '3xcb-no-fees' : '4xcb-no-fees';
-    var $container = $source.find('#hipay-oney-' + productCode + '-widget-container');
+    var $container = $slot.find('#hipay-oney-' + productCode + '-widget-container');
+    if (!$container.length) {
+        $container = $source.find('#hipay-oney-' + productCode + '-widget-container');
+    }
     if (!$container.length) {
         $container = $source.find('[id*="hipay-oney"][id*="' + productCode + '"]').first();
     }
@@ -32,7 +37,10 @@ function relocateOneyWidgetFromSource($source, role, $slot) {
         return false;
     }
 
-    $container.removeAttr('hidden').appendTo($slot);
+    $container.removeAttr('hidden');
+    if (!$slot.find($container).length) {
+        $container.appendTo($slot);
+    }
     $slot.find('.oney-checkoutSection__legal-notice, .oney-checkout-legal-notice').remove();
     $slot.data('oney-widget-moved', true);
     return true;

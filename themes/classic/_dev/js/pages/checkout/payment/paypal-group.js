@@ -103,8 +103,9 @@ export function initPayPalPaymentGroup() {
      * sur « PASSER COMMANDE » (clic réel = PayPal, pas de clic programmatique iframe).
      */
     function getPassOrderSubmit() {
-        var $clone = $('.js-payment-checkout-actions-clone .payment-confirmation__submit').filter(':visible');
-        if ($clone.length) {
+        // Préférer le clone résumé s'il est affiché (layout desktop)
+        var $clone = $('.js-payment-checkout-actions-clone .payment-confirmation__submit');
+        if ($clone.length && $clone.closest('.js-cart-summary-payment-actions').hasClass('is-visible')) {
             return $clone.first();
         }
         return $('#payment-confirmation .payment-confirmation__submit').first();
@@ -127,16 +128,40 @@ export function initPayPalPaymentGroup() {
         });
     }
 
+    /**
+     * Le module PayPal met #payment-confirmation en visibility:hidden
+     * dès qu'une option paypal/paypal_bnpl est cochée. On le force visible
+     * pour garder « PASSER COMMANDE » (l'overlay SDK se place dessus).
+     */
+    function forcePassOrderVisible(paypalActive) {
+        var $conf = $('#payment-confirmation');
+        if (paypalActive) {
+            $conf.addClass('paypal-pass-order-visible').css('visibility', 'visible');
+            $conf.find('.payment-confirmation__submit').css('visibility', 'visible').show();
+            $('.js-payment-checkout-actions-clone .payment-confirmation__submit')
+                .css('visibility', 'visible')
+                .show();
+        } else {
+            $conf.removeClass('paypal-pass-order-visible').css('visibility', '');
+            $conf.find('.payment-confirmation__submit').css('visibility', '');
+        }
+    }
+
     function placePayPalOverlay() {
         var paypalActive = $cashInput.is(':checked') || $bnplInput.is(':checked');
         var $cashBtn = $('[paypal-button-container]');
         var $bnplBtn = $('[paypal-bnpl-button-container]');
         var $submit = getPassOrderSubmit();
-        var $conf = $('#payment-confirmation');
 
-        $conf.css('visibility', paypalActive ? 'visible' : '');
-        $('.js-payment-checkout-actions-clone .payment-confirmation__submit').show();
         $('[paypal-wrong-button-message], [paypal-ec-wrong-button-message]').hide();
+
+        // Afficher les conteneurs SDK si l'option est cochée (sans rappeler
+        // hideElementTillChecked, qui re-masque PASSER COMMANDE).
+        if (window.PaypalTools && typeof PaypalTools.showElementsIfChecked === 'function') {
+            PaypalTools.showElementsIfChecked();
+        }
+
+        forcePassOrderVisible(paypalActive);
 
         if (!paypalActive || !$submit.length) {
             clearPayPalOverlayStyles($cashBtn);
@@ -144,14 +169,10 @@ export function initPayPalPaymentGroup() {
             return;
         }
 
-        // Laisser PaypalTools gérer display, puis forcer le conteneur actif
-        if (window.PaypalTools) {
-            if (typeof PaypalTools.hideElementTillChecked === 'function') {
-                PaypalTools.hideElementTillChecked();
-            }
-            if (typeof PaypalTools.showElementsIfChecked === 'function') {
-                PaypalTools.showElementsIfChecked();
-            }
+        // Re-mesurer après force visible (getBoundingClientRect plus fiable)
+        $submit = getPassOrderSubmit();
+        if (!$submit.length) {
+            return;
         }
 
         var rect = $submit[0].getBoundingClientRect();
@@ -271,6 +292,19 @@ export function initPayPalPaymentGroup() {
             setTimeout(syncPayPalModuleUi, 50);
         }
     );
+
+    // Le module écoute « input » sur .payment-options et remet visibility:hidden :
+    // on re-force visible juste après (même tick + frame suivante).
+    $container.on('input.paypalOverlayKeepVisible', function () {
+        if (!$cashInput.is(':checked') && !$bnplInput.is(':checked')) {
+            return;
+        }
+        forcePassOrderVisible(true);
+        requestAnimationFrame(function () {
+            forcePassOrderVisible(true);
+            placePayPalOverlay();
+        });
+    });
 
     setTimeout(syncPayPalModuleUi, 100);
     setTimeout(syncPayPalModuleUi, 500);
