@@ -114,6 +114,7 @@
                     </div>
                 {/foreach}
             </div>
+            {block name='order_confirmation_totals'}
             {* TOTALS *}
             <table class="order-confirmation-total">
 
@@ -170,6 +171,7 @@
                 {/if}
 
             </table>
+            {/block}
         {/block}
 
     </div>

@@ -10,23 +10,31 @@ document.addEventListener('DOMContentLoaded', function () {
         };
     })(XMLHttpRequest.prototype.open);
 
-
-    // Fonction pour obtenir le montant total à partir du DOM
     function getTotalAmount() {
-        const totalElement = document.querySelector('.cart-summary-line.cart-total .value');
+        const totalElement = document.querySelector('.cart-summary-line.cart-total .value, .cart-total .value');
         if (totalElement) {
-            // Extraire le texte du total et le convertir en nombre
             const totalText = totalElement.textContent.replace(/[^\d,.-]/g, '').replace(',', '.');
-            return parseFloat(totalText);
+            const parsed = parseFloat(totalText);
+            return isNaN(parsed) ? 0 : parsed;
         }
+
+        if (typeof prestashop !== 'undefined' && prestashop.cart && prestashop.cart.totals && prestashop.cart.totals.total) {
+            const raw = prestashop.cart.totals.total.amount;
+            if (typeof raw === 'number') {
+                return raw;
+            }
+            if (typeof raw === 'string') {
+                const parsed = parseFloat(raw.replace(',', '.'));
+                return isNaN(parsed) ? 0 : parsed;
+            }
+        }
+
         return 0;
     }
 
-    // Fonction qui met à jour les options de financement
     function updateFinancingOptions(totalAmount) {
         const desktopOptions = document.querySelectorAll('#paiement-select-desktop .financement-option');
 
-        // Mise à jour des options pour la version desktop
         if (desktopOptions) {
             desktopOptions.forEach(option => {
                 const minAmount = parseInt(option.getAttribute('data-min'), 10);
@@ -36,24 +44,22 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Mise à jour des options pour la version desktop
     function updateFinancingDisplay(totalAmount) {
         if (document.getElementById('financing-discover')) {
             if (totalAmount >= 300 && totalAmount <= 15000) {
-                document.getElementById('financing-discover').style.display = 'block'
-                document.getElementById('financing-choice').style.display = 'block'
-            }else{
-                document.getElementById('financing-discover').style.display = 'none'
-                document.getElementById('financing-choice').style.display = 'none'
+                document.getElementById('financing-discover').style.display = 'block';
+                document.getElementById('financing-choice').style.display = 'block';
+            } else {
+                document.getElementById('financing-discover').style.display = 'none';
+                document.getElementById('financing-choice').style.display = 'none';
             }
         }
     }
 
-    // Fonction qui attache les événements nécessaires
     function attachEventHandlers() {
-        // Desktop handler
         const desktopSelect = document.getElementById('paiement-select-desktop');
-        if (desktopSelect) {
+        if (desktopSelect && !desktopSelect.dataset.oneyBound) {
+            desktopSelect.dataset.oneyBound = '1';
             desktopSelect.addEventListener('change', function () {
                 const options = [
                     'paymentOption3x', 'paymentOption4x', 'paymentOption10x',
@@ -61,7 +67,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     'paymentOption48x'
                 ];
 
-                // Masquer toutes les options de paiement
                 options.forEach(option => {
                     const elem = document.getElementById(option);
                     if (elem) {
@@ -69,11 +74,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
 
-                // Afficher l'option sélectionnée
                 if (this.value) {
                     const selectedOption = `paymentOption${this.value.slice(4)}`;
                     const selectedElem = document.getElementById(selectedOption);
-                    updateSimulationPayments()
+                    updateSimulationPayments();
                     if (selectedElem) {
                         selectedElem.style.display = 'block';
                     }
@@ -82,16 +86,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Fonction qui attache les événements et met à jour les options de financement
     window.attachEventsAndUpdateOptions = function () {
-        // Mise à jour du montant total et des options de financement
         const totalAmount = getTotalAmount();
         updateFinancingOptions(totalAmount);
-        updateFinancingDisplay(totalAmount); // Mise à jour de l'affichage des éléments de financement
-        attachEventHandlers();  // Attacher les événements à chaque mise à jour
-
-        // Actualiser les simulations de paiement avec le nouveau montant total
-        updateSimulationPayments(totalAmount);
+        updateFinancingDisplay(totalAmount);
+        attachEventHandlers();
+        updateSimulationPayments();
     };
 
     function debounce(fn, delay) {
@@ -104,16 +104,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const debouncedAttach = debounce(attachEventsAndUpdateOptions, 200);
 
-
     if (typeof prestashop !== 'undefined' && typeof prestashop.on === 'function') {
         prestashop.on('updateCart', function () {
-            attachEventsAndUpdateOptions()
+            attachEventsAndUpdateOptions();
         });
     }
 
-    // Fonction qui met à jour les simulations de paiement
+    function isCheckoutPaymentPage() {
+        return !!(
+            document.getElementById('checkout') ||
+            document.body.classList.contains('page-order') ||
+            document.querySelector('#checkout-payment-step')
+        );
+    }
+
     function updateSimulationPayments() {
-        let totalAmount = getTotalAmount();
         const desktopSelect = document.getElementById('paiement-select-desktop');
 
         if (desktopSelect) {
@@ -130,40 +135,92 @@ document.addEventListener('DOMContentLoaded', function () {
                 showSimulationPayment(
                     mode,
                     selectedOption.dataset.placeholder,
-                    selectedOption.dataset.free,
+                    selectedOption.dataset.free === 'true' || selectedOption.dataset.free === true,
                     selectedOption.dataset.method,
                     methodType
                 );
             }
         }
 
-        if (document.getElementById('checkout')) {
-            showSimulationPayment("3x", "#paymentOption3x", true, "bnpl", "split");
-            showSimulationPayment("4x", "#paymentOption4x", true, "bnpl", "split");
-            showSimulationPayment("10x", "#paymentOption10x", true, "bnpl", "split");
-            showSimulationPayment("12x", "#paymentOption12x", true, "bnpl", "split");
-            showSimulationPayment("24x", "#paymentOption24x", false, "longtermcredit", "longtermcredit");
-            showSimulationPayment("36x", "#paymentOption36x", false, "longtermcredit", "longtermcredit");
-            showSimulationPayment("48x", "#paymentOption48x", false, "longtermcredit", "longtermcredit");
+        if (isCheckoutPaymentPage()) {
+            loadCheckoutOneyPlaceholders(false);
         }
     }
 
+    function loadCheckoutOneyPlaceholders(force) {
+        const placeholders = document.querySelectorAll(
+            '.js-oney-checkout-placeholder, #paymentOption10x, #paymentOption12x, #paymentOption24x, #paymentOption36x, #paymentOption48x'
+        );
 
-    // Appel initial lors du chargement de la page
+        placeholders.forEach(function (el) {
+            if (!el || !el.id) {
+                return;
+            }
+            if (!force && el.querySelector('.oney-checkoutSection')) {
+                return;
+            }
+
+            const mode = el.dataset.oneyMode || el.id.replace('paymentOption', '');
+            if (!mode) {
+                return;
+            }
+
+            const method = el.dataset.oneyMethod || (
+                (mode === '24x' || mode === '36x' || mode === '48x') ? 'longtermcredit' : 'bnpl'
+            );
+            const methodType = method === 'longtermcredit' ? 'longtermcredit' : 'split';
+            const isFree = el.dataset.oneyFree === 'true' || (
+                method !== 'longtermcredit' && el.dataset.oneyFree !== 'false'
+            );
+
+            showSimulationPayment(mode, '#' + el.id, isFree, method, methodType);
+        });
+    }
+
     attachEventsAndUpdateOptions();
 
+    // Le conteneur est souvent ps-hidden au chargement : recharger à la sélection mh_oney
+    document.addEventListener('change', function (e) {
+        const input = e.target;
+        if (!input || input.name !== 'payment-option') {
+            return;
+        }
+        if (input.dataset.moduleName !== 'mh_oney') {
+            return;
+        }
+
+        setTimeout(function () {
+            loadCheckoutOneyPlaceholders(true);
+        }, 200);
+    });
+
     function showSimulationPayment(paymentMode, placeholderId, isFree, paymentMethod, paymentMethodType) {
+        if (!placeholderId) {
+            return;
+        }
+
+        var placeholder = document.querySelector(placeholderId);
+        if (!placeholder) {
+            return;
+        }
+
+        var amount = getProductPriceTotal();
+        if (!amount || amount <= 0 || isNaN(amount)) {
+            console.warn('[oney] Montant panier invalide pour', placeholderId, amount);
+            return;
+        }
+
         var options = {
             country: "FR",
             language: "FR",
             merchant_guid: "a3b3970f2f3849618e71ef98ecdac55a",
-            payment_amount: getProductPriceTotal(),
+            payment_amount: amount,
             filter_by: "filters",
             filters: [{
                 "payment_method": paymentMethod,
                 "payment_method_type": paymentMethodType,
                 "payment_mode": paymentMode,
-                "is_free": isFree
+                "is_free": !!isFree
             }],
             checkout_placeholder: placeholderId,
             merchant_name: "DISTRICLOS",
@@ -171,33 +228,28 @@ document.addEventListener('DOMContentLoaded', function () {
             merchant_address: "1200 route des Lucioles, 06560 VALBONNE",
             hide_logo: true,
             errorCallback: function (status, response) {
-                //console.log(status, response);
+                console.warn('[oney] Widget error', placeholderId, status, response);
             },
-            successCallback: function outputSuccess() {
-
-            },
+            successCallback: function outputSuccess() {}
         };
 
-        // Charger le widget sans appeler la fonction de manière récursive
+        if (typeof loadOneyWidget !== 'function') {
+            console.warn('[oney] loadOneyWidget indisponible');
+            return;
+        }
+
         loadOneyWidget(function () {
+            if (typeof oneyMerchantApp === 'undefined' || !oneyMerchantApp.loadCheckoutSection) {
+                console.warn('[oney] oneyMerchantApp.loadCheckoutSection indisponible');
+                return;
+            }
             oneyMerchantApp.loadCheckoutSection({
-                options
+                options: options
             });
         });
     }
 
     function getProductPriceTotal() {
-        if ($(".cart-total .value").length) {
-            monTotalCart = parseFloat(
-                $(".cart-total .value")
-                    .html()
-                    .replace(/,/g, ".")
-                    .replace(/€/g, "")
-                    .replace(/\s+/g, "")
-            );
-
-            return monTotalCart;
-        }
-        return 0;
+        return getTotalAmount();
     }
 });

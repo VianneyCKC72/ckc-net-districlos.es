@@ -98,7 +98,10 @@ class ckc_shipping_estimatorproductshippingestimatorModuleFrontController extend
                             $carrier = array_merge($carrier, $this->objectPresenter->present($carrier['instance']));
                             $delay   = $carrier['delay'][$this->context->language->id];
                             unset($carrier['instance'], $carrier['delay']);
-                            $carrier['delay'] = $delay;
+                            if (!class_exists('DeliveryDelayHelper', false)) {
+                                require_once _PS_ROOT_DIR_ . '/override/classes/checkout/DeliveryDelayHelper.php';
+                            }
+                            $carrier['delay'] = DeliveryDelayHelper::replace($delay);
                             $sql              = 'SELECT d.`price`
                                 FROM `' . _DB_PREFIX_ . 'delivery` d
                                 LEFT JOIN `' . _DB_PREFIX_ . 'range_price` r ON d.`id_range_price` = r.`id_range_price`

@@ -43,6 +43,9 @@
             {include file='checkout/_partials/cart-summary-totals.tpl' cart=$cart}
         {/block}
 
+        {* Slot pour CGV + PASSER COMMANDE (rempli en JS sur l'étape paiement) *}
+        <div class="js-cart-summary-payment-actions cart-summary-payment-actions"></div>
+
 {*  Doublon ?
     {block name='cart_summary_voucher'}*}
 {*            {include file='checkout/_partials/cart-voucher.tpl'}*}
