@@ -5,6 +5,10 @@
  * HiPay gère déjà hide/show via checkTermeOfService(), mais notre
  * clone CGV dans le récap + le rendu SDK rendent le bouton encore
  * cliquable. On force pointer-events + resync HiPay.
+ *
+ * UX mobile : HiPay retire « PASSER COMMANDE » et laisse le bouton
+ * sous la carte paiement — trop bas. On le déplace dans la zone CTA
+ * (récap sticky / confirmation), là où l’utilisateur clique.
  */
 
 function areCheckoutCgvAccepted() {
@@ -21,6 +25,10 @@ function getApplePayButton() {
     return $('#apple-pay-button');
 }
 
+function getApplePayHome() {
+    return $('#apple-pay-form');
+}
+
 function isApplePayPaymentSelected() {
     var $checked = $('input[name="payment-option"]:checked');
     if (!$checked.length) {
@@ -29,6 +37,53 @@ function isApplePayPaymentSelected() {
     var formId = $('#pay-with-' + $checked.attr('id') + '-form form').attr('id') || '';
     var title = ($checked.closest('.payment-option-card').find('.payment-option__title').text() || '').toLowerCase();
     return formId === 'applepay-hipay' || title.indexOf('apple') !== -1;
+}
+
+/**
+ * Zone CTA visible : clone récap si affiché, sinon confirmation d’origine.
+ */
+function getApplePayCtaSlot() {
+    var $cloneActions = $('.js-payment-checkout-actions-clone .payment-confirmation__actions');
+    if (
+        $cloneActions.length &&
+        $cloneActions.closest('.js-cart-summary-payment-actions').hasClass('is-visible')
+    ) {
+        return $cloneActions.first();
+    }
+    return $('#payment-confirmation .payment-confirmation__actions').first();
+}
+
+/**
+ * Place le vrai #apple-pay-button dans le CTA (move, pas clone — le SDK HiPay y est lié).
+ */
+function relocateApplePayButton() {
+    var $btn = getApplePayButton();
+    var $home = getApplePayHome();
+    if (!$btn.length || !$home.length) {
+        return;
+    }
+
+    if (!isApplePayPaymentSelected()) {
+        if (!$home.find($btn).length) {
+            $btn.prependTo($home);
+        }
+        return;
+    }
+
+    var $slot = getApplePayCtaSlot();
+    if (!$slot.length) {
+        return;
+    }
+
+    if (!$slot.find($btn).length) {
+        // Après « Étape précédente » s'il reste, avant / à la place du submit
+        var $prev = $slot.find('.payment-confirmation__prev');
+        if ($prev.length) {
+            $btn.insertAfter($prev);
+        } else {
+            $slot.prepend($btn);
+        }
+    }
 }
 
 /**
@@ -68,6 +123,7 @@ export function syncApplePayWithCgv() {
     var appleSelected = isApplePayPaymentSelected();
 
     syncHipayApplePayTerms();
+    relocateApplePayButton();
 
     $btn.toggleClass('apple-pay-cgv-disabled', !accepted);
     $btn.attr('aria-disabled', accepted ? 'false' : 'true');
@@ -145,6 +201,13 @@ export function bindApplePayCgvGuard() {
         });
         observer.observe(document.body, { childList: true, subtree: true });
     }
+
+    // Re-place après clone CGV / sticky récap
+    $(document).on('click', '.checkout-step .js-step-title', schedule);
+    if (typeof prestashop !== 'undefined') {
+        prestashop.on('updatedCart', schedule);
+    }
+    $(window).on('resize orientationchange', schedule);
 
     schedule();
 }

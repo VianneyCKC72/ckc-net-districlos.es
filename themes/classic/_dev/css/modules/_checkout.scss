@@ -291,7 +291,30 @@ body#checkout {
     }
   }
 
-  // Apple Pay : non cliquable tant que les CGV ne sont pas cochées
+  // Apple Pay : taille mini (HiPay force height:30px en inline) + non cliquable sans CGV
+  #apple-pay-button {
+    width: 100%;
+    min-height: 48px !important;
+    height: auto !important;
+    margin: 0;
+
+    apple-pay-button {
+      --apple-pay-button-width: 100%;
+      --apple-pay-button-height: 48px;
+      width: 100%;
+      min-height: 48px;
+      display: block;
+    }
+  }
+
+  .payment-confirmation__actions #apple-pay-button,
+  .js-payment-checkout-actions-clone #apple-pay-button {
+    flex: 1 1 100%;
+    order: 2;
+    width: 100%;
+    max-width: 100%;
+  }
+
   #apple-pay-button.apple-pay-cgv-disabled {
     position: relative;
     opacity: 0.45;
@@ -357,6 +380,11 @@ body#checkout {
           line-height: 1.4;
           color: $black !important;
           cursor: pointer;
+
+          a {
+            color: $black !important;
+            text-decoration: underline !important;
+          }
         }
       }
 
@@ -1676,7 +1704,7 @@ body#checkout {
 
       a {
         color: $black !important;
-        text-decoration: none !important;
+        text-decoration: underline !important;
       }
     }
 
