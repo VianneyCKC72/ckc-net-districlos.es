@@ -24,15 +24,6 @@ export function syncPaymentActionsToSummary() {
     var $paymentStep = $('#checkout-payment-step');
     var isPaymentCurrent = $paymentStep.hasClass('-current') || $paymentStep.hasClass('js-current-step');
 
-    // #apple-pay-button est déplacé dans le slot CTA : le sauver avant empty()
-    var $applePayBtn = $slot.find('#apple-pay-button');
-    if ($applePayBtn.length) {
-        var $appleHome = $('#apple-pay-form');
-        if ($appleHome.length) {
-            $applePayBtn.prependTo($appleHome);
-        }
-    }
-
     if (!isPaymentCurrent) {
         $slot.empty().removeClass('is-visible');
         return;
@@ -91,8 +82,6 @@ export function syncPaymentActionsToSummary() {
         .toggleClass('disabled', $originalBtn.hasClass('disabled') || $originalBtn.prop('disabled'));
 
     $slot.empty().append($clone).addClass('is-visible');
-    // Replacer Apple Pay dans le nouveau clone CTA
-    setTimeout(syncApplePayWithCgv, 0);
 }
 
 export function syncSummaryCheckboxState() {

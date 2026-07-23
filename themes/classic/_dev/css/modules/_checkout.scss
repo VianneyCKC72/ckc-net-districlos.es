@@ -307,14 +307,6 @@ body#checkout {
     }
   }
 
-  .payment-confirmation__actions #apple-pay-button,
-  .js-payment-checkout-actions-clone #apple-pay-button {
-    flex: 1 1 100%;
-    order: 2;
-    width: 100%;
-    max-width: 100%;
-  }
-
   #apple-pay-button.apple-pay-cgv-disabled {
     position: relative;
     opacity: 0.45;
