@@ -39,7 +39,9 @@
               {foreach from=$delivery_options item=carrier key=carrier_id}
                 {assign var='is_selected' value=($delivery_option == $carrier_id)}
                 {assign var='is_pickup' value=(isset($custompickup_main_carrier_id) && $carrier.id == $custompickup_main_carrier_id)}
-                {assign var='has_reduc' value=(isset($carrier.reduc) && $carrier.reduc && $carrier.price != 'gratuit' && $carrier.price|lower != 'free')}
+                {assign var='price_lower' value=$carrier.price|lower}
+                {assign var='is_free_price' value=($price_lower == 'gratuit' || $price_lower == 'free')}
+                {assign var='has_reduc' value=(isset($carrier.reduc) && $carrier.reduc)}
 
                 <div class="delivery-option js-delivery-option{if $is_selected} -selected{/if}{if $is_pickup} -pickup{/if}">
                   <label for="delivery_option_{$carrier.id}" class="delivery-option-card">
@@ -58,12 +60,12 @@
                           {/if}
                         </div>
                         <span class="carrier-price">
-                          {if $carrier.price == 'gratuit' || $carrier.price|lower == 'free'}
+                          {if $has_reduc}
+                            <span class="carrier-price__old">{$carrier.reduc}</span>
+                          {/if}
+                          {if $is_free_price}
                             <span class="carrier-price__current">{l s='Gratuit' d='Shop.Theme.Checkout'}</span>
                           {else}
-                            {if $has_reduc}
-                              <span class="carrier-price__old">{$carrier.reduc}</span>
-                            {/if}
                             <span class="carrier-price__current">{$carrier.price|escape:'html':'UTF-8'}</span>
                           {/if}
                         </span>

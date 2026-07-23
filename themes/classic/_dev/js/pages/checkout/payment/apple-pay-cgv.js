@@ -2,9 +2,9 @@
  * Apple Pay (HiPay) : le bouton ne doit pas être cliquable
  * tant que les CGV ne sont pas acceptées.
  *
- * HiPay gère déjà hide/show via checkTermeOfService(), mais notre
- * clone CGV dans le récap + le rendu SDK rendent le bouton encore
- * cliquable. On force pointer-events + resync HiPay.
+ * On laisse le bouton sous la carte Apple Pay (comportement HiPay).
+ * Pas de déplacement vers le récap — cassait l’UX mobile
+ * (récap en haut, options en bas).
  */
 
 function areCheckoutCgvAccepted() {
@@ -36,18 +36,15 @@ function isApplePayPaymentSelected() {
  */
 function syncHipayApplePayTerms() {
     try {
-        if (typeof window.checkbox !== 'undefined' || typeof checkbox !== 'undefined') {
-            var el = document.querySelector('#conditions-to-approve input[id^="conditions_to_approve"]');
-            if (el) {
-                if (typeof window.checkbox !== 'undefined') {
-                    window.checkbox = el;
-                }
-                // Variable non-window dans le scope du script inline HiPay
-                try {
-                    checkbox = el;
-                } catch (e) {
-                    /* ignore */
-                }
+        var el = document.querySelector('#conditions-to-approve input[id^="conditions_to_approve"]');
+        if (el) {
+            if (typeof window.checkbox !== 'undefined') {
+                window.checkbox = el;
+            }
+            try {
+                checkbox = el;
+            } catch (e) {
+                /* ignore */
             }
         }
         if (typeof checkTermeOfService === 'function') {
@@ -75,7 +72,6 @@ export function syncApplePayWithCgv() {
     if (!accepted) {
         $btn.css('pointer-events', 'none');
         $btn.find('apple-pay-button, button, iframe, div').css('pointer-events', 'none');
-        // Garde le message HiPay si Apple Pay est sélectionné
         if (appleSelected) {
             var $err = $('#apple-pay-error-message');
             var $tos = $('#apple-pay-termes-of-service-error-message');
@@ -83,21 +79,23 @@ export function syncApplePayWithCgv() {
                 $err.css('display', 'inline').text($tos.text());
             }
         }
-    } else {
-        $btn.css('pointer-events', '');
-        $btn.find('apple-pay-button, button, iframe, div').css('pointer-events', '');
-        if (appleSelected) {
-            $btn.show();
-            $('#apple-pay-error-message').hide();
-        }
+        return;
+    }
+
+    $btn.css('pointer-events', '');
+    $btn.find('apple-pay-button, button, iframe, div').css('pointer-events', '');
+
+    if (appleSelected) {
+        // Force show : HiPay ne show() que si le parent form est :visible
+        $btn.show();
+        $('#apple-pay-error-message').hide();
     }
 }
 
 export function bindApplePayCgvGuard() {
     var schedule = function () {
         setTimeout(syncApplePayWithCgv, 0);
-        setTimeout(syncApplePayWithCgv, 100);
-        setTimeout(syncApplePayWithCgv, 400);
+        setTimeout(syncApplePayWithCgv, 150);
     };
 
     $(document).on(
@@ -106,7 +104,6 @@ export function bindApplePayCgvGuard() {
         schedule
     );
 
-    // Bloque tout clic / activation tant que CGV non cochées
     $(document).on(
         'click mousedown pointerdown touchstart',
         '#apple-pay-button, #apple-pay-button *',
@@ -122,7 +119,7 @@ export function bindApplePayCgvGuard() {
         }
     );
 
-    // Le SDK HiPay injecte le bouton de façon asynchrone
+    // SDK HiPay injecte le bouton de façon asynchrone
     if (typeof MutationObserver !== 'undefined') {
         var observer = new MutationObserver(function (mutations) {
             var relevant = mutations.some(function (m) {

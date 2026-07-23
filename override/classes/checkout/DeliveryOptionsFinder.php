@@ -58,6 +58,7 @@ class DeliveryOptionsFinder extends DeliveryOptionsFinderCore
         }
 
         // Prix barré 1096 — cache Cart déjà rempli par parent (pas de recalcul)
+        // Même en gratuit : barré = max des autres options si > 0
         if ($key1096 === null) {
             return $carriers_available;
         }
@@ -68,6 +69,7 @@ class DeliveryOptionsFinder extends DeliveryOptionsFinderCore
             && (int) Configuration::get('PS_TAX');
 
         $maxPrice = 0.0;
+        $maxOther = 0.0;
         $price1096 = null;
 
         foreach ($carriers_available as $id_carriers_list => $carrier) {
@@ -84,11 +86,27 @@ class DeliveryOptionsFinder extends DeliveryOptionsFinderCore
             }
             if ($id_carriers_list === $key1096) {
                 $price1096 = $price;
+            } elseif ($price > $maxOther) {
+                $maxOther = $price;
             }
         }
 
-        if ($price1096 !== null && $maxPrice > $price1096) {
-            $carriers_available[$key1096]['reduc'] = $this->getParentPriceFormatter()->format(ceil($maxPrice));
+        $displayPrice = isset($carriers_available[$key1096]['price'])
+            ? trim((string) $carriers_available[$key1096]['price'])
+            : '';
+        $isDisplayedFree = (bool) preg_match('/^(free|gratuit)$/iu', $displayPrice);
+
+        $reducAmount = null;
+        if ($isDisplayedFree && $maxOther > 0) {
+            // Gratuit : toujours le max des autres transporteurs
+            $reducAmount = $maxOther;
+        } elseif ($price1096 !== null && $maxPrice > $price1096) {
+            // Payant : max de la liste s'il est plus cher que 1096
+            $reducAmount = $maxPrice;
+        }
+
+        if ($reducAmount !== null) {
+            $carriers_available[$key1096]['reduc'] = $this->getParentPriceFormatter()->format(ceil($reducAmount));
         }
 
         return $carriers_available;
