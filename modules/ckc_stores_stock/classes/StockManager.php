@@ -460,19 +460,14 @@ class StockManager extends Module
                     }
                 }
             }
-        }else{
-            foreach ($shops as $key => $shop) {
-                $deps = explode(',', $shop['zip_codes']);
-                foreach ($deps as $zip_code) {
-                    if (!$storesDelivery) {
-                        $zip_code = trim($zip_code);
-
-                        if ($zip_code === $address->postcode || (strpos($zip_code, '*') !== false && preg_match('/^' . str_replace('*', '.*', $zip_code) . '$/', $address->postcode))) {
-                            $storesDelivery = $shop['id_store'];
-                            $store_name = $shop['name'];
-                        }
-                    }
-                }
+        } else {
+            if (!class_exists('Ckcstockmultistore', false)) {
+                require_once _PS_MODULE_DIR_ . 'ckcstockmultistore/ckcstockmultistore.php';
+            }
+            $match = Ckcstockmultistore::matchStoreByZip($shops, (string) $address->postcode);
+            if ($match) {
+                $storesDelivery = $match['id_store'];
+                $store_name = $match['name'];
             }
         }
 
