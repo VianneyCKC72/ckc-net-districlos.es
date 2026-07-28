@@ -369,25 +369,6 @@
                 </a></li>
         {/if}
         *}
-        <li class="mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile menu-soldes-promo-li">
-            <div class="hide_pro image-fw-mm">
-                {* START BANDEAU SOLDES - promo menu *}
-                <a href="/400-soldes" class="menu-soldes-promo">
-                    <span class="menu-soldes-promo__badge">
-                        <img src="/themes/classic/assets/img/grosses-soldes.png" alt="" width="22" height="22" class="menu-soldes-promo__flamme" loading="lazy">
-                        SOLDES
-                    </span>
-                    <span class="menu-soldes-promo__text">
-                        <span class="menu-soldes-promo__prefix">Jusqu'à</span>
-                        <strong class="menu-soldes-promo__discount">-30%</strong>
-                    </span>
-                    <span class="menu-soldes-promo__arrow" aria-hidden="true">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8L22 12L18 16"/><path d="M2 12H22"/></svg>
-                    </span>
-                </a>
-                {* END BANDEAU SOLDES - promo menu *}
-            </div>
-        </li>
             </ul>
         </li>
     </ul>
