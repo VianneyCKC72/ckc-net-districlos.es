@@ -58,21 +58,15 @@ function NosMagasins() {
             return x.toUpperCase();
         };
 
+        let exact = [], wild = [], star = [];
         $(".agenceShop").each(function () {
-            let cpList = $(this).data('zipcodes').split(',');
-            let myCodePostal = mycodepostal.toString();
-
-            let match = cpList.some(cp => {
-                let regex = new RegExp('^' + cp.replace('*', '.*') + '$');
-                return regex.test(myCodePostal);
-            });
-
-            if (match) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
+            let list = $(this).data('zipcodes').toString().split(',').map(s => s.trim());
+            if (list.includes(mycodepostal)) exact.push(this);
+            else if (list.some(cp => cp !== '*' && cp.includes('*') && new RegExp('^' + cp.replace('*', '.*') + '$').test(mycodepostal))) wild.push(this);
+            else if (list.includes('*')) star.push(this);
+            $(this).hide();
         });
+        (exact.length ? exact : (wild.length ? wild : star)).forEach(el => $(el).show());
     } else {
         $(".agenceShop").show();
     }
