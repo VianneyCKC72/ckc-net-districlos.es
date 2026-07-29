@@ -13,13 +13,12 @@
 
 {block name='header_top'}
 
-    {* START BANDEAU SOLDES *}
-    <div class="bandeau-soldes" role="region" aria-label="Soldes">
+    {* START BANDEAU BONS PLANS *}
+    <div class="bandeau-soldes" role="region" aria-label="Bons plans">
         <div class="bandeau-soldes__inner">
-            <a href="/400-soldes" class="bandeau-soldes__link">
+            <a href="/400-bons-plans" class="bandeau-soldes__link">
                 <span class="bandeau-soldes__badge">
-                    <img src="/themes/classic/assets/img/grosses-soldes.png" alt="" width="16" height="16" class="bandeau-soldes__flamme" loading="lazy">
-                    SOLDES
+                    BONS PLANS
                 </span>
                 <span class="bandeau-soldes__text">
                     Jusqu'à <strong class="bandeau-soldes__discount">-30%</strong> de réduction&nbsp;!
@@ -27,7 +26,7 @@
             </a>
         </div>
     </div>
-    {* END BANDEAU SOLDES *}
+    {* END BANDEAU BONS PLANS *}
 
     <div class="header-top">
         <div class="row-header d-flex align-items-center">
