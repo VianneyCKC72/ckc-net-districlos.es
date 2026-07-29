@@ -369,6 +369,11 @@
                 </a></li>
         {/if}
         *}
+        <li class="mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
+            <div class="hide_pro image-fw-mm">
+                {hook h='displayPromoMenuImage'}
+            </div>
+        </li>
             </ul>
         </li>
     </ul>
