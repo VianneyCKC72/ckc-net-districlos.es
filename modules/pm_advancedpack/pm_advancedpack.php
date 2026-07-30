@@ -342,6 +342,45 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 }
             }
             die(json_encode(['idWarehouse' => $idWarehouse, 'warehouseListId' => $warehouseListId]));
+        } elseif (Tools::getIsset('adminPackContentUpdate') && Tools::getIsset('saveMlDiscountTiers') && Tools::getValue('saveMlDiscountTiers')) {
+            $idPack = (int) Tools::getValue('id_product');
+            $idShop = (int) $this->context->shop->id;
+            $ok = false;
+            $tiers = [];
+            if ($idPack > 0 && AdvancedPack::isValidPack($idPack)) {
+                $rawTiers = Tools::getValue('ap5_ml_discount_tiers');
+                if (!is_array($rawTiers) && isset($_POST['ap5_ml_discount_tiers']) && is_array($_POST['ap5_ml_discount_tiers'])) {
+                    $rawTiers = $_POST['ap5_ml_discount_tiers'];
+                }
+                if (!is_array($rawTiers)) {
+                    $rawTiers = [];
+                }
+                $tiers = AdvancedPack::normalizePackMlDiscountTiers($rawTiers);
+                // Empty payload = clear. Non-empty but invalid (typing) = keep existing.
+                if (!count($tiers) && count($rawTiers)) {
+                    $existingRaw = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        'SELECT `ml_discount_tiers` FROM `' . _DB_PREFIX_ . 'pm_advancedpack`
+                         WHERE `id_pack`=' . (int) $idPack . ' AND `id_shop`=' . (int) $idShop
+                    );
+                    $decoded = $existingRaw ? json_decode($existingRaw, true) : [];
+                    $tiers = AdvancedPack::normalizePackMlDiscountTiers(is_array($decoded) ? $decoded : []);
+                }
+                $ok = (bool) Db::getInstance()->update(
+                    'pm_advancedpack',
+                    ['ml_discount_tiers' => json_encode($tiers)],
+                    '`id_pack`=' . (int) $idPack . ' AND `id_shop`=' . (int) $idShop,
+                    0,
+                    true
+                );
+                $reductionAmount = count($tiers) ? (float) $tiers[0]['amount'] : 0;
+                if ($reductionAmount > 0) {
+                    Db::getInstance()->execute(
+                        'REPLACE INTO `' . _DB_PREFIX_ . 'pm_advancedpack_pack_shop_discount` (`id_pack`, `id_shop`, `reduction_type`, `reduction_amount`)
+                         VALUES (' . (int) $idPack . ', ' . (int) $idShop . ", 'percentage', " . (float) $reductionAmount . ')'
+                    );
+                }
+            }
+            die(json_encode(['success' => $ok, 'tiers' => $tiers, 'tiersCount' => count($tiers)]));
         } elseif (Tools::getIsset('adminPackContentUpdate') && Tools::getIsset('updatePackPriceSimulation') && Tools::getValue('updatePackPriceSimulation') && Tools::getIsset('productFormValues') && Tools::getValue('productFormValues')) {
             $productFormValues = $packProducts = [];
             parse_str(Tools::getValue('productFormValues'), $productFormValues);
@@ -2596,7 +2635,19 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 $mlDiscountTiers = [];
                 if ($priceRules === 1 || $priceRules === 5) {
                     if ($priceRules === 5) {
-                        $mlDiscountTiers = AdvancedPack::normalizePackMlDiscountTiers(Tools::getValue('ap5_ml_discount_tiers', []));
+                        // PS8: preserve DB tiers if POST absent OR present but empty/invalid (avoids wiping AJAX-saved tiers)
+                        $existingRaw = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                            'SELECT `ml_discount_tiers` FROM `' . _DB_PREFIX_ . 'pm_advancedpack`
+                             WHERE `id_pack`=' . (int) $idPack . ' AND `id_shop`=' . (int) $idShop
+                        );
+                        $decodedExisting = $existingRaw ? json_decode($existingRaw, true) : [];
+                        $existingTiers = AdvancedPack::normalizePackMlDiscountTiers(is_array($decodedExisting) ? $decodedExisting : []);
+                        if (isset($_POST['ap5_ml_discount_tiers']) && is_array($_POST['ap5_ml_discount_tiers'])) {
+                            $fromPost = AdvancedPack::normalizePackMlDiscountTiers($_POST['ap5_ml_discount_tiers']);
+                            $mlDiscountTiers = count($fromPost) ? $fromPost : $existingTiers;
+                        } else {
+                            $mlDiscountTiers = $existingTiers;
+                        }
                         $globalDiscountPct = count($mlDiscountTiers)
                             ? ((float) $mlDiscountTiers[0]['amount'] * 100)
                             : 0;
@@ -2613,6 +2664,9 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                     foreach ($packInformations as &$row) {
                         $row['reduction_type'] = 'percentage';
                         $row['reduction_amount'] = 0;
+                        if ($priceRules === 5) {
+                            $row['use_reduc'] = 1;
+                        }
                     }
                     unset($row);
                 } else {

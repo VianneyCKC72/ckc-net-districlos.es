@@ -730,12 +730,57 @@ function ap5_initMlDiscountTiersManagement() {
 			'</div>');
 		$('#ap5-ml-discount-tiers-list').append($row);
 		ap5_packUpdated();
+		ap5_saveMlDiscountTiersToDb();
 	});
 
 	$(document).off('click.ap5RemoveMlTier', '.ap5-remove-ml-discount-tier').on('click.ap5RemoveMlTier', '.ap5-remove-ml-discount-tier', function(e) {
 		e.preventDefault();
 		$(this).closest('.ap5-ml-discount-tier-row').remove();
-		ap5_reindexMlDiscountTiers();
+		ap5_reindexMlDiscountTier();
 		ap5_packUpdated();
+		ap5_saveMlDiscountTiersToDb();
 	});
+
+	$(document).off('change.ap5MlTier', '.ap5_ml_tier_from, .ap5_ml_tier_to, .ap5_ml_tier_percent').on('change.ap5MlTier', '.ap5_ml_tier_from, .ap5_ml_tier_to, .ap5_ml_tier_percent', function() {
+		ap5_saveMlDiscountTiersToDb();
+	});
+
+	$(document).off('change.ap5PriceRuleMl', 'input.ap5_price_rules').on('change.ap5PriceRuleMl', 'input.ap5_price_rules', function() {
+		if (parseInt($(this).val(), 10) === 5) {
+			ap5_saveMlDiscountTiersToDb();
+		}
+	});
+}
+
+var ap5_saveMlDiscountTiersDelay = null;
+function ap5_saveMlDiscountTiersToDb() {
+	if (parseInt($('input.ap5_price_rules:checked').val(), 10) !== 5) {
+		return;
+	}
+	if (ap5_saveMlDiscountTiersDelay != null) {
+		clearTimeout(ap5_saveMlDiscountTiersDelay);
+	}
+	ap5_saveMlDiscountTiersDelay = setTimeout(function() {
+		ap5_reindexMlDiscountTier();
+		var tiers = [];
+		$('#ap5-ml-discount-tiers-list .ap5-ml-discount-tier-row').each(function() {
+			tiers.push({
+				from: $(this).find('.ap5_ml_tier_from').val(),
+				to: $(this).find('.ap5_ml_tier_to').val(),
+				percent: $(this).find('.ap5_ml_tier_percent').val()
+			});
+		});
+		var idProduct = $('#form_id_product').val() || $('input[name="id_product"]').val() || $('form[name=product]').data('product-id');
+		$.ajax({
+			type: 'POST',
+			dataType: 'json',
+			url: ap5_updateUrl,
+			data: {
+				saveMlDiscountTiers: 1,
+				id_product: idProduct,
+				ap5_ml_discount_tiers: tiers
+			},
+			cache: false
+		});
+	}, 300);
 }
