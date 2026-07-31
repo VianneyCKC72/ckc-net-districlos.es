@@ -74,6 +74,7 @@ $(document).ready(function () {
         if (!form) return;
 
         const order = [
+            "#customer-pays",
             ".form-group-id_gender",
             ".form-group-firstname",
             ".form-group-lastname",
@@ -88,7 +89,6 @@ $(document).ready(function () {
             "#customer-adresse2",
             "#customer-cp",
             "#customer-ville",
-            "#customer-pays",
             "#customer-tel",
             ".form-group-email",
             ".form-group-password",
@@ -126,8 +126,8 @@ $(document).ready(function () {
        Formulaire inscription pro en 3 étapes (uniquement page registration)
     ---------------------------------------------------- */
     var STEP_SELECTORS = {
-        1: ['#customer-company', '#customer-siret', '#nafCodeInput', '#nafCodeSelect', '#customer-tva', '#customer-vat_number', '#file-upload', '#rib-upload'],
-        2: ['#customer-adresse', '#customer-adresse2', '#customer-cp', '#customer-ville', '#customer-pays']
+        1: ['#customer-pays', '#customer-company', '#customer-siret', '#nafCodeInput', '#nafCodeSelect', '#customer-tva', '#customer-vat_number', '#file-upload', '#rib-upload'],
+        2: ['#customer-adresse', '#customer-adresse2', '#customer-cp', '#customer-ville']
     };
 
     function getStepForNode(node) {
@@ -268,14 +268,19 @@ $(document).ready(function () {
     var nafCodeInput = document.getElementById('nafCodeInput');
 
     function verifierSiret() {
-        if (siretInput) {
-            if (paysSelect && paysSelect.value === "8") {
-                siretInput.setAttribute('required', '');
-                siretInput.placeholder = 'Siret*';
-            } else {
-                siretInput.removeAttribute('required');
-                siretInput.placeholder = 'Siret';
-            }
+        if (!siretInput) return;
+
+        var isFrance = paysSelect && paysSelect.value === '8';
+        var label = document.getElementById('customer-siret-label');
+
+        if (isFrance) {
+            siretInput.setAttribute('required', 'required');
+            siretInput.placeholder = 'Siret*';
+            if (label) label.textContent = 'Siret*';
+        } else {
+            siretInput.removeAttribute('required');
+            siretInput.placeholder = 'Siret';
+            if (label) label.textContent = 'Siret';
         }
     }
 
@@ -285,22 +290,30 @@ $(document).ready(function () {
     }
 
     function validerFormulaire(event) {
-        var siretValue = siretInput.value;
+        var siretValue = siretInput ? siretInput.value.replace(/\s/g, '') : '';
         var isGenderSelected = Array.from(genderInputs).some(input => input.checked);
-        var isFileSelected = fileInput.files.length > 0;
-        var isRibSelected = document.getElementById('rib-upload').files.length > 0;
-        var isNafCodeFilled = nafCodeInput.value.trim() !== '';
+        var isFileSelected = fileInput && fileInput.files.length > 0;
+        var ribUpload = document.getElementById('rib-upload');
+        var isRibSelected = ribUpload && ribUpload.files.length > 0;
+        var isNafCodeFilled = nafCodeInput && nafCodeInput.value.trim() !== '';
         var codePostalInput = document.getElementById('customer-cp');
         var codePostalValue = codePostalInput ? codePostalInput.value : '';
+        var isFrance = paysSelect && paysSelect.value === '8';
+        var isRegistration = $("body#registration").length > 0;
 
         if (!isGenderSelected) { alert('Veuillez sélectionner une civilité.'); event.preventDefault(); return; }
-        if (!isRibSelected && $("body#registration").length) { alert('Veuillez joindre votre RIB.'); event.preventDefault(); return; }
-        if (!isFileSelected && $("body#registration").length) { alert('Veuillez joindre un fichier (ex: KBIS).'); event.preventDefault(); return; }
-        if (!isNafCodeFilled && $("body#registration").length) { alert('Veuillez remplir le champ Code NAF.'); event.preventDefault(); nafCodeInput.focus(); return; }
-        if (!validerCodePostal(codePostalValue) && $("body#registration").length) { alert('Veuillez entrer un code postal valide.'); event.preventDefault(); codePostalInput.focus(); return; }
+        if (!isRibSelected && isRegistration) { alert('Veuillez joindre votre RIB.'); event.preventDefault(); return; }
+        if (!isFileSelected && isRegistration) { alert('Veuillez joindre un fichier (ex: KBIS).'); event.preventDefault(); return; }
+        if (!isNafCodeFilled && isRegistration) { alert('Veuillez remplir le champ Code NAF.'); event.preventDefault(); nafCodeInput.focus(); return; }
+        if (isFrance && !validerCodePostal(codePostalValue) && isRegistration) {
+            alert('Veuillez entrer un code postal valide.');
+            event.preventDefault();
+            if (codePostalInput) codePostalInput.focus();
+            return;
+        }
 
-        if (paysSelect.value === "8") {
-            var isSiretValid = siretValue.length === 14 && !isNaN(siretValue);
+        if (isFrance) {
+            var isSiretValid = siretValue.length === 14 && /^\d{14}$/.test(siretValue);
             if (!isSiretValid) {
                 alert('Le SIRET doit comporter 14 chiffres.');
                 event.preventDefault();
