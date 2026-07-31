@@ -49,6 +49,7 @@
 /* sections */
 
 .benefits-section {
+    position: relative;
     padding-bottom: 28%;
     overflow: hidden;
 }

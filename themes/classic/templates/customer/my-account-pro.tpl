@@ -5,8 +5,6 @@
                     {include file='customer/pro-raccourcis.tpl'}
             {/block}
 
-            {hook h='displayDtcCustomerPalier'}
-
             <h2 class="h2 mb-36">
                 Mes autres options
             </h2>
