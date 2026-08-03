@@ -330,4 +330,50 @@ class Cart extends CartCore
         $this->invalidateQuantityCache();
         return $result;
     }
+
+    /**
+     * Filtre les règles panier pour les clients pro (groupe par défaut 10) :
+     * ignore les bons restreints à d'autres groupes, sauf si le client
+     * appartient déjà à l'un de ces groupes (ex. Club Pro Bronze/Argent/Or).
+     * Le groupe client standard (PS_CUSTOMER_GROUP) ne compte pas comme exception.
+     */
+    public function getCartRules($filter = CartRule::FILTER_ACTION_ALL, $autoAdd = true, $useOrderPrices = false)
+    {
+        $result = parent::getCartRules($filter, $autoAdd, $useOrderPrices);
+
+        $customer = Context::getContext()->customer;
+        if (!$customer || !(int) $customer->id || (int) $customer->id_default_group !== 10) {
+            return $result;
+        }
+
+        $defaultCustomerGroup = (int) Configuration::get('PS_CUSTOMER_GROUP');
+        $customerGroupIds = array_map('intval', (array) $customer->getGroups());
+
+        foreach ($result as $key => $row) {
+            $idCartRule = (int) ($row['id_cart_rule'] ?? 0);
+            if ($idCartRule <= 0) {
+                continue;
+            }
+
+            $cartRuleGroups = Db::getInstance()->executeS(
+                'SELECT id_group FROM `' . _DB_PREFIX_ . 'cart_rule_group`
+                 WHERE id_cart_rule = ' . $idCartRule
+            );
+            $cartRuleGroupIds = array_map('intval', array_column($cartRuleGroups ?: [], 'id_group'));
+
+            if (!$cartRuleGroupIds || in_array(10, $cartRuleGroupIds, true)) {
+                continue;
+            }
+
+            $meaningfulOverlap = array_diff(
+                array_intersect($cartRuleGroupIds, $customerGroupIds),
+                [$defaultCustomerGroup]
+            );
+            if (!$meaningfulOverlap) {
+                unset($result[$key]);
+            }
+        }
+
+        return $result;
+    }
 }
