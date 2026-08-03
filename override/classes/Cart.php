@@ -332,48 +332,145 @@ class Cart extends CartCore
     }
 
     /**
-     * Filtre les règles panier pour les clients pro (groupe par défaut 10) :
-     * ignore les bons restreints à d'autres groupes, sauf si le client
-     * appartient déjà à l'un de ces groupes (ex. Club Pro Bronze/Argent/Or).
-     * Le groupe client standard (PS_CUSTOMER_GROUP) ne compte pas comme exception.
+     * Filtre pro + réinjection Club Pro.
+     *
+     * Sur certains environnements, CartCore retire les règles restreintes
+     * à un groupe ≠ 10 pour les clients pro. Les règles Club Pro (Bronze/Argent/Or)
+     * sont alors absentes du résultat : on les réinjecte si le client est
+     * dans le bon groupe et que la règle est bien liée au panier.
+     * Ne modifie pas classes/Cart.php.
      */
     public function getCartRules($filter = CartRule::FILTER_ACTION_ALL, $autoAdd = true, $useOrderPrices = false)
     {
-        $result = parent::getCartRules($filter, $autoAdd, $useOrderPrices);
+        static $depth = 0;
+        ++$depth;
 
-        $customer = Context::getContext()->customer;
-        if (!$customer || !(int) $customer->id || (int) $customer->id_default_group !== 10) {
+        try {
+            $result = parent::getCartRules($filter, $autoAdd, $useOrderPrices);
+
+            // Évite la récursion via getOrderTotal pendant la réinjection
+            if ($depth > 1) {
+                return $result;
+            }
+
+            $customer = Context::getContext()->customer;
+            if (!$customer || !(int) $customer->id) {
+                return $result;
+            }
+
+            $customerGroupIds = array_map('intval', (array) $customer->getGroups());
+            $defaultCustomerGroup = (int) Configuration::get('PS_CUSTOMER_GROUP');
+            $isProDefault = (int) $customer->id_default_group === 10;
+
+            // Filtre complémentaire : bons restreints à d'autres groupes (hors Club Pro)
+            if ($isProDefault) {
+                foreach ($result as $key => $row) {
+                    $idCartRule = (int) ($row['id_cart_rule'] ?? 0);
+                    if ($idCartRule <= 0) {
+                        continue;
+                    }
+
+                    $cartRuleGroupIds = array_map('intval', array_column(
+                        Db::getInstance()->executeS(
+                            'SELECT id_group FROM `' . _DB_PREFIX_ . 'cart_rule_group`
+                             WHERE id_cart_rule = ' . $idCartRule
+                        ) ?: [],
+                        'id_group'
+                    ));
+
+                    if (!$cartRuleGroupIds || in_array(10, $cartRuleGroupIds, true)) {
+                        continue;
+                    }
+
+                    $meaningfulOverlap = array_diff(
+                        array_intersect($cartRuleGroupIds, $customerGroupIds),
+                        [$defaultCustomerGroup]
+                    );
+                    if (!$meaningfulOverlap) {
+                        unset($result[$key]);
+                    }
+                }
+            }
+
+            if (!$this->id) {
+                return $result;
+            }
+
+            $presentIds = [];
+            foreach ($result as $row) {
+                $presentIds[(int) ($row['id_cart_rule'] ?? 0)] = true;
+            }
+
+            $sqlFilter = '';
+            if ($filter == CartRule::FILTER_ACTION_SHIPPING) {
+                $sqlFilter = ' AND cr.free_shipping = 1';
+            } elseif ($filter == CartRule::FILTER_ACTION_GIFT) {
+                $sqlFilter = ' AND cr.gift_product != 0';
+            } elseif ($filter == CartRule::FILTER_ACTION_REDUCTION) {
+                $sqlFilter = ' AND (cr.reduction_percent != 0 OR cr.reduction_amount != 0)';
+            }
+
+            $clubRows = Db::getInstance()->executeS(
+                'SELECT cr.*, crl.`id_lang`, crl.`name`, cd.`id_cart`
+                 FROM `' . _DB_PREFIX_ . 'cart_cart_rule` cd
+                 INNER JOIN `' . _DB_PREFIX_ . 'cart_rule` cr ON cd.`id_cart_rule` = cr.`id_cart_rule`
+                 LEFT JOIN `' . _DB_PREFIX_ . 'cart_rule_lang` crl ON (
+                    cd.`id_cart_rule` = crl.`id_cart_rule`
+                    AND crl.id_lang = ' . (int) $this->getAssociatedLanguage()->getId() . '
+                 )
+                 WHERE cd.`id_cart` = ' . (int) $this->id . '
+                   AND cr.description LIKE "DTC_PALIER_SHARED_%"'
+                . $sqlFilter
+            );
+
+            if (!$clubRows) {
+                return $result;
+            }
+
+            $virtualContext = Context::getContext()->cloneContext();
+            /* @phpstan-ignore-next-line */
+            $virtualContext->cart = $this;
+            $virtualContext->virtualTotalTaxExcluded = $this->getOrderTotal(false, self::ONLY_PRODUCTS);
+            if (Tax::excludeTaxeOption()) {
+                $virtualContext->virtualTotalTaxIncluded = $virtualContext->virtualTotalTaxExcluded;
+            } else {
+                $virtualContext->virtualTotalTaxIncluded = $this->getOrderTotal(true, self::ONLY_PRODUCTS);
+            }
+
+            foreach ($clubRows as $row) {
+                $idCartRule = (int) $row['id_cart_rule'];
+                if ($idCartRule <= 0 || isset($presentIds[$idCartRule])) {
+                    continue;
+                }
+
+                $cartRuleGroupIds = array_map('intval', array_column(
+                    Db::getInstance()->executeS(
+                        'SELECT id_group FROM `' . _DB_PREFIX_ . 'cart_rule_group`
+                         WHERE id_cart_rule = ' . $idCartRule
+                    ) ?: [],
+                    'id_group'
+                ));
+
+                if (!$cartRuleGroupIds || !array_intersect($cartRuleGroupIds, $customerGroupIds)) {
+                    continue;
+                }
+
+                $row['obj'] = new CartRule($idCartRule, (int) $this->id_lang);
+                if (!Validate::isLoadedObject($row['obj']) || !(bool) $row['obj']->active) {
+                    continue;
+                }
+
+                $row['value_real'] = $row['obj']->getContextualValue(true, $virtualContext, $filter);
+                $row['value_tax_exc'] = $row['obj']->getContextualValue(false, $virtualContext, $filter);
+                $row['id_discount'] = $idCartRule;
+                $row['description'] = $row['obj']->description;
+                $result[] = $row;
+                $presentIds[$idCartRule] = true;
+            }
+
             return $result;
+        } finally {
+            --$depth;
         }
-
-        $defaultCustomerGroup = (int) Configuration::get('PS_CUSTOMER_GROUP');
-        $customerGroupIds = array_map('intval', (array) $customer->getGroups());
-
-        foreach ($result as $key => $row) {
-            $idCartRule = (int) ($row['id_cart_rule'] ?? 0);
-            if ($idCartRule <= 0) {
-                continue;
-            }
-
-            $cartRuleGroups = Db::getInstance()->executeS(
-                'SELECT id_group FROM `' . _DB_PREFIX_ . 'cart_rule_group`
-                 WHERE id_cart_rule = ' . $idCartRule
-            );
-            $cartRuleGroupIds = array_map('intval', array_column($cartRuleGroups ?: [], 'id_group'));
-
-            if (!$cartRuleGroupIds || in_array(10, $cartRuleGroupIds, true)) {
-                continue;
-            }
-
-            $meaningfulOverlap = array_diff(
-                array_intersect($cartRuleGroupIds, $customerGroupIds),
-                [$defaultCustomerGroup]
-            );
-            if (!$meaningfulOverlap) {
-                unset($result[$key]);
-            }
-        }
-
-        return $result;
     }
 }
