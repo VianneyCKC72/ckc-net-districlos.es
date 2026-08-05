@@ -85,7 +85,7 @@
     {foreach from=$products item="product" key="position" name=productsList}
         {include file="catalog/_partials/miniatures/product.tpl" product=$product position=$position productClasses=$productClasses}
 
-        {* Bannière catégorie : mobile = après le 1er produit (< md, 2 colonnes) ; desktop = après le 3e (>= lg, 4 colonnes). Première page grille uniquement. Masquée en espace pro. *}
+        {* Bannière catégorie désactivée
         {if !$pro.env && $page.page_name == 'category' && isset($listing.pagination.items_shown_from) && $listing.pagination.items_shown_from == 1 && !isset($smarty.cookies.show_list)}
             {if $smarty.foreach.productsList.iteration == 1}
                 <div class="category-listing-banner category-listing-banner--mobile col-6 col-sm-6 d-md-none">
@@ -102,5 +102,6 @@
                 </div>
             {/if}
         {/if}
+        *}
     {/foreach}
 </div>
