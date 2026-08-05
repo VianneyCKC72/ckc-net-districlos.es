@@ -26,14 +26,15 @@
 {capture assign="productClasses"}{if !empty($productClass)}{$productClass}{else}col-xs-12 col-sm-6 col-lg-3 col-xl-3{/if}{/capture}
 
 {* ─────────────────────────────────────────────────────────────────────────────
-   Bannière listing catégorie - DÉSACTIVÉE
+   Bannière listing catégorie
    • Avant le 24/06/2025 00h01 : comportement existant (jours fous / promo générique)
    • À partir du 24/06/2025 00h01 : visuels soldes par famille de catégories
+   ───────────────────────────────────────────────────────────────────────────── *}
 {if $page.page_name == 'category'}
 
     {assign var=_cat_id   value=Context::getContext()->controller->getCategory()->id}
     {assign var=_now_ts   value=$smarty.now}
-    {assign var=_soldes_ts value=1750719660}
+    {assign var=_soldes_ts value=1750719660}{* timestamp UTC de 2025-06-19 00:01:00 (Europe/Paris = UTC+2, donc UTC 22h01 le 23/06) *}
 
     {if $_now_ts >= $_soldes_ts}
 
@@ -60,11 +61,13 @@
             {assign var=category_listing_banner_file value='promo_category_rigide.jpg'}
 
         {else}
+            {* Catégorie sans visuel soldes spécifique → fallback générique *}
             {assign var=category_listing_banner_file value='category-listing-promo.jpg'}
         {/if}
 
     {else}
 
+        {* ── AVANT SOLDES : comportement d'origine inchangé ── *}
         {if in_array($_cat_id, [169, 240, 243, 339, 337, 323, 171, 239, 241, 366, 4])}
             {assign var=category_listing_banner_file value='category-joursfous.jpg'}
         {else}
@@ -76,7 +79,7 @@
 {else}
     {assign var=category_listing_banner_file value='category-listing-promo.jpg'}
 {/if}
-   ───────────────────────────────────────────────────────────────────────────── *}
+{* ───────────────────────────────────────────────────────────────────────────── *}
 
 <div class="products{if !empty($cssClass)} {$cssClass}{/if} {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')} list_view {/if}">
     {foreach from=$products item="product" key="position" name=productsList}
