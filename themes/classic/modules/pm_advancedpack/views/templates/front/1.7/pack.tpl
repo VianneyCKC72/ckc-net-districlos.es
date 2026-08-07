@@ -252,12 +252,16 @@
 
                                         .product-variants.ap5-dimensions-row {
                                             display: grid !important;
-                                            grid-template-columns: repeat(2, minmax(0, 1fr));
+                                            grid-template-columns: 1fr;
                                             gap: 16px;
                                             margin-bottom: 1rem;
                                             align-items: stretch;
                                             border-left: 0;
                                             padding: 0;
+                                        }
+
+                                        .product-variants.ap5-dimensions-row:has(.ap5-ml-field-item--length):has(.ap5-ml-field-item--height) {
+                                            grid-template-columns: repeat(2, minmax(0, 1fr));
                                         }
 
                                         .ap5-dimensions-row .ap5-ml-field-item {
@@ -274,15 +278,8 @@
                                             align-items: flex-start;
                                         }
 
-                                        .product-variants.ap5-dimensions-row:has(> :only-child) {
-                                            grid-template-columns: 1fr !important;
-                                        }
-
-                                        .ap5-dimensions-row .ap5-ml-field-item:only-child {
-                                            grid-column: auto;
-                                        }
-
-                                        .ap5-dimensions-row .ap5-ml-field-item:only-child .group-name {
+                                        .ap5-dimensions-row:not(:has(.ap5-ml-field-item--height)) .ap5-ml-field-item--length .group-name,
+                                        .ap5-dimensions-row:not(:has(.ap5-ml-field-item--length)) .ap5-ml-field-item--height .group-name {
                                             min-height: 0;
                                         }
 
@@ -341,7 +338,7 @@
                                         }
 
                                         @media (min-width: 768px) {
-                                            .product-variants.ap5-dimensions-row:not(:has(> :only-child)) {
+                                            .product-variants.ap5-dimensions-row:has(.ap5-ml-field-item--length):has(.ap5-ml-field-item--height) {
                                                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
                                             }
                                         }
@@ -377,37 +374,51 @@
                                         .ap5-ml-degressive__cta {
                                             display: flex;
                                             align-items: center;
-                                            flex: 0 0 110px;
-                                            padding: 8px 10px 8px 14px;
+                                            flex: 0 0 auto;
+                                            min-width: 95px;
+                                            padding: 8px 12px 8px 14px;
                                             box-sizing: border-box;
                                         }
                                         .ap5-ml-degressive__cta strong {
                                             display: block;
                                             font-size: 15px;
                                             font-weight: 800;
-                                            line-height: 1.05;
+                                            line-height: 1.15;
                                             letter-spacing: -0.2px;
                                             color: #FF144E;
+                                        }
+                                        .ap5-ml-degressive__cta-line {
+                                            display: block;
+                                            white-space: nowrap;
                                         }
                                         .ap5-ml-degressive__table {
                                             flex: 1 1 auto;
                                             width: 100%;
-                                            height: 100%;
+                                            height: 56px;
                                             border-collapse: collapse;
                                             table-layout: fixed;
+                                        }
+                                        .ap5-ml-degressive__table thead,
+                                        .ap5-ml-degressive__table tbody {
+                                            height: 50%;
+                                        }
+                                        .ap5-ml-degressive__table tr {
+                                            height: 28px;
                                         }
                                         .ap5-ml-degressive__table th,
                                         .ap5-ml-degressive__table td {
                                             border: 0;
                                             border-left: 1px solid #FF144E;
-                                            padding: 6px 4px;
+                                            height: 28px;
+                                            padding: 0 4px;
                                             text-align: center;
                                             vertical-align: middle;
                                             font-size: 10px;
                                             font-weight: 400;
-                                            line-height: 1.2;
+                                            line-height: 1;
                                             color: #FF144E;
                                             white-space: nowrap;
+                                            box-sizing: border-box;
                                         }
                                         .ap5-ml-degressive__table tbody th,
                                         .ap5-ml-degressive__table tbody td {
@@ -452,7 +463,8 @@
                                             .ap5-ml-degressive__table th,
                                             .ap5-ml-degressive__table td {
                                                 font-size: 10px;
-                                                padding: 6px 3px;
+                                                height: 28px;
+                                                padding: 0 3px;
                                             }
                                             .ap5-ml-degressive__table tbody td {
                                                 font-size: 10px;
@@ -503,30 +515,32 @@
                                             <p id="quantity_hauteur_error" class="ap5-ml-error">Veuillez sélectionner une hauteur</p>
                                         </div>
                                         {/if}
-                                        {if isset($packHasMlDiscountTiers) && $packHasMlDiscountTiers}
+                                        {if isset($packHasMlDiscountTiers) && $packHasMlDiscountTiers && isset($packMlDiscountTiers) && $packMlDiscountTiers|@count > 0}
                                         <div class="ap5-ml-degressive" role="region" aria-label="Prix dégressifs">
                                             <div class="ap5-ml-degressive__cta">
-                                                <strong>Prix<br>dégressifs !</strong>
+                                                <strong><span class="ap5-ml-degressive__cta-line">Prix</span><span class="ap5-ml-degressive__cta-line">dégressifs&nbsp;!</span></strong>
                                             </div>
                                             <table class="ap5-ml-degressive__table">
                                                 <thead>
                                                     <tr>
                                                         <th scope="row">Nombre de mL</th>
-                                                        <td>10 à 30 mL</td>
-                                                        <td>31 à 50 mL</td>
-                                                        <td>51 à 70 mL</td>
-                                                        <td>71 à 100 mL</td>
-                                                        <td>+100 mL</td>
+                                                        {foreach from=$packMlDiscountTiers item=tier}
+                                                            <td>
+                                                                {if $tier.to === null || $tier.to === ''}
+                                                                    +{$tier.from|string_format:"%g"} mL
+                                                                {else}
+                                                                    {$tier.from|string_format:"%g"} à {$tier.to|string_format:"%g"} mL
+                                                                {/if}
+                                                            </td>
+                                                        {/foreach}
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <tr>
                                                         <th scope="row">% de remise</th>
-                                                        <td>5%</td>
-                                                        <td>10%</td>
-                                                        <td>12%</td>
-                                                        <td>15%</td>
-                                                        <td>17%</td>
+                                                        {foreach from=$packMlDiscountTiers item=tier}
+                                                            <td>{$tier.percent|string_format:"%g"}%</td>
+                                                        {/foreach}
                                                     </tr>
                                                 </tbody>
                                             </table>
