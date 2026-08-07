@@ -578,20 +578,12 @@ class Ckcstockmultistore extends Module
             }
         }
 
-        // Vérification par CODE POSTAL, filtrée par pays déduit du code postal
+        // Vérification par CODE POSTAL (exact > 89* > *)
         if (!$id_store) {
-            foreach ($stores as $store) {
-                if (!self::storeCountryOk($store, $country_for_matching)) {
-                    continue;
-                }
-
-                foreach (explode(',', $store['zip_codes']) as $zip_code) {
-                    if (self::zipOk($customer_zip_code, $zip_code)) {
-                        $id_store = (int) $store['id_store'];
-                        $attribution_method = 'CODE POSTAL ('.trim($zip_code).')';
-                        break 2;
-                    }
-                }
+            $match = self::matchStoreByZip($stores, $customer_zip_code, $country_for_matching);
+            if ($match) {
+                $id_store = $match['id_store'];
+                $attribution_method = 'CODE POSTAL ('.$match['pattern'].')';
             }
         }
 
@@ -1119,9 +1111,47 @@ class Ckcstockmultistore extends Module
         return in_array(strtoupper($country), $codes, true);
     }
 
+    /**
+     * Priorité : CP exact > joker (89*) > "*".
+     *
+     * @return array{id_store: int, name: string, pattern: string}|null
+     */
+    public static function matchStoreByZip(array $stores, string $zip, ?string $country = null): ?array
+    {
+        $wild = $star = null;
+
+        foreach ($stores as $store) {
+            if ($country !== null && !self::storeCountryOk($store, $country)) {
+                continue;
+            }
+
+            foreach (explode(',', $store['zip_codes'] ?? '') as $pattern) {
+                $pattern = trim($pattern);
+                if ($pattern === '') {
+                    continue;
+                }
+                if ($pattern === '*') {
+                    $star ??= ['id_store' => (int) $store['id_store'], 'name' => (string) ($store['name'] ?? ''), 'pattern' => '*'];
+                    continue;
+                }
+                if (!str_contains($pattern, '*') && $pattern === $zip) {
+                    return ['id_store' => (int) $store['id_store'], 'name' => (string) ($store['name'] ?? ''), 'pattern' => $pattern];
+                }
+                if ($wild === null && self::zipOk($zip, $pattern)) {
+                    $wild = ['id_store' => (int) $store['id_store'], 'name' => (string) ($store['name'] ?? ''), 'pattern' => $pattern];
+                }
+            }
+        }
+
+        return $wild ?? $star;
+    }
+
     public static function zipOk(string $zip, string $pattern): bool
     {
         $pattern = trim($pattern);
+        if ($pattern === '' || $pattern === '*') {
+            return false;
+        }
 
         return $pattern === $zip
             || (str_contains($pattern, '*') && preg_match('/^' . str_replace('*', '.*', $pattern) . '$/', $zip));

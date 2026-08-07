@@ -35,52 +35,65 @@
         data-url-update="{url entity='order' params=['ajax' => 1, 'action' => 'selectDeliveryOption']}" method="post">
         <div class="form-fields">
           {block name='delivery_options'}
-            <div class="delivery-options mt-3">
+            <div class="delivery-options">
               {foreach from=$delivery_options item=carrier key=carrier_id}
-                <div class="delivery-option js-delivery-option">
+                {assign var='is_selected' value=($delivery_option == $carrier_id)}
+                {assign var='is_pickup' value=(isset($custompickup_main_carrier_id) && $carrier.id == $custompickup_main_carrier_id)}
+                {assign var='price_lower' value=$carrier.price|lower}
+                {assign var='is_free_price' value=($price_lower == 'gratuit' || $price_lower == 'free')}
+                {assign var='has_reduc' value=(isset($carrier.reduc) && $carrier.reduc)}
 
-                  <label for="delivery_option_{$carrier.id}" class="delivery-option-2">
+                <div class="delivery-option js-delivery-option{if $is_selected} -selected{/if}{if $is_pickup} -pickup{/if}">
+                  <label for="delivery_option_{$carrier.id}" class="delivery-option-card">
                     <span class="custom-radio white">
                       <input type="radio" name="delivery_option[{$id_address}]" id="delivery_option_{$carrier.id}"
-                        value="{$carrier_id}" {if $delivery_option == $carrier_id} checked{/if}>
+                        value="{$carrier_id}" {if $is_selected} checked{/if}>
                       <span></span>
                     </span>
-                    <div class="row w-100">
-                      <div class="col-sm-5 col-xs-12">
-                        <div class="carrier">
-                          {if $carrier.logo}
-                            <img class="carrier-logo" src="{$carrier.logo}" alt="{$carrier.name}" loading="lazy" />
+
+                    <div class="delivery-option-card__content">
+                      <div class="delivery-option-card__header">
+                        <div class="delivery-option-card__title">
+                          <span class="carrier-name">{$carrier.name}</span>
+                          {if isset($carrier.badge) && $carrier.badge}
+                            <span class="carrier-badge">{$carrier.badge|escape:'html':'UTF-8'}</span>
                           {/if}
-                          <span class="h6 carrier-name">{$carrier.name}</span>
                         </div>
-                      </div>
-                      <div class="col-sm-4 col-xs-12">
-                        <span class="carrier-delay">{$carrier.delay}</span>
-                      </div>
-                      <div class="col-sm-3 col-xs-12">
                         <span class="carrier-price">
-                            {if $carrier.price == 'gratuit'}
-                              <span>{ucfirst($carrier.price)|escape:'html':'UTF-8'}</span>
-                            {else}
-                                <span class="text-line-through color-red">{$carrier.reduc}</span> {$carrier.price|escape:'html':'UTF-8'}
-                            {/if}
+                          {if $has_reduc}
+                            <span class="carrier-price__old">{$carrier.reduc}</span>
+                          {/if}
+                          {if $is_free_price}
+                            <span class="carrier-price__current">{l s='Gratuit' d='Shop.Theme.Checkout'}</span>
+                          {else}
+                            <span class="carrier-price__current">{$carrier.price|escape:'html':'UTF-8'}</span>
+                          {/if}
                         </span>
                       </div>
-                      {if $carrier.id == $custompickup_main_carrier_id}
-                        {hook h='displayCarrierExtraContent' carrier=$carrier.id}
+
+                      {if $carrier.delay}
+                        <div class="carrier-delay">{$carrier.delay nofilter}</div>
                       {/if}
                     </div>
                   </label>
+
+                  {if $is_pickup}
+                    <div class="delivery-option-card__extra delivery-option-card__extra--pickup">
+                      {hook h='displayCarrierExtraContent' carrier=$carrier.id}
+                    </div>
+                  {/if}
+
+                  {if !$is_pickup && $carrier.extraContent}
+                    <div class="carrier-extra-content js-carrier-extra-content"{if !$is_selected} style="display:none"{/if}>
+                      {$carrier.extraContent nofilter}
+                    </div>
+                  {/if}
                 </div>
-                {if $delivery_option != $carrier_id}
-                  <div class="row carrier-extra-content js-carrier-extra-content">
-                    {$carrier.extraContent nofilter}
-                  </div>
-                {/if}
               {/foreach}
             </div>
           {/block}
-          <div class="order-options my-3">
+
+          <div class="order-options">
             <div id="delivery">
               <label for="delivery_message"
                 class="small">{l s='If you would like to add a comment about your order, please write it in the field below.' d='Shop.Theme.Checkout'}</label>
@@ -118,12 +131,17 @@
                 <textarea rows="3" id="gift_message" name="gift_message">{$gift.message}</textarea>
               </div>
             {/if}
-
           </div>
         </div>
-        <button type="submit" class="continue btn btn-primary float-xs-right" name="confirmDeliveryOption" value="1">
-          {l s='Continue' d='Shop.Theme.Actions'}
-        </button>
+
+        <div class="delivery-actions">
+          <button type="button" class="btn-link js-checkout-prev-step">
+            {l s='Étape précédente' d='Shop.Theme.Checkout'}
+          </button>
+          <button type="submit" class="continue btn btn-primary" name="confirmDeliveryOption" value="1">
+            {l s='Passer au paiement' d='Shop.Theme.Checkout'}
+          </button>
+        </div>
       </form>
     {else}
       <p class="alert alert-danger mt-3">

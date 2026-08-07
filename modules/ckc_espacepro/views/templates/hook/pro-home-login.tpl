@@ -116,8 +116,8 @@
         <aside class="pro-auth__visual">
             <figure class="pro-figure">
                 <picture>
-                    <source srcset="/img/cms/auth/img-espace-pro2.webp" type="image/webp">
-                    <img src="/img/cms/auth/img-espace-pro2.jpeg" alt="Districlos sur salon professionnel"
+                    <source srcset="/img/cms/auth/img-espace-pro3.webp" type="image/webp">
+                    <img src="/img/cms/auth/img-espace-pro3.jpg" alt="Districlos sur salon professionnel"
                          loading="lazy">
                 </picture>
 
