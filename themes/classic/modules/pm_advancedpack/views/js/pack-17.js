@@ -649,7 +649,7 @@ function ap5GetPackDimensionValues() {
     var hauteur = 0;
 
     if ($('#quantity_ml').length) {
-        var mlValue = parseInt($('#quantity_ml').val());
+        var mlValue = parseFloat(String($('#quantity_ml').val()).replace(',', '.'));
         ml = (isNaN(mlValue) || mlValue <= 0) ? 1 : mlValue;
     }
     if ($('#quantity_hauteur').length) {

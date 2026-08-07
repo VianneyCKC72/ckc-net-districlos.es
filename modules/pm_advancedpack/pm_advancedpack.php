@@ -4171,6 +4171,11 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             );
             $productPackObj = new Product($id_product, false, $this->context->language->id);
             if (Validate::isLoadedObject($productPackObj) && $productPackObj->active && AdvancedPack::isValidPack($id_product)) {
+                $appliedFrontMl = false;
+                if (isset($explodedPackData['ml']) && (float) $explodedPackData['ml'] > 0) {
+                    AdvancedPack::setFrontMl((float) $explodedPackData['ml']);
+                    $appliedFrontMl = true;
+                }
                 $product = $presenter->present(
                     $presentationSettings,
                     $assembler->assembleProduct(['id_product' => (int)$id_product, 'cart_quantity' => (int)$explodedPackData['cq']]),
@@ -4188,6 +4193,9 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                 $product->offsetSet('attributes', $productAttributes, true);
                 $product['price'] = Tools::displayPrice(AdvancedPack::getPackPrice((int)$product['id_product'], false, true, true, 6, $explodedPackData['idpal'], $explodedPackData['ql'], $explodedPackData['pel'], true));
                 $product['price_wt'] = AdvancedPack::getPackPrice((int)$product['id_product'], true, true, true, 6, $explodedPackData['idpal'], $explodedPackData['ql'], $explodedPackData['pel'], true);
+                if ($appliedFrontMl) {
+                    AdvancedPack::clearFrontMl();
+                }
             }
         } else {
             foreach ($data['products'] as $p) {
