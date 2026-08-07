@@ -313,81 +313,96 @@
                                 .ap5-ml-degressive {
                                     display: flex;
                                     align-items: stretch;
-                                    gap: 0;
                                     grid-column: 1 / -1;
-                                    margin: 0 0 4px;
-                                    background: #f7d5e0;
-                                    color: #b0005a;
+                                    margin: 8px 0 12px;
+                                    background: #FECFD8;
+                                    color: #FF144E;
+                                    min-height: 74px;
                                     overflow: hidden;
+                                    font-family: Arial, Helvetica, sans-serif;
                                 }
                                 .ap5-ml-degressive__cta {
                                     display: flex;
                                     align-items: center;
-                                    gap: 10px;
-                                    flex: 0 0 auto;
-                                    padding: 14px 18px;
-                                    white-space: nowrap;
-                                }
-                                .ap5-ml-degressive__cta svg {
-                                    flex-shrink: 0;
-                                    width: 28px;
-                                    height: 28px;
+                                    flex: 0 0 110px;
+                                    padding: 8px 10px 8px 14px;
+                                    box-sizing: border-box;
                                 }
                                 .ap5-ml-degressive__cta strong {
                                     display: block;
-                                    font-size: 18px;
-                                    font-weight: 700;
-                                    line-height: 1.15;
-                                    color: #b0005a;
+                                    font-size: 15px;
+                                    font-weight: 800;
+                                    line-height: 1.05;
+                                    letter-spacing: -0.2px;
+                                    color: #FF144E;
                                 }
                                 .ap5-ml-degressive__table {
                                     flex: 1 1 auto;
                                     width: 100%;
+                                    height: 100%;
                                     border-collapse: collapse;
                                     table-layout: fixed;
                                 }
                                 .ap5-ml-degressive__table th,
                                 .ap5-ml-degressive__table td {
-                                    border-left: 1px solid #d9a3b5;
-                                    border-top: 1px solid #d9a3b5;
-                                    padding: 8px 10px;
+                                    border: 0;
+                                    border-left: 1px solid #FF144E;
+                                    padding: 6px 4px;
                                     text-align: center;
                                     vertical-align: middle;
-                                    font-size: 13px;
+                                    font-size: 10px;
+                                    font-weight: 400;
                                     line-height: 1.2;
-                                    color: #b0005a;
+                                    color: #FF144E;
+                                    white-space: nowrap;
                                 }
-                                .ap5-ml-degressive__table tr:first-child th,
-                                .ap5-ml-degressive__table tr:first-child td {
-                                    border-top: 0;
+                                .ap5-ml-degressive__table tbody th,
+                                .ap5-ml-degressive__table tbody td {
+                                    border-top: 1px solid #FF144E;
                                 }
                                 .ap5-ml-degressive__table th:first-child,
                                 .ap5-ml-degressive__table td:first-child {
-                                    border-left: 1px solid #d9a3b5;
+                                    border-left: 0;
                                     text-align: left;
-                                    white-space: nowrap;
-                                    width: 120px;
-                                    font-weight: 500;
+                                    width: 96px;
+                                    padding-left: 10px;
+                                    padding-right: 6px;
                                 }
-                                .ap5-ml-degressive__table th:first-child {
-                                    text-decoration: underline;
-                                    text-underline-offset: 2px;
-                                }
-                                .ap5-ml-degressive__table td {
+                                .ap5-ml-degressive__table tbody th:first-child {
                                     font-weight: 700;
-                                    font-size: 18px;
+                                }
+                                .ap5-ml-degressive__table tbody td {
+                                    font-weight: 700;
+                                    font-size: 10px;
                                 }
                                 @media (max-width: 767px) {
                                     .ap5-ml-degressive {
                                         flex-direction: column;
+                                        min-height: 0;
                                     }
                                     .ap5-ml-degressive__cta {
+                                        flex: 0 0 auto;
                                         justify-content: center;
-                                        border-bottom: 1px solid #d9a3b5;
+                                        padding: 12px 14px;
+                                        border-bottom: 1px solid #FF144E;
+                                    }
+                                    .ap5-ml-degressive__cta strong {
+                                        font-size: 15px;
+                                        text-align: center;
                                     }
                                     .ap5-ml-degressive__table th:first-child,
                                     .ap5-ml-degressive__table td:first-child {
                                         width: auto;
+                                        font-size: 10px;
+                                        padding-left: 8px;
+                                    }
+                                    .ap5-ml-degressive__table th,
+                                    .ap5-ml-degressive__table td {
+                                        font-size: 10px;
+                                        padding: 6px 3px;
+                                    }
+                                    .ap5-ml-degressive__table tbody td {
+                                        font-size: 10px;
                                     }
                                 }
                             </style>
@@ -438,27 +453,30 @@
                                 </div>
                             </div>
                             {/if}
-                            {if isset($packMlChoose) && $packMlChoose}
+                            {if isset($packHasMlDiscountTiers) && $packHasMlDiscountTiers}
                             <div class="ap5-ml-degressive" role="region" aria-label="Prix dégressifs">
                                 <div class="ap5-ml-degressive__cta">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4v12.17l4.59-4.58L18 13l-6 6-6-6 1.41-1.41L11 16.17V4z"/></svg>
                                     <strong>Prix<br>dégressifs !</strong>
                                 </div>
                                 <table class="ap5-ml-degressive__table">
                                     <thead>
                                         <tr>
                                             <th scope="row">Nombre de mL</th>
-                                            <td>0 à 30 mL</td>
-                                            <td>40 à 70 mL</td>
-                                            <td>A partir de 70 mL</td>
+                                            <td>10 à 30 mL</td>
+                                            <td>31 à 50 mL</td>
+                                            <td>51 à 70 mL</td>
+                                            <td>71 à 100 mL</td>
+                                            <td>+100 mL</td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
                                             <th scope="row">% de remise</th>
+                                            <td>5%</td>
                                             <td>10%</td>
+                                            <td>12%</td>
                                             <td>15%</td>
-                                            <td>20%</td>
+                                            <td>17%</td>
                                         </tr>
                                     </tbody>
                                 </table>
