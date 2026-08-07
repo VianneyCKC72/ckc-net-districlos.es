@@ -3,12 +3,27 @@
 <!-- Module ckc_espacepro -->
 <div class="block-register-espace-pro">
 
+    <!-- Pays (en premier : conditionne l'obligation du SIRET) -->
+    <div class="form-group row">
+        <div class="col-md-12">
+            <label class="form-label" for="customer-pays">Pays*</label>
+            <select name="customer-pays" id="customer-pays" class="form-control pad20" required>
+                {foreach from=$countries item='country'}
+                    <option value="{$country.id_country|intval}"
+                            {if (isset($customer->id_country) && $customer->id_country == $country.id_country) || (!isset($customer->id_country) && $country.iso_code == 'FR')}selected{/if}>
+                        {$country.name|escape}
+                    </option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+
     <!-- SIRET -->
     <div class="form-group row">
         <div class="col-md-12">
-            <label class="form-label" for="customer-siret">Siret*</label>
+            <label class="form-label" for="customer-siret" id="customer-siret-label">Siret*</label>
             <input class="form-control pad20" type="text" name="customer-siret" id="customer-siret"
-                   value="{$customer->siret|default:''|escape:'htmlall':'UTF-8'}" required>
+                   value="{$customer->siret|default:''|escape:'htmlall':'UTF-8'}">
         </div>
     </div>
 
@@ -41,7 +56,6 @@
                 </select>
             </div>
         </div>
-
 
         <!-- Numéro de TVA -->
         <div class="form-group row">
@@ -77,23 +91,7 @@
                 </div>
             </div>
         </div>
-    {/if}
 
-    <!-- Pays -->
-    <div class="form-group row">
-        <div class="col-md-12">
-            <label class="form-label" for="customer-pays">Pays*</label>
-            <select name="customer-pays" id="customer-pays" class="form-control pad20" required>
-                {foreach from=$countries item='country'}
-                    <option value="{$country.id_country|intval}"
-                            {if isset($customer->id_country) && $customer->id_country == $country.id_country}selected{/if}>
-                        {$country.name|escape}
-                    </option>
-                {/foreach}
-            </select>
-        </div>
-    </div>
-    {if $showAddressFields}
         <!-- Société -->
         <div class="form-group row">
             <div class="col-md-12">
@@ -115,7 +113,7 @@
             <div class="col-md-12">
                 <label class="form-label" for="customer-adresse">Adresse*</label>
                 <input class="form-control pad20" type="text" name="customer-adresse" id="customer-adresse"
-                       value="{$customer->address1|default:''|escape:'htmlall':'UTF-8'}" required>
+                       value="{$customer->address1|default:''|escape:'htmlall':'UTF-8'}" maxlength="35" required>
             </div>
         </div>
         <!-- Complément d'adresse -->
@@ -123,7 +121,7 @@
             <div class="col-md-12">
                 <label class="form-label" for="customer-adresse2">Complément d'adresse</label>
                 <input class="form-control pad20" type="text" name="customer-adresse2" id="customer-adresse2"
-                       value="{$customer->address2|default:''|escape:'htmlall':'UTF-8'}">
+                       value="{$customer->address2|default:''|escape:'htmlall':'UTF-8'}" maxlength="35">
             </div>
         </div>
         <!-- Code Postal -->

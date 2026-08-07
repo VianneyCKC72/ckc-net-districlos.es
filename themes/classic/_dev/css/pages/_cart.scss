@@ -12,11 +12,16 @@
     flex: 0 0 auto; /* Empêche que les slides se stretchent */
   }
 
-  .reassu-cart{
-    float:left;
-    .elementor-widget-container{
+  .reassu-cart {
+    float: left;
+    margin-top: 70px;
+    margin-bottom: 70px;
+
+    .elementor-widget-container {
       width: 100%;
-      .banner-services, .hero-home {
+
+      .banner-services,
+      .hero-home {
         justify-content: space-between;
         width: 100%;
       }

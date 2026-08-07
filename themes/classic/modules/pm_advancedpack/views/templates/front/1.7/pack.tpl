@@ -204,15 +204,15 @@
                                         }
 
                                         .ap5-dimensions-row .ap5-ml-field-item {
-                                            background: #F5F5F5;
-                                            border: 1px solid #bdbdbd;
+                                            background: #E8F4F6;
+                                            border: 0;
                                             border-radius: 4px;
                                             padding: 14px 16px;
                                         }
 
                                         .ap5-dimensions-row .ap5-ml-field-item input,
                                         .ap5-dimensions-row .ap5-ml-field-item select {
-                                            background: #F5F5F5 !important;
+                                            background: transparent !important;
                                         }
 
                                         .ap5-ml-help {
@@ -222,7 +222,7 @@
                                             justify-content: center;
                                             width: 20px;
                                             height: 20px;
-                                            color: #79c046;
+                                            color: #026473;
                                             cursor: help;
                                         }
 
@@ -307,7 +307,7 @@
                                             line-height: 22px !important;
                                             box-sizing: border-box;
                                             border: 0 !important;
-                                            border-bottom: 1px solid #a6a6a6 !important;
+                                            border-bottom: 2px solid #026473 !important;
                                             border-radius: 0 !important;
                                             box-shadow: none !important;
                                             outline: none;
@@ -321,7 +321,7 @@
 
                                         .ap5-dimensions-row .ap5-ml-field-item #quantity_ml:focus,
                                         .ap5-dimensions-row .ap5-ml-field-item #quantity_hauteur:focus {
-                                            border-bottom: 1px solid #7e7e7e !important;
+                                            border-bottom: 2px solid #026473 !important;
                                             box-shadow: none !important;
                                         }
 
@@ -329,8 +329,8 @@
                                             -webkit-appearance: none;
                                             appearance: none;
                                             padding-right: 24px !important;
-                                            background-color: #F5F5F5 !important;
-                                            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+                                            background-color: #E8F4F6 !important;
+                                            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23026473' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
                                             background-repeat: no-repeat !important;
                                             background-position: right center !important;
                                             background-size: 16px 16px !important;

@@ -116,4 +116,31 @@ class FrontController extends FrontControllerCore
 
         return parent::initHeader();
     }
+
+    /**
+     * Sur la boutique particuliers, n'affiche pas société / TVA
+     * dans les adresses formatées (checkout, résumé, etc.).
+     */
+    public function getTemplateVarCustomer($customer = null)
+    {
+        $cust = parent::getTemplateVarCustomer($customer);
+
+        if (CustomerAddressFormatter::isProFrontOffice() || empty($cust['addresses'])) {
+            return $cust;
+        }
+
+        foreach ($cust['addresses'] as &$address) {
+            if (empty($address['id'])) {
+                continue;
+            }
+            $address['formatted'] = AddressFormat::generateAddress(
+                new Address((int) $address['id']),
+                ['avoid' => ['company', 'vat_number']],
+                '<br>'
+            );
+        }
+        unset($address);
+
+        return $cust;
+    }
 }

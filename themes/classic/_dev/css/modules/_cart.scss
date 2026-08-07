@@ -500,3 +500,12 @@ body:has(.sticky-summary) .cart-grid-right .moyen_de_paiement {
   }
 
 }
+
+.collapse-toggle,
+.chevron-toggle {
+  cursor: pointer;
+}
+
+.chevron-toggle {
+  transition: transform 0.3s;
+}

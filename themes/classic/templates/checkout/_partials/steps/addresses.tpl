@@ -30,7 +30,7 @@
       data-refresh-url="{url entity='order' params=['ajax' => 1, 'action' => 'addressForm']}">
 
       {if $use_same_address}
-        <p>
+        <p class="addresses-intro">
           {if $cart.is_virtual}
             {l s='The selected address will be used as your personal address (for invoice).' d='Shop.Theme.Checkout'}
           {else}
@@ -69,20 +69,22 @@
             {l s="Your address is incomplete, please update it." d="Shop.Notifications.Error"}</p>
         {/if}
 
-        <p class="add-address mb-2">
-          <a href="{$new_address_delivery_url}"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" class="lucide lucide-plus mr-2">
+        <p class="add-address">
+          <a href="{$new_address_delivery_url}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M5 12h14" />
               <path d="M12 5v14" />
-            </svg>{l s='add new address' d='Shop.Theme.Actions'}</a>
+            </svg>
+            Ajouter une nouvelle adresse
+          </a>
         </p>
 
         {if $use_same_address && !$cart.is_virtual}
-          <p>
-            <a class="text-decoration-underline" data-link-action="different-invoice-address"
-              href="{$use_different_address_url}">
-              {l s='Billing address differs from shipping address' d='Shop.Theme.Checkout'}
+          <p class="different-invoice-address">
+            <a data-link-action="different-invoice-address" href="{$use_different_address_url}">
+              <span class="custom-radio" aria-hidden="true"><span></span></span>
+              Mon adresse de facturation est différente de l'adresse de livraison
             </a>
           </p>
         {/if}
@@ -122,17 +124,26 @@
           {/if}
 
           <p class="add-address">
-            <a href="{$new_address_invoice_url}"><i
-                class="material-icons">&#xE145;</i>{l s='add new address' d='Shop.Theme.Actions'}</a>
+            <a href="{$new_address_invoice_url}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14" />
+                <path d="M12 5v14" />
+              </svg>
+              Ajouter une nouvelle adresse
+            </a>
           </p>
         {/if}
 
       {/if}
 
       {if !$form_has_continue_button}
-        <div class="clearfix">
-          <button type="submit" class="btn btn-primary continue float-xs-right" name="confirm-addresses" value="1">
-            {l s='Continue' d='Shop.Theme.Actions'}
+        <div class="addresses-actions clearfix">
+          <button type="button" class="btn-link js-checkout-prev-step">
+            Étape précédente
+          </button>
+          <button type="submit" class="btn btn-primary continue" name="confirm-addresses" value="1">
+            Choisir ma livraison
           </button>
           <input type="hidden" id="not-valid-addresses" class="js-not-valid-addresses" value="{$not_valid_addresses}">
         </div>

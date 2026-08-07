@@ -1788,7 +1788,7 @@
 }
 .product-variants {
   .ap5-attributes {
-    border-left: 1px solid #026473;
+    border-left: 2px solid #026473;
     padding: 0 10px;
     margin-bottom: 1rem;
   }
@@ -1797,7 +1797,7 @@
   grid-template-columns: repeat(2, 1fr);
   row-gap: 10px;
   column-gap: 30px;
-  border-left: 1px solid #026473;
+  border-left: 2px solid #026473;
   padding: 0 10px;
   margin-bottom: 1rem;
 
@@ -1948,7 +1948,7 @@
     }
 
     @media (max-width: 480px) {
-      padding: 90px 5px 10px;
+      padding: 3em 5px 10px;
     }
   }
 
