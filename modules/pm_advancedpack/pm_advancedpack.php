@@ -3910,20 +3910,27 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
         $packPriceWithReduction = AdvancedPack::getPackPrice($idPack, $useTax, true, true, _PS_PRICE_DISPLAY_PRECISION_, $packAttributesList, $packQuantityList, $packExcludeList, true);
         $packPriceWithoutReduction = AdvancedPack::getPackPrice($idPack, $useTax, false, true, _PS_PRICE_DISPLAY_PRECISION_, $packAttributesList, $packQuantityList, $packExcludeList, true);
 
-        $productPresentation['price_amount'] = Tools::ps_round($packPriceWithReduction, Context::getContext()->currency->precision);
-        $productPresentation['price'] = number_format(Tools::ps_round(
-            ($packPriceWithReduction * $quantityWanted),
-            Context::getContext()->currency->precision
-        ), 2, ',', ' '). ' €';
-        $productPresentation['regular_price'] = number_format(Tools::ps_round(
-            ($packPriceWithoutReduction * $quantityWanted),
-            Context::getContext()->currency->precision
-        ), 2, ',', ' '). ' €';
+        $pricePrecision = (int) Context::getContext()->currency->precision;
+        $fmt = static function ($amount) use ($pricePrecision) {
+            return number_format(Tools::ps_round($amount, $pricePrecision), 2, ',', ' ') . ' €';
+        };
+
+        $productPresentation['price_amount'] = Tools::ps_round($packPriceWithReduction, $pricePrecision);
+        $productPresentation['price'] = $fmt($packPriceWithReduction * $quantityWanted);
+        $productPresentation['regular_price'] = $fmt($packPriceWithoutReduction * $quantityWanted);
         $productPresentation['has_discount'] = ($packPriceWithoutReduction > $packPriceWithReduction);
-        $productPresentation['unit_price_full'] = Tools::ps_round(
-                $packPriceWithReduction,
-                Context::getContext()->currency->precision
-            ). ' €';
+        $productPresentation['unit_price_full'] = Tools::ps_round($packPriceWithReduction, $pricePrecision) . ' €';
+
+        $packMlChoose = AdvancedPack::getPackMlChoose($idPack);
+        $showPackMlDualPrice = $packMlChoose && AdvancedPack::$frontMl !== null && (float) AdvancedPack::$frontMl > 0;
+        $packMlUnitPrice = '';
+        $packMlUnitRegularPrice = '';
+        if ($showPackMlDualPrice) {
+            $ml = (float) AdvancedPack::$frontMl;
+            $packMlUnitPrice = $fmt(($packPriceWithReduction * $quantityWanted) / $ml);
+            $packMlUnitRegularPrice = $fmt(($packPriceWithoutReduction * $quantityWanted) / $ml);
+        }
+
         $productPack->ecotax = AdvancedPack::getPackEcoTax($idPack, $packAttributesList);
         $productPack->quantity = AdvancedPack::getPackAvailableQuantity($idPack, $packAttributesList, $packQuantityList, $packExcludeList);
         $ecotax_rate = (float)Tax::getProductEcotaxRate($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
@@ -3963,11 +3970,14 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             'packQuantityList' => $packQuantityList,
             'packAllowRemoveProduct' => AdvancedPack::getPackAllowRemoveProduct($idPack),
             'packAutoChoose' => AdvancedPack::getPackAutoChoose($idPack),
-            'packMlChoose' => AdvancedPack::getPackMlChoose($idPack),
+            'packMlChoose' => $packMlChoose,
             'packMlDiscountTiers' => AdvancedPack::getPackMlDiscountTiers($idPack),
             'packHasMlDiscountTiers' => count(AdvancedPack::getPackMlDiscountTiers($idPack)) > 0,
             'packHeightChoose' => AdvancedPack::getPackHeightChoose($idPack),
             'packHeightValues' => AdvancedPack::getPackHeightValues($idPack),
+            'showPackMlDualPrice' => $showPackMlDualPrice,
+            'packMlUnitPrice' => $packMlUnitPrice,
+            'packMlUnitRegularPrice' => $packMlUnitRegularPrice,
             'packExcludeList' => $packExcludeList,
             'priceDisplayPrecision' => _PS_PRICE_DISPLAY_PRECISION_,
             'tax_enabled' => Configuration::get('PS_TAX'),

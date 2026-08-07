@@ -139,6 +139,81 @@
       }
     }
   }
+
+  &.ap5-price-dual {
+    align-items: stretch;
+    gap: 20px;
+    margin-bottom: 12px;
+
+    .ap5-price-dual__sep {
+      width: 1px;
+      align-self: stretch;
+      background: rgba($red, 0.45);
+    }
+
+    .ap5-ml-col {
+      --int: 34px;
+      --dec: 14px;
+      --reg: 13px;
+      --badge: 10px;
+      --label: 12px;
+      --reg-w: 700;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      &--unit {
+        --int: 22px;
+        --dec: 11px;
+        --reg: 11px;
+        --badge: 9px;
+        --label: 11px;
+        --reg-w: 400;
+      }
+
+      &__promo {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        .regular-price {
+          margin: 0;
+          color: #000;
+          font-size: var(--reg);
+        }
+
+        .tag-discount {
+          margin: 0;
+          padding: 1px 7px;
+          font-weight: 700;
+
+          .discount-value { color: $white; }
+        }
+      }
+
+      .product-price {
+        display: flex;
+        align-items: flex-end;
+        margin: auto 0 0;
+        font-size: 0;
+        line-height: 1;
+
+        .price-integer { font-size: var(--int); line-height: 1; }
+        .price-decimal { font-size: var(--dec); line-height: 1; }
+      }
+
+      &__label {
+        margin-top: 2px;
+        font-size: var(--label);
+        line-height: 1.2;
+      }
+    }
+  }
+}
+
+.banner-quick-view .ap5-price-dual {
+  .ap5-price-dual__sep,
+  .ap5-ml-col--unit { display: none; }
 }
 
 .product-quantity {
