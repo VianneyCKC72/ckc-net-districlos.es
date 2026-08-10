@@ -4,11 +4,11 @@ $(document).ready(function () {
         if ($('body#product').length) {
             $('.product-container.js-product-container').each(function () {
                 const $container = $(this);
-                const $swiper = $container.find('.swiper.swiper__product-img__cover.swiper-initialized.swiper-horizontal.swiper-watch-progress.swiper-backface-hidden');
+                const $gallery = $container.find('.product-images-grid');
                 const $discount = $container.find('.row > .col-lg-7 > .discount_type_flag');
 
-                if ($swiper.length && $discount.length) {
-                    $discount.appendTo($swiper);
+                if ($gallery.length && $discount.length) {
+                    $discount.prependTo($gallery);
                 }
             });
         }
@@ -27,7 +27,7 @@ $(document).ready(function () {
     });
 
 
-    var $element = $(".wrapper__swiper__product-img");
+    var $element = $(".product-images-grid");
 
     if ($element.length) {
         function updateWidth() {
@@ -481,10 +481,7 @@ $(document).ready(function () {
     refreshPrice();
 
     prestashop.on('updatedProduct', (event) => {
-        let dataImg = $(event.product_images_modal).filter('.js-product-images-modal').html()
-        let imgSrc = $(dataImg).find('img')
-        $('.img-cover.rounded-4').prop('src', imgSrc.attr('src'));
-        $('.wrapper__swiper__product-img').replaceWith(event.product_cover_thumbnails);
+        $('.product-images-grid').replaceWith(event.product_cover_thumbnails);
 
         refreshPrice();
 
@@ -505,39 +502,6 @@ $(document).ready(function () {
                 refEl.textContent = event.product_reference;
             }
         }
-
-        document
-            .querySelectorAll(".wrapper__swiper__product-img")
-            .forEach((wrapper, index) => {
-                const swiperProductImgThumbnails = new Swiper(
-                    wrapper.querySelector(
-                        ".wrapper__swiper__product-img__thumbnails .swiper__product-img__thumbnails"
-                    ),
-                    {
-                        direction: "vertical",
-                        loop: true,
-                        slidesPerView: "auto",
-                        spaceBetween: 24,
-                        watchSlidesProgress: true,
-                        navigation: {
-                            nextEl: wrapper.querySelector(".swiper-button-next"),
-                            prevEl: wrapper.querySelector(".swiper-button-prev"),
-                        },
-                    }
-                );
-                const swiperProductImgCover = new Swiper(
-                    wrapper.querySelector(".swiper__product-img__cover"),
-                    {
-                        loop: true,
-                        slidesPerView: 1,
-                        spaceBetween: 24,
-                        watchSlidesProgress: true,
-                        thumbs: {
-                            swiper: swiperProductImgThumbnails,
-                        },
-                    }
-                );
-            });
     });
 
     prestashop.on('updatedCart', (event) => {
