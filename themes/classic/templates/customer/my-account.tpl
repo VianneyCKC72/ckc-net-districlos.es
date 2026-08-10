@@ -28,7 +28,7 @@
 {block name='page_content'}
 
     {if $pro.suffix == '-pro'}
-        {include file="themes/classic/templates/customer/my-account-pro.tpl"}
+        {include file='customer/my-account-pro.tpl'}
     {else}
         <div class="small_container">
             <div class="row">
