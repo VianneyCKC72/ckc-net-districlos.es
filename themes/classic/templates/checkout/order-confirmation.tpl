@@ -13,6 +13,8 @@
               </h3>
             {/block}
 
+            {hook h='displayDtcOrderConfirmationClubPro'}
+
             <p>
               {l s='An email has been sent to your mail address %email%.' d='Shop.Theme.Checkout' sprintf=['%email%' => $order_customer.email]}
               {if $order.details.invoice_url}

@@ -24,9 +24,10 @@
         Mon adresse
     </a>
 {/if}
-{* // mes avantages *}
-<a  class="pro-items-links" href="{$urls.pages.discount}">
-    Mes avantages
+{* // Club Pro & avantages *}
+<a class="pro-items-links" href="{$urls.pages.discount}">
+    <span class="pro-items-links__star" aria-hidden="true">★</span>
+    Club Pro &amp; avantages
 </a>
 
 {if !$configuration.is_catalog}

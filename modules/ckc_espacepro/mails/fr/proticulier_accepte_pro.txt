@@ -1,0 +1,22 @@
+Bonjour {firstname},
+
+Nous avons le plaisir de vous informer que votre compte a désormais le statut de client professionnel chez Districlos.
+
+Ce statut vous donne accès à plusieurs avantages réservés aux professionnels :
+- L'accès au Club Pro, notre programme de remises automatiques, pouvant aller jusqu'à 10% sur vos commandes
+- Une réduction des frais de livraison
+- Reprise de marchandise et processus simplifié
+et encore plus !
+
+Le Club Pro, comment ça marche ?
+Votre statut dépend du cumul de vos commandes sur les 12 derniers mois glissants (clients web) :
+-5% de 0 € à 2 500 € HT
+-7% de 2 500 € à 5 000 € HT
+-10% au-delà de 5 000 € HT
+
+Suivez votre statut : {status_url}
+
+Bienvenue dans le Club Pro, et merci pour votre confiance !
+
+{shop_name}
+{shop_url}
