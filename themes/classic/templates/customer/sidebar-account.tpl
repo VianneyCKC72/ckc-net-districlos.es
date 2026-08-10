@@ -8,6 +8,7 @@
         </div>
         <div class="row links hide_mobile">
             {include file="customer/pro-raccourcis.tpl" sidebar=true}
+
             <h2 class="h2 mb-36 mt-5">
                 Mes autres options
             </h2>

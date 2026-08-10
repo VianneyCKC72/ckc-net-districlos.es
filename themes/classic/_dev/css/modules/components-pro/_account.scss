@@ -43,6 +43,13 @@
     padding: 15px 25px;
     margin-bottom: 25px;
 
+    .pro-items-links__star {
+      color: #F5C518;
+      margin-right: 8px;
+      font-size: 1.1em;
+      line-height: 1;
+    }
+
     &:hover {
         filter: brightness(85%);
         }
