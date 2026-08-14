@@ -81,19 +81,6 @@
                                 <h1 class="product-title">{block name='page_title'}{$product.name}{/block}</h1>
                             {/block}
                         {/block}
-                        {if !$pro.env}
-                            <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mb-3">
-                                <div>
-                                    <p class="small mb-0 font-weight-bold mb-1">
-                                        Produit garanti moins cher du web
-                                    </p>
-                                    <p class="thin mb-0">
-                                        Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.
-                                    </p>
-                                </div>
-                                <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
-                            </div>
-                        {/if}
                         <div class="d-flex align-items-center mb-3 gap-16 flex-wrap">
                             {if $product.quantity > 0}
                                 <div class="small text-secondary">
@@ -225,6 +212,19 @@
                                 </form>
                             {/block}
                         </div>
+                        {if !$pro.env}
+                            <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mt-3 mb-3">
+                                <div>
+                                    <p class="small mb-0 font-weight-bold mb-1">
+                                        Produit garanti moins cher du web
+                                    </p>
+                                    <p class="thin mb-0">
+                                        Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.
+                                    </p>
+                                </div>
+                                <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
+                            </div>
+                        {/if}
                     </div>
                 </div>
             </div>
