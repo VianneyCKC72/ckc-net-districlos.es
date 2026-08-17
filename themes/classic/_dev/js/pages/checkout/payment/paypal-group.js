@@ -64,7 +64,7 @@ export function initPayPalPaymentGroup() {
                             '<span class="payment-option__desc">Au comptant ou quatre fois sans frais</span>' +
                         '</span>' +
                         '<span class="payment-option__logos">' +
-                            '<img src="/themes/classic/assets/img/payment/paypal-logos.png" alt="PayPal" loading="lazy">' +
+                            '<img src="/themes/classic/assets/img/payment/paypal-logos.png" alt="PayPal" width="110" height="28">' +
                         '</span>' +
                     '</span>' +
                 '</label>' +
