@@ -39,3 +39,4 @@
 
 {* Totaux déjà dans le récap à droite — pas besoin en bas de l'étape paiement *}
 {block name='order_confirmation_totals'}{/block}
+{block name='order_confirmation_details'}{/block}

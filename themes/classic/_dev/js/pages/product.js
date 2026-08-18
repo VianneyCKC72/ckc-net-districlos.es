@@ -11,8 +11,47 @@ $(document).ready(function () {
                     $discount.prependTo($gallery);
                 }
             });
+
+            enhanceProductDescriptionSections();
         }
     });
+
+    function enhanceProductDescriptionSections() {
+        document.querySelectorAll('#product .product-description .descr_infosupp').forEach(function (section) {
+            var titleEl = section.querySelector('.title_descr');
+            var title = titleEl ? titleEl.textContent.trim().toLowerCase() : '';
+
+            if (/bénéfice|benefice/.test(title)) {
+                section.classList.add('descr_infosupp--benefits');
+            }
+
+            if (/information/.test(title)) {
+                var content = section.querySelector('.descr_infosupp_content');
+                if (content && content.getAttribute('data-descr-enhanced') !== '1') {
+                    content.setAttribute('data-descr-enhanced', '1');
+                    var html = content.innerHTML;
+                    if (/<br\s*\/?>/i.test(html)) {
+                        var items = html.split(/<br\s*\/?>/i).map(function (item) {
+                            return item.trim();
+                        }).filter(Boolean);
+
+                        if (items.length > 1) {
+                            var list = document.createElement('ul');
+                            list.className = 'descr_infosupp-list';
+
+                            items.forEach(function (item) {
+                                var li = document.createElement('li');
+                                li.innerHTML = item;
+                                list.appendChild(li);
+                            });
+
+                            content.parentNode.replaceChild(list, content);
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     $(document).on('ajaxComplete', function (event, xhr, settings) {
         if (settings.url.includes('calculator')) {

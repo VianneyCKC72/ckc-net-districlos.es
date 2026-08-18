@@ -72,6 +72,22 @@
 }
 
 body#checkout {
+  // Réserve CGV + PASSER COMMANDE dans le récap dès le 1er paint (étape paiement)
+  &:has(#checkout-payment-step.js-current-step),
+  &:has(#checkout-payment-step.-current) {
+    #js-checkout-summary .cart-summary-payment-actions {
+      display: block;
+      min-height: 160px;
+    }
+  }
+
+  .banner-services .service > img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
   // Mobile : le .row Bootstrap (margin ±15px) + col padding 15px déborde
   // → contenu collé à droite. On s’appuie uniquement sur le padding .container.
   @media (max-width: 991px) {
@@ -1726,6 +1742,24 @@ body#checkout {
     flex-direction: column;
     gap: 12px;
 
+    // Cartes fusionnées en JS : masquées dès le 1er paint uniquement si le groupe est complet
+    &:has([data-payment-group="paypal-keep"]):has([data-payment-group="paypal-extra"]) {
+      [data-payment-group="paypal-extra"] { display: none; }
+    }
+
+    &:has([data-payment-group="oney-sf-keep"]):has([data-payment-group="oney-sf-extra"]) {
+      [data-payment-group="oney-sf-extra"] { display: none; }
+    }
+
+    &:has([data-payment-group="oney-nx-keep"]):has([data-payment-group="oney-nx-extra"]) {
+      [data-payment-group="oney-nx-extra"] { display: none; }
+    }
+
+    &:has([data-payment-group="oney-long-keep"]):has([data-payment-group="oney-long-extra-36"]):has([data-payment-group="oney-long-extra-48"]) {
+      [data-payment-group="oney-long-extra-36"],
+      [data-payment-group="oney-long-extra-48"] { display: none; }
+    }
+
     .custom-radio {
       @extend %checkout-card-radio;
     }
@@ -2111,7 +2145,7 @@ body#checkout {
       align-items: flex-start;
       gap: 12px;
       height: auto;
-      min-height: 0;
+      min-height: 48px;
       margin: 0;
 
       label {
@@ -2175,10 +2209,14 @@ body#checkout {
       gap: 8px;
       margin-left: auto;
       flex: 0 0 auto;
+      min-width: 96px;
+      min-height: 28px;
 
       img {
-        max-height: 28px;
+        height: 28px;
         width: auto;
+        max-height: 28px;
+        max-width: 110px;
         object-fit: contain;
       }
 

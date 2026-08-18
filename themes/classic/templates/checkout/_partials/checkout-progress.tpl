@@ -60,16 +60,22 @@
 </nav>
 
 <script>
+  (function () {
+    var progress = document.currentScript && document.currentScript.previousElementSibling;
+    if (!progress || !progress.classList || !progress.classList.contains('checkout-progress')) {
+      progress = document.querySelector('.checkout-progress');
+    }
+    var topbar = document.querySelector('.checkout-topbar');
+    // Déplacer avant le 1er paint des colonnes (paiement / récap) pour éviter le CLS
+    if (progress && topbar && progress.parentNode !== topbar) {
+      topbar.insertAdjacentElement('afterbegin', progress);
+    }
+  })();
+
   document.addEventListener('DOMContentLoaded', function () {
     var progress = document.querySelector('.checkout-progress');
-    var topbar = document.querySelector('.checkout-topbar');
     if (!progress) {
       return;
-    }
-
-    // Place le fil d'Ariane en pleine largeur au-dessus du checkout
-    if (topbar) {
-      topbar.insertAdjacentElement('afterbegin', progress);
     }
 
     function syncCheckoutProgress() {
