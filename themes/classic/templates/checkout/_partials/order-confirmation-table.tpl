@@ -57,15 +57,14 @@
                             </div>
 
                             <div class="col-sm-4 col-xs-9 details">
-                                <span>{$product.name|escape:'html'}</span>
+                                <span class="product-name">{$product.name|regex_replace:'/\s*\(.*\)\s*$/':''|escape:'html'}</span>
 
                                 {if isset($product.attributes) && $product.attributes}
-                                    {foreach from=$product.attributes key="attribute" item="value"}
-                                        <div class="product-line-info product-line-info-secondary">
-                                            <span class="label">{$attribute} :</span>
-                                            <span class="value">{$value}</span>
-                                        </div>
-                                    {/foreach}
+                                    <div class="product-attributes-inline">
+                                        {foreach from=$product.attributes key="attribute" item="value" name="attrs"}
+                                            <span>{$attribute} : {$value}</span>{if !$smarty.foreach.attrs.last}<br>{/if}
+                                        {/foreach}
+                                    </div>
                                 {/if}
 
                                 {if is_array($product.customizations) && $product.customizations|count}
