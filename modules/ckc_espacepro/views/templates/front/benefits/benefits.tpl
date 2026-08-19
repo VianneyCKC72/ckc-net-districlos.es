@@ -2,6 +2,13 @@
 
 {block name="page_content"}
 
+    {* Section Club Pro *}
+    <section class="dtc-club-pro-section p-b-100">
+        <div class="container px-0">
+            {hook h='displayDtcClubProAvantages'}
+        </div>
+    </section>
+
     {* Section des bénéfices *}
     <section class="benefits-section p-b-100">
         <img class="position-absolute image-bg z-n1" src="modules/ckc_espacepro/views/img/dessins.svg" alt="">

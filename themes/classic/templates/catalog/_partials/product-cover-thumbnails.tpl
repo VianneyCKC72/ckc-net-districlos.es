@@ -23,91 +23,36 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 
-<div class="images-container wrapper__swiper__product-img mb-5 mb-lg-0">
-  {block name='product_images'}
-    <div class="product-cover wrapper__swiper__product-img__thumbnails">
-      <div class="swiper swiper__product-img__thumbnails">
-        <div class="swiper-wrapper">
-          {foreach from=$product.images item=image}
-            <div class="swiper-slide">
-              <div class="thumbnail">
-                <picture>
-                  {if !empty($image.bySize.small_default.sources.avif)}
-                    <source srcset="{$image.bySize.small_default.sources.avif}" type="image/avif">{/if}
-                  {if !empty($image.bySize.small_default.sources.webp)}
-                    <source srcset="{$image.bySize.small_default.sources.webp}" type="image/webp">{/if}
-                  <img loading="lazy" class="img-cover" src="{$image.bySize.small_default.url}"
-                       alt="{if !empty($image.legend)}{$image.legend}{else}{$product.name}{/if}" />
-                </picture>
-              </div>
-            </div>
-          {/foreach}
-        </div>
-      </div>
-      <div class="swiper-button-prev">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-             class="lucide lucide-move-left">
-          <path d="M6 8L2 12L6 16" />
-          <path d="M2 12H22" />
-        </svg>
-      </div>
-      <div class="swiper-button-next">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-             class="lucide lucide-move-right">
-          <path d="M18 8L22 12L18 16" />
-          <path d="M2 12H22" />
-        </svg>
-      </div>
-    </div>
-  {/block}
-
+<div class="images-container product-images-grid mb-5 mb-lg-0">
   {block name='product_cover'}
-    <div class="product-images swiper swiper__product-img__cover">
-        {if !$product.from_europe}
-            <div class="pastille_fr">
-                <img src="/img/pastille_produit_france.svg" alt="{l s='Fabriqué en France' d='Shop.Theme.Customcatalog'}" class="pastille_fr_icon pastille-fr-icon-page-produit">
-            </div>
-        {/if}
-
-      <img class="tag-web-price" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
-
-      <div class="swiper-wrapper">
-        {foreach from=$product.images key=key item=image}
+    <div class="product-images-grid__track">
+      {foreach from=$product.images key=key item=image}
+        <div class="product-images-grid__item{if $key == 0} product-images-grid__item--first{/if}">
           {if $key == 0}
-            <div class="swiper-slide">
-              {*            <a href="{$image.bySize.large_default.url}" data-fancybox="product-gallery" rel="nofollow">*}
-              <a href="{$image.bySize.large_default.url}" rel="nofollow">
-                <picture>
-                  {if !empty($image.bySize.large_default.sources.avif)}
-                    <source srcset=" {$image.bySize.large_default.sources.avif}" type="image/avif">{/if}
-                  {if !empty($image.bySize.large_default.sources.webp)}
-                    <source srcset="{$image.bySize.large_default.sources.webp}" type="image/webp">{/if}
-                  <img class="img-cover rounded-4" src="{$image.bySize.large_default.url}"
-                       alt="{if !empty($image.legend)}{$image.legend}{else}{$product.name}{/if}" />
-                </picture>
-              </a>
-            </div>
-          {else}
-            <div class="swiper-slide">
-              {*            <a href="{$image.bySize.large_default.url}" data-fancybox="product-gallery" rel="nofollow">*}
-              <a href="{$image.bySize.large_default.url}" rel="nofollow">
-                <picture>
-                  {if !empty($image.bySize.large_default.sources.avif)}
-                    <source srcset=" {$image.bySize.large_default.sources.avif}" type="image/avif">{/if}
-                  {if !empty($image.bySize.large_default.sources.webp)}
-                    <source srcset="{$image.bySize.large_default.sources.webp}" type="image/webp">{/if}
-                  <img loading="lazy" class="img-cover rounded-4" src="{$image.bySize.large_default.url}"
-                       alt="{if !empty($image.legend)}{$image.legend}{else}{$product.name}{/if}" />
-                </picture>
-              </a>
-            </div>
+            {if !$product.from_europe}
+              <div class="pastille_fr">
+                <img src="/img/pastille_produit_france.svg" alt="{l s='Fabriqué en France' d='Shop.Theme.Customcatalog'}" class="pastille_fr_icon pastille-fr-icon-page-produit">
+              </div>
+            {/if}
+            <img class="tag-web-price" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
           {/if}
-        {/foreach}
-      </div>
-        {hook h='displayAfterProductThumbs' product=$product}
+          <a href="{$image.bySize.large_default.url}" class="js-product-image-zoom" rel="nofollow">
+            <picture>
+              {if !empty($image.bySize.large_default.sources.avif)}
+                <source srcset="{$image.bySize.large_default.sources.avif}" type="image/avif">{/if}
+              {if !empty($image.bySize.large_default.sources.webp)}
+                <source srcset="{$image.bySize.large_default.sources.webp}" type="image/webp">{/if}
+              <img
+                class="img-cover rounded-4"
+                src="{$image.bySize.large_default.url}"
+                alt="{if !empty($image.legend)}{$image.legend}{else}{$product.name}{/if}"
+                {if $key != 0}loading="lazy"{/if}
+              />
+            </picture>
+          </a>
+        </div>
+      {/foreach}
     </div>
+    {hook h='displayAfterProductThumbs' product=$product}
   {/block}
-
 </div>

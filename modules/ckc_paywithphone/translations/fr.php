@@ -19,4 +19,5 @@ $_MODULE['<{ckc_paywithphone}prestashop>ckc_paywithphone_infos_85044e226bee40900
 $_MODULE['<{ckc_paywithphone}prestashop>ckc_paywithphone_infos_19b943fc1edfb55b996c7522e236b9e8'] = 'Payer par téléphone';
 $_MODULE['<{ckc_paywithphone}prestashop>ckc_paywithphone_infos_3854da4395f439885dc06cb0053a4da9'] = 'Payer par téléphone :';
 $_MODULE['<{ckc_paywithphone}prestashop>payment_infos_b2f40690858b404ed10e62bdf422c704'] = 'Montant';
+$_MODULE['<{ckc_paywithphone}prestashop>payment_infos_fdb0c388de01d545017cdf9ccf00eb72'] = 'Magasin';
 $_MODULE['<{ckc_paywithphone}prestashop>payment_infos_bcc254b55c4a1babdf1dcb82c207506b'] = 'Téléphone';

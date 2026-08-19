@@ -37,7 +37,19 @@
                     title="{l s='View my customer account' d='Shop.Theme.Customeraccount'}"
                     rel="nofollow"
             >
-                <img src="/themes/classic/assets/img/ico-compte.svg" alt="{l s='Connexion' d='Shop.Theme.Custommodules'}">
+                <span class="ico__account-wrap">
+                    <img src="/themes/classic/assets/img/ico-compte.svg" alt="{l s='Connexion' d='Shop.Theme.Custommodules'}">
+                    {if isset($modules.dtc_paliers_remise.club_badge) && $modules.dtc_paliers_remise.club_badge}
+                        <img
+                            class="ico__club-badge"
+                            src="{$urls.base_url}modules/dtc_paliers_remise/views/img/badge-{$modules.dtc_paliers_remise.club_badge|escape:'htmlall':'UTF-8'}.png"
+                            alt=""
+                            width="25"
+                            height="25"
+                            loading="lazy"
+                        >
+                    {/if}
+                </span>
                 <span class="hidden-sm-down">{l s='Mon compte' d='Shop.Theme.Custommodules'}</span>
             </a>
         {elseif isset($pro.env) && $pro.env == 1 && Context::getContext()->shop->id == 2}

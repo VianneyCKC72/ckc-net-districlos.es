@@ -51,8 +51,8 @@
       <div class="col-6 contenair-img-auth">
         <figure>
           <picture>
-            <source srcset="/img/cms/auth/img-espace-pro2.webp" type="image/webp">
-            <img class="img-connect" alt="Authentification Districlos" src="/img/cms/auth/img-espace-pro2.jpeg">
+            <source srcset="/img/cms/auth/img-espace-pro3.webp" type="image/webp">
+            <img class="img-connect" alt="Authentification Districlos" src="/img/cms/auth/img-espace-pro3.jpg">
           </picture>
         </figure>
 

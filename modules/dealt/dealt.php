@@ -635,22 +635,12 @@ class Dealt extends Module
 
                             $customer_zip_code = pSQL($addressSQL[0]['postcode']);
 
-                            $stores = Db::getInstance()->executeS('SELECT zip_codes, name FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
-
-                            $store_name = null;
-
-                            foreach ($stores as $store) {
-                                $zip_codes = explode(',', $store['zip_codes']);
-
-                                foreach ($zip_codes as $zip_code) {
-                                    $zip_code = trim($zip_code);
-
-                                    if ($zip_code === $customer_zip_code || (strpos($zip_code, '*') !== false && preg_match('/^' . str_replace('*', '.*', $zip_code) . '$/', $customer_zip_code))) {
-                                        $store_name = $store['name'];
-                                        break 2;
-                                    }
-                                }
+                            $stores = Db::getInstance()->executeS('SELECT id_store, zip_codes, name FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
+                            if (!class_exists('Ckcstockmultistore', false)) {
+                                require_once _PS_MODULE_DIR_ . 'ckcstockmultistore/ckcstockmultistore.php';
                             }
+                            $match = Ckcstockmultistore::matchStoreByZip($stores, $customer_zip_code);
+                            $store_name = $match['name'] ?? null;
 
                             if(!empty($store_name)){
                                 $stores2 = Db::getInstance()->executeS('SELECT offerId, departement FROM ' . _DB_PREFIX_ . 'ckcstorespresentation');
@@ -902,22 +892,12 @@ class Dealt extends Module
 
                             $customer_zip_code = pSQL($addressSQL[0]['postcode']);
 
-                            $stores = Db::getInstance()->executeS('SELECT zip_codes, name FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
-
-                            $store_name = null;
-
-                            foreach ($stores as $store) {
-                                $zip_codes = explode(',', $store['zip_codes']);
-
-                                foreach ($zip_codes as $zip_code) {
-                                    $zip_code = trim($zip_code);
-
-                                    if ($zip_code === $customer_zip_code || (strpos($zip_code, '*') !== false && preg_match('/^' . str_replace('*', '.*', $zip_code) . '$/', $customer_zip_code))) {
-                                        $store_name = $store['name'];
-                                        break 2;
-                                    }
-                                }
+                            $stores = Db::getInstance()->executeS('SELECT id_store, zip_codes, name FROM ' . _DB_PREFIX_ . 'ckcstockstores_stores');
+                            if (!class_exists('Ckcstockmultistore', false)) {
+                                require_once _PS_MODULE_DIR_ . 'ckcstockmultistore/ckcstockmultistore.php';
                             }
+                            $match = Ckcstockmultistore::matchStoreByZip($stores, $customer_zip_code);
+                            $store_name = $match['name'] ?? null;
 
                             if(!empty($store_name)){
                                 $stores2 = Db::getInstance()->executeS('SELECT offerId, departement FROM ' . _DB_PREFIX_ . 'ckcstorespresentation');

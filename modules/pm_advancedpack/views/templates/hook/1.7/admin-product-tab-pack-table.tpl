@@ -58,6 +58,10 @@
 						<input type="hidden" value="0" id="ap5_customizationFields-{$idProductPack|escape:'html':'UTF-8'}" name="ap5_customizationFields-{$idProductPack|escape:'html':'UTF-8'}" />
 						{/if}
 						<br />
+						{if isset($packHeightChoose) && $packHeightChoose && isset($packHeightValues) && $packHeightValues|@count}
+						{l s='Height impact:' mod='pm_advancedpack'}&nbsp;
+						<input type="checkbox"{if !empty($packProduct['height_impact'])} checked="checked"{/if} value="1" id="ap5_height_impact-{$idProductPack|escape:'html':'UTF-8'}" name="ap5_height_impact-{$idProductPack|escape:'html':'UTF-8'}" class="ap5_height_impact" data-id-product-pack="{$idProductPack|escape:'html':'UTF-8'}" />
+						{/if}
 					</td>
 					<td class="text-center">
 						<input type="hidden" name="ap5_productList[]" value="{$idProductPack|escape:'html':'UTF-8'}" />
@@ -112,6 +116,9 @@
 									<th class="text-left ap5_discountCell">
 										<input title="{l s='Allow custom discounts on combinations' mod='pm_advancedpack'}" type="checkbox" id="ap5_combinationDiscount-{$idProductPack|escape:'html':'UTF-8'}" class="ap5_combinationDiscount" data-id-product-pack="{$idProductPack|escape:'html':'UTF-8'}"{if isset($hasDiscountOnCombinations[$idProductPackKey]) && $hasDiscountOnCombinations[$idProductPackKey]} checked="checked"{/if} />&nbsp;{l s='Discount' mod='pm_advancedpack'}
 									</th>
+									{if isset($packHeightChoose) && $packHeightChoose && isset($packHeightValues) && $packHeightValues|@count}
+									<th class="text-left ap5_heightImpactCell">{l s='Height' mod='pm_advancedpack'}</th>
+									{/if}
 									<th class="text-left">{l s='Reference / EAN13' mod='pm_advancedpack'}</th>
 									<th class="text-center">{l s='Quantity' mod='pm_advancedpack'}</th>
 								</tr>

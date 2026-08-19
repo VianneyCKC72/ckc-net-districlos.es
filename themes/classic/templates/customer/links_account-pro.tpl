@@ -24,9 +24,10 @@
         {l s='Mon adresse' d='Shop.Theme.Customcustomer'}
     </a>
 {/if}
-{* // mes avantages *}
-<a  class="pro-items-links" href="{$urls.pages.discount}">
-    {l s='Mes avantages' d='Shop.Theme.Customcustomer'}
+{* // Club Pro & avantages *}
+<a class="pro-items-links" href="{$urls.pages.discount}">
+    <span class="pro-items-links__star" aria-hidden="true">★</span>
+    {l s='Club Pro & avantages' d='Shop.Theme.Customcustomer'}
 </a>
 
 {if !$configuration.is_catalog}

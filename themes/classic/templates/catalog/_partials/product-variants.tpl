@@ -28,6 +28,11 @@
   <span class="h6 mb-2 w-100 chooseYourProduct">{l s='Choisissez votre produit' d='Shop.Theme.Customcatalog'}</span>
 {/if}
 <div class="product-variants js-product-variants mb-4">
+  {if isset($combinations) && $combinations|count}
+    <script type="application/json" class="js-product-combos">{strip}
+      [{foreach from=$combinations item=combo name=combos}{ldelim}{assign var=attrIndex value=0}{foreach from=$combo.attributes_values key=gid item=gname name=comboGroups}"{$gid|intval}":{$combo.attributes[$attrIndex]|intval}{if !$smarty.foreach.comboGroups.last},{/if}{assign var=attrIndex value=$attrIndex+1}{/foreach}{rdelim}{if !$smarty.foreach.combos.last},{/if}{/foreach}]
+    {/strip}</script>
+  {/if}
 
   {foreach from=$groups key=id_attribute_group item=group}
     {if !empty($group.attributes)}

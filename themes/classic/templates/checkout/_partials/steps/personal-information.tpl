@@ -5,40 +5,41 @@
 
   {if $customer.is_logged && !$customer.is_guest}
 
-    <p class="identity">
-      {* [1][/1] is for a HTML tag. *}
-      {l s='Connected as [1]%firstname% %lastname%[/1].'
-                    d='Shop.Theme.Customeraccount'
-                    sprintf=[
-                      '[1]' => "<a href='{$urls.pages.identity}'>",
-      '[/1]' => "</a>",
-      '%firstname%' => $customer.firstname,
-      '%lastname%' => $customer.lastname
-      ]
-      }
-    </p>
-    <p>
-      {* [1][/1] is for a HTML tag. *}
-      {l
-                    s='Not you? [1]Log out[/1]'
-                    d='Shop.Theme.Customeraccount'
-                    sprintf=[
-                    '[1]' => "<a href='{$urls.actions.logout}'>",
-      '[/1]' => "</a>"
-      ]
-      }
-    </p>
-    {if !isset($empty_cart_on_logout) || $empty_cart_on_logout}
-      <p><small>{l s='If you sign out now, your cart will be emptied.' d='Shop.Theme.Checkout'}</small></p>
-    {/if}
+    <div class="personal-info-logged">
+      <div class="personal-info-logged__identity">
+        <p class="identity">
+          {* [1][/1] is for a HTML tag. *}
+          {l s='Connected as [1]%firstname% %lastname%[/1].'
+                        d='Shop.Theme.Customeraccount'
+                        sprintf=[
+                          '[1]' => "<a href='{$urls.pages.identity}'>",
+          '[/1]' => "</a>",
+          '%firstname%' => $customer.firstname,
+          '%lastname%' => $customer.lastname
+          ]
+          }
+        </p>
+        <p class="identity-logout">
+          {* [1][/1] is for a HTML tag. *}
+          {l
+                        s='Not you? [1]Log out[/1]'
+                        d='Shop.Theme.Customeraccount'
+                        sprintf=[
+                        '[1]' => "<a href='{$urls.actions.logout}'>",
+          '[/1]' => "</a>"
+          ]
+          }
+        </p>
+        {if !isset($empty_cart_on_logout) || $empty_cart_on_logout}
+          <p><small>{l s='If you sign out now, your cart will be emptied.' d='Shop.Theme.Checkout'}</small></p>
+        {/if}
+      </div>
 
-    <div class="clearfix">
-      <form method="GET" action="{$urls.pages.order}">
-        <button class="continue btn btn-primary float-xs-right" name="controller" type="submit" value="order">
-          {l s='Continue' d='Shop.Theme.Actions'}
+      <form class="personal-info-logged__action" method="GET" action="{$urls.pages.order}">
+        <button class="continue btn btn-primary" name="controller" type="submit" value="order">
+          Choisir mon adresse
         </button>
       </form>
-
     </div>
 
   {else}

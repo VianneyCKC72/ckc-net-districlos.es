@@ -36,11 +36,11 @@
               <span class="label-name">{$address.firstname} {$address.lastname}</span><br>
             {/if}
 
-            {if $address.company}
+            {if (isset($pro.env) && $pro.env == 1) && $address.company}
               <span class="label-company"><strong>{$address.company}</strong></span><br>
             {/if}
             <br>
-            {if $address.vat_number}
+            {if (isset($pro.env) && $pro.env == 1) && $address.vat_number}
               <span class="label-vat">{$address.vat_number}</span><br>
             {/if}
 
@@ -92,11 +92,11 @@
               <span class="label-name">{$address.firstname} {$address.lastname}</span><br>
             {/if}
 
-            {if $address.company}
+            {if (isset($pro.env) && $pro.env == 1) && $address.company}
               <span class="label-company"><strong>{$address.company}</strong></span><br>
             {/if}
             <br>
-            {if $address.vat_number}
+            {if (isset($pro.env) && $pro.env == 1) && $address.vat_number}
               <span class="label-vat">{$address.vat_number}</span><br>
             {/if}
 
@@ -153,11 +153,11 @@
             <span class="label-name">{$address.firstname} {$address.lastname}</span><br>
           {/if}
 
-          {if $address.company}
+          {if (isset($pro.env) && $pro.env == 1) && $address.company}
             <span class="label-company"><strong>{$address.company}</strong></span><br>
           {/if}
           <br>
-          {if $address.vat_number}
+          {if (isset($pro.env) && $pro.env == 1) && $address.vat_number}
             <span class="label-vat">{$address.vat_number}</span><br>
           {/if}
 

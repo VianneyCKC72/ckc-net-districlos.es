@@ -20,8 +20,8 @@
                     <div class="price product_header_title js-product-prices">
                         {include file='module:pm_advancedpack/views/templates/front/1.7/pack-price-container.tpl'}
                     </div>
-                    <div class="addProduct" {if isset($packMlChoose) && $packMlChoose} style="display:block" {/if}>
-                        {if !$packMlChoose}
+                    <div class="addProduct" {if (isset($packMlChoose) && $packMlChoose) || (isset($packHeightChoose) && $packHeightChoose && isset($packHeightValues) && $packHeightValues|@count > 0)} style="display:block" {/if}>
+                        {if !$packMlChoose && !($packHeightChoose && isset($packHeightValues) && $packHeightValues|@count > 0)}
                             <div class="clearfix dis_flex" >
                                     <span class="input-group-btn-vertical dis_flex">
                                         <button class="btn btn-touchspin js-touchspin bootstrap-touchspin-down-bottom" type="button"><i class="material-icons touchspin-down"></i></button>
@@ -30,8 +30,8 @@
                                     </span>
                             </div>
                         {/if}
-                        <div class="position-relative" {if $packMlChoose} style="width: 100%" {/if}>
-                            <button class="btn btn-primary add-to-cart-bottom" data-button-action="add-to-cart" type="submit" {if $packMlChoose} style="padding: 11px !important;width: 100%;" {/if}>
+                        <div class="position-relative" {if $packMlChoose || ($packHeightChoose && isset($packHeightValues) && $packHeightValues|@count > 0)} style="width: 100%" {/if}>
+                            <button class="btn btn-primary add-to-cart-bottom" data-button-action="add-to-cart" type="submit" {if $packMlChoose || ($packHeightChoose && isset($packHeightValues) && $packHeightValues|@count > 0)} style="padding: 11px !important;width: 100%;" {/if}>
                                 {l s='Ajouter au panier' d='Shop.Theme.Custommodules'}
                             </button>
                         </div>
@@ -167,6 +167,7 @@
                                 <input type="hidden" name="id_product_attribute" id="idCombination" value="{if !empty($packAttributesList)}{$packAttributesList|json_encode}{/if}" />
                                 <input type="hidden" name="auto_choose" id="auto_choose" value="{$packAutoChoose}">
                                 <input type="hidden" name="ml_choose" id="ml_choose" value="{$packMlChoose}">
+                                <input type="hidden" name="height_choose" id="height_choose" value="{$packHeightChoose}">
                                 <input type="hidden" name="is_pack" value="1" id="is_pack">
 
                                 {block name='product_discounts'}
@@ -191,20 +192,221 @@
                                     {/if}
                                 {/block}
 
-                                {if $packMlChoose}
+                                {if $packMlChoose || ($packHeightChoose && isset($packHeightValues) && $packHeightValues|@count > 0)}
                                     <span class="bold">{l s='Dimensions' d='Shop.Theme.Custommodules'}</span>
 
-                                    <div class="product-variants ap5-attributes">
-                                        <div class="clearfix hiddenlabel">
-                                            <p class=group-name>{l s='Choisissez la longueur en mètres linéaires' d='Shop.Theme.Custommodules'}</p>
+                                    <style>
+                                        .ap5-dimensions-row .group-name {
+                                            display: flex;
+                                            align-items: center;
+                                            gap: 8px;
+                                            margin: 0 0 10px;
+                                        }
+
+                                        .ap5-dimensions-row .ap5-ml-field-item {
+                                            background: #E8F4F6;
+                                            border: 0;
+                                            border-radius: 4px;
+                                            padding: 14px 16px;
+                                        }
+
+                                        .ap5-dimensions-row .ap5-ml-field-item input,
+                                        .ap5-dimensions-row .ap5-ml-field-item select {
+                                            background: transparent !important;
+                                        }
+
+                                        .ap5-ml-help {
+                                            position: relative;
+                                            display: inline-flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            width: 20px;
+                                            height: 20px;
+                                            color: #026473;
+                                            cursor: help;
+                                        }
+
+                                        .ap5-ml-help-tooltip {
+                                            position: absolute;
+                                            left: 50%;
+                                            top: 28px;
+                                            transform: translateX(-50%);
+                                            min-width: 190px;
+                                            max-width: 260px;
+                                            padding: 8px 10px;
+                                            background: #FFFFFF;
+                                            border: 1px solid #bdbdbd;
+                                            color: #6f6f6f;
+                                            font-size: 12px;
+                                            line-height: 1.3;
+                                            visibility: hidden;
+                                            opacity: 0;
+                                            z-index: 15;
+                                        }
+
+                                        .ap5-ml-help:hover .ap5-ml-help-tooltip,
+                                        .ap5-ml-help:focus .ap5-ml-help-tooltip {
+                                            visibility: visible;
+                                            opacity: 1;
+                                        }
+
+                                        .product-variants.ap5-dimensions-row {
+                                            display: grid !important;
+                                            grid-template-columns: repeat(2, minmax(0, 1fr));
+                                            gap: 16px;
+                                            margin-bottom: 1rem;
+                                            align-items: stretch;
+                                            border-left: 0;
+                                            padding: 0;
+                                        }
+
+                                        .ap5-dimensions-row .ap5-ml-field-item {
+                                            display: flex;
+                                            flex-direction: column;
+                                            min-width: 0;
+                                            align-self: stretch;
+                                        }
+
+                                        .ap5-dimensions-row .group-name {
+                                            flex: 0 0 auto;
+                                            min-height: 52px;
+                                            margin-bottom: 10px;
+                                            align-items: flex-start;
+                                        }
+
+                                        .product-variants.ap5-dimensions-row:has(> :only-child) {
+                                            grid-template-columns: 1fr !important;
+                                        }
+
+                                        .ap5-dimensions-row .ap5-ml-field-item:only-child {
+                                            grid-column: auto;
+                                        }
+
+                                        .ap5-dimensions-row .ap5-ml-field-item:only-child .group-name {
+                                            min-height: 0;
+                                        }
+
+                                        .ap5-dimensions-row .select_wrap {
+                                            flex: 0 0 auto;
+                                        }
+
+                                        .ap5-dimensions-row .clearfix::after {
+                                            display: none;
+                                        }
+
+                                        .ap5-dimensions-row .ap5-ml-field-item #quantity_ml,
+                                        .ap5-dimensions-row .ap5-ml-field-item #quantity_hauteur,
+                                        .ap5-dimensions-row .ap5-ml-field-item select#quantity_hauteur {
+                                            display: block;
+                                            width: 100%;
+                                            height: 28px !important;
+                                            min-height: 28px !important;
+                                            max-height: 28px !important;
+                                            padding: 0 0 6px !important;
+                                            margin: 0;
+                                            line-height: 22px !important;
+                                            box-sizing: border-box;
+                                            border: 0 !important;
+                                            border-bottom: 2px solid #026473 !important;
+                                            border-radius: 0 !important;
+                                            box-shadow: none !important;
+                                            outline: none;
+                                            color: #222;
+                                        }
+
+                                        .ap5-dimensions-row .ap5-ml-field-item #quantity_ml::placeholder {
+                                            color: #8a8a8a !important;
+                                            opacity: 1;
+                                        }
+
+                                        .ap5-dimensions-row .ap5-ml-field-item #quantity_ml:focus,
+                                        .ap5-dimensions-row .ap5-ml-field-item #quantity_hauteur:focus {
+                                            border-bottom: 2px solid #026473 !important;
+                                            box-shadow: none !important;
+                                        }
+
+                                        .ap5-dimensions-row .ap5-ml-field-item select#quantity_hauteur {
+                                            -webkit-appearance: none;
+                                            appearance: none;
+                                            padding-right: 24px !important;
+                                            background-color: #E8F4F6 !important;
+                                            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23026473' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+                                            background-repeat: no-repeat !important;
+                                            background-position: right center !important;
+                                            background-size: 16px 16px !important;
+                                        }
+
+                                        .ap5-dimensions-row .ap5-ml-error {
+                                            margin-bottom: 0;
+                                        }
+
+                                        @media (min-width: 768px) {
+                                            .product-variants.ap5-dimensions-row:not(:has(> :only-child)) {
+                                                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                                            }
+                                        }
+
+                                        @media (max-width: 767px) {
+                                            .product-variants.ap5-dimensions-row {
+                                                grid-template-columns: 1fr;
+                                            }
+                                        }
+
+                                        .ap5-ml-error {
+                                            display: none;
+                                            margin-top: 6px;
+                                            color: #f33;
+                                            font-size: 13px;
+                                        }
+
+                                        .ap5-ml-error.ap5-ml-error-visible {
+                                            display: block;
+                                        }
+                                    </style>
+
+                                    <div class="product-variants ap5-attributes ap5-dimensions-row">
+                                        {if $packMlChoose}
+                                        <div class="clearfix hiddenlabel ap5-ml-field-item ap5-ml-field-item--length">
+                                            <p class="group-name">
+                                                {l s='Choisissez la longueur en mètres linéaires' d='Shop.Theme.Custommodules'}
+                                                <span class="ap5-ml-help" tabindex="0" aria-label="{l s='Aide sur le calcul des mètres linéaires' d='Shop.Theme.Custommodules'}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                        <circle cx="12" cy="12" r="10"></circle>
+                                                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                                                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                                    </svg>
+                                                    <span class="ap5-ml-help-tooltip">{l s='Calcul mètres linéaires : addition de toutes les longueurs en mètres' d='Shop.Theme.Custommodules'}</span>
+                                                </span>
+                                            </p>
                                             <div class="select_wrap">
                                                 <div class="clearfix dis_flex">
-                                                    <span class="input-group-btn-vertical dis_flex">
-                                                        <input type="text" name="qty_bis" id="quantity_wanted_ml" value="1" class="form-control" style="display: block;">
+                                                    <span class="input-group-btn-vertical dis_flex w-100">
+                                                        <input type="number" name="qty_bis" id="quantity_ml" value="" class="form-control" style="display: block;" min="1" step="1" placeholder="{l s='Renseignez votre longueur' d='Shop.Theme.Custommodules'}" required>
                                                     </span>
                                                 </div>
                                             </div>
+                                            <p id="quantity_ml_error" class="ap5-ml-error">{l s='Veuillez renseigner ce champ' d='Shop.Theme.Custommodules'}</p>
                                         </div>
+                                        {/if}
+                                        {if $packHeightChoose && isset($packHeightValues) && $packHeightValues|@count > 0}
+                                        <div class="clearfix hiddenlabel ap5-ml-field-item ap5-ml-field-item--height">
+                                            <p class="group-name">
+                                                {l s='Sélectionnez la hauteur' d='Shop.Theme.Custommodules'}
+                                            </p>
+                                            <div class="select_wrap">
+                                                <div class="clearfix dis_flex">
+                                                    <span class="input-group-btn-vertical dis_flex w-100">
+                                                        <select id="quantity_hauteur" class="form-control" style="display: block;" required>
+                                                            {foreach from=$packHeightValues item=heightItem name=heightLoop}
+                                                                <option value="{$heightItem.value|escape:'html':'UTF-8'}"{if $smarty.foreach.heightLoop.first} selected="selected"{/if}>{AdvancedPack::formatPackHeightDisplay($heightItem.height)|escape:'html':'UTF-8'}</option>
+                                                            {/foreach}
+                                                        </select>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <p id="quantity_hauteur_error" class="ap5-ml-error">Veuillez sélectionner une hauteur</p>
+                                        </div>
+                                        {/if}
                                     </div>
                                 {/if}
 

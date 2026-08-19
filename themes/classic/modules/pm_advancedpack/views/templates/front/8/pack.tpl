@@ -3,7 +3,7 @@
 {block name='content'}
     {assign var="initial_pack" value="1"}
 
-    {if isset($packMlChoose) && $packMlChoose == 1}
+    {if (isset($packMlChoose) && $packMlChoose == 1) || (isset($packHeightChoose) && $packHeightChoose == 1 && isset($packHeightValues) && $packHeightValues|@count > 0)}
         <style>
             .qty {
                 display: none !important;
@@ -31,27 +31,9 @@
         <meta content="{$product.url}">
         {hook h='CETemplate' id=43}
         <div class="product-container js-product-container">
-            <div class="row mb-5">
-                <div class="col-12">
-                    {block name='page_header_container'}
-                        {block name='page_header'}
-                            <h1 class="h2">{block name='page_title'}{$product.name}{/block}</h1>
-                        {/block}
-                    {/block}
-                    {hook h='displayPromoProductDescription'}
-                    {* Start - Inté static *}
-                    {*                    <div class="has-discount d-flex align-items-center">
-                                            <div class="tag-discount mr-2">% SOLDES</div>
-                                            <p class="small mb-0">100 € offerts par tranche de 1 000 € d’achat & 150 € offerts par tranche
-                                                de 3 000 €
-                                                d’achat
-                                            </p>
-                                        </div>*}
-                    {* End - Inté static *}
-                </div>
-            </div>
             <div class="row">
                 <div class="col-lg-7">
+                    {hook h='displayPromoProductDescription'}
                     {block name='page_content_container'}
                         {block name='page_content'}
                             {* {include file='catalog/_partials/product-flags.tpl'} *}
@@ -66,7 +48,13 @@
                 <div class="col-lg-5">
 
                     <div class="product-information">
+                        {block name='page_header_container'}
+                            {block name='page_header'}
+                                <h1 class="product-title">{block name='page_title'}{$product.name}{/block}</h1>
+                            {/block}
+                        {/block}
 
+                        {if !$pro.env}
                         <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mb-3">
                             <div>
                                 <p class="small mb-0 font-weight-bold mb-1">
@@ -78,6 +66,7 @@
                             </div>
                             <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
                         </div>
+                        {/if}
                         <div class="d-flex align-items-center mb-3 gap-16 flex-wrap">
                             {if $product.quantity > 0}
                                 <div class="small text-secondary">
@@ -118,7 +107,7 @@
                             </div>
                         {/block}
 
-                        {if isset($packMlChoose) && $packMlChoose}
+                        {if (isset($packMlChoose) && $packMlChoose) || (isset($packHeightChoose) && $packHeightChoose && isset($packHeightValues) && $packHeightValues|@count > 0)}
                             <style>
                                 .ap5-ml-field .group-name {
                                     display: flex;
@@ -128,7 +117,8 @@
                                 }
 
                                 .ap5-ml-field {
-                                    background: #F5F5F5;
+                                    background: #E8F4F6;
+                                    border: 0;
                                     border-radius: 4px;
                                     padding: 14px 16px;
                                 }
@@ -142,7 +132,7 @@
                                     height: 20px;
                                     border-radius: 0;
                                     background: transparent;
-                                    color: #79c046;
+                                    color: #026473;
                                     font-size: 0;
                                     font-weight: 400;
                                     line-height: 1;
@@ -180,12 +170,14 @@
                                     opacity: 1;
                                 }
 
-                                .ap5-ml-field #quantity_ml {
+                                .ap5-ml-field #quantity_ml,
+                                .ap5-ml-field #quantity_hauteur,
+                                .ap5-ml-field select#quantity_hauteur {
                                     display: block;
                                     width: 100%;
                                     background: transparent !important;
                                     border: 0 !important;
-                                    border-bottom: 1px solid #a6a6a6 !important;
+                                    border-bottom: 2px solid #026473 !important;
                                     border-radius: 0 !important;
                                     padding: 0 0 8px !important;
                                     margin: 0;
@@ -197,17 +189,20 @@
                                     outline: none;
                                 }
 
-                                .ap5-ml-field #quantity_ml::placeholder {
+                                .ap5-ml-field #quantity_ml::placeholder,
+                                .ap5-ml-field #quantity_hauteur::placeholder {
                                     color: #8a8a8a !important;
                                     opacity: 1;
                                 }
 
-                                .ap5-ml-field #quantity_ml:focus {
-                                    border-bottom: 1px solid #7e7e7e !important;
+                                .ap5-ml-field #quantity_ml:focus,
+                                .ap5-ml-field #quantity_hauteur:focus {
+                                    border-bottom: 2px solid #026473 !important;
                                     box-shadow: none !important;
                                 }
 
-                                .ap5-ml-field #quantity_ml.ap5-ml-invalid {
+                                .ap5-ml-field #quantity_ml.ap5-ml-invalid,
+                                .ap5-ml-field #quantity_hauteur.ap5-ml-invalid {
                                     color: #f33 !important;
                                     border-bottom: 2px solid #f33 !important;
                                 }
@@ -223,8 +218,90 @@
                                 .ap5-ml-error.ap5-ml-error-visible {
                                     display: block;
                                 }
+
+                                .ap5-dimensions-row {
+                                    display: grid !important;
+                                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                                    gap: 16px;
+                                    margin-bottom: 1rem;
+                                    align-items: stretch;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-field {
+                                    margin-bottom: 0 !important;
+                                    display: flex;
+                                    flex-direction: column;
+                                    min-width: 0;
+                                    align-self: stretch;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-field .hiddenlabel {
+                                    display: flex;
+                                    flex-direction: column;
+                                    flex: 0 0 auto;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-field .group-name {
+                                    flex: 0 0 auto;
+                                    min-height: 52px;
+                                    margin-bottom: 10px;
+                                    align-items: flex-start;
+                                }
+
+                                .ap5-dimensions-row:has(> :only-child) {
+                                    grid-template-columns: 1fr;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-field:only-child {
+                                    grid-column: auto;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-field:only-child .group-name {
+                                    min-height: 0;
+                                }
+
+                                .ap5-dimensions-row .select_wrap {
+                                    flex: 0 0 auto;
+                                }
+
+                                .ap5-dimensions-row .clearfix::after {
+                                    display: none;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-field #quantity_ml,
+                                .ap5-dimensions-row .ap5-ml-field #quantity_hauteur,
+                                .ap5-dimensions-row .ap5-ml-field select#quantity_hauteur {
+                                    height: 28px !important;
+                                    min-height: 28px !important;
+                                    max-height: 28px !important;
+                                    padding: 0 0 6px !important;
+                                    line-height: 22px !important;
+                                    box-sizing: border-box;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-field select#quantity_hauteur {
+                                    -webkit-appearance: none;
+                                    appearance: none;
+                                    padding-right: 24px !important;
+                                    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23026473' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+                                    background-repeat: no-repeat !important;
+                                    background-position: right center !important;
+                                    background-size: 16px 16px !important;
+                                }
+
+                                .ap5-dimensions-row .ap5-ml-error {
+                                    margin-bottom: 0;
+                                }
+
+                                @media (max-width: 767px) {
+                                    .ap5-dimensions-row {
+                                        grid-template-columns: 1fr;
+                                    }
+                                }
                             </style>
-                            <div class="ap5-attributes ap5-ml-field" style="margin-bottom: 1rem;">
+                            <div class="ap5-dimensions-row">
+                            {if isset($packMlChoose) && $packMlChoose}
+                            <div class="ap5-attributes ap5-ml-field ap5-ml-field--length">
                                 <div class="clearfix hiddenlabel">
                                     <p class="font-weight-bold group-name">
                                         {l s='Choisissez la longueur en mètres linéaires' d='Shop.Theme.Custommodules'}
@@ -239,13 +316,36 @@
                                     </p>
                                     <div class="select_wrap">
                                         <div class="clearfix dis_flex">
-                                                    <span class="input-group-btn-vertical dis_flex">
-                                                        <input type="number" id="quantity_ml" value="" class="form-control" min="1" step="1" placeholder="{l s='Renseignez votre longueur (en mètres linéaires)' d='Shop.Theme.Custommodules'}" required>
+                                                    <span class="input-group-btn-vertical dis_flex w-100">
+                                                        <input type="number" id="quantity_ml" value="" class="form-control" min="1" step="1" placeholder="{l s='Renseignez votre longueur' d='Shop.Theme.Custommodules'}" required>
                                                     </span>
                                         </div>
                                     </div>
                                     <p id="quantity_ml_error" class="ap5-ml-error">{l s='Veuillez renseigner ce champ' d='Shop.Theme.Custommodules'}</p>
                                 </div>
+                            </div>
+                            {/if}
+                            {if isset($packHeightChoose) && $packHeightChoose && isset($packHeightValues) && $packHeightValues|@count > 0}
+                            <div class="ap5-attributes ap5-ml-field ap5-ml-field--height">
+                                <div class="clearfix hiddenlabel">
+                                    <p class="font-weight-bold group-name">
+                                        Sélectionnez la hauteur
+                                    </p>
+                                    <div class="select_wrap">
+                                        <div class="clearfix dis_flex">
+                                                    <span class="input-group-btn-vertical dis_flex w-100">
+                                                        <select id="quantity_hauteur" class="form-control" required>
+                                                            {foreach from=$packHeightValues item=heightItem name=heightLoop}
+                                                                <option value="{$heightItem.value|escape:'html':'UTF-8'}"{if $smarty.foreach.heightLoop.first} selected="selected"{/if}>{AdvancedPack::formatPackHeightDisplay($heightItem.height)|escape:'html':'UTF-8'}</option>
+                                                            {/foreach}
+                                                        </select>
+                                                    </span>
+                                        </div>
+                                    </div>
+                                    <p id="quantity_hauteur_error" class="ap5-ml-error">Veuillez sélectionner une hauteur</p>
+                                </div>
+                            </div>
+                            {/if}
                             </div>
                         {/if}
 
@@ -277,6 +377,9 @@
                                     {/if}
                                     {if isset($packMlChoose)}
                                         <input type="hidden" name="ml_choose" id="ml_choose" value="{$packMlChoose}">
+                                    {/if}
+                                    {if isset($packHeightChoose)}
+                                        <input type="hidden" name="height_choose" id="height_choose" value="{$packHeightChoose}">
                                     {/if}
                                     <input type="hidden" name="add" value="1" />
                                     <input type="hidden" name="id_product_attribute" id="idCombination" value="{if !empty($packAttributesList)}{$packAttributesList|json_encode}{/if}" />
@@ -349,6 +452,19 @@
                                 </form>
                             {/block}
                         </div>
+                        {if !$pro.env}
+                            <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mt-3 mb-3">
+                                <div>
+                                    <p class="small mb-0 font-weight-bold mb-1">
+                                        Produit garanti moins cher du web
+                                    </p>
+                                    <p class="thin mb-0">
+                                        Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.
+                                    </p>
+                                </div>
+                                <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
+                            </div>
+                        {/if}
                     </div>
                 </div>
             </div>
@@ -459,29 +575,7 @@
                             <div class="tab-content" id="tab-content">
                                 <div class="tab-pane active js-product-tab-active" id="kit_content" role="tabpanel">
                                     <div id="ap5-pack-product-container">
-                                        {foreach from=$productsPackUnique item=productPack name=productPack_list}
-                                            <div class="row mb-5" style="border-bottom: 1px solid #DBDBDB;padding-bottom: 50px;">
-                                                <div class="col-md-2 position-relative d-flex">
-                                                    {assign var=productPackImageIds value="`$productPack.id_product`-`$productPack.image.id_image`"}
-                                                    <div style="padding: 20px;border-radius: 4px;border: 1px solid #DBDBDB;width: 100%;" class="d-flex">
-                                                        <img src="{$pmlink->getImageLink($productPack.presentation.link_rewrite, $productPackImageIds, $imageFormatProductSlideshow)}" alt="{$productPack.image.legend}" style="width: auto;max-height: 190px;max-width: 100%;margin: auto;">
-                                                    </div>
-                                                    <div class="position-absolute w-100 d-flex" style="bottom: -16px !important;">
-                                                        <span class="text-center m-auto" style="padding: 5px;background-color: #79C144;border-radius: 20px;color: #fff;font-weight: 600;font-size: 17px;">x{$productPack.quantity}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-10 content-kit-description">
-                                                    <h3 class="h5 text-uppercase fs-16">{$productPack.presentation.name}</h3>
-                                                    <div class="product-description">{$productPack.presentation.description_short nofilter}</div>
-                                                    <div class="mt-10">
-                                                        <a class="btn btn-primary add_to_cart" href="{$productPack.presentation.link}">{l s='Voir le produit' d='Shop.Theme.Custommodules'}</a>
-                                                    </div>
-                                                    {block name='product_reviews'}
-                                                        {hook h='displayProductListReviews' product=$productPack.presentation}
-                                                    {/block}
-                                                </div>
-                                            </div>
-                                        {/foreach}
+                                        {include file='module:pm_advancedpack/views/templates/front/8/pack-product-container.tpl'}
                                     </div>
                                 </div>
 

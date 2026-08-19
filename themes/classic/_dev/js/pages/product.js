@@ -4,15 +4,54 @@ $(document).ready(function () {
         if ($('body#product').length) {
             $('.product-container.js-product-container').each(function () {
                 const $container = $(this);
-                const $swiper = $container.find('.swiper.swiper__product-img__cover.swiper-initialized.swiper-horizontal.swiper-watch-progress.swiper-backface-hidden');
+                const $gallery = $container.find('.product-images-grid');
                 const $discount = $container.find('.row > .col-lg-7 > .discount_type_flag');
 
-                if ($swiper.length && $discount.length) {
-                    $discount.appendTo($swiper);
+                if ($gallery.length && $discount.length) {
+                    $discount.prependTo($gallery);
                 }
             });
+
+            enhanceProductDescriptionSections();
         }
     });
+
+    function enhanceProductDescriptionSections() {
+        document.querySelectorAll('#product .product-description .descr_infosupp').forEach(function (section) {
+            var titleEl = section.querySelector('.title_descr');
+            var title = titleEl ? titleEl.textContent.trim().toLowerCase() : '';
+
+            if (/bénéfice|benefice/.test(title)) {
+                section.classList.add('descr_infosupp--benefits');
+            }
+
+            if (/information/.test(title)) {
+                var content = section.querySelector('.descr_infosupp_content');
+                if (content && content.getAttribute('data-descr-enhanced') !== '1') {
+                    content.setAttribute('data-descr-enhanced', '1');
+                    var html = content.innerHTML;
+                    if (/<br\s*\/?>/i.test(html)) {
+                        var items = html.split(/<br\s*\/?>/i).map(function (item) {
+                            return item.trim();
+                        }).filter(Boolean);
+
+                        if (items.length > 1) {
+                            var list = document.createElement('ul');
+                            list.className = 'descr_infosupp-list';
+
+                            items.forEach(function (item) {
+                                var li = document.createElement('li');
+                                li.innerHTML = item;
+                                list.appendChild(li);
+                            });
+
+                            content.parentNode.replaceChild(list, content);
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     $(document).on('ajaxComplete', function (event, xhr, settings) {
         if (settings.url.includes('calculator')) {
@@ -27,7 +66,7 @@ $(document).ready(function () {
     });
 
 
-    var $element = $(".wrapper__swiper__product-img");
+    var $element = $(".product-images-grid");
 
     if ($element.length) {
         function updateWidth() {
@@ -162,14 +201,9 @@ $(document).ready(function () {
 
     function getGroupParams() {
         let groupParams = {};
-        let elements = $('input[name^="group["]:checked, select[name^="group["]');
-
-        if (elements.length > 0) {
-            elements.each(function (index) {
-                groupParams[`group[${index + 1}]`] = $(this).val();
-            });
-        }
-
+        $('input[name^="group["]:checked, select[name^="group["]').each(function () {
+            groupParams[this.name] = this.value;
+        });
         return groupParams;
     }
 
@@ -480,11 +514,47 @@ $(document).ready(function () {
 
     refreshPrice();
 
+    document.addEventListener('change', function (e) {
+        const el = e.target;
+        const wrap = el.closest && el.closest('.js-product-variants');
+        const json = wrap && wrap.querySelector('.js-product-combos');
+        if (!json || (el.name || '').indexOf('group[') !== 0) {
+            return;
+        }
+
+        const gid = el.dataset.productAttribute;
+        const current = {};
+        wrap.querySelectorAll('select[name^="group["], input[name^="group["]:checked').forEach(function (field) {
+            current[field.dataset.productAttribute] = +field.value;
+        });
+
+        const score = (combo) => Object.keys(current).filter((g) => +combo[g] === current[g]).length;
+        const best = JSON.parse(json.textContent)
+            .filter((combo) => +combo[gid] === +el.value)
+            .sort((a, b) => score(b) - score(a))[0];
+        if (!best) {
+            return;
+        }
+
+        Object.keys(best).forEach(function (g) {
+            const id = String(best[g]);
+            const select = wrap.querySelector('select[name="group[' + g + ']"]');
+            if (select) {
+                if (![...select.options].some((option) => option.value === id)) {
+                    select.add(new Option('', id));
+                }
+                select.value = id;
+                return;
+            }
+            const radio = wrap.querySelector('input[name="group[' + g + ']"][value="' + id + '"]');
+            if (radio) {
+                radio.checked = true;
+            }
+        });
+    }, true);
+
     prestashop.on('updatedProduct', (event) => {
-        let dataImg = $(event.product_images_modal).filter('.js-product-images-modal').html()
-        let imgSrc = $(dataImg).find('img')
-        $('.img-cover.rounded-4').prop('src', imgSrc.attr('src'));
-        $('.wrapper__swiper__product-img').replaceWith(event.product_cover_thumbnails);
+        $('.product-images-grid').replaceWith(event.product_cover_thumbnails);
 
         refreshPrice();
 
@@ -505,39 +575,6 @@ $(document).ready(function () {
                 refEl.textContent = event.product_reference;
             }
         }
-
-        document
-            .querySelectorAll(".wrapper__swiper__product-img")
-            .forEach((wrapper, index) => {
-                const swiperProductImgThumbnails = new Swiper(
-                    wrapper.querySelector(
-                        ".wrapper__swiper__product-img__thumbnails .swiper__product-img__thumbnails"
-                    ),
-                    {
-                        direction: "vertical",
-                        loop: true,
-                        slidesPerView: "auto",
-                        spaceBetween: 24,
-                        watchSlidesProgress: true,
-                        navigation: {
-                            nextEl: wrapper.querySelector(".swiper-button-next"),
-                            prevEl: wrapper.querySelector(".swiper-button-prev"),
-                        },
-                    }
-                );
-                const swiperProductImgCover = new Swiper(
-                    wrapper.querySelector(".swiper__product-img__cover"),
-                    {
-                        loop: true,
-                        slidesPerView: 1,
-                        spaceBetween: 24,
-                        watchSlidesProgress: true,
-                        thumbs: {
-                            swiper: swiperProductImgThumbnails,
-                        },
-                    }
-                );
-            });
     });
 
     prestashop.on('updatedCart', (event) => {

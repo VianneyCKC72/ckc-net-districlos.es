@@ -1,2 +1,0 @@
-$(document).ready((function(){$("body").hasClass("page-addresses")&&$(".badge-empty-green").click((function(){let e=$(this).next().text();$.ajax({type:"POST",url:"controller/action",data:{controller:"front",action:"postProcess",addressId:e,ajax:!0},success:function(e){"success"==e&&location.reload()}})}))}));
-//# sourceMappingURL=address.js.map

@@ -22,6 +22,8 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
+{include file='checkout/_partials/checkout-progress.tpl' steps=$steps}
+
 {foreach from=$steps item="step" key="index"}
   {render identifier  =  $step.identifier
           position    =  ($index + 1)
