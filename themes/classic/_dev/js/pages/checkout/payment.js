@@ -40,4 +40,6 @@ export default function initCheckoutPayment() {
     setTimeout(selectDefaultPaymentOption, 200);
 
     bindPaymentConditionsEvents(selectDefaultPaymentOption);
+
+    $('.payment-options').addClass('is-grouped');
 }

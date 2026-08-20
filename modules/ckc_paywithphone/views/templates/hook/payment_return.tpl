@@ -1,7 +1,6 @@
 {if $status == 'ok'}
 	<p>
-		{l s='Your order on %s is complete.' sprintf=[$shop_name] mod='ckc_paywithphone'}<br/>
-		{l s='Please call us now at :' mod='ckc_paywithphone'}
+		{l s='Your order on %s is complete.' sprintf=[$shop_name] mod='ckc_paywithphone'}
 	</p>
 	{include file='module:ckc_paywithphone/views/templates/hook/_partials/payment_infos.tpl'}
 

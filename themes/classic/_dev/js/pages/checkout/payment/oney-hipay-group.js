@@ -106,7 +106,7 @@ export function initOneyPaymentGroup() {
                             '<span class="payment-option__desc">Avec votre carte bancaire</span>' +
                         '</span>' +
                         '<span class="payment-option__logos">' +
-                            '<img src="/themes/classic/assets/img/payment/oney-logos.png" alt="Oney" loading="lazy">' +
+                            '<img src="/themes/classic/assets/img/payment/oney-logos.png" alt="Oney" width="110" height="28">' +
                         '</span>' +
                     '</span>' +
                 '</label>' +

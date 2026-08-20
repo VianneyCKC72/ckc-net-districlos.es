@@ -26,12 +26,12 @@
     <div class="banner-services stack-row__cards">
         {foreach from=$elements item=element}
             <div class="block-reassurance-item service">
-                <img src="{$element.image}" alt="{$element.title|replace:'__':' ' nofilter}" loading="lazy">
+                <img src="{$element.image}" alt="{$element.title|replace:'__':' ' nofilter}" width="40" height="40">
                 <p>
                     {$element.title|replace:'__':'<br>' nofilter}
                     {if $element.description == '__picto3x4x10x12x'}
                         <br>
-                        <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="Paiement en plusieurs fois">
+                        <img src="/themes/classic/assets/img/services/multiple-paiement.svg" width="80" height="16" alt="Paiement en plusieurs fois">
                     {/if}
                 </p>
             </div>
