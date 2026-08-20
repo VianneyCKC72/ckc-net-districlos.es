@@ -1,0 +1,78 @@
+.modal-content {
+  position: relative;
+  background-color: $white;
+  background-clip: padding-box;
+  border-radius: 4px;
+  outline: 0;
+  overflow: hidden;
+  border: none;
+  .modal-header {
+    align-items: center;
+    .close {
+      align-self: flex-end;
+      margin: 0;
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      transform: translate(5px, 0px);
+      border-radius: 4px;
+      transition: all 0.3s;
+      &:hover {
+        background-color: $sand-light-color;
+        svg {
+          color: $red;
+        }
+      }
+    }
+  }
+}
+
+.quickview {
+  h1 {
+    font-size: 35px;
+  }
+  .modal-content {
+    .modal-body {
+      padding: 35px;
+    }
+  }
+}
+
+#blockcart-modal {
+  .product-price {
+    font-size: 40px;
+    line-height: 40px;
+    font-weight: 700;
+    span {
+      &.price-integer {
+        font-size: 40px;
+        line-height: 40px;
+        font-weight: 700;
+      }
+      &.price-decimal {
+        font-size: 16px;
+        line-height: 18px;
+      }
+    }
+  }
+  .cart-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    p {
+      margin-bottom: 0;
+    }
+    .product-total {
+      span.value {
+        font-size: 30px;
+        line-height: 30px;
+      }
+    }
+    .cart-content-btn {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  }
+}

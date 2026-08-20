@@ -35,7 +35,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
                                 <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"></path>
                             </svg>
-                            {l s='Top deals' mod='ckcpromotionbanner'}
+                            Bons plans
                         </a>
                         </div>
                     {/if}
@@ -74,7 +74,7 @@
                     {/if}
                     <strong><span id="ckctimer" style="color: {$CKC_BARREPROMO_TIMER_COLOR} !important;"></span></strong>
                 </div>
-                <div class="block-question"><img src="/img/cms/ico-question.png" width="22" height="20" class="ico-question" alt="{l s='Questions?' mod='ckcpromotionbanner'}" />{l s='Questions?' mod='ckcpromotionbanner'}<a href="tel:0422531034"><strong>04 22 53 10 34</strong></a></div>
+                <div class="block-question"><img src="/img/cms/ico-question.png" width="22" height="20" class="ico-question" alt="des question?" />Des questions ?<a href="tel:0422531034"><strong>04 22 53 10 34</strong></a></div>
                 <div class="clients">
                     {hook h='displaySkeepersRating' mod='dtc_skeepers'}
                 </div>
@@ -88,7 +88,7 @@
             <div class="container">
                 <div class="ckcpromobarre-text-change-container">
                 </div>
-                <div class="block-question"><img src="/img/cms/ico-question.png" width="22" height="20" class="ico-question" alt="{l s='Questions?' mod='ckcpromotionbanner'}" />{l s='Questions?' mod='ckcpromotionbanner'}<a href="tel:0422531034"><strong>04 22 53 10 34</strong></a></div>
+                <div class="block-question"><img src="/img/cms/ico-question.png" width="22" height="20" class="ico-question" alt="des question?" />Des questions ?<a href="tel:0422531034"><strong>04 22 53 10 34</strong></a></div>
                 <div class="clients">
                     {hook h='displaySkeepersRating' mod='dtc_skeepers'}
                 </div>
@@ -103,14 +103,6 @@
         document.addEventListener("DOMContentLoaded", function () {
             // Récupère la date cible depuis la variable Smarty
             var countDownDate = new Date("{$CKC_BARREPROMO_TIMER}").getTime();
-
-            // Libellés localisés des unités du compte à rebours
-            var ckcpromobarreLabels = {
-                days:    "{l s='d' mod='ckcpromotionbanner' js=1}",
-                hours:   "{l s='h' mod='ckcpromotionbanner' js=1}",
-                minutes: "{l s='m' mod='ckcpromotionbanner' js=1}",
-                seconds: "{l s='s' mod='ckcpromotionbanner' js=1}"
-            };
 
             // Met à jour le compte à rebours chaque seconde
             var x = setInterval(function () {
@@ -135,10 +127,7 @@
                 // Affichage du compte à rebours
                 var timerElement = document.getElementById("ckctimer");
                 if (timerElement) {
-                    timerElement.innerHTML = days + ckcpromobarreLabels.days + " "
-                        + hours + ckcpromobarreLabels.hours + " "
-                        + minutes + ckcpromobarreLabels.minutes + " "
-                        + seconds + ckcpromobarreLabels.seconds + " ";
+                    timerElement.innerHTML = days + "j " + hours + "h " + minutes + "m " + seconds + "s ";
                 }
 
                 // Si le compte à rebours est terminé

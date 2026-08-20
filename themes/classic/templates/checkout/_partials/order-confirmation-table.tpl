@@ -85,7 +85,7 @@
                                 <div class="row">
                                     {if isset($pro) && $pro.env == 1}
                                         <div class="col-xs-4 text-sm-center text-xs-left">
-                                            {$product.price_with_reduction_without_tax|number_format:2:',':' '} € {l s='HT' d='Shop.Theme.Customcheckout'}
+                                            {$product.price_with_reduction_without_tax|number_format:2:',':' '} € HT
                                         </div>
                                         <div class="col-xs-4 text-sm-center">
                                             {$product.quantity}

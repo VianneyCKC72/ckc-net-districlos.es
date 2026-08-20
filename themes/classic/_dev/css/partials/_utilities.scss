@@ -1,0 +1,56 @@
+.bg-primary {
+  background-color: $primary-color !important;
+}
+.bg-primary-light {
+  background-color: $primary-light-color !important;
+}
+.bg-secondary {
+  background-color: $secondary-color !important;
+}
+.text-white {
+  color: $white !important;
+}
+.text-black {
+  color: $black !important;
+}
+.text-secondary {
+  color: $secondary-color !important;
+}
+.text-red {
+  color: $red !important;
+}
+.rounded-4 {
+  border-radius: 4px;
+}
+
+.stack-row__cards {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.my-section {
+  margin-top: 70px;
+  margin-bottom: 70px;
+}
+.gap-16 {
+  gap: 16px;
+}
+
+.card-bg-sand-light {
+  background-color: $sand-light-color;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  p {
+    margin-bottom: 0;
+  }
+}
+
+.w-lg-75 {
+  width: 75% !important;
+  @media (max-width: 992px) {
+    width: 100% !important;
+  }
+}

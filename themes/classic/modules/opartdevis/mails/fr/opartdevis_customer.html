@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre devis - {shopName}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            line-height: 1.6;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #026473, #008397);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #026473;
+            margin-bottom: 20px;
+        }
+        .message {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        .quote-info {
+            background-color: #F6F2EB;
+            border-left: 4px solid #7CBA49;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 0 5px 5px 0;
+        }
+        .quote-info h3 {
+            margin: 0 0 15px 0;
+            color: #026473;
+            font-size: 18px;
+        }
+        .info-row {
+            display: flex;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            min-width: 120px;
+            margin-right: 10px;
+        }
+        .info-value {
+            color: #333;
+            flex: 1;
+        }
+        .cta-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 25px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #7CBA49, #6BA83A);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        .cta-button:hover {
+            background: linear-gradient(135deg, #6BA83A, #5A9730);
+            transform: translateY(-2px);
+        }
+        .cta-button.secondary {
+            background: linear-gradient(135deg, #026473, #008397);
+        }
+        .cta-button.secondary:hover {
+            background: linear-gradient(135deg, #008397, #006B7A);
+        }
+        .contact-info {
+            background-color: #026473;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        .contact-info h3 {
+            margin: 0 0 15px 0;
+            font-size: 20px;
+        }
+        .contact-details {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .contact-item {
+            margin: 10px;
+            text-align: center;
+        }
+        .contact-item strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #7CBA49;
+        }
+        .footer {
+            background-color: #008397;
+            color: #DCD6CD;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #7CBA49;
+            text-decoration: none;
+        }
+        .highlight {
+            color: #7CBA49;
+            font-weight: bold;
+        }
+        .pdf-notice {
+            background-color: #F6F2EB;
+            border: 1px solid #7CBA49;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #026473;
+        }
+        .pdf-notice strong {
+            color: #7CBA49;
+        }
+        /* Tableau des produits - responsive */
+        .cart-products-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 20px 0;
+            width: 100%;
+        }
+        .cart-products-wrapper table {
+            width: 100%;
+            max-width: 100%;
+            border-collapse: collapse;
+        }
+        .cart-products-wrapper td,
+        .cart-products-wrapper th {
+            padding: 10px 8px;
+            font-size: 14px;
+        }
+        @media (max-width: 600px) {
+            .email-container {
+                margin: 0;
+                box-shadow: none;
+            }
+            .content {
+                padding: 20px 15px;
+            }
+            .contact-details {
+                flex-direction: column;
+            }
+            .info-row {
+                flex-direction: column;
+            }
+            .info-label {
+                min-width: auto;
+                margin-bottom: 5px;
+            }
+            /* Tableau produits : scroll horizontal sur mobile */
+            .cart-products-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin: 15px -15px;
+                padding: 0 15px;
+            }
+            .cart-products-wrapper table {
+                min-width: 480px;
+                font-size: 13px;
+            }
+            .cart-products-wrapper td,
+            .cart-products-wrapper th {
+                padding: 8px 6px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <!-- Header -->
+    <div class="header">
+        <img src="{shop_logo}" alt="{shop_name}" style="max-width: 200px; height: auto; margin-bottom: 20px;" />
+        <h1>Votre Devis est Prêt !</h1>
+        <p>Merci pour votre confiance en {shopName}</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <div class="greeting">
+            Bonjour <strong>{firstname} {lastname}</strong>,
+        </div>
+
+        <div class="message">
+            Nous avons le plaisir de vous transmettre votre devis personnalisé. Notre équipe a étudié votre demande avec attention et vous propose une solution adaptée à vos besoins.
+        </div>
+
+        <!-- PDF Notice -->
+        <div class="pdf-notice">
+            <strong>📄 Document PDF en pièce jointe</strong><br>
+            Votre devis détaillé est disponible en pièce jointe de cet email. Vous pouvez le télécharger et l'imprimer pour vos archives.
+        </div>
+
+        <!-- Call to Action -->
+        <div class="cta-section">
+            <h3 style="margin-top: 0; color: #2c3e50;">Que souhaitez-vous faire maintenant ?</h3>
+            <a href="{shopUrl}" class="cta-button">🛒 Voir nos produits</a>
+            <a href="mailto:{shopMail}" class="cta-button secondary">✉️ Nous contacter</a>
+        </div>
+
+        <!-- Customer Message -->
+        {customerMessage}
+
+        <!-- Cart Details (tableau des produits) -->
+        <div class="cart-products-wrapper">
+            {cart}
+        </div>
+    </div>
+
+    <!-- Contact Information -->
+    <div class="contact-info">
+        <h3>💬 Besoin d'aide ?</h3>
+        <p>Notre équipe commerciale est à votre disposition pour toute question ou modification de votre devis.</p>
+
+        <div class="contact-details">
+            <div class="contact-item">
+                <strong>📧 Email</strong>
+                <a href="mailto:commercial@districlos.com" style="color: white;">commercial@districlos.com</a>
+            </div>
+            <div class="contact-item">
+                <strong>📞 Téléphone</strong>
+                <a href="tel: 0422531034" style="color: white;">04 22 53 10 34</a>
+            </div>
+            <div class="contact-item">
+                <strong>🌐 Site Web</strong>
+                <a href="{shopUrl}" style="color: white;">{shopName}</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <img src="{shop_logo}" alt="{shop_name}" style="max-width: 150px; height: auto; margin-bottom: 15px; filter: brightness(0) invert(1);" />
+        <p>
+            <strong>{shopName}</strong> - Votre partenaire de confiance<br>
+            <a href="{shopUrl}">Visitez notre site</a> |
+            <a href="mailto:{shopMail}">Contactez-nous</a>
+        </p>
+        <p style="margin-top: 15px; font-size: 12px; opacity: 0.8;">
+            Cet email a été envoyé automatiquement. Merci de ne pas y répondre directement.
+        </p>
+    </div>
+</div>
+</body>
+</html>

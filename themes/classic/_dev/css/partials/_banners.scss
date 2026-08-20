@@ -1,0 +1,51 @@
+.banner-primary {
+  @extend .bg-primary;
+  @extend .text-white;
+  @extend .rounded-4;
+  padding: 8px 24px;
+  text-align: center;
+  p {
+    @extend .mb-0;
+  }
+}
+
+.banner-services {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  justify-items: center;
+  gap: 24px;
+  .service {
+    display: flex;
+    column-gap: 16px;
+    align-items: center;
+    > img {
+      height: 40px;
+    }
+    p {
+      font-weight: 500;
+      margin-bottom: 0;
+      line-height: 16px;
+    }
+  }
+}
+
+.hero-home {
+  display: flex;
+  gap: 24px;
+  > div:first-child {
+    width: 60%;
+  }
+  > div:last-child {
+    width: 40%;
+  }
+  @include media-breakpoint-down(md) {
+    flex-direction: column;
+    > div:first-child {
+      width: 100%;
+    }
+    > div:last-child {
+      width: 100%;
+    }
+  }
+}

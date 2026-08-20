@@ -1,0 +1,54 @@
+.stars__item {
+  background: transparent !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skeepers_product__stars .stars__item .star-svg {
+  width: 100% !important;
+  height: auto !important;
+  margin-top: 0 !important;
+}
+
+.star-svg path {
+  fill: $secondary-color !important; /* Étoile jaune */
+}
+.rate-aggregate,
+.rate-aggregate__separator,
+.rate-aggregate__max {
+  display: none !important;
+}
+
+.rate-total,
+.stars__rating {
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 16px;
+  color:black;
+}
+a.nav-link.avisVerfies{
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  .avis-verifie-logo{
+    width: 81px;
+    display: flex;
+    flex-direction: row;
+    margin-right: 15px;
+    span{
+      color: #000;
+      line-height: 13px;
+    }
+    svg{
+      margin-right: 2px;
+    }
+  }
+}
+a.nav-link.avisVerfies.active{
+  .avis-verifie-logo{
+    span {
+      color: #fff;
+    }
+  }
+}

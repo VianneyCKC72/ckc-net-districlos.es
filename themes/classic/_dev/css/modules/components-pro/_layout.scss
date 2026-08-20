@@ -1,0 +1,234 @@
+  
+  .register-form .js-customer-form {
+    max-width: 454px;
+  }
+
+  .contenair-img {
+    display: flex;
+    justify-content: space-around;
+    margin: 30px auto;
+    width: 1420px;
+
+    img {
+      max-width: 240px;
+    }
+  }
+
+
+  .contenair-img-auth {
+    .avis {
+      position: absolute;
+      left: 50px;
+      top: 50px;
+      max-width: 300px;
+
+      p {
+        color: $white;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 18px;
+      }
+    }
+
+    .block-bas {
+      background: #026473;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      min-width: 65%;
+      height: 90px;
+      padding-top: 10px;
+      transform: translateX(-50%);
+      img.img-connect {
+        display: block;
+        max-height: 100%;
+        object-fit: cover;
+        width: 100%;
+      }
+      .green-dark {
+        color: $white;
+        font-size: 20px;
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .text-white {
+        color: $white;
+        font-size: 16px;
+        text-align: center;
+      }
+    }
+
+    figure {
+      position: relative;
+      height: 100%;
+      margin: 0;
+    }
+
+    .img-connect {
+      height: 100%;
+      object-fit: cover;
+      width: auto;
+    }
+  }
+
+  .block-explication {
+    margin: 70px 0 50px;
+    .btn-secondary {
+      background-color: #7ABF48;
+      color: $white;
+      font-weight: 700;
+      &.btn-show-passpord {
+        background-color: $black;
+      }
+    }
+    h3 {
+      color: $black;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0;
+      line-height: 30px;
+      margin-bottom: 5px;
+      opacity: 1;
+      text-align: left;
+    }
+
+    p {
+      color: $black;
+      letter-spacing: 0;
+    }
+  }
+
+  .steps-container {
+    display: flex;
+    justify-content: space-between;
+    width: 800px;
+    margin: 30px auto;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 25px;
+      left: 150px;
+      right: 150px;
+      height: 2px;
+      background: $pro-color;
+      z-index: 0;
+    }
+  }
+
+  .step {
+    flex: 1;
+    max-width: 880px;
+    text-align: center;
+
+    &:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: -50%;
+      width: 100%;
+      height: 2px;
+      background: $primary-color;
+      display: none;
+      z-index: 0;
+    }
+  }
+
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: $pro-color;
+    color: $white;
+    font-size: 20px;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-text {
+    color: $black;
+    font-size: 16px;
+  }
+
+  @mixin background-icon($image) {
+    background: transparent url("../img/espace-pro/#{$image}") no-repeat scroll center left;
+  }
+
+    #login-form {
+    .col-md-12 {
+      .form-control {
+        padding-left: 45px;
+      }
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      float: left;
+    }
+
+    .btn-secondary:not(.btn-show-passpord) {
+      @extend .btn-secondary-espace-pro;
+    }
+  }
+
+
+#authentication .row.full-width,
+#block-reassurance-custom .row {
+  background: #026473;
+  left: 50%;
+  margin-left: -50vw;
+  position: relative;
+  width: 100vw;
+  .inside {
+    margin: 20px auto;
+    .cont-inside {
+      display: flex;
+      justify-content: space-around;
+      margin: 0 auto;
+      max-width: 100%;
+      padding-bottom: 0;
+      padding-top: 30px;
+      width:1200px;
+      .item {
+        background: #F2EEE9;
+        display: flex;
+        flex-direction: column;
+        min-height: 290px;
+        padding: 15px;
+        text-align: center;
+        width: 220px;
+        align-items: center;
+        gap: 15px;
+        border-radius: 5px;
+      }
+    }
+
+  }
+
+
+}
+
+.page-customer-account #content {
+  overflow: unset;
+}
+
+main#page section#content {
+  clear: both;
+}
+
+.text-right {
+  text-align: right;
+}
+
+
+.memeLigne {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}

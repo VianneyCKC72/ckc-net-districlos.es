@@ -1,0 +1,103 @@
+.btn,
+.cn_element_products_2_button > a {
+  padding: 13px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 999px;
+  &:focus,
+  &:active {
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+  }
+}
+.cn_element_products_2_button > a,
+.btn-primary {
+  color: $white;
+  background-color: $primary-color;
+  &:hover {
+    background-color: darken($primary-color, 10%);
+  }
+  &:focus,
+  &:active {
+    background-color: lighten($primary-color, 5%) !important;
+  }
+}
+.btn-primary-light {
+  color: $white;
+  background-color: $primary-light-color;
+  &:hover {
+    background-color: darken($primary-light-color, 10%);
+  }
+  &:focus,
+  &:active {
+    background-color: lighten($primary-light-color, 5%) !important;
+  }
+}
+.btn-secondary {
+  color: $white;
+  background-color: $secondary-color;
+  &:hover {
+    background-color: darken($secondary-color, 10%);
+  }
+  &:focus,
+  &:active {
+    background-color: lighten($secondary-color, 5%) !important;
+  }
+}
+.btn-primary-outline {
+  color: $primary-color;
+  background-color: $white;
+  box-shadow: 0 0 0 1px $primary-color;
+  &:hover {
+    background-color: $primary-color;
+    color: $white;
+  }
+  &:focus,
+  &:active {
+    background-color: lighten($primary-color, 5%) !important;
+  }
+  &.active {
+    background-color: $primary-color;
+    color: $white;
+  }
+}
+
+.link-arrow {
+  display: flex;
+  column-gap: 10px;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 700;
+  @media only screen and (max-width: 1620px) {
+    font-size: 18px;
+  }
+}
+
+.btn-primary-arrow {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  color: $white;
+  background-color: $primary-color;
+  border-radius: 10px;
+  @media only screen and (max-width: 1380px) {
+    padding: 8px;
+    gap: 8px;
+  }
+}
+.btn-secondary-espace-pro {
+  background-color: $pro-color;
+}
+.btn-primary-pro {
+  border: 1px solid $pro-color;
+  background: white;
+  color: $pro-color;
+  &:hover {
+    background-color: $pro-color;
+    color: white;
+  }
+}

@@ -46,16 +46,16 @@
     <div class="account-switch texte-left">
       {if $show_login_form}
         <p>
-          {l s='Vous avez déjà un compte ?' d='Shop.Theme.Customcheckout'}
+          Vous avez déjà un compte ?
           <a href="#checkout-guest-form" data-toggle="tab" role="tab" aria-controls="checkout-guest-form" aria-selected="false">
-            {l s='Connectez-vous' d='Shop.Theme.Customcheckout'} →
+            Connectez-vous →
           </a>
         </p>
       {else}
         <p>
-          {l s='Pas encore de compte ?' d='Shop.Theme.Customcheckout'}
+          Pas encore de compte ?
           <a href="#checkout-login-form" data-toggle="tab" role="tab" aria-controls="checkout-login-form" aria-selected="false">
-            {l s='Créez un compte' d='Shop.Theme.Customcheckout'} →
+            Créez un compte →
           </a>
         </p>
       {/if}

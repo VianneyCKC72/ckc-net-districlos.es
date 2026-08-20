@@ -25,7 +25,7 @@
 
 
 {if $pro.env}
-  <span class="h6 mb-2 w-100 chooseYourProduct">{l s='Choisissez votre produit' d='Shop.Theme.Customcatalog'}</span>
+  <span class="h6 mb-2 w-100 chooseYourProduct">Choisissez votre produit</span>
 {/if}
 <div class="product-variants js-product-variants mb-4">
   {if isset($combinations) && $combinations|count}
