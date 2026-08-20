@@ -22,6 +22,8 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
+{* Visible uniquement en preview (?ckc=1). Pas de liens EN exposés hors preview. *}
+{if isset($ckc_lang_preview) && $ckc_lang_preview}
 {* Sélecteur de langue – mise en forme custom (sans drapeaux). Les classes
    fonctionnelles PrestaShop (dropdown / js-dropdown / btn-unstyle / dropdown-menu)
    sont conservées pour le JS d'ouverture du thème. *}
@@ -35,14 +37,16 @@
       </button>
       <ul class="dropdown-menu ckc-lang__menu hidden-sm-down" aria-labelledby="language-selector-label">
         {foreach from=$languages item=language}
+          {capture assign=lang_href}{url entity='language' id=$language.id_lang}{/capture}
           <li {if $language.id_lang == $current_language.id_lang}class="current"{/if}>
-            <a href="{url entity='language' id=$language.id_lang}" class="dropdown-item ckc-lang__item" data-iso-code="{$language.iso_code}">{$language.name_simple}</a>
+            <a href="{$lang_href}{if $lang_href|strstr:'?'}&{else}?{/if}ckc=1" class="dropdown-item ckc-lang__item" data-iso-code="{$language.iso_code}" rel="nofollow">{$language.name_simple}</a>
           </li>
         {/foreach}
       </ul>
       <select class="link ckc-lang__select hidden-md-up" aria-labelledby="language-selector-label">
         {foreach from=$languages item=language}
-          <option value="{url entity='language' id=$language.id_lang}"{if $language.id_lang == $current_language.id_lang} selected="selected"{/if} data-iso-code="{$language.iso_code}">
+          {capture assign=lang_href}{url entity='language' id=$language.id_lang}{/capture}
+          <option value="{$lang_href}{if $lang_href|strstr:'?'}&{else}?{/if}ckc=1"{if $language.id_lang == $current_language.id_lang} selected="selected"{/if} data-iso-code="{$language.iso_code}">
             {$language.name_simple}
           </option>
         {/foreach}
@@ -115,3 +119,4 @@
     font-weight: 600;
   }
 </style>
+{/if}
