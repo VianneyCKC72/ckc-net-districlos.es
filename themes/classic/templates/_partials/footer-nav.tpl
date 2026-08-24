@@ -151,6 +151,10 @@
                             <li><a class="custom-page-link elementor-page-link" href="/content/395-guides-cloture">
                                     Guides de clôture
                                 </a></li>
+                            <li><a class="custom-page-link elementor-page-link"
+                                   href="https://www.cloture-discount.fr/content/672-bien-choisir-sa-cloture-le-guide-complet">
+                                    Bien choisir sa clôture : le guide complet
+                                </a></li>
                             <li><a class="custom-page-link elementor-page-link" href="/contactez-nous">
                                     Contactez-nous
                                 </a></li>
