@@ -97,6 +97,16 @@ class CkcProductExtraAdvice extends Module
 
     private function saveExtraFields($id_product)
     {
+    
+        if (!Tools::getIsset('extra_advice_title')
+            && !Tools::getIsset('extra_advice_content')
+            && !Tools::getIsset('maintenance_title')
+            && !Tools::getIsset('maintenance_content')
+
+        ) {
+            return;
+        }
+    
         $fields = [
             'extra_advice_title'   => pSQL(Tools::getValue('extra_advice_title'), true),
             'extra_advice_content' => pSQL(Tools::getValue('extra_advice_content'), true),

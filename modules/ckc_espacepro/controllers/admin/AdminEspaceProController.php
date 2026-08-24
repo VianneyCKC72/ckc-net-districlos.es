@@ -576,6 +576,7 @@ class AdminEspaceProController extends ModuleAdminController
             $proIds     = $this->getProGroupIds();
             $gidProti   = $this->getProticulierGroupId();
             $allowedIds = array_merge($proIds, [$gidProti]);
+            $previousDefaultGroup = (int) $customer->id_default_group;
 
             if (!in_array($idGroup, $allowedIds, true)) {
                 throw new Exception($this->l('Groupe non autorisé'));
@@ -608,6 +609,14 @@ class AdminEspaceProController extends ModuleAdminController
             ob_start();
             Hook::exec('actionCustomerAccountUpdate', ['customer' => $customer]);
             ob_end_clean();
+
+            // Mail d'acceptation proticulier → professionnel (+ sync Club Pro)
+            $targetProIds = array_values(array_diff($proIds, [$gidProti]));
+            if ($previousDefaultGroup === $gidProti && in_array($idGroup, $targetProIds, true)) {
+                $customer = new Customer($idCustomer);
+                $this->sendProticulierAcceptedAsProMail($customer);
+                $this->syncClubProAfterProAcceptance($idCustomer);
+            }
 
             $response['success'] = true;
         } catch (Exception $e) {
@@ -765,5 +774,106 @@ class AdminEspaceProController extends ModuleAdminController
                 $this->errors[] = "Erreur lors de suppression d'une société de référence.";
             }
         }
+    }
+
+    /**
+     * Mail de bienvenue Club Pro lors du passage proticulier → professionnel.
+     */
+    private function sendProticulierAcceptedAsProMail(Customer $customer): void
+    {
+        if (!Validate::isLoadedObject($customer) || !Validate::isEmail($customer->email)) {
+            return;
+        }
+
+        $idLang = (int) ($customer->id_lang ?: Configuration::get('PS_LANG_DEFAULT'));
+        $idShop = (int) $this->context->shop->id;
+        // Boutique PRO (multi-shop) : URLs / logo cohérents avec les mails Club Pro
+        if (Shop::isFeatureActive() && Validate::isLoadedObject(new Shop(2))) {
+            $idShop = 2;
+        }
+
+        $link = $this->context->link;
+        $baseUrl = rtrim(
+            $link ? $link->getBaseLink($idShop, true) : Tools::getShopDomainSsl(true) . __PS_BASE_URI__,
+            '/'
+        ) . '/';
+
+        $statusUrl = $link
+            ? $link->getPageLink('discount', true, $idLang, null, false, $idShop)
+            : $baseUrl . 'reduction';
+
+        $shopPhone = trim((string) Configuration::get('PS_SHOP_PHONE', null, null, $idShop));
+        if ($shopPhone === '') {
+            $shopPhone = '04 22 53 10 34';
+        }
+
+        $imgBase = $baseUrl . 'modules/dtc_paliers_remise/views/img/';
+
+        Mail::Send(
+            $idLang,
+            'proticulier_accepte_pro',
+            'Votre compte professionnel Districlos est activé',
+            [
+                '{firstname}' => $customer->firstname,
+                '{lastname}' => $customer->lastname,
+                '{shop_name}' => Configuration::get('PS_SHOP_NAME', null, null, $idShop) ?: Configuration::get('PS_SHOP_NAME'),
+                '{shop_url}' => $baseUrl,
+                '{status_url}' => $statusUrl,
+                '{shop_phone}' => $shopPhone,
+                '{shop_phone_link}' => preg_replace('/\D+/', '', $shopPhone),
+                '{stores_url}' => $baseUrl . 'content/11-nos-magasins-de-cloture',
+                '{club_pro_logo}' => $imgBase . 'logo-pro.png',
+                '{badge_bronze}' => $imgBase . 'badge-bronze.png',
+                '{badge_argent}' => $imgBase . 'badge-argent.png',
+                '{badge_or}' => $imgBase . 'badge-or.png',
+            ],
+            $customer->email,
+            $customer->firstname . ' ' . $customer->lastname,
+            'info@cloture-discount.fr',
+            Configuration::get('PS_SHOP_NAME'),
+            null,
+            null,
+            _PS_MODULE_DIR_ . 'ckc_espacepro/mails/',
+            false,
+            $idShop
+        );
+    }
+
+    /**
+     * Recalcule le palier Club Pro sans renvoyer les mails upgrade/downgrade
+     * (le mail de bienvenue suffit à l'acceptation).
+     */
+    private function syncClubProAfterProAcceptance(int $idCustomer): void
+    {
+        if ($idCustomer <= 0 || !Module::isEnabled('dtc_paliers_remise')) {
+            return;
+        }
+
+        $servicePath = _PS_MODULE_DIR_ . 'dtc_paliers_remise/classes/DtcPalierService.php';
+        $cartPath = _PS_MODULE_DIR_ . 'dtc_paliers_remise/classes/DtcCartRuleManager.php';
+        if (!is_file($servicePath) || !is_file($cartPath)) {
+            return;
+        }
+
+        require_once $servicePath;
+        require_once $cartPath;
+
+        if (!class_exists('DtcPalierService', false) || !class_exists('DtcCartRuleManager', false)) {
+            return;
+        }
+
+        $tier = DtcPalierService::recompute($idCustomer);
+        DtcCartRuleManager::syncCartRule($idCustomer, $tier);
+
+        $after = DtcPalierService::getCustomerTier($idCustomer);
+        if (!$after || empty($after['current_tier'])) {
+            return;
+        }
+
+        Db::getInstance()->execute(
+            'UPDATE `' . _DB_PREFIX_ . 'dtc_customer_palier`
+             SET `last_notified_tier` = \'' . pSQL((string) $after['current_tier']) . '\'
+             WHERE id_customer = ' . (int) $idCustomer
+        );
     }
 }

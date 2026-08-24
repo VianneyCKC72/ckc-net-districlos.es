@@ -31,27 +31,9 @@
         <meta content="{$product.url}">
         {hook h='CETemplate' id=43}
         <div class="product-container js-product-container">
-            <div class="row mb-5">
-                <div class="col-12">
-                    {block name='page_header_container'}
-                        {block name='page_header'}
-                            <h1 class="h2">{block name='page_title'}{$product.name}{/block}</h1>
-                        {/block}
-                    {/block}
-                    {hook h='displayPromoProductDescription'}
-                    {* Start - Inté static *}
-                    {*                    <div class="has-discount d-flex align-items-center">
-                                            <div class="tag-discount mr-2">% SOLDES</div>
-                                            <p class="small mb-0">100 € offerts par tranche de 1 000 € d’achat & 150 € offerts par tranche
-                                                de 3 000 €
-                                                d’achat
-                                            </p>
-                                        </div>*}
-                    {* End - Inté static *}
-                </div>
-            </div>
             <div class="row">
                 <div class="col-lg-7">
+                    {hook h='displayPromoProductDescription'}
                     {block name='page_content_container'}
                         {block name='page_content'}
                             {* {include file='catalog/_partials/product-flags.tpl'} *}
@@ -66,18 +48,12 @@
                 <div class="col-lg-5">
 
                     <div class="product-information">
+                        {block name='page_header_container'}
+                            {block name='page_header'}
+                                <h1 class="product-title">{block name='page_title'}{$product.name}{/block}</h1>
+                            {/block}
+                        {/block}
 
-                        <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mb-3">
-                            <div>
-                                <p class="small mb-0 font-weight-bold mb-1">
-                                    Produit garanti moins cher du web
-                                </p>
-                                <p class="thin mb-0">
-                                    Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.
-                                </p>
-                            </div>
-                            <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
-                        </div>
                         <div class="d-flex align-items-center mb-3 gap-16 flex-wrap">
                             {if $product.quantity > 0}
                                 <div class="small text-secondary">
@@ -640,6 +616,19 @@
                                 </form>
                             {/block}
                         </div>
+                        {if !$pro.env}
+                            <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mt-3 mb-3">
+                                <div>
+                                    <p class="small mb-0 font-weight-bold mb-1">
+                                        Produit garanti moins cher du web
+                                    </p>
+                                    <p class="thin mb-0">
+                                        Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.
+                                    </p>
+                                </div>
+                                <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
+                            </div>
+                        {/if}
                     </div>
                 </div>
             </div>

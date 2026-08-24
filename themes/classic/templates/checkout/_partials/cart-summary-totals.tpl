@@ -24,6 +24,8 @@
  *}
 
 {block name='cart_summary_total'}
+  {include file='checkout/_partials/cart-savings-vars.tpl'}
+
   {if !$configuration.display_prices_tax_incl && $configuration.taxes_enabled}
     <div class="cart-summary-line">
       <span class="label">{$cart.totals.total.label}&nbsp;{if $pro.env}HT{else}{$cart.labels.tax_short}{/if}</span>
@@ -55,8 +57,8 @@
     <div class="cart-summary-line cart-total">
       <span class="label">{$cart.totals.total_including_tax.label}</span>
       <span class="value">
-        {if $page.page_name == 'cart' && isset($cart.subtotals.discounts) && $cart.subtotals.discounts.amount > 0}
-          <span class="value-before-promo">{($cart.totals.total_including_tax.amount + $cart.subtotals.discounts.amount)|number_format:2:',':' '}&nbsp;€</span>
+        {if $page.page_name == 'cart' && $cart_total_savings > 0}
+          <span class="value-before-promo">{($cart.totals.total_including_tax.amount + $cart_total_savings)|number_format:2:',':' '}&nbsp;€</span>
         {/if}
         {$cart.totals.total_including_tax.value}
       </span>
@@ -78,8 +80,8 @@
       <div class="cart-summary-line cart-total">
         <span class="label">{$cart.totals.total_for_cart.label}&nbsp;{if $configuration.taxes_enabled && $env_pro != 1}{$cart.labels.tax_short}{/if}</span>
         <span class="value">
-          {if isset($cart.subtotals.discounts) && $cart.subtotals.discounts.amount > 0}
-            <span class="value-before-promo">{($cart.totals.total_for_cart.amount + $cart.subtotals.discounts.amount)|number_format:2:',':' '}&nbsp;€</span>
+          {if $cart_total_savings > 0}
+            <span class="value-before-promo">{($cart.totals.total_for_cart.amount + $cart_total_savings)|number_format:2:',':' '}&nbsp;€</span>
           {/if}
           {$cart.totals.total_for_cart.value}
         </span>
@@ -92,9 +94,9 @@
     {/if}
   {/if}
 
-  {if isset($cart.subtotals.discounts) && $cart.subtotals.discounts.amount > 0}
+  {if $cart_total_savings > 0}
     <div class="cart-summary-line cart-savings" id="cart-savings" style="justify-content: center; font-size: 14px;margin-top: 10px;">
-      <span class="label">Vous économisez <strong>{$cart.subtotals.discounts.amount|round} €</strong> sur votre commande</span>
+      <span class="label">Vous économisez <strong>{$cart_total_savings|round} €</strong> sur votre commande</span>
     </div>
   {/if}
 {/block}
