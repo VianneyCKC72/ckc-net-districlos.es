@@ -1507,13 +1507,6 @@
       display: none !important;
     }
 
-    &:not(:has(img))::before {
-      content: "";
-      display: block;
-      width: 100%;
-      aspect-ratio: 1 / 1;
-    }
-
     a {
       color: $black;
     }

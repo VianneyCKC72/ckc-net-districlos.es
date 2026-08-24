@@ -1,3 +1,10 @@
+document.addEventListener('click', function (e) {
+    const url = e.target.closest('.js-variant-link')?.getAttribute('data-url');
+    if (url) {
+        window.location.href = url;
+    }
+});
+
 document.addEventListener('keydown', function(e){
     const t = e.target;
     if (!t || t.tagName === 'TEXTAREA') return;
