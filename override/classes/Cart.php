@@ -330,4 +330,105 @@ class Cart extends CartCore
         $this->invalidateQuantityCache();
         return $result;
     }
+
+    /**
+     * Réinjecte les règles Club Pro filtrées par le core (groupe défaut 10).
+     */
+    public function getCartRules($filter = CartRule::FILTER_ACTION_ALL, $autoAdd = true, $useOrderPrices = false)
+    {
+        static $depth = 0;
+        ++$depth;
+
+        try {
+            $result = parent::getCartRules($filter, $autoAdd, $useOrderPrices);
+
+            // Évite la récursion via getOrderTotal pendant la réinjection
+            if ($depth > 1 || !$this->id) {
+                return $result;
+            }
+
+            $customer = Context::getContext()->customer;
+            if (!$customer || !(int) $customer->id) {
+                return $result;
+            }
+
+            $customerGroupIds = array_map('intval', (array) $customer->getGroups());
+
+            $presentIds = [];
+            foreach ($result as $row) {
+                $presentIds[(int) ($row['id_cart_rule'] ?? 0)] = true;
+            }
+
+            $sqlFilter = '';
+            if ($filter == CartRule::FILTER_ACTION_SHIPPING) {
+                $sqlFilter = ' AND cr.free_shipping = 1';
+            } elseif ($filter == CartRule::FILTER_ACTION_GIFT) {
+                $sqlFilter = ' AND cr.gift_product != 0';
+            } elseif ($filter == CartRule::FILTER_ACTION_REDUCTION) {
+                $sqlFilter = ' AND (cr.reduction_percent != 0 OR cr.reduction_amount != 0)';
+            }
+
+            $clubRows = Db::getInstance()->executeS(
+                'SELECT cr.*, crl.`id_lang`, crl.`name`, cd.`id_cart`
+                 FROM `' . _DB_PREFIX_ . 'cart_cart_rule` cd
+                 INNER JOIN `' . _DB_PREFIX_ . 'cart_rule` cr ON cd.`id_cart_rule` = cr.`id_cart_rule`
+                 LEFT JOIN `' . _DB_PREFIX_ . 'cart_rule_lang` crl ON (
+                    cd.`id_cart_rule` = crl.`id_cart_rule`
+                    AND crl.id_lang = ' . (int) $this->getAssociatedLanguage()->getId() . '
+                 )
+                 WHERE cd.`id_cart` = ' . (int) $this->id . '
+                   AND cr.description LIKE "DTC_PALIER_SHARED_%"'
+                . $sqlFilter
+            );
+
+            if (!$clubRows) {
+                return $result;
+            }
+
+            $virtualContext = Context::getContext()->cloneContext();
+            /* @phpstan-ignore-next-line */
+            $virtualContext->cart = $this;
+            $virtualContext->virtualTotalTaxExcluded = $this->getOrderTotal(false, self::ONLY_PRODUCTS);
+            if (Tax::excludeTaxeOption()) {
+                $virtualContext->virtualTotalTaxIncluded = $virtualContext->virtualTotalTaxExcluded;
+            } else {
+                $virtualContext->virtualTotalTaxIncluded = $this->getOrderTotal(true, self::ONLY_PRODUCTS);
+            }
+
+            foreach ($clubRows as $row) {
+                $idCartRule = (int) $row['id_cart_rule'];
+                if ($idCartRule <= 0 || isset($presentIds[$idCartRule])) {
+                    continue;
+                }
+
+                $cartRuleGroupIds = array_map('intval', array_column(
+                    Db::getInstance()->executeS(
+                        'SELECT id_group FROM `' . _DB_PREFIX_ . 'cart_rule_group`
+                         WHERE id_cart_rule = ' . $idCartRule
+                    ) ?: [],
+                    'id_group'
+                ));
+
+                if (!$cartRuleGroupIds || !array_intersect($cartRuleGroupIds, $customerGroupIds)) {
+                    continue;
+                }
+
+                $row['obj'] = new CartRule($idCartRule, (int) $this->id_lang);
+                if (!Validate::isLoadedObject($row['obj']) || !(bool) $row['obj']->active) {
+                    continue;
+                }
+
+                $row['value_real'] = $row['obj']->getContextualValue(true, $virtualContext, $filter);
+                $row['value_tax_exc'] = $row['obj']->getContextualValue(false, $virtualContext, $filter);
+                $row['id_discount'] = $idCartRule;
+                $row['description'] = $row['obj']->description;
+                $result[] = $row;
+                $presentIds[$idCartRule] = true;
+            }
+
+            return $result;
+        } finally {
+            --$depth;
+        }
+    }
 }

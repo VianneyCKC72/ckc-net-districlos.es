@@ -44,9 +44,9 @@ class pm_advancedpackupdate_packModuleFrontController extends ModuleFrontControl
         if (Tools::getIsset('productPackExclude')) {
             $this->productPackExclude = array_unique(array_map('intval', (array)Tools::getValue('productPackExclude')));
         }
-        if (Tools::getIsset('quantity_ml') && (int)Tools::getValue('quantity_ml') > 0) {
+        if (Tools::getIsset('quantity_ml') && (float) str_replace(',', '.', (string) Tools::getValue('quantity_ml')) > 0) {
             $this->pack_ml = true;
-            $this->ml = (int)Tools::getValue('quantity_ml');
+            $this->ml = (float) str_replace(',', '.', (string) Tools::getValue('quantity_ml'));
             AdvancedPack::setFrontMl($this->ml);
         }
         if (Tools::getIsset('quantity_hauteur') && Tools::getValue('quantity_hauteur') !== '' && (float) Tools::getValue('quantity_hauteur') >= 0) {

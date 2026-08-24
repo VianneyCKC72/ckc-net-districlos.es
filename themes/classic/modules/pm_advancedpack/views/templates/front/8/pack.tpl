@@ -31,27 +31,9 @@
         <meta content="{$product.url}">
         {hook h='CETemplate' id=43}
         <div class="product-container js-product-container">
-            <div class="row mb-5">
-                <div class="col-12">
-                    {block name='page_header_container'}
-                        {block name='page_header'}
-                            <h1 class="h2">{block name='page_title'}{$product.name}{/block}</h1>
-                        {/block}
-                    {/block}
-                    {hook h='displayPromoProductDescription'}
-                    {* Start - Inté static *}
-                    {*                    <div class="has-discount d-flex align-items-center">
-                                            <div class="tag-discount mr-2">% SOLDES</div>
-                                            <p class="small mb-0">100 € offerts par tranche de 1 000 € d’achat & 150 € offerts par tranche
-                                                de 3 000 €
-                                                d’achat
-                                            </p>
-                                        </div>*}
-                    {* End - Inté static *}
-                </div>
-            </div>
             <div class="row">
                 <div class="col-lg-7">
+                    {hook h='displayPromoProductDescription'}
                     {block name='page_content_container'}
                         {block name='page_content'}
                             {* {include file='catalog/_partials/product-flags.tpl'} *}
@@ -66,18 +48,12 @@
                 <div class="col-lg-5">
 
                     <div class="product-information">
+                        {block name='page_header_container'}
+                            {block name='page_header'}
+                                <h1 class="product-title">{block name='page_title'}{$product.name}{/block}</h1>
+                            {/block}
+                        {/block}
 
-                        <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mb-3">
-                            <div>
-                                <p class="small mb-0 font-weight-bold mb-1">
-                                    Produit garanti moins cher du web
-                                </p>
-                                <p class="thin mb-0">
-                                    Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.
-                                </p>
-                            </div>
-                            <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
-                        </div>
                         <div class="d-flex align-items-center mb-3 gap-16 flex-wrap">
                             {if $product.quantity > 0}
                                 <div class="small text-secondary">
@@ -338,8 +314,14 @@
                                     display: block;
                                     white-space: nowrap;
                                 }
-                                .ap5-ml-degressive__table {
+                                .ap5-ml-degressive__scroll {
                                     flex: 1 1 auto;
+                                    min-width: 0;
+                                    overflow-x: auto;
+                                    -webkit-overflow-scrolling: touch;
+                                    overscroll-behavior-x: contain;
+                                }
+                                .ap5-ml-degressive__table {
                                     width: 100%;
                                     border-collapse: collapse;
                                     table-layout: fixed;
@@ -389,31 +371,62 @@
                                     .ap5-ml-degressive {
                                         flex-direction: column;
                                         min-height: 0;
+                                        overflow: visible;
                                     }
                                     .ap5-ml-degressive__cta {
                                         flex: 0 0 auto;
                                         justify-content: center;
-                                        padding: 12px 14px;
+                                        min-width: 0;
+                                        width: 100%;
+                                        padding: 10px 12px;
                                         border-bottom: 1px solid #FF144E;
                                     }
                                     .ap5-ml-degressive__cta strong {
-                                        font-size: 15px;
+                                        font-size: 14px;
                                         text-align: center;
                                     }
-                                    .ap5-ml-degressive__table th:first-child,
-                                    .ap5-ml-degressive__table td:first-child {
-                                        width: auto;
-                                        font-size: 10px;
-                                        padding-left: 8px;
+                                    .ap5-ml-degressive__cta-line {
+                                        display: inline;
+                                    }
+                                    .ap5-ml-degressive__cta-line + .ap5-ml-degressive__cta-line::before {
+                                        content: ' ';
+                                    }
+                                    .ap5-ml-degressive__scroll {
+                                        width: 100%;
+                                        overflow-x: auto;
+                                        scrollbar-width: thin;
+                                        scrollbar-color: #FF144E #FECFD8;
+                                    }
+                                    .ap5-ml-degressive__table {
+                                        width: max-content;
+                                        min-width: 100%;
+                                        table-layout: auto;
+                                        height: auto;
                                     }
                                     .ap5-ml-degressive__table th,
                                     .ap5-ml-degressive__table td {
-                                        font-size: 10px;
-                                        height: 28px;
-                                        padding: 0 3px;
+                                        font-size: 11px;
+                                        height: 32px;
+                                        padding: 0 10px;
+                                    }
+                                    .ap5-ml-degressive__table th:first-child,
+                                    .ap5-ml-degressive__table td:first-child {
+                                        position: sticky;
+                                        left: 0;
+                                        z-index: 1;
+                                        width: auto;
+                                        min-width: 88px;
+                                        max-width: 110px;
+                                        padding-left: 10px;
+                                        padding-right: 8px;
+                                        background: #FECFD8;
+                                        box-shadow: 2px 0 0 #FF144E;
+                                        white-space: normal;
+                                        line-height: 1.2;
                                     }
                                     .ap5-ml-degressive__table tbody td {
-                                        font-size: 10px;
+                                        font-size: 12px;
+                                        min-width: 72px;
                                     }
                                 }
                             </style>
@@ -469,30 +482,32 @@
                                 <div class="ap5-ml-degressive__cta">
                                     <strong><span class="ap5-ml-degressive__cta-line">Prix</span><span class="ap5-ml-degressive__cta-line">dégressifs&nbsp;!</span></strong>
                                 </div>
-                                <table class="ap5-ml-degressive__table">
-                                    <thead>
-                                        <tr>
-                                            <th scope="row">Nombre de mL</th>
-                                            {foreach from=$packMlDiscountTiers item=tier}
-                                                <td>
-                                                    {if $tier.to === null || $tier.to === ''}
-                                                        +{$tier.from|string_format:"%g"} mL
-                                                    {else}
-                                                        {$tier.from|string_format:"%g"} à {$tier.to|string_format:"%g"} mL
-                                                    {/if}
-                                                </td>
-                                            {/foreach}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <th scope="row">% de remise</th>
-                                            {foreach from=$packMlDiscountTiers item=tier}
-                                                <td>{$tier.percent|string_format:"%g"}%</td>
-                                            {/foreach}
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div class="ap5-ml-degressive__scroll">
+                                    <table class="ap5-ml-degressive__table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="row">Nombre de mL</th>
+                                                {foreach from=$packMlDiscountTiers item=tier}
+                                                    <td>
+                                                        {if $tier.to === null || $tier.to === ''}
+                                                            +{$tier.from|string_format:"%g"} mL
+                                                        {else}
+                                                            {$tier.from|string_format:"%g"} à {$tier.to|string_format:"%g"} mL
+                                                        {/if}
+                                                    </td>
+                                                {/foreach}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">% de remise</th>
+                                                {foreach from=$packMlDiscountTiers item=tier}
+                                                    <td>{$tier.percent|string_format:"%g"}%</td>
+                                                {/foreach}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             {/if}
                             </div>
@@ -601,6 +616,19 @@
                                 </form>
                             {/block}
                         </div>
+                        {if !$pro.env}
+                            <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mt-3 mb-3">
+                                <div>
+                                    <p class="small mb-0 font-weight-bold mb-1">
+                                        Produit garanti moins cher du web
+                                    </p>
+                                    <p class="thin mb-0">
+                                        Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.
+                                    </p>
+                                </div>
+                                <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
+                            </div>
+                        {/if}
                     </div>
                 </div>
             </div>

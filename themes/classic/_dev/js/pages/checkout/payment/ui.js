@@ -5,6 +5,10 @@ export function applyPaymentLogos() {
         if (!$logos.length || $logos.data('payment-logo-set')) {
             return;
         }
+        if ($logos.find('img').length) {
+            $logos.data('payment-logo-set', true);
+            return;
+        }
 
         // Pas de logo pour l'acompte sur facture
         if (title.indexOf('acompte') !== -1) {
@@ -31,7 +35,7 @@ export function applyPaymentLogos() {
         }
 
         if (logoSrc) {
-            $logos.html('<img src="' + logoSrc + '" alt="" loading="lazy">');
+            $logos.html('<img src="' + logoSrc + '" alt="" width="110" height="28">');
             $logos.data('payment-logo-set', true);
         }
     });
