@@ -253,6 +253,10 @@
       top: 10px;
       left: 10px;
     }
+
+    &.is-hidden-by-color {
+      display: none !important;
+    }
   }
 
   @include media-breakpoint-up(lg) {
