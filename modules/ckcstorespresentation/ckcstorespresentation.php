@@ -45,7 +45,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
     {
         $this->name = 'ckcstorespresentation';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.1';
+        $this->version = '1.2.0';
         $this->author = 'ckc-net';
         $this->need_instance = 0;
 

@@ -50,8 +50,8 @@
                             {/if}
                         {/foreach}
                     </div>
-                    <div class="image-gallery-accordeon btn btn-primary">Voir toutes les réalisations</div>
-                    <div class="image-gallery-accordeon-hide btn btn-primary">Réduire</div>
+                    <div class="image-gallery-accordeon btn btn-primary">{l s='Voir toutes les réalisations' d='Shop.Theme.Customckc'}</div>
+                    <div class="image-gallery-accordeon-hide btn btn-primary">{l s='Réduire' d='Shop.Theme.Customckc'}</div>
                 {else}
                     <div class="gallery-content" id="ckc-realisation-images">
                         {foreach from=$gallery item=$image key=$key}
@@ -75,7 +75,7 @@
         </div>
         {/foreach}
     {else}
-        <div>Pas d'images des réalisations.</div>
+        <div>{l s='Pas d\'images des réalisations.' d='Shop.Theme.Customckc'}</div>
     {/if}
 </div>
 

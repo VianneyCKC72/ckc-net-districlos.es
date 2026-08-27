@@ -11,7 +11,7 @@ class Ckc_Favorite_StoresFavoriteStoreModuleFrontController extends ModuleFrontC
 
         if ($action === 'add') {
             if (!$id_store) {
-                die(json_encode(['status' => 'error', 'message' => 'Aucun magasin sélectionné.']));
+                die(json_encode(['status' => 'error', 'message' => ($this->context->language->iso_code === 'en') ? 'No store selected.' : 'Aucun magasin sélectionné.']));
             }
             
             if ($this->context->customer->isLogged()) {

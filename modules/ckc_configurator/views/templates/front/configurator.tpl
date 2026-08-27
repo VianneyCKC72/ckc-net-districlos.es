@@ -4,7 +4,7 @@
 {/block}
 {block name='page_content'}
     <div id="configurator-loader">
-        <div>Chargement</div>
+        <div>{l s='Chargement' d='Shop.Theme.Customconfigurator'}</div>
     </div>
 
     <div class="add_to_cart_configurator_bottom" style="display: none;">
@@ -27,7 +27,7 @@
                     <div>
                         <div class="position-relative">
                             <button class="btn btn-primary" id="voir_config" type="button">
-                                Voir ma configuration
+                                {l s='Voir ma configuration' d='Shop.Theme.Customconfigurator'}
                             </button>
                         </div>
                     </div>
@@ -38,11 +38,11 @@
 
     <div class="error-bg">
         <div class="error-modal">
-            <div class="error-title">Attention !</div>
+            <div class="error-title">{l s='Attention !' d='Shop.Theme.Customconfigurator'}</div>
             <div class="error-text"></div>
             <div class="error-buttons">
-                <button name="changeType" class="btn configurator-change-type configurator-submit revert btn-primary">Continuer et changer de gamme</button>
-                <button name="keepType" class="btn configurator-change-type configurator-submit revert btn-primary">Conserver ces attributs / gammes</button>
+                <button name="changeType" class="btn configurator-change-type configurator-submit revert btn-primary">{l s='Continuer et changer de gamme' d='Shop.Theme.Customconfigurator'}</button>
+                <button name="keepType" class="btn configurator-change-type configurator-submit revert btn-primary">{l s='Conserver ces attributs / gammes' d='Shop.Theme.Customconfigurator'}</button>
             </div>
         </div>
     </div>
@@ -58,18 +58,18 @@
                     </li>
 
                     <li>
-                        <span>Configurez votre clôture</span>
+                        <span>{l s='Configurez votre clôture' d='Shop.Theme.Customconfigurator'}</span>
                     </li>
                 </ol>
             </nav>
-            <h1 class="h2">Configurez votre clôture</h1>
-            <p class="font-weight-semibold mb-0">Bienvenue sur notre outil de création de kit de clôture.</p>
-            <p>Suivez les étapes en cliquant ci-dessous pour configurer votre clôture idéale et personnalisée !</p>
+            <h1 class="h2">{l s='Configurez votre clôture' d='Shop.Theme.Customconfigurator'}</h1>
+            <p class="font-weight-semibold mb-0">{l s='Bienvenue sur notre outil de création de kit de clôture.' d='Shop.Theme.Customconfigurator'}</p>
+            <p>{l s='Suivez les étapes en cliquant ci-dessous pour configurer votre clôture idéale et personnalisée !' d='Shop.Theme.Customconfigurator'}</p>
             <div class="step first" data-step="first">
                 <div class="configurator-container configurator-first">
                     <div class="d-flex align-items-center mb-4">
-                        <span class="mr-4 font-weight-bold subtitle">Type de clôture</span>
-                        <span class="font-weight-semibold">Obligatoire</span>
+                        <span class="mr-4 font-weight-bold subtitle">{l s='Type de clôture' d='Shop.Theme.Customconfigurator'}</span>
+                        <span class="font-weight-semibold">{l s='Obligatoire' d='Shop.Theme.Customconfigurator'}</span>
                     </div>
                     <div class="configurator-content">
                         <div class="row row-items initial-m-p">
@@ -108,7 +108,7 @@
 
         <div class="col-xl-4 mobil_session">
             <div class="configurator-session sticky-column" style="display: none">
-                <div class="font-weight-semibold subtitle mb-2">Ma clôture</div>
+                <div class="font-weight-semibold subtitle mb-2">{l s='Ma clôture' d='Shop.Theme.Customconfigurator'}</div>
 
                 <div class="preview" style="margin-bottom: 1rem;">
                     <div class="configurator-container configurator-preview">
@@ -132,27 +132,27 @@
                     </div>
                 </div>
 
-                <div class="font-weight-semibold">Récapitulatif</div>
-                <span id="deconseil">(Nous déconseillons la pose sur platine et/ou avec brise-vue pour cette hauteur)</span>
+                <div class="font-weight-semibold">{l s='Récapitulatif' d='Shop.Theme.Customconfigurator'}</div>
+                <span id="deconseil">{l s='(Nous déconseillons la pose sur platine et/ou avec brise-vue pour cette hauteur)' d='Shop.Theme.Customconfigurator'}</span>
                 <div class="configurator-session-list">
-                    <div class="justify-content-between"><span>Type de grillage</span><strong><span id="grillage_type"></span></strong></div>
-                    <div class="onlyAlu displayEspacement justify-content-between"><span>Espacement des lames</span><strong><span id="grillage_espacement"></span>cm</strong></div>
-                    <div class="justify-content-between"><span>Longueur</span><strong><span id="grillage_length"></span>m</strong></div>
-                    <div class="justify-content-between"><span>Type de pose</span><strong><span id="grillage_installation"></span></strong></div>
-                    <div class="justify-content-between"><span>Hauteur</span><strong><span id="grillage_height"></span></strong></div>
-                    <div class="justify-content-between"><span>Couleur</span><strong><span id="grillage_color"></span></strong></div>
-                    <div class="onlyAlu displayDepartMur justify-content-between"><span>Départ du mur</span><strong><span id="grillage_depart_mur"></span></strong></div>
-                    <div class="onlyAlu displayDepartMur justify-content-between"><span>Nombre d'angle</span><strong><span id="grillage_nombre_angle"></span></strong></div>
+                    <div class="justify-content-between"><span>{l s='Type de grillage' d='Shop.Theme.Customconfigurator'}</span><strong><span id="grillage_type"></span></strong></div>
+                    <div class="onlyAlu displayEspacement justify-content-between"><span>{l s='Espacement des lames' d='Shop.Theme.Customconfigurator'}</span><strong><span id="grillage_espacement"></span>cm</strong></div>
+                    <div class="justify-content-between"><span>{l s='Longueur' d='Shop.Theme.Customconfigurator'}</span><strong><span id="grillage_length"></span>m</strong></div>
+                    <div class="justify-content-between"><span>{l s='Type de pose' d='Shop.Theme.Customconfigurator'}</span><strong><span id="grillage_installation"></span></strong></div>
+                    <div class="justify-content-between"><span>{l s='Hauteur' d='Shop.Theme.Customconfigurator'}</span><strong><span id="grillage_height"></span></strong></div>
+                    <div class="justify-content-between"><span>{l s='Couleur' d='Shop.Theme.Customconfigurator'}</span><strong><span id="grillage_color"></span></strong></div>
+                    <div class="onlyAlu displayDepartMur justify-content-between"><span>{l s='Départ du mur' d='Shop.Theme.Customconfigurator'}</span><strong><span id="grillage_depart_mur"></span></strong></div>
+                    <div class="onlyAlu displayDepartMur justify-content-between"><span>{l s='Nombre d\'angle' d='Shop.Theme.Customconfigurator'}</span><strong><span id="grillage_nombre_angle"></span></strong></div>
                 </div>
 
                 <div class="configurator-products-list">
-                    <div class="font-weight-semibold">Produits</div>
+                    <div class="font-weight-semibold">{l s='Produits' d='Shop.Theme.Customconfigurator'}</div>
                     <div class="list" style="gap: 10px;display: flex;flex-direction: column;">
 
                     </div>
                 </div>
                 <div class="configurator-price d-flex justify-content-between">
-                    <div class="font-weight-semibold subtitle">Total TTC</div>
+                    <div class="font-weight-semibold subtitle">{l s='Total TTC' d='Shop.Theme.Customconfigurator'}</div>
                     <strong id="price"><span id="price_value"></span> &euro;</strong>
                 </div>
 
@@ -163,7 +163,7 @@
                         <rect x="12.83" y="5.66211" width="13" height="13" rx="6.5" stroke="#7CBA49" stroke-width="2"/>
                         <path d="M21.8799 12.7713H19.9899V14.7113H18.6699V12.7713H16.7799V11.5513H18.6699V9.61133H19.9899V11.5513H21.8799V12.7713Z" fill="#7CBA49"/>
                     </svg>
-                    Ajouter au panier</button>
+                    {l s='Ajouter au panier' d='Shop.Theme.Customconfigurator'}</button>
 
             </div>
         </div>

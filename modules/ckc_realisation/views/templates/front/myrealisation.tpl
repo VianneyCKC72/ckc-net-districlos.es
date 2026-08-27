@@ -104,11 +104,11 @@
                       {elseif $r.status=='rejected'}real-badge--rejected
                       {else}real-badge--pending{/if}">
                       {if $r.status == 'approved'}
-                          Mise en ligne
+                          {l s='Mise en ligne' d='Shop.Theme.Customckc'}
                       {elseif $r.status=='rejected'}
-                          Rejetée
+                          {l s='Rejetée' d='Shop.Theme.Customckc'}
                       {elseif $r.status=='pending'}
-                          En attente de validation
+                          {l s='En attente de validation' d='Shop.Theme.Customckc'}
                       {/if}
                     </span>
                                     </div>
