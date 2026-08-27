@@ -114,7 +114,54 @@ class FrontController extends FrontControllerCore
         $this->context->smarty->assign('IS_EMPLOYEE_BO', $show_emptycart);
         Media::addJsDef(['IS_EMPLOYEE_BO' => (bool)$show_emptycart]);
 
+        // Preview sélecteur de langue : visible uniquement avec ?ckc=1
+        $this->context->smarty->assign(
+            'ckc_lang_preview',
+            (string) Tools::getValue('ckc') === '1'
+        );
+
         return parent::initHeader();
+    }
+
+    /**
+     * N'expose pas les URLs EN dans les hreflang / alternate_langs
+     * tant que les traductions ne sont pas prêtes pour la prod.
+     */
+    public function getTemplateVarUrls()
+    {
+        $urls = parent::getTemplateVarUrls();
+
+        if (!empty($urls['alternative_langs']) && is_array($urls['alternative_langs'])) {
+            foreach (array_keys($urls['alternative_langs']) as $code) {
+                if ($this->isEnglishLangCode((string) $code)) {
+                    unset($urls['alternative_langs'][$code]);
+                }
+            }
+        }
+
+        return $urls;
+    }
+
+    /**
+     * Empêche l'indexation des pages EN pendant la phase de traduction.
+     */
+    public function getTemplateVarPage()
+    {
+        $page = parent::getTemplateVarPage();
+        $iso = strtolower((string) $this->context->language->iso_code);
+
+        if ($this->isEnglishLangCode($iso)) {
+            $page['meta']['robots'] = 'noindex, nofollow';
+        }
+
+        return $page;
+    }
+
+    private function isEnglishLangCode($code)
+    {
+        $code = strtolower(str_replace('_', '-', (string) $code));
+
+        return $code === 'en' || strpos($code, 'en-') === 0;
     }
 
     /**

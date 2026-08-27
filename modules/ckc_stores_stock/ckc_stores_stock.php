@@ -15,7 +15,7 @@ class Ckc_Stores_Stock extends Module
     {
         $this->name = 'ckc_stores_stock';
         $this->tab = 'administration';
-        $this->version = '1.0.0';
+        $this->version = '1.0.3';
         $this->author = 'CKC-Net';
         $this->need_instance = 0;
 

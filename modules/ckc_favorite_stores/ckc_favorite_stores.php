@@ -9,7 +9,7 @@ class Ckc_Favorite_Stores extends Module
     {
         $this->name = 'ckc_favorite_stores';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.0';
+        $this->version = '1.0.1';
         $this->author = 'CKC-Net';
         $this->need_instance = 0;
 

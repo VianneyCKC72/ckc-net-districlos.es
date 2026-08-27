@@ -3,19 +3,19 @@
         <input type="checkbox" id="tva-attestation-toggle" />
         <span class="slider round"></span>
     </label>
-    <span>Réduction de TVA</span>
+    <span>{l s='Réduction de TVA' d='Shop.Theme.Customdealt'}</span>
 
     <div id="tva-attestation-modal" class="tva-modal" style="display:none;">
         <div class="tva-modal-content">
             <span class="tva-close-modal">&times;</span>
-            <h3>Conditions d’éligibilité à la TVA réduite</h3>
+            <h3>{l s='Conditions d’éligibilité à la TVA réduite' d='Shop.Theme.Customdealt'}</h3>
             <ul>
-                <li>Logement achevé depuis plus de 2 ans</li>
-                <li>Travaux réalisés dans ce logement</li>
-                <li>Vous êtes propriétaire ou locataire</li>
+                <li>{l s='Logement achevé depuis plus de 2 ans' d='Shop.Theme.Customdealt'}</li>
+                <li>{l s='Travaux réalisés dans ce logement' d='Shop.Theme.Customdealt'}</li>
+                <li>{l s='Vous êtes propriétaire ou locataire' d='Shop.Theme.Customdealt'}</li>
             </ul>
             <a href="{$tva_attestation_url}" class="btn btn-primary dealt-tva-open-popup">
-                Certifier mon éligibilité à la TVA réduite
+                {l s='Certifier mon éligibilité à la TVA réduite' d='Shop.Theme.Customdealt'}
             </a>
         </div>
     </div>

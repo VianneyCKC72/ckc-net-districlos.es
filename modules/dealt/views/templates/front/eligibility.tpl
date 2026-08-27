@@ -1,6 +1,6 @@
 <div id="dealt-service-info">
-    <p>Service d'installation disponible via notre partenaire</p>
-    <button id="check-eligibility" class="btn btn-outline-secondary">Vérifier l'éligibilité</button>
+    <p>{l s='Service d\'installation disponible via notre partenaire' d='Shop.Theme.Customdealt'}</p>
+    <button id="check-eligibility" class="btn btn-outline-secondary">{l s='Vérifier l\'éligibilité' d='Shop.Theme.Customdealt'}</button>
 </div>
 
 <script type="text/javascript">
