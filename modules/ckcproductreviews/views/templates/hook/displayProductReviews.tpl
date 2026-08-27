@@ -1,5 +1,5 @@
 <div id="ckcproductreviews" class="my-4" itemscope itemtype="https://schema.org/Product">
-    <meta itemprop="name" content="Nom du produit ou service évalué" />
+    <meta itemprop="name" content="{l s='Nom du produit ou service évalué' d='Shop.Theme.Customckc'}" />
 
     <div class="row align-items-center line-review">
         <!-- Bloc statique avec note globale -->
@@ -17,10 +17,10 @@
                         </div>
                     </div>
                     <div class="review-count">
-                        <div>Calculé à partir de <span itemprop="reviewCount">{$nb_reviews_12_months}</span> avis
+                        <div>{l s='Calculé à partir de' d='Shop.Theme.Customckc'} <span itemprop="reviewCount">{$nb_reviews_12_months}</span> {l s='avis' d='Shop.Theme.Customckc'}
                             <br>
-                            obtenus sur les 12 derniers mois</div>
-                        <div style="font-size: 12px;"><span itemprop="reviewCount">6917</span> avis depuis le 09/01/2015</div>
+                            {l s='obtenus sur les 12 derniers mois' d='Shop.Theme.Customckc'}</div>
+                        <div style="font-size: 12px;"><span itemprop="reviewCount">6917</span> {l s='avis depuis le' d='Shop.Theme.Customckc'} 09/01/2015</div>
                     </div>
                     <meta itemprop="ratingValue" content="4.8" />
                     <meta itemprop="bestRating" content="5" />
@@ -32,8 +32,8 @@
                         </picture>
                     </div>
 
-                    <div class="review-note italic">Avis soumis à un contrôle</div>
-                    <a target="_blank" href="https://www.avis-verifies.com/avis-clients/cloture-discount.fr" class="btn btn-primary mt-2 btn-review">Voir tous les avis</a>
+                    <div class="review-note italic">{l s='Avis soumis à un contrôle' d='Shop.Theme.Customckc'}</div>
+                    <a target="_blank" href="https://www.avis-verifies.com/avis-clients/cloture-discount.fr" class="btn btn-primary mt-2 btn-review">{l s='Voir tous les avis' d='Shop.Theme.Customckc'}</a>
                 </div>
             </div>
         </div>
@@ -68,6 +68,6 @@
             {/if}
 
         </div>
-        <a target="_blank" href="https://www.avis-verifies.com/avis-clients/cloture-discount.fr" class="btn btn-primary mt-2 btn-review-mobile">Voir tous les avis</a>
+        <a target="_blank" href="https://www.avis-verifies.com/avis-clients/cloture-discount.fr" class="btn btn-primary mt-2 btn-review-mobile">{l s='Voir tous les avis' d='Shop.Theme.Customckc'}</a>
     </div>
 </div>

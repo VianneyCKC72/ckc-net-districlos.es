@@ -4,13 +4,13 @@
          data-total-quantity="{$total_quantity}"
          data-platform-stock="{$platform_stock|default:0}">
         <div class="d-flex align-items-center blockDeliveryDisplayStock">
-            <img class="ckc-stores-stock-block__icon" src="/modules/ckc_stores_stock/assets/img/{$ui.image}" loading="lazy" alt="Icone livraison">
+            <img class="ckc-stores-stock-block__icon" src="/modules/ckc_stores_stock/assets/img/{$ui.image}" loading="lazy" alt="{l s='Icone livraison' d='Shop.Theme.Customckc'}">
             <div class="small d-flex flex-column text-center ckc-stores-stock-block__text">
                 <span class="style_findevie">{$ui.title}</span>
                 <span class="font-weight-bold text-secondary stock-display">{$ui.stock}</span>
                 <span class="thin style_findevie_thin">{$ui.subtitle}</span>
             </div>
         </div>
-        <button type="button" id="selectShop" style="text-align: start; text-decoration: underline;{if !$ui.showStoreButton} display: none;{/if}" class="d-block small text-black bg-transparent font-weight-semibold text-underline ckc-stores-stock-block__cta">Voir les stocks par magasin</button>
+        <button type="button" id="selectShop" style="text-align: start; text-decoration: underline;{if !$ui.showStoreButton} display: none;{/if}" class="d-block small text-black bg-transparent font-weight-semibold text-underline ckc-stores-stock-block__cta">{l s='Voir les stocks par magasin' d='Shop.Theme.Customckc'}</button>
     </div>
 {/if}

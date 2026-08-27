@@ -1,22 +1,72 @@
 <?php
+
 class ProductController extends ProductControllerCore
 {
     private function getCampaignProductDiscount($product)
     {
         $defaultDiscount = ['active' => false];
+
         if (!Module::isEnabled('ckcadcampaignconfigurator')) {
             return $defaultDiscount;
         }
+
         $module = Module::getInstanceByName('ckcadcampaignconfigurator');
+
         if (!$module || !method_exists($module, 'getCampaignProductDiscountForProduct')) {
             return $defaultDiscount;
         }
+
         return $module->getCampaignProductDiscountForProduct($product);
     }
+
+    protected function assignAttributesGroups($product_for_template = null)
+    {
+        parent::assignAttributesGroups($product_for_template);
+
+        $groups = $this->context->smarty->getTemplateVars('groups');
+        if (empty($groups) || empty($this->combinations)) {
+            return;
+        }
+
+        foreach ($this->combinations as $combo) {
+            if (empty($combo['attributes_values']) || empty($combo['attributes'])) {
+                continue;
+            }
+
+            $index = 0;
+            foreach ($combo['attributes_values'] as $groupId => $name) {
+                $attributeId = (int) ($combo['attributes'][$index++] ?? 0);
+                if (!$attributeId || !isset($groups[$groupId])) {
+                    continue;
+                }
+                if (isset($groups[$groupId]['attributes'][$attributeId])) {
+                    continue;
+                }
+
+                $groups[$groupId]['attributes'][$attributeId] = [
+                    'name' => $name,
+                    'html_color_code' => '',
+                    'texture' => '',
+                    'selected' => false,
+                ];
+            }
+        }
+
+        foreach ($groups as &$group) {
+            if (!empty($group['attributes'])) {
+                ksort($group['attributes'], SORT_NUMERIC);
+            }
+        }
+        unset($group);
+
+        $this->context->smarty->assign('groups', $groups);
+    }
+
     public function initContent()
     {
         $product = $this->getTemplateVarProduct();
         $campaignProductDiscount = $this->getCampaignProductDiscount($product);
+
         $from_europe = true;
         foreach ($product["features"] as $feature) {
             if ($feature['name'] == 'Provenance') {
@@ -25,13 +75,18 @@ class ProductController extends ProductControllerCore
                 }
             }
         }
+
         $product->from_europe = $from_europe;
+
         $this->context->smarty->assign([
             'from_europe'      => $from_europe,
             'campaignProductDiscount' => $campaignProductDiscount,
         ]);
+
         parent::initContent();
     }
+
+
     public function displayAjaxRefresh()
     {
         $product = $this->getTemplateVarProduct();
@@ -40,12 +95,17 @@ class ProductController extends ProductControllerCore
         $product['regular_price_amount'] = round((float)$product['regular_price_amount'] * $product['quantity_wanted'], 2);
         $product['regular_price']        = number_format($product['regular_price_amount'], 2, ',', ' ') . '€';
         $product['unit_price_full']     = number_format(round((float)$product['price_amount'] / $product['quantity_wanted'], 2), 2, ',', ' ') . '€';
-        
+        /*        $product['rounded_display_price'] = round((float)$product['rounded_display_price'] * $product['quantity_wanted'], 2);
+                $product['price_without_reduction'] = round((float)$product['price_without_reduction'] * $product['quantity_wanted'], 2);*/
         $campaignProductDiscount = $this->getCampaignProductDiscount($product);
+
         $minimalProductQuantity = $this->getProductMinimalQuantity($product);
+
+        // If the product is already in the cart, we can set the minimal quantity to 1
         if ($product['cart_quantity'] >= $minimalProductQuantity) {
             $minimalProductQuantity = 1;
         }
+
         ob_end_clean();
         header('Content-Type: application/json');
         $this->ajaxRender(json_encode([
@@ -89,11 +149,4 @@ class ProductController extends ProductControllerCore
             'product_reference' => $product['reference_to_display'],
         ]));
     }
-    
-    /*
-    * module: ets_awesomeurl
-    * date: 2026-08-27 09:36:18
-    * version: 1.4.2
-    */
-    protected $redirectionExtraExcludedKeys = ['category', 'rewrite', 'id_product_attribute'];
 }

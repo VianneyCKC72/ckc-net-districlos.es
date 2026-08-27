@@ -1,7 +1,7 @@
 <div class="configurator-container configurator-fourth">
     <div class="d-flex align-items-center mb-4">
-        <span class="mr-4 font-weight-bold subtitle">Définissez vos services</span>
-        <span class="font-weight-semibold">Facultatif</span>
+        <span class="mr-4 font-weight-bold subtitle">{l s='Définissez vos services' d='Shop.Theme.Customconfigurator'}</span>
+        <span class="font-weight-semibold">{l s='Facultatif' d='Shop.Theme.Customconfigurator'}</span>
     </div>
 
     <div class="configurator-content">
@@ -13,7 +13,7 @@
                         <a href="#" class="form-title optionnal mt-0" id="checkbox_service">
                             <div class="title-img flex-column">
                                 <div class="top-content w-100 d-flex justify-content-between align-items-center mb-4">
-                                    Services
+                                    {l s='Services' d='Shop.Theme.Customconfigurator'}
                                     <svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected">
                                         <rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/>
                                         <path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/>
@@ -24,7 +24,7 @@
                                     </svg>
                                 </div>
                                 <div class="description font-weight-normal">
-                                    Vous souhaitez une pose ? Vérifiez l'éligibilité
+                                    {l s='Vous souhaitez une pose ? Vérifiez l\'éligibilité' d='Shop.Theme.Customconfigurator'}
                                 </div>
                             </div>
                         </a>
@@ -64,7 +64,7 @@
                         <a href="#" class="form-title optionnal mt-0" id="checkbox_service">
                             <div class="title-img flex-column">
                                 <div class="top-content w-100 d-flex justify-content-between align-items-center mb-4">
-                                    Services
+                                    {l s='Services' d='Shop.Theme.Customconfigurator'}
                                     <svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected">
                                         <rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/>
                                         <path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/>
@@ -75,7 +75,7 @@
                                     </svg>
                                 </div>
                                 <div class="description font-weight-normal">
-                                    Vous souhaitez une pose ? Vérifiez l'éligibilité
+                                    {l s='Vous souhaitez une pose ? Vérifiez l\'éligibilité' d='Shop.Theme.Customconfigurator'}
                                 </div>
                             </div>
                         </a>
@@ -85,7 +85,7 @@
                                         <div class="title-img" style="display: flex;justify-content: space-between;flex-direction: column;width: 100%;">
                                             <div class="infos-top">
                                                     <span class="name">
-                                                        Pas de services pour ce produit.
+                                                        {l s='Pas de services pour ce produit.' d='Shop.Theme.Customconfigurator'}
                                                     </span>
                                             </div>
                                         </div>
@@ -97,7 +97,7 @@
             </div>
             <div id="servicesPrev" style="display: none">{json_encode($serviceTitles)}</div>
             <div class="text-center" style="display: none">
-                <button name="addToCart" class="btn configurator-submit btn-primary">Ajouter au panier</button>
+                <button name="addToCart" class="btn configurator-submit btn-primary">{l s='Ajouter au panier' d='Shop.Theme.Customconfigurator'}</button>
             </div>
         </form>
     </div>

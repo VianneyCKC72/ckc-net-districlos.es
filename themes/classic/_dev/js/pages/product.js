@@ -201,14 +201,9 @@ $(document).ready(function () {
 
     function getGroupParams() {
         let groupParams = {};
-        let elements = $('input[name^="group["]:checked, select[name^="group["]');
-
-        if (elements.length > 0) {
-            elements.each(function (index) {
-                groupParams[`group[${index + 1}]`] = $(this).val();
-            });
-        }
-
+        $('input[name^="group["]:checked, select[name^="group["]').each(function () {
+            groupParams[this.name] = this.value;
+        });
         return groupParams;
     }
 
@@ -518,6 +513,45 @@ $(document).ready(function () {
     }
 
     refreshPrice();
+
+    document.addEventListener('change', function (e) {
+        const el = e.target;
+        const wrap = el.closest && el.closest('.js-product-variants');
+        const json = wrap && wrap.querySelector('.js-product-combos');
+        if (!json || (el.name || '').indexOf('group[') !== 0) {
+            return;
+        }
+
+        const gid = el.dataset.productAttribute;
+        const current = {};
+        wrap.querySelectorAll('select[name^="group["], input[name^="group["]:checked').forEach(function (field) {
+            current[field.dataset.productAttribute] = +field.value;
+        });
+
+        const score = (combo) => Object.keys(current).filter((g) => +combo[g] === current[g]).length;
+        const best = JSON.parse(json.textContent)
+            .filter((combo) => +combo[gid] === +el.value)
+            .sort((a, b) => score(b) - score(a))[0];
+        if (!best) {
+            return;
+        }
+
+        Object.keys(best).forEach(function (g) {
+            const id = String(best[g]);
+            const select = wrap.querySelector('select[name="group[' + g + ']"]');
+            if (select) {
+                if (![...select.options].some((option) => option.value === id)) {
+                    select.add(new Option('', id));
+                }
+                select.value = id;
+                return;
+            }
+            const radio = wrap.querySelector('input[name="group[' + g + ']"][value="' + id + '"]');
+            if (radio) {
+                radio.checked = true;
+            }
+        });
+    }, true);
 
     prestashop.on('updatedProduct', (event) => {
         $('.product-images-grid').replaceWith(event.product_cover_thumbnails);

@@ -1,14 +1,14 @@
 <div id="debug-container"></div>
 <div class="configurator-container configurator-second">
     <div class="d-flex align-items-center">
-        <span class="mr-4 font-weight-bold subtitle">Définissez vos besoins</span>
-        <span class="font-weight-semibold">Obligatoire</span>
+        <span class="mr-4 font-weight-bold subtitle">{l s='Définissez vos besoins' d='Shop.Theme.Customconfigurator'}</span>
+        <span class="font-weight-semibold">{l s='Obligatoire' d='Shop.Theme.Customconfigurator'}</span>
     </div>
 
     <div class="configurator-content">
 
         <form class="configurator-form core-form">
-            <div class="form-title">Type de grillage</div>
+            <div class="form-title">{l s='Type de grillage' d='Shop.Theme.Customconfigurator'}</div>
             <div class="row row-items initial-m-p">
                 {if isset($types)}
                     {foreach from=$types item=type}
@@ -37,7 +37,7 @@
             </div>
 
             <div class="viewEspacement" style="display:none">
-                <div class="form-title">Espacement des lames (entre 1cm et 3cm)
+                <div class="form-title">{l s='Espacement des lames (entre 1cm et 3cm)' d='Shop.Theme.Customconfigurator'}
                 </div>
                 <input type="number" id="espacement"
                        min="1" max="3"
@@ -45,14 +45,14 @@
                 />
             </div>
 
-            <div class="form-title" style="margin-bottom: 15px;">Longueur (en mètres)</div>
+            <div class="form-title" style="margin-bottom: 15px;">{l s='Longueur (en mètres)' d='Shop.Theme.Customconfigurator'}</div>
             <div class="longueur-container input-group-configurator-text">
                 <input type="text" id="longueur" class="form-control"
                        name="longueur" {if isset($session->length)} value="{$session->length}" {/if}
-                       placeholder="Ex: 1.8, 2.0, 2.5"/>
+                       placeholder="{l s='Ex: 1.8, 2.0, 2.5' d='Shop.Theme.Customconfigurator'}"/>
             </div>
 
-            <div class="form-title">Type de pose</div>
+            <div class="form-title">{l s='Type de pose' d='Shop.Theme.Customconfigurator'}</div>
             <div class="row row-items initial-m-p">
                 {if isset($installations)}
                     {foreach from=$installations item=installation}
@@ -82,7 +82,7 @@
 
             <div id="heights">
                 <div class="form-title">
-                    Hauteur
+                    {l s='Hauteur' d='Shop.Theme.Customconfigurator'}
                 </div>
                 <div class="row row-items initial-m-p height-mobile">
                     {if isset($heights)}
@@ -115,7 +115,7 @@
             {if isset($session->id_type) && $session->id_type == 177}
                 <div id="poteaux">
                     <div class="form-title">
-                        Type de poteau
+                        {l s='Type de poteau' d='Shop.Theme.Customconfigurator'}
                     </div>
                     <div class="row row-items initial-m-p">
                         {foreach from=$poteaux item=poteau}
@@ -146,7 +146,7 @@
 
             <div id="colors">
                 <div class="form-title">
-                    Couleur
+                    {l s='Couleur' d='Shop.Theme.Customconfigurator'}
                 </div>
                 <div class="row row-items initial-m-p">
                     {if isset($colors)}
@@ -178,10 +178,10 @@
 
             <div class="viewDepartMur">
                 <div class="form-title">
-                    Départ(s) du mur
+                    {l s='Départ(s) du mur' d='Shop.Theme.Customconfigurator'}
                 </div>
                 <em><p style="font-size: 0.8rem">
-                        Le nombre de fois où votre clôture commence ou termine sur un mur
+                        {l s='Le nombre de fois où votre clôture commence ou termine sur un mur' d='Shop.Theme.Customconfigurator'}
                     </p></em>
                 <div class="input-group-configurator-text">
                     <input type="number" id="depart_mur" class="form-control"
@@ -194,7 +194,7 @@
             </div>
             <div class="viewNombreAngle">
                 <div class="form-title">
-                    Nombre d'angle(s)
+                    {l s='Nombre d\'angle(s)' d='Shop.Theme.Customconfigurator'}
                 </div>
                 <div class="input-group-configurator-text">
                     <input type="number" id="nombre_angle" class="form-control"

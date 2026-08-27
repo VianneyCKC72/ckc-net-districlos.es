@@ -43,7 +43,7 @@ class Ckcpromotionbanner extends Module
     {
         $this->name = 'ckcpromotionbanner';
         $this->tab = 'pricing_promotion';
-        $this->version = '1.0.0';
+        $this->version = '1.1.0';
         $this->author = 'Agence CKC';
         $this->need_instance = 1;
         $this->className = 'AdminManagesBarrePromo';
@@ -193,31 +193,23 @@ class Ckcpromotionbanner extends Module
 
         $moduleAdminLink = $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]);
 
-        $idPromotextsResult = \Configuration::get('CKC_BARREPROMO_TEXTE');
+        $languages = Language::getLanguages(false);
+        $defaultLangId = (int) Configuration::get('PS_LANG_DEFAULT');
+        $employeeLangId = (int) $this->context->language->id;
 
-
-        if(null !== $idPromotextsResult && '' !== $idPromotextsResult ) {
-            $idPromotexts = unserialize(base64_decode($idPromotextsResult));
-            $promotexts = implode(",,", $idPromotexts);
-        } else {
-            $promotexts = '';
-        }
-
-        $idPromotextsResultPro = \Configuration::get('CKC_BARREPROMO_TEXTE_PRO');
-
-
-        if(null !== $idPromotextsResultPro && '' !== $idPromotextsResultPro ) {
-            $idPromotextsPro = unserialize(base64_decode($idPromotextsResultPro));
-            $promotextsPro = implode(",,", $idPromotextsPro);
-        } else {
-            $promotextsPro = '';
-        }
+        $promotextsByLang = $this->loadPromoTextsByLang('CKC_BARREPROMO_TEXTE', $languages, $defaultLangId);
+        $promotextsProByLang = $this->loadPromoTextsByLang('CKC_BARREPROMO_TEXTE_PRO', $languages, $defaultLangId);
 
         $this->context->smarty->assign(array(
             'module_dir' => $this->_path,
             'moduleAdminLink' => $moduleAdminLink,
-            'promotexts' => $promotexts,
-            'promotextsPro' => $promotextsPro
+            'languages' => $languages,
+            'default_lang_id' => $defaultLangId,
+            'employee_lang_id' => $employeeLangId,
+            'promotextsByLang' => $promotextsByLang,
+            'promotextsProByLang' => $promotextsProByLang,
+            'promotextsByLangJson' => json_encode($promotextsByLang, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE),
+            'promotextsProByLangJson' => json_encode($promotextsProByLang, JSON_HEX_TAG | JSON_UNESCAPED_UNICODE),
         ));
 
 
@@ -228,33 +220,87 @@ class Ckcpromotionbanner extends Module
     }
 
     public function saveExceptions(){
-        $exceptions = \Tools::getValue('id_promotexts');
-        if(null !== $exceptions) {
-            $arr = explode(',,', $exceptions);
-            $tableauIdsExclure = [];
-            foreach ($arr as $exception) {
-                if($exception !== ''){
-                    $tableauIdsExclure[] = trim($exception);
-                }
-            }
-            $serializedData = base64_encode(serialize($tableauIdsExclure));
-            Configuration::updateValue('CKC_BARREPROMO_TEXTE', $serializedData);
-        }
+        $this->savePromoTextsMultilang('id_promotexts', 'CKC_BARREPROMO_TEXTE');
     }
 
     public function saveExceptionsPro(){
-        $exceptions = \Tools::getValue('id_promotextsPro');
-        if(null !== $exceptions) {
-            $arr = explode(',,', $exceptions);
-            $tableauIdsExclure = [];
-            foreach ($arr as $exception) {
-                if($exception !== ''){
-                    $tableauIdsExclure[] = trim($exception);
-                }
+        $this->savePromoTextsMultilang('id_promotextsPro', 'CKC_BARREPROMO_TEXTE_PRO');
+    }
+
+    protected function savePromoTextsMultilang($postKey, $configKey)
+    {
+        $payload = Tools::getValue($postKey);
+
+        if (is_array($payload)) {
+            $values = array();
+            foreach (Language::getLanguages(false) as $lang) {
+                $idLang = (int) $lang['id_lang'];
+                $raw = isset($payload[$idLang]) ? (string) $payload[$idLang] : '';
+                $values[$idLang] = $this->encodePromoTexts($raw);
             }
-            $serializedData = base64_encode(serialize($tableauIdsExclure));
-            Configuration::updateValue('CKC_BARREPROMO_TEXTE_PRO', $serializedData);
+            Configuration::updateValue($configKey, $values);
+
+            return;
         }
+
+        if (null === $payload) {
+            return;
+        }
+
+        $defaultLangId = (int) Configuration::get('PS_LANG_DEFAULT');
+        $values = array();
+        foreach (Language::getLanguages(false) as $lang) {
+            $idLang = (int) $lang['id_lang'];
+            $values[$idLang] = $idLang === $defaultLangId
+                ? $this->encodePromoTexts((string) $payload)
+                : $this->encodePromoTexts('');
+        }
+        Configuration::updateValue($configKey, $values);
+    }
+
+    protected function encodePromoTexts($csv)
+    {
+        $arr = array();
+        foreach (explode(',,', (string) $csv) as $item) {
+            $item = trim($item);
+            if ($item !== '') {
+                $arr[] = $item;
+            }
+        }
+
+        return base64_encode(serialize($arr));
+    }
+
+    protected function decodePromoTexts($raw)
+    {
+        if ($raw === '' || $raw === null) {
+            return array();
+        }
+
+        $decoded = @unserialize(base64_decode((string) $raw));
+
+        return is_array($decoded) ? $decoded : array();
+    }
+
+    protected function loadPromoTextsByLang($configKey, array $languages, $defaultLangId)
+    {
+        $legacyGlobal = (string) Configuration::get($configKey);
+        $legacyArr = $this->decodePromoTexts($legacyGlobal);
+        $byLang = array();
+
+        foreach ($languages as $lang) {
+            $idLang = (int) $lang['id_lang'];
+            $raw = (string) Configuration::get($configKey, $idLang);
+            $arr = $this->decodePromoTexts($raw);
+
+            if (empty($arr) && $idLang === (int) $defaultLangId && !empty($legacyArr)) {
+                $arr = $legacyArr;
+            }
+
+            $byLang[$idLang] = implode(',,', $arr);
+        }
+
+        return $byLang;
     }
 
     /**
@@ -459,34 +505,23 @@ class Ckcpromotionbanner extends Module
             $addClass .= 'bottom';
         }
 
+        $idLang = (int) $this->context->language->id;
+        $defaultLangId = (int) Configuration::get('PS_LANG_DEFAULT');
+
         foreach (array_keys($form_values) as $key) {
-            if($key == 'CKC_BARREPROMO_TEXTE'){
-                $idPromotextsResult = Configuration::get($key);
+            if ($key === 'CKC_BARREPROMO_TEXTE' || $key === 'CKC_BARREPROMO_TEXTE_PRO') {
+                $raw = (string) Configuration::get($key, $idLang);
+                $texts = $this->decodePromoTexts($raw);
 
-                if(null !== $idPromotextsResult && '' !== $idPromotextsResult ) {
-                    $promotexts = unserialize(base64_decode($idPromotextsResult));
-                } else {
-                    $promotexts = '';
+                if (empty($texts) && $idLang === $defaultLangId) {
+                    $texts = $this->decodePromoTexts((string) Configuration::get($key));
                 }
 
-
-                $this->smarty->assign('ckcpromobarretexts', $promotexts);
-
-            } elseif ($key == 'CKC_BARREPROMO_TEXTE_PRO') {
-                $idPromotextsResultPro = Configuration::get($key);
-
-                if(null !== $idPromotextsResultPro && '' !== $idPromotextsResultPro ) {
-                    $promotextsPro = unserialize(base64_decode($idPromotextsResultPro));
-                } else {
-                    $promotextsPro = '';
-                }
-
-
-                $this->smarty->assign('ckcpromobarretextsPro', $promotextsPro);
+                $assignVar = $key === 'CKC_BARREPROMO_TEXTE' ? 'ckcpromobarretexts' : 'ckcpromobarretextsPro';
+                $this->smarty->assign($assignVar, !empty($texts) ? $texts : '');
             } else {
                 $this->smarty->assign($key, Configuration::get($key));
             }
-
         }
 
         $this->smarty->assign('class', $addClass);
