@@ -49,6 +49,26 @@
 }
 
 /* ==========================================================================
+   checkout — notifications (alerte compte créé, etc.)
+   ========================================================================== */
+body#checkout #notifications {
+    margin-bottom: 16px;
+}
+
+/* ==========================================================================
+   checkout — option « Créer un devis » (alignement radio + label)
+   ========================================================================== */
+body#checkout .payment-options .payment-option-card--quote .payment-option {
+    align-items: center;
+    min-height: auto;
+}
+
+body#checkout .payment-options .payment-option-card--quote .custom-radio {
+    margin-top: 0 !important;
+    align-self: center;
+}
+
+/* ==========================================================================
    checkout/_partials/steps/checkout-step.tpl — barre de progression
    ========================================================================== */
 .progress-container .progress-bar {
