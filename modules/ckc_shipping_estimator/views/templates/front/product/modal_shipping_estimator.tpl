@@ -14,24 +14,23 @@
                         </defs>
                         <rect id="camion_blanc" width="64" height="40" fill="url(#pattern)"></rect>
                     </svg>
-                    <p>Livraison à domicile {hook h='displayPromoImpactFranco'} !
+                    <p>{l s='Livraison à domicile' d='Shop.Theme.Custommodules'} {hook h='displayPromoImpactFranco'} !
                         {*<span class="color-green">offerte dès 1499 € TTC !</span>*}
                     </p>
                 </div>
 
                 <div class="modal-shipping-content-product">
                     <div>
-                        <h2 class="title-modal-delivery">1. Estimez vos frais de livraison</h2>
+                        <h2 class="title-modal-delivery">{l s='1. Estimez vos frais de livraison' d='Shop.Theme.Custommodules'}</h2>
                         <p class="description-delivery">
-                            Cette simulation prend en compte les produits dans votre panier (ex : produits avec plus-value de transport).
-                            Pour confirmer un choix de livraison, vous devez aller jusqu'à l'étape "transport" en appuyant sur le bouton "passer commande".
+                            {l s='Cette simulation prend en compte les produits dans votre panier (ex : produits avec plus-value de transport). Pour confirmer un choix de livraison, vous devez aller jusqu\'à l\'étape "transport" en appuyant sur le bouton "passer commande".' d='Shop.Theme.Custommodules'}
                         </p>
 
                         <div class="shippingCp">
-                            <div class="zipcode-label">Renseignez votre code postal</div>
+                            <div class="zipcode-label">{l s='Renseignez votre code postal' d='Shop.Theme.Custommodules'}</div>
                             <div class="zipcode-input-container">
                                 <div class="zipcode-input-group">
-                                    <input type="text" class="form-control moduleZipcodeInput" placeholder="Ex : 75000" id="postalCodeInput" data-1p-ignore>
+                                    <input type="text" class="form-control moduleZipcodeInput" placeholder="{l s='Ex : 75000' d='Shop.Theme.Custommodules'}" id="postalCodeInput" data-1p-ignore>
                                     <button type="button" class="btn btn-primary" id="submitZipCodeProduct" data-id-product="{$product->id}" data-id-product-attribute="{$product->id_product_attribute}">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="#fff" style="width: 16px;">
                                             <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
@@ -49,42 +48,42 @@
                         <table class="table deliveriesTable" style="display: none;">
                             <thead>
                             <tr>
-                                <th class="text-center">Transporteur</th>
-                                <th>Prix de livraison</th>
-                                <th>Informations et délais moyens</th>
+                                <th class="text-center">{l s='Transporteur' d='Shop.Theme.Custommodules'}</th>
+                                <th>{l s='Prix de livraison' d='Shop.Theme.Custommodules'}</th>
+                                <th>{l s='Informations et délais moyens' d='Shop.Theme.Custommodules'}</th>
                             </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
-                        <p class="deliveryCostError">Il n'y a aucun choix de livraison pour le code postal renseigné</p>
+                        <p class="deliveryCostError">{l s='Il n\'y a aucun choix de livraison pour le code postal renseigné' d='Shop.Theme.Custommodules'}</p>
                     </div>
                 </div>
 
                 <div class="delivery-content">
-                    <p>2. Choix de la livraison</p>
-                    <p><span class="underline">Livraison Standard</span> : directement dans votre jardin ! Nos équipes déchargent la marchandise à l'adresse demandée.</p>
-                    <p><span class="underline">Livraison Economique</span> : pour faire des économies, prêtez main forte à nos livreurs.</p>
-                    <p>Certains produits lourds tels que les plaques de soubassement en béton engendrent une majoration des frais de livraison. Veuillez estimer vos frais de port pour en connaître le montant.</p>
+                    <p>{l s='2. Choix de la livraison' d='Shop.Theme.Custommodules'}</p>
+                    <p>{l s='[1]Livraison Standard[/1] : directement dans votre jardin ! Nos équipes déchargent la marchandise à l\'adresse demandée.' sprintf=['[1]'=>'<span class="underline">','[/1]'=>'</span>'] d='Shop.Theme.Custommodules'}</p>
+                    <p>{l s='[1]Livraison Economique[/1] : pour faire des économies, prêtez main forte à nos livreurs.' sprintf=['[1]'=>'<span class="underline">','[/1]'=>'</span>'] d='Shop.Theme.Custommodules'}</p>
+                    <p>{l s='Certains produits lourds tels que les plaques de soubassement en béton engendrent une majoration des frais de livraison. Veuillez estimer vos frais de port pour en connaître le montant.' d='Shop.Theme.Custommodules'}</p>
                 </div>
 
                 <div class="delivery-content">
-                    <p>3. Planifiez votre livraison</p>
-                    <p>Prenez rendez-vous directement avec nos équipes. Choisissez une date et une heure spécifique afin d'être présent lors de la livraison.</p>
+                    <p>{l s='3. Planifiez votre livraison' d='Shop.Theme.Custommodules'}</p>
+                    <p>{l s='Prenez rendez-vous directement avec nos équipes. Choisissez une date et une heure spécifique afin d\'être présent lors de la livraison.' d='Shop.Theme.Custommodules'}</p>
                 </div>
 
                 <div class="delivery-content">
-                    <p>4. Délai de livraison</p>
-                    <p>Si vous avez choisi la livraison par notre magasin le plus proche, le délai est d'environ de 10 à 15 jours ouvrés (sauf exception).</p>
+                    <p>{l s='4. Délai de livraison' d='Shop.Theme.Custommodules'}</p>
+                    <p>{l s='Si vous avez choisi la livraison par notre magasin le plus proche, le délai est d\'environ de 10 à 15 jours ouvrés (sauf exception).' d='Shop.Theme.Custommodules'}</p>
                 </div>
 
                 <div class="delivery-content">
-                    <p>5. Suivi de la commande</p>
-                    <p>Un e-mail est envoyé à chaque étape du traitement de votre commande. De plus, vous avez l'œil sur le suivi directement dans votre espace client.</p>
-                    <p>Sinon, contactez votre magasin ou le service commercial au <a href="tel:0422531034">04 22 53 10 34</a>.</p>
+                    <p>{l s='5. Suivi de la commande' d='Shop.Theme.Custommodules'}</p>
+                    <p>{l s='Un e-mail est envoyé à chaque étape du traitement de votre commande. De plus, vous avez l\'œil sur le suivi directement dans votre espace client.' d='Shop.Theme.Custommodules'}</p>
+                    <p>{l s='Sinon, contactez votre magasin ou le service commercial au [1]04 22 53 10 34[/1].' sprintf=['[1]'=>'<a href="tel:0422531034">','[/1]'=>'</a>'] d='Shop.Theme.Custommodules'}</p>
                 </div>
 
                 <div class="delivery-footer">
-                    <button type="button" class="btn btn-primary d-flex my-2 mx-auto" data-dismiss="modal" aria-label="Close">Retour au produit</button>
+                    <button type="button" class="btn btn-primary d-flex my-2 mx-auto" data-dismiss="modal" aria-label="Close">{l s='Retour au produit' d='Shop.Theme.Custommodules'}</button>
                 </div>
             </div>
         </div>

@@ -10,7 +10,7 @@ class Ckc_Realisation extends Module
     {
         $this->name = 'ckc_realisation';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.2';
+        $this->version = '1.0.3';
         $this->author = 'Vianney';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '8.0.0', 'max' => _PS_VERSION_];

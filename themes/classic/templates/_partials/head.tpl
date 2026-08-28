@@ -65,15 +65,19 @@
   <link rel="preconnect" href="https://www.googletagmanager.com">
   <link rel="preconnect" href="https://assets.motive.co">
   <link rel="preload" href="https://nouveau.cloture-discount.fr/img/cms/MOBILE%20MAI.webp" as="image">
-{*  {if $page.meta.robots !== 'index'}*}
-{*    <meta name="robots" content="{$page.meta.robots}">*}
-{*  {/if}*}
+  {* noindex EN tant que les traductions ne sont pas prêtes *}
+  {if isset($page.meta.robots) && $page.meta.robots && $page.meta.robots != 'index'}
+    <meta name="robots" content="{$page.meta.robots|escape:'html':'UTF-8'}">
+  {/if}
   {if $page.canonical}
     <link rel="canonical" href="{$page.canonical}">
   {/if}
   {block name='head_hreflang'}
+    {* Pas de hreflang EN pour l'instant (traductions en cours) *}
     {foreach from=$urls.alternative_langs item=pageUrl key=code}
-      <link rel="alternate" href="{$pageUrl}" hreflang="{$code}">
+      {if $code|substr:0:2 != 'en'}
+        <link rel="alternate" href="{$pageUrl}" hreflang="{$code}">
+      {/if}
     {/foreach}
   {/block}
 

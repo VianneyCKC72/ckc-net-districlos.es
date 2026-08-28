@@ -1,7 +1,7 @@
 <script type="text/javascript" src="https://assets.oney.io/build/loader.min.js"></script>
 
  <div id="financing-discover">
-    <p class="h2">Aide au financement</p>
+    <p class="h2">{l s='Aide au financement' d='Shop.Theme.Customoney'}</p>
     {* <div class="payment-methods__listing mt-5">
         <div class="payment-method">
             <div class="img">
@@ -11,8 +11,7 @@
         </div>
         <div class="payment-method">
             <div class="img">
-                <img src="/themes/classic/assets/img/payment-methods/cb.jpg" loading="lazy" alt="Carte Bleue">
-            </div>
+                <img src="/themes/classic/assets/img/payment-methods/cb.jpg" loading="lazy" alt="Carte Bleue"> </div>
             <p>Carte Bleue</p>
         </div>
         <div class="payment-method">
@@ -60,26 +59,25 @@
     <div class="d-flex flex-wrap align-items-center gap-16">
         {* <p class="h3 mb-0">Choix du financement</p> *}
         <select class="form-control form-control-select w-max-content" id="paiement-select-desktop" name="payment-method">
-            <option value="">Paiement gratuit en plusieurs fois</option>
-            <option value="oney3x" class="financement-option" data-min="300" data-max="6000" data-placeholder="#paymentOption3x" data-free="true" data-method="bnpl">Payez en 3 fois sans frais</option>
-            <option value="oney4x" class="financement-option" data-min="400" data-max="6000" data-placeholder="#paymentOption4x" data-free="true" data-method="bnpl">Payez en 4 fois sans frais</option>
-            <option value="oney10x" class="financement-option" data-min="500" data-max="3000" data-placeholder="#paymentOption10x" data-free="true" data-method="bnpl">Payez en 10 fois sans frais</option>
-            <option value="oney12x" class="financement-option" data-min="500" data-max="3000" data-placeholder="#paymentOption12x" data-free="true" data-method="bnpl">Payez en 12 fois sans frais</option>
-            <option value="oney24x" class="financement-option" data-min="2000" data-max="15000" data-placeholder="#paymentOption24x" data-free="false" data-method="longtermcredit">Financement 24x</option>
-            <option value="oney36x" class="financement-option" data-min="2000" data-max="15000" data-placeholder="#paymentOption36x" data-free="false" data-method="longtermcredit">Financement 36x</option>
-            <option value="oney48x" class="financement-option" data-min="2000" data-max="15000" data-placeholder="#paymentOption48x" data-free="false" data-method="longtermcredit">Financement 48x</option>
+            <option value="">{l s='Paiement gratuit en plusieurs fois' d='Shop.Theme.Customoney'}</option>
+            <option value="oney3x" class="financement-option" data-min="300" data-max="6000" data-placeholder="#paymentOption3x" data-free="true" data-method="bnpl">{l s='Payez en 3 fois sans frais' d='Shop.Theme.Customoney'}</option>
+            <option value="oney4x" class="financement-option" data-min="400" data-max="6000" data-placeholder="#paymentOption4x" data-free="true" data-method="bnpl">{l s='Payez en 4 fois sans frais' d='Shop.Theme.Customoney'}</option>
+            <option value="oney10x" class="financement-option" data-min="500" data-max="3000" data-placeholder="#paymentOption10x" data-free="true" data-method="bnpl">{l s='Payez en 10 fois sans frais' d='Shop.Theme.Customoney'}</option>
+            <option value="oney12x" class="financement-option" data-min="500" data-max="3000" data-placeholder="#paymentOption12x" data-free="true" data-method="bnpl">{l s='Payez en 12 fois sans frais' d='Shop.Theme.Customoney'}</option>
+            <option value="oney24x" class="financement-option" data-min="2000" data-max="15000" data-placeholder="#paymentOption24x" data-free="false" data-method="longtermcredit">{l s='Financement 24x' d='Shop.Theme.Customoney'}</option>
+            <option value="oney36x" class="financement-option" data-min="2000" data-max="15000" data-placeholder="#paymentOption36x" data-free="false" data-method="longtermcredit">{l s='Financement 36x' d='Shop.Theme.Customoney'}</option>
+            <option value="oney48x" class="financement-option" data-min="2000" data-max="15000" data-placeholder="#paymentOption48x" data-free="false" data-method="longtermcredit">{l s='Financement 48x' d='Shop.Theme.Customoney'}</option>
         </select>
     </div>
 
     <div class="card-bg-sand-light px-4 px-md-5 py-4 mt-4" id="simulatorContainer">
-        <div id="paymentOption3x" style="display:none;">Option de paiement en 3 fois.</div>
-        <div id="paymentOption4x" style="display:none;">Option de paiement en 4 fois.</div>
-        <div id="paymentOption10x" style="display:none;">Option de paiement en 10 fois.</div>
-        <div id="paymentOption12x" style="display:none;">Option de paiement en 12 fois.</div>
-        <div id="paymentOption24x" style="display:none;">Option de paiement en 24 fois.</div>
-        <div id="paymentOption36x" style="display:none;">Option de paiement en 36 fois.</div>
-        <div id="paymentOption48x" style="display:none;">Option de paiement en 48 fois.</div>
-        <p class="p-2 small text-uppercase">Un crédit vous engage et doit être remboursé. Vérifiez vos capacités de
-            remboursement avant de vous engager.</p>
+        <div id="paymentOption3x" style="display:none;">{l s='Option de paiement en 3 fois.' d='Shop.Theme.Customoney'}</div>
+        <div id="paymentOption4x" style="display:none;">{l s='Option de paiement en 4 fois.' d='Shop.Theme.Customoney'}</div>
+        <div id="paymentOption10x" style="display:none;">{l s='Option de paiement en 10 fois.' d='Shop.Theme.Customoney'}</div>
+        <div id="paymentOption12x" style="display:none;">{l s='Option de paiement en 12 fois.' d='Shop.Theme.Customoney'}</div>
+        <div id="paymentOption24x" style="display:none;">{l s='Option de paiement en 24 fois.' d='Shop.Theme.Customoney'}</div>
+        <div id="paymentOption36x" style="display:none;">{l s='Option de paiement en 36 fois.' d='Shop.Theme.Customoney'}</div>
+        <div id="paymentOption48x" style="display:none;">{l s='Option de paiement en 48 fois.' d='Shop.Theme.Customoney'}</div>
+        <p class="p-2 small text-uppercase">{l s='Un crédit vous engage et doit être remboursé. Vérifiez vos capacités de remboursement avant de vous engager.' d='Shop.Theme.Customoney'}</p>
     </div>
 </div>

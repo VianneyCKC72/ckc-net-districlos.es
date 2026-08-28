@@ -70,7 +70,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         parent::initContent();
         
         if ($this->module->isLive()) {
-            $this->context->smarty->assign('meta_title', 'Configurez votre clôture et sécurisez votre extérieur avec Districlos');
+            $this->context->smarty->assign('meta_title', ($this->context->language->iso_code === 'en') ? 'Configure your fence and secure your outdoor space with Districlos' : 'Configurez votre clôture et sécurisez votre extérieur avec Districlos');
 //            $this->session = Session::init($this->userKey(), $this->language_id);
             $this->context->smarty->assign(["categories" => $this->configurator->getSubCategories($this->language_id, true)]);
             $this->init = true;
@@ -442,7 +442,7 @@ class Ckc_ConfiguratorConfiguratorModuleFrontController extends ModuleFrontContr
         }
 
         if((!in_array($this->session->height, $heights) || !in_array($this->session->color, $colors)) && !isset($forceChange)) {
-            $this->errors[] = ["type" => "error", "msg" => "Les déclinaisons que vous avez sélectionné ne correspondent pas avec cette gamme de Clôture. Si vous souhaitez de gamme, vous devrez à nouveau sélectionner les déclinaisons", "action" => "changeType"];
+            $this->errors[] = ["type" => "error", "msg" => ($this->context->language->iso_code === 'en') ? "The variations you selected do not match this fence range. If you want to change range, you will need to select the variations again." : "Les déclinaisons que vous avez sélectionné ne correspondent pas avec cette gamme de Clôture. Si vous souhaitez de gamme, vous devrez à nouveau sélectionner les déclinaisons", "action" => "changeType"];
         }
         else {
             if (isset($forceChange)) {
