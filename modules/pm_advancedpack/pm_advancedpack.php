@@ -21,6 +21,7 @@ if (!defined('_PS_VERSION_')) {
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 include_once _PS_ROOT_DIR_ . '/modules/pm_advancedpack/AdvancedPack.php';
 include_once _PS_ROOT_DIR_ . '/modules/pm_advancedpack/AdvancedPackCoreClass.php';
+include_once _PS_ROOT_DIR_ . '/modules/pm_advancedpack/PackGalleryColorHelper.php';
 class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
 {
     const DEBUG = false;
@@ -159,6 +160,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             || !$this->registerHook('actionProductSave')
             || !$this->registerHook('actionPresentProduct')
             || !$this->registerHook('displayAdminProductsMainStepLeftColumnBottom')
+            || !$this->registerHook('displayAdminProductsMainStepLeftColumnMiddle')
             || !$this->registerHook('actionFrontControllerInitBefore')
             || (version_compare(_PS_VERSION_, '8.1.0', '>=') && !$this->registerHook('actionProductFormBuilderModifier'))
             || !$this->_addCustomAttributeGroup()
@@ -168,6 +170,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
         ) {
             return false;
         }
+        PackGalleryColorHelper::ensureTable();
         Configuration::updateGlobalValue('PS_SPECIFIC_PRICE_FEATURE_ACTIVE', '1');
         Configuration::updateGlobalValue('PS_COMBINATION_FEATURE_ACTIVE', '1');
         $this->_checkIfModuleIsUpdate(true, false, true);
@@ -194,6 +197,8 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             $res &= $this->registerHook('displayAdminProductsMainStepLeftColumnBottom');
             $res &= $this->registerHook('actionFrontControllerInitBefore');
         }
+        $res &= $this->registerHook('displayAdminProductsMainStepLeftColumnMiddle');
+        PackGalleryColorHelper::ensureTable();
         return $res;
     }
     private function _updateModulePosition()
@@ -317,6 +322,9 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     }
     public function getContent()
     {
+        if (Tools::getValue('ajax') && Tools::getValue('action') === 'savePackImageColors') {
+            $this->ajaxProcessSavePackImageColors();
+        }
         if (Tools::getIsset('adminPackContentUpdate') && Tools::getIsset('getProductExtraInformations') && Tools::getValue('getProductExtraInformations') && Tools::getIsset('productId') && Tools::getValue('productId')) {
             $idProduct = (int)Tools::getValue('productId');
             $warehouseListId = [];
@@ -1497,6 +1505,24 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             'attributesCombinations' => [],
             'content_only' => (int)Tools::getValue('content_only'),
         ];
+
+        $colorMap = PackGalleryColorHelper::buildColorMap((int) $idPack, $packContent ?: []);
+        $vars['packImageColors'] = [];
+        foreach ($colorMap as $idImage => $idAttribute) {
+            // clés int + string : Smarty isset() est capricieux selon la version
+            $vars['packImageColors'][(int) $idImage] = (int) $idAttribute;
+            $vars['packImageColors'][(string) $idImage] = (int) $idAttribute;
+        }
+        $selectedColorId = PackGalleryColorHelper::getSelectedColorId(
+            $packContent ?: [],
+            $packAttributesList
+        );
+        // Couleur sans aucune image dédiée => pas de filtre SSR (galerie de base)
+        if ($selectedColorId && !in_array($selectedColorId, $colorMap, true)) {
+            $selectedColorId = 0;
+        }
+        $vars['packSelectedColorId'] = $selectedColorId;
+
         $this->context->smarty->assign($vars);
         return $vars;
     }
@@ -2743,12 +2769,18 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
     {
         $request = $this->getSfRequest();
         if (empty($request)) {
-            return null;
+            return (int) Tools::getValue('id_product') ?: null;
         }
-        if (version_compare(_PS_VERSION_, '8.1.0', '>=')) {
-            return (int)$request->get('id');
+        // PS 8 product edit: /{productId}/edit (pas "id")
+        foreach (['productId', 'id', 'id_product'] as $key) {
+            $id = (int) $request->get($key);
+            if ($id > 0) {
+                return $id;
+            }
         }
-        return (int)$request->get('id');
+        $id = (int) $request->attributes->get('productId');
+
+        return $id > 0 ? $id : ((int) Tools::getValue('id_product') ?: null);
     }
     public function hookActionProductFormBuilderModifier($params)
     {
@@ -2850,7 +2882,8 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
             $idPackList = AdvancedPack::getIdsPacks(true);
 
             if (Validate::isLoadedObject($product)) {
-                if (AdvancedPack::isValidPack($product->id) && !AdvancedPack::isFromShop($product->id, Context::getContext()->shop->id) && count($this->context->controller->confirmations)) {
+                $isPack = AdvancedPack::isValidPack($product->id);
+                if ($isPack && !AdvancedPack::isFromShop($product->id, Context::getContext()->shop->id) && count($this->context->controller->confirmations)) {
                     $this->context->controller->errors[] = $this->l('You must select the right shop in order to continue (where the pack has been created).');
                     return $this->display(__FILE__, $this->getPrestaShopTemplateVersion() . '/admin-js-disable-product-edit.tpl');
                 }
@@ -3095,6 +3128,7 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
         ]);
         return $this->display(__FILE__, $this->getPrestaShopTemplateVersion() . '/admin-product-tab-new-pack.tpl');
     }
+
     public function ajaxProcessGetAdminNewPackOutput()
     {
         $product = new Product((int)Tools::getValue('idProduct'), true, $this->context->language->id, $this->context->shop->id);
@@ -3296,11 +3330,84 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
         );
         return $this->display(__FILE__, 'views/templates/hook/' . $this->getPrestaShopTemplateVersion() . '/product-bundles.tpl');
     }
+    public function hookDisplayAdminProductsMainStepLeftColumnMiddle($params)
+    {
+        $idPack = (int) ($params['id_product'] ?? 0);
+        if ($idPack <= 0 || !AdvancedPack::isValidPack($idPack)) {
+            return '';
+        }
+
+        return $this->renderPackImageColorsAdmin($idPack);
+    }
+
+    public function renderPackImageColorsAdmin($idPack)
+    {
+        static $rendered = [];
+        $idPack = (int) $idPack;
+        if (isset($rendered[$idPack])) {
+            return '';
+        }
+        $rendered[$idPack] = true;
+
+        PackGalleryColorHelper::ensureTable();
+
+        $idLang = (int) $this->context->language->id;
+        $pack = new Product($idPack, false, $idLang);
+        $images = Image::getImages($idLang, $idPack) ?: [];
+        foreach ($images as &$img) {
+            $img['thumb_url'] = $this->context->link->getImageLink(
+                $pack->link_rewrite,
+                (int) $img['id_image'],
+                'small_default'
+            );
+        }
+        unset($img);
+
+        $this->context->smarty->assign([
+            'link' => $this->context->link,
+            'ap5_pack_id' => $idPack,
+            'ap5_pack_images' => $images,
+            'ap5_pack_colors' => PackGalleryColorHelper::getAvailableColors($idPack),
+            'ap5_pack_image_color_map' => PackGalleryColorHelper::getRawMap($idPack),
+            'ap5_pack_image_colors_save_url' => $this->context->link->getAdminLink('AdminModules', true, [], [
+                'configure' => $this->name,
+                'ajax' => 1,
+                'action' => 'savePackImageColors',
+            ]),
+        ]);
+
+        return $this->display(__FILE__, $this->getPrestaShopTemplateVersion() . '/admin-pack-image-colors.tpl');
+    }
+
+    public function ajaxProcessSavePackImageColors()
+    {
+        header('Content-Type: application/json');
+        $idPack = (int) Tools::getValue('id_pack');
+        if ($idPack <= 0 || !AdvancedPack::isValidPack($idPack)) {
+            die(json_encode(['success' => false, 'error' => 'Invalid pack']));
+        }
+        $mappings = Tools::getValue('mappings');
+        if (!is_array($mappings)) {
+            $mappings = [];
+        }
+        $clean = [];
+        foreach ($mappings as $idImage => $idAttribute) {
+            $clean[(int) $idImage] = (int) $idAttribute;
+        }
+        PackGalleryColorHelper::saveMappings($idPack, $clean);
+        die(json_encode(['success' => true]));
+    }
+
     public function hookDisplayAdminProductsMainStepLeftColumnBottom($params)
     {
-        $product = new Product((int) $params['id_product']);
+        $idProduct = (int) ($params['id_product'] ?? 0);
+        if ($idProduct > 0 && AdvancedPack::isValidPack($idProduct)) {
+            return $this->renderPackImageColorsAdmin($idProduct);
+        }
 
-        if (!Validate::isLoadedObject($product) || Tools::getValue('is_real_new_pack') || AdvancedPack::isValidPack((int)$params['id_product'])) {
+        $product = new Product($idProduct);
+
+        if (!Validate::isLoadedObject($product) || Tools::getValue('is_real_new_pack')) {
             return;
         }
         $legacyContextService = $this->get('prestashop.adapter.legacy.context');
