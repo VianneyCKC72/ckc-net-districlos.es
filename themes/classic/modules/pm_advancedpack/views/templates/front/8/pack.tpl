@@ -39,7 +39,7 @@
                             {* {include file='catalog/_partials/product-flags.tpl'} *}
                             {hook h='displayCustomProductLabel' product=$product}
                             {block name='product_cover_thumbnails'}
-                                {include file='catalog/_partials/product-cover-thumbnails.tpl'}
+                                {include file='catalog/_partials/product-cover-thumbnails-pack.tpl'}
                             {/block}
                             {hook h='displayProductBelowGallery' product=$product}
                         {/block}
