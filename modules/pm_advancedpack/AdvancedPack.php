@@ -67,7 +67,7 @@ class AdvancedPack extends Product
     }
 
     /**
-     * Ajuste un prix unitaire pour que le total panier corresponde à getPackPrice() selon PS_ROUND_TYPE.
+     * Ajuste les PU composants (simulation panier ROUND_ITEM/LINE/TOTAL) pour total = getPackPrice() arrondi.
      */
     private static function alignPackCartSpecificPrices(array $unitPrices, array $qtyByKey, $targetTotalHt)
     {
@@ -78,30 +78,53 @@ class AdvancedPack extends Product
         $precision = (int) Context::getContext()->getComputingPrecision();
         $roundType = (int) Configuration::get('PS_ROUND_TYPE');
         $targetTotalHt = Tools::ps_round((float) $targetTotalHt, $precision);
-        $tolerance = pow(10, -$precision);
+        $tolerance = pow(10, -$precision) / 2;
 
         if (abs(self::sumCartLineTotalsForPack($unitPrices, $qtyByKey, $roundType, $precision) - $targetTotalHt) < $tolerance) {
             return $unitPrices;
         }
 
-        $adjustKey = array_keys($unitPrices)[0];
-        $maxQty = 0;
-        foreach ($qtyByKey as $key => $qty) {
-            if ((int) $qty > $maxQty) {
-                $maxQty = (int) $qty;
-                $adjustKey = $key;
+        $keys = array_keys($unitPrices);
+        usort($keys, function ($a, $b) use ($qtyByKey) {
+            return (int) ($qtyByKey[$a] ?? 1) <=> (int) ($qtyByKey[$b] ?? 1);
+        });
+
+        foreach ($keys as $adjustKey) {
+            $base = (float) $unitPrices[$adjustKey];
+            for ($i = -500; $i <= 500; ++$i) {
+                $try = $unitPrices;
+                $try[$adjustKey] = $base + ($i / 10000);
+                if ($try[$adjustKey] < 0) {
+                    continue;
+                }
+                $trySum = self::sumCartLineTotalsForPack($try, $qtyByKey, $roundType, $precision);
+                if (abs($trySum - $targetTotalHt) < $tolerance) {
+                    return $try;
+                }
             }
         }
 
-        $base = (float) $unitPrices[$adjustKey];
-        for ($i = -500; $i <= 500; ++$i) {
-            $tryPrices = $unitPrices;
-            $tryPrices[$adjustKey] = $base + ($i / 10000);
-            if ($tryPrices[$adjustKey] < 0) {
-                continue;
-            }
-            if (abs(self::sumCartLineTotalsForPack($tryPrices, $qtyByKey, $roundType, $precision) - $targetTotalHt) < $tolerance) {
-                return $tryPrices;
+        $lineCount = count($keys);
+        for ($a = 0; $a < $lineCount - 1; ++$a) {
+            for ($b = $a + 1; $b < $lineCount; ++$b) {
+                $k1 = $keys[$a];
+                $k2 = $keys[$b];
+                $b1 = (float) $unitPrices[$k1];
+                $b2 = (float) $unitPrices[$k2];
+                for ($i = -500; $i <= 500; ++$i) {
+                    for ($j = -500; $j <= 500; ++$j) {
+                        $try = $unitPrices;
+                        $try[$k1] = $b1 + ($i / 10000);
+                        $try[$k2] = $b2 + ($j / 10000);
+                        if ($try[$k1] < 0 || $try[$k2] < 0) {
+                            continue;
+                        }
+                        $trySum = self::sumCartLineTotalsForPack($try, $qtyByKey, $roundType, $precision);
+                        if (abs($trySum - $targetTotalHt) < $tolerance) {
+                            return $try;
+                        }
+                    }
+                }
             }
         }
 
@@ -152,11 +175,11 @@ class AdvancedPack extends Product
             return [$unitPrices, $qtyByKey];
         }
 
-        $unitPrices = self::alignPackCartSpecificPrices(
-            $unitPrices,
-            $qtyByKey,
-            self::getPackPrice($idPack, false, true, true, 6, $idProductAttributeList, $quantityList, $packExcludeList, true)
+        $targetPackTotalHt = Tools::ps_round(
+            self::getPackPrice($idPack, false, true, true, 6, $idProductAttributeList, $quantityList, $packExcludeList, true),
+            (int) Context::getContext()->getComputingPrecision()
         );
+        $unitPrices = self::alignPackCartSpecificPrices($unitPrices, $qtyByKey, $targetPackTotalHt);
 
         return [$unitPrices, $qtyByKey];
     }
@@ -3237,6 +3260,13 @@ class AdvancedPack extends Product
             } elseif (isset($context->cookie->id_cart) && (int) $context->cookie->id_cart > 0) {
                 $idCart = (int) $context->cookie->id_cart;
             }
+            if ($idCart <= 0 && Validate::isLoadedObject($context->cart)) {
+                $context->cart->add();
+                $idCart = (int) $context->cart->id;
+                if ($idCart > 0) {
+                    $context->cookie->id_cart = $idCart;
+                }
+            }
 
             $packUniqueHash = md5(
                 $idCart
@@ -3250,14 +3280,14 @@ class AdvancedPack extends Product
             $idProductAttributePack = self::addCustomPackProductAttribute((int)$idPack, $idProductAttributeList, $packUniqueHash);
 
             $packProducts = self::getPackContent($idPack, null, true, [], $quantityList);
-            list($packFixedUnitPrices) = self::buildAlignedPackFixedUnitPrices(
+            $packFixedUnitPrices = self::buildAlignedPackFixedUnitPrices(
                 $idPack,
                 $packProducts,
                 $idProductAttributeList,
                 $quantityList,
                 $packExcludeList,
                 $quantity
-            );
+            )[0];
             if (AdvancedPackCoreClass::_isFilledArray($packProducts)) {
                 $idAddressDelivery = (int)Tools::getValue('id_address_delivery');
                 pm_advancedpack::$_preventInfiniteLoop = true;
@@ -3319,7 +3349,7 @@ class AdvancedPack extends Product
                         self::addExplodedPackCartSpecificPrice(
                             (int) $packProduct['id_product'],
                             (int) $productPackIdAttribute,
-                            (int) self::getContext()->cart->id,
+                            $idCart,
                             $fixedPackUnitPrice,
                             $packProduct
                         );
@@ -3350,6 +3380,7 @@ class AdvancedPack extends Product
                 $cartPresenter = new \PrestaShop\PrestaShop\Adapter\Presenter\Cart\CartPresenter();
                 $presentedCart = $cartPresenter->present($context->cart);
                 $presentedCart['products'] = $moduleInstance->getContainer()->get('prestashop.core.filter.front_end_object.product_collection')->filter($presentedCart['products']);
+
                 $jsonCartContent['cart'] = $presentedCart;
                 $jsonCartContent['ap5Data'] = [
                     'idProductAttribute' => null,
