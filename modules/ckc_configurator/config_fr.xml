@@ -2,7 +2,7 @@
 <module>
     <name>ckc_configurator</name>
     <displayName><![CDATA[Configurateur de produits]]></displayName>
-    <version><![CDATA[1.0.0]]></version>
+    <version><![CDATA[1.0.1]]></version>
     <description><![CDATA[Configurateur de produits permettant, via un formulaire &eacute;volutif, d&#039;ajouter au panier les produits en relation avec son r&eacute;sultat.]]></description>
     <author><![CDATA[CKC NET]]></author>
     <tab><![CDATA[administration]]></tab>
