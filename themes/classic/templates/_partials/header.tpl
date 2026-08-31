@@ -13,9 +13,6 @@
 
 {block name='header_top'}
 
-    {* Bandeau Bons plans — module dtc_bandeau_soldes *}
-    {hook h='displayBandeauSoldes'}
-
     <div class="header-top">
         <div class="row-header d-flex align-items-center">
 
