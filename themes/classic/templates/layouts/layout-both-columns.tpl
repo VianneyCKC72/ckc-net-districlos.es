@@ -27,7 +27,6 @@
 
     {block name='hook_after_body_opening_tag'}
         {hook h='displayAfterBodyOpeningTag'}
-        {hook h='displayBandeauSoldes'}
     {/block}
 
     <main>
