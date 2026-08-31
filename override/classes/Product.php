@@ -1,5 +1,4 @@
 <?php
-
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -100,7 +99,7 @@ class Product extends ProductCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-27 09:36:18
+    * date: 2026-08-28 14:28:38
     * version: 1.4.2
     */
     public function getAnchor($id_product_attribute, $with_id = false)
