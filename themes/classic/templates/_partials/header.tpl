@@ -13,20 +13,8 @@
 
 {block name='header_top'}
 
-    {* START BANDEAU BONS PLANS *}
-    <div class="bandeau-soldes" role="region" aria-label="Bons plans">
-        <div class="bandeau-soldes__inner">
-            <a href="/400-bons-plans" class="bandeau-soldes__link">
-                <span class="bandeau-soldes__badge">
-                    BONS PLANS
-                </span>
-                <span class="bandeau-soldes__text">
-                    Jusqu'à <strong>-12%</strong> offerts dès 2000€ d'achat !
-                </span>
-            </a>
-        </div>
-    </div>
-    {* END BANDEAU BONS PLANS *}
+    {* Bandeau Bons plans — module dtc_bandeau_soldes *}
+    {hook h='displayBandeauSoldes'}
 
     <div class="header-top">
         <div class="row-header d-flex align-items-center">
