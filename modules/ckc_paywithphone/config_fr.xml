@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <module>
     <name>ckc_paywithphone</name>
-    <displayName><![CDATA[Pay With Phone]]></displayName>
+    <displayName><![CDATA[Payer par t&eacute;l&eacute;phone]]></displayName>
     <version><![CDATA[1.0.0]]></version>
     <description><![CDATA[Accept payments for your products via phone.]]></description>
     <author><![CDATA[CKC-Net]]></author>

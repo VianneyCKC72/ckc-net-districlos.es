@@ -11,7 +11,7 @@ class ckc_label extends Module
     {
         $this->name = 'ckc_label';
         $this->tab = 'administration';
-        $this->version = '1.0.0';
+        $this->version = '1.0.1';
         $this->author = 'CKC-Net';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -686,8 +686,15 @@ class ckc_label extends Module
             . '_' . $idProduct . '_' . $idCategory;
 
         if (!$this->isCached('views/templates/hook/product_labels.tpl', $cacheId)) {
+            $labels = $this->getActiveLabelsForProduct($idProduct, $idCategory);
+            if (is_array($labels)) {
+                foreach ($labels as &$label) {
+                    $label['show_discount_percent'] = (int) ($label['show_discount_percent'] ?? 1);
+                }
+                unset($label);
+            }
             $this->context->smarty->assign([
-                'ckc_labels' => $this->getActiveLabelsForProduct($idProduct, $idCategory),
+                'ckc_labels' => $labels,
                 'ckc_labels_product' => $product,
             ]);
         }

@@ -1,15 +1,15 @@
 <div class="dealt-cart-tva">
-    <h3>TVA réduite à 10%</h3>
+    <h3>{l s='TVA réduite à 10%' d='Shop.Theme.Customdealt'}</h3>
     <div class="dealt-cart-tva-box">
-        <p>Profitez d’un taux de TVA réduit à 10% sur la pose si vous remplissez les conditions suivantes :</p>
+        <p>{l s='Profitez d’un taux de TVA réduit à 10% sur la pose si vous remplissez les conditions suivantes :' d='Shop.Theme.Customdealt'}</p>
         <ul>
-            <li>Votre habitation est achevée depuis plus de 2 ans</li>
-            <li>Vous êtes propriétaire, locataire ou occupant à titre gratuit</li>
-            <li>Les travaux sont réalisés par un professionnel</li>
+            <li>{l s='Votre habitation est achevée depuis plus de 2 ans' d='Shop.Theme.Customdealt'}</li>
+            <li>{l s='Vous êtes propriétaire, locataire ou occupant à titre gratuit' d='Shop.Theme.Customdealt'}</li>
+            <li>{l s='Les travaux sont réalisés par un professionnel' d='Shop.Theme.Customdealt'}</li>
         </ul>
-        <p><strong>Un formulaire TVA simplifié sera à fournir.</strong></p>
+        <p>{l s='[1]Un formulaire TVA simplifié sera à fournir.[/1]' sprintf=['[1]'=>'<strong>','[/1]'=>'</strong>'] d='Shop.Theme.Customdealt'}</p>
         <a href="/content/21-formulaire-tva-reduite" target="_blank" class="btn btn-secondary btn-sm mt-2">
-            Télécharger le formulaire
+            {l s='Télécharger le formulaire' d='Shop.Theme.Customdealt'}
         </a>
     </div>
 </div>

@@ -1,12 +1,12 @@
 {* // mes devis *}
 <a  class="pro-items-links" href="{$link->getModuleLink('opartdevis', 'listquotation')|escape:'htmlall':'UTF-8'}">
-    Mes demandes de devis
+    {l s='Mes demandes de devis' d='Shop.Theme.Customcustomer'}
 </a>
 
 {* // mon historique d'achat *}
 {if !$configuration.is_catalog}
     <a  class="pro-items-links"href="{$urls.pages.history}">
-        Mon historique d'achat
+        {l s='Mon historique d\'achat' d='Shop.Theme.Customcustomer'}
     </a>
 {/if}
 {* // mes listes de projets *}
@@ -21,13 +21,13 @@
     </a>
 {else}
     <a  class="pro-items-links" href="{$urls.pages.address}">
-        Mon adresse
+        {l s='Mon adresse' d='Shop.Theme.Customcustomer'}
     </a>
 {/if}
 {* // Club Pro & avantages *}
 <a class="pro-items-links" href="{$urls.pages.discount}">
     <span class="pro-items-links__star" aria-hidden="true">★</span>
-    Club Pro &amp; avantages
+    {l s='Club Pro & avantages' d='Shop.Theme.Customcustomer'}
 </a>
 
 {if !$configuration.is_catalog}
@@ -47,12 +47,12 @@
 
 {* GRPD *}
 <a class="pro-items-links" id="returns-link" href="/module/psgdpr/gdpr">
-    Mes données personnelles
+    {l s='Mes données personnelles' d='Shop.Theme.Customcustomer'}
 </a>
 {* // mes notifications *}
 <a  class="pro-items-links" href="#">
-    Mes notifications
+    {l s='Mes notifications' d='Shop.Theme.Customcustomer'}
 </a>
 <a  class="pro-items-links" href="/?mylogout=">
-   Déconnexion
+   {l s='Déconnexion' d='Shop.Theme.Customcustomer'}
 </a>

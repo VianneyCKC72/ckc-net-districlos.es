@@ -1,7 +1,7 @@
 {* Afficher le bloc si au moins un service est suggéré ou si la TVA réduite n'est pas activée *}
 {if ($dealt_cart_services|@count > 0) || (!$dealt_tva_enabled)}
     <div class="dealt-cart-services-container">
-    <p class="h2" style="margin-top: 50px">Notre suggestion</p>
+    <p class="h2" style="margin-top: 50px">{l s='Notre suggestion' d='Shop.Theme.Customdealt'}</p>
 
     <div class="dealt-cart-services mb-3">
 
@@ -21,17 +21,17 @@
                                         <div class="picto-mobile">
                                             {include file="module:dealt/views/templates/hook/svg/cle_molette.tpl"}
                                         </div>
-                                        <h3>Besoin d'une pose ?</h3>
+                                        <h3>{l s='Besoin d\'une pose ?' d='Shop.Theme.Customdealt'}</h3>
                                     </div>
 
                                     <p style="margin-bottom: 1rem;">
-                                        Vérifiez votre éligibilité en fonction du produit et de votre zone géographique ! Nos experts s'occupent de monter votre clôture, grillage ou portail à votre place.
+                                        {l s='Vérifiez votre éligibilité en fonction du produit et de votre zone géographique ! Nos experts s\'occupent de monter votre clôture, grillage ou portail à votre place.' d='Shop.Theme.Customdealt'}
                                     </p>
 
                                     <a href="{$s.service_url|default:'#'|escape:'html':'UTF-8'}"
                                        target="_blank" rel="noopener"
                                        class="service-link">
-                                        Détails et conditions du service
+                                        {l s='Détails et conditions du service' d='Shop.Theme.Customdealt'}
                                     </a>
                                 </div>
 
@@ -42,7 +42,7 @@
 
                                     {if $s.service_ref|default:''}
                                         <p class="service-ref">
-                                            Ref : {$s.service_ref|escape:'html':'UTF-8'}
+                                            {l s='Ref :' d='Shop.Theme.Customdealt'} {$s.service_ref|escape:'html':'UTF-8'}
                                         </p>
                                     {/if}
 
@@ -59,7 +59,7 @@
                                         <div data-dealt-zipcode-check>
                                             <div data-role="check-box" class="dealt-check-box">
                                                 <div class="dealt-check-label">
-                                                    <label for="dealt-zipcode-input-{$s.service_product_id|intval}">Trouver un installateur</label>
+                                                    <label for="dealt-zipcode-input-{$s.service_product_id|intval}">{l s='Trouver un installateur' d='Shop.Theme.Customdealt'}</label>
                                                 </div>
 
                                                 <div class="dealt-zipcode-check">
@@ -67,11 +67,11 @@
                                                         <input id="dealt-zipcode-input-{$s.service_product_id|intval}"
                                                                name="dealt_zipcode"
                                                                type="text"
-                                                               placeholder="Code postal"
+                                                               placeholder="{l s='Code postal' d='Shop.Theme.Customdealt'}"
                                                                inputmode="numeric"
                                                                pattern="^\d{5}$"
                                                                maxlength="5"
-                                                               aria-label="Code postal (5 chiffres)"
+                                                               aria-label="{l s='Code postal (5 chiffres)' d='Shop.Theme.Customdealt'}"
                                                                data-role="zipcode-input"
                                                                style="width: 100%;padding: 5px;border-radius: 20px;border: 2px solid;"
                                                                data-1p-ignore />
@@ -83,9 +83,9 @@
                                                                 data-service-product-id="{$s.service_product_id|intval}"
                                                                 data-main-product-id="{$s.main_product_id|intval}"
                                                                 data-eligibility-url="{$s.eligibility_url|escape:'html':'UTF-8'}"
-                                                                aria-label="Rechercher"
+                                                                aria-label="{l s='Rechercher' d='Shop.Theme.Customdealt'}"
                                                                 {if $elig_disabled}disabled="disabled"
-                                                                title="Configuration manquante pour la vérification"{/if}>
+                                                                title="{l s='Configuration manquante pour la vérification' d='Shop.Theme.Customdealt'}"{/if}>
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                                                  viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -100,11 +100,11 @@
                                                 <button type="button"
                                                         class="btn btn-primary dealt-add-service-only"
                                                         data-service-product-id="{$s.service_product_id|intval}">
-                                                    Ajouter le service de montage
+                                                    {l s='Ajouter le service de montage' d='Shop.Theme.Customdealt'}
                                                 </button>
                                                 <div>
                                                     <a href="#" class="dealt-try-again" data-role="try-again">
-                                                        Réessayer avec un autre code postal
+                                                        {l s='Réessayer avec un autre code postal' d='Shop.Theme.Customdealt'}
                                                     </a>
                                                 </div>
                                             </div>
@@ -113,7 +113,7 @@
 
                                             {if $elig_disabled}
                                                 <small class="text-muted" style="display:block;margin-top:.5rem;">
-                                                    Vérification indisponible pour le moment (identifiants non configurés).
+                                                    {l s='Vérification indisponible pour le moment (identifiants non configurés).' d='Shop.Theme.Customdealt'}
                                                 </small>
                                             {/if}
                                         </div>

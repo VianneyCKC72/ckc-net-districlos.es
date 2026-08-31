@@ -1,7 +1,7 @@
 <div class="configurator-container configurator-third">
     <div class="d-flex align-items-center mb-4">
-        <span class="mr-4 font-weight-bold subtitle">Définissez vos options</span>
-        <span class="font-weight-semibold">Facultatif</span>
+        <span class="mr-4 font-weight-bold subtitle">{l s='Définissez vos options' d='Shop.Theme.Customconfigurator'}</span>
+        <span class="font-weight-semibold">{l s='Facultatif' d='Shop.Theme.Customconfigurator'}</span>
     </div>
 
     <div class="configurator-content">
@@ -12,7 +12,7 @@
                         <a href="#" class="soubassement form-title optionnal mt-0" id="checkbox_soubassement">
                             <div class="title-img flex-column">
                                 <div class="top-content w-100 d-flex justify-content-between align-items-center mb-4">
-                                    Soubassement
+                                    {l s='Soubassement' d='Shop.Theme.Customconfigurator'}
                                     <svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected">
                                         <rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/>
                                         <path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/>
@@ -23,7 +23,7 @@
                                     </svg>
                                 </div>
                                 <div class="description font-weight-normal">
-                                    Solidifiez votre clôture, ajoutez-lui une jolie finition ou créez une clôture en escalier grâce au soubassement béton
+                                    {l s='Solidifiez votre clôture, ajoutez-lui une jolie finition ou créez une clôture en escalier grâce au soubassement béton' d='Shop.Theme.Customconfigurator'}
                                 </div>
                             </div>
                         </a>
@@ -115,7 +115,7 @@
                             <a href="#" class="portillon form-title optionnal mt-0" id="checkbox_portillon">
                                     <div class="title-img flex-column">
                                         <div class="top-content w-100 d-flex justify-content-between align-items-center mb-4">
-                                            Portillon
+                                            {l s='Portillon' d='Shop.Theme.Customconfigurator'}
                                             <svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected">
                                                 <rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/>
                                                 <path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/>
@@ -126,7 +126,7 @@
                                             </svg>
                                         </div>
                                         <div class="description font-weight-normal">
-                                            Sécurisez davantage votre extérieur et facilitez vos déplacements grâce à un portillon de jardin discret et esthétique
+                                            {l s='Sécurisez davantage votre extérieur et facilitez vos déplacements grâce à un portillon de jardin discret et esthétique' d='Shop.Theme.Customconfigurator'}
                                         </div>
                                     </div>
                                 </a>
@@ -248,7 +248,7 @@
                         <a href="#" class="occultation form-title optionnal mt-0" id="checkbox_occultation">
                             <div class="title-img flex-column">
                                 <div class="top-content w-100 d-flex justify-content-between align-items-center mb-4">
-                                    Occultation
+                                    {l s='Occultation' d='Shop.Theme.Customconfigurator'}
                                     <svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected">
                                         <rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/>
                                         <path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/>
@@ -259,7 +259,7 @@
                                     </svg>
                                 </div>
                                 <div class="description font-weight-normal">
-                                    Préservez votre jardin du vis-à-vis à l'aide d'un brise-vue adapté à vos besoins
+                                    {l s='Préservez votre jardin du vis-à-vis à l\'aide d\'un brise-vue adapté à vos besoins' d='Shop.Theme.Customconfigurator'}
                                 </div>
                             </div>
                         </a>
@@ -351,7 +351,7 @@
                         <a href="#" class="configurator-action mt-0" id="checkbox_panneau_deco">
                             <div class="title-img flex-column">
                                 <div class="top-content w-100 d-flex justify-content-between align-items-center mb-4">
-                                    Panneau
+                                    {l s='Panneau' d='Shop.Theme.Customconfigurator'}
                                     <svg width="38" height="39" viewBox="0 0 38 39" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-not-selected">
                                         <rect y="0.5" width="38" height="38" rx="10" fill="#0B798A"/>
                                         <path d="M24.8 21.125H20.075V25.975H16.775V21.125H12.05V18.075H16.775V13.225H20.075V18.075H24.8V21.125Z" fill="white"/>
@@ -362,7 +362,7 @@
                                     </svg>
                                 </div>
                                 <div class="description font-weight-normal">
-                                    Préservez votre jardin du vis-à-vis à l'aide d'un brise-vue adapté à vos besoins
+                                    {l s='Préservez votre jardin du vis-à-vis à l\'aide d\'un brise-vue adapté à vos besoins' d='Shop.Theme.Customconfigurator'}
                                 </div>
                             </div>
                         </a>
@@ -397,7 +397,7 @@
             </div>
 
             <div class="text-center" style="display: none">
-                <button name="addToCart" class="btn configurator-submit btn-primary">Ajouter au panier</button>
+                <button name="addToCart" class="btn configurator-submit btn-primary">{l s='Ajouter au panier' d='Shop.Theme.Customconfigurator'}</button>
             </div>
         </form>
     </div>
