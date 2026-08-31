@@ -27,6 +27,7 @@ class ckc_label extends Module
     {
         return parent::install() &&
             $this->registerHook('displayCustomProductLabel') &&
+            $this->registerHook('displayHeader') &&
             $this->registerHook('displayBackOfficeHeader') &&
             $this->createDatabaseTables();
     }
@@ -106,7 +107,7 @@ class ckc_label extends Module
 
                 $this->context->smarty->assign('fields_value', $_POST);
                 $this->context->controller->addJS($this->_path . 'views/js/ckc_label.js');
-                $this->context->controller->addCSS($this->_path . 'views/css/ckc_label.css');
+                $this->context->controller->addCSS($this->_path . 'views/css/ckc_label_bo.css');
                 $output .= $this->renderForm();
                 $this->clearCache();
                 return $output;
@@ -127,7 +128,7 @@ class ckc_label extends Module
 
         if (Tools::getValue('addNewLabel') || Tools::isSubmit('updateckc_labels')) {
             $this->context->controller->addJS($this->_path . 'views/js/ckc_label.js');
-            $this->context->controller->addCSS($this->_path . 'views/css/ckc_label.css');
+            $this->context->controller->addCSS($this->_path . 'views/css/ckc_label_bo.css');
             $output .= $this->renderForm();
         } else {
             $output .= $this->renderLabelList();
@@ -139,6 +140,11 @@ class ckc_label extends Module
     public function clearCache()
     {
         $this->_clearCache('module:ckc_label/views/templates/hook/product_labels.tpl');
+        // Invalide le cache SQL front (version bump)
+        Configuration::updateValue(
+            'CKC_LABEL_CACHE_VER',
+            (int) Configuration::get('CKC_LABEL_CACHE_VER') + 1
+        );
     }
 
     private function renderLabelList()
@@ -206,10 +212,13 @@ class ckc_label extends Module
                         'required' => true,
                     ],
                     [
-                        'type' => 'text',
+                        'type' => 'textarea',
                         'label' => $this->l('Texte'),
                         'name' => 'text',
                         'required' => true,
+                        'rows' => 3,
+                        'cols' => 40,
+                        'desc' => $this->l('Autorisé : <strong>, <br>, ↓. Ex. : ↓ <strong>PRIX<br>DÉGRESSIF</strong>'),
                     ],
                     [
                         'type' => 'switch',
@@ -396,6 +405,15 @@ class ckc_label extends Module
         return $errors;
     }
 
+    /** HTML limité : strong/b/br + flèche ↓ en tête agrandie. */
+    private function sanitizeLabelText($text)
+    {
+        $text = strip_tags(preg_replace('/\r\n|\r|\n/', '<br>', (string) $text), '<strong><b><br>');
+        $text = trim($text);
+
+        return preg_replace('/^↓\s*/u', '<b class="ckc-label-arrow">↓</b>', $text);
+    }
+
     private function processFormSubmission()
     {
         $id_label = Tools::getValue('id_label');
@@ -409,7 +427,7 @@ class ckc_label extends Module
         $data = [
             'color' => Tools::getValue('color'),
             'background_color' => Tools::getValue('background_color'),
-            'text' => Tools::getValue('text'),
+            'text' => $this->sanitizeLabelText(Tools::getValue('text')),
             'show_discount_percent' => (int) Tools::getValue('show_discount_percent', 1),
             'start_date' => Tools::getValue('start_date'),
             'end_date' => Tools::getValue('end_date'),
@@ -425,16 +443,7 @@ class ckc_label extends Module
             return $errors;
         }
 
-        $data = [
-            'color' => Tools::getValue('color'),
-            'background_color' => Tools::getValue('background_color'),
-            'text' => Tools::getValue('text'),
-            'show_discount_percent' => (int) Tools::getValue('show_discount_percent', 1),
-            'start_date' => Tools::getValue('start_date'),
-            'end_date' => Tools::getValue('end_date'),
-            'active' => (int) Tools::getValue('active'),
-            'apply_to' => Tools::getValue('apply_to'),
-        ];
+        unset($data['product_ids'], $data['category_ids']);
 
         if ($id_label) {
             Db::getInstance()->update('ckc_labels', $data, 'id_label = ' . (int) $id_label);
@@ -561,76 +570,135 @@ class ckc_label extends Module
         Db::getInstance()->update('ckc_labels', ['active' => $active], 'id_label = ' . (int) $id_label);
     }
 
-    public function hookActionAdminControllerSetMedia()
+    public function hookDisplayHeader()
     {
-        $this->context->controller->addCSS($this->_path . 'views/css/ckc_label.css');
-        $this->context->controller->addJS($this->_path . 'views/js/ckc_label.js');
+        $this->context->controller->registerStylesheet(
+            'ckc-label-front',
+            'modules/' . $this->name . '/views/css/ckc_label.css',
+            ['media' => 'all', 'priority' => 200]
+        );
+    }
+
+    /**
+     * Catalogue labels actifs (1 SQL / requête HTTP), puis filtre produit/catégorie.
+     */
+    private function getActiveLabelsCatalog()
+    {
+        static $catalog = null;
+        if ($catalog !== null) {
+            return $catalog;
+        }
+
+        $ver = (int) Configuration::get('CKC_LABEL_CACHE_VER');
+        $cacheId = 'ckc_label_catalog_' . $ver . '_' . date('YmdH');
+
+        if (Cache::isStored($cacheId)) {
+            return $catalog = Cache::retrieve($cacheId);
+        }
+
+        $currentDate = date('Y-m-d H:i:s');
+        $rows = Db::getInstance()->executeS(
+            'SELECT l.*, p.`id_product` AS `map_id_product`, c.`id_category` AS `map_id_category`
+            FROM `' . _DB_PREFIX_ . 'ckc_labels` l
+            LEFT JOIN `' . _DB_PREFIX_ . 'ckc_labels_product` p ON p.`id_label` = l.`id_label`
+            LEFT JOIN `' . _DB_PREFIX_ . 'ckc_labels_category` c ON c.`id_label` = l.`id_label`
+            WHERE l.`active` = 1
+            AND (l.`start_date` IS NULL OR l.`start_date` = "0000-00-00 00:00:00" OR l.`start_date` <= "' . pSQL($currentDate) . '")
+            AND (l.`end_date` IS NULL OR l.`end_date` = "0000-00-00 00:00:00" OR l.`end_date` >= "' . pSQL($currentDate) . '")'
+        );
+
+        $catalog = [
+            'all' => [],
+            'by_product' => [],
+            'by_category' => [],
+        ];
+
+        if (!is_array($rows)) {
+            Cache::store($cacheId, $catalog);
+            return $catalog;
+        }
+
+        $seenAll = [];
+        foreach ($rows as $row) {
+            $label = $row;
+            unset($label['map_id_product'], $label['map_id_category']);
+            $idLabel = (int) $label['id_label'];
+
+            if ($label['apply_to'] === 'all') {
+                if (!isset($seenAll[$idLabel])) {
+                    $seenAll[$idLabel] = true;
+                    $catalog['all'][] = $label;
+                }
+                continue;
+            }
+
+            if ($label['apply_to'] === 'products' && !empty($row['map_id_product'])) {
+                $idProduct = (int) $row['map_id_product'];
+                $catalog['by_product'][$idProduct][$idLabel] = $label;
+            } elseif ($label['apply_to'] === 'categories' && !empty($row['map_id_category'])) {
+                $idCategory = (int) $row['map_id_category'];
+                $catalog['by_category'][$idCategory][$idLabel] = $label;
+            }
+        }
+
+        Cache::store($cacheId, $catalog);
+        return $catalog;
+    }
+
+    private function getActiveLabelsForProduct($idProduct, $idCategory)
+    {
+        static $memo = [];
+        $idProduct = (int) $idProduct;
+        $idCategory = (int) $idCategory;
+        $key = $idProduct . '_' . $idCategory;
+
+        if (isset($memo[$key])) {
+            return $memo[$key];
+        }
+
+        $catalog = $this->getActiveLabelsCatalog();
+        $byId = [];
+
+        foreach ($catalog['all'] as $label) {
+            $byId[(int) $label['id_label']] = $label;
+        }
+        if (!empty($catalog['by_product'][$idProduct])) {
+            foreach ($catalog['by_product'][$idProduct] as $idLabel => $label) {
+                $byId[(int) $idLabel] = $label;
+            }
+        }
+        if (!empty($catalog['by_category'][$idCategory])) {
+            foreach ($catalog['by_category'][$idCategory] as $idLabel => $label) {
+                $byId[(int) $idLabel] = $label;
+            }
+        }
+
+        return $memo[$key] = array_values($byId);
     }
 
     public function hookDisplayCustomProductLabel($params)
     {
-        $this->clearCache();
-        $isLogged = $this->context->customer->logged;
-        $env_pro = $isLogged && in_array(10, $this->context->customer->getGroups());
-
         $product = $params['product'];
-        $currentDate = date('Y-m-d H:i:s');
         $idProduct = (int) $product['id_product'];
         $idCategory = (int) $product['id_category_default'];
-        // $sql = 'SELECT *
-        // FROM ' . _DB_PREFIX_ . 'ckc_labels
-        // WHERE active = 1
-        //   AND (
-        //       (apply_to = "products" AND FIND_IN_SET(' . $idProduct . ', product_ids))
-        //       OR
-        //       (apply_to = "categories" AND FIND_IN_SET(' . $idCategory . ', category_ids))
-        //       OR
-        //       (apply_to = "all")
-        //   )
-        //   AND (start_date IS NULL OR start_date <= "' . pSQL($currentDate) . '")
-        //   AND (end_date IS NULL OR end_date >= "' . pSQL($currentDate) . '
-        //   LIMIT 1")';
+        $cacheId = 'ckc_label_'
+            . (int) Configuration::get('CKC_LABEL_CACHE_VER')
+            . '_' . $idProduct . '_' . $idCategory;
 
-
-        $sql = 'SELECT l.*, p.id_product, c.id_category
-        FROM ' . _DB_PREFIX_ . 'ckc_labels l
-        LEFT JOIN ' . _DB_PREFIX_ . 'ckc_labels_product p ON p.id_label = l.id_label
-        LEFT JOIN ' . _DB_PREFIX_ . 'ckc_labels_category c ON c.id_label = l.id_label
-        WHERE l.active = 1 
-        AND (
-          (apply_to = "products" AND p.id_product = ' . $idProduct . ') 
-          OR 
-          (apply_to = "categories" AND c.id_category = ' . $idCategory . ')
-          OR
-          (apply_to = "all")
-          )
-          AND (start_date IS NULL OR start_date <= "' . pSQL($currentDate) . '")
-          AND (end_date IS NULL OR end_date >= "' . pSQL($currentDate) . ' 
-          LIMIT 1")';
-
-
-        $labels = Db::getInstance()->executeS($sql);
-
-        if ($env_pro) {
-            $labels = [];
+        if (!$this->isCached('views/templates/hook/product_labels.tpl', $cacheId)) {
+            $this->context->smarty->assign([
+                'ckc_labels' => $this->getActiveLabelsForProduct($idProduct, $idCategory),
+                'ckc_labels_product' => $product,
+            ]);
         }
 
-        $this->context->smarty->assign('ckc_labels_sql', $sql);
-
-        $this->context->smarty->assign('ckc_labels', $labels);
-        $this->context->smarty->assign('ckc_labels_product', $product);
-
-        return $this->display(__FILE__, 'views/templates/hook/product_labels.tpl');
+        return $this->display(__FILE__, 'views/templates/hook/product_labels.tpl', $cacheId);
     }
 
-    /**
-     * Add the CSS & JavaScript files you want to be loaded in the BO.
-     */
     public function hookDisplayBackOfficeHeader()
     {
         if (Tools::getValue('configure') == $this->name) {
-            $this->context->controller->addJS($this->_path.'views/js/back.js');
+            $this->context->controller->addJS($this->_path . 'views/js/back.js');
         }
     }
-
 }

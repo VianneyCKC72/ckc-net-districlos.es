@@ -7133,33 +7133,6 @@ li:not([data-depth="0"]):not([data-depth="1"])::before {
   height: 1.438rem;
 }
 
-.product-discounts > .product-discounts-title {
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.product-discounts > .table-product-discounts thead tr th {
-  width: 33%;
-  padding: 0.625rem 1.25rem;
-  text-align: center;
-  background: #fff;
-  border: 0.3125rem #f6f6f6 solid;
-}
-
-.product-discounts > .table-product-discounts tbody tr {
-  background: #f6f6f6;
-}
-
-.product-discounts > .table-product-discounts tbody tr:nth-of-type(even) {
-  background: #fff;
-}
-
-.product-discounts > .table-product-discounts tbody tr td {
-  padding: 0.625rem 1.25rem;
-  text-align: center;
-  border: 0.3125rem #f6f6f6 solid;
-}
-
 .product-prices .tax-shipping-delivery-label {
   font-size: 0.8125rem;
   word-wrap: break-word;

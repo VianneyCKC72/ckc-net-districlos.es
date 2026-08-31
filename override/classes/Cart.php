@@ -431,4 +431,120 @@ class Cart extends CartCore
             --$depth;
         }
     }
+
+    /**
+     * SP panier à prix fixe (pack explosé ML pro) : alimente reduction / specific_prices pour prix barrés et badges.
+     */
+    protected function applyProductCalculations($row, $shopContext, $productQuantity = null, bool $keepOrderPrices = false)
+    {
+        $row = parent::applyProductCalculations($row, $shopContext, $productQuantity, $keepOrderPrices);
+
+        $productQuantity = null === $productQuantity ? (int) $row['cart_quantity'] : (int) $productQuantity;
+        $displayTaxExcluded = Product::getTaxCalculationMethod((int) Context::getContext()->customer->id) == PS_TAX_EXC;
+
+        if ((int) $this->id <= 0 || $keepOrderPrices) {
+            return $this->enrichCartLineReductionDisplay($row, $displayTaxExcluded);
+        }
+
+        $cartFixedSp = Db::getInstance()->getRow(
+            'SELECT `price`
+             FROM `' . _DB_PREFIX_ . 'specific_price`
+             WHERE `id_cart` = ' . (int) $this->id . '
+               AND `id_product` = ' . (int) $row['id_product'] . '
+               AND `id_product_attribute` = ' . (int) $row['id_product_attribute'] . '
+               AND `price` >= 0
+               AND `reduction` = 0'
+        );
+        if (!$cartFixedSp) {
+            return $this->enrichCartLineReductionDisplay($row, $displayTaxExcluded);
+        }
+
+        $addressId = $this->getCartLineTaxAddressId($row);
+        $catalogPriceHt = $this->getCatalogUnitPriceWithoutCartSp($row, false, $productQuantity, $shopContext, $addressId);
+        $catalogPriceTtc = $this->getCatalogUnitPriceWithoutCartSp($row, true, $productQuantity, $shopContext, $addressId);
+        $reductionWithoutTax = $catalogPriceHt - (float) $row['price_with_reduction_without_tax'];
+        $reductionWithTax = $catalogPriceTtc - (float) $row['price_with_reduction'];
+
+        if ($reductionWithoutTax <= 0.000001 && $reductionWithTax <= 0.000001) {
+            return $row;
+        }
+
+        $row['price_without_reduction_without_tax'] = $catalogPriceHt;
+        $row['price_without_reduction'] = $catalogPriceTtc;
+        $row['reduction_without_tax'] = $reductionWithoutTax;
+        $row['reduction'] = $displayTaxExcluded ? $reductionWithoutTax : $reductionWithTax;
+
+        $referencePrice = $displayTaxExcluded ? $catalogPriceHt : $catalogPriceTtc;
+        $percentRatio = $referencePrice > 0 ? ($row['reduction'] / $referencePrice) : 0;
+        $row['specific_prices'] = [
+            'id_cart' => (int) $this->id,
+            'price' => (float) $cartFixedSp['price'],
+            'reduction_type' => 'percentage',
+            'reduction' => (string) (round($percentRatio * 100) / 100),
+        ];
+
+        return $row;
+    }
+
+    private function getCartLineTaxAddressId(array $row): ?int
+    {
+        if (Configuration::get('PS_TAX_ADDRESS_TYPE') == 'id_address_invoice') {
+            $addressId = (int) $this->id_address_invoice;
+        } else {
+            $addressId = (int) $row['id_address_delivery'];
+        }
+
+        return Address::addressExists($addressId, true) ? $addressId : null;
+    }
+
+    private function getCatalogUnitPriceWithoutCartSp(array $row, bool $withTax, int $productQuantity, $shopContext, ?int $addressId): float
+    {
+        $specificPriceOutput = null;
+
+        return (float) Product::getPriceStatic(
+            (int) $row['id_product'],
+            $withTax,
+            (int) $row['id_product_attribute'],
+            6,
+            null,
+            false,
+            true,
+            $productQuantity,
+            false,
+            (int) $this->id_customer ?: null,
+            0,
+            $addressId,
+            $specificPriceOutput,
+            true,
+            true,
+            $shopContext,
+            true,
+            (int) $row['id_customization']
+        );
+    }
+
+    private function enrichCartLineReductionDisplay(array $row, bool $displayTaxExcluded): array
+    {
+        $reductionWithoutTax = (float) $row['price_without_reduction_without_tax'] - (float) $row['price_with_reduction_without_tax'];
+        $reductionWithTax = (float) $row['price_without_reduction'] - (float) $row['price_with_reduction'];
+
+        if (empty($row['reduction_applies']) && $reductionWithoutTax <= 0.000001 && $reductionWithTax <= 0.000001) {
+            return $row;
+        }
+
+        $row['reduction_without_tax'] = $reductionWithoutTax;
+        $row['reduction'] = $displayTaxExcluded ? $reductionWithoutTax : $reductionWithTax;
+
+        if (empty($row['specific_prices']) || !is_array($row['specific_prices'])) {
+            $withoutTaxIncl = (float) $row['price_without_reduction'];
+            $row['specific_prices'] = [
+                'reduction_type' => (!empty($row['reduction_type']) && $row['reduction_type'] !== 0) ? $row['reduction_type'] : 'percentage',
+                'reduction' => (string) ($withoutTaxIncl > 0 ? ($reductionWithTax / $withoutTaxIncl) : 0),
+            ];
+        } elseif (isset($row['specific_prices']['reduction']) && !is_string($row['specific_prices']['reduction'])) {
+            $row['specific_prices']['reduction'] = (string) $row['specific_prices']['reduction'];
+        }
+
+        return $row;
+    }
 }

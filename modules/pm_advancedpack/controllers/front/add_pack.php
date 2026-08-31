@@ -210,7 +210,6 @@ class pm_advancedpackadd_packModuleFrontController extends ModuleFrontController
     }
     public function displayAjax()
     {
-
         AdvancedPack::addExplodedPackToCart($this->idPack, $this->quantity, $this->idProductAttributeList, $this->productPackCustomizationList, $this->productPackQuantityList, $this->productPackExclude);
 
         // Ajouter les accessoires Multi Accessories Pro (HSMA)

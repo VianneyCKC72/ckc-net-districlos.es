@@ -1,22 +1,35 @@
-.bootstrap select[name*=product_ids].fixed-width-xl {
-    width: 100% !important;
-    height: 500px;
+/* Front : haut gauche (override thème) */
+.discount_type_flag.ckc-label-flag,
+#category .discount_type_flag.ckc-label-flag,
+#product #wrapper .product-container.js-product-container .discount_type_flag.ckc-label-flag {
+    display: inline-flex !important;
+    align-items: center;
+    position: absolute !important;
+    left: 10px !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: auto !important;
+    height: auto !important;
+    transform: none !important;
+    padding: 4px 8px !important;
+    font-size: 11px;
+    line-height: 1.15;
+    font-weight: 700;
+    z-index: 9 !important;
+    border-radius: 3px;
 }
-.discount_type_flag,#category .discount_type_flag{
-    background:#DD3124;border:none;
-    border-radius:5px;
-    bottom:4px;
-    height:40px;
-    left:auto;
-    position:absolute;
-    right:0;top:unset;
-    transform:translate(-4px,2px);
-    width:40px;
-    z-index:2
+.ckc-label-flag .discount-percentage {
+    position: static !important;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    margin: 0 !important;
+    top: auto !important;
+    right: auto !important;
+    color: inherit;
+    font-weight: 700;
 }
-#category .discount_type_flag span.discount-percentage{
-    font-weight:600!important;
-    right:3px;
-    top:10px!important;
-    transform:none!important
+.ckc-label-arrow {
+    font-size: 18px;
+    -webkit-text-stroke: 1px currentColor;
 }

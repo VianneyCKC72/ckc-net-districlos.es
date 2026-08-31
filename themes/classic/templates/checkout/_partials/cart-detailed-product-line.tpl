@@ -57,7 +57,7 @@
             </span>
                 {else}
                     <span class="discount discount-amount">
-              -{$product.discount_to_display}
+              {$product.discount_to_display}
             </span>
                 {/if}
             {/if}

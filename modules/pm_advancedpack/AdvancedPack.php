@@ -30,6 +30,176 @@ class AdvancedPack extends Product
     public static $frontHeightFilter = null;
     public static $frontMl = null;
     public static $forceMlDiscountTiers = null;
+
+    /** Invalide le cache fichier ckcspcache (CKC_SP_CACHE_NS_VERSION) + cache core SpecificPrice. */
+    private static function invalidateCkcSpCache()
+    {
+        SpecificPrice::flushCache();
+        if (Module::isInstalled('ckcspcache')) {
+            $v = (int) Configuration::get('CKC_SP_CACHE_NS_VERSION', 1);
+            Configuration::updateValue('CKC_SP_CACHE_NS_VERSION', $v + 1);
+        }
+    }
+
+    private static function computeCartLineTotalForRoundType($unitPrice, $qty, $roundType, $precision)
+    {
+        $unitPrice = (float) $unitPrice;
+        $qty = (int) $qty;
+        if ($roundType === (int) Order::ROUND_TOTAL) {
+            return $unitPrice * $qty;
+        }
+        if ($roundType === (int) Order::ROUND_LINE) {
+            return Tools::ps_round($unitPrice * $qty, $precision);
+        }
+
+        return Tools::ps_round($unitPrice, $precision) * $qty;
+    }
+
+    private static function sumCartLineTotalsForPack(array $unitPrices, array $qtyByKey, $roundType, $precision)
+    {
+        $sum = 0.0;
+        foreach ($unitPrices as $key => $unitPrice) {
+            $qty = max(1, (int) ($qtyByKey[$key] ?? 1));
+            $sum += self::computeCartLineTotalForRoundType($unitPrice, $qty, $roundType, $precision);
+        }
+
+        return Tools::ps_round($sum, $precision);
+    }
+
+    /**
+     * Ajuste un prix unitaire pour que le total panier corresponde à getPackPrice() selon PS_ROUND_TYPE.
+     */
+    private static function alignPackCartSpecificPrices(array $unitPrices, array $qtyByKey, $targetTotalHt)
+    {
+        if (!count($unitPrices)) {
+            return $unitPrices;
+        }
+
+        $precision = (int) Context::getContext()->getComputingPrecision();
+        $roundType = (int) Configuration::get('PS_ROUND_TYPE');
+        $targetTotalHt = Tools::ps_round((float) $targetTotalHt, $precision);
+        $tolerance = pow(10, -$precision);
+
+        if (abs(self::sumCartLineTotalsForPack($unitPrices, $qtyByKey, $roundType, $precision) - $targetTotalHt) < $tolerance) {
+            return $unitPrices;
+        }
+
+        $adjustKey = array_keys($unitPrices)[0];
+        $maxQty = 0;
+        foreach ($qtyByKey as $key => $qty) {
+            if ((int) $qty > $maxQty) {
+                $maxQty = (int) $qty;
+                $adjustKey = $key;
+            }
+        }
+
+        $base = (float) $unitPrices[$adjustKey];
+        for ($i = -500; $i <= 500; ++$i) {
+            $tryPrices = $unitPrices;
+            $tryPrices[$adjustKey] = $base + ($i / 10000);
+            if ($tryPrices[$adjustKey] < 0) {
+                continue;
+            }
+            if (abs(self::sumCartLineTotalsForPack($tryPrices, $qtyByKey, $roundType, $precision) - $targetTotalHt) < $tolerance) {
+                return $tryPrices;
+            }
+        }
+
+        return $unitPrices;
+    }
+
+    /**
+     * Prix unitaires HT par composant pack, alignés sur le total getPackPrice().
+     *
+     * @return array{0: array<string, float>, 1: array<string, int>}
+     */
+    private static function buildAlignedPackFixedUnitPrices($idPack, array $packProducts, array $idProductAttributeList, array $quantityList, array $packExcludeList, $quantity)
+    {
+        $unitPrices = [];
+        $qtyByKey = [];
+        if (!AdvancedPackCoreClass::_isFilledArray($packProducts)) {
+            return [$unitPrices, $qtyByKey];
+        }
+
+        $packPriceTable = self::getPackPriceTable(
+            $packProducts,
+            self::getPackFixedPrice($idPack),
+            self::getPackIdTaxRulesGroup((int) $idPack),
+            false,
+            true,
+            true,
+            $idProductAttributeList
+        );
+        if (!is_array($packPriceTable)) {
+            return [$unitPrices, $qtyByKey];
+        }
+
+        foreach ($packPriceTable as $priceRow) {
+            if (self::isProductPackHiddenByHeightFilter((int) $priceRow['id_product_pack'])
+                || !isset($priceRow['priceInfos']['productPackPrice'])
+            ) {
+                continue;
+            }
+            $rowIpa = isset($idProductAttributeList[(int) $priceRow['id_product_pack']])
+                ? (int) $idProductAttributeList[(int) $priceRow['id_product_pack']]
+                : (int) $priceRow['default_id_product_attribute'];
+            $priceKey = (int) $priceRow['id_product'] . '_' . $rowIpa;
+            $unitPrices[$priceKey] = (float) $priceRow['priceInfos']['productPackPrice'];
+            $qtyByKey[$priceKey] = (int) $priceRow['quantity'] * (int) $quantity;
+        }
+
+        if (!count($unitPrices)) {
+            return [$unitPrices, $qtyByKey];
+        }
+
+        $unitPrices = self::alignPackCartSpecificPrices(
+            $unitPrices,
+            $qtyByKey,
+            self::getPackPrice($idPack, false, true, true, 6, $idProductAttributeList, $quantityList, $packExcludeList, true)
+        );
+
+        return [$unitPrices, $qtyByKey];
+    }
+
+    private static function addExplodedPackCartSpecificPrice($idProduct, $idProductAttribute, $idCart, $fixedPackUnitPrice, array $packProduct)
+    {
+        if ($idCart <= 0) {
+            return;
+        }
+
+        Db::getInstance()->execute(
+            'DELETE FROM `' . _DB_PREFIX_ . 'specific_price`
+             WHERE `id_cart`=' . (int) $idCart . '
+               AND `id_product`=' . (int) $idProduct . '
+               AND `id_product_attribute`=' . (int) $idProductAttribute
+        );
+
+        $sp = new SpecificPrice();
+        $sp->id_product = (int) $idProduct;
+        $sp->id_cart = (int) $idCart;
+        $sp->id_product_attribute = (int) $idProductAttribute;
+        $sp->id_shop = (int) Context::getContext()->shop->id;
+        $sp->id_shop_group = 0;
+        $sp->id_currency = 0;
+        $sp->id_country = 0;
+        $sp->id_group = 0;
+        $sp->id_customer = 0;
+        $sp->from = '0000-00-00 00:00:00';
+        $sp->to = '0000-00-00 00:00:00';
+        $sp->from_quantity = 1;
+        if ($fixedPackUnitPrice !== null && $fixedPackUnitPrice >= 0) {
+            $sp->price = (float) $fixedPackUnitPrice;
+            $sp->reduction_type = 'amount';
+            $sp->reduction = 0;
+        } else {
+            $sp->reduction_type = !empty($packProduct['reduction_type']) ? $packProduct['reduction_type'] : 'percentage';
+            $sp->reduction = (float) $packProduct['reduction_amount'];
+            $sp->price = -1;
+        }
+        $sp->reduction_tax = 1;
+        $sp->add();
+    }
+
     public static function getPriceStaticPack(
         $id_product,
         $usetax = true,
@@ -3061,15 +3231,15 @@ class AdvancedPack extends Product
                 sort($packExcludeList);
             }
 
-            $idCartForTrace = 0;
+            $idCart = 0;
             if (Validate::isLoadedObject($context->cart) && (int) $context->cart->id > 0) {
-                $idCartForTrace = (int) $context->cart->id;
+                $idCart = (int) $context->cart->id;
             } elseif (isset($context->cookie->id_cart) && (int) $context->cookie->id_cart > 0) {
-                $idCartForTrace = (int) $context->cookie->id_cart;
+                $idCart = (int) $context->cookie->id_cart;
             }
 
             $packUniqueHash = md5(
-                $idCartForTrace
+                $idCart
                 . '-' . (int) $idPack
                 . '-' . serialize($idProductAttributeList)
                 . (count($customizationList) ? serialize($customizationList) : '')
@@ -3080,12 +3250,15 @@ class AdvancedPack extends Product
             $idProductAttributePack = self::addCustomPackProductAttribute((int)$idPack, $idProductAttributeList, $packUniqueHash);
 
             $packProducts = self::getPackContent($idPack, null, true, [], $quantityList);
-            $totalPackPrice = 0;
-            $reductionAmountTable = $reductionPercentageTable = [];
-            $forceReductionByAmount = false;
+            list($packFixedUnitPrices) = self::buildAlignedPackFixedUnitPrices(
+                $idPack,
+                $packProducts,
+                $idProductAttributeList,
+                $quantityList,
+                $packExcludeList,
+                $quantity
+            );
             if (AdvancedPackCoreClass::_isFilledArray($packProducts)) {
-                $useTax = (Product::getTaxCalculationMethod($context->customer->id) != PS_TAX_EXC);
-                $explodedProductList = [];
                 $idAddressDelivery = (int)Tools::getValue('id_address_delivery');
                 pm_advancedpack::$_preventInfiniteLoop = true;
                 $acpValues = [];
@@ -3100,14 +3273,15 @@ class AdvancedPack extends Product
                     }
                     $productPackIdAttribute = (isset($idProductAttributeList[(int)$packProduct['id_product_pack']]) ? $idProductAttributeList[(int)$packProduct['id_product_pack']] : (int)$packProduct['default_id_product_attribute']);
                     $packProduct['id_product_attribute'] = $productPackIdAttribute;
-                    // Forcer la remise de la tranche ML matchée (indépendamment du cache getPackContent)
-                    if ($mlCartReduction !== null && $mlCartReduction > 0) {
+                    $priceKey = (int) $packProduct['id_product'] . '_' . (int) $productPackIdAttribute;
+                    $fixedPackUnitPrice = isset($packFixedUnitPrices[$priceKey]) ? (float) $packFixedUnitPrices[$priceKey] : null;
+                    if ($fixedPackUnitPrice === null && $mlCartReduction !== null && $mlCartReduction > 0) {
                         $packProduct['reduction_type'] = 'percentage';
                         $packProduct['reduction_amount'] = (float) $mlCartReduction;
                     }
                     $packCustomizationList = (isset($customizationList[(int)$packProduct['id_product_pack']]) ? $customizationList[(int)$packProduct['id_product_pack']] : null);
                     $acpValues[] = '('
-                        . $idCartForTrace . ', '
+                        . $idCart . ', '
                         . (int) $context->shop->id . ', '
                         . (int) $idPack . ', '
                         . (int) $packProduct['id_product_pack'] . ', '
@@ -3137,51 +3311,24 @@ class AdvancedPack extends Product
                         }
                     }
 
-                    // reduction — créer le SpecificPrice AVANT updateQty pour que le panier voie la remise
-                    $selectedIdProductAttribute = null;
-                    if (empty($selectedIdProductAttribute) && !empty($packProduct['default_id_product_attribute'])) {
-                        $selectedIdProductAttribute = (int)$packProduct['default_id_product_attribute'];
-                    }
-                    if ($selectedIdProductAttribute != null && isset($packProduct['combinationsInformations']) && isset($packProduct['combinationsInformations'][$selectedIdProductAttribute])) {
-                        if ((float)$packProduct['combinationsInformations'][$selectedIdProductAttribute]['reduction_amount'] > 0) {
-                            $forceReductionByAmount = true;
-                        }
-                    }
-                    if ((isset($packProduct['reduction_amount']) && $packProduct['reduction_amount'] > 0) || (isset($packProduct['reduction_percentage']) && $packProduct['reduction_percentage'] > 0)) {
-                        $idCartSp = (int) self::getContext()->cart->id;
-                        if ($idCartSp > 0) {
-                            Db::getInstance()->execute(
-                                'DELETE FROM `' . _DB_PREFIX_ . 'specific_price`
-                                WHERE `id_cart`=' . $idCartSp . '
-                                AND `id_product`=' . (int) $packProduct['id_product'] . '
-                                AND `id_product_attribute`=' . (int) $productPackIdAttribute
-                            );
-                        }
-                        $sp = new SpecificPrice();
-                        $sp->id_product = $packProduct['id_product'];
-                        $sp->id_cart = $idCartSp;
-                        $sp->id_product_attribute = $productPackIdAttribute;
-                        /*        $sp->id_shop = AdvancedPack::getPackIdShop($idPack);*/
-                        $sp->id_shop = Context::getContext()->shop->id;
-                        $sp->id_shop_group = 0;
-                        $sp->id_currency = 0;
-                        $sp->id_country = 0;
-                        $sp->id_group = 0;
-                        $sp->id_customer = 0;
-                        $sp->from = '0000-00-00 00:00:00';
-                        $sp->to = '0000-00-00 00:00:00';
-                        $sp->from_quantity = 1;
-                        $sp->reduction_type = !empty($packProduct['reduction_type']) ? $packProduct['reduction_type'] : 'percentage';
-                        $sp->reduction = (float) $packProduct['reduction_amount'];
-                        $sp->reduction_tax = 1;
-                        $sp->price = -1;
-                        $sp->add();
+                    // SpecificPrice panier avant updateQty pour que le panier voie la remise
+                    $hasPercentageReduction = $fixedPackUnitPrice === null
+                        && ((isset($packProduct['reduction_amount']) && $packProduct['reduction_amount'] > 0)
+                            || (isset($packProduct['reduction_percentage']) && $packProduct['reduction_percentage'] > 0));
+                    if (($fixedPackUnitPrice !== null && $fixedPackUnitPrice >= 0) || $hasPercentageReduction) {
+                        self::addExplodedPackCartSpecificPrice(
+                            (int) $packProduct['id_product'],
+                            (int) $productPackIdAttribute,
+                            (int) self::getContext()->cart->id,
+                            $fixedPackUnitPrice,
+                            $packProduct
+                        );
                     }
 
                     $resPackAdd &= self::getContext()->cart->updateQty((int)$packProduct['quantity'] * $quantity, (int)$packProduct['id_product'], $productPackIdAttribute, null, 'up', $idAddressDelivery);
                 }
 
-                if ($idCartForTrace > 0 && AdvancedPackCoreClass::_isFilledArray($acpValues)) {
+                if ($idCart > 0 && AdvancedPackCoreClass::_isFilledArray($acpValues)) {
                     $resPackAdd &= Db::getInstance()->execute(
                         'INSERT IGNORE INTO `' . _DB_PREFIX_ . 'pm_advancedpack_cart_products`
                         (`id_cart`, `id_shop`, `id_pack`, `id_product_pack`, `id_product_attribute_pack`, `id_product_attribute`, `unique_hash`, `customization_infos`)
@@ -3191,16 +3338,10 @@ class AdvancedPack extends Product
 
                 self::addPackSpecificPrice($idPack, null, $idProductAttributeList);
 
-                Product::resetStaticCache();
-                SpecificPrice::flushCache();
-                // Invalide le cache fichier ckcspcache sans écrire dans ps_configuration
-                $ckcNsFile = _PS_MODULE_DIR_ . 'ckcspcache/cache/ns_version';
-                if (is_dir(dirname($ckcNsFile))) {
-                    $v = is_file($ckcNsFile) ? (int) file_get_contents($ckcNsFile) : 1;
-                    file_put_contents($ckcNsFile, (string) ($v + 1));
-                }
-
                 pm_advancedpack::$_preventInfiniteLoop = false;
+                Product::resetStaticCache();
+                self::invalidateCkcSpCache();
+
                 $jsonCartContent = [];
                 $jsonCartContent['id_product'] = (int) $idPack;
                 $explodedAttributesResume = $moduleInstance->displayPackContent($idPack, false, pm_advancedpack::PACK_CONTENT_BLOCK_CART, $packProducts);
