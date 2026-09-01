@@ -252,12 +252,17 @@
 
                                         .product-variants.ap5-dimensions-row {
                                             display: grid !important;
-                                            grid-template-columns: repeat(2, minmax(0, 1fr));
+                                            grid-template-columns: 1fr;
                                             gap: 16px;
                                             margin-bottom: 1rem;
                                             align-items: stretch;
+                                            min-width: 0;
                                             border-left: 0;
                                             padding: 0;
+                                        }
+
+                                        .product-variants.ap5-dimensions-row:has(.ap5-ml-field-item--length):has(.ap5-ml-field-item--height) {
+                                            grid-template-columns: repeat(2, minmax(0, 1fr));
                                         }
 
                                         .ap5-dimensions-row .ap5-ml-field-item {
@@ -274,15 +279,8 @@
                                             align-items: flex-start;
                                         }
 
-                                        .product-variants.ap5-dimensions-row:has(> :only-child) {
-                                            grid-template-columns: 1fr !important;
-                                        }
-
-                                        .ap5-dimensions-row .ap5-ml-field-item:only-child {
-                                            grid-column: auto;
-                                        }
-
-                                        .ap5-dimensions-row .ap5-ml-field-item:only-child .group-name {
+                                        .ap5-dimensions-row:not(:has(.ap5-ml-field-item--height)) .ap5-ml-field-item--length .group-name,
+                                        .ap5-dimensions-row:not(:has(.ap5-ml-field-item--length)) .ap5-ml-field-item--height .group-name {
                                             min-height: 0;
                                         }
 
@@ -341,7 +339,7 @@
                                         }
 
                                         @media (min-width: 768px) {
-                                            .product-variants.ap5-dimensions-row:not(:has(> :only-child)) {
+                                            .product-variants.ap5-dimensions-row:has(.ap5-ml-field-item--length):has(.ap5-ml-field-item--height) {
                                                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
                                             }
                                         }
@@ -405,6 +403,39 @@
                                                 </div>
                                             </div>
                                             <p id="quantity_hauteur_error" class="ap5-ml-error">Veuillez sélectionner une hauteur</p>
+                                        </div>
+                                        {/if}
+                                        {if isset($packHasMlDiscountTiers) && $packHasMlDiscountTiers && isset($packMlDiscountTiers) && $packMlDiscountTiers|@count > 0}
+                                        <div class="ap5-ml-degressive" role="region" aria-label="Prix dégressifs">
+                                            <div class="ap5-ml-degressive__cta">
+                                                <strong><span class="ap5-ml-degressive__cta-line">Prix</span><span class="ap5-ml-degressive__cta-line">dégressifs&nbsp;!</span></strong>
+                                            </div>
+                                            <div class="ap5-ml-degressive__scroll">
+                                                <table class="ap5-ml-degressive__table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="row">Nombre de mL</th>
+                                                            {foreach from=$packMlDiscountTiers item=tier}
+                                                                <td>
+                                                                    {if $tier.to === null || $tier.to === ''}
+                                                                        +{$tier.from|string_format:"%g"} mL
+                                                                    {else}
+                                                                        {$tier.from|string_format:"%g"} à {$tier.to|string_format:"%g"} mL
+                                                                    {/if}
+                                                                </td>
+                                                            {/foreach}
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <th scope="row">% de remise</th>
+                                                            {foreach from=$packMlDiscountTiers item=tier}
+                                                                <td>{$tier.percent|string_format:"%g"}%</td>
+                                                            {/foreach}
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                         {/if}
                                     </div>

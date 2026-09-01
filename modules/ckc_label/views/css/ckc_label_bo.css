@@ -1,0 +1,4 @@
+.bootstrap select[name*=product_ids].fixed-width-xl {
+    width: 100% !important;
+    height: 500px;
+}

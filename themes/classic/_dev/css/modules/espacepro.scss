@@ -1372,7 +1372,7 @@ $bp-md: 768px;
 }
 
 #product-features-show,
-.product-discounts {
+.product-discounts:not(.ap5-ml-degressive) {
   border-left: 1px solid #026473;
   padding: 0 10px;
 

@@ -191,12 +191,12 @@ function ap5_initNewPackFields() {
 		return false;
 	});
 
-	$(document).on('change', '#ap5-pack-content-table input[type=text], #ap5-pack-content-table select, #ap5-pack-content-table input.ap5_useReduc, #ap5-pack-content-table input.ap5_exclusive, input.ap5_price_rules, input#ap5_allow_remove_product, input#ap5_auto_choose, input#ap5_ml_choose, input#ap5_height_choose, .ap5_height_value, .ap5_height_formula_value', function() {
+	$(document).on('change', '#ap5-pack-content-table input[type=text], #ap5-pack-content-table select, #ap5-pack-content-table input.ap5_useReduc, #ap5-pack-content-table input.ap5_exclusive, input.ap5_price_rules, input#ap5_allow_remove_product, input#ap5_auto_choose, input#ap5_ml_choose, input#ap5_height_choose, .ap5_ml_tier_from, .ap5_ml_tier_to, .ap5_ml_tier_percent, .ap5_height_value, .ap5_height_formula_value', function() {
 		// Update pack trigger
 		ap5_packUpdated();
 	});
 
-	$(document).on('change', 'input.ap5_price_rules, input#ap5_global_percentage_discount, input.ap5_fixed_pack_price', function() {
+	$(document).on('change', 'input.ap5_price_rules, input#ap5_global_percentage_discount, .ap5_ml_tier_from, .ap5_ml_tier_to, .ap5_ml_tier_percent, input.ap5_fixed_pack_price', function() {
 		ap5_updatePriceRulesForm();
 		// Update pack trigger
 		ap5_packUpdated();
@@ -327,6 +327,7 @@ function ap5_initNewPackFields() {
 
 	// Update pack trigger
 	ap5_initHeightValuesManagement();
+	ap5_initMlDiscountTiersManagement();
 	ap5_packUpdated(true);
 
 	// Update pack price simulation table
@@ -592,17 +593,23 @@ function ap5_updatePackPriceSimulationCallback() {
 
 function ap5_updatePriceRulesForm() {
 	$('.ap5_fixed_pack_price').prop('required', false).attr('min', '0');
-	if ($('input.ap5_price_rules:checked').val() == 1) {
+	var priceRule = parseInt($('input.ap5_price_rules:checked').val(), 10);
+	$('#ap5_price_rules_1_configuration, #ap5_price_rules_5_configuration, #ap5_price_rules_3_configuration, #ap5_price_rules_4_configuration').addClass('ap5-admin-hide hide');
+	if (priceRule == 1) {
 		$('#ap5_price_rules_1_configuration').removeClass('ap5-admin-hide hide');
-		$('#ap5_price_rules_3_configuration, #ap5_price_rules_4_configuration').addClass('ap5-admin-hide hide');
 		$('.ap5_discountCell').addClass('ap5-admin-hide hide');
 		$('.ap5_useReduc-container').removeClass('ap5-admin-hide hide');
-	} else if ($('input.ap5_price_rules:checked').val() == 2) {
-		$('#ap5_price_rules_1_configuration, #ap5_price_rules_3_configuration, #ap5_price_rules_4_configuration').addClass('hide ap5-admin-hide');
+	} else if (priceRule == 5) {
+		$('#ap5_price_rules_5_configuration').removeClass('ap5-admin-hide hide');
+		$('.ap5_discountCell').addClass('ap5-admin-hide hide');
+		$('.ap5_useReduc-container').removeClass('ap5-admin-hide hide');
+		if (!$('#ap5-ml-discount-tiers-list .ap5-ml-discount-tier-row').length) {
+			$('#ap5-add-ml-discount-tier').trigger('click');
+		}
+	} else if (priceRule == 2) {
 		$('.ap5_discountCell').removeClass('ap5-admin-hide hide');
 		$('.ap5_useReduc-container').removeClass('ap5-admin-hide hide');
-	} else if ($('input.ap5_price_rules:checked').val() == 3) {
-		$('#ap5_price_rules_1_configuration, #ap5_price_rules_4_configuration').addClass('ap5-admin-hide hide');
+	} else if (priceRule == 3) {
 		$('#ap5_price_rules_3_configuration').removeClass('ap5-admin-hide hide');
 		$('.ap5_discountCell').addClass('ap5-admin-hide hide');
 		$('.ap5_useReduc').attr('checked', false);
@@ -611,18 +618,23 @@ function ap5_updatePriceRulesForm() {
 		}
 		$('.ap5_useReduc-container').addClass('ap5-admin-hide hide');
 		$('.ap5_fixed_pack_price').prop('required', true).attr('min', '0.000001');
-	} else if ($('input.ap5_price_rules:checked').val() == 4) {
-		$('#ap5_price_rules_1_configuration, #ap5_price_rules_3_configuration').addClass('hide ap5-admin-hide');
+	} else if (priceRule == 4) {
 		$('#ap5_price_rules_4_configuration').removeClass('ap5-admin-hide hide');
 		$('.ap5_discountCell').addClass('ap5-admin-hide hide');
 		$('.ap5_useReduc-container').removeClass('ap5-admin-hide hide');
 	}
-	ap5_updatePackFields($('input.ap5_price_rules:checked').val());
+	ap5_updatePackFields(priceRule);
 }
 
 function ap5_updatePackFields(priceRule) {
 	if (priceRule == 1) {
 		$('.ap5_reductionAmount').val($('input#ap5_global_percentage_discount').val());
+		$('.ap5_reductionType option:selected').attr("selected", false);
+		$('.ap5_reductionType option[value=percentage]').attr('selected', true);
+		$('.ap5_combinationDiscount:checked').prop('checked', false).trigger('change');
+	} else if (priceRule == 5) {
+		var firstPercent = $('#ap5-ml-discount-tiers-list .ap5_ml_tier_percent').first().val() || '0';
+		$('.ap5_reductionAmount').val(firstPercent);
 		$('.ap5_reductionType option:selected').attr("selected", false);
 		$('.ap5_reductionType option[value=percentage]').attr('selected', true);
 		$('.ap5_combinationDiscount:checked').prop('checked', false).trigger('change');
@@ -690,4 +702,85 @@ function ap5_initHeightValuesManagement() {
 		ap5_reindexHeightValueRows();
 		ap5_packUpdated();
 	});
+}
+
+function ap5_reindexMlDiscountTier() {
+	$('#ap5-ml-discount-tiers-list .ap5-ml-discount-tier-row').each(function(index) {
+		$(this).find('.ap5_ml_tier_from').attr('name', 'ap5_ml_discount_tiers[' + index + '][from]');
+		$(this).find('.ap5_ml_tier_to').attr('name', 'ap5_ml_discount_tiers[' + index + '][to]');
+		$(this).find('.ap5_ml_tier_percent').attr('name', 'ap5_ml_discount_tiers[' + index + '][percent]');
+	});
+}
+
+function ap5_initMlDiscountTiersManagement() {
+	ap5_reindexMlDiscountTier();
+
+	$(document).off('click.ap5AddMlTier', '#ap5-add-ml-discount-tier').on('click.ap5AddMlTier', '#ap5-add-ml-discount-tier', function(e) {
+		e.preventDefault();
+		var index = $('#ap5-ml-discount-tiers-list .ap5-ml-discount-tier-row').length;
+		var $row = $('<div class="ap5-ml-discount-tier-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">' +
+			'<span>De</span>' +
+			'<input type="number" step="0.01" min="0" class="form-control ap5_ml_tier_from" name="ap5_ml_discount_tiers[' + index + '][from]" value="" style="width:90px;" placeholder="0" />' +
+			'<span>à</span>' +
+			'<input type="number" step="0.01" min="0" class="form-control ap5_ml_tier_to" name="ap5_ml_discount_tiers[' + index + '][to]" value="" style="width:90px;" placeholder="∞" title="Laisser vide = pas de plafond" />' +
+			'<span>ML =</span>' +
+			'<input type="number" step="0.01" min="0" max="100" class="form-control ap5_ml_tier_percent" name="ap5_ml_discount_tiers[' + index + '][percent]" value="" style="width:90px;" placeholder="%" />' +
+			'<span>%</span>' +
+			'<button type="button" class="btn btn-danger ap5-remove-ml-discount-tier">&times;</button>' +
+			'</div>');
+		$('#ap5-ml-discount-tiers-list').append($row);
+		ap5_packUpdated();
+		ap5_saveMlDiscountTiersToDb();
+	});
+
+	$(document).off('click.ap5RemoveMlTier', '.ap5-remove-ml-discount-tier').on('click.ap5RemoveMlTier', '.ap5-remove-ml-discount-tier', function(e) {
+		e.preventDefault();
+		$(this).closest('.ap5-ml-discount-tier-row').remove();
+		ap5_reindexMlDiscountTier();
+		ap5_packUpdated();
+		ap5_saveMlDiscountTiersToDb();
+	});
+
+	$(document).off('change.ap5MlTier', '.ap5_ml_tier_from, .ap5_ml_tier_to, .ap5_ml_tier_percent').on('change.ap5MlTier', '.ap5_ml_tier_from, .ap5_ml_tier_to, .ap5_ml_tier_percent', function() {
+		ap5_saveMlDiscountTiersToDb();
+	});
+
+	$(document).off('change.ap5PriceRuleMl', 'input.ap5_price_rules').on('change.ap5PriceRuleMl', 'input.ap5_price_rules', function() {
+		if (parseInt($(this).val(), 10) === 5) {
+			ap5_saveMlDiscountTiersToDb();
+		}
+	});
+}
+
+var ap5_saveMlDiscountTiersDelay = null;
+function ap5_saveMlDiscountTiersToDb() {
+	if (parseInt($('input.ap5_price_rules:checked').val(), 10) !== 5) {
+		return;
+	}
+	if (ap5_saveMlDiscountTiersDelay != null) {
+		clearTimeout(ap5_saveMlDiscountTiersDelay);
+	}
+	ap5_saveMlDiscountTiersDelay = setTimeout(function() {
+		ap5_reindexMlDiscountTier();
+		var tiers = [];
+		$('#ap5-ml-discount-tiers-list .ap5-ml-discount-tier-row').each(function() {
+			tiers.push({
+				from: $(this).find('.ap5_ml_tier_from').val(),
+				to: $(this).find('.ap5_ml_tier_to').val(),
+				percent: $(this).find('.ap5_ml_tier_percent').val()
+			});
+		});
+		var idProduct = $('#form_id_product').val() || $('input[name="id_product"]').val() || $('form[name=product]').data('product-id');
+		$.ajax({
+			type: 'POST',
+			dataType: 'json',
+			url: ap5_updateUrl,
+			data: {
+				saveMlDiscountTiers: 1,
+				id_product: idProduct,
+				ap5_ml_discount_tiers: tiers
+			},
+			cache: false
+		});
+	}, 300);
 }
