@@ -21,7 +21,7 @@
                     BONS PLANS
                 </span>
                 <span class="bandeau-soldes__text">
-                    Jusqu'à <strong>-12%</strong> offerts dès 2000€ d'achat !
+                    Jusqu'à <strong>-10%</strong> sur tout le site !
                 </span>
             </a>
         </div>
