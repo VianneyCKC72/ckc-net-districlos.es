@@ -1,8 +1,12 @@
+{assign var="has_campaign_discount" value=false}
+{if isset($campaignProductDiscount) && isset($campaignProductDiscount.active) && $campaignProductDiscount.active && !$product.has_discount}
+    {assign var="has_campaign_discount" value=true}
+{/if}
+
+{if isset($showPackMlDualPrice) && $showPackMlDualPrice && !isset($initial_pack)}
+    {include file='catalog/_partials/product-prices/price-dual-ml.tpl'}
+{else}
 <div class="d-flex align-items-center product-prices">
-    {assign var="has_campaign_discount" value=false}
-    {if isset($campaignProductDiscount) && isset($campaignProductDiscount.active) && $campaignProductDiscount.active && !$product.has_discount}
-        {assign var="has_campaign_discount" value=true}
-    {/if}
     {if $has_campaign_discount}
         {assign var="price_parts" value=","|explode:$campaignProductDiscount.price}
     {else}
@@ -67,6 +71,7 @@
         {/if}
     {/block}
 </div>
+{/if}
 {if $product.quantity_wanted > 1 && !$product.is_configurable && !$product.name|strstr:"sur mesure"}
     <p class="product-unit-price sub">
         {$product.unit_price_full}

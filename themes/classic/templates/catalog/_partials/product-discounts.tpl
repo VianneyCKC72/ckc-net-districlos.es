@@ -1,81 +1,40 @@
 {**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/AFL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://devdocs.prestashop.com/ for more information.
- *
- * @author    PrestaShop SA and Contributors <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
+ * Tableau remises quantité — même style que le bandeau packs (ap5-ml-degressive).
  *}
 {if $product.quantity_discounts}
-
-  {if $pro.env}
-    <section class="product-discounts js-product-discounts mt-4">
-      <span class="h6">{l s='Le prix au volume' d='Shop.Theme.Catalog'}</span>
+  <div class="ap5-ml-degressive product-discounts js-product-discounts" role="region" aria-label="{l s='Prix dégressifs' d='Shop.Theme.Catalog'}">
+    <div class="ap5-ml-degressive__cta">
+      <strong><span class="ap5-ml-degressive__cta-line">Prix</span><span class="ap5-ml-degressive__cta-line">dégressifs&nbsp;!</span></strong>
+    </div>
+    <div class="ap5-ml-degressive__scroll">
       {block name='product_discount_table'}
-        <table class="table w-100 table-striped">
-          
-          <tbody>
-            {foreach from=$product.quantity_discounts item='quantity_discount' name='quantity_discounts'}
-              <tr data-discount-type="{$quantity_discount.reduction_type}" data-discount="{$quantity_discount.real_value}"
-                data-discount-quantity="{$quantity_discount.quantity}">
-                <td>Quantité</td>
-                <td class="text-bold text-right">{$quantity_discount.quantity}</td>
-              </tr>
-              <tr data-discount-type="{$quantity_discount.reduction_type}" data-discount="{$quantity_discount.real_value}"
-                data-discount-quantity="{$quantity_discount.quantity}">
-                <td>Prix par unité</td>
-                <td class="text-bold text-right">{$quantity_discount.discount} /pièce</td>
-              </tr>
-              <tr data-discount-type="{$quantity_discount.reduction_type}" data-discount="{$quantity_discount.real_value}"
-                data-discount-quantity="{$quantity_discount.quantity}">
-                <td>Économisez</td>
-                <td class="text-bold text-right">{$quantity_discount.save}</td>
-            </tr>
-            {/foreach}
-          </tbody>
-        </table>
-      {/block}
-    </section>
-    {else}
-    <section class="product-discounts js-product-discounts">
-      <p class="h6 product-discounts-title">{l s='Volume discounts' d='Shop.Theme.Catalog'}</p>
-      {block name='product_discount_table'}
-        <table class="table-product-discounts">
+        <table class="ap5-ml-degressive__table">
           <thead>
             <tr>
-              <th>{l s='Quantity' d='Shop.Theme.Catalog'}</th>
-              <th>{$configuration.quantity_discount.label}</th>
-              <th>{l s='You Save' d='Shop.Theme.Catalog'}</th>
+              <th scope="row">{l s='Quantité' d='Shop.Theme.Catalog'}</th>
+              {foreach from=$product.quantity_discounts item='quantity_discount'}
+                <td data-discount-type="{$quantity_discount.reduction_type}"
+                    data-discount="{$quantity_discount.real_value}"
+                    data-discount-quantity="{$quantity_discount.quantity}">
+                  dès {$quantity_discount.quantity}
+                </td>
+              {/foreach}
             </tr>
           </thead>
           <tbody>
-            {foreach from=$product.quantity_discounts item='quantity_discount' name='quantity_discounts'}
-              <tr data-discount-type="{$quantity_discount.reduction_type}" data-discount="{$quantity_discount.real_value}"
-                data-discount-quantity="{$quantity_discount.quantity}">
-                <td>{$quantity_discount.quantity}</td>
-                <td>{$quantity_discount.discount}</td>
-                <td>{$quantity_discount.save}</td>
-              </tr>
-            {/foreach}
+            <tr>
+              <th scope="row">{$configuration.quantity_discount.label}</th>
+              {foreach from=$product.quantity_discounts item='quantity_discount'}
+                <td data-discount-type="{$quantity_discount.reduction_type}"
+                    data-discount="{$quantity_discount.real_value}"
+                    data-discount-quantity="{$quantity_discount.quantity}">
+                  {$quantity_discount.discount}
+                </td>
+              {/foreach}
+            </tr>
           </tbody>
         </table>
       {/block}
-    </section>
-  {/if}
+    </div>
+  </div>
 {/if}
