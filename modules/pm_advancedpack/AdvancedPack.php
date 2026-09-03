@@ -712,7 +712,7 @@ class AdvancedPack extends Product
                     $productPackPriceWt = $productClassicPriceWt = self::getPriceStaticPack($packProduct['id_product'], true, $productPackIdAttribute, 6, null, false, $useProductReduc, (int)$packProduct['quantity'], null, null, null, $specificPriceOutput, false, $useGroupReduction);
                     $productPackPrice = $productClassicPrice = self::getPriceStaticPack($packProduct['id_product'], false, $productPackIdAttribute, 6, null, false, $useProductReduc, (int)$packProduct['quantity'], null, null, null, $specificPriceOutput, false, $useGroupReduction);
                     if ($packFixedPrice > 0) {
-                        if ($packCategoryReduction === null) {
+                        if (!$mlExclusive && $packCategoryReduction === null) {
                             $specificCategoryReduction = null;
                             $productCategoryReduction = GroupReduction::getValueForProduct((int)$packProduct['id_product'], $currentIdGroup);
                             if (is_float($productCategoryReduction + 0)) {
