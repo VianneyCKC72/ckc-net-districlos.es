@@ -51,6 +51,12 @@
       <trans-unit id="47"><source>Monsieur</source><target>Mr</target></trans-unit>
       <trans-unit id="48"><source>Madame</source><target>Mrs</target></trans-unit>
       <trans-unit id="49"><source>Mademoiselle</source><target>Miss</target></trans-unit>
+      <trans-unit id="50"><source>Bons plans</source><target>Great deals</target></trans-unit>
+      <trans-unit id="51"><source>BONS PLANS</source><target>GREAT DEALS</target></trans-unit>
+      <trans-unit id="52"><source>Jusqu'à</source><target>Up to</target></trans-unit>
+      <trans-unit id="53"><source>sur tout le site !</source><target>sitewide!</target></trans-unit>
+      <trans-unit id="54"><source>Nos</source><target>Our</target></trans-unit>
+      <trans-unit id="55"><source>produits</source><target>products</target></trans-unit>
     </body>
   </file>
 </xliff>

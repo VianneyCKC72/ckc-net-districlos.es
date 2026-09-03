@@ -26,13 +26,13 @@
     <div class="blockcart cart-preview {if $cart.products_count > 0}active{else}inactive{/if}" data-refresh-url="{$refresh_url}">
         <span class="cart-products-count">{$cart.products_count}</span>
         <a class="ico" rel="nofollow" aria-label="{l s='Shopping cart link containing %nbProducts% product(s)' sprintf=['%nbProducts%' => $cart.products_count] d='Shop.Theme.Checkout'}" href="{$cart_url}">
-            <img src="/themes/classic/assets/img/ico-panier.svg" alt="Panier">
+            <img src="/themes/classic/assets/img/ico-panier.svg" alt="{l s='Panier' d='Shop.Theme.Custommodules'}">
             <span class="hidden-sm-down">{l s='Cart' d='Shop.Theme.Checkout'}</span>
         </a>
         {if isset($show_emptycart) && $show_emptycart == true}
             <div class="empty-cart">
                 <a rel="nofollow" href="{url entity='cart' params=['deleteAll' => '1']}" class="viewcart">
-                    {l s='Vider' d='Shop.Theme.Actions'}
+                    {l s='Vider' d='Shop.Theme.Custommodules'}
                 </a>
             </div>
         {/if}
