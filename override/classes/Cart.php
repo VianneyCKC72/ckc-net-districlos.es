@@ -433,7 +433,8 @@ class Cart extends CartCore
     }
 
     /**
-     * SP panier à prix fixe (pack explosé ML pro) : alimente reduction / specific_prices pour prix barrés et badges.
+     * SP panier (pack ML prix fixe / configurateur % ML) : badges et prix barrés.
+     * getProductProperties pose la promo catalogue ; on la remplace par la SP panier.
      */
     protected function applyProductCalculations($row, $shopContext, $productQuantity = null, bool $keepOrderPrices = false)
     {
@@ -446,16 +447,31 @@ class Cart extends CartCore
             return $this->enrichCartLineReductionDisplay($row, $displayTaxExcluded);
         }
 
-        $cartFixedSp = Db::getInstance()->getRow(
-            'SELECT `price`
+        $cartSp = Db::getInstance()->getRow(
+            'SELECT `price`, `reduction`, `reduction_type`
              FROM `' . _DB_PREFIX_ . 'specific_price`
              WHERE `id_cart` = ' . (int) $this->id . '
                AND `id_product` = ' . (int) $row['id_product'] . '
-               AND `id_product_attribute` = ' . (int) $row['id_product_attribute'] . '
-               AND `price` >= 0
-               AND `reduction` = 0'
+               AND `id_product_attribute` = ' . (int) $row['id_product_attribute']
         );
-        if (!$cartFixedSp) {
+        if (!$cartSp) {
+            return $this->enrichCartLineReductionDisplay($row, $displayTaxExcluded);
+        }
+
+        // Configurateur : SP panier en % — le prix est déjà bon, seul le badge catalogue est faux
+        if ((string) $cartSp['reduction_type'] === 'percentage' && (float) $cartSp['reduction'] > 0) {
+            $row['specific_prices'] = [
+                'id_cart' => (int) $this->id,
+                'price' => -1,
+                'reduction_type' => 'percentage',
+                'reduction' => (string) $cartSp['reduction'],
+            ];
+
+            return $this->enrichCartLineReductionDisplay($row, $displayTaxExcluded);
+        }
+
+        // Pack ML : SP panier à prix fixe
+        if ((float) $cartSp['price'] < 0 || (float) $cartSp['reduction'] != 0) {
             return $this->enrichCartLineReductionDisplay($row, $displayTaxExcluded);
         }
 
@@ -480,7 +496,7 @@ class Cart extends CartCore
         $percentRatio = $referencePrice > 0 ? ($row['reduction'] / $referencePrice) : 0;
         $row['specific_prices'] = [
             'id_cart' => (int) $this->id,
-            'price' => (float) $cartFixedSp['price'],
+            'price' => (float) $cartSp['price'],
             'reduction_type' => 'percentage',
             'reduction' => (string) (round($percentRatio * 100) / 100),
         ];
