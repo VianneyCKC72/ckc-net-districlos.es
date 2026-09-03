@@ -538,8 +538,17 @@ function executeEvent(name, replay = false) {
     }
     else if(name === 'CHK5OPTION')
     {
-        document.querySelector('#payment-confirmation > div.ps-shown-by-js > button[type="submit"]').addEventListener('click', function(e) {
-            var selectedPayment = document.querySelector('input[name="payment-option"]:checked').dataset.moduleName;
+        var paymentSubmitBtn = document.querySelector('#payment-confirmation .payment-confirmation__submit, #payment-confirmation button[type="submit"]');
+        if (!paymentSubmitBtn) {
+            return;
+        }
+
+        paymentSubmitBtn.addEventListener('click', function(e) {
+            var selectedPaymentEl = document.querySelector('input[name="payment-option"]:checked');
+            if (!selectedPaymentEl) {
+                return;
+            }
+            var selectedPayment = selectedPaymentEl.dataset.moduleName;
             var selectedPaymentName = '';
 
             switch(selectedPayment) {
@@ -580,8 +589,11 @@ function executeEvent(name, replay = false) {
     else if(name === 'PUR')
     {
         // Check if purchase event has already been sent
-        var order = document.querySelector('section#content').dataset.order;
-        order = JSON.parse(order);
+        var orderContent = document.querySelector('section#content.page-order-confirmation');
+        if (!orderContent || !orderContent.dataset.order) {
+            return;
+        }
+        var order = JSON.parse(orderContent.dataset.order);
 
         var expirationDate = localStorage.getItem('purchase_event_expiration');
         if (localStorage.getItem('purchase_event_expiration_id') === order.details.reference) {
