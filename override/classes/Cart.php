@@ -460,8 +460,10 @@ class Cart extends CartCore
         }
 
         $addressId = $this->getCartLineTaxAddressId($row);
-        $catalogPriceHt = $this->getCatalogUnitPriceWithoutCartSp($row, false, $productQuantity, $shopContext, $addressId);
-        $catalogPriceTtc = $this->getCatalogUnitPriceWithoutCartSp($row, true, $productQuantity, $shopContext, $addressId);
+        // Pack ML exclusive : prix barré / badge vs catalogue brut (sans promo produit)
+        $useCatalogReduc = !$this->isMlPackCartFixedPriceLine((int) $row['id_product'], (int) $row['id_product_attribute']);
+        $catalogPriceHt = $this->getCatalogUnitPriceWithoutCartSp($row, false, $productQuantity, $shopContext, $addressId, $useCatalogReduc);
+        $catalogPriceTtc = $this->getCatalogUnitPriceWithoutCartSp($row, true, $productQuantity, $shopContext, $addressId, $useCatalogReduc);
         $reductionWithoutTax = $catalogPriceHt - (float) $row['price_with_reduction_without_tax'];
         $reductionWithTax = $catalogPriceTtc - (float) $row['price_with_reduction'];
 
@@ -497,8 +499,51 @@ class Cart extends CartCore
         return Address::addressExists($addressId, true) ? $addressId : null;
     }
 
-    private function getCatalogUnitPriceWithoutCartSp(array $row, bool $withTax, int $productQuantity, $shopContext, ?int $addressId): float
+    /**
+     * Ligne issue d'un pack explosé avec tranches ML configurées.
+     * Cache une requête par panier pour rester léger.
+     */
+    private function isMlPackCartFixedPriceLine(int $idProduct, int $idProductAttribute): bool
     {
+        static $mlLinesByCart = [];
+
+        $idCart = (int) $this->id;
+        if ($idCart <= 0) {
+            return false;
+        }
+
+        if (!isset($mlLinesByCart[$idCart])) {
+            $mlLinesByCart[$idCart] = [];
+            $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                'SELECT app.`id_product`, acp.`id_product_attribute`
+                 FROM `' . _DB_PREFIX_ . 'pm_advancedpack_cart_products` acp
+                 INNER JOIN `' . _DB_PREFIX_ . 'pm_advancedpack` ap
+                   ON ap.`id_pack` = acp.`id_pack`
+                 INNER JOIN `' . _DB_PREFIX_ . 'pm_advancedpack_products` app
+                   ON app.`id_product_pack` = acp.`id_product_pack`
+                 WHERE acp.`id_cart` = ' . $idCart . '
+                   AND ap.`ml_discount_tiers` IS NOT NULL
+                   AND ap.`ml_discount_tiers` != \'\'
+                   AND ap.`ml_discount_tiers` != \'[]\''
+            );
+            if (is_array($rows)) {
+                foreach ($rows as $r) {
+                    $mlLinesByCart[$idCart][(int) $r['id_product'] . '_' . (int) $r['id_product_attribute']] = true;
+                }
+            }
+        }
+
+        return isset($mlLinesByCart[$idCart][$idProduct . '_' . $idProductAttribute]);
+    }
+
+    private function getCatalogUnitPriceWithoutCartSp(
+        array $row,
+        bool $withTax,
+        int $productQuantity,
+        $shopContext,
+        ?int $addressId,
+        bool $useReduc = true
+    ): float {
         $specificPriceOutput = null;
 
         return (float) Product::getPriceStatic(
@@ -508,7 +553,7 @@ class Cart extends CartCore
             6,
             null,
             false,
-            true,
+            $useReduc,
             $productQuantity,
             false,
             (int) $this->id_customer ?: null,
@@ -516,7 +561,7 @@ class Cart extends CartCore
             $addressId,
             $specificPriceOutput,
             true,
-            true,
+            $useReduc,
             $shopContext,
             true,
             (int) $row['id_customization']

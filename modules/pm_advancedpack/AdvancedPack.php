@@ -651,6 +651,7 @@ class AdvancedPack extends Product
         $productCategoryReduction = null;
         $packCategoryReduction = null;
         $currentIdGroup = null;
+        $idPack = 0;
         if ($packContent !== false && is_array($packContent)) {
             $currentIdGroup = (int)Group::getCurrent()->id;
             $packContentFirstItem = current($packContent);
@@ -666,6 +667,14 @@ class AdvancedPack extends Product
             if (is_array($packFixedPriceList) && isset($packFixedPriceList[$currentIdGroup]) && $packFixedPriceList[$currentIdGroup] > 0) {
                 $packFixedPrice = $packFixedPriceList[$currentIdGroup];
             }
+        }
+        // Remise progressive ML exclusive : pas de cumul avec promo catalogue / groupe produit
+        $mlExclusive = $idPack > 0
+            && self::$frontMl !== null
+            && self::applyMlDiscountTiersToAmount($idPack, 0.0) > 0;
+        if ($mlExclusive) {
+            $useGroupReduction = false;
+            $packCategoryReduction = null;
         }
         if ($packCategoryReduction !== null) {
             $useGroupReduction = false;
@@ -699,10 +708,11 @@ class AdvancedPack extends Product
                     }
                     $productPackIdAttribute = (isset($attributesList[(int)$packProduct['id_product_pack']]) ? $attributesList[(int)$packProduct['id_product_pack']] : (isset($packProduct['id_product_attribute']) && (int)$packProduct['id_product_attribute'] ? (int)$packProduct['id_product_attribute'] : (int)$packProduct['default_id_product_attribute']));
                     $specificPriceOutput = null;
-                    $productPackPriceWt = $productClassicPriceWt = self::getPriceStaticPack($packProduct['id_product'], true, $productPackIdAttribute, 6, null, false, (bool)$packProduct['use_reduc'], (int)$packProduct['quantity'], null, null, null, $specificPriceOutput, false, $useGroupReduction);
-                    $productPackPrice = $productClassicPrice = self::getPriceStaticPack($packProduct['id_product'], false, $productPackIdAttribute, 6, null, false, (bool)$packProduct['use_reduc'], (int)$packProduct['quantity'], null, null, null, $specificPriceOutput, false, $useGroupReduction);
+                    $useProductReduc = $mlExclusive ? false : (bool) $packProduct['use_reduc'];
+                    $productPackPriceWt = $productClassicPriceWt = self::getPriceStaticPack($packProduct['id_product'], true, $productPackIdAttribute, 6, null, false, $useProductReduc, (int)$packProduct['quantity'], null, null, null, $specificPriceOutput, false, $useGroupReduction);
+                    $productPackPrice = $productClassicPrice = self::getPriceStaticPack($packProduct['id_product'], false, $productPackIdAttribute, 6, null, false, $useProductReduc, (int)$packProduct['quantity'], null, null, null, $specificPriceOutput, false, $useGroupReduction);
                     if ($packFixedPrice > 0) {
-                        if ($packCategoryReduction === null) {
+                        if (!$mlExclusive && $packCategoryReduction === null) {
                             $specificCategoryReduction = null;
                             $productCategoryReduction = GroupReduction::getValueForProduct((int)$packProduct['id_product'], $currentIdGroup);
                             if (is_float($productCategoryReduction + 0)) {
@@ -715,8 +725,8 @@ class AdvancedPack extends Product
                                 $specificCategoryReduction = (float)$groupReduction;
                             }
                             if ($specificCategoryReduction !== null && $specificCategoryReduction > 0) {
-                                $productClassicPriceWtTmp = self::getPriceStaticPack($packProduct['id_product'], true, $productPackIdAttribute, 6, null, false, (bool)$packProduct['use_reduc'], (int)$packProduct['quantity'], null, null, null, $specificPriceOutput, false, false);
-                                $productClassicPriceTmp = self::getPriceStaticPack($packProduct['id_product'], false, $productPackIdAttribute, 6, null, false, (bool)$packProduct['use_reduc'], (int)$packProduct['quantity'], null, null, null, $specificPriceOutput, false, false);
+                                $productClassicPriceWtTmp = self::getPriceStaticPack($packProduct['id_product'], true, $productPackIdAttribute, 6, null, false, $useProductReduc, (int)$packProduct['quantity'], null, null, null, $specificPriceOutput, false, false);
+                                $productClassicPriceTmp = self::getPriceStaticPack($packProduct['id_product'], false, $productPackIdAttribute, 6, null, false, $useProductReduc, (int)$packProduct['quantity'], null, null, null, $specificPriceOutput, false, false);
                                 $packProduct['customPercentageDiscount'] = $specificCategoryReduction;
                                 if ($packIdTaxRulesGroup) {
                                     $totalClassicPriceWithTaxes -= ($productClassicPriceTmp * $specificCategoryReduction / 100);
@@ -726,7 +736,7 @@ class AdvancedPack extends Product
                             }
                         }
                     } else {
-                        if ($packCategoryReduction === null && self::$usePackReductionReduction && !$useGroupReduction) {
+                        if (!$mlExclusive && $packCategoryReduction === null && self::$usePackReductionReduction && !$useGroupReduction) {
                             $productCategoryReduction = GroupReduction::getValueForProduct((int)$packProduct['id_product'], $currentIdGroup);
                             if (is_float($productCategoryReduction + 0)) {
                                 $productCategoryReduction = $productCategoryReduction * 100;
@@ -740,7 +750,7 @@ class AdvancedPack extends Product
                                 $productClassicPrice -= ($productClassicPrice * $productCategoryReduction / 100);
                                 $productClassicPriceWt -= ($productClassicPriceWt * $productCategoryReduction / 100);
                             }
-                        } elseif ($packCategoryReduction !== null && $packCategoryReduction > 0) {
+                        } elseif (!$mlExclusive && $packCategoryReduction !== null && $packCategoryReduction > 0) {
                             $productPackPrice -= ($productPackPrice * $packCategoryReduction / 100);
                             $productPackPriceWt -= ($productPackPriceWt * $packCategoryReduction / 100);
                             $productClassicPrice -= ($productClassicPrice * $packCategoryReduction / 100);
