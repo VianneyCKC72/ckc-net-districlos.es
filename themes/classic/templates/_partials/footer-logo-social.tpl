@@ -10,7 +10,7 @@
     </div>
     <div class="elementor-element elementor-element-b1a5e08 textFooterDescription">
         <div class="elementor-widget-container">
-            <p>Districlos, votre expert clôtures, portails <br>et brise-vues vous accompagne <br>dans vos projets depuis plus de 15 ans.</p>
+            <p>{capture assign="ckc_footer_expert"}{l s='%brand%, votre expert clôtures, portails %br%et brise-vues vous accompagne %br%dans vos projets depuis plus de 15 ans.' sprintf=['%brand%' => 'Districlos', '%br%' => '<br>'] d='Shop.Theme.Customglobal'}{/capture}{$ckc_footer_expert nofilter}</p>
         </div>
     </div>
     <div class="elementor-element elementor-element-7c993ab socialIconFooter elementor-shape-rounded">
@@ -46,7 +46,7 @@
     <div class="elementor-element elementor-element-d79a163 copyrightFooter">
         <div class="elementor-widget-container">
             <p>© Cloture-Discount &amp; Districlos<br>
-                Tous droits réservés - <a href="https://www.ckc-net.com/" target="_blank" rel="noopener noreferrer">Agence web ckc-net</a>
+                {l s='Tous droits réservés' d='Shop.Theme.Customglobal'} - <a href="https://www.ckc-net.com/" target="_blank" rel="noopener noreferrer">{l s='Agence web ckc-net' d='Shop.Theme.Customglobal'}</a>
             </p>
         </div>
     </div>
