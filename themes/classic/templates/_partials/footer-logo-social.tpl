@@ -2,7 +2,7 @@
     <div class="elementor-element elementor-element-918d6ea logoFooterContainer">
         <div class="elementor-widget-container">
             <div class="elementor-image">
-                <a href="https://www.cloture-discount.fr/">
+                <a href="{$urls.pages.index}">
                     <img width="144px" src="/img/logo-1744701147.svg" alt="Districlos">
                 </a>
             </div>
