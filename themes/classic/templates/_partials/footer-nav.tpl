@@ -25,10 +25,10 @@
                                                     d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"></path></svg></i></span></span>
                         </div>
                         <ul id="footer_sub_menu_34730" class="collapse block_content">
-                            <li><a class="custom-page-link elementor-page-link" href="/inscription" title="">
+                            <li><a class="custom-page-link elementor-page-link" href="{$urls.pages.registration}" title="">
                                     {l s='Créer un compte' d='Shop.Theme.Customglobal'}
                                 </a></li>
-                            <li><a class="custom-page-link elementor-page-link" href="/suivi-commande-invite">
+                            <li><a class="custom-page-link elementor-page-link" href="{$urls.pages.guest_tracking}">
                                     {l s='Suivi de commande' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link" href="{$link->getCMSLink(2)}">
@@ -39,7 +39,7 @@
                                     {l s='Conditions générales de vente' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link"
-                                   href="https://www.cloture-discount.fr/distriblog/" title="">
+                                   href="{if $language.iso_code == 'en'}https://www.cloture-discount.fr/distriblog/en{else}https://www.cloture-discount.fr/distriblog/{/if}" title="">
                                     {l s='Blog' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link"
@@ -69,7 +69,7 @@
                                    href="{$link->getCMSLink(655)}">
                                     {l s='Règlement tirage au sort' d='Shop.Theme.Customglobal'}
                                 </a></li>
-                            <li><a class="custom-page-link elementor-page-link" href="/offres-emploi">
+                            <li><a class="custom-page-link elementor-page-link" href="{$link->getModuleLink('dtc_feedhelloworkjob', 'jobs')}">
                                     {l s='Offres d\'emploi' d='Shop.Theme.Customglobal'}
                                 </a></li>
                         </ul>
@@ -94,25 +94,25 @@
                                                     d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"></path></svg></i></span></span>
                         </div>
                         <ul id="footer_sub_menu_63289" class="collapse block_content">
-                            <li><a class="custom-page-link elementor-page-link" href="/3-cloture-rigide" title="">
+                            <li><a class="custom-page-link elementor-page-link" href="{$link->getCategoryLink(3)}" title="">
                                     {l s='Grillage Rigide' d='Shop.Theme.Customglobal'}
                                 </a></li>
-                            <li><a class="custom-page-link elementor-page-link" href="/2-grillage-souple" title="">
+                            <li><a class="custom-page-link elementor-page-link" href="{$link->getCategoryLink(2)}" title="">
                                     {l s='Grillage Souple' d='Shop.Theme.Customglobal'}
                                 </a></li>
-                            <li><a class="custom-page-link elementor-page-link" href="/4-portillon-portail" title="">
+                            <li><a class="custom-page-link elementor-page-link" href="{$link->getCategoryLink(4)}" title="">
                                     {l s='Portail &amp; Portillon' d='Shop.Theme.Customglobal'}
                                 </a></li>
-                            <li><a class="custom-page-link elementor-page-link" href="/6-brise-vue" title="">
+                            <li><a class="custom-page-link elementor-page-link" href="{$link->getCategoryLink(6)}" title="">
                                     {l s='Brise vue &amp; Occultation' d='Shop.Theme.Customglobal'}
                                 </a></li>
-                            <li><a class="custom-page-link elementor-page-link" href="/100-gabion" title="">
+                            <li><a class="custom-page-link elementor-page-link" href="{$link->getCategoryLink(100)}" title="">
                                     {l s='Gabions' d='Shop.Theme.Customglobal'}
                                 </a></li>
-                            <li><a class="custom-page-link elementor-page-link" href="/configurateur" title="">
+                            <li><a class="custom-page-link elementor-page-link" href="{$link->getModuleLink('ckcconfigurateurdistriclos', 'configurator')}" title="">
                                     {l s='Configurateur' d='Shop.Theme.Customglobal'}
                                 </a></li>
-                            <li><a class="custom-page-link elementor-page-link" href="/promotions" title="">
+                            <li><a class="custom-page-link elementor-page-link" href="{$urls.pages.prices_drop}" title="">
                                     {l s='Promotion' d='Shop.Theme.Customglobal'}
                                 </a></li>
                         </ul>
@@ -155,7 +155,7 @@
                                    href="{$link->getCMSLink(672)}">
                                     {l s='Bien choisir sa clôture : le guide complet' d='Shop.Theme.Customglobal'}
                                 </a></li>
-                            <li><a class="custom-page-link elementor-page-link" href="/contactez-nous">
+                            <li><a class="custom-page-link elementor-page-link" href="{$urls.pages.contact}">
                                     {l s='Contactez-nous' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link"
@@ -169,7 +169,7 @@
                             <li><a class="custom-page-link elementor-page-link" href="{$link->getCMSLink(1)}">
                                     {l s='Livraison' d='Shop.Theme.Customglobal'}
                                 </a></li>
-                            <li><a class="custom-page-link elementor-page-link" href="/vos-realisations">
+                            <li><a class="custom-page-link elementor-page-link" href="{$link->getModuleLink('ckc_realisation', 'allgalleries')}">
                                     {l s='Vos réalisations' d='Shop.Theme.Customglobal'}
                                 </a></li>
                             <li><a class="custom-page-link elementor-page-link" href="javascript:openAxeptioCookies()">

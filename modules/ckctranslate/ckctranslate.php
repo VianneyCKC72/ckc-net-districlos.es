@@ -22,6 +22,11 @@ class CkcTranslate extends Module
     public const CONF_STYLE_GUIDELINES = 'CKCTRANSLATE_STYLE_GUIDELINES';
     public const CONF_RESTRICTIONS = 'CKCTRANSLATE_RESTRICTIONS';
     public const CONF_ONLY_MISSING_FIELDS = 'CKCTRANSLATE_ONLY_MISSING_FIELDS';
+    public const CONF_TRANSLATE_MODE = 'CKCTRANSLATE_TRANSLATE_MODE';
+
+    public const TRANSLATE_MODE_MISSING = 'missing';
+    public const TRANSLATE_MODE_MISSING_OR_SAME = 'missing_or_same';
+    public const TRANSLATE_MODE_FORCE = 'force';
 
     public const CONF_GLOSSARY = 'CKCTRANSLATE_GLOSSARY';
     public const CONF_SEO_META_TITLE_MAX = 'CKCTRANSLATE_SEO_META_TITLE_MAX';
@@ -44,7 +49,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.3.0';
+        $this->version = '2.4.0';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -126,6 +131,7 @@ class CkcTranslate extends Module
             && Configuration::updateValue(self::CONF_STYLE_GUIDELINES, 'Elegant tone, natural English, premium e-commerce vocabulary, short sentences, benefit-driven copy.')
             && Configuration::updateValue(self::CONF_RESTRICTIONS, 'Do not invent materials, do not invent certifications, do not promise delivery speed, do not exaggerate SEO keywords.')
             && Configuration::updateValue(self::CONF_ONLY_MISSING_FIELDS, 1)
+            && Configuration::updateValue(self::CONF_TRANSLATE_MODE, self::TRANSLATE_MODE_MISSING_OR_SAME)
             && Configuration::updateValue(self::CONF_GLOSSARY, "gold-plated = gold plated\n925 = sterling silver\ncollection names = keep unchanged")
             && Configuration::updateValue(self::CONF_SEO_META_TITLE_MAX, 60)
             && Configuration::updateValue(self::CONF_SEO_META_DESCRIPTION_MAX, 155)
@@ -158,6 +164,7 @@ class CkcTranslate extends Module
             && Configuration::deleteByName(self::CONF_STYLE_GUIDELINES)
             && Configuration::deleteByName(self::CONF_RESTRICTIONS)
             && Configuration::deleteByName(self::CONF_ONLY_MISSING_FIELDS)
+            && Configuration::deleteByName(self::CONF_TRANSLATE_MODE)
             && Configuration::deleteByName(self::CONF_GLOSSARY)
             && Configuration::deleteByName(self::CONF_SEO_META_TITLE_MAX)
             && Configuration::deleteByName(self::CONF_SEO_META_DESCRIPTION_MAX)
