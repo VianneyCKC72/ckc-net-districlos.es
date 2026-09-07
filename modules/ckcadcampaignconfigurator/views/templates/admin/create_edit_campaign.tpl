@@ -15,6 +15,9 @@
     Lien du module <strong>Module Countdown setter (Districlos)</strong> : <strong><a href="{Context::getContext()->link->getAdminLink('AdminModules', true, [], ['configure' => 'dtc_countdown_setter'])}" target="_blank">{Context::getContext()->link->getAdminLink('AdminModules', true, [], ['configure' => 'dtc_countdown_setter'])}</a></strong>
     <br>
     <br>
+    Lien du module <strong>Bandeau Bons plans</strong> : <strong><a href="{Context::getContext()->link->getAdminLink('AdminModules', true, [], ['configure' => 'dtc_bandeau_soldes'])}" target="_blank">{Context::getContext()->link->getAdminLink('AdminModules', true, [], ['configure' => 'dtc_bandeau_soldes'])}</a></strong>
+    <br>
+    <br>
 </div>
 <div>
     {$form_main}
