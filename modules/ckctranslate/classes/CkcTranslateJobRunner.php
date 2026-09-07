@@ -32,14 +32,22 @@ class CkcTranslateJobRunner
             $batchSize = 1;
         }
 
-        $processed = 0;
+        $translated = 0;
+        $skipped = 0;
+        $errors = 0;
+        $scanned = 0;
+        $maxScan = max($batchSize * 50, 100);
+
         $lastResult = array(
             'success' => true,
             'message' => $this->module->l('Nothing processed.', 'CkcTranslateJobRunner'),
             'finished' => false,
+            'translated' => 0,
+            'skipped' => 0,
+            'errors' => 0,
         );
 
-        while ($processed < $batchSize) {
+        while ($translated < $batchSize && $scanned < $maxScan) {
             switch ($job) {
                 case 'product_seo':
                     $result = $this->runProductSeo();
@@ -78,21 +86,41 @@ class CkcTranslateJobRunner
                         'success' => false,
                         'message' => $this->module->l('Unknown job.', 'CkcTranslateJobRunner'),
                         'finished' => true,
+                        'translated' => 0,
+                        'skipped' => 0,
+                        'errors' => 0,
                     );
             }
 
             $lastResult = $result;
-            $processed++;
+            $scanned++;
+
+            $status = isset($result['status']) ? (string) $result['status'] : 'ok';
+            if ($status === 'skipped') {
+                $skipped++;
+                // Soft skip: avance la file sans consommer le quota AI du batch
+            } elseif ($status === 'error') {
+                $errors++;
+                $translated++;
+            } else {
+                $translated++;
+            }
 
             if (!empty($result['finished'])) {
                 break;
             }
         }
 
+        $lastResult['translated'] = $translated;
+        $lastResult['skipped'] = $skipped;
+        $lastResult['errors'] = $errors;
         $lastResult['message'] .= ' ' . sprintf(
-                $this->module->l('Processed in this launch: %d item(s).', 'CkcTranslateJobRunner'),
-                (int) $processed
-            );
+            $this->module->l('Launch summary — translated: %1$d, skipped: %2$d, errors: %3$d, scanned: %4$d.', 'CkcTranslateJobRunner'),
+            (int) $translated,
+            (int) $skipped,
+            (int) $errors,
+            (int) $scanned
+        );
 
         return $lastResult;
     }
@@ -121,16 +149,16 @@ class CkcTranslateJobRunner
             return $this->nextResult(sprintf(
                 $this->module->l('Invalid product #%d skipped.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'skipped');
         }
 
-        if ($this->shouldSkipFilledFields($targetProduct, array('name', 'meta_title', 'meta_description', 'meta_keywords', 'link_rewrite'))) {
+        if ($this->shouldSkipFilledFields($targetProduct, array('name', 'meta_title', 'meta_description', 'meta_keywords', 'link_rewrite'), $product)) {
             $this->logHistory('product_seo', 'product', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
                 $this->module->l('Product #%d already translated, skipped.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'skipped');
         }
 
         $systemPrompt = $this->buildSystemPrompt(
@@ -172,7 +200,7 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('Invalid AI response for product #%d.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'error');
         }
 
         $metaTitle = $this->normalizeSeoText($data['meta_title'], (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX));
@@ -229,16 +257,16 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('Invalid product #%d skipped.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'skipped');
         }
 
-        if ($this->shouldSkipFilledFields($targetProduct, array('description_short', 'description'))) {
+        if ($this->shouldSkipFilledFields($targetProduct, array('description_short', 'description'), $product)) {
             $this->logHistory('product_description', 'product', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
                 $this->module->l('Product descriptions #%d already translated, skipped.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'skipped');
         }
 
         $systemPrompt = $this->buildSystemPrompt(
@@ -268,7 +296,7 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('Invalid AI response for product #%d.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'error');
         }
 
         Db::getInstance()->update(
@@ -318,16 +346,16 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('Invalid category #%d skipped.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'skipped');
         }
 
-        if ($this->shouldSkipFilledFields($targetCategory, array('name', 'meta_title', 'meta_description', 'link_rewrite'))) {
+        if ($this->shouldSkipFilledFields($targetCategory, array('name', 'meta_title', 'meta_description', 'link_rewrite'), $category)) {
             $this->logHistory('category_seo', 'category', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
                 $this->module->l('Category #%d already translated, skipped.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'skipped');
         }
 
         $systemPrompt = $this->buildSystemPrompt(
@@ -365,7 +393,7 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('Invalid AI response for category #%d.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'error');
         }
 
         $metaTitle = $this->normalizeSeoText($data['meta_title'], (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX));
@@ -421,16 +449,16 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('Invalid category #%d skipped.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'skipped');
         }
 
-        if ($this->shouldSkipFilledFields($targetCategory, array('description', 'additional_description'))) {
+        if ($this->shouldSkipFilledFields($targetCategory, array('description', 'additional_description'), $category)) {
             $this->logHistory('category_description', 'category', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
                 $this->module->l('Category descriptions #%d already translated, skipped.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'skipped');
         }
 
         $systemPrompt = $this->buildSystemPrompt(
@@ -460,7 +488,7 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('Invalid AI response for category #%d.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'error');
         }
 
         Db::getInstance()->update(
@@ -510,16 +538,16 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('Invalid CMS #%d skipped.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'skipped');
         }
 
-        if ($this->shouldSkipFilledFields($targetCms, array('meta_title', 'meta_description', 'meta_keywords', 'content', 'link_rewrite'))) {
+        if ($this->shouldSkipFilledFields($targetCms, array('meta_title', 'meta_description', 'meta_keywords', 'content', 'link_rewrite'), $cms)) {
             $this->logHistory('cms', 'cms', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
                 $this->module->l('CMS #%d already translated, skipped.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'skipped');
         }
 
         $systemPrompt = $this->buildSystemPrompt(
@@ -558,7 +586,7 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('Invalid AI response for CMS #%d.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'error');
         }
 
         $metaTitle = $this->normalizeSeoText($data['meta_title'], (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX));
@@ -783,25 +811,23 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('CE theme #%d has no source content, skipped.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'skipped');
         }
 
-        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
-            $targetRows = Db::getInstance()->executeS(
-                'SELECT content FROM `' . _DB_PREFIX_ . 'ce_theme_lang`
-                 WHERE id_ce_theme = ' . (int) $id . ' AND id_lang = ' . (int) $this->targetLangId . '
-                 LIMIT 1'
-            );
-            $targetContent = ($targetRows && !empty($targetRows[0]['content'])) ? $targetRows[0]['content'] : '';
+        $targetRows = Db::getInstance()->executeS(
+            'SELECT content FROM `' . _DB_PREFIX_ . 'ce_theme_lang`
+             WHERE id_ce_theme = ' . (int) $id . ' AND id_lang = ' . (int) $this->targetLangId . '
+             LIMIT 1'
+        );
+        $targetContent = ($targetRows && !empty($targetRows[0]['content'])) ? $targetRows[0]['content'] : '';
 
-            if (!empty($targetContent)) {
-                $this->logHistory('creative_elements', 'ce_theme', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+        if ($this->shouldSkipTextPair($sourceRow['content'], $targetContent)) {
+            $this->logHistory('creative_elements', 'ce_theme', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
-                return $this->nextResult(sprintf(
-                    $this->module->l('CE theme #%d already translated, skipped.', 'CkcTranslateJobRunner'),
-                    (int) $id
-                ));
-            }
+            return $this->nextResult(sprintf(
+                $this->module->l('CE theme #%d already translated, skipped.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ), 'skipped');
         }
 
         $systemPrompt = $this->buildSystemPrompt(
@@ -832,7 +858,7 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('Invalid AI response for CE content #%d.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'error');
         }
 
         $translatedContent = $data['content'];
@@ -910,7 +936,7 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('CE meta #%s has no JSON, skipped.', 'CkcTranslateJobRunner'),
                 $sourceUidStr
-            ));
+            ), 'skipped');
         }
 
         $sourceJson = $sourceRows[0]['value'];
@@ -922,25 +948,28 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('CE meta #%s invalid JSON, skipped.', 'CkcTranslateJobRunner'),
                 $sourceUidStr
-            ));
+            ), 'skipped');
         }
 
         // Build target UID: replace lang portion (chars -4 to -2 from end)
         $targetUidStr = substr($sourceUidStr, 0, -4) . sprintf('%02d', $this->targetLangId) . substr($sourceUidStr, -2);
 
-        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+        if ($this->getTranslateMode() !== CkcTranslate::TRANSLATE_MODE_FORCE) {
             $existsRows = Db::getInstance()->executeS(
-                'SELECT id FROM `' . _DB_PREFIX_ . 'ce_meta`
+                'SELECT `value` FROM `' . _DB_PREFIX_ . 'ce_meta`
                  WHERE `id` = ' . (int) $targetUidStr . ' AND `name` = \'_elementor_data\'
                  LIMIT 1'
             );
             if (!empty($existsRows)) {
-                $this->logHistory('ce_meta', 'ce_meta', (int) $sourceUid, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+                $targetJson = isset($existsRows[0]['value']) ? (string) $existsRows[0]['value'] : '';
+                if ($this->shouldSkipTextPair($sourceJson, $targetJson)) {
+                    $this->logHistory('ce_meta', 'ce_meta', (int) $sourceUid, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
-                return $this->nextResult(sprintf(
-                    $this->module->l('CE meta #%s already translated, skipped.', 'CkcTranslateJobRunner'),
-                    $sourceUidStr
-                ));
+                    return $this->nextResult(sprintf(
+                        $this->module->l('CE meta #%s already translated, skipped.', 'CkcTranslateJobRunner'),
+                        $sourceUidStr
+                    ), 'skipped');
+                }
             }
         }
 
@@ -976,7 +1005,7 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('Invalid AI response for CE meta #%s — source saved as fallback.', 'CkcTranslateJobRunner'),
                 $sourceUidStr
-            ));
+            ), 'error');
         }
 
         $translatedElements = $this->injectTranslatedTexts($elements, $translations);
@@ -1020,10 +1049,10 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('Reassurance #%d has no source content, skipped.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'skipped');
         }
 
-        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+        if ($this->getTranslateMode() !== CkcTranslate::TRANSLATE_MODE_FORCE) {
             $targetRows = Db::getInstance()->executeS(
                 'SELECT title, description FROM `' . _DB_PREFIX_ . 'psreassurance_lang`
                  WHERE id_psreassurance = ' . (int) $id . ' AND id_lang = ' . (int) $this->targetLangId . '
@@ -1031,13 +1060,13 @@ PROMPT;
             );
             $targetRow = $targetRows ? $targetRows[0] : false;
 
-            if ($targetRow && (!empty($targetRow['title']) || !empty($targetRow['description']))) {
+            if ($this->shouldSkipReassuranceRow($sourceRow, $targetRow)) {
                 $this->logHistory('reassurance', 'reassurance', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
                 return $this->nextResult(sprintf(
                     $this->module->l('Reassurance #%d already translated, skipped.', 'CkcTranslateJobRunner'),
                     (int) $id
-                ));
+                ), 'skipped');
             }
         }
 
@@ -1068,7 +1097,7 @@ PROMPT;
             return $this->nextResult(sprintf(
                 $this->module->l('Invalid AI response for reassurance #%d.', 'CkcTranslateJobRunner'),
                 (int) $id
-            ));
+            ), 'error');
         }
 
         $existsRows = Db::getInstance()->executeS(
@@ -1288,19 +1317,134 @@ PROMPT;
         return $slug;
     }
 
-    protected function shouldSkipFilledFields($targetObject, array $fields)
+    protected function shouldSkipFilledFields($targetObject, array $fields, $sourceObject = null)
     {
-        if (!(int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+        $mode = $this->getTranslateMode();
+
+        if ($mode === CkcTranslate::TRANSLATE_MODE_FORCE) {
             return false;
         }
 
+        $allFilled = true;
+        $allSameAsSource = true;
+
         foreach ($fields as $field) {
-            if (!isset($targetObject->{$field}) || trim(strip_tags((string) $targetObject->{$field})) === '') {
-                return false;
+            $targetVal = $this->normalizeComparable(isset($targetObject->{$field}) ? $targetObject->{$field} : '');
+            if ($targetVal === '') {
+                $allFilled = false;
+                $allSameAsSource = false;
+                break;
+            }
+
+            if ($sourceObject !== null) {
+                $sourceVal = $this->normalizeComparable(isset($sourceObject->{$field}) ? $sourceObject->{$field} : '');
+                if ($targetVal !== $sourceVal) {
+                    $allSameAsSource = false;
+                }
+            } else {
+                $allSameAsSource = false;
             }
         }
 
+        if (!$allFilled) {
+            return false;
+        }
+
+        // Contenu cible rempli mais identique à la source (= FR copié en EN) → à retraduire
+        if ($mode === CkcTranslate::TRANSLATE_MODE_MISSING_OR_SAME && $allSameAsSource) {
+            return false;
+        }
+
         return true;
+    }
+
+    protected function shouldSkipTextPair($sourceText, $targetText)
+    {
+        $mode = $this->getTranslateMode();
+
+        if ($mode === CkcTranslate::TRANSLATE_MODE_FORCE) {
+            return false;
+        }
+
+        $sourceVal = $this->normalizeComparable($sourceText);
+        $targetVal = $this->normalizeComparable($targetText);
+
+        if ($targetVal === '') {
+            return false;
+        }
+
+        if ($mode === CkcTranslate::TRANSLATE_MODE_MISSING_OR_SAME && $sourceVal !== '' && $targetVal === $sourceVal) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function shouldSkipReassuranceRow(array $sourceRow, $targetRow)
+    {
+        $mode = $this->getTranslateMode();
+
+        if ($mode === CkcTranslate::TRANSLATE_MODE_FORCE) {
+            return false;
+        }
+
+        if (!$targetRow) {
+            return false;
+        }
+
+        $sourceTitle = $this->normalizeComparable(isset($sourceRow['title']) ? $sourceRow['title'] : '');
+        $sourceDesc = $this->normalizeComparable(isset($sourceRow['description']) ? $sourceRow['description'] : '');
+        $targetTitle = $this->normalizeComparable(isset($targetRow['title']) ? $targetRow['title'] : '');
+        $targetDesc = $this->normalizeComparable(isset($targetRow['description']) ? $targetRow['description'] : '');
+
+        if ($targetTitle === '' && $targetDesc === '') {
+            return false;
+        }
+
+        $sameAsSource = ($targetTitle === $sourceTitle || ($targetTitle === '' && $sourceTitle === ''))
+            && ($targetDesc === $sourceDesc || ($targetDesc === '' && $sourceDesc === ''));
+
+        // Au moins un champ rempli mais tout est encore du FR → retraduire
+        if ($mode === CkcTranslate::TRANSLATE_MODE_MISSING_OR_SAME && $sameAsSource) {
+            return false;
+        }
+
+        // Mode missing strict : si un champ cible est rempli, on skip (ancien comportement)
+        if ($mode === CkcTranslate::TRANSLATE_MODE_MISSING && ($targetTitle !== '' || $targetDesc !== '')) {
+            return true;
+        }
+
+        if ($mode === CkcTranslate::TRANSLATE_MODE_MISSING_OR_SAME && !$sameAsSource) {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function getTranslateMode()
+    {
+        $mode = (string) Configuration::get(CkcTranslate::CONF_TRANSLATE_MODE);
+
+        if (in_array($mode, array(
+            CkcTranslate::TRANSLATE_MODE_MISSING,
+            CkcTranslate::TRANSLATE_MODE_MISSING_OR_SAME,
+            CkcTranslate::TRANSLATE_MODE_FORCE,
+        ), true)) {
+            return $mode;
+        }
+
+        // Migration depuis l'ancien switch
+        return (int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)
+            ? CkcTranslate::TRANSLATE_MODE_MISSING_OR_SAME
+            : CkcTranslate::TRANSLATE_MODE_FORCE;
+    }
+
+    protected function normalizeComparable($value)
+    {
+        $value = html_entity_decode(strip_tags((string) $value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $value = preg_replace('/\s+/u', ' ', $value);
+
+        return trim((string) $value);
     }
 
     protected function logHistory($jobCode, $entityType, $entityId, $status, $message)
@@ -1382,12 +1526,13 @@ PROMPT;
         return true;
     }
 
-    protected function nextResult($message)
+    protected function nextResult($message, $status = 'ok')
     {
         return array(
             'success' => true,
             'message' => $message,
             'finished' => false,
+            'status' => $status,
         );
     }
 
@@ -1397,6 +1542,7 @@ PROMPT;
             'success' => true,
             'message' => $message,
             'finished' => true,
+            'status' => 'ok',
         );
     }
 }

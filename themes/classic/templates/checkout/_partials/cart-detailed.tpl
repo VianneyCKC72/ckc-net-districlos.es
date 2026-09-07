@@ -27,7 +27,10 @@
     {if $cart.products}
     <ul class="cart-items">
       {foreach from=$cart.products item=product}
-          {if isset($custom_product_message) && isset($custom_product_message[$product.id_product]) && $custom_product_message[$product.id_product] != ''}
+          {assign var="cart_line_key" value="{$product.id_product}_{$product.id_product_attribute}"}
+          {if isset($custom_product_message[$cart_line_key]) && $custom_product_message[$cart_line_key] != ''}
+              {$custom_product_message[$cart_line_key] nofilter}
+          {elseif isset($custom_product_message) && isset($custom_product_message[$product.id_product]) && $custom_product_message[$product.id_product] != ''}
               {$custom_product_message[$product.id_product] nofilter}
           {/if}
         <li class="cart-item{if !empty($product.dtc_dealt_is_service) || (isset($product.id_category_default) && $product.id_category_default == 369)} dtc-dealt-service-cart-item{/if}">
