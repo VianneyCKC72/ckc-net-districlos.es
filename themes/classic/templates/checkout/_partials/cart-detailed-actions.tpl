@@ -32,6 +32,10 @@
         <button type="button" class="btn btn-primary disabled"
           disabled>PASSER COMMANDE</button>
       </div>
+    {elseif $cart_has_victime_succes}
+      <div class="text-sm-center">
+        <button type="button" class="btn btn-secondary w-100 disabled" disabled>PASSER COMMANDE</button>
+      </div>
     {elseif empty($cart.products) }
       <div class="text-sm-center">
         <button type="button" class="btn btn-primary disabled"
