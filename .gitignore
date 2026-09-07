@@ -474,3 +474,9 @@ modules/ckc*/config_fr.xml
 modules/ckcproductreviews/cache/
 themes/classic/assets/css/theme.css.map
 .claude/
+/fix_*.php
+/fix_configurateur.php
+themes/classic/assets/css/theme.css
+themes/classic/assets/js/theme.js
+/fix_*.php
+/fix_configurateur.php
