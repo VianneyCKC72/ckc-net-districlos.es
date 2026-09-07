@@ -138,6 +138,8 @@ class CartController extends CartControllerCore
 
     /**
      * Fusionne les messages victime avec ceux de dtc_cartwarnings (déjà assignés à Smarty).
+     * Important : ne pas utiliser array_merge() — il réindexe les clés numériques (id_product)
+     * et casse l'affichage des warnings dtc_cartwarnings.
      */
     private function assignVictimeSuccesCartState(): void
     {
@@ -147,8 +149,12 @@ class CartController extends CartControllerCore
             $custom_product_message = [];
         }
 
+        foreach ($victimeState['messages'] as $key => $message) {
+            $custom_product_message[$key] = $message;
+        }
+
         $this->context->smarty->assign([
-            'custom_product_message' => array_merge($custom_product_message, $victimeState['messages']),
+            'custom_product_message' => $custom_product_message,
             'cart_has_victime_succes' => $victimeState['has_victime'],
         ]);
     }
@@ -242,9 +248,13 @@ class CartController extends CartControllerCore
             return;
         }
 
-        $warningsModule = Module::getInstanceByName('dtc_cartwarnings');
-        if ($warningsModule instanceof dtc_cartwarnings) {
-            $warningsModule->assignCartWarningsToSmarty();
+        try {
+            $warningsModule = Module::getInstanceByName('dtc_cartwarnings');
+            if ($warningsModule instanceof dtc_cartwarnings) {
+                $warningsModule->assignCartWarningsToSmarty();
+            }
+        } catch (Exception $e) {
+            // Ne pas casser le panier si le module warnings échoue.
         }
     }
 
