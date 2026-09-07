@@ -8,7 +8,7 @@ class ckc_oney_simulator extends Module
     public function __construct()
     {
         $this->name = 'ckc_oney_simulator';
-        $this->version = '1.0.0';
+        $this->version = '1.0.1';
         $this->author = 'CKC';
         $this->logo_path     = $this->_path . 'logo.png';
         parent::__construct();

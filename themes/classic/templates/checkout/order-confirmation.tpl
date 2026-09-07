@@ -39,7 +39,7 @@
 {/block}
 
 {block name='page_content_container'}
-  <section id="content" class="page-content page-order-confirmation card">
+  <section id="content" class="page-content page-order-confirmation card" data-order="{$order|json_encode}">
     <div class="card-block">
       <div class="row">
 

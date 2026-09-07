@@ -1,0 +1,4 @@
+[submodule "modules/ckcconfigurateurdistriclos"]
+	path = modules/ckcconfigurateurdistriclos
+	url = git@gitlab.com:ckcnet/prestashop/modules/ckc-configurateur-districlos.git
+	ignore = all

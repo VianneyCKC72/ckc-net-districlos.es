@@ -137,6 +137,10 @@ class DealtEligibilityModuleFrontController extends ModuleFrontController
                         }
                         if (AdvancedPack::isInStock($productId, $packQty, $idProductAttributeList, true, $id_product_attribute)) {
                             $cart->updateQty(1, $serviceId);
+                            // packQtyML (Dealt) ≠ quantity_ml (pack) : poser frontMl pour la remise ML
+                            if ($packQtyML && (float) $packQtyML > 0) {
+                                AdvancedPack::setFrontMl((float) str_replace(',', '.', (string) $packQtyML));
+                            }
                             AdvancedPack::addExplodedPackToCart($productId, $packQty, $idProductAttributeList, $productPackCustomizationList, $productPackQuantityList, $productPackExclude);
                         }
                     } else {

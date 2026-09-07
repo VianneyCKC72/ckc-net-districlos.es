@@ -13,7 +13,7 @@
                 </div>
             {/foreach}
             <div class="product-line-info prix-unitaire">
-                <span class="label">Prix unitaire {if $pro.env == 1}HT{else}TTC{/if} </span>
+                <span class="label">{l s='Prix unitaire' d='Shop.Theme.Customdealt'} {if $pro.env == 1}HT{else}TTC{/if} </span>
                 <span class="value dealt-service-unit-price">{$product.price}</span>
             </div>
         </div>
@@ -57,18 +57,18 @@
 {if isset($dealt_show_tva_block) && $dealt_show_tva_block && (isset($dealt_tva_enabled) && !$dealt_tva_enabled)}
   <div class="dealt-tva-notice dealt-tva-notice--cartline">
     <div class="dealt-tva-notice__text">
-      <span class="dealt-tva-title">Réduisez votre TVA</span>
+      <span class="dealt-tva-title">{l s='Réduisez votre TVA' d='Shop.Theme.Customdealt'}</span>
       <small class="dealt-tva-description">
-        Vous pouvez bénéficier d'une TVA à 10% soit une réduction de 10% du montant de vos achats !
+        {l s='Vous pouvez bénéficier d\'une TVA à 10% soit une réduction de 10% du montant de vos achats !' d='Shop.Theme.Customdealt'}
       </small>
     </div>
     <div class="dealt-tva-actions-wrapper">
       <a href="{$tva_modal_url|default:'#'|escape:'html':'UTF-8'}" class="btn-secondary btn-add dealt-tva-open-popup dealt-tva-btn-desktop">
-        Ajouter la réduction
+        {l s='Ajouter la réduction' d='Shop.Theme.Customdealt'}
       </a>
       <div class="dealt-tva-actions-mobile">
         <a href="{$tva_modal_url|default:'#'|escape:'html':'UTF-8'}" class="btn-secondary btn-add dealt-tva-open-popup">
-          Ajouter la réduction
+          {l s='Ajouter la réduction' d='Shop.Theme.Customdealt'}
         </a>
         <div class="dealt-tva-price-mobile">
           <span class="product-price dealt-service-total-price">

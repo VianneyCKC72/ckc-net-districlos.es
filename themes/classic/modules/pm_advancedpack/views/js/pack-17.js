@@ -649,7 +649,7 @@ function ap5GetPackDimensionValues() {
     var hauteur = 0;
 
     if ($('#quantity_ml').length) {
-        var mlValue = parseInt($('#quantity_ml').val());
+        var mlValue = parseFloat(String($('#quantity_ml').val()).replace(',', '.'));
         ml = (isNaN(mlValue) || mlValue <= 0) ? 1 : mlValue;
     }
     if ($('#quantity_hauteur').length) {
@@ -920,6 +920,47 @@ $(document).ready(function() {
     }
     ap5Plugin.updatePackTable();
 });
+
+// Filtre galerie pack par couleur (data-color-attribute-id)
+function ap5FilterPackGallery() {
+    var $gallery = $('.product-images-grid[data-pack-color-filter="1"]');
+    if (!$gallery.length) {
+        return;
+    }
+    var colorId = parseInt(
+        $('#ap5-product-list .ap5-attribute-fieldset')
+            .filter(function () { return /couleur/i.test($(this).find('.control-label').text()); })
+            .find('select.ap5-attribute-select')
+            .first()
+            .val(),
+        10
+    );
+    var $items = $gallery.find('.product-images-grid__item');
+    var boundColors = {};
+    var matchCount = 0;
+    $items.each(function () {
+        var bound = parseInt($(this).attr('data-color-attribute-id'), 10) || 0;
+        if (bound) {
+            boundColors[bound] = true;
+            if (bound === colorId) {
+                matchCount++;
+            }
+        }
+    });
+    // Galerie de base si : pas de couleur, couleur sans images, ou une seule couleur mappée
+    if (!colorId || !matchCount || Object.keys(boundColors).length < 2) {
+        $items.removeClass('is-hidden-by-color');
+        return;
+    }
+    // Couleur choisie + images sans binding (vues communes)
+    $items.each(function () {
+        var bound = parseInt($(this).attr('data-color-attribute-id'), 10) || 0;
+        $(this).toggleClass('is-hidden-by-color', !!(bound && bound !== colorId));
+    });
+}
+$(document).on('change', '#ap5-product-list .ap5-attribute-select', ap5FilterPackGallery);
+$(document).on('ap5-After-UpdatePackContent', ap5FilterPackGallery);
+$(ap5FilterPackGallery);
 
 // Fix : contenu du pack non affiché dans la modale pour quantité > 1.
 // L'événement shown.bs.modal garantit que la modale est dans le DOM avant

@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `PREFIX_pm_advancedpack` (
   `allow_remove_product` tinyint(3) unsigned DEFAULT 0,
   `auto_choose` tinyint(3) unsigned DEFAULT 0,
   `ml_choose` tinyint(3) unsigned DEFAULT 0,
+  `ml_discount_tiers` text NULL DEFAULT NULL,
   `height_choose` tinyint(3) unsigned DEFAULT 0,
   `height_values` text NULL DEFAULT NULL,
   `is_bundle` tinyint(1) unsigned DEFAULT 0,
@@ -71,3 +72,11 @@ CREATE TABLE IF NOT EXISTS `PREFIX_pm_advancedpack_pack_shop_discount` (
   PRIMARY KEY (`id_pack`, `id_shop`),
   INDEX `id_shop_pack` (`id_shop`, `id_pack`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `PREFIX_pm_advancedpack_image_color` (
+  `id_image` int(10) unsigned NOT NULL,
+  `id_pack` int(10) unsigned NOT NULL,
+  `id_attribute` int(10) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id_image`),
+  KEY `id_pack` (`id_pack`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;

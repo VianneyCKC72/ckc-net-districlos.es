@@ -96,7 +96,7 @@
 
   {if $cart_total_savings > 0}
     <div class="cart-summary-line cart-savings" id="cart-savings" style="justify-content: center; font-size: 14px;margin-top: 10px;">
-      <span class="label">Vous économisez <strong>{$cart_total_savings|round} €</strong> sur votre commande</span>
+      <span class="label">{l s='Vous économisez [1]%amount% €[/1] sur votre commande' sprintf=['[1]' => '<strong>', '[/1]' => '</strong>', '%amount%' => $cart_total_savings|round] d='Shop.Theme.Customcheckout'}</span>
     </div>
   {/if}
 {/block}

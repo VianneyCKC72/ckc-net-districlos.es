@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="fr-FR" target-language="en-US" datatype="plaintext" original="ShopThemeCustomglobal">
+    <body>
+      <trans-unit id="1"><source>%brand%, votre expert clôtures, portails %br%et brise-vues vous accompagne %br%dans vos projets depuis plus de 15 ans.</source><target>%brand%, your fencing, gate %br%and privacy-screen expert, supporting you %br%in your projects for over 15 years.</target></trans-unit>
+      <trans-unit id="2"><source>A propos</source><target>About</target></trans-unit>
+      <trans-unit id="3"><source>Accueil</source><target>Home</target></trans-unit>
+      <trans-unit id="4"><source>Afficher/Masquer le mot de passe</source><target>Show/Hide password</target></trans-unit>
+      <trans-unit id="5"><source>Aide</source><target>Help</target></trans-unit>
+      <trans-unit id="6"><source>Brise vue &amp;amp; Occultation</source><target>Privacy screen &amp;amp; screening</target></trans-unit>
+      <trans-unit id="7"><source>Carte des installateurs</source><target>Installers map</target></trans-unit>
+      <trans-unit id="8"><source>Catalogue %brand%</source><target>%brand% catalogue</target></trans-unit>
+      <trans-unit id="9"><source>Conditions générales de vente</source><target>Terms and conditions of sale</target></trans-unit>
+      <trans-unit id="10"><source>Configurateur</source><target>Configurator</target></trans-unit>
+      <trans-unit id="11"><source>Configurez</source><target>Configure</target></trans-unit>
+      <trans-unit id="12"><source>Configurez votre clôture</source><target>Configure your fence</target></trans-unit>
+      <trans-unit id="13"><source>Contactez-nous</source><target>Contact us</target></trans-unit>
+      <trans-unit id="14"><source>Créer un compte</source><target>Create an account</target></trans-unit>
+      <trans-unit id="15"><source>Des questions ?</source><target>Any questions?</target></trans-unit>
+      <trans-unit id="16"><source>Egalité Hommes-Femmes au travail à %brand%</source><target>Gender equality at work at %brand%</target></trans-unit>
+      <trans-unit id="17"><source>FAQ - Foire aux questions</source><target>FAQ - Frequently asked questions</target></trans-unit>
+      <trans-unit id="18"><source>Grillage Rigide</source><target>Rigid mesh fencing</target></trans-unit>
+      <trans-unit id="19"><source>Grillage Souple</source><target>Flexible mesh fencing</target></trans-unit>
+      <trans-unit id="20"><source>Guides de clôture</source><target>Fencing guides</target></trans-unit>
+      <trans-unit id="21"><source>Les offres Districlos</source><target>Districlos offers</target></trans-unit>
+      <trans-unit id="22"><source>Les offres au volume</source><target>Volume offers</target></trans-unit>
+      <trans-unit id="23"><source>Livraison</source><target>Delivery</target></trans-unit>
+      <trans-unit id="24"><source>M.</source><target>Mr</target></trans-unit>
+      <trans-unit id="25"><source>Mentions légales</source><target>Legal notice</target></trans-unit>
+      <trans-unit id="26"><source>Mes avantages</source><target>My benefits</target></trans-unit>
+      <trans-unit id="27"><source>Mlle.</source><target>Miss</target></trans-unit>
+      <trans-unit id="28"><source>Mme.</source><target>Mrs</target></trans-unit>
+      <trans-unit id="29"><source>Modifier vos préférences en matière de cookies</source><target>Change your cookie preferences</target></trans-unit>
+      <trans-unit id="30"><source>Moyens de paiement</source><target>Payment methods</target></trans-unit>
+      <trans-unit id="31"><source>Nos magasins</source><target>Our stores</target></trans-unit>
+      <trans-unit id="32"><source>Offres d'emploi</source><target>Job offers</target></trans-unit>
+      <trans-unit id="33"><source>Partenaire Equipe Cycliste %brand%</source><target>Partner of the %brand% cycling team</target></trans-unit>
+      <trans-unit id="34"><source>Politique de confidentialité et de cookies</source><target>Privacy and cookie policy</target></trans-unit>
+      <trans-unit id="35"><source>Portail &amp;amp; Portillon</source><target>Gate &amp;amp; pedestrian gate</target></trans-unit>
+      <trans-unit id="36"><source>Produits</source><target>Products</target></trans-unit>
+      <trans-unit id="37"><source>Promotion</source><target>Promotion</target></trans-unit>
+      <trans-unit id="38"><source>Règlement tirage au sort</source><target>Prize draw rules</target></trans-unit>
+      <trans-unit id="39"><source>Service de pose</source><target>Installation service</target></trans-unit>
+      <trans-unit id="40"><source>Suivi de commande</source><target>Order tracking</target></trans-unit>
+      <trans-unit id="41"><source>Titre de votre adresse</source><target>Your address title</target></trans-unit>
+      <trans-unit id="42"><source>Tous droits réservés</source><target>All rights reserved</target></trans-unit>
+      <trans-unit id="43"><source>Tutoriels %brand%</source><target>%brand% tutorials</target></trans-unit>
+      <trans-unit id="44"><source>Vos réalisations</source><target>Your projects</target></trans-unit>
+      <trans-unit id="45"><source>des question?</source><target>questions?</target></trans-unit>
+      <trans-unit id="46"><source>votre clôture</source><target>your fence</target></trans-unit>
+      <trans-unit id="47"><source>Monsieur</source><target>Mr</target></trans-unit>
+      <trans-unit id="48"><source>Madame</source><target>Mrs</target></trans-unit>
+      <trans-unit id="49"><source>Mademoiselle</source><target>Miss</target></trans-unit>
+      <trans-unit id="50"><source>Bons plans</source><target>Great deals</target></trans-unit>
+      <trans-unit id="51"><source>BONS PLANS</source><target>GREAT DEALS</target></trans-unit>
+      <trans-unit id="52"><source>Jusqu'à</source><target>Up to</target></trans-unit>
+      <trans-unit id="53"><source>sur tout le site !</source><target>sitewide!</target></trans-unit>
+      <trans-unit id="54"><source>Nos</source><target>Our</target></trans-unit>
+      <trans-unit id="55"><source>produits</source><target>products</target></trans-unit>
+      <trans-unit id="56"><source>Blog</source><target>Blog</target></trans-unit>
+      <trans-unit id="57"><source>Gabions</source><target>Gabions</target></trans-unit>
+      <trans-unit id="58"><source>Bien choisir sa clôture : le guide complet</source><target>How to choose your fence: the complete guide</target></trans-unit>
+      <trans-unit id="59"><source>Agence web ckc-net</source><target>ckc-net web agency</target></trans-unit>
+    </body>
+  </file>
+</xliff>

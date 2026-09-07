@@ -8,7 +8,7 @@ class Ckc_Shipping_Estimator extends Module
     public function __construct()
     {
         $this->name = 'ckc_shipping_estimator';
-        $this->version = '1.0.0';
+        $this->version = '1.0.1';
         $this->author = 'CKC-Net';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7', 'max' => _PS_VERSION_];

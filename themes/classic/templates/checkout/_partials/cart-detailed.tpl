@@ -33,7 +33,7 @@
                   {$custom_product_message[$product.id_product] nofilter}
               {/if}
           {/if}
-        <li class="cart-item">
+        <li class="cart-item{if !empty($product.dtc_dealt_is_service) || (isset($product.id_category_default) && $product.id_category_default == 369)} dtc-dealt-service-cart-item{/if}">
           {block name='cart_detailed_product_line'}
             {* Appeler le hook displayCartProductLine *}
             {assign var="customProductLine" value={hook h='displayCartProductLine' product=$product pro=$pro urls=$urls}}
@@ -44,6 +44,7 @@
               {include file='checkout/_partials/cart-detailed-product-line.tpl' product=$product}
             {/if}
           {/block}
+          {hook h='displayAfterCartProductLine' product=$product}
         </li>
         {if is_array($product.customizations) && $product.customizations|count >1}<hr>{/if}
       {/foreach}

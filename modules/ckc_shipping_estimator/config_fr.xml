@@ -2,7 +2,7 @@
 <module>
     <name>ckc_shipping_estimator</name>
     <displayName><![CDATA[Estimation des frais de livraison]]></displayName>
-    <version><![CDATA[1.0.0]]></version>
+    <version><![CDATA[1.0.1]]></version>
     <description><![CDATA[Module pour estimer les frais de livraison]]></description>
     <author><![CDATA[CKC-Net]]></author>
     <tab><![CDATA[]]></tab>

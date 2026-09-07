@@ -2,7 +2,7 @@
 <module>
     <name>ckc_realisation</name>
     <displayName><![CDATA[CKC R&eacute;alisations]]></displayName>
-    <version><![CDATA[1.0.2]]></version>
+    <version><![CDATA[1.0.3]]></version>
     <description><![CDATA[Upload et gestion de photos de r&eacute;alisations par magasin (gestion dans la page de configuration du module).]]></description>
     <author><![CDATA[Vianney]]></author>
     <tab><![CDATA[front_office_features]]></tab>

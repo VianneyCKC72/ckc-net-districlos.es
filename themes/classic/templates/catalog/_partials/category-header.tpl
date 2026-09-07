@@ -47,7 +47,7 @@
                         {/if}
                     </div>
                     {if $category.id != 400}
-                        <button class="read-more-btn btn btn-primary" id="toggle-btn">En savoir plus</button>
+                        <button class="read-more-btn btn btn-primary" id="toggle-btn">{l s='En savoir plus' d='Shop.Theme.Customcatalog'}</button>
                     {/if}
                     {include file='catalog/_partials/link-sub-desc.tpl'}
                 </div>

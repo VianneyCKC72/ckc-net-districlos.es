@@ -43,7 +43,7 @@ class Ckcadcampaignconfigurator extends Module
     {
         $this->name = 'ckcadcampaignconfigurator';
         $this->tab = 'administration';
-        $this->version = '1.0.0';
+        $this->version = '1.0.1';
         $this->author = 'ckc-net';
         $this->need_instance = 0;
         $this->ps_version  = (bool)version_compare(_PS_VERSION_, '1.7', '>=');
@@ -2017,13 +2017,45 @@ class Ckcadcampaignconfigurator extends Module
         return $productPromos;
     }
 
+    public function applyToDynamicCalculation($idProduct, array $data, $formatHelper)
+    {
+        foreach ($this->getProductPromosForProduct(['id_product' => (int) $idProduct]) as $promo) {
+            $pct = (float) ($promo['reduction_percent'] ?? 0);
+            if ($pct <= 0) {
+                continue;
+            }
+            $ratio = 1 - ($pct / 100);
+            foreach (['unit_prices' => 'formatted_unit_prices', 'final_prices' => 'formatted_prices'] as $key => $formattedKey) {
+                if (empty($data[$key]['price_ttc_nr'])) {
+                    continue;
+                }
+                if ((float) $data[$key]['price_ttc_nr'] > (float) $data[$key]['price_ttc'] + 0.001) {
+                    continue;
+                }
+                $data[$key]['price_ttc'] = Tools::ps_round((float) $data[$key]['price_ttc_nr'] * $ratio, _PS_PRICE_COMPUTE_PRECISION_);
+                $data[$key]['price_ht'] = Tools::ps_round((float) $data[$key]['price_ht_nr'] * $ratio, _PS_PRICE_COMPUTE_PRECISION_);
+                if ($formatHelper) {
+                    $data[$formattedKey] = $formatHelper->formatPrices($data[$key]);
+                }
+            }
+            break;
+        }
+
+        return $data;
+    }
+
     public function getCampaignProductDiscountForProduct($product)
     {
         $campaignProductDiscount = [
             'active' => false,
         ];
 
-        if (!empty($product['has_discount']) || empty($product['price_amount'])) {
+        if (empty($product['price_amount'])) {
+            return $campaignProductDiscount;
+        }
+
+        if (!empty($product['has_discount'])
+            && (float) ($product['regular_price_amount'] ?? 0) > (float) $product['price_amount'] + 0.001) {
             return $campaignProductDiscount;
         }
 

@@ -20,7 +20,7 @@
                 <div class="dealt-toggle-text">
                     <div class="dealt-title-row">
                         <span class="dealt-offer-title">
-                            Besoin d'une pose ?
+                            {l s='Besoin d\'une pose ?' d='Shop.Theme.Customdealt'}
                         </span>
                         {if !empty($service.dealt_service_url)}
                             <a href="{$service.dealt_service_url|escape:'html':'UTF-8'}"
@@ -30,15 +30,15 @@
                                data-role="link-in-toggle"
                                style="display: none;"
                                onclick="event.stopPropagation();">
-                                Détails conditions du service
+                                {l s='Détails conditions du service' d='Shop.Theme.Customdealt'}
                             </a>
                         {/if}
                     </div>
                     <span class="dealt-offer-subtitle" data-role="subtitle">
-                        Economisez <strong> 10% </strong> en faisant appel à notre service !
+                        {l s='Economisez [1] 10% [/1] en faisant appel à notre service !' sprintf=['[1]' => '<strong>', '[/1]' => '</strong>'] d='Shop.Theme.Customdealt'}
                     </span>
                     <span class="dealt-offer-subtitle-expanded" data-role="subtitle-expanded" style="display: none;">
-                        Réservez un installateur et <strong>réduisez votre TVA à 10% !</strong>
+                        {l s='Réservez un installateur et [1]réduisez votre TVA à 10% ![/1]' sprintf=['[1]' => '<strong>', '[/1]' => '</strong>'] d='Shop.Theme.Customdealt'}
                     </span>
                 </div>
                 <span class="dealt-toggle-icon" aria-hidden="true">
@@ -75,7 +75,7 @@
                 <div data-dealt-zipcode-check>
                     <div data-role="check-box" class="dealt-check-box">
                         <div class="dealt-check-label">
-                            <label for="dealt-zipcode-input">Trouver un installateur</label>
+                            <label for="dealt-zipcode-input">{l s='Trouver un installateur' d='Shop.Theme.Customdealt'}</label>
                         </div>
 
                         <div class="dealt-zipcode-check">
@@ -83,16 +83,16 @@
                                 <input id="dealt-zipcode-input"
                                        name="dealt_zipcode"
                                        type="text"
-                                       placeholder="Code postal"
+                                       placeholder="{l s='Code postal' d='Shop.Theme.Customdealt'}"
                                        inputmode="numeric"
                                        pattern="^\d{5}$"
                                        maxlength="5"
-                                       aria-label="Code postal (5 chiffres)"
+                                       aria-label="{l s='Code postal (5 chiffres)' d='Shop.Theme.Customdealt'}"
                                        data-role="zipcode-input" />
                                 <button class="zipcode-search-icon" 
                                         type="button"
                                         data-role="zipcode-check-btn"
-                                        aria-label="Rechercher">
+                                        aria-label="{l s='Rechercher' d='Shop.Theme.Customdealt'}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                          viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -105,10 +105,10 @@
 
                     <div data-role="retry-block" class="dealt-retry-box" hidden>
                         <button type="button" id="dealt-add-service-only" class="btn btn-primary">
-                            Ajouter le service de montage
+                            {l s='Ajouter le service de montage' d='Shop.Theme.Customdealt'}
                         </button>
                         <div>
-                            <a href="#" id="dealt-try-again" data-role="try-again">Réessayer avec un autre code postal</a>
+                            <a href="#" id="dealt-try-again" data-role="try-again">{l s='Réessayer avec un autre code postal' d='Shop.Theme.Customdealt'}</a>
                         </div>
                     </div>
 

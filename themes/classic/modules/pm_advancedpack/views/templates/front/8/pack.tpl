@@ -39,7 +39,7 @@
                             {* {include file='catalog/_partials/product-flags.tpl'} *}
                             {hook h='displayCustomProductLabel' product=$product}
                             {block name='product_cover_thumbnails'}
-                                {include file='catalog/_partials/product-cover-thumbnails.tpl'}
+                                {include file='catalog/_partials/product-cover-thumbnails-pack.tpl'}
                             {/block}
                             {hook h='displayProductBelowGallery' product=$product}
                         {/block}
@@ -54,6 +54,19 @@
                             {/block}
                         {/block}
 
+                        {if !$pro.env}
+                        <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mb-3">
+                            <div>
+                                <p class="small mb-0 font-weight-bold mb-1">
+                                    {l s='Produit garanti moins cher du web' d='Shop.Theme.Custommodules'}
+                                </p>
+                                <p class="thin mb-0">
+                                    {l s='Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.' d='Shop.Theme.Custommodules'}
+                                </p>
+                            </div>
+                            <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
+                        </div>
+                        {/if}
                         <div class="d-flex align-items-center mb-3 gap-16 flex-wrap">
                             {if $product.quantity > 0}
                                 <div class="small text-secondary">
@@ -64,12 +77,12 @@
                                          class="lucide lucide-check mr-2">
                                         <path d="M20 6 9 17l-5-5"/>
                                     </svg>
-                                    En stock
+                                    {l s='En stock' d='Shop.Theme.Custommodules'}
                                 </div>
                             {/if}
 
                             {if $product.reference_to_display}
-                                <div class="small">REF <span
+                                <div class="small">{l s='REF' d='Shop.Theme.Custommodules'} <span
                                             class="font-weight-bold" id="product_reference">{$product.reference_to_display}</span></div>
                             {/if}
                             <a href="javascript:av_widget_click()" id="AV_button">
@@ -90,7 +103,7 @@
                                         <path d="M5 12h14"/>
                                         <path d="M12 5v14"/>
                                     </svg>
-                                    Lire davantage</a>
+                                    {l s='Lire davantage' d='Shop.Theme.Custommodules'}</a>
                             </div>
                         {/block}
 
@@ -208,10 +221,15 @@
 
                                 .ap5-dimensions-row {
                                     display: grid !important;
-                                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                                    grid-template-columns: 1fr;
                                     gap: 16px;
                                     margin-bottom: 1rem;
                                     align-items: stretch;
+                                    min-width: 0;
+                                }
+
+                                .ap5-dimensions-row:has(.ap5-ml-field--length):has(.ap5-ml-field--height) {
+                                    grid-template-columns: repeat(2, minmax(0, 1fr));
                                 }
 
                                 .ap5-dimensions-row .ap5-ml-field {
@@ -235,15 +253,8 @@
                                     align-items: flex-start;
                                 }
 
-                                .ap5-dimensions-row:has(> :only-child) {
-                                    grid-template-columns: 1fr;
-                                }
-
-                                .ap5-dimensions-row .ap5-ml-field:only-child {
-                                    grid-column: auto;
-                                }
-
-                                .ap5-dimensions-row .ap5-ml-field:only-child .group-name {
+                                .ap5-dimensions-row:not(:has(.ap5-ml-field--height)) .ap5-ml-field--length .group-name,
+                                .ap5-dimensions-row:not(:has(.ap5-ml-field--length)) .ap5-ml-field--height .group-name {
                                     min-height: 0;
                                 }
 
@@ -291,24 +302,24 @@
                             <div class="ap5-attributes ap5-ml-field ap5-ml-field--length">
                                 <div class="clearfix hiddenlabel">
                                     <p class="font-weight-bold group-name">
-                                        Choisissez la longueur en mètres linéaires
-                                        <span class="ap5-ml-help" tabindex="0" aria-label="Aide sur le calcul des mètres linéaires">
+                                        {l s='Choisissez la longueur en mètres linéaires' d='Shop.Theme.Custommodules'}
+                                        <span class="ap5-ml-help" tabindex="0" aria-label="{l s='Aide sur le calcul des mètres linéaires' d='Shop.Theme.Custommodules'}">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                                 <circle cx="12" cy="12" r="10"></circle>
                                                 <line x1="12" y1="16" x2="12" y2="12"></line>
                                                 <line x1="12" y1="8" x2="12.01" y2="8"></line>
                                             </svg>
-                                            <span class="ap5-ml-help-tooltip">Calcul mètres linéaires : addition de toutes les longueurs en mètres</span>
+                                            <span class="ap5-ml-help-tooltip">{l s='Calcul mètres linéaires : addition de toutes les longueurs en mètres' d='Shop.Theme.Custommodules'}</span>
                                         </span>
                                     </p>
                                     <div class="select_wrap">
                                         <div class="clearfix dis_flex">
                                                     <span class="input-group-btn-vertical dis_flex w-100">
-                                                        <input type="number" id="quantity_ml" value="" class="form-control" min="1" step="1" placeholder="Renseignez votre longueur" required>
+                                                        <input type="number" id="quantity_ml" value="" class="form-control" min="1" step="1" placeholder="{l s='Renseignez votre longueur' d='Shop.Theme.Custommodules'}" required>
                                                     </span>
                                         </div>
                                     </div>
-                                    <p id="quantity_ml_error" class="ap5-ml-error">Veuillez renseigner ce champ</p>
+                                    <p id="quantity_ml_error" class="ap5-ml-error">{l s='Veuillez renseigner ce champ' d='Shop.Theme.Custommodules'}</p>
                                 </div>
                             </div>
                             {/if}
@@ -330,6 +341,39 @@
                                         </div>
                                     </div>
                                     <p id="quantity_hauteur_error" class="ap5-ml-error">Veuillez sélectionner une hauteur</p>
+                                </div>
+                            </div>
+                            {/if}
+                            {if isset($packHasMlDiscountTiers) && $packHasMlDiscountTiers && isset($packMlDiscountTiers) && $packMlDiscountTiers|@count > 0}
+                            <div class="ap5-ml-degressive" role="region" aria-label="Prix dégressifs">
+                                <div class="ap5-ml-degressive__cta">
+                                    <strong><span class="ap5-ml-degressive__cta-line">Prix</span><span class="ap5-ml-degressive__cta-line">dégressifs&nbsp;!</span></strong>
+                                </div>
+                                <div class="ap5-ml-degressive__scroll">
+                                    <table class="ap5-ml-degressive__table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="row">Nombre de mL</th>
+                                                {foreach from=$packMlDiscountTiers item=tier}
+                                                    <td>
+                                                        {if $tier.to === null || $tier.to === ''}
+                                                            +{$tier.from|string_format:"%g"} mL
+                                                        {else}
+                                                            {$tier.from|string_format:"%g"} à {$tier.to|string_format:"%g"} mL
+                                                        {/if}
+                                                    </td>
+                                                {/foreach}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">% de remise</th>
+                                                {foreach from=$packMlDiscountTiers item=tier}
+                                                    <td>{$tier.percent|string_format:"%g"}%</td>
+                                                {/foreach}
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                             {/if}
@@ -467,7 +511,7 @@
                             <ul class="mobile-nav-tabs" role="tablist">
                                 <li class="mobile-nav-item">
                                     <a class="mobile-nav-link active js-product-nav-active" data-toggle="tab" href="#kit_content" role="tab" aria-controls="kit_content" aria-selected="true">
-                                        Contenu du kit
+                                        {l s='Contenu du kit' d='Shop.Theme.Custommodules'}
                                     </a>
                                 </li>
                                 {if $product.description}
@@ -509,7 +553,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link active js-product-nav-active" href="#kit_content"
                                        data-toggle="tab" role="tab" aria-controls="kit_content" aria-selected="true">
-                                        Contenu du kit
+                                        {l s='Contenu du kit' d='Shop.Theme.Custommodules'}
                                     </a>
                                 </li>
                                 {if $product.description}
@@ -582,7 +626,7 @@
                                                     {if !empty($group.attributes)}
 
                                                         {if $group.group_type == 'color'}
-                                                            <h3>Couleurs disponibles</h3>
+                                                            <h3>{l s='Couleurs disponibles' d='Shop.Theme.Custommodules'}</h3>
                                                             <div class="color-variants">
 
                                                                 {foreach from=$group.attributes key=id_attribute item=group_attribute}
