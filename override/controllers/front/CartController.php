@@ -74,9 +74,7 @@ class CartController extends CartControllerCore
 
         ) {
             if (Tools::getIsset('add') || Tools::getIsset('update')) {
-                // Blocage serveur instantané pour "victime de son succès"
-                // (évite la fenêtre de clic avant le retour AJAX du module ckc_stores_stock).
-                if ($this->shouldBlockAddToCartForVictimeSucces()) {
+                if ($this->blockVictimeSuccesCartChange()) {
                     return;
                 }
                 $this->processChangeProductInCart();
@@ -131,11 +129,16 @@ class CartController extends CartControllerCore
         }
     }
 
-    private function shouldBlockAddToCartForVictimeSucces(): bool
+    private function getStockManager(): StockManager
     {
-        // Ne bloquer que les opérations "up" (ajout/augmentation) — jamais les suppressions.
-        $op = (string) Tools::getValue('op', 'up');
-        if ($op !== 'up') {
+        require_once _PS_MODULE_DIR_ . 'ckc_stores_stock/classes/StockManager.php';
+
+        return new StockManager();
+    }
+
+    private function blockVictimeSuccesCartChange(): bool
+    {
+        if ((string) Tools::getValue('op', 'up') !== 'up') {
             return false;
         }
 
@@ -144,57 +147,65 @@ class CartController extends CartControllerCore
             return false;
         }
 
-        // Déterminer rapidement une déclinaison si nécessaire.
         $idProductAttribute = (int) $this->id_product_attribute;
-        if ($idProductAttribute === 0) {
+        if (Tools::getIsset('group')) {
+            $idProductAttribute = (int) Product::getIdProductAttributeByIdAttributes(
+                $idProduct,
+                Tools::getValue('group')
+            );
+        } elseif ($idProductAttribute === 0) {
             $idProductAttribute = (int) Tools::getValue('id_product_attribute', Tools::getValue('ipa', 0));
         }
-        if ($idProductAttribute === 0) {
-            $idProductAttribute = (int) Product::getDefaultAttribute($idProduct);
-        }
         if ($idProductAttribute <= 0) {
-            // Produit sans déclinaison ou déclinaison introuvable -> on laisse le core gérer.
             return false;
         }
 
-        // Vérifier l'état côté module (source de vérité métier pour "victime de succès").
-        $moduleFile = _PS_MODULE_DIR_ . 'ckc_stores_stock/classes/StockManager.php';
-        if (!is_file($moduleFile)) {
-            return false;
-        }
-        require_once $moduleFile;
+        $stockManager = $this->getStockManager();
+        $stockData = $stockManager->getStockData($idProduct, $idProductAttribute, null);
 
-        try {
-            $stockManager = new StockManager();
-            $stockData = $stockManager->getStockData($idProduct, $idProductAttribute, null);
-        } catch (\Throwable $e) {
-            // Ne jamais bloquer le panier sur une erreur de calcul stock.
+        if (!$stockManager->isVictimeSucces($idProduct, $idProductAttribute, $stockData)) {
             return false;
         }
 
-        $isVictimeSucces = !empty($stockData['victime_succes']);
+        $this->errors[] = $this->trans(
+            $stockManager->getVictimeSuccesErrorMessage($stockData),
+            [],
+            'Shop.Notifications.Error'
+        );
 
-        if (!$isVictimeSucces) {
-            return false;
-        }
-
-        $message = null;
-        if (!empty($stockData['i18n']['not_available'])) {
-            $message = (string) $stockData['i18n']['not_available'];
-        } elseif (!empty($stockData['i18n']['victime_succes'])) {
-            $message = (string) $stockData['i18n']['victime_succes'];
-        } else {
-            $message = 'Ce produit n\'est plus disponible';
-        }
-
-        $this->errors[] = $this->trans($message, [], 'Shop.Notifications.Error');
         return true;
     }
+
+    /**
+     * @return array{messages: array<string, string>, has_victime: bool}
+     */
+    private function getVictimeSuccesCartState(): array
+    {
+        if (!$this->context->cart || !$this->context->cart->id) {
+            return ['messages' => [], 'has_victime' => false];
+        }
+
+        $lines = $this->getStockManager()->getCartVictimeSuccesLines($this->context->cart);
+        $messages = [];
+
+        foreach ($lines as $key => $text) {
+            $messages[$key] = '<div class="alert alert-danger" role="alert">'
+                . htmlspecialchars($text, ENT_QUOTES, 'UTF-8')
+                . '</div>';
+        }
+
+        return [
+            'messages' => $messages,
+            'has_victime' => !empty($lines),
+        ];
+    }
+
     public function initContent()
     {
         if (Configuration::isCatalogMode() && Tools::getValue('action') === 'show') {
             Tools::redirect('index.php');
         }
+
         if (!Tools::getValue('ajax')) {
             $this->checkCartProductsMinimalQuantities();
         }
@@ -354,7 +365,13 @@ class CartController extends CartControllerCore
             }
         }
 
-        $this->context->smarty->assign('custom_product_message', $custom_product_message);
+        $victimeState = $this->getVictimeSuccesCartState();
+        $custom_product_message = array_merge($custom_product_message, $victimeState['messages']);
+
+        $this->context->smarty->assign([
+            'custom_product_message' => $custom_product_message,
+            'cart_has_victime_succes' => $victimeState['has_victime'],
+        ]);
 
         parent::initContent();
     }
@@ -564,6 +581,12 @@ class CartController extends CartControllerCore
         }
         ob_end_clean();
         header('Content-Type: application/json');
+
+        $victimeState = $this->getVictimeSuccesCartState();
+        $this->context->smarty->assign([
+            'custom_product_message' => $victimeState['messages'],
+            'cart_has_victime_succes' => $victimeState['has_victime'],
+        ]);
 
         Hook::exec('displayAfterCartDetailedActions', array());
 
