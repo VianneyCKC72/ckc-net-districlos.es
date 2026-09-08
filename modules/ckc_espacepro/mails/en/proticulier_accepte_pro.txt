@@ -1,0 +1,22 @@
+Hello {firstname},
+
+We are pleased to inform you that your account now has professional customer status with Districlos.
+
+This status gives you access to several benefits reserved for professionals:
+- Access to Club Pro, our automatic discount programme, with savings of up to 10% on your orders
+- Reduced delivery fees
+- Goods returns and a simplified process
+and more!
+
+How does Club Pro work?
+Your status depends on the total of your orders over the last 12 rolling months (web customers):
+-5% from €0 to €2,500 excl. VAT
+-7% from €2,500 to €5,000 excl. VAT
+-10% over €5,000 excl. VAT
+
+Track your status: {status_url}
+
+Welcome to Club Pro, and thank you for your trust!
+
+{shop_name}
+{shop_url}

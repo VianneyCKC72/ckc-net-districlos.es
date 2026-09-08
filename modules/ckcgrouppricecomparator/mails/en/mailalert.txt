@@ -1,0 +1,9 @@
+{shop_url}
+
+Hello,
+
+Warning (!): Some of your products have Pro prices higher than standard prices.
+
+Please go to your store Back Office for details.
+
+[{shop_name}]({shop_url})

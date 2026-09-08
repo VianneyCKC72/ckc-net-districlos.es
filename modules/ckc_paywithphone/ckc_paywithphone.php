@@ -48,8 +48,13 @@ class ckc_PayWithPhone extends PaymentModule
             $order_state->name = array();
 
             foreach (Language::getLanguages() as $language) {
-                if (Tools::strtolower($language['iso_code']) == 'fr') {
+                $iso = Tools::strtolower($language['iso_code']);
+                if ($iso == 'fr') {
                     $order_state->name[$language['id_lang']] = 'En attente de paiement par téléphone';
+                } elseif ($iso == 'en') {
+                    $order_state->name[$language['id_lang']] = 'Awaiting payment by phone';
+                } else {
+                    $order_state->name[$language['id_lang']] = 'Awaiting payment by phone';
                 }
             }
 
