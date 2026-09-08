@@ -71,6 +71,9 @@
       <trans-unit id="67"><source>conditions générales</source><target>terms and conditions</target></trans-unit>
       <trans-unit id="68"><source>et la</source><target>and the</target></trans-unit>
       <trans-unit id="69"><source>politique de confidentialité</source><target>privacy policy</target></trans-unit>
+      <trans-unit id="70"><source>Votre compte a bien été créé et vous êtes maintenant connecté.</source><target>Your account has been created and you are now logged in.</target></trans-unit>
+      <trans-unit id="71"><source>Nous étudions votre demande pour vous donner accès aux tarifs et avantages Professionnels, et vous tiendrons informé dès que votre compte sera validé.</source><target>We are reviewing your request for professional rates and benefits, and will notify you as soon as your account is approved.</target></trans-unit>
+      <trans-unit id="72"><source>Titre de votre adresse</source><target>Address title</target></trans-unit>
     </body>
   </file>
 </xliff>

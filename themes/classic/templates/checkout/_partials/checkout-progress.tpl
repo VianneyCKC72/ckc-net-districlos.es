@@ -14,9 +14,9 @@
         data-step="{$step.identifier|escape:'html':'UTF-8'}"
       >
         {if $step.identifier == 'checkout-personal-information-step'}
-          {assign var='progress_label' value={l s='Informations' d='Shop.Theme.Checkout'}}
+          {assign var='progress_label' value={l s='Informations' d='Shop.Theme.Customcheckout'}}
         {elseif $step.identifier == 'checkout-delivery-step'}
-          {assign var='progress_label' value={l s='Livraison' d='Shop.Theme.Checkout'}}
+          {assign var='progress_label' value={l s='Livraison' d='Shop.Theme.Customcheckout'}}
         {else}
           {assign var='progress_label' value=$step.title}
         {/if}
@@ -45,7 +45,7 @@
           </span>
 
           <span class="checkout-progress__label">
-            <span class="checkout-progress__index">étape {$index + 1}</span>
+            <span class="checkout-progress__index">{l s='étape %step%' sprintf=['%step%' => ($index + 1)] d='Shop.Theme.Customcheckout'}</span>
             <span class="checkout-progress__name">{$progress_label|escape:'html':'UTF-8'}</span>
           </span>
 

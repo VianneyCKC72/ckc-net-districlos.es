@@ -60,4 +60,33 @@
 
     </form>
   </div>
+  <script>
+    window.CKC_ADDRESS_I18N = window.CKC_ADDRESS_I18N || {
+      noResults: '{l s='Aucun résultat.' d='Shop.Theme.Customcheckout' js=1}'
+    };
+    (function () {
+      var label = (window.CKC_ADDRESS_I18N && window.CKC_ADDRESS_I18N.noResults) || 'Aucun résultat.';
+      function apply(root) {
+        (root || document).querySelectorAll('.zca-suggestions li.error, ul.suggestions-list li.error').forEach(function (el) {
+          if (/aucun r[eé]sultat\.?/i.test((el.textContent || '').trim())) {
+            el.textContent = label;
+          }
+        });
+      }
+      if (typeof MutationObserver === 'undefined') {
+        return;
+      }
+      var obs = new MutationObserver(function (mutations) {
+        mutations.forEach(function (m) {
+          if (m.addedNodes && m.addedNodes.length) {
+            apply(document);
+          }
+        });
+      });
+      document.addEventListener('DOMContentLoaded', function () {
+        apply(document);
+        obs.observe(document.body, { childList: true, subtree: true });
+      });
+    })();
+  </script>
 {/block}

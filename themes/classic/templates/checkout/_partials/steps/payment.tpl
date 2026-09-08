@@ -105,31 +105,34 @@
             {* Descriptions courtes sous le titre (PrestaShop n'a pas de champ dédié) *}
             {capture assign='payment_option_desc'}
               {if $option.module_name == 'ps_cashondelivery'}
-                {l s='Vous payez lors de la livraison de votre commande' d='Shop.Theme.Checkout'}
+                {l s='Vous payez lors de la livraison de votre commande' d='Shop.Theme.Customcheckout'}
               {elseif $option.module_name == 'ps_wirepayment'}
               {elseif $option.module_name == 'everpsadvancepayment'}
-                {l s='Vous payez un acompte, le solde sera facturé ensuite' d='Shop.Theme.Checkout'}
+                {l s='Vous payez un acompte, le solde sera facturé ensuite' d='Shop.Theme.Customcheckout'}
               {elseif $option.module_name == 'payplug'}
                 {if $option.call_to_action_text|strstr:'carte' or $option.call_to_action_text|strstr:'Carte' or $option.call_to_action_text|strstr:'card' or $option.call_to_action_text|strstr:'Card'}
-                  {l s='Carte bleue, Visa, Mastercard' d='Shop.Theme.Checkout'}
+                  {l s='Carte bleue, Visa, Mastercard' d='Shop.Theme.Customcheckout'}
                 {else}
-                  {l s='Paiement sécurisé en ligne' d='Shop.Theme.Checkout'}
+                  {l s='Paiement sécurisé en ligne' d='Shop.Theme.Customcheckout'}
                 {/if}
               {elseif $option.module_name == 'paypal' or $option.module_name == 'paypal_bnpl'}
-                {l s='Au comptant ou quatre fois sans frais' d='Shop.Theme.Checkout'}
+                {l s='Au comptant ou quatre fois sans frais' d='Shop.Theme.Customcheckout'}
               {elseif $option.module_name == 'ckc_paywithphone' or $option.call_to_action_text|strstr:'éléphone' or $option.call_to_action_text|strstr:'Phone'}
-                {l s='Veuillez nous appeler immédiatement après la confirmation de votre commande pour procéder au paiement. Vous recevrez une confirmation de commande par e-mail contenant les détails et le numéro de commande. Nous traiterons la commande immédiatement après réception du paiement.' d='Shop.Theme.Checkout'}
+                {l s='Veuillez nous appeler immédiatement après la confirmation de votre commande pour procéder au paiement. Vous recevrez une confirmation de commande par e-mail contenant les détails et le numéro de commande. Nous traiterons la commande immédiatement après réception du paiement.' d='Shop.Theme.Customcheckout'}
               {elseif $option.module_name == 'mh_oney' or $option.module_name == 'ckc_oney_simulator'}
-                {l s='Payez en plusieurs fois avec Oney' d='Shop.Theme.Checkout'}
+                {l s='Payez en plusieurs fois avec Oney' d='Shop.Theme.Customcheckout'}
               {elseif $option.module_name == 'local_payment_hipay'}
                 {if $option.call_to_action_text|strstr:'3x' or $option.call_to_action_text|strstr:'4x'}
-                  {l s='Payez en 3 ou 4 fois sans frais avec votre carte bancaire' d='Shop.Theme.Checkout'}
-                {elseif $option.call_to_action_text|strstr:'Apple' or $option.call_to_action_text|strstr:'apple'}
+                  {l s='Payez en 3 ou 4 fois sans frais avec votre carte bancaire' d='Shop.Theme.Customcheckout'}
+                {elseif $opt_title_l|strstr:'apple' or $option.call_to_action_text|strstr:'Apple' or $option.call_to_action_text|strstr:'apple'}
+                  {l s='Paiement sécurisé en ligne' d='Shop.Theme.Customcheckout'}
                 {else}
-                  {l s='Paiement sécurisé en ligne' d='Shop.Theme.Checkout'}
+                  {l s='Paiement sécurisé en ligne' d='Shop.Theme.Customcheckout'}
                 {/if}
+              {elseif $opt_title_l|strstr:'apple'}
+                {l s='Paiement sécurisé en ligne' d='Shop.Theme.Customcheckout'}
               {elseif $option.module_name == 'credit_card'}
-                {l s='Carte bleue, Visa, Mastercard' d='Shop.Theme.Checkout'}
+                {l s='Carte bleue, Visa, Mastercard' d='Shop.Theme.Customcheckout'}
               {/if}
             {/capture}
 
@@ -241,11 +244,11 @@
     <div class="ps-shown-by-js">
       <div class="payment-confirmation__actions">
         <a href="#" class="js-checkout-prev-step payment-confirmation__prev">
-          {l s='Etape précédente' d='Shop.Theme.Checkout'}
+          {l s='Étape précédente' d='Shop.Theme.Customcheckout'}
         </a>
         <button type="submit"
                 class="btn btn-primary payment-confirmation__submit{if !$effective_selected_payment_option} disabled{/if}">
-          {l s='PASSER COMMANDE' d='Shop.Theme.Checkout'}
+          {l s='Passer commande' d='Shop.Theme.Customcheckout'}
         </button>
       </div>
       {if $show_final_summary}

@@ -23,6 +23,10 @@
       <trans-unit id="19"><source>minutes</source><target>minutes</target></trans-unit>
       <trans-unit id="20"><source>secondes</source><target>seconds</target></trans-unit>
       <trans-unit id="21"><source>Étape</source><target>Step</target></trans-unit>
+      <trans-unit id="22"><source>Produits réservés :</source><target>Reserved products:</target></trans-unit>
+      <trans-unit id="23"><source>Finalisez votre commande pour garantir leur disponibilité.</source><target>Complete your order to secure availability.</target></trans-unit>
+      <trans-unit id="24"><source>min</source><target>min</target></trans-unit>
+      <trans-unit id="25"><source>sec</source><target>sec</target></trans-unit>
     </body>
   </file>
 </xliff>
