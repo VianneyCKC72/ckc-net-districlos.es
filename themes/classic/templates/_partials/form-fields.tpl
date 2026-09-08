@@ -85,11 +85,17 @@
                   <span></span>
                 </span>
                                 {if $pro.env == 1 && $label == 'Mademoiselle'}
-                                    Mlle.
+                                    {l s='Mlle.' d='Shop.Theme.Customglobal'}
                                 {elseif $pro.env == 1 && $label == 'Monsieur'}
-                                    M.
+                                    {l s='M.' d='Shop.Theme.Customglobal'}
                                 {elseif $pro.env == 1 && $label == 'Madame'}
-                                    Mme.
+                                    {l s='Mme.' d='Shop.Theme.Customglobal'}
+                                {elseif $label == 'Monsieur'}
+                                    {l s='Monsieur' d='Shop.Theme.Customglobal'}
+                                {elseif $label == 'Madame'}
+                                    {l s='Madame' d='Shop.Theme.Customglobal'}
+                                {elseif $label == 'Mademoiselle'}
+                                    {l s='Mademoiselle' d='Shop.Theme.Customglobal'}
                                 {else}
                                     {$label}
                                 {/if}
@@ -114,7 +120,11 @@
                             </svg>
                           </span>
                             <span class="checkbox-label-content">
-                          {$field.label nofilter}
+                          {if $field.name == 'psgdpr'}
+                            {l s='J\'accepte les' d='Shop.Theme.Customcustomer'}&nbsp;<a href="{$link->getCMSLink(3)|escape:'html':'UTF-8'}">{l s='conditions générales' d='Shop.Theme.Customcustomer'}</a> {l s='et la' d='Shop.Theme.Customcustomer'} <a href="{$link->getCMSLink(489)|escape:'html':'UTF-8'}">{l s='politique de confidentialité' d='Shop.Theme.Customcustomer'}</a>
+                          {else}
+                            {$field.label nofilter}
+                          {/if}
                             </span>
                         </label>
                       </span>

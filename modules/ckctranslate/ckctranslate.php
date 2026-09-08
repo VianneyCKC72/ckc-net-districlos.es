@@ -22,11 +22,6 @@ class CkcTranslate extends Module
     public const CONF_STYLE_GUIDELINES = 'CKCTRANSLATE_STYLE_GUIDELINES';
     public const CONF_RESTRICTIONS = 'CKCTRANSLATE_RESTRICTIONS';
     public const CONF_ONLY_MISSING_FIELDS = 'CKCTRANSLATE_ONLY_MISSING_FIELDS';
-    public const CONF_TRANSLATE_MODE = 'CKCTRANSLATE_TRANSLATE_MODE';
-
-    public const TRANSLATE_MODE_MISSING = 'missing';
-    public const TRANSLATE_MODE_MISSING_OR_SAME = 'missing_or_same';
-    public const TRANSLATE_MODE_FORCE = 'force';
 
     public const CONF_GLOSSARY = 'CKCTRANSLATE_GLOSSARY';
     public const CONF_SEO_META_TITLE_MAX = 'CKCTRANSLATE_SEO_META_TITLE_MAX';
@@ -40,6 +35,8 @@ class CkcTranslate extends Module
     public const CONF_PROMPT_CMS = 'CKCTRANSLATE_PROMPT_CMS';
     public const CONF_PROMPT_CE = 'CKCTRANSLATE_PROMPT_CE';
     public const CONF_PROMPT_REASSURANCE = 'CKCTRANSLATE_PROMPT_REASSURANCE';
+    public const CONF_PROMPT_BRAND_REVIEWS = 'CKCTRANSLATE_PROMPT_BRAND_REVIEWS';
+    public const CONF_PROMPT_ORDER_STATES = 'CKCTRANSLATE_PROMPT_ORDER_STATES';
 
     public const CONF_FILTER_TYPE = 'CKCTRANSLATE_FILTER_TYPE';
     public const CONF_FILTER_IDS = 'CKCTRANSLATE_FILTER_IDS';
@@ -49,7 +46,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.4.0';
+        $this->version = '2.5.0';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -131,7 +128,6 @@ class CkcTranslate extends Module
             && Configuration::updateValue(self::CONF_STYLE_GUIDELINES, 'Elegant tone, natural English, premium e-commerce vocabulary, short sentences, benefit-driven copy.')
             && Configuration::updateValue(self::CONF_RESTRICTIONS, 'Do not invent materials, do not invent certifications, do not promise delivery speed, do not exaggerate SEO keywords.')
             && Configuration::updateValue(self::CONF_ONLY_MISSING_FIELDS, 1)
-            && Configuration::updateValue(self::CONF_TRANSLATE_MODE, self::TRANSLATE_MODE_MISSING_OR_SAME)
             && Configuration::updateValue(self::CONF_GLOSSARY, "gold-plated = gold plated\n925 = sterling silver\ncollection names = keep unchanged")
             && Configuration::updateValue(self::CONF_SEO_META_TITLE_MAX, 60)
             && Configuration::updateValue(self::CONF_SEO_META_DESCRIPTION_MAX, 155)
@@ -143,6 +139,8 @@ class CkcTranslate extends Module
             && Configuration::updateValue(self::CONF_PROMPT_CMS, 'Translate CMS content with editorial quality, natural language and SEO clarity.')
             && Configuration::updateValue(self::CONF_PROMPT_CE, 'Translate page builder text content. Preserve all HTML tags and attributes exactly. Keep each translated value similar in length to the source to avoid breaking the layout.')
             && Configuration::updateValue(self::CONF_PROMPT_REASSURANCE, 'Translate reassurance block text (delivery, payment, warranty icons). Keep it short, clear and reassuring for the customer.')
+            && Configuration::updateValue(self::CONF_PROMPT_BRAND_REVIEWS, 'Translate customer review texts naturally. Keep the tone authentic and personal. Do not invent details. Preserve product/brand names.')
+            && Configuration::updateValue(self::CONF_PROMPT_ORDER_STATES, 'Translate order status names for an e-commerce storefront. Keep them short, clear and professional. Preserve any leading reference prefixes like "0 - " if present.')
             && Configuration::updateValue(self::CONF_FILTER_TYPE, 'all')
             && Configuration::updateValue(self::CONF_FILTER_IDS, '')
             && Configuration::updateValue(self::CONF_FILTER_CATEGORY_ID, 0);
@@ -164,7 +162,6 @@ class CkcTranslate extends Module
             && Configuration::deleteByName(self::CONF_STYLE_GUIDELINES)
             && Configuration::deleteByName(self::CONF_RESTRICTIONS)
             && Configuration::deleteByName(self::CONF_ONLY_MISSING_FIELDS)
-            && Configuration::deleteByName(self::CONF_TRANSLATE_MODE)
             && Configuration::deleteByName(self::CONF_GLOSSARY)
             && Configuration::deleteByName(self::CONF_SEO_META_TITLE_MAX)
             && Configuration::deleteByName(self::CONF_SEO_META_DESCRIPTION_MAX)
@@ -176,6 +173,8 @@ class CkcTranslate extends Module
             && Configuration::deleteByName(self::CONF_PROMPT_CMS)
             && Configuration::deleteByName(self::CONF_PROMPT_CE)
             && Configuration::deleteByName(self::CONF_PROMPT_REASSURANCE)
+            && Configuration::deleteByName(self::CONF_PROMPT_BRAND_REVIEWS)
+            && Configuration::deleteByName(self::CONF_PROMPT_ORDER_STATES)
             && Configuration::deleteByName(self::CONF_FILTER_TYPE)
             && Configuration::deleteByName(self::CONF_FILTER_IDS)
             && Configuration::deleteByName(self::CONF_FILTER_CATEGORY_ID);

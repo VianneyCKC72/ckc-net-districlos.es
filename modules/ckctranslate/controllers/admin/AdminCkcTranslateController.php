@@ -22,6 +22,19 @@ class AdminCkcTranslateController extends ModuleAdminController
     {
         parent::initContent();
 
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_BRAND_REVIEWS)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_BRAND_REVIEWS,
+                'Translate customer review texts naturally. Keep the tone authentic and personal. Do not invent details. Preserve product/brand names.'
+            );
+        }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_ORDER_STATES)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_ORDER_STATES,
+                'Translate order status names for an e-commerce storefront. Keep them short, clear and professional. Preserve any leading reference prefixes like "0 - " if present.'
+            );
+        }
+
         if (Tools::isSubmit('submitCkcTranslateConfig')) {
             $this->postProcessConfig();
         }
@@ -55,9 +68,6 @@ class AdminCkcTranslateController extends ModuleAdminController
             'jobs' => $this->getJobsWithCounters(),
             'current_url' => self::$currentIndex . '&token=' . $this->token,
             'history_rows' => $this->getHistoryRows(),
-            'history_job' => (string) Tools::getValue('history_job'),
-            'history_job_options' => $this->getJobs(),
-            'translate_mode' => $this->getTranslateModeValue(),
             'prompt_example' => $this->getAdvancedPromptExample(),
             'estimated_batch_cost' => $this->getEstimatedBatchCost(),
             'available_models' => $this->getAvailableModels(),
@@ -80,7 +90,7 @@ class AdminCkcTranslateController extends ModuleAdminController
         $countryKeywords = trim((string) Tools::getValue(CkcTranslate::CONF_COUNTRY_KEYWORDS));
         $styleGuidelines = trim((string) Tools::getValue(CkcTranslate::CONF_STYLE_GUIDELINES));
         $restrictions = trim((string) Tools::getValue(CkcTranslate::CONF_RESTRICTIONS));
-        $translateMode = trim((string) Tools::getValue(CkcTranslate::CONF_TRANSLATE_MODE));
+        $onlyMissingFields = (int) Tools::getValue(CkcTranslate::CONF_ONLY_MISSING_FIELDS);
 
         $glossary = trim((string) Tools::getValue(CkcTranslate::CONF_GLOSSARY));
         $seoMetaTitleMax = (int) Tools::getValue(CkcTranslate::CONF_SEO_META_TITLE_MAX);
@@ -92,7 +102,9 @@ class AdminCkcTranslateController extends ModuleAdminController
         $promptCategoryDescription = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CATEGORY_DESCRIPTION));
         $promptCms = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CMS));
         $promptCe = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CE));
-        $promptReassurance = trim((string) Tools::getValue('CKCTRANSLATE_PROMPT_REASSURANCE'));
+        $promptReassurance = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_REASSURANCE));
+        $promptBrandReviews = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_BRAND_REVIEWS));
+        $promptOrderStates = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_ORDER_STATES));
         $filterType = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_TYPE));
         $filterIds = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_IDS));
         $filterCategoryId = (int) Tools::getValue(CkcTranslate::CONF_FILTER_CATEGORY_ID);
@@ -126,16 +138,6 @@ class AdminCkcTranslateController extends ModuleAdminController
             $filterType = 'all';
         }
 
-        if (!in_array($translateMode, array(
-            CkcTranslate::TRANSLATE_MODE_MISSING,
-            CkcTranslate::TRANSLATE_MODE_MISSING_OR_SAME,
-            CkcTranslate::TRANSLATE_MODE_FORCE,
-        ), true)) {
-            $translateMode = CkcTranslate::TRANSLATE_MODE_MISSING_OR_SAME;
-        }
-
-        $previousMode = (string) Configuration::get(CkcTranslate::CONF_TRANSLATE_MODE);
-
         Configuration::updateValue(CkcTranslate::CONF_API_KEY, $apiKey);
         Configuration::updateValue(CkcTranslate::CONF_SOURCE_LANG, $sourceLang);
         Configuration::updateValue(CkcTranslate::CONF_TARGET_LANG, $targetLang);
@@ -149,8 +151,7 @@ class AdminCkcTranslateController extends ModuleAdminController
         Configuration::updateValue(CkcTranslate::CONF_COUNTRY_KEYWORDS, $countryKeywords);
         Configuration::updateValue(CkcTranslate::CONF_STYLE_GUIDELINES, $styleGuidelines);
         Configuration::updateValue(CkcTranslate::CONF_RESTRICTIONS, $restrictions);
-        Configuration::updateValue(CkcTranslate::CONF_ONLY_MISSING_FIELDS, $translateMode === CkcTranslate::TRANSLATE_MODE_FORCE ? 0 : 1);
-        Configuration::updateValue(CkcTranslate::CONF_TRANSLATE_MODE, $translateMode);
+        Configuration::updateValue(CkcTranslate::CONF_ONLY_MISSING_FIELDS, $onlyMissingFields ? 1 : 0);
 
         Configuration::updateValue(CkcTranslate::CONF_GLOSSARY, $glossary);
         Configuration::updateValue(CkcTranslate::CONF_SEO_META_TITLE_MAX, max($seoMetaTitleMax, 10));
@@ -162,15 +163,12 @@ class AdminCkcTranslateController extends ModuleAdminController
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_CATEGORY_DESCRIPTION, $promptCategoryDescription);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_CMS, $promptCms);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_CE, $promptCe);
-        Configuration::updateValue('CKCTRANSLATE_PROMPT_REASSURANCE', $promptReassurance);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_REASSURANCE, $promptReassurance);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_BRAND_REVIEWS, $promptBrandReviews);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_ORDER_STATES, $promptOrderStates);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_TYPE, $filterType);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_IDS, $filterIds);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_CATEGORY_ID, $filterCategoryId);
-
-        if ($previousMode !== $translateMode) {
-            $this->resetQueues();
-            $this->confirmations[] = $this->module->l('Translation mode changed: queues were reset so the next launch starts cleanly.');
-        }
 
         $this->confirmations[] = $this->module->l('Settings updated successfully.');
     }
@@ -250,34 +248,29 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'desc' => $this->module->l('Recommended models proposed by the module.'),
                     ),
                     array(
-                        'type' => 'select',
-                        'label' => $this->module->l('Translation mode'),
-                        'name' => CkcTranslate::CONF_TRANSLATE_MODE,
-                        'options' => array(
-                            'query' => array(
-                                array(
-                                    'id_option' => CkcTranslate::TRANSLATE_MODE_MISSING_OR_SAME,
-                                    'name' => $this->module->l('Empty fields OR French copy in target (recommended)'),
-                                ),
-                                array(
-                                    'id_option' => CkcTranslate::TRANSLATE_MODE_MISSING,
-                                    'name' => $this->module->l('Empty fields only (legacy)'),
-                                ),
-                                array(
-                                    'id_option' => CkcTranslate::TRANSLATE_MODE_FORCE,
-                                    'name' => $this->module->l('Force re-translate everything'),
-                                ),
+                        'type' => 'switch',
+                        'label' => $this->module->l('Translate only missing fields'),
+                        'name' => CkcTranslate::CONF_ONLY_MISSING_FIELDS,
+                        'is_bool' => true,
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => 1,
+                                'label' => $this->module->l('Yes'),
                             ),
-                            'id' => 'id_option',
-                            'name' => 'name',
+                            array(
+                                'id' => 'active_off',
+                                'value' => 0,
+                                'label' => $this->module->l('No'),
+                            ),
                         ),
-                        'desc' => $this->module->l('Recommended mode also retranslates target content that is still identical to French. Changing mode resets the queue.'),
+                        'desc' => $this->module->l('If enabled, the module skips entries already translated in the target language.'),
                     ),
                     array(
                         'type' => 'text',
-                        'label' => $this->module->l('AI translations per launch'),
+                        'label' => $this->module->l('Pages / items per launch'),
                         'name' => CkcTranslate::CONF_BATCH_SIZE,
-                        'desc' => $this->module->l('Number of AI translations per launch (already-done items are skipped without consuming this quota). Example: 10, 20, 50.'),
+                        'desc' => $this->module->l('Number of items translated per launch cycle. Example: 10, 20, 50.'),
                     ),
                     array(
                         'type' => 'text',
@@ -365,10 +358,26 @@ class AdminCkcTranslateController extends ModuleAdminController
                     array(
                         'type' => 'textarea',
                         'label' => $this->module->l('Prompt - Reassurance blocks'),
-                        'name' => 'CKCTRANSLATE_PROMPT_REASSURANCE',
+                        'name' => CkcTranslate::CONF_PROMPT_REASSURANCE,
                         'rows' => 4,
                         'cols' => 60,
                         'desc' => $this->module->l('For blockreassurance items (delivery, payment, warranty, etc.).'),
+                    ),
+                    array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Homepage reviews'),
+                        'name' => CkcTranslate::CONF_PROMPT_BRAND_REVIEWS,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For CKC Product Reviews carousel texts (Avis Vérifiés / Skeepers).'),
+                    ),
+                    array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Order statuses'),
+                        'name' => CkcTranslate::CONF_PROMPT_ORDER_STATES,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For order status names displayed in customer account and emails.'),
                     ),
                     array(
                         'type' => 'select',
@@ -467,7 +476,6 @@ class AdminCkcTranslateController extends ModuleAdminController
             CkcTranslate::CONF_STYLE_GUIDELINES => Configuration::get(CkcTranslate::CONF_STYLE_GUIDELINES),
             CkcTranslate::CONF_RESTRICTIONS => Configuration::get(CkcTranslate::CONF_RESTRICTIONS),
             CkcTranslate::CONF_ONLY_MISSING_FIELDS => (int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS),
-            CkcTranslate::CONF_TRANSLATE_MODE => $this->getTranslateModeValue(),
             CkcTranslate::CONF_GLOSSARY => Configuration::get(CkcTranslate::CONF_GLOSSARY),
             CkcTranslate::CONF_SEO_META_TITLE_MAX => (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX),
             CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX => (int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX),
@@ -478,7 +486,11 @@ class AdminCkcTranslateController extends ModuleAdminController
             CkcTranslate::CONF_PROMPT_CATEGORY_DESCRIPTION => Configuration::get(CkcTranslate::CONF_PROMPT_CATEGORY_DESCRIPTION),
             CkcTranslate::CONF_PROMPT_CMS => Configuration::get(CkcTranslate::CONF_PROMPT_CMS),
             CkcTranslate::CONF_PROMPT_CE => Configuration::get(CkcTranslate::CONF_PROMPT_CE),
-            'CKCTRANSLATE_PROMPT_REASSURANCE' => Configuration::get('CKCTRANSLATE_PROMPT_REASSURANCE'),
+            CkcTranslate::CONF_PROMPT_REASSURANCE => Configuration::get(CkcTranslate::CONF_PROMPT_REASSURANCE),
+            CkcTranslate::CONF_PROMPT_BRAND_REVIEWS => Configuration::get(CkcTranslate::CONF_PROMPT_BRAND_REVIEWS)
+                ?: 'Translate customer review texts naturally. Keep the tone authentic and personal. Do not invent details. Preserve product/brand names.',
+            CkcTranslate::CONF_PROMPT_ORDER_STATES => Configuration::get(CkcTranslate::CONF_PROMPT_ORDER_STATES)
+                ?: 'Translate order status names for an e-commerce storefront. Keep them short, clear and professional. Preserve any leading reference prefixes like "0 - " if present.',
             CkcTranslate::CONF_FILTER_TYPE => Configuration::get(CkcTranslate::CONF_FILTER_TYPE),
             CkcTranslate::CONF_FILTER_IDS => Configuration::get(CkcTranslate::CONF_FILTER_IDS),
             CkcTranslate::CONF_FILTER_CATEGORY_ID => (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID),
@@ -586,22 +598,26 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'label' => $this->module->l('Translate reassurance blocks (blockreassurance)'),
                 'advice' => $this->module->l('Translates title and description of reassurance items (delivery, payment, warranty, etc.).'),
             ),
+            array(
+                'code' => 'brand_reviews',
+                'label' => $this->module->l('Translate homepage reviews (CKC Product Reviews)'),
+                'advice' => $this->module->l('Translates brand/homepage carousel reviews. New reviews synced from Avis Vérifiés appear here until translated.'),
+            ),
+            array(
+                'code' => 'order_states',
+                'label' => $this->module->l('Translate order statuses'),
+                'advice' => $this->module->l('Translates order status names shown in FO account/history and used in status emails.'),
+            ),
         );
     }
 
     protected function getJobsWithCounters()
     {
         $jobs = $this->getJobs();
-        $historyStats = $this->getHistoryStatsByJob();
-        $mode = $this->getTranslateModeValue();
 
         foreach ($jobs as &$job) {
             $job['total'] = 0;
             $job['remaining'] = 0;
-            $job['done'] = 0;
-            $job['skipped'] = 0;
-            $job['errors'] = 0;
-            $job['mode'] = $mode;
 
             if (!isset($job['code'])) {
                 continue;
@@ -610,64 +626,10 @@ class AdminCkcTranslateController extends ModuleAdminController
             $counters = $this->getJobCounters($job['code']);
             $job['total'] = isset($counters['total']) ? (int) $counters['total'] : 0;
             $job['remaining'] = isset($counters['remaining']) ? (int) $counters['remaining'] : 0;
-
-            if (isset($historyStats[$job['code']])) {
-                $job['done'] = (int) $historyStats[$job['code']]['success'];
-                $job['skipped'] = (int) $historyStats[$job['code']]['skipped'];
-                $job['errors'] = (int) $historyStats[$job['code']]['error'];
-            }
         }
         unset($job);
 
         return $jobs;
-    }
-
-    protected function getTranslateModeValue()
-    {
-        $mode = (string) Configuration::get(CkcTranslate::CONF_TRANSLATE_MODE);
-        if (in_array($mode, array(
-            CkcTranslate::TRANSLATE_MODE_MISSING,
-            CkcTranslate::TRANSLATE_MODE_MISSING_OR_SAME,
-            CkcTranslate::TRANSLATE_MODE_FORCE,
-        ), true)) {
-            return $mode;
-        }
-
-        // First load after update: default to missing_or_same and persist
-        $mode = CkcTranslate::TRANSLATE_MODE_MISSING_OR_SAME;
-        Configuration::updateValue(CkcTranslate::CONF_TRANSLATE_MODE, $mode);
-
-        return $mode;
-    }
-
-    protected function getHistoryStatsByJob()
-    {
-        $sql = 'SELECT job_code, status, COUNT(*) AS nb
-                FROM `' . _DB_PREFIX_ . 'ckctranslate_history`
-                GROUP BY job_code, status';
-        $rows = Db::getInstance()->executeS($sql);
-        $stats = array();
-
-        if (!is_array($rows)) {
-            return $stats;
-        }
-
-        foreach ($rows as $row) {
-            $code = (string) $row['job_code'];
-            $status = (string) $row['status'];
-            if (!isset($stats[$code])) {
-                $stats[$code] = array(
-                    'success' => 0,
-                    'skipped' => 0,
-                    'error' => 0,
-                );
-            }
-            if (isset($stats[$code][$status])) {
-                $stats[$code][$status] = (int) $row['nb'];
-            }
-        }
-
-        return $stats;
     }
 
     protected function getJobCounters($jobCode)
@@ -761,6 +723,59 @@ class AdminCkcTranslateController extends ModuleAdminController
                 $indexKey = 'ckctranslate_reassurance_index';
                 break;
 
+            case 'brand_reviews':
+                $this->ensureBrandReviewsTables();
+                $targetLangId = (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG);
+                $total = (int) Db::getInstance()->getValue(
+                    'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'ckc_brand_review`'
+                );
+
+                if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS) && $targetLangId > 0) {
+                    $remainingFallback = (int) Db::getInstance()->getValue(
+                        'SELECT COUNT(*)
+                         FROM `' . _DB_PREFIX_ . 'ckc_brand_review` r
+                         WHERE NOT EXISTS (
+                            SELECT 1 FROM `' . _DB_PREFIX_ . 'ckc_brand_review_lang` rl
+                            WHERE rl.id_ckc_brand_review = r.id_ckc_brand_review
+                              AND rl.id_lang = ' . $targetLangId . '
+                              AND rl.review_content IS NOT NULL
+                              AND rl.review_content != \'\'
+                         )'
+                    );
+                } else {
+                    $remainingFallback = $total;
+                }
+
+                $cookieKey = 'ckctranslate_brand_reviews_ids';
+                $indexKey = 'ckctranslate_brand_reviews_index';
+                break;
+
+            case 'order_states':
+                $sourceLangId = (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
+                $targetLangId = (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG);
+                $total = (int) Db::getInstance()->getValue(
+                    'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'order_state` WHERE deleted = 0'
+                );
+
+                if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS) && $targetLangId > 0 && $sourceLangId > 0) {
+                    $remainingFallback = (int) Db::getInstance()->getValue(
+                        'SELECT COUNT(*)
+                         FROM `' . _DB_PREFIX_ . 'order_state` os
+                         INNER JOIN `' . _DB_PREFIX_ . 'order_state_lang` src
+                           ON src.id_order_state = os.id_order_state AND src.id_lang = ' . $sourceLangId . '
+                         LEFT JOIN `' . _DB_PREFIX_ . 'order_state_lang` tgt
+                           ON tgt.id_order_state = os.id_order_state AND tgt.id_lang = ' . $targetLangId . '
+                         WHERE os.deleted = 0
+                           AND (tgt.name IS NULL OR tgt.name = \'\' OR tgt.name = src.name)'
+                    );
+                } else {
+                    $remainingFallback = $total;
+                }
+
+                $cookieKey = 'ckctranslate_order_states_ids';
+                $indexKey = 'ckctranslate_order_states_index';
+                break;
+
             default:
                 return array(
                     'total' => 0,
@@ -784,8 +799,22 @@ class AdminCkcTranslateController extends ModuleAdminController
 
         return array(
             'total' => (int) $total,
-            'remaining' => (int) $total,
+            'remaining' => isset($remainingFallback) ? (int) $remainingFallback : (int) $total,
         );
+    }
+
+    protected function ensureBrandReviewsTables()
+    {
+        $module = Module::getInstanceByName('ckcproductreviews');
+        if (!$module || !Validate::isLoadedObject($module)) {
+            return;
+        }
+        if (method_exists($module, 'installSql')) {
+            $module->installSql();
+        }
+        if (method_exists($module, 'syncFromCacheFile')) {
+            $module->syncFromCacheFile();
+        }
     }
 
     protected function resetQueues()
@@ -807,6 +836,10 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_cemeta_index',
             'ckctranslate_reassurance_ids',
             'ckctranslate_reassurance_index',
+            'ckctranslate_brand_reviews_ids',
+            'ckctranslate_brand_reviews_index',
+            'ckctranslate_order_states_ids',
+            'ckctranslate_order_states_index',
         );
 
         foreach ($keys as $key) {
@@ -877,17 +910,10 @@ class AdminCkcTranslateController extends ModuleAdminController
 
     protected function getHistoryRows()
     {
-        $jobFilter = trim((string) Tools::getValue('history_job'));
-        $where = '';
-        if ($jobFilter !== '') {
-            $where = ' WHERE job_code = \'' . pSQL($jobFilter) . '\'';
-        }
-
         $sql = 'SELECT job_code, entity_type, entity_id, status, model, estimated_cost, message, date_add
-                FROM `' . _DB_PREFIX_ . 'ckctranslate_history`'
-            . $where . '
+                FROM `' . _DB_PREFIX_ . 'ckctranslate_history`
                 ORDER BY id_ckctranslate_history DESC
-                LIMIT 100';
+                LIMIT 20';
 
         $rows = Db::getInstance()->executeS($sql);
 

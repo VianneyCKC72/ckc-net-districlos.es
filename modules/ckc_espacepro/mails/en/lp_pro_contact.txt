@@ -1,0 +1,13 @@
+New PRO contact request
+=======================
+
+Last name        : {nom}
+First name       : {prenom}
+Company          : {societe}
+Type             : {type}
+Phone            : {tel}
+Email            : {email}
+Postal address   : {adresse}
+
+--
+Message sent from the LP PRO landing page – pro.cloture-discount.fr

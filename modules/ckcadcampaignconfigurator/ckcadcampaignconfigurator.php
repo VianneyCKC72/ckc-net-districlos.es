@@ -43,7 +43,7 @@ class Ckcadcampaignconfigurator extends Module
     {
         $this->name = 'ckcadcampaignconfigurator';
         $this->tab = 'administration';
-        $this->version = '1.0.1';
+        $this->version = '1.0.2';
         $this->author = 'ckc-net';
         $this->need_instance = 0;
         $this->ps_version  = (bool)version_compare(_PS_VERSION_, '1.7', '>=');
@@ -1912,6 +1912,9 @@ class Ckcadcampaignconfigurator extends Module
                         }
                     }
 
+                    if (!empty($cartPromo['textFinal'])) {
+                        $cartPromo['textFinal'] = $this->localizeCampaignHtml($cartPromo['textFinal']);
+                    }
                     $cartPromos[] = $cartPromo;
                 }
             }
@@ -2004,17 +2007,61 @@ class Ckcadcampaignconfigurator extends Module
 
         foreach ($this->getActiveProductPromos() as $productPromo) {
             if (!empty($productPromo['show_all'])) {
+                $productPromo['text'] = $this->localizeCampaignHtml($productPromo['text'] ?? '');
                 $productPromos[] = $productPromo;
                 continue;
             }
 
             $productIds = $this->getProductIdsForProductPromo($productPromo['id']);
             if (isset($productIds[$idProduct])) {
+                $productPromo['text'] = $this->localizeCampaignHtml($productPromo['text'] ?? '');
                 $productPromos[] = $productPromo;
             }
         }
 
         return $productPromos;
+    }
+
+    /**
+     * Translate known French fragments inside campaign HTML for the current FO language.
+     * Campaign texts are stored as free HTML without multilang tables.
+     */
+    protected function localizeCampaignHtml($html)
+    {
+        $html = (string) $html;
+        if ($html === '') {
+            return $html;
+        }
+
+        $idLang = (int) $this->context->language->id;
+        $idDefault = (int) Configuration::get('PS_LANG_DEFAULT');
+        if ($idLang === $idDefault) {
+            return $html;
+        }
+
+        $locale = $this->context->language->locale;
+        $translator = $this->context->getTranslator();
+        $domain = 'Shop.Theme.Custommodules';
+
+        $map = [
+            'BON PLAN' => $translator->trans('BON PLAN', [], $domain, $locale),
+            'BONS PLANS' => $translator->trans('BONS PLANS', [], 'Shop.Theme.Customglobal', $locale),
+            'Livraison offerte dès' => $translator->trans('Livraison offerte dès', [], $domain, $locale),
+            'Livraison offerte' => $translator->trans('Livraison offerte', [], 'Shop.Theme.Customcustomer', $locale),
+        ];
+
+        // Longer keys first to avoid partial double-replacements
+        uksort($map, function ($a, $b) {
+            return strlen($b) - strlen($a);
+        });
+
+        foreach ($map as $source => $target) {
+            if ($target !== '' && $target !== $source) {
+                $html = str_replace($source, $target, $html);
+            }
+        }
+
+        return $html;
     }
 
     public function applyToDynamicCalculation($idProduct, array $data, $formatHelper)
@@ -2164,6 +2211,7 @@ class Ckcadcampaignconfigurator extends Module
 
                 if($categoryPromo['categoryActive'] && in_array($customerGroupId, explode(',',$categoryPromo['id_client_group']))){
                     if($categoryPromo['categoryShowAll']){
+                        $categoryPromo['categoryText'] = $this->localizeCampaignHtml($categoryPromo['categoryText']);
                         $categoryPromos[] = $categoryPromo;
                     } else {
                         $categoryIdsSql = Db::getInstance()->executeS('SELECT GROUP_CONCAT(id_category) FROM ' . _DB_PREFIX_ . 'ckccampaign_config_category_show WHERE id_campaign = '.$categoryPromo['id']);
@@ -2171,6 +2219,7 @@ class Ckcadcampaignconfigurator extends Module
 
                         if(isset($categoryIds[0])){
                             if(in_array($categoryId, $categoryIds)){
+                                $categoryPromo['categoryText'] = $this->localizeCampaignHtml($categoryPromo['categoryText']);
                                 $categoryPromos[] = $categoryPromo;
                             }
                         }
@@ -2233,6 +2282,7 @@ class Ckcadcampaignconfigurator extends Module
         if(isset($queryDevis)){
             foreach($queryDevis as $devisPromo){
                 if(in_array($customerGroupId, explode(',',$devisPromo['id_client_group']))){
+                    $devisPromo['textDevis'] = $this->localizeCampaignHtml($devisPromo['textDevis'] ?? '');
                     $devisPromos[] = $devisPromo;
                 }
             }
@@ -2262,6 +2312,7 @@ class Ckcadcampaignconfigurator extends Module
         if(isset($queryPromoPage)){
             foreach($queryPromoPage as $promoPagePromo){
                 if(in_array($customerGroupId, explode(',',$promoPagePromo['id_client_group']))){
+                    $promoPagePromo['promoPageText'] = $this->localizeCampaignHtml($promoPagePromo['promoPageText'] ?? '');
                     $promoPagePromos[] = $promoPagePromo;
                 }
             }

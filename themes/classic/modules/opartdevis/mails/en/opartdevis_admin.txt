@@ -1,0 +1,3 @@
+{firstname} / {lastname} / {customerMail} has just submitted a quotation request. Please find the details in the attachment.
+Message:
+{customerMessage}
