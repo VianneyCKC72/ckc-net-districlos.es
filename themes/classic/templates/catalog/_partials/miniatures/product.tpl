@@ -172,7 +172,7 @@
                                             <span class="price">
                                                 {$product.specific_price_ht} € HT
                                             </span>
-                                            <small>dès {$product.from_quantity} unités*</small>
+                                            <small>dès {$product.from_quantity} {l s='unités' d='Shop.Theme.Customcatalog'}*</small>
                                             <div class="product-price-and-shipping">
                                                 <span class="regular-price">{$product.initial_price_ht} € HT </span>
                                             </div>
@@ -212,7 +212,7 @@
                         {/block}
                     </div>
                     {if $pro.env == 0 OR ($pro.env == 1 && $page.page_name == 'product') OR ($pro.env == 1 && $page.page_name == 'category')}
-                        <a href="{$product.url}" class="btn btn-primary">Voir le produit</a>
+                        <a href="{$product.url}" class="btn btn-primary">{l s='Voir le produit' d='Shop.Theme.Customcatalog'}</a>
                     {/if}
                 </div>
 

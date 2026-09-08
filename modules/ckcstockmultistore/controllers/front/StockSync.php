@@ -242,9 +242,20 @@ class CkcstockmultistoreStockSyncModuleFrontController extends ModuleFrontContro
                 WHERE p.id_product IN (
                     SELECT ap.id_pack FROM `{$database1}`.`"._DB_PREFIX_."pm_advancedpack` ap
                 )
-            ");
+            "); 
 
             $pdo->commit();
+
+            try {
+                if (Module::isEnabled('dtc_lowstockalert')) {
+                    $lowStockModule = Module::getInstanceByName('dtc_lowstockalert');
+                    if ($lowStockModule instanceof Dtc_Lowstockalert) {
+                        $lowStockModule->processLowStockAlerts();
+                    }
+                }
+            } catch (Throwable $e) {
+                // Ne pas faire échouer la sync stock si l'alerte mail plante
+            }
 
         } catch (Throwable $e) {
             if ($pdo->inTransaction()) {

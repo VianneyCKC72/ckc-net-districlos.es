@@ -27,7 +27,7 @@
 {block name='form_buttons'}
   <button class="continue btn btn-primary float-xs-right" name="continue" data-link-action="sign-in" type="submit"
     value="1">
-    Connexion
+    {l s='Connexion' d='Shop.Theme.Custommodules'}
   </button>
   <p class="txt_ou_bien text-center"><strong>Ou bien...</strong></p>
 

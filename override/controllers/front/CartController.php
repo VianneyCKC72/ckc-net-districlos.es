@@ -3,70 +3,6 @@ use PrestaShop\PrestaShop\Adapter\Presenter\Cart\CartPresenter;
 
 class CartController extends CartControllerCore
 {
-    // Constantes pour les IDs produits
-    const PRODUCT_ID_CREMALLIERE = 1130;
-    const PRODUCT_ID_MOTEUR_1305 = 1305;
-    const PRODUCT_ID_MOTEUR_1306 = 1306;
-    const PRODUCT_ID_POTEAU_1223 = 1223;
-    const PRODUCT_ID_POTEAU_1224 = 1224;
-    const PRODUCT_ID_POTEAU_1285 = 1285;
-    const PRODUCT_ID_151 = 151;
-    const PRODUCT_ID_422 = 422;
-    const PRODUCT_ID_1302 = 1302;
-    const PRODUCT_ID_1303 = 1303;
-    const PRODUCT_ID_1304 = 1304;
-    
-    // CSS pour les messages de produits manquants (inclus une seule fois)
-    private static $product_message_css_included = false;
-
-    // Retourne la version EN si la langue courante est l'anglais, sinon la version FR.
-    private function trMsg($fr, $en)
-    {
-        return ($this->context->language->iso_code === 'en') ? $en : $fr;
-    }
-
-    // Configuration des règles de produits manquants
-    private function getMissingProductRules()
-    {
-        return [
-            [
-                'trigger_products' => [self::PRODUCT_ID_MOTEUR_1305, self::PRODUCT_ID_MOTEUR_1306],
-                'missing_product' => self::PRODUCT_ID_CREMALLIERE,
-                'message' => $this->trMsg('Les crémaillères ne sont pas incluses dans ce moteur.||Portail 3m00 : 4 crémaillères - Portail 3m50 et 4m00 : 5 crémaillères', 'The racks are not included with this motor.||3m00 gate: 4 racks - 3m50 and 4m00 gate: 5 racks'),
-            ],
-            [
-                'trigger_products' => [self::PRODUCT_ID_POTEAU_1223, self::PRODUCT_ID_POTEAU_1285],
-                'missing_product' => self::PRODUCT_ID_POTEAU_1224,
-                'message' => $this->trMsg('N\'oubliez pas les bouchons compatibles avec votre poteau.', 'Don\'t forget the caps compatible with your post.'),
-            ],
-            [
-                'trigger_products' => [self::PRODUCT_ID_151],
-                'missing_product' => self::PRODUCT_ID_422,
-                'message' => $this->trMsg('Ce produit nécessite le produit complémentaire suivant.', 'This product requires the following complementary product.'),
-            ],
-        ];
-    }
-    
-    // Configuration pour produit avec multiples produits manquants
-    private function getMultipleMissingProductRules()
-    {
-        return [
-            [
-                'trigger_product' => self::PRODUCT_ID_1302,
-                'missing_products' => [
-                    [
-                        'id' => self::PRODUCT_ID_1303,
-                        'message' => $this->trMsg('N\'oubliez vos clips pour votre poteau.', 'Don\'t forget your clips for your post.'),
-                    ],
-                    [
-                        'id' => self::PRODUCT_ID_1304,
-                        'message' => $this->trMsg('N\'oubliez pas la pince à clips pour votre poteau.', 'Don\'t forget the clip pliers for your post.'),
-                    ],
-                ],
-            ],
-        ];
-    }
-    
     protected function updateCart()
     {
         if ($this->context->cookie->exists()
@@ -74,9 +10,7 @@ class CartController extends CartControllerCore
 
         ) {
             if (Tools::getIsset('add') || Tools::getIsset('update')) {
-                // Blocage serveur instantané pour "victime de son succès"
-                // (évite la fenêtre de clic avant le retour AJAX du module ckc_stores_stock).
-                if ($this->shouldBlockAddToCartForVictimeSucces()) {
+                if ($this->blockVictimeSuccesCartChange()) {
                     return;
                 }
                 $this->processChangeProductInCart();
@@ -131,11 +65,16 @@ class CartController extends CartControllerCore
         }
     }
 
-    private function shouldBlockAddToCartForVictimeSucces(): bool
+    private function getStockManager(): StockManager
     {
-        // Ne bloquer que les opérations "up" (ajout/augmentation) — jamais les suppressions.
-        $op = (string) Tools::getValue('op', 'up');
-        if ($op !== 'up') {
+        require_once _PS_MODULE_DIR_ . 'ckc_stores_stock/classes/StockManager.php';
+
+        return new StockManager();
+    }
+
+    private function blockVictimeSuccesCartChange(): bool
+    {
+        if ((string) Tools::getValue('op', 'up') !== 'up') {
             return false;
         }
 
@@ -144,57 +83,88 @@ class CartController extends CartControllerCore
             return false;
         }
 
-        // Déterminer rapidement une déclinaison si nécessaire.
         $idProductAttribute = (int) $this->id_product_attribute;
-        if ($idProductAttribute === 0) {
+        if (Tools::getIsset('group')) {
+            $idProductAttribute = (int) Product::getIdProductAttributeByIdAttributes(
+                $idProduct,
+                Tools::getValue('group')
+            );
+        } elseif ($idProductAttribute === 0) {
             $idProductAttribute = (int) Tools::getValue('id_product_attribute', Tools::getValue('ipa', 0));
         }
-        if ($idProductAttribute === 0) {
-            $idProductAttribute = (int) Product::getDefaultAttribute($idProduct);
-        }
         if ($idProductAttribute <= 0) {
-            // Produit sans déclinaison ou déclinaison introuvable -> on laisse le core gérer.
             return false;
         }
 
-        // Vérifier l'état côté module (source de vérité métier pour "victime de succès").
-        $moduleFile = _PS_MODULE_DIR_ . 'ckc_stores_stock/classes/StockManager.php';
-        if (!is_file($moduleFile)) {
-            return false;
-        }
-        require_once $moduleFile;
+        $stockManager = $this->getStockManager();
+        $stockData = $stockManager->getStockData($idProduct, $idProductAttribute, null);
 
-        try {
-            $stockManager = new StockManager();
-            $stockData = $stockManager->getStockData($idProduct, $idProductAttribute, null);
-        } catch (\Throwable $e) {
-            // Ne jamais bloquer le panier sur une erreur de calcul stock.
+        if (!$stockManager->isVictimeSucces($idProduct, $idProductAttribute, $stockData)) {
             return false;
         }
 
-        $isVictimeSucces = !empty($stockData['victime_succes']);
+        $this->errors[] = $this->trans(
+            $stockManager->getVictimeSuccesErrorMessage($stockData),
+            [],
+            'Shop.Notifications.Error'
+        );
 
-        if (!$isVictimeSucces) {
-            return false;
-        }
-
-        $message = null;
-        if (!empty($stockData['i18n']['not_available'])) {
-            $message = (string) $stockData['i18n']['not_available'];
-        } elseif (!empty($stockData['i18n']['victime_succes'])) {
-            $message = (string) $stockData['i18n']['victime_succes'];
-        } else {
-            $message = 'Ce produit n\'est plus disponible';
-        }
-
-        $this->errors[] = $this->trans($message, [], 'Shop.Notifications.Error');
         return true;
     }
+
+    /**
+     * @return array{messages: array<string, string>, has_victime: bool}
+     */
+    private function getVictimeSuccesCartState(): array
+    {
+        if (!$this->context->cart || !$this->context->cart->id) {
+            return ['messages' => [], 'has_victime' => false];
+        }
+
+        $lines = $this->getStockManager()->getCartVictimeSuccesLines($this->context->cart);
+        $messages = [];
+
+        foreach ($lines as $key => $text) {
+            $messages[$key] = '<div class="alert alert-warning" role="alert">'
+                . htmlspecialchars($text, ENT_QUOTES, 'UTF-8')
+                . '</div>';
+        }
+
+        return [
+            'messages' => $messages,
+            'has_victime' => !empty($lines),
+        ];
+    }
+
+    /**
+     * Fusionne les messages victime avec ceux de dtc_cartwarnings (déjà assignés à Smarty).
+     * Important : ne pas utiliser array_merge() — il réindexe les clés numériques (id_product)
+     * et casse l'affichage des warnings dtc_cartwarnings.
+     */
+    private function assignVictimeSuccesCartState(): void
+    {
+        $victimeState = $this->getVictimeSuccesCartState();
+        $custom_product_message = $this->context->smarty->getTemplateVars('custom_product_message');
+        if (!is_array($custom_product_message)) {
+            $custom_product_message = [];
+        }
+
+        foreach ($victimeState['messages'] as $key => $message) {
+            $custom_product_message[$key] = $message;
+        }
+
+        $this->context->smarty->assign([
+            'custom_product_message' => $custom_product_message,
+            'cart_has_victime_succes' => $victimeState['has_victime'],
+        ]);
+    }
+
     public function initContent()
     {
         if (Configuration::isCatalogMode() && Tools::getValue('action') === 'show') {
             Tools::redirect('index.php');
         }
+
         if (!Tools::getValue('ajax')) {
             $this->checkCartProductsMinimalQuantities();
         }
@@ -266,98 +236,28 @@ class CartController extends CartControllerCore
             $this->setTemplate('checkout/cart-empty');
         }
 
-        $products = $this->context->cart->getProducts();
-        $custom_product_message = [];
-        $product_ids = array_column($products, 'id_product');
-        $product_ids_flipped = array_flip($product_ids);
-
-        // Vérifications d'incompatibilités
-        $has_1215 = isset($product_ids_flipped[1215]);
-        $has_1214 = isset($product_ids_flipped[1214]);
-        $has_1213 = isset($product_ids_flipped[1213]);
-        $has_332 = isset($product_ids_flipped[332]);
-        $has_1302 = isset($product_ids_flipped[1302]);
-        $has_416 = isset($product_ids_flipped[416]);
-        $has_1223 = isset($product_ids_flipped[1223]);
-        $has_1285 = isset($product_ids_flipped[1285]);
-        
-        if ($has_1215 && $has_1214) {
-            $custom_product_message['1215'] = $this->wrapMessageInBlock($this->trMsg('<span class="text-red">Attention : Les platines choisies ne sont pas compatibles avec le portillon Jardi.</span>', '<span class="text-red">Warning: The selected base plates are not compatible with the Jardi pedestrian gate.</span>'));
-        } elseif ($has_1213 && $has_332) {
-            $custom_product_message['1213'] = $this->wrapMessageInBlock($this->trMsg('<span class="text-red">Attention : Les platines choisies ne sont pas compatibles avec le portillon Garden.</span>', '<span class="text-red">Warning: The selected base plates are not compatible with the Garden pedestrian gate.</span>'));
-        } elseif ($has_1302 && $has_416) {
-            foreach ($products as $product) {
-                if ($product['id_product'] == 416 && strpos($product['attributes'], 'encoches') !== false) {
-                    $custom_product_message['1302'] = $this->wrapMessageInBlock($this->trMsg('<span class="text-red">Attention : Les poteaux à clip ne sont pas compatibles avec les soubassements à encoche</span>', '<span class="text-red">Warning: Clip posts are not compatible with slotted base panels</span>'));
-                    break;
-                }
-            }
-        } elseif (($has_1223 || $has_1285) && $has_416) {
-            foreach ($products as $product) {
-                if ($product['id_product'] == 416 && strpos($product['attributes'], 'clips') !== false) {
-                    $message = $this->wrapMessageInBlock($this->trMsg('<span class="text-red">Attention : Les poteaux à encoche ne sont pas compatibles avec le soubassements à clips</span>', '<span class="text-red">Warning: Slotted posts are not compatible with clip base panels</span>'));
-                    if ($has_1223) {
-                        $custom_product_message['1223'] = $message;
-                    }
-                    if ($has_1285) {
-                        $custom_product_message['1285'] = $message;
-                    }
-                    break;
-                }
-            }
-        }
-
-        // Traitement des règles de produits manquants simples
-        foreach ($this->getMissingProductRules() as $rule) {
-            $has_trigger = false;
-            $trigger_ids_found = [];
-            foreach ($rule['trigger_products'] as $trigger_id) {
-                if (isset($product_ids_flipped[$trigger_id])) {
-                    $has_trigger = true;
-                    $trigger_ids_found[] = $trigger_id;
-                }
-            }
-            
-            if ($has_trigger && !isset($product_ids_flipped[$rule['missing_product']])) {
-                $message_html = $this->buildMissingProductMessage(
-                    $rule['missing_product'],
-                    $rule['message']
-                );
-                $message_html = $this->wrapMessageInBlock($message_html);
-                
-                foreach ($trigger_ids_found as $trigger_id) {
-                    $custom_product_message[$trigger_id] = $message_html;
-                }
-            }
-        }
-        
-        // Traitement des règles avec multiples produits manquants
-        foreach ($this->getMultipleMissingProductRules() as $rule) {
-            $trigger_id = $rule['trigger_product'];
-            if (!isset($product_ids_flipped[$trigger_id]) || isset($custom_product_message[$trigger_id])) {
-                continue;
-            }
-            
-            $messages_html = [];
-            foreach ($rule['missing_products'] as $missing_product) {
-                if (!isset($product_ids_flipped[$missing_product['id']])) {
-                    $messages_html[] = $this->buildMissingProductMessage(
-                        $missing_product['id'],
-                        $missing_product['message']
-                    );
-                }
-            }
-            
-            if (!empty($messages_html)) {
-                $wrapped_messages = array_map([$this, 'wrapMessageInBlock'], $messages_html);
-                $custom_product_message[$trigger_id] = implode('', $wrapped_messages);
-            }
-        }
-
-        $this->context->smarty->assign('custom_product_message', $custom_product_message);
+        $this->assignDtcCartWarnings();
+        $this->assignVictimeSuccesCartState();
 
         parent::initContent();
     }
+
+    private function assignDtcCartWarnings()
+    {
+        if (!Module::isEnabled('dtc_cartwarnings')) {
+            return;
+        }
+
+        try {
+            $warningsModule = Module::getInstanceByName('dtc_cartwarnings');
+            if ($warningsModule instanceof dtc_cartwarnings) {
+                $warningsModule->assignCartWarningsToSmarty();
+            }
+        } catch (Exception $e) {
+            // Ne pas casser le panier si le module warnings échoue.
+        }
+    }
+
     public function getDeliveryOptionsByPostalCode($postalCode)
     {
         $originalAddressId = $this->context->cart->id_address_delivery;
@@ -567,6 +467,9 @@ class CartController extends CartControllerCore
 
         Hook::exec('displayAfterCartDetailedActions', array());
 
+        $this->assignDtcCartWarnings();
+        $this->assignVictimeSuccesCartState();
+
         $this->ajaxRender(json_encode([
             'cart_detailed' => Module::isEnabled('ets_extraoptions') ? $this->context->smarty->fetch(_PS_MODULE_DIR_.'ets_extraoptions/views/templates/hook/checkout/cart-detailed.tpl'): $this->render('checkout/_partials/cart-detailed'),
             'cart_detailed_totals' => $this->render('checkout/_partials/cart-detailed-totals'),
@@ -581,294 +484,5 @@ class CartController extends CartControllerCore
             'cart_promos' => $this->context->smarty->fetch(_PS_MODULE_DIR_.'ckcadcampaignconfigurator/views/templates/front/hook/promo_content_cart.tpl'),
             'cart_footer_dealt' => Hook::exec('displayShoppingCartFooter', [], Module::getModuleIdByName('dealt')),
         ]));
-    }
-
-    /**
-     * Enveloppe un message dans un bloc comme dans le template
-     * 
-     * @param string $message Message HTML à envelopper
-     * @return string Message enveloppé dans un bloc
-     */
-    private function wrapMessageInBlock($message)
-    {
-        return '<div class="d-flex" style="justify-content: space-between;align-items: center;padding: 10px;background-color: #f6f2eb;">' 
-            . $message 
-            . '</div>';
-    }
-
-    /**
-     * Construit un message HTML enrichi pour informer qu'un produit manquant est requis
-     * 
-     * @param int $id_product_missing ID du produit manquant à afficher
-     * @param string $alert_message Message d'alerte personnalisé
-     * @return string Message HTML structuré avec image, texte, déclinaisons, prix et bouton
-     */
-    private function buildMissingProductMessage($id_product_missing, $alert_message)
-    {
-        $product_data = $this->getProductData($id_product_missing);
-        
-        if (empty($product_data)) {
-            return '';
-        }
-
-        $product_url = $this->context->link->getProductLink(
-            $id_product_missing,
-            $product_data['link_rewrite']
-        );
-        
-        $id_product_attribute = Product::getDefaultAttribute($id_product_missing);
-        if (!$id_product_attribute) {
-            $id_product_attribute = 0;
-        }
-        
-        $params = [
-            'add' => 1,
-            'id_product' => $id_product_missing,
-            'id_product_attribute' => $id_product_attribute,
-            'qty' => 1,
-        ];
-        
-        if (Configuration::get('PS_TOKEN_ENABLE')) {
-            $params['token'] = Tools::getToken(false);
-        }
-        
-        $add_to_cart_url = $this->context->link->getPageLink('cart', true, null, $params, false);
-        
-        $image_with_link = $product_data['image_html'] 
-            ? '<a href="' . htmlspecialchars($product_url, ENT_QUOTES, 'UTF-8') . '" class="product-image media-middle" title="' . strip_tags($product_data['name_html']) . '" style="display: block; cursor: pointer;">' . $product_data['image_html'] . '</a>'
-            : '';
-        
-        $name_with_link = $product_data['name_html'] 
-            ? '<a href="' . htmlspecialchars($product_url, ENT_QUOTES, 'UTF-8') . '" class="h4 text-black mb-2 d-block" style="text-decoration: none; cursor: pointer;">' . $product_data['name_html'] . '</a>'
-            : '';
-        
-        $div_image = '<div class="product-message-img" style="border: 2px solid #dbe6e8;">' . $image_with_link . '</div>';
-        
-        $alert_parts = explode('||', $alert_message, 2);
-        $alert_html = htmlspecialchars($alert_parts[0], ENT_QUOTES, 'UTF-8');
-        if (isset($alert_parts[1]) && $alert_parts[1] !== '') {
-            $alert_html .= '<br/><em>' . htmlspecialchars($alert_parts[1], ENT_QUOTES, 'UTF-8') . '</em>';
-        }
-
-        $div_text = '<div class="product-message-txt" style="width: 60%;">
-            <span class="text-red" style="font-size: 14px;">Attention : ' . $alert_html . '</span><br/>
-            ' . $name_with_link . '
-            ' . $product_data['combination_html'] . '
-        </div>';
-        
-        $div_price_button = '<div class="product-message-price text-xs-right d-flex flex_cln" style="gap: 5px;">
-            ' . ($product_data['price_html'] ? 'Prix unitaire : ' . $product_data['price_html'] . ' ' : '')
-            . '<a href="' . htmlspecialchars($add_to_cart_url, ENT_QUOTES, 'UTF-8') . '" class="btn btn-secondary" style="padding: 10px 20px;">Ajouter au panier</a>
-        </div>';
-
-        // Inclure le CSS une seule fois
-        $css = '';
-        if (!self::$product_message_css_included) {
-            $css = '<style>
-                .product-message-container {
-                    display: contents;
-                }
-                .product-message-row {
-                    display: contents;
-                }
-                @media (max-width: 767px) {
-                    .product-message-container {
-                        display: flex;
-                        flex-direction: column;
-                        gap: 10px;
-                    }
-                    .product-message-row {
-                        display: flex;
-                        flex-direction: row;
-                        gap: 10px;
-                        align-items: flex-start;
-                    }
-                    .product-message-txt {
-                        width: auto !important;
-                        flex: 1;
-                        min-width: 0;
-                    }
-                    .product-message-price {
-                        display: flex !important;
-                        justify-content: space-between !important;
-                        flex-direction: row;
-                        align-items: center;
-                        gap: 5px;
-                        width: 100%;
-                        flex-wrap: wrap;
-                        margin-top: 10px;
-                    }
-                }
-            </style>';
-            self::$product_message_css_included = true;
-        }
-        
-        $html = $css . '<div class="product-message-container">
-            <div class="product-message-row">
-                ' . $div_image . '
-                ' . $div_text . '
-            </div>
-            ' . $div_price_button . '
-        </div>';
-
-        return $html;
-    }
-
-
-    /**
-     * Récupère toutes les données d'un produit nécessaires pour l'affichage
-     * 
-     * @param int $id_product ID du produit
-     * @return array Tableau contenant : name_html, image_html, price_html, combination_html, link_rewrite
-     */
-    private function getProductData($id_product)
-    {
-        $product = new Product($id_product, true, $this->context->language->id, $this->context->shop->id);
-        
-        if (!Validate::isLoadedObject($product)) {
-            return [];
-        }
-
-        $data = [
-            'name_html' => '',
-            'image_html' => '',
-            'price_html' => '',
-            'combination_html' => '',
-            'link_rewrite' => '',
-        ];
-
-        // Récupération du nom du produit
-        $product_name = is_array($product->name) 
-            ? $product->name[$this->context->language->id] 
-            : $product->name;
-        $data['name_html'] = '<strong>' . htmlspecialchars($product_name, ENT_QUOTES, 'UTF-8') . '</strong>';
-
-        // Récupération du link_rewrite pour générer l'URL
-        $data['link_rewrite'] = is_array($product->link_rewrite) 
-            ? $product->link_rewrite[$this->context->language->id] 
-            : $product->link_rewrite;
-
-        // Récupération des déclinaisons
-        $data['combination_html'] = $this->getProductCombinationsHtml($id_product);
-
-        // Récupération du prix
-        $data['price_html'] = $this->getProductPriceHtml($id_product);
-
-        // Récupération de l'image
-        $data['image_html'] = $this->getProductImageHtml($id_product, $data['link_rewrite'], $product_name);
-
-        return $data;
-    }
-
-    /**
-     * Récupère le HTML des déclinaisons d'un produit
-     * 
-     * @param int $id_product ID du produit
-     * @return string HTML des déclinaisons ou chaîne vide
-     */
-    private function getProductCombinationsHtml($id_product)
-    {
-        if (!Combination::isFeatureActive()) {
-            return '';
-        }
-
-        $attributes_info = Product::getAttributesInformationsByProduct($id_product);
-        
-        if (empty($attributes_info)) {
-            return '';
-        }
-
-        // Regrouper les attributs par groupe
-        $attributes_by_group = [];
-        foreach ($attributes_info as $attr) {
-            if (!empty($attr['group']) && !empty($attr['attribute'])) {
-                $group_name = $attr['group'];
-                if (!isset($attributes_by_group[$group_name])) {
-                    $attributes_by_group[$group_name] = [];
-                }
-                if (!in_array($attr['attribute'], $attributes_by_group[$group_name])) {
-                    $attributes_by_group[$group_name][] = $attr['attribute'];
-                }
-            }
-        }
-
-        if (empty($attributes_by_group)) {
-            return '';
-        }
-
-        // Construire le HTML des déclinaisons
-        $combination_text = [];
-        foreach ($attributes_by_group as $group => $attributes) {
-            $combination_text[] = htmlspecialchars($group, ENT_QUOTES, 'UTF-8') 
-                . ' : ' 
-                . htmlspecialchars(implode(', ', $attributes), ENT_QUOTES, 'UTF-8');
-        }
-
-        return '<div>' . implode(' | ', $combination_text) . '</div>';
-    }
-
-    /**
-     * Récupère le HTML du prix d'un produit
-     * 
-     * @param int $id_product ID du produit
-     * @return string Prix formaté ou chaîne vide en cas d'erreur
-     */
-    private function getProductPriceHtml($id_product)
-    {
-        try {
-            $id_customer = ($this->context->cart->id_customer && $this->context->cart->id_customer > 0) 
-                ? (int) $this->context->cart->id_customer 
-                : null;
-
-            $price_with_tax = Product::getPriceStatic(
-                $id_product,
-                true,  // avec taxes
-                null,  // pas d'attribut spécifique
-                6,     // décimales
-                null,  // pas de diviseur
-                false, // pas seulement la réduction
-                true,  // avec réduction
-                1,     // quantité 1
-                false, // pas de taxe associée forcée
-                $id_customer,
-                null,  // pas d'id_cart pour éviter les problèmes d'adresse
-                null   // pas d'id_address spécifique
-            );
-
-            if ($price_with_tax && $price_with_tax > 0) {
-                return Tools::displayPrice($price_with_tax, $this->context->currency);
-            }
-        } catch (Exception $e) {
-            // En cas d'erreur, on n'affiche pas le prix
-        }
-
-        return '';
-    }
-
-    /**
-     * Récupère le HTML de l'image d'un produit
-     * 
-     * @param int $id_product ID du produit
-     * @param string $link_rewrite Link rewrite du produit
-     * @param string $product_name Nom du produit pour l'attribut alt
-     * @return string Balise img HTML ou chaîne vide
-     */
-    private function getProductImageHtml($id_product, $link_rewrite, $product_name)
-    {
-        $cover = Product::getCover($id_product);
-        
-        if (!$cover || !isset($cover['id_image'])) {
-            return '';
-        }
-
-        $image_url = $this->context->link->getImageLink($link_rewrite, $cover['id_image'], 'home_default');
-        
-        if (!$image_url) {
-            return '';
-        }
-
-        return '<img src="' . htmlspecialchars($image_url, ENT_QUOTES, 'UTF-8') 
-            . '" alt="' . htmlspecialchars($product_name, ENT_QUOTES, 'UTF-8') 
-            . '" style="max-width: 100px;" />';
     }
 }

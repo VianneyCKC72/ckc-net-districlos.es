@@ -133,7 +133,7 @@
                                 {*                                    Lire davantage</a>*}
                                 {if $pro.env}
                                     <div class="text-left">
-                                        <a href="#block-description-long" class="text-bold product-description-read-more-link">+ Lire davantage</a>
+                                        <a href="#block-description-long" class="text-bold product-description-read-more-link">+ {l s='Lire davantage' d='Shop.Theme.Custommodules'}</a>
                                     </div>
                                 {/if}
                             </div>
@@ -229,10 +229,10 @@
                             <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mt-3 mb-3">
                                 <div>
                                     <p class="small mb-0 font-weight-bold mb-1">
-                                        Produit garanti moins cher du web
+                                        {l s='Produit garanti moins cher du web' d='Shop.Theme.Customcatalog'}
                                     </p>
                                     <p class="thin mb-0">
-                                        Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.
+                                        {l s='Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.' d='Shop.Theme.Customcatalog'}
                                     </p>
                                 </div>
                                 <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">

@@ -55,16 +55,16 @@
           {if isset($pro.env) && $pro.env == 1}
             <div class="already-account-banner-center">
               <div class="already-account-banner-left">
-                <span class="already-account-banner-title">Formulaire d'inscription</span>
+                <span class="already-account-banner-title">{l s='Formulaire d\'inscription' d='Shop.Theme.Customcustomer'}</span>
               </div>
               <div class="already-account-banner-right">
-                <span class="already-account-banner-question">Vous avez déjà un compte ?</span>
+                <span class="already-account-banner-question">{l s='Vous avez déjà un compte ?' d='Shop.Theme.Customcustomer'}</span>
                 {if Tools::getValue("ep") == 1}
                   {assign var="auth_url" value=$urls.pages.authentication|cat:'?back=my-account&ep=1'}
                 {else}
                   {assign var="auth_url" value=$urls.pages.authentication}
                 {/if}
-                <a href="{$auth_url}" class="btn btn-secondary btn-banner-connect" id="inscription">Je me connecte</a>
+                <a href="{$auth_url}" class="btn btn-secondary btn-banner-connect" id="inscription">{l s='Je me connecte' d='Shop.Theme.Customcustomer'}</a>
               </div>
             </div>
           {else}

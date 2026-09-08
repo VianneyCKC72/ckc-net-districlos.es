@@ -76,6 +76,6 @@
     <p class="product-unit-price sub">
         {$product.unit_price_full}
         {if $env_pro}
-            HT
-        {/if} à l'unité</p>
+            {l s='HT' d='Shop.Theme.Customcustomer'}
+        {/if} {l s='à l\'unité' d='Shop.Theme.Customcatalog'}</p>
 {/if}

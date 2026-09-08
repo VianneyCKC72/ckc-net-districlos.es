@@ -5,13 +5,13 @@
             {if $pro.env == 1}<div class="cont-all-btn-login">{/if}
             <button id="submit-login" class="btn btn-primary btn-primary-pro" data-link-action="sign-in" type="submit"
                     class="form-control-submit">
-                Se connecter
+                {l s='Se connecter' d='Shop.Theme.Customcustomer'}
             </button>
 
             <div class="cont-btn-submit">
-                <span class="green"><strong>100€ offert !</strong></span>
-                <a href="/inscription?create_account=1&ep=1" class="btn btn-secondary"
-                   id="inscription">Créer un compte</a>
+                <span class="green"><strong>{l s='100€ offert !' d='Shop.Theme.Customcustomer'}</strong></span>
+                <a href="{$urls.pages.registration}?create_account=1&ep=1" class="btn btn-secondary"
+                   id="inscription">{l s='Créer un compte' d='Shop.Theme.Customcustomer'}</a>
             </div>
             </div>
 

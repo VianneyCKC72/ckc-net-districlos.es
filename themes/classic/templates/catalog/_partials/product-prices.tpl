@@ -44,7 +44,7 @@
       {* Paiement en plusieurs fois *}
       {if ($product.price_amount * $product.quantity_wanted > 300)}
         <div style="margin-top: 15px;">
-          <p class="mb-0">Payez en plusieurs fois
+          <p class="mb-0">{l s='Payez en plusieurs fois' d='Shop.Theme.Customcatalog'}
             {if $product.price_amount * $product.quantity_wanted >= 2000}
               <span style="margin-inline: 10px">
                 <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
@@ -58,12 +58,11 @@
                 <img src="/themes/classic/assets/img/services/multiple-paiement.svg" loading="lazy" alt="">
               </span>
             {/if}
-            en carte bancaire sans frais <a href="#" id="oneySimulation" style="color: black;">
-              <strong>Simuler</strong>
+            {l s='en carte bancaire sans frais' d='Shop.Theme.Customcatalog'} <a href="#" id="oneySimulation" style="color: black;">
+              <strong>{l s='Simuler' d='Shop.Theme.Customcatalog'}</strong>
             </a>.
           </p>
-          <p class="mb-0 thin">Un crédit vous engage et doit être remboursé. vérifiez vos capacités de remboursement avant
-            de vous engager.</p>
+          <p class="mb-0 thin">{l s='Un crédit vous engage et doit être remboursé. vérifiez vos capacités de remboursement avant de vous engager.' d='Shop.Theme.Customcatalog'}</p>
         </div>
       {/if}
 
