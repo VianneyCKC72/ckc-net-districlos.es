@@ -25,7 +25,7 @@
 
 <section class="featured-products my-section">
   <h2 class="h2">
-    Nos clients ont également acheté
+    {l s='Nos clients ont également acheté' d='Shop.Theme.Custommodules'}
   </h2>
   {include file="catalog/_partials/productlist-slider.tpl" products=$products}
 </section>

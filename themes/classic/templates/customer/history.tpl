@@ -108,12 +108,12 @@
                     <div class="col-xs-2 text-xs-right">
                       <div>
                         <a href="{$order.details.details_url}" data-link-action="view-order-details" title="{l s='Details' d='Shop.Theme.Customeraccount'}">
-                          <i class="material-icons">Détails</i>
+                          <i class="material-icons">{l s='Détails' d='Shop.Theme.Customcustomer'}</i>
                         </a>
                       </div>
                       <div>
                         <a href="{$link->getModuleLink('dtc_ordertracking','track',['ref'=>$order.details.reference], true)|escape:'htmlall':'UTF-8'}" title="{l s='Suivre' mod='dtc_ordertracking'}">
-                          <i class="material-icons">Suivre</i>
+                          <i class="material-icons">{l s='Suivre' d='Shop.Theme.Customcustomer'}</i>
                         </a>
                       </div>
                       {if $order.details.reorder_url}

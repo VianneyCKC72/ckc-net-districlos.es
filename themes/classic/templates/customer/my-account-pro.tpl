@@ -6,7 +6,7 @@
             {/block}
 
             <h2 class="h2 mb-36">
-                Mes autres options
+                {l s='Mes autres options' d='Shop.Theme.Customcustomer'}
             </h2>
         </div>
         <div class="col-12">

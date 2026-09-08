@@ -31,10 +31,10 @@
   <h1>404</h1>
 
   <div class="content__404">
-    <p><strong>Oups !</strong></p>
-    <p>La page que vous cherchez n'a pas été trouvée.</p>
+    <p><strong>{l s='Oups !' d='Shop.Theme.Customerrors'}</strong></p>
+    <p>{l s='La page que vous cherchez n\'a pas été trouvée.' d='Shop.Theme.Customerrors'}</p>
 
-    <a href="/" class="btn btn-primary">Retour à l'accueil</a>
+    <a href="{$urls.pages.index}" class="btn btn-primary">{l s='Retour à l\'accueil' d='Shop.Theme.Customerrors'}</a>
 
   </div>
 

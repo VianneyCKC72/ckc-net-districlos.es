@@ -21,7 +21,7 @@
             {/if}
             <div class="product-description">{$productPack.presentation.description_short nofilter}</div>
             <div class="mt-10">
-                <a class="btn btn-primary add_to_cart" href="{$productPack.presentation.link}">Voir le produit</a>
+                <a class="btn btn-primary add_to_cart" href="{$productPack.presentation.link}">{l s='Voir le produit' d='Shop.Theme.Custommodules'}</a>
             </div>
             {block name='product_reviews'}
                 {hook h='displayProductListReviews' product=$productPack.presentation}

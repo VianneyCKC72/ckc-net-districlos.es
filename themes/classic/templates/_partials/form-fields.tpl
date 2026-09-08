@@ -34,7 +34,7 @@
         {if $field.type !== 'checkbox'}
             {if $field.label == "Alias" && $field.name == "alias"}
                 <label class="form-control-label{if $field.required} required{/if}" for="field-{$field.name}">
-                    Titre de votre adresse
+                    {l s='Titre de votre adresse' d='Shop.Theme.Customcustomer'}
                 </label>
             {else}
                 <label class="form-control-label{if $field.required} required{/if}" for="field-{$field.name}">

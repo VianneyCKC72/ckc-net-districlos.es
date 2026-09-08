@@ -64,11 +64,11 @@
         {if isset($show_final_price) && $show_final_price}
             <div class="product-discount" style="margin-left: 15px;">
                 {if isset($dynamic_discount_percent) && $dynamic_discount_percent > 0}
-                    <div class="price-remise-label">Prix remisé : <span class="regular-price">{$product.regular_price}</span>
+                    <div class="price-remise-label">{l s='Prix remisé' d='Shop.Theme.Customcatalog'} : <span class="regular-price">{$product.regular_price}</span>
                         <span style="color: #ff144e; font-weight: bold;">-{$dynamic_discount_percent}</span>
                     </div>
                 {/if}
-                <div class="price-remise-label">PROMOS : <span class="regular-price">{$product.price}</span>
+                <div class="price-remise-label">{l s='PROMOS' d='Shop.Theme.Customcatalog'} : <span class="regular-price">{$product.price}</span>
                     {if isset($hard_discount_percent)}
                         <span style="color: #ff144e; font-weight: bold;">-{$hard_discount_percent}%</span>
                     {/if}
@@ -76,7 +76,7 @@
             </div>
         {elseif $product.has_discount}
             <div class="product-discount" style="margin-left: 15px;">
-                <div class="price-remise-label">Prix remisé : <span class="regular-price">{$product.regular_price|replace:' €':''}</span>
+                <div class="price-remise-label">{l s='Prix remisé' d='Shop.Theme.Customcatalog'} : <span class="regular-price">{$product.regular_price|replace:' €':''}</span>
                     {if isset($dynamic_discount_percent) && $dynamic_discount_percent > 0}
                         <span style="color: #ff144e; font-weight: bold;">-{$dynamic_discount_percent}</span>
                     {/if}
@@ -90,8 +90,8 @@
     <p class="product-unit-price sub">
         {$product.unit_price_full}
         {if $env_pro}
-            HT
-        {/if} à l'unité</p>
+            {l s='HT' d='Shop.Theme.Customcustomer'}
+        {/if} {l s='à l\'unité' d='Shop.Theme.Customcatalog'}</p>
 {/if}
 
 {* Style pour mobile - Prix remisé en 11px *}
