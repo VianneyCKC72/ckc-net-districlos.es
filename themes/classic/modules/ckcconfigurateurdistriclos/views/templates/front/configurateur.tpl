@@ -1979,7 +1979,7 @@ window.CKC_CFG_I18N = {
           </template>
           <div>
             <span class="ckc-footer__etape"
-                  x-text="'Étape '+ $store.configurator.currentStep"></span>
+                  x-text="((window.CKC_CFG_I18N&&window.CKC_CFG_I18N.stepPrefix)||'Étape') + ' ' + $store.configurator.currentStep"></span>
           </div>
           {* ---- Barre de progression ---- *}
           <div class="ckc-progress" role="progressbar"
