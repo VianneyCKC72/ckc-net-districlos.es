@@ -136,6 +136,18 @@
       <trans-unit id="132"><source>Sous 3 à 4 semaines.</source><target>Within 3 to 4 weeks.</target></trans-unit>
       <trans-unit id="133"><source>Sous 10 jours.</source><target>Within 10 days.</target></trans-unit>
       <trans-unit id="134"><source>Nos clients ont également acheté</source><target>Our customers also bought</target></trans-unit>
+      <trans-unit id="135"><source>RGPD - Données personnelles</source><target>GDPR - Personal data</target></trans-unit>
+      <trans-unit id="136"><source>RGPD</source><target>GDPR</target></trans-unit>
+      <trans-unit id="137"><source>Accès à mes données</source><target>Access to my data</target></trans-unit>
+      <trans-unit id="138"><source>À tout moment, vous avez le droit de récupérer les données que vous avez fournies à notre site. Cliquez sur « Obtenir mes données » pour télécharger automatiquement une copie de vos données personnelles au format PDF ou CSV.</source><target>At any time, you have the right to retrieve the data you have provided to our site. Click on "Get my data" to automatically download a copy of your personal data as a PDF or CSV file.</target></trans-unit>
+      <trans-unit id="139"><source>OBTENIR MES DONNÉES EN CSV</source><target>GET MY DATA AS CSV</target></trans-unit>
+      <trans-unit id="140"><source>OBTENIR MES DONNÉES EN PDF</source><target>GET MY DATA AS PDF</target></trans-unit>
+      <trans-unit id="141"><source>Demandes de rectification et d'effacement</source><target>Rectification &amp; erasure requests</target></trans-unit>
+      <trans-unit id="142"><source>Vous avez le droit de modifier toutes les informations personnelles présentes dans la page « Mon compte ». Pour toute autre demande concernant la rectification et/ou l'effacement de vos données personnelles, veuillez nous contacter via notre</source><target>You have the right to modify all the personal information found on the "My account" page. For any other request regarding the rectification and/or erasure of your personal data, please contact us through our</target></trans-unit>
+      <trans-unit id="143"><source>page de contact</source><target>contact page</target></trans-unit>
+      <trans-unit id="144"><source>Nous examinerons votre demande et vous répondrons dans les meilleurs délais.</source><target>We will review your request and reply as soon as possible.</target></trans-unit>
+      <trans-unit id="145"><source>BON PLAN</source><target>GREAT DEAL</target></trans-unit>
+      <trans-unit id="146"><source>Livraison offerte dès</source><target>Free shipping from</target></trans-unit>
     </body>
   </file>
 </xliff>

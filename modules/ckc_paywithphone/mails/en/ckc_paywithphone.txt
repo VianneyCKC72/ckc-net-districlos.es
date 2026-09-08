@@ -1,0 +1,23 @@
+
+[/{shop_url}] 
+
+Hello {firstname} {lastname},
+
+Thank you for shopping on {shop_name}!
+
+We have successfully registered your order with reference
+{order_name}. It will be SENT AS SOON AS WE RECEIVE YOUR
+PAYMENT.
+
+As a reminder, you selected payment by phone.
+
+Please contact us on the following number: {telephone}
+
+You can track your order and download your invoice at any time
+in "Order history" [/{history_url}] under "My account"
+[/{my_account_url}] on our website.
+
+If you have a guest account, you can track your order via the
+"Guest tracking" section [/{guest_tracking_url}] on our store.
+
+{shop_name} [/{shop_url}]

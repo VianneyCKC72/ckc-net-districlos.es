@@ -809,10 +809,15 @@ class AdminEspaceProController extends ModuleAdminController
 
         $imgBase = $baseUrl . 'modules/dtc_paliers_remise/views/img/';
 
+        $isoLang = Language::getIsoById($idLang);
+        $mailSubject = ($isoLang === 'en')
+            ? 'Your Districlos professional account is now active'
+            : 'Votre compte professionnel Districlos est activé';
+
         Mail::Send(
             $idLang,
             'proticulier_accepte_pro',
-            'Votre compte professionnel Districlos est activé',
+            $mailSubject,
             [
                 '{firstname}' => $customer->firstname,
                 '{lastname}' => $customer->lastname,

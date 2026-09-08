@@ -67,6 +67,10 @@
       <trans-unit id="63"><source>Vous êtes un professionnel ?</source><target>Are you a professional?</target></trans-unit>
       <trans-unit id="64"><source>Créer un compte professionnel</source><target>Create a professional account</target></trans-unit>
       <trans-unit id="65"><source>Club Pro &amp; avantages</source><target>Pro Club &amp; benefits</target></trans-unit>
+      <trans-unit id="66"><source>J'accepte les</source><target>I accept the</target></trans-unit>
+      <trans-unit id="67"><source>conditions générales</source><target>terms and conditions</target></trans-unit>
+      <trans-unit id="68"><source>et la</source><target>and the</target></trans-unit>
+      <trans-unit id="69"><source>politique de confidentialité</source><target>privacy policy</target></trans-unit>
     </body>
   </file>
 </xliff>
