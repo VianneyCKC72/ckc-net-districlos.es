@@ -190,7 +190,6 @@
 
 @media (max-width: 1024px) {
   #footer .hidden-md-down { display: none !important; }
-  #footer .block_content.collapse:not(.show) { display: none; }
   #footer .block_content.collapse.show { display: block; }
 
   #footer {
