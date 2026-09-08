@@ -69,6 +69,7 @@
       <trans-unit id="65"><source>Voir les stocks par magasin</source><target>View stock by store</target></trans-unit>
       <trans-unit id="66"><source>Publié le</source><target>Published on</target></trans-unit>
       <trans-unit id="67"><source>suite à une expérience du</source><target>following an experience on</target></trans-unit>
+      <trans-unit id="68"><source>Avis vérifiés</source><target>Verified reviews</target></trans-unit>
     </body>
   </file>
 </xliff>
