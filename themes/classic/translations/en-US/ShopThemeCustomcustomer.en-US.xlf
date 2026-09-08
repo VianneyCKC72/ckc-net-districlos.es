@@ -66,6 +66,7 @@
       <trans-unit id="62"><source>LES FACTURES ET DEVIS REALISES EN MAGASIN SERONT BIENTÔT DISPONIBLE DANS VOTRE ESPACE.</source><target>INVOICES AND QUOTES ISSUED IN STORE WILL SOON BE AVAILABLE IN YOUR ACCOUNT.</target></trans-unit>
       <trans-unit id="63"><source>Vous êtes un professionnel ?</source><target>Are you a professional?</target></trans-unit>
       <trans-unit id="64"><source>Créer un compte professionnel</source><target>Create a professional account</target></trans-unit>
+      <trans-unit id="65"><source>Club Pro &amp; avantages</source><target>Pro Club &amp; benefits</target></trans-unit>
     </body>
   </file>
 </xliff>

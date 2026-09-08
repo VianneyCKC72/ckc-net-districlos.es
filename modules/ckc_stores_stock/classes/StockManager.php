@@ -564,4 +564,80 @@ class StockManager extends Module
 
         return (bool)Db::getInstance()->getValue($sql);
     }
+
+    public function isVictimeSucces($idProduct, $idProductAttribute, ?array $stockData = null): bool
+    {
+        $idProduct = (int) $idProduct;
+        $idProductAttribute = (int) $idProductAttribute;
+
+        if ($idProduct <= 0) {
+            return false;
+        }
+
+        if ($idProductAttribute <= 0) {
+            $idProductAttribute = (int) Product::getDefaultAttribute($idProduct);
+        }
+
+        if ($idProductAttribute <= 0) {
+            return false;
+        }
+
+        if ($stockData === null) {
+            $stockData = $this->getStockData($idProduct, $idProductAttribute, null);
+        }
+
+        return !empty($stockData['victime_succes']);
+    }
+
+    public function getVictimeSuccesErrorMessage(?array $stockData = null): string
+    {
+        if (!empty($stockData['i18n']['not_available'])) {
+            return (string) $stockData['i18n']['not_available'];
+        }
+
+        if (!empty($stockData['i18n']['victime_succes'])) {
+            return (string) $stockData['i18n']['victime_succes'];
+        }
+
+        return $this->l('Ce produit n\'est plus disponible');
+    }
+
+    /**
+     * @return array<string, string> Messages par clé id_product_id_product_attribute
+     */
+    public function getCartVictimeSuccesLines(Cart $cart): array
+    {
+        $lines = [];
+
+        if (!$cart->id) {
+            return $lines;
+        }
+
+        foreach ($cart->getProducts() as $product) {
+            $idProduct = (int) ($product['id_product'] ?? 0);
+            $idProductAttribute = (int) ($product['id_product_attribute'] ?? 0);
+
+            if ($idProduct <= 0) {
+                continue;
+            }
+
+            $stockData = $this->getStockData($idProduct, $idProductAttribute, null);
+
+            if (!empty($stockData['victime_succes'])) {
+                $lines[$idProduct . '_' . $idProductAttribute] = $this->getVictimeSuccesErrorMessage($stockData);
+            }
+        }
+
+        return $lines;
+    }
+
+    /**
+     * @return string|null Message d'erreur si le panier contient un produit victime de son succès
+     */
+    public function getCartVictimeSuccesError(Cart $cart): ?string
+    {
+        $lines = $this->getCartVictimeSuccesLines($cart);
+
+        return $lines ? (string) reset($lines) : null;
+    }
 }
