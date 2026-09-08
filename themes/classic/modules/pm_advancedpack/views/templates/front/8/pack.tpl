@@ -85,6 +85,41 @@
                                 <div class="small">{l s='REF' d='Shop.Theme.Custommodules'} <span
                                             class="font-weight-bold" id="product_reference">{$product.reference_to_display}</span></div>
                             {/if}
+                            <script>
+                              window.CKC_AVIS_I18N = {
+                                verifiedReviews: '{l s='Avis vérifiés' d='Shop.Theme.Customckc' js=1}',
+                                reviews: '{l s='avis' d='Shop.Theme.Customckc' js=1}'
+                              };
+                              (function () {
+                                var i18n = window.CKC_AVIS_I18N || {};
+                                var labelReviews = i18n.reviews || 'avis';
+                                var labelVerified = i18n.verifiedReviews || 'Avis vérifiés';
+                                function apply() {
+                                  document.querySelectorAll('[data-lang="SKEEPERS_AVIS"]').forEach(function (el) {
+                                    el.textContent = labelReviews;
+                                  });
+                                  document.querySelectorAll('.avis-verifie-logo > span').forEach(function (el) {
+                                    if (/avis v[eé]rifi[eé]s/i.test(el.textContent || '')) {
+                                      el.textContent = labelVerified;
+                                    }
+                                  });
+                                  document.querySelectorAll('.avis_verifies_inserted, .rate-total').forEach(function (el) {
+                                    if (el.querySelector('[data-lang="SKEEPERS_AVIS"]')) return;
+                                    if (/\bavis\b/i.test(el.textContent || '')) {
+                                      el.innerHTML = el.innerHTML.replace(/\bavis\b/gi, labelReviews);
+                                    }
+                                  });
+                                }
+                                document.addEventListener('DOMContentLoaded', function () {
+                                  apply();
+                                  var root = document.querySelector('.skeepers_product__stars') || document.body;
+                                  if (!root || typeof MutationObserver === 'undefined') return;
+                                  var obs = new MutationObserver(apply);
+                                  obs.observe(root, { childList: true, subtree: true });
+                                  setTimeout(function () { obs.disconnect(); }, 15000);
+                                });
+                              })();
+                            </script>
                             <a href="javascript:av_widget_click()" id="AV_button">
                                 <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
                             </a>
