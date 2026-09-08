@@ -151,9 +151,9 @@
                         {if isset($accessory.cart_rule) && !empty($accessory.cart_rule)}
                             {assign var=old_price value='line_though'}
                         {/if}
-                        <span class="{$old_price|escape:'htmlall':'UTF-8'} price_{$group.id_accessory_group|intval}_{$accessory.id_accessory|intval}"> {Tools::displayPrice($accessory.price)}</span>{if Context::getContext()->shop->id == 2}<span class="mr-1 ml-1">HT</span>{/if}
+                        <span class="{$old_price|escape:'htmlall':'UTF-8'} price_{$group.id_accessory_group|intval}_{$accessory.id_accessory|intval}"> {Tools::displayPrice($accessory.price)}</span>{if Context::getContext()->shop->id == 2}<span class="mr-1 ml-1">{l s='HT' d='Shop.Theme.Custommodules'}</span>{/if}
                         {if Context::getContext()->shop->id == 2}
-                        <small class="pack-unit-note">Prix unitaire hors pack</small>
+                        <small class="pack-unit-note">{l s='Prix unitaire hors pack' d='Shop.Theme.Custommodules'}</small>
                         {/if}
                         {if isset($accessory.cart_rule) && !empty($accessory.cart_rule)}
                             <span class="discount_price final_price_{$group.id_accessory_group|intval}_{$accessory.id_accessory|intval}"> {Tools::displayPrice($accessory.final_price)}</span>

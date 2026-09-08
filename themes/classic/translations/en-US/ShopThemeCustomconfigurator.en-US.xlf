@@ -188,6 +188,42 @@
       <trans-unit id="184"><source>Erreur serveur</source><target>Server error</target></trans-unit>
       <trans-unit id="185"><source>Erreur lors du chargement du récapitulatif.</source><target>Error loading the summary.</target></trans-unit>
       <trans-unit id="186"><source>Erreur lors du chargement du récapitulatif :</source><target>Error loading the summary:</target></trans-unit>
+      <trans-unit id="187"><source>Clôture aluminium</source><target>Aluminum fence</target></trans-unit>
+      <trans-unit id="188"><source>Clôture composite</source><target>Composite fence</target></trans-unit>
+      <trans-unit id="189"><source>Clôture piscine</source><target>Pool fence</target></trans-unit>
+      <trans-unit id="190"><source>Clôture barreaudée professionnelle</source><target>Professional railing fence</target></trans-unit>
+      <trans-unit id="191"><source>Kit de grillage rigide prêt à poser</source><target>Ready-to-install rigid mesh kit</target></trans-unit>
+      <trans-unit id="192"><source>Kit de grillage souple prêt à poser</source><target>Ready-to-install flexible mesh kit</target></trans-unit>
+      <trans-unit id="193"><source>Kit de panneaux en aluminium</source><target>Aluminum panel kit</target></trans-unit>
+      <trans-unit id="194"><source>Kit de panneaux en composite</source><target>Composite panel kit</target></trans-unit>
+      <trans-unit id="195"><source>Kit de clôture piscine prêt à poser</source><target>Ready-to-install pool fence kit</target></trans-unit>
+      <trans-unit id="196"><source>Kit de barreaudage prêt à poser</source><target>Ready-to-install railing kit</target></trans-unit>
+      <trans-unit id="197"><source>Solution complète pour clôturer facilement votre terrain : panneaux, poteaux et système de fixation inclus. Idéal pour délimiter et sécuriser.</source><target>Complete ready-to-install rigid mesh solution: panels, posts and fixing system included. Ideal for marking and securing your property.</target></trans-unit>
+      <trans-unit id="198"><source>Solution économique et pratique pour délimiter son extérieur : rouleaux, poteaux et accessoires inclus. Parfait pour un rendu discret et fonctionnel.</source><target>Affordable and practical solution to mark out outdoor areas: rolls, posts and accessories included. Perfect for a discreet, functional look.</target></trans-unit>
+      <trans-unit id="199"><source>Solution haut de gamme entre design et durabilité : lames, poteaux et fixation inclus. Léger et robuste, pour valoriser son extérieur en toute modernité.</source><target>Premium solution combining design and durability: slats, posts and fittings included. Light and sturdy, to enhance outdoor spaces with a modern look.</target></trans-unit>
+      <trans-unit id="200"><source>Solution moderne et durable pour aménager son extérieur avec style : lames, poteaux et accessoires inclus. Adapté pour résister aux intempéries, alliant esthétique et intimité.</source><target>Modern, durable solution to style outdoor spaces: slats, posts and accessories included. Weather-resistant, combining looks and privacy.</target></trans-unit>
+      <trans-unit id="201"><source>Garantie la sécurité et la protection près d'un cours d'eau, tout en discrétion ! Panneau et ses accessoires inclus.</source><target>Provides safety and protection near water, with a discreet look. Panel and accessories included.</target></trans-unit>
+      <trans-unit id="202"><source>Parfaite pour sécuriser les espaces publiques grâce à sa rigidité exceptionnelle et son design élégant.</source><target>Ideal for securing public spaces thanks to its exceptional rigidity and elegant design.</target></trans-unit>
+      <trans-unit id="203"><source>Choix de votre clôture</source><target>Choosing your fence</target></trans-unit>
+      <trans-unit id="204"><source>Du sur-mesure pour votre terrain !</source><target>Custom-fit for your land!</target></trans-unit>
+      <trans-unit id="205"><source>Configurez votre clôture !</source><target>Configure your fence!</target></trans-unit>
+      <trans-unit id="206"><source>Le soubassement, c'est du renfort !</source><target>A base panel adds reinforcement!</target></trans-unit>
+      <trans-unit id="207"><source>Terminez votre personnalisation !</source><target>Finish your customization!</target></trans-unit>
+      <trans-unit id="208"><source>&lt;p&gt;Pensez à définir vos &lt;strong&gt;objectifs &lt;/strong&gt;avant de choisir votre clôture : &lt;strong&gt;sécuriser&lt;/strong&gt;, &lt;strong&gt;occulter&lt;/strong&gt;, &lt;strong&gt;embellir &lt;/strong&gt;votre extérieur ? Optez pour la solution la plus adaptée à votre projet.&lt;/p&gt;</source><target>&lt;p&gt;Define your &lt;strong&gt;goals &lt;/strong&gt;before choosing a fence: &lt;strong&gt;secure&lt;/strong&gt;, &lt;strong&gt;screen&lt;/strong&gt;, or &lt;strong&gt;enhance &lt;/strong&gt;your outdoor space? Pick the solution that best fits your project.&lt;/p&gt;</target></trans-unit>
+      <trans-unit id="209"><source>&lt;p&gt;Paramétrez votre clôture en &lt;strong&gt;hauteur&lt;/strong&gt;, &lt;strong&gt;largeur &lt;/strong&gt;et en fonction de votre &lt;strong&gt;nombre d'angles&lt;/strong&gt;. C'est la dernière étape avant les options de personnalisation !&lt;/p&gt;</source><target>&lt;p&gt;Set your fence &lt;strong&gt;height&lt;/strong&gt;, &lt;strong&gt;length &lt;/strong&gt;and &lt;strong&gt;number of corners&lt;/strong&gt;. This is the last step before customization options!&lt;/p&gt;</target></trans-unit>
+      <trans-unit id="210"><source>&lt;p&gt;En fonction de la &lt;strong&gt;pose &lt;/strong&gt;choisie, retrouvez nos &lt;strong&gt;gammes &lt;/strong&gt;disponibles ! Personnalisez la &lt;strong&gt;couleur &lt;/strong&gt;et le type de poteau pour une adaptation parfaite à votre jardin&lt;/p&gt;</source><target>&lt;p&gt;Based on the selected &lt;strong&gt;installation &lt;/strong&gt;, browse our available &lt;strong&gt;ranges&lt;/strong&gt;! Customize the &lt;strong&gt;color &lt;/strong&gt;and post type for a perfect fit in your garden.&lt;/p&gt;</target></trans-unit>
+      <trans-unit id="211"><source>&lt;p&gt;Que ce soit en &lt;strong&gt;béton &lt;/strong&gt;ou en &lt;strong&gt;acier&lt;/strong&gt;, le soubassement viendra terminer la clôture, éviter les &lt;strong&gt;intrusions &lt;/strong&gt;d'animaux ou encore apporter de la &lt;strong&gt;structure&lt;/strong&gt; à votre jardin.&lt;/p&gt;</source><target>&lt;p&gt;Whether in &lt;strong&gt;concrete &lt;/strong&gt;or &lt;strong&gt;steel&lt;/strong&gt;, a base panel finishes the fence, helps prevent animal &lt;strong&gt;intrusions&lt;/strong&gt; and adds &lt;strong&gt;structure&lt;/strong&gt; to your garden.&lt;/p&gt;</target></trans-unit>
+      <trans-unit id="212"><source>&lt;p&gt;Un &lt;strong&gt;portillon &lt;/strong&gt;ou une &lt;strong&gt;occultation &lt;/strong&gt;? Retrouvez les produits Districlos qui matcheront parfaitement à votre clôture !&lt;/p&gt;</source><target>&lt;p&gt;Need a &lt;strong&gt;gate &lt;/strong&gt;or &lt;strong&gt;privacy screening&lt;/strong&gt;? Discover Districlos products that match your fence perfectly!&lt;/p&gt;</target></trans-unit>
+      <trans-unit id="213"><source>Hauteur</source><target>Height</target></trans-unit>
+      <trans-unit id="214"><source>Lames</source><target>Slats</target></trans-unit>
+      <trans-unit id="215"><source>Pose</source><target>Installation</target></trans-unit>
+      <trans-unit id="216"><source>de 1m00 à 2m00</source><target>from 1.00 m to 2.00 m</target></trans-unit>
+      <trans-unit id="217"><source>De 1m00 à 2m00</source><target>From 1.00 m to 2.00 m</target></trans-unit>
+      <trans-unit id="218"><source>pleines ou semi-ajourées</source><target>solid or semi-open</target></trans-unit>
+      <trans-unit id="219"><source>sur platines ou à sceller</source><target>on base plates or set in concrete</target></trans-unit>
+      <trans-unit id="220"><source>de 0m403 à 1m41</source><target>from 0.403 m to 1.41 m</target></trans-unit>
+      <trans-unit id="221"><source>de 0m53 à 1m55</source><target>from 0.53 m to 1.55 m</target></trans-unit>
+      <trans-unit id="222"><source>1m306</source><target>1.306 m</target></trans-unit>
     </body>
   </file>
 </xliff>
