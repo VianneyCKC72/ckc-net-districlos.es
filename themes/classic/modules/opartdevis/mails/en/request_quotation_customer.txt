@@ -1,0 +1,7 @@
+Hello, {firstname} {lastname}
+Your quotation request has been sent successfully!
+Delivery address: {invoiceAddress}
+Billing address: {deliveryAddress}
+Phone: {customerPhone}
+Your message:
+{customerMessage}
