@@ -114,7 +114,15 @@
                                   apply();
                                   var root = document.querySelector('.skeepers_product__stars') || document.body;
                                   if (!root || typeof MutationObserver === 'undefined') return;
-                                  var obs = new MutationObserver(apply);
+                                  var busy = false;
+                                  var obs = new MutationObserver(function () {
+                                    if (busy) return;
+                                    busy = true;
+                                    obs.disconnect();
+                                    apply();
+                                    obs.observe(root, { childList: true, subtree: true });
+                                    busy = false;
+                                  });
                                   obs.observe(root, { childList: true, subtree: true });
                                   setTimeout(function () { obs.disconnect(); }, 15000);
                                 });

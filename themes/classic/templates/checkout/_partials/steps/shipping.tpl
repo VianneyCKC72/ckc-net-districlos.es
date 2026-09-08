@@ -240,14 +240,31 @@
           html = html
             .replace(/\b(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\b/gi, function (d) {
               var key = d.charAt(0).toUpperCase() + d.slice(1).toLowerCase();
-              var map = {Lundi:'Monday',Mardi:'Tuesday',Mercredi:'Wednesday',Jeudi:'Thursday',Vendredi:'Friday',Samedi:'Saturday',Dimanche:'Sunday'};
-              return map[key] || d;
+              return days[key] || d;
             })
             .replace(/\b(janvier|février|fevrier|mars|avril|mai|juin|juillet|août|aout|septembre|octobre|novembre|décembre|decembre)\b/gi, function (m) {
-              var map = {janvier:'January',février:'February',fevrier:'February',mars:'March',avril:'April',mai:'May',juin:'June',juillet:'July','août':'August',aout:'August',septembre:'September',octobre:'October',novembre:'November','décembre':'December',decembre:'December'};
+              var map = {
+                'janvier': 'January',
+                'février': 'February',
+                'fevrier': 'February',
+                'mars': 'March',
+                'avril': 'April',
+                'mai': 'May',
+                'juin': 'June',
+                'juillet': 'July',
+                'août': 'August',
+                'aout': 'August',
+                'septembre': 'September',
+                'octobre': 'October',
+                'novembre': 'November',
+                'décembre': 'December',
+                'decembre': 'December'
+              };
               return map[m.toLowerCase()] || m;
             });
-          el.innerHTML = html;
+          if (html !== el.innerHTML) {
+            el.innerHTML = html;
+          }
         });
 
         root.querySelectorAll('.carrier-badge').forEach(function (el) {
@@ -262,7 +279,15 @@
         localizePickup(document);
         if (typeof MutationObserver === 'undefined') return;
         var target = document.querySelector('.delivery-options-list') || document.body;
-        var obs = new MutationObserver(function () { localizePickup(document); });
+        var busy = false;
+        var obs = new MutationObserver(function () {
+          if (busy) return;
+          busy = true;
+          obs.disconnect();
+          localizePickup(document);
+          obs.observe(target, { childList: true, subtree: true });
+          busy = false;
+        });
         obs.observe(target, { childList: true, subtree: true });
       }
 
