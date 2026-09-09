@@ -51,6 +51,13 @@
       <trans-unit id="47"><source>Votre compte n’est pas encore activé.</source><target>Your account is not yet activated.</target></trans-unit>
       <trans-unit id="48"><source>Votre e-mail</source><target>Your email</target></trans-unit>
       <trans-unit id="49"><source>Votre mot de passe</source><target>Your password</target></trans-unit>
+      <trans-unit id="50"><source>Bonjour %s !</source><target>Hello %s!</target></trans-unit>
+      <trans-unit id="51"><source>Code promo :</source><target>Promo code:</target></trans-unit>
+      <trans-unit id="52"><source>Copier le code</source><target>Copy code</target></trans-unit>
+      <trans-unit id="53"><source>de réduction</source><target>off</target></trans-unit>
+      <trans-unit id="54"><source>Fermer</source><target>Close</target></trans-unit>
+      <trans-unit id="55"><source>Code promo copié !</source><target>Promo code copied!</target></trans-unit>
+      <trans-unit id="56"><source>Je bénéficie d'une remise fidélité exclusive, [1]adaptée à mon statut[/1]</source><target>I benefit from an exclusive loyalty discount, [1]adapted to my status[/1]</target></trans-unit>
     </body>
   </file>
 </xliff>

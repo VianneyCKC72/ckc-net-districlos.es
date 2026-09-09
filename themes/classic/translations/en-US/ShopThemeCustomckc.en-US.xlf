@@ -70,6 +70,18 @@
       <trans-unit id="66"><source>Publié le</source><target>Published on</target></trans-unit>
       <trans-unit id="67"><source>suite à une expérience du</source><target>following an experience on</target></trans-unit>
       <trans-unit id="68"><source>Avis vérifiés</source><target>Verified reviews</target></trans-unit>
+      <trans-unit id="69"><source>Mes réalisations</source><target>My projects</target></trans-unit>
+      <trans-unit id="70"><source>Ajouter une photo</source><target>Add a photo</target></trans-unit>
+      <trans-unit id="71"><source>Photo (JPEG/PNG ≤ 5MB)</source><target>Photo (JPEG/PNG ≤ 5MB)</target></trans-unit>
+      <trans-unit id="72"><source>Ajouter</source><target>Add</target></trans-unit>
+      <trans-unit id="73"><source>Mes photos</source><target>My photos</target></trans-unit>
+      <trans-unit id="74"><source>Photo ajoutée, en attente de validation.</source><target>Photo added, pending validation.</target></trans-unit>
+      <trans-unit id="75"><source>Photo supprimée.</source><target>Photo deleted.</target></trans-unit>
+      <trans-unit id="76"><source>Une erreur est survenue.</source><target>An error occurred.</target></trans-unit>
+      <trans-unit id="77"><source>Vous n’avez pas encore ajouté de photo.</source><target>You have not added a photo yet.</target></trans-unit>
+      <trans-unit id="78"><source>Supprimer</source><target>Delete</target></trans-unit>
+      <trans-unit id="79"><source>Statut :</source><target>Status:</target></trans-unit>
+      <trans-unit id="80"><source>Supprimer ?</source><target>Delete?</target></trans-unit>
     </body>
   </file>
 </xliff>

@@ -54,19 +54,6 @@
                             {/block}
                         {/block}
 
-                        {if !$pro.env}
-                        <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mb-3">
-                            <div>
-                                <p class="small mb-0 font-weight-bold mb-1">
-                                    {l s='Produit garanti moins cher du web' d='Shop.Theme.Custommodules'}
-                                </p>
-                                <p class="thin mb-0">
-                                    {l s='Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.' d='Shop.Theme.Custommodules'}
-                                </p>
-                            </div>
-                            <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
-                        </div>
-                        {/if}
                         <div class="d-flex align-items-center mb-3 gap-16 flex-wrap">
                             {if $product.quantity > 0}
                                 <div class="small text-secondary">
@@ -114,7 +101,15 @@
                                   apply();
                                   var root = document.querySelector('.skeepers_product__stars') || document.body;
                                   if (!root || typeof MutationObserver === 'undefined') return;
-                                  var obs = new MutationObserver(apply);
+                                  var busy = false;
+                                  var obs = new MutationObserver(function () {
+                                    if (busy) return;
+                                    busy = true;
+                                    obs.disconnect();
+                                    apply();
+                                    obs.observe(root, { childList: true, subtree: true });
+                                    busy = false;
+                                  });
                                   obs.observe(root, { childList: true, subtree: true });
                                   setTimeout(function () { obs.disconnect(); }, 15000);
                                 });
@@ -362,7 +357,7 @@
                             <div class="ap5-attributes ap5-ml-field ap5-ml-field--height">
                                 <div class="clearfix hiddenlabel">
                                     <p class="font-weight-bold group-name">
-                                        Sélectionnez la hauteur
+                                        {l s='Sélectionnez la hauteur' d='Shop.Theme.Custommodules'}
                                     </p>
                                     <div class="select_wrap">
                                         <div class="clearfix dis_flex">
@@ -375,26 +370,26 @@
                                                     </span>
                                         </div>
                                     </div>
-                                    <p id="quantity_hauteur_error" class="ap5-ml-error">Veuillez sélectionner une hauteur</p>
+                                    <p id="quantity_hauteur_error" class="ap5-ml-error">{l s='Veuillez sélectionner une hauteur' d='Shop.Theme.Custommodules'}</p>
                                 </div>
                             </div>
                             {/if}
                             {if isset($packHasMlDiscountTiers) && $packHasMlDiscountTiers && isset($packMlDiscountTiers) && $packMlDiscountTiers|@count > 0}
-                            <div class="ap5-ml-degressive" role="region" aria-label="Prix dégressifs">
+                            <div class="ap5-ml-degressive" role="region" aria-label="{l s='Prix dégressifs' d='Shop.Theme.Custommodules'}">
                                 <div class="ap5-ml-degressive__cta">
-                                    <strong><span class="ap5-ml-degressive__cta-line">Prix</span><span class="ap5-ml-degressive__cta-line">dégressifs&nbsp;!</span></strong>
+                                    <strong><span class="ap5-ml-degressive__cta-line">{l s='Prix' d='Shop.Theme.Custommodules'}</span><span class="ap5-ml-degressive__cta-line">{l s='dégressifs !' d='Shop.Theme.Custommodules'}</span></strong>
                                 </div>
                                 <div class="ap5-ml-degressive__scroll">
                                     <table class="ap5-ml-degressive__table">
                                         <thead>
                                             <tr>
-                                                <th scope="row">Nombre de mL</th>
+                                                <th scope="row">{l s='Nombre de mL' d='Shop.Theme.Custommodules'}</th>
                                                 {foreach from=$packMlDiscountTiers item=tier}
                                                     <td>
                                                         {if $tier.to === null || $tier.to === ''}
                                                             +{$tier.from|string_format:"%g"} mL
                                                         {else}
-                                                            {$tier.from|string_format:"%g"} à {$tier.to|string_format:"%g"} mL
+                                                            {$tier.from|string_format:"%g"} {l s='à' d='Shop.Theme.Custommodules'} {$tier.to|string_format:"%g"} mL
                                                         {/if}
                                                     </td>
                                                 {/foreach}
@@ -402,7 +397,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <th scope="row">% de remise</th>
+                                                <th scope="row">{l s='% de remise' d='Shop.Theme.Custommodules'}</th>
                                                 {foreach from=$packMlDiscountTiers item=tier}
                                                     <td>{$tier.percent|string_format:"%g"}%</td>
                                                 {/foreach}

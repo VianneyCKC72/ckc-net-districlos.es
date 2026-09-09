@@ -258,6 +258,26 @@
         <source>Payez en 3 ou 4 fois sans frais avec votre carte bancaire</source>
         <target>Pay in 3 or 4 interest-free installments with your bank card</target>
       </trans-unit>
+      <trans-unit id="64" resname="Distance non calculable">
+        <source>Distance non calculable</source>
+        <target>Distance not calculable</target>
+      </trans-unit>
+      <trans-unit id="65" resname="Point">
+        <source>Point</source>
+        <target>Point</target>
+      </trans-unit>
+      <trans-unit id="66" resname="Téléphone">
+        <source>Téléphone</source>
+        <target>Phone</target>
+      </trans-unit>
+      <trans-unit id="67" resname="Horaires">
+        <source>Horaires</source>
+        <target>Opening hours</target>
+      </trans-unit>
+      <trans-unit id="68" resname="Erreur de lecture des horaires">
+        <source>Erreur de lecture des horaires</source>
+        <target>Unable to read opening hours</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
