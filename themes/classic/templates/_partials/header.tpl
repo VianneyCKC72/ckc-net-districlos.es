@@ -13,20 +13,7 @@
 
 {block name='header_top'}
 
-    {* START BANDEAU BONS PLANS *}
-    <div class="bandeau-soldes" role="region" aria-label="{l s='Bons plans' d='Shop.Theme.Customglobal'}">
-        <div class="bandeau-soldes__inner">
-            <a href="{url entity='category' id=400}" class="bandeau-soldes__link">
-                <span class="bandeau-soldes__badge">
-                    {l s='BONS PLANS' d='Shop.Theme.Customglobal'}
-                </span>
-                <span class="bandeau-soldes__text">
-                    {l s='Jusqu\'à -17% sur nos kits !' d='Shop.Theme.Customglobal'}
-                </span>
-            </a>
-        </div>
-    </div>
-    {* END BANDEAU BONS PLANS *}
+    {hook h='displayBandeauSoldes'}
 
     <div class="header-top">
         <div class="row-header d-flex align-items-center">
