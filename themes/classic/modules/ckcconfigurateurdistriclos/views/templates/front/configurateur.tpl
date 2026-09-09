@@ -1648,7 +1648,12 @@ window.CKC_CFG_I18N = {
                     <div class="ckc-recap-row">
                       <span class="ckc-recap-row__label">{l s='Prix de la section' d='Shop.Theme.Customconfigurator'}</span>
                       <span class="ckc-recap-row__value"></span>
-                      <strong class="ckc-recap-row__price" x-text="t.price.toFixed(2) + ((window.CKC_CFG_I18N&&window.CKC_CFG_I18N.ttcSuffix)||' € TTC')"></strong>
+                      <span class="ckc-recap-row__price-wrap">
+                        <template x-if="t.ml_discount_percent > 0">
+                          <span class="ckc-recap-row__price-before" x-text="t.price_before_discount.toFixed(2) + ' €'"></span>
+                        </template>
+                        <strong class="ckc-recap-row__price" x-text="t.price.toFixed(2) + ((window.CKC_CFG_I18N&&window.CKC_CFG_I18N.ttcSuffix)||' € TTC')"></strong>
+                      </span>
                     </div>
 
                     {* Product list for this troncon *}
@@ -1916,12 +1921,37 @@ window.CKC_CFG_I18N = {
             </template>
           </div>
         </template>
+        <template x-if="$store.configurator.mlDiscountTiers.length">
+          <div class="ckc-sidebar-ml-degressive">
+            <div class="ckc-sidebar-ml-degressive__title">{l s='Remise dégressive' d='Shop.Theme.Customconfigurator'}</div>
+            <table class="ckc-sidebar-ml-degressive__table">
+              <thead>
+                <tr>
+                  <th>{l s='Longueur (m)' d='Shop.Theme.Customconfigurator'}</th>
+                  <th>{l s='Remise' d='Shop.Theme.Customconfigurator'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="(tier, idx) in $store.configurator.mlDiscountTiers" :key="'ml-tier-' + idx">
+                  <tr :class="{ 'is-active': $store.configurator.isMlTierActive(tier) }">
+                    <td x-text="tier.from + ' – ' + (tier.to !== null && tier.to !== undefined ? tier.to : '+')"></td>
+                    <td x-text="'-' + tier.percent + '%'"></td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </template>
         <div class="ckc-footer__price">
           <div class="ckc-footer__total_container">
             <div><span class="ckc-footer__ttc">{l s='Total TTC' d='Shop.Theme.Customconfigurator'}</span></div>
-            <div>
-            <span class="ckc-footer__amount"
-                  x-text="$store.configurator.totalPrice.toFixed(2) + ' €'"></span>
+            <div class="ckc-footer__amount-wrap">
+              <template x-if="$store.configurator.totalPriceBeforeDiscount && $store.configurator.totalPriceBeforeDiscount > $store.configurator.totalPrice">
+                <span class="ckc-footer__amount-before"
+                      x-text="$store.configurator.totalPriceBeforeDiscount.toFixed(2) + ' €'"></span>
+              </template>
+              <span class="ckc-footer__amount"
+                    x-text="$store.configurator.totalPrice.toFixed(2) + ' €'"></span>
             </div>
           </div>
           <div  class="ckc-footer__total_note">{l s='Prix indicatif, devis final après configuration complète.' d='Shop.Theme.Customconfigurator'}</div>
@@ -1971,6 +2001,9 @@ window.CKC_CFG_I18N = {
             <div class="ckc-footer-fixed-total__container">
               <div class="ckc-footer-fixed-total__label">{l s='Total TTC' d='Shop.Theme.Customconfigurator'}</div>
               <div class="ckc-footer-fixed-total__text">
+                <template x-if="$store.configurator.totalPriceBeforeDiscount && $store.configurator.totalPriceBeforeDiscount > $store.configurator.totalPrice">
+                  <span class="ckc-footer-fixed-total__amount-before" x-text="$store.configurator.totalPriceBeforeDiscount.toFixed(2) + ' €'"></span>
+                </template>
                 <span class="ckc-price-from">{l s='À partir de' d='Shop.Theme.Customconfigurator'}</span>
                 <span class="ckc-footer-fixed-total__amount_int" x-text="Math.floor($store.configurator.totalPrice)"></span>
                 <span class="ckc-footer-fixed-total__amount_decimal" x-text="',' + ($store.configurator.totalPrice.toFixed(2).split('.')[1] || '00') + ' €'"></span>
@@ -1979,7 +2012,7 @@ window.CKC_CFG_I18N = {
           </template>
           <div>
             <span class="ckc-footer__etape"
-                  x-text="((window.CKC_CFG_I18N&&window.CKC_CFG_I18N.stepPrefix)||'Étape') + ' ' + $store.configurator.currentStep"></span>
+                  x-text="'Étape '+ $store.configurator.currentStep"></span>
           </div>
           {* ---- Barre de progression ---- *}
           <div class="ckc-progress" role="progressbar"
@@ -2120,6 +2153,8 @@ document.addEventListener('alpine:init', () => {
     cartMessage:    '',
     cartOk:         true,
     totalPrice:     0,
+    totalPriceBeforeDiscount: null,
+    mlDiscountPercent: 0,
     _serverSidebar: null,
 
     // ── Getters ───────────────────────────────────────────────
@@ -2187,6 +2222,37 @@ document.addEventListener('alpine:init', () => {
       return this.fenceTypes.find(f => f.id === t.fenceTypeId) || null;
     },
 
+    get mlDiscountTiers() {
+      const ft = this.selectedFenceType;
+      if (!ft || !Array.isArray(ft.ml_discount_tiers)) {
+        // #region agent log
+        if (this.currentStep > 1) {
+          fetch('http://127.0.0.1:7660/ingest/e4eded95-e335-4205-a8d5-964d73fe922f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'83d6ec'},body:JSON.stringify({sessionId:'83d6ec',runId:'post-fix',hypothesisId:'D',location:'theme/configurateur.tpl:mlDiscountTiers',message:'tiers empty for UI',data:{step:this.currentStep,fenceTypeId:this.currentTronconData()?.fenceTypeId||null,hasFt:!!ft},timestamp:Date.now()})}).catch(()=>{});
+        }
+        // #endregion
+        return [];
+      }
+      return ft.ml_discount_tiers;
+    },
+
+    isMlTierActive(tier) {
+      const ml = parseFloat(this.currentTronconData().longueur) || 0;
+      const from = parseFloat(tier.from) || 0;
+      const to = tier.to !== null && tier.to !== undefined ? parseFloat(tier.to) : null;
+      if (ml < from) return false;
+      if (to === null) return true;
+      return ml <= to;
+    },
+
+    _syncMlDiscountDisplay(totalPrice, totalBefore) {
+      this.totalPriceBeforeDiscount = totalBefore || null;
+      if (totalBefore && totalBefore > totalPrice) {
+        this.mlDiscountPercent = Math.round((1 - totalPrice / totalBefore) * 1000) / 10;
+      } else {
+        this.mlDiscountPercent = 0;
+      }
+    },
+
     get sidebarItems() {
       if (!this._serverSidebar || !this._serverSidebar.length) return [];
       const items = this._serverSidebar.map(item => {
@@ -2247,6 +2313,10 @@ document.addEventListener('alpine:init', () => {
         if (!data.ok) { this.error = data.error || (this._i18n().bootstrapError || 'Erreur bootstrap'); return; }
 
         this.fenceTypes = data.fence_types || [];
+
+        // #region agent log
+        fetch('http://127.0.0.1:7660/ingest/e4eded95-e335-4205-a8d5-964d73fe922f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'83d6ec'},body:JSON.stringify({sessionId:'83d6ec',runId:'post-fix',hypothesisId:'B',location:'theme/configurateur.tpl:boot',message:'THEME bootstrap fenceTypes ml tiers',data:{count:this.fenceTypes.length,types:(this.fenceTypes||[]).map(f=>({id:f.id,title:f.title,tiersLen:Array.isArray(f.ml_discount_tiers)?f.ml_discount_tiers.length:0}))},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
 
         const tunnel = data.tunnel || {};
         // hasSoubassementStep is now set per fence_type in selectFenceType()
@@ -2925,6 +2995,10 @@ document.addEventListener('alpine:init', () => {
         const data = await res.json();
         if (data.ok) {
           this.totalPrice = data.total_price;
+          this._syncMlDiscountDisplay(data.total_price, data.total_price_before_discount);
+          // #region agent log
+          fetch('http://127.0.0.1:7660/ingest/e4eded95-e335-4205-a8d5-964d73fe922f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'83d6ec'},body:JSON.stringify({sessionId:'83d6ec',runId:'post-fix',hypothesisId:'E',location:'theme/configurateur.tpl:_fetchPrice',message:'THEME price response',data:{total:data.total_price,before:data.total_price_before_discount,mlPct:this.mlDiscountPercent,tiersLen:this.mlDiscountTiers.length,fenceTypeId:this.currentTronconData()?.fenceTypeId||null,longueur:this.currentTronconData()?.longueur||null},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
           if (data.sidebar) {
             this._serverSidebar = data.sidebar;
           }
