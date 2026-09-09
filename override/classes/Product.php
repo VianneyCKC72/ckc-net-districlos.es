@@ -99,7 +99,7 @@ class Product extends ProductCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function getAnchor($id_product_attribute, $with_id = false)

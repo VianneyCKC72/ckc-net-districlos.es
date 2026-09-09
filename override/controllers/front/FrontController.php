@@ -135,9 +135,10 @@ class FrontController extends FrontControllerCore
     }
     
     
+    
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     protected $redirectionExtraExcludedKeys = ['rewrite', 'category'];

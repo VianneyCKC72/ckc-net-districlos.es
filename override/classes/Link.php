@@ -24,7 +24,7 @@ class Link extends LinkCore
 {
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function getLangLink($idLang = null, Context $context = null, $idShop = null)
@@ -45,7 +45,7 @@ class Link extends LinkCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function getCategoryLink(
@@ -56,10 +56,7 @@ class Link extends LinkCore
         $idShop = null,
         $relativeProtocol = false
     ) {
-        if (!Module::isEnabled('ets_awesomeurl') || !Module::getInstanceByName('ets_awesomeurl')) {
-            return parent::getCategoryLink($category, $alias, $idLang, $selectedFilters, $idShop, $relativeProtocol);
-        }
-
+        
         $dispatcher = Dispatcher::getInstance();
         if (!$idLang) {
             $idLang = Ets_awesomeurl::getContextStatic()->language->id;
@@ -115,7 +112,7 @@ class Link extends LinkCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function getCategoryObject($category, $idLang)

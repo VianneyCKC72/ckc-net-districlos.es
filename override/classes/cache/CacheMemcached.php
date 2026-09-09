@@ -21,35 +21,44 @@ class CacheMemcached extends CacheMemcachedCore
 {
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     public function __construct()
     {
         parent::__construct();
-        Cache::__construct();
+        if (method_exists(Cache::class, 'bootQueryCacheEngine')) {
+            Cache::__construct();
+        }
         $this->setMemcachedOptions();
     }
+    /**
+     * An unreachable memcached is NOT a reason to turn the query cache off as a
+     * whole: isCacheEnabled() already requires isConnected(), so reads and writes
+     * to the store are covered, while invalidation is DB-backed and must keep
+     * running (see Cache::isInvalidationEnabled()). Disabling everything here
+     * meant a CLI/cron process with memcached down stopped bumping the table
+     * counters, leaving web requests serving stale data until a manual flush.
+     */
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     private function setMemcachedOptions()
     {
-        if ($this->isConnected()) {
-            $this->memcached->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);
-            $this->memcached->setOption(\Memcached::OPT_TCP_NODELAY, true);
-            $this->memcached->setOption(\Memcached::OPT_NO_BLOCK, true);
-            $this->memcached->setOption(\Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
-        } else {
-            $this->cacheEnabled = false;
+        if (!$this->isConnected()) {
+            return;
         }
+        $this->memcached->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);
+        $this->memcached->setOption(\Memcached::OPT_TCP_NODELAY, true);
+        $this->memcached->setOption(\Memcached::OPT_NO_BLOCK, true);
+        $this->memcached->setOption(\Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
     }
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     protected function shouldStoreResult()
     {
@@ -64,8 +73,8 @@ class CacheMemcached extends CacheMemcachedCore
      */
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     public static function getMemcachedServers()
     {
@@ -76,8 +85,8 @@ class CacheMemcached extends CacheMemcachedCore
      */
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     public function connect()
     {
