@@ -1,7 +1,7 @@
 {if $page.page_name == 'category'}
     <div class="col-xs-12 only-category-block">
         {if Context::getContext()->shop->id != 2}
-            {hook h='CETemplate' id=14}
+            {include file='_partials/ce-templates/category-browse-14.tpl'}
         {else}
             {hook h='CETemplate' id=40}
         {/if}

@@ -37,6 +37,10 @@ class CkcTranslate extends Module
     public const CONF_PROMPT_REASSURANCE = 'CKCTRANSLATE_PROMPT_REASSURANCE';
     public const CONF_PROMPT_BRAND_REVIEWS = 'CKCTRANSLATE_PROMPT_BRAND_REVIEWS';
     public const CONF_PROMPT_ORDER_STATES = 'CKCTRANSLATE_PROMPT_ORDER_STATES';
+    public const CONF_PROMPT_EVERCONTENTSEO = 'CKCTRANSLATE_PROMPT_EVERCONTENTSEO';
+    public const CONF_PROMPT_FEATURES = 'CKCTRANSLATE_PROMPT_FEATURES';
+    public const CONF_PROMPT_ATTRIBUTES = 'CKCTRANSLATE_PROMPT_ATTRIBUTES';
+    public const CONF_PROMPT_CARRIER_DELAYS = 'CKCTRANSLATE_PROMPT_CARRIER_DELAYS';
 
     public const CONF_FILTER_TYPE = 'CKCTRANSLATE_FILTER_TYPE';
     public const CONF_FILTER_IDS = 'CKCTRANSLATE_FILTER_IDS';
@@ -46,7 +50,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.5.0';
+        $this->version = '2.8.0';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -141,6 +145,10 @@ class CkcTranslate extends Module
             && Configuration::updateValue(self::CONF_PROMPT_REASSURANCE, 'Translate reassurance block text (delivery, payment, warranty icons). Keep it short, clear and reassuring for the customer.')
             && Configuration::updateValue(self::CONF_PROMPT_BRAND_REVIEWS, 'Translate customer review texts naturally. Keep the tone authentic and personal. Do not invent details. Preserve product/brand names.')
             && Configuration::updateValue(self::CONF_PROMPT_ORDER_STATES, 'Translate order status names for an e-commerce storefront. Keep them short, clear and professional. Preserve any leading reference prefixes like "0 - " if present.')
+            && Configuration::updateValue(self::CONF_PROMPT_EVERCONTENTSEO, 'Translate Ever Content SEO HTML blocks (category/manufacturer/supplier SEO footers). Preserve all HTML tags, attributes, links and images. Translate only visible text. Keep a concise SEO tone. Do not invent products, prices or promotions.')
+            && Configuration::updateValue(self::CONF_PROMPT_FEATURES, 'Translate product feature names and feature values for an e-commerce catalog. Keep labels short, accurate and consistent. Preserve units, numbers, codes and brand/model names when they must stay unchanged.')
+            && Configuration::updateValue(self::CONF_PROMPT_ATTRIBUTES, 'Translate product attribute group names, public names and attribute values (color, size, etc.). Keep them short for product pages and filters. Preserve codes, measurements and brand-specific terms when needed.')
+            && Configuration::updateValue(self::CONF_PROMPT_CARRIER_DELAYS, 'Translate carrier delivery delay texts for checkout and shipping estimators. Keep them short and clear. Preserve numbers, time units and carrier brand names. Do not invent delivery promises.')
             && Configuration::updateValue(self::CONF_FILTER_TYPE, 'all')
             && Configuration::updateValue(self::CONF_FILTER_IDS, '')
             && Configuration::updateValue(self::CONF_FILTER_CATEGORY_ID, 0);
@@ -175,6 +183,10 @@ class CkcTranslate extends Module
             && Configuration::deleteByName(self::CONF_PROMPT_REASSURANCE)
             && Configuration::deleteByName(self::CONF_PROMPT_BRAND_REVIEWS)
             && Configuration::deleteByName(self::CONF_PROMPT_ORDER_STATES)
+            && Configuration::deleteByName(self::CONF_PROMPT_EVERCONTENTSEO)
+            && Configuration::deleteByName(self::CONF_PROMPT_FEATURES)
+            && Configuration::deleteByName(self::CONF_PROMPT_ATTRIBUTES)
+            && Configuration::deleteByName(self::CONF_PROMPT_CARRIER_DELAYS)
             && Configuration::deleteByName(self::CONF_FILTER_TYPE)
             && Configuration::deleteByName(self::CONF_FILTER_IDS)
             && Configuration::deleteByName(self::CONF_FILTER_CATEGORY_ID);

@@ -50,8 +50,8 @@
                         {if isset($quotation.expire_date) && $quotation.expire_date > 0}
                             <td>{dateFormat date=$quotation.expire_date full=1}</td>
                         {/if}
-                        <td data-label="{l s='Nom' d='Shop.Theme.Custommodules'}">{$quotation.name|escape:'htmlall':'UTF-8'}</td>
-                        <td data-label="{l s='Modifier/Valider' d='Shop.Theme.Custommodules'}">
+                        <td data-label="Nom">{$quotation.name|escape:'htmlall':'UTF-8'}</td>
+                        <td data-label="Modifier/Valider">
                             {if $quotation.status == OpartQuotation::VALIDATED}
                                 <a href="{$link->getModuleLink('opartdevis','loadquotation',['opartquotationId'=>$quotation.id_opartdevis,'proceedCheckout'=>true])|escape:'htmlall':'UTF-8'}" class="btn btn-primary">
                                     <span class="opartDevisHide">{l s='Proceed to checkout' mod='opartdevis'}</span>
@@ -68,14 +68,14 @@
                                 </a>
                             {/if}
                         </td>
-                        <td data-label="{l s='Supprimer' d='Shop.Theme.Custommodules'}">
+                        <td data-label="Supprimer">
                             {if $quotation.status == OpartQuotation::NOT_VALIDATED || $quotation.status == OpartQuotation::EXPIRED}
                                 <a href="{$link->getModuleLink('opartdevis', 'listquotation', ['action' => 'delete', 'opartquotationId' => $quotation.id_opartdevis])|escape:'htmlall':'UTF-8'}" class="btn btn-outline-danger btn-sm">
                                     <span class="opartDevisHide">{l s='Delete' mod='opartdevis'}</span>
                                 </a>
                             {/if}
                         </td>
-                        <td data-label="{l s='Télécharger' d='Shop.Theme.Custommodules'}">
+                        <td data-label="Télécharger">
                             <a href="{$link->getModuleLink('opartdevis', 'showquotation', ['id_cart' => $quotation.id_cart])|escape:'htmlall':'UTF-8'}" class="btn btn-outline-success btn-sm">
                                 <span class="opartDevisHide">{l s='Download' mod='opartdevis'}</span>
                             </a>
