@@ -9,7 +9,8 @@
 
 <link rel="stylesheet" href="{$urls.base_url|escape:'html':'UTF-8'}modules/creativeelements/views/css/ce/14010000.css" media="all">
 
-<div data-elementor-type="section" data-elementor-id="14010000" class="elementor elementor-14010000">
+{* Pas de data-elementor-id : sinon frontend-edit.js injecte le bouton "modifier avec CE" *}
+<div class="elementor elementor-14010000">
   <div class="elementor-section-wrap">
 
     <section class="elementor-element elementor-element-63690c3 elementor-section-boxed elementor-section-height-default elementor-section-height-default elementor-section elementor-top-section" data-id="63690c3" data-element_type="section">
