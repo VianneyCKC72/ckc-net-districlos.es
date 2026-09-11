@@ -148,32 +148,17 @@
       <trans-unit id="144"><source>Nous examinerons votre demande et vous répondrons dans les meilleurs délais.</source><target>We will review your request and reply as soon as possible.</target></trans-unit>
       <trans-unit id="145"><source>BON PLAN</source><target>GREAT DEAL</target></trans-unit>
       <trans-unit id="146"><source>Livraison offerte dès</source><target>Free shipping from</target></trans-unit>
-      <trans-unit id="147"><source>Sélectionnez la hauteur</source><target>Select the height</target></trans-unit>
-      <trans-unit id="148"><source>Veuillez sélectionner une hauteur</source><target>Please select a height</target></trans-unit>
-      <trans-unit id="149"><source>Prix dégressifs</source><target>Volume pricing</target></trans-unit>
-      <trans-unit id="150"><source>Prix</source><target>Volume</target></trans-unit>
-      <trans-unit id="151"><source>dégressifs !</source><target>pricing!</target></trans-unit>
-      <trans-unit id="152"><source>Nombre de mL</source><target>Number of lm</target></trans-unit>
-      <trans-unit id="153"><source>% de remise</source><target>% discount</target></trans-unit>
-      <trans-unit id="154"><source>à</source><target>to</target></trans-unit>
-      <trans-unit id="155"><source>Renseignez votre longueur</source><target>Enter your length</target></trans-unit>
-      <trans-unit id="156"><source>Réinitialiser tous les filtres</source><target>Reset all filters</target></trans-unit>
-      <trans-unit id="157"><source>Possibilité de payer un acompte de</source><target>Option to pay a deposit of</target></trans-unit>
-      <trans-unit id="158"><source>et le reste avant la livraison</source><target>and the balance before delivery</target></trans-unit>
-      <trans-unit id="159"><source>acompte</source><target>deposit</target></trans-unit>
-      <trans-unit id="160"><source>Vous pouvez payer en utilisant le paiement anticipé. Total dû est :</source><target>You can pay using advance payment. Amount due is:</target></trans-unit>
-      <trans-unit id="161"><source>Prix unitaire hors pack</source><target>Unit price excluding pack</target></trans-unit>
-      <trans-unit id="162"><source>HT</source><target>excl. VAT</target></trans-unit>
-      <trans-unit id="163"><source>Nom</source><target>Name</target></trans-unit>
-      <trans-unit id="164"><source>Modifier/Valider</source><target>Edit/Validate</target></trans-unit>
-      <trans-unit id="165"><source>Supprimer</source><target>Delete</target></trans-unit>
-      <trans-unit id="166"><source>Télécharger</source><target>Download</target></trans-unit>
-      <trans-unit id="167"><source>Votre espace client</source><target>Your customer area</target></trans-unit>
-      <trans-unit id="168"><source>Tutoriels de pose</source><target>Installation tutorials</target></trans-unit>
-      <trans-unit id="169"><source>Panier</source><target>Cart</target></trans-unit>
-      <trans-unit id="170"><source>Payer en plusieurs fois</source><target>Pay in installments</target></trans-unit>
-      <trans-unit id="171"><source>Paiement en plusieurs fois</source><target>Pay in installments</target></trans-unit>
-      <trans-unit id="172"><source>contacter nous</source><target>contact us</target></trans-unit>
+      <trans-unit id="147"><source>Parcourir d'autres types de produits</source><target>Browse other product types</target></trans-unit>
+      <trans-unit id="148"><source>Grillage rigide</source><target>Rigid fencing</target></trans-unit>
+      <trans-unit id="149"><source>Grillage souple</source><target>Flexible fencing</target></trans-unit>
+      <trans-unit id="150"><source>Portails</source><target>Gates</target></trans-unit>
+      <trans-unit id="151"><source>Brise-vue</source><target>Privacy screens</target></trans-unit>
+      <trans-unit id="152"><source>Brise%br%vue</source><target>Privacy%br%screens</target></trans-unit>
+      <trans-unit id="153"><source>Aluminium</source><target>Aluminium</target></trans-unit>
+      <trans-unit id="154"><source>Portillons</source><target>Pedestrian gates</target></trans-unit>
+      <trans-unit id="155"><source>Configurez votre clôture</source><target>Configure your fence</target></trans-unit>
+      <trans-unit id="156"><source>Vous préférez du sur-mesure ? Composez votre clôture et choisissez ses caractéristiques uniques.</source><target>Prefer a custom-made solution? Build your fence and choose its unique features.</target></trans-unit>
+      <trans-unit id="157"><source>Configurer votre clôture</source><target>Configure your fence</target></trans-unit>
     </body>
   </file>
 </xliff>

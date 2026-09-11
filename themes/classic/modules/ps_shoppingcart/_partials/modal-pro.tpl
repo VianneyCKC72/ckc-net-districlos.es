@@ -70,7 +70,7 @@
             {* TVA *}
             {if isset($cart.subtotals.tax)}
                 <div class="cart-pro-row">
-                    <div class="cart-pro-label">{l s='TVA' d='Shop.Theme.Custommodules'}</div>
+                    <div class="cart-pro-label">TVA</div>
                     <div class="cart-pro-value">
                         {$cart.subtotals.tax.value}
                     </div>

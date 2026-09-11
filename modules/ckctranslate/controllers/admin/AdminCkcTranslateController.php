@@ -34,6 +34,30 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'Translate order status names for an e-commerce storefront. Keep them short, clear and professional. Preserve any leading reference prefixes like "0 - " if present.'
             );
         }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_EVERCONTENTSEO)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_EVERCONTENTSEO,
+                'Translate Ever Content SEO HTML blocks (category/manufacturer/supplier SEO footers). Preserve all HTML tags, attributes, links and images. Translate only visible text. Keep a concise SEO tone. Do not invent products, prices or promotions.'
+            );
+        }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_FEATURES)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_FEATURES,
+                'Translate product feature names and feature values for an e-commerce catalog. Keep labels short, accurate and consistent. Preserve units, numbers, codes and brand/model names when they must stay unchanged.'
+            );
+        }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_ATTRIBUTES)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_ATTRIBUTES,
+                'Translate product attribute group names, public names and attribute values (color, size, etc.). Keep them short for product pages and filters. Preserve codes, measurements and brand-specific terms when needed.'
+            );
+        }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_CARRIER_DELAYS)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_CARRIER_DELAYS,
+                'Translate carrier delivery delay texts for checkout and shipping estimators. Keep them short and clear. Preserve numbers, time units and carrier brand names. Do not invent delivery promises.'
+            );
+        }
 
         if (Tools::isSubmit('submitCkcTranslateConfig')) {
             $this->postProcessConfig();
@@ -105,6 +129,10 @@ class AdminCkcTranslateController extends ModuleAdminController
         $promptReassurance = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_REASSURANCE));
         $promptBrandReviews = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_BRAND_REVIEWS));
         $promptOrderStates = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_ORDER_STATES));
+        $promptEverContentSeo = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_EVERCONTENTSEO));
+        $promptFeatures = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_FEATURES));
+        $promptAttributes = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_ATTRIBUTES));
+        $promptCarrierDelays = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CARRIER_DELAYS));
         $filterType = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_TYPE));
         $filterIds = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_IDS));
         $filterCategoryId = (int) Tools::getValue(CkcTranslate::CONF_FILTER_CATEGORY_ID);
@@ -166,6 +194,10 @@ class AdminCkcTranslateController extends ModuleAdminController
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_REASSURANCE, $promptReassurance);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_BRAND_REVIEWS, $promptBrandReviews);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_ORDER_STATES, $promptOrderStates);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_EVERCONTENTSEO, $promptEverContentSeo);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_FEATURES, $promptFeatures);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_ATTRIBUTES, $promptAttributes);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_CARRIER_DELAYS, $promptCarrierDelays);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_TYPE, $filterType);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_IDS, $filterIds);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_CATEGORY_ID, $filterCategoryId);
@@ -380,6 +412,38 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'desc' => $this->module->l('For order status names displayed in customer account and emails.'),
                     ),
                     array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Ever Content SEO'),
+                        'name' => CkcTranslate::CONF_PROMPT_EVERCONTENTSEO,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For Ever Content SEO HTML blocks (categories, manufacturers, suppliers).'),
+                    ),
+                    array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Features'),
+                        'name' => CkcTranslate::CONF_PROMPT_FEATURES,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For product feature names and feature values (caractéristiques).'),
+                    ),
+                    array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Attributes'),
+                        'name' => CkcTranslate::CONF_PROMPT_ATTRIBUTES,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For attribute groups and attribute values (color, size, etc.).'),
+                    ),
+                    array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Carrier delays'),
+                        'name' => CkcTranslate::CONF_PROMPT_CARRIER_DELAYS,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For carrier delivery delay texts (checkout + shipping estimator).'),
+                    ),
+                    array(
                         'type' => 'select',
                         'label' => $this->module->l('Filter type'),
                         'name' => CkcTranslate::CONF_FILTER_TYPE,
@@ -491,6 +555,14 @@ class AdminCkcTranslateController extends ModuleAdminController
                 ?: 'Translate customer review texts naturally. Keep the tone authentic and personal. Do not invent details. Preserve product/brand names.',
             CkcTranslate::CONF_PROMPT_ORDER_STATES => Configuration::get(CkcTranslate::CONF_PROMPT_ORDER_STATES)
                 ?: 'Translate order status names for an e-commerce storefront. Keep them short, clear and professional. Preserve any leading reference prefixes like "0 - " if present.',
+            CkcTranslate::CONF_PROMPT_EVERCONTENTSEO => Configuration::get(CkcTranslate::CONF_PROMPT_EVERCONTENTSEO)
+                ?: 'Translate Ever Content SEO HTML blocks (category/manufacturer/supplier SEO footers). Preserve all HTML tags, attributes, links and images. Translate only visible text. Keep a concise SEO tone. Do not invent products, prices or promotions.',
+            CkcTranslate::CONF_PROMPT_FEATURES => Configuration::get(CkcTranslate::CONF_PROMPT_FEATURES)
+                ?: 'Translate product feature names and feature values for an e-commerce catalog. Keep labels short, accurate and consistent. Preserve units, numbers, codes and brand/model names when they must stay unchanged.',
+            CkcTranslate::CONF_PROMPT_ATTRIBUTES => Configuration::get(CkcTranslate::CONF_PROMPT_ATTRIBUTES)
+                ?: 'Translate product attribute group names, public names and attribute values (color, size, etc.). Keep them short for product pages and filters. Preserve codes, measurements and brand-specific terms when needed.',
+            CkcTranslate::CONF_PROMPT_CARRIER_DELAYS => Configuration::get(CkcTranslate::CONF_PROMPT_CARRIER_DELAYS)
+                ?: 'Translate carrier delivery delay texts for checkout and shipping estimators. Keep them short and clear. Preserve numbers, time units and carrier brand names. Do not invent delivery promises.',
             CkcTranslate::CONF_FILTER_TYPE => Configuration::get(CkcTranslate::CONF_FILTER_TYPE),
             CkcTranslate::CONF_FILTER_IDS => Configuration::get(CkcTranslate::CONF_FILTER_IDS),
             CkcTranslate::CONF_FILTER_CATEGORY_ID => (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID),
@@ -597,6 +669,26 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'code' => 'reassurance',
                 'label' => $this->module->l('Translate reassurance blocks (blockreassurance)'),
                 'advice' => $this->module->l('Translates title and description of reassurance items (delivery, payment, warranty, etc.).'),
+            ),
+            array(
+                'code' => 'evercontentseo',
+                'label' => $this->module->l('Translate Ever Content SEO (everpscontentseo)'),
+                'advice' => $this->module->l('Translates SEO HTML footers for categories, manufacturers and suppliers. Category filters apply to category contents only.'),
+            ),
+            array(
+                'code' => 'features',
+                'label' => $this->module->l('Translate features (caractéristiques)'),
+                'advice' => $this->module->l('Translates feature names and feature values. Filter by IDs = id_feature.'),
+            ),
+            array(
+                'code' => 'attributes',
+                'label' => $this->module->l('Translate attributes'),
+                'advice' => $this->module->l('Translates attribute groups (name + public name) and attribute values. Filter by IDs = id_attribute_group.'),
+            ),
+            array(
+                'code' => 'carrier_delays',
+                'label' => $this->module->l('Translate carrier delays'),
+                'advice' => $this->module->l('Translates carrier_lang.delay texts shown at checkout and in the shipping estimator. Filter by IDs = id_carrier.'),
             ),
             array(
                 'code' => 'brand_reviews',
@@ -723,6 +815,88 @@ class AdminCkcTranslateController extends ModuleAdminController
                 $indexKey = 'ckctranslate_reassurance_index';
                 break;
 
+            case 'evercontentseo':
+                $total = $this->countEverContentSeoItems();
+                $remainingFallback = $total;
+                if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+                    $remainingFallback = $this->countEverContentSeoItems(true);
+                }
+                $cookieKey = 'ckctranslate_evercontentseo_ids';
+                $indexKey = 'ckctranslate_evercontentseo_index';
+                break;
+
+            case 'features':
+                $total = $this->countFeaturesItems();
+                $remainingFallback = $total;
+                if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+                    $remainingFallback = $this->countFeaturesItems(true);
+                }
+                $cookieKey = 'ckctranslate_features_ids';
+                $indexKey = 'ckctranslate_features_index';
+                break;
+
+            case 'attributes':
+                $total = $this->countAttributesItems();
+                $remainingFallback = $total;
+                if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+                    $remainingFallback = $this->countAttributesItems(true);
+                }
+                $cookieKey = 'ckctranslate_attributes_ids';
+                $indexKey = 'ckctranslate_attributes_index';
+                break;
+
+            case 'carrier_delays':
+                $shopId = (int) $this->context->shop->id;
+                $sourceLangId = (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
+                $targetLangId = (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG);
+                $sql = 'SELECT COUNT(*)
+                        FROM `' . _DB_PREFIX_ . 'carrier` c
+                        INNER JOIN `' . _DB_PREFIX_ . 'carrier_lang` cl
+                          ON cl.id_carrier = c.id_carrier
+                         AND cl.id_lang = ' . (int) $sourceLangId . '
+                         AND cl.id_shop = ' . (int) $shopId . '
+                        WHERE c.deleted = 0
+                          AND cl.delay IS NOT NULL
+                          AND TRIM(cl.delay) != \'\'';
+
+                if ($filterType === 'ids' && !empty($filterIds)) {
+                    $sql .= ' AND c.id_carrier IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                }
+
+                $total = (int) Db::getInstance()->getValue($sql);
+
+                if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS) && $targetLangId > 0) {
+                    $remainingFallback = (int) Db::getInstance()->getValue(
+                        'SELECT COUNT(*)
+                         FROM `' . _DB_PREFIX_ . 'carrier` c
+                         INNER JOIN `' . _DB_PREFIX_ . 'carrier_lang` src
+                           ON src.id_carrier = c.id_carrier
+                          AND src.id_lang = ' . (int) $sourceLangId . '
+                          AND src.id_shop = ' . (int) $shopId . '
+                         LEFT JOIN `' . _DB_PREFIX_ . 'carrier_lang` tgt
+                           ON tgt.id_carrier = c.id_carrier
+                          AND tgt.id_lang = ' . (int) $targetLangId . '
+                          AND tgt.id_shop = ' . (int) $shopId . '
+                         WHERE c.deleted = 0
+                           AND src.delay IS NOT NULL
+                           AND TRIM(src.delay) != \'\'
+                           AND (
+                                tgt.delay IS NULL
+                                OR TRIM(tgt.delay) = \'\'
+                                OR tgt.delay = src.delay
+                           )'
+                        . (($filterType === 'ids' && !empty($filterIds))
+                            ? ' AND c.id_carrier IN (' . implode(',', array_map('intval', $filterIds)) . ')'
+                            : '')
+                    );
+                } else {
+                    $remainingFallback = $total;
+                }
+
+                $cookieKey = 'ckctranslate_carrier_delays_ids';
+                $indexKey = 'ckctranslate_carrier_delays_index';
+                break;
+
             case 'brand_reviews':
                 $this->ensureBrandReviewsTables();
                 $targetLangId = (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG);
@@ -817,6 +991,193 @@ class AdminCkcTranslateController extends ModuleAdminController
         }
     }
 
+    protected function countEverContentSeoItems($onlyMissing = false)
+    {
+        $shopId = (int) $this->context->shop->id;
+        $sourceLangId = (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
+        $targetLangId = (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG);
+        $filterType = (string) Configuration::get(CkcTranslate::CONF_FILTER_TYPE);
+        $filterIds = $this->parseIds((string) Configuration::get(CkcTranslate::CONF_FILTER_IDS));
+        $filterCategoryId = (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID);
+
+        $types = array(
+            'category' => array(
+                'table' => 'everpscontentseo_categories',
+                'lang_table' => 'everpscontentseo_categories_lang',
+                'id_column' => 'id_everpscontentseo_category',
+                'ref_column' => 'id_category',
+            ),
+            'manufacturer' => array(
+                'table' => 'everpscontentseo_manufacturers',
+                'lang_table' => 'everpscontentseo_manufacturers_lang',
+                'id_column' => 'id_everpscontentseo_manufacturer',
+                'ref_column' => 'id_manufacturer',
+            ),
+            'supplier' => array(
+                'table' => 'everpscontentseo_suppliers',
+                'lang_table' => 'everpscontentseo_suppliers_lang',
+                'id_column' => 'id_everpscontentseo_supplier',
+                'ref_column' => 'id_supplier',
+            ),
+        );
+
+        $total = 0;
+        $db = Db::getInstance();
+
+        foreach ($types as $type => $meta) {
+            if (!(bool) $db->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . $meta['table'] . '"')) {
+                continue;
+            }
+
+            $sql = 'SELECT COUNT(*)
+                    FROM `' . _DB_PREFIX_ . $meta['table'] . '` c
+                    INNER JOIN `' . _DB_PREFIX_ . $meta['lang_table'] . '` src
+                      ON src.`' . $meta['id_column'] . '` = c.`' . $meta['id_column'] . '`
+                     AND src.id_lang = ' . (int) $sourceLangId . '
+                    WHERE src.content IS NOT NULL
+                      AND TRIM(src.content) != \'\'
+                      AND c.id_shop = ' . (int) $shopId;
+
+            if ($type === 'category') {
+                if ($filterType === 'ids' && !empty($filterIds)) {
+                    $sql .= ' AND c.`' . $meta['ref_column'] . '` IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                }
+                if ($filterType === 'category' && $filterCategoryId > 0) {
+                    $sql .= ' AND c.`' . $meta['ref_column'] . '` = ' . (int) $filterCategoryId;
+                }
+            }
+
+            if ($onlyMissing && $targetLangId > 0) {
+                $sql .= ' AND NOT EXISTS (
+                    SELECT 1 FROM `' . _DB_PREFIX_ . $meta['lang_table'] . '` tgt
+                    WHERE tgt.`' . $meta['id_column'] . '` = c.`' . $meta['id_column'] . '`
+                      AND tgt.id_lang = ' . (int) $targetLangId . '
+                      AND tgt.content IS NOT NULL
+                      AND TRIM(tgt.content) != \'\'
+                )';
+            }
+
+            $total += (int) $db->getValue($sql);
+        }
+
+        return $total;
+    }
+
+    protected function countFeaturesItems($onlyMissing = false)
+    {
+        $sourceLangId = (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
+        $targetLangId = (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG);
+        $filterType = (string) Configuration::get(CkcTranslate::CONF_FILTER_TYPE);
+        $filterIds = $this->parseIds((string) Configuration::get(CkcTranslate::CONF_FILTER_IDS));
+        $db = Db::getInstance();
+
+        $featureSql = 'SELECT COUNT(*)
+                       FROM `' . _DB_PREFIX_ . 'feature` f
+                       INNER JOIN `' . _DB_PREFIX_ . 'feature_lang` src
+                         ON src.id_feature = f.id_feature
+                        AND src.id_lang = ' . (int) $sourceLangId . '
+                       WHERE src.name IS NOT NULL
+                         AND TRIM(src.name) != \'\'';
+
+        if ($filterType === 'ids' && !empty($filterIds)) {
+            $featureSql .= ' AND f.id_feature IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+        }
+
+        if ($onlyMissing && $targetLangId > 0) {
+            $featureSql .= ' AND NOT EXISTS (
+                SELECT 1 FROM `' . _DB_PREFIX_ . 'feature_lang` tgt
+                WHERE tgt.id_feature = f.id_feature
+                  AND tgt.id_lang = ' . (int) $targetLangId . '
+                  AND tgt.name IS NOT NULL
+                  AND TRIM(tgt.name) != \'\'
+                  AND tgt.name != src.name
+            )';
+        }
+
+        $valueSql = 'SELECT COUNT(*)
+                     FROM `' . _DB_PREFIX_ . 'feature_value` fv
+                     INNER JOIN `' . _DB_PREFIX_ . 'feature_value_lang` src
+                       ON src.id_feature_value = fv.id_feature_value
+                      AND src.id_lang = ' . (int) $sourceLangId . '
+                     WHERE src.value IS NOT NULL
+                       AND TRIM(src.value) != \'\'';
+
+        if ($filterType === 'ids' && !empty($filterIds)) {
+            $valueSql .= ' AND fv.id_feature IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+        }
+
+        if ($onlyMissing && $targetLangId > 0) {
+            $valueSql .= ' AND NOT EXISTS (
+                SELECT 1 FROM `' . _DB_PREFIX_ . 'feature_value_lang` tgt
+                WHERE tgt.id_feature_value = fv.id_feature_value
+                  AND tgt.id_lang = ' . (int) $targetLangId . '
+                  AND tgt.value IS NOT NULL
+                  AND TRIM(tgt.value) != \'\'
+                  AND tgt.value != src.value
+            )';
+        }
+
+        return (int) $db->getValue($featureSql) + (int) $db->getValue($valueSql);
+    }
+
+    protected function countAttributesItems($onlyMissing = false)
+    {
+        $sourceLangId = (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
+        $targetLangId = (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG);
+        $filterType = (string) Configuration::get(CkcTranslate::CONF_FILTER_TYPE);
+        $filterIds = $this->parseIds((string) Configuration::get(CkcTranslate::CONF_FILTER_IDS));
+        $db = Db::getInstance();
+
+        $groupSql = 'SELECT COUNT(*)
+                     FROM `' . _DB_PREFIX_ . 'attribute_group` ag
+                     INNER JOIN `' . _DB_PREFIX_ . 'attribute_group_lang` src
+                       ON src.id_attribute_group = ag.id_attribute_group
+                      AND src.id_lang = ' . (int) $sourceLangId . '
+                     WHERE (
+                        (src.name IS NOT NULL AND TRIM(src.name) != \'\')
+                        OR (src.public_name IS NOT NULL AND TRIM(src.public_name) != \'\')
+                     )';
+
+        if ($filterType === 'ids' && !empty($filterIds)) {
+            $groupSql .= ' AND ag.id_attribute_group IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+        }
+
+        if ($onlyMissing && $targetLangId > 0) {
+            $groupSql .= ' AND NOT EXISTS (
+                SELECT 1 FROM `' . _DB_PREFIX_ . 'attribute_group_lang` tgt
+                WHERE tgt.id_attribute_group = ag.id_attribute_group
+                  AND tgt.id_lang = ' . (int) $targetLangId . '
+                  AND tgt.name IS NOT NULL AND TRIM(tgt.name) != \'\' AND tgt.name != src.name
+                  AND tgt.public_name IS NOT NULL AND TRIM(tgt.public_name) != \'\' AND tgt.public_name != src.public_name
+            )';
+        }
+
+        $attrSql = 'SELECT COUNT(*)
+                    FROM `' . _DB_PREFIX_ . 'attribute` a
+                    INNER JOIN `' . _DB_PREFIX_ . 'attribute_lang` src
+                      ON src.id_attribute = a.id_attribute
+                     AND src.id_lang = ' . (int) $sourceLangId . '
+                    WHERE src.name IS NOT NULL
+                      AND TRIM(src.name) != \'\'';
+
+        if ($filterType === 'ids' && !empty($filterIds)) {
+            $attrSql .= ' AND a.id_attribute_group IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+        }
+
+        if ($onlyMissing && $targetLangId > 0) {
+            $attrSql .= ' AND NOT EXISTS (
+                SELECT 1 FROM `' . _DB_PREFIX_ . 'attribute_lang` tgt
+                WHERE tgt.id_attribute = a.id_attribute
+                  AND tgt.id_lang = ' . (int) $targetLangId . '
+                  AND tgt.name IS NOT NULL
+                  AND TRIM(tgt.name) != \'\'
+                  AND tgt.name != src.name
+            )';
+        }
+
+        return (int) $db->getValue($groupSql) + (int) $db->getValue($attrSql);
+    }
+
     protected function resetQueues()
     {
         $keys = array(
@@ -836,6 +1197,14 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_cemeta_index',
             'ckctranslate_reassurance_ids',
             'ckctranslate_reassurance_index',
+            'ckctranslate_evercontentseo_ids',
+            'ckctranslate_evercontentseo_index',
+            'ckctranslate_features_ids',
+            'ckctranslate_features_index',
+            'ckctranslate_attributes_ids',
+            'ckctranslate_attributes_index',
+            'ckctranslate_carrier_delays_ids',
+            'ckctranslate_carrier_delays_index',
             'ckctranslate_brand_reviews_ids',
             'ckctranslate_brand_reviews_index',
             'ckctranslate_order_states_ids',
