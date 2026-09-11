@@ -1399,46 +1399,12 @@ PROMPT;
 
     protected function getNextEverContentSeoItem()
     {
-        $cookie = Context::getContext()->cookie;
-        $cookieKey = 'ckctranslate_evercontentseo_ids';
-        $indexKey = 'ckctranslate_evercontentseo_index';
-
-        if (!isset($cookie->{$cookieKey})) {
-            $cookie->{$cookieKey} = json_encode($this->buildEverContentSeoQueue());
-            $cookie->{$indexKey} = 0;
-        }
-
-        $items = json_decode($cookie->{$cookieKey}, true);
-        $index = (int) $cookie->{$indexKey};
-
-        if (!is_array($items) || !isset($items[$index])) {
-            unset($cookie->{$cookieKey});
-            unset($cookie->{$indexKey});
-            Tools::clearAllCache();
-
-            return null;
-        }
-
-        $item = $items[$index];
-        $cookie->{$indexKey} = $index + 1;
-
-        if (!is_array($item) || empty($item['type']) || empty($item['id'])) {
-            return $this->getNextEverContentSeoItem();
-        }
-
-        return array(
-            'type' => (string) $item['type'],
-            'id' => (int) $item['id'],
-        );
+        return $this->getNextTypedQueueItem('evercontentseo', array($this, 'buildEverContentSeoQueue'));
     }
 
     protected function runFeatures()
     {
-        $item = $this->getNextTypedQueueItem(
-            'ckctranslate_features_ids',
-            'ckctranslate_features_index',
-            array($this, 'buildFeaturesQueue')
-        );
+        $item = $this->getNextTypedQueueItem('features', array($this, 'buildFeaturesQueue'));
 
         if (!$item) {
             return $this->finishedResult($this->module->l('Features translation finished.', 'CkcTranslateJobRunner'));
@@ -1483,11 +1449,7 @@ PROMPT;
 
     protected function runAttributes()
     {
-        $item = $this->getNextTypedQueueItem(
-            'ckctranslate_attributes_ids',
-            'ckctranslate_attributes_index',
-            array($this, 'buildAttributesQueue')
-        );
+        $item = $this->getNextTypedQueueItem('attributes', array($this, 'buildAttributesQueue'));
 
         if (!$item) {
             return $this->finishedResult($this->module->l('Attributes translation finished.', 'CkcTranslateJobRunner'));
@@ -1625,32 +1587,162 @@ PROMPT;
         return $items;
     }
 
-    protected function getNextTypedQueueItem($cookieKey, $indexKey, $builder)
+    /**
+     * Files de file d'attente (le cookie BO est limité à 4096 octets).
+     */
+    public static function getQueueDir()
     {
-        $cookie = Context::getContext()->cookie;
+        $varDir = _PS_MODULE_DIR_ . 'ckctranslate/var/';
+        $dir = $varDir . 'queues/';
 
-        if (!isset($cookie->{$cookieKey})) {
-            $items = is_callable($builder) ? call_user_func($builder) : array();
-            $cookie->{$cookieKey} = json_encode(is_array($items) ? $items : array());
-            $cookie->{$indexKey} = 0;
+        if (!is_dir($varDir)) {
+            @mkdir($varDir, 0755, true);
+        }
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0755, true);
         }
 
-        $items = json_decode($cookie->{$cookieKey}, true);
-        $index = (int) $cookie->{$indexKey};
+        foreach (array($varDir . 'index.php', $dir . 'index.php') as $indexPhp) {
+            if (!file_exists($indexPhp)) {
+                @file_put_contents($indexPhp, "<?php\nheader('Location: ../');\nexit;\n");
+            }
+        }
+
+        return $dir;
+    }
+
+    public static function normalizeQueueName($queueName)
+    {
+        $queueName = (string) $queueName;
+        if (strpos($queueName, 'ckctranslate_') === 0) {
+            $queueName = substr($queueName, strlen('ckctranslate_'));
+        }
+        $queueName = preg_replace('/_ids$/', '', $queueName);
+
+        return preg_replace('/[^a-z0-9_]/i', '', $queueName);
+    }
+
+    public static function getQueueFilePaths($queueName)
+    {
+        $employeeId = (int) (Context::getContext()->employee ? Context::getContext()->employee->id : 0);
+        $shopId = (int) Context::getContext()->shop->id;
+        $safe = self::normalizeQueueName($queueName);
+        $base = self::getQueueDir() . $safe . '_e' . $employeeId . '_s' . $shopId;
+
+        return array(
+            'items' => $base . '_items.json',
+            'index' => $base . '_index.txt',
+        );
+    }
+
+    public static function getFileQueueCounters($queueName)
+    {
+        $paths = self::getQueueFilePaths($queueName);
+        if (!file_exists($paths['items'])) {
+            return null;
+        }
+
+        $items = json_decode((string) @file_get_contents($paths['items']), true);
+        if (!is_array($items)) {
+            return null;
+        }
+
+        $index = (int) @file_get_contents($paths['index']);
+
+        return array(
+            'total' => count($items),
+            'remaining' => max(count($items) - $index, 0),
+        );
+    }
+
+    public static function resetFileQueue($queueName)
+    {
+        $paths = self::getQueueFilePaths($queueName);
+        if (file_exists($paths['items'])) {
+            @unlink($paths['items']);
+        }
+        if (file_exists($paths['index'])) {
+            @unlink($paths['index']);
+        }
+    }
+
+    public static function getKnownFileQueueNames()
+    {
+        return array(
+            'product_seo',
+            'product_desc',
+            'category_seo',
+            'category_desc',
+            'cms',
+            'ce',
+            'cemeta',
+            'reassurance',
+            'evercontentseo',
+            'features',
+            'attributes',
+            'carrier_delays',
+            'brand_reviews',
+            'order_states',
+        );
+    }
+
+    public static function resetAllFileQueues()
+    {
+        foreach (self::getKnownFileQueueNames() as $name) {
+            self::resetFileQueue($name);
+        }
+    }
+
+    public static function jobCodeToQueueName($jobCode)
+    {
+        $map = array(
+            'product_seo' => 'product_seo',
+            'product_description' => 'product_desc',
+            'category_seo' => 'category_seo',
+            'category_description' => 'category_desc',
+            'cms' => 'cms',
+            'creative_elements' => 'ce',
+            'ce_meta' => 'cemeta',
+            'reassurance' => 'reassurance',
+            'evercontentseo' => 'evercontentseo',
+            'features' => 'features',
+            'attributes' => 'attributes',
+            'carrier_delays' => 'carrier_delays',
+            'brand_reviews' => 'brand_reviews',
+            'order_states' => 'order_states',
+        );
+
+        return isset($map[$jobCode]) ? $map[$jobCode] : self::normalizeQueueName($jobCode);
+    }
+
+    protected function getNextTypedQueueItem($queueName, $builder)
+    {
+        $paths = self::getQueueFilePaths($queueName);
+
+        if (!file_exists($paths['items'])) {
+            $items = is_callable($builder) ? call_user_func($builder) : array();
+            if (!is_array($items)) {
+                $items = array();
+            }
+            @file_put_contents($paths['items'], json_encode(array_values($items)));
+            @file_put_contents($paths['index'], '0');
+        }
+
+        $items = json_decode((string) @file_get_contents($paths['items']), true);
+        $index = (int) @file_get_contents($paths['index']);
 
         if (!is_array($items) || !isset($items[$index])) {
-            unset($cookie->{$cookieKey});
-            unset($cookie->{$indexKey});
+            self::resetFileQueue($queueName);
             Tools::clearAllCache();
 
             return null;
         }
 
         $item = $items[$index];
-        $cookie->{$indexKey} = $index + 1;
+        @file_put_contents($paths['index'], (string) ($index + 1));
 
         if (!is_array($item) || empty($item['type']) || empty($item['id'])) {
-            return $this->getNextTypedQueueItem($cookieKey, $indexKey, $builder);
+            return $this->getNextTypedQueueItem($queueName, $builder);
         }
 
         return array(
@@ -2451,13 +2543,14 @@ PROMPT;
 
     protected function getNextId($cookieKey, $indexKey, $sql, $column)
     {
-        $cookie = Context::getContext()->cookie;
-
         if (empty($sql) || empty($column)) {
             return 0;
         }
 
-        if (!isset($cookie->{$cookieKey})) {
+        $queueName = self::normalizeQueueName($cookieKey);
+        $paths = self::getQueueFilePaths($queueName);
+
+        if (!file_exists($paths['items'])) {
             $rows = Db::getInstance()->executeS($sql);
             $ids = array();
 
@@ -2469,23 +2562,22 @@ PROMPT;
                 }
             }
 
-            $cookie->{$cookieKey} = json_encode($ids);
-            $cookie->{$indexKey} = 0;
+            @file_put_contents($paths['items'], json_encode($ids));
+            @file_put_contents($paths['index'], '0');
         }
 
-        $ids = json_decode($cookie->{$cookieKey}, true);
-        $index = (int) $cookie->{$indexKey};
+        $ids = json_decode((string) @file_get_contents($paths['items']), true);
+        $index = (int) @file_get_contents($paths['index']);
 
         if (!is_array($ids) || !isset($ids[$index])) {
-            unset($cookie->{$cookieKey});
-            unset($cookie->{$indexKey});
+            self::resetFileQueue($queueName);
             Tools::clearAllCache();
 
             return 0;
         }
 
         $currentId = (int) $ids[$index];
-        $cookie->{$indexKey} = $index + 1;
+        @file_put_contents($paths['index'], (string) ($index + 1));
 
         return $currentId;
     }

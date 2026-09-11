@@ -86,7 +86,7 @@
             {hook h='displayPromoPageText'}
         {/if}
         {if Context::getContext()->shop->id != 2}
-            {hook h='CETemplate' id=12}
+            {include file='_partials/ce-templates/left-column-12.tpl'}
         {else}
             {hook h='CETemplate' id=35}
         {/if}

@@ -20,6 +20,9 @@ class AdminCkcTranslateController extends ModuleAdminController
 
     public function initContent()
     {
+        // Anciennes files JSON dans le cookie BO → exception PrestaShop (limite 4096 octets).
+        $this->purgeLegacyQueueCookies();
+
         parent::initContent();
 
         if (!Configuration::get(CkcTranslate::CONF_PROMPT_BRAND_REVIEWS)) {
@@ -726,6 +729,13 @@ class AdminCkcTranslateController extends ModuleAdminController
 
     protected function getJobCounters($jobCode)
     {
+        $fileCounters = CkcTranslateJobRunner::getFileQueueCounters(
+            CkcTranslateJobRunner::jobCodeToQueueName($jobCode)
+        );
+        if (is_array($fileCounters)) {
+            return $fileCounters;
+        }
+
         $filterType = (string) Configuration::get(CkcTranslate::CONF_FILTER_TYPE);
         $filterIds = $this->parseIds((string) Configuration::get(CkcTranslate::CONF_FILTER_IDS));
         $filterCategoryId = (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID);
@@ -1180,6 +1190,8 @@ class AdminCkcTranslateController extends ModuleAdminController
 
     protected function resetQueues()
     {
+        CkcTranslateJobRunner::resetAllFileQueues();
+
         $keys = array(
             'ckctranslate_product_seo_ids',
             'ckctranslate_product_seo_index',
@@ -1217,6 +1229,49 @@ class AdminCkcTranslateController extends ModuleAdminController
 
         Tools::clearAllCache();
         $this->confirmations[] = $this->module->l('Translation queues have been reset.');
+    }
+
+    protected function purgeLegacyQueueCookies()
+    {
+        if (!isset($this->context->cookie) || !is_object($this->context->cookie)) {
+            return;
+        }
+
+        $cookie = $this->context->cookie;
+        $keys = array(
+            'ckctranslate_product_seo_ids',
+            'ckctranslate_product_seo_index',
+            'ckctranslate_product_desc_ids',
+            'ckctranslate_product_desc_index',
+            'ckctranslate_category_seo_ids',
+            'ckctranslate_category_seo_index',
+            'ckctranslate_category_desc_ids',
+            'ckctranslate_category_desc_index',
+            'ckctranslate_cms_ids',
+            'ckctranslate_cms_index',
+            'ckctranslate_ce_ids',
+            'ckctranslate_ce_index',
+            'ckctranslate_cemeta_ids',
+            'ckctranslate_cemeta_index',
+            'ckctranslate_reassurance_ids',
+            'ckctranslate_reassurance_index',
+            'ckctranslate_evercontentseo_ids',
+            'ckctranslate_evercontentseo_index',
+            'ckctranslate_features_ids',
+            'ckctranslate_features_index',
+            'ckctranslate_attributes_ids',
+            'ckctranslate_attributes_index',
+            'ckctranslate_carrier_delays_ids',
+            'ckctranslate_carrier_delays_index',
+            'ckctranslate_brand_reviews_ids',
+            'ckctranslate_brand_reviews_index',
+            'ckctranslate_order_states_ids',
+            'ckctranslate_order_states_index',
+        );
+
+        foreach ($keys as $key) {
+            unset($cookie->{$key});
+        }
     }
 
     protected function clearHistory()
