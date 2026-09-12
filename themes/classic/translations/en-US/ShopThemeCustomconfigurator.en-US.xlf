@@ -224,6 +224,10 @@
       <trans-unit id="220"><source>de 0m403 à 1m41</source><target>from 0.403 m to 1.41 m</target></trans-unit>
       <trans-unit id="221"><source>de 0m53 à 1m55</source><target>from 0.53 m to 1.55 m</target></trans-unit>
       <trans-unit id="222"><source>1m306</source><target>1.306 m</target></trans-unit>
+      <trans-unit id="223"><source>Remise dégressive</source><target>Volume discount</target></trans-unit>
+      <trans-unit id="224"><source>Longueur (m)</source><target>Length (m)</target></trans-unit>
+      <trans-unit id="225"><source>Remise</source><target>Discount</target></trans-unit>
+      <trans-unit id="226"><source>Icône conseils expert</source><target>Expert tips icon</target></trans-unit>
     </body>
   </file>
 </xliff>

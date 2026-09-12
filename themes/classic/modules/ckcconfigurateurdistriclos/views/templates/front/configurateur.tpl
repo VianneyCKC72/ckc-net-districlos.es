@@ -46,6 +46,9 @@ window.CKC_CFG_I18N = {
   summaryErrorPrefix: '{l s='Erreur lors du chargement du récapitulatif :' d='Shop.Theme.Customconfigurator' js=1}',
 };
 </script>
+{if isset($language.iso_code) && $language.iso_code != 'fr'}
+<script src="{$urls.base_url|escape:'htmlall':'UTF-8'}modules/ckcconfigurateurdistriclos/views/js/cfg-catalogue-en.js"></script>
+{/if}
 
 <div id="ckc-configurator"
      x-data
@@ -180,15 +183,15 @@ window.CKC_CFG_I18N = {
           <template x-if="$store.configurator.stepAdvice['step_1'] && $store.configurator.stepAdvice['step_1'].active && $store.configurator.stepAdvice['step_1'].content">
             <div class="ckc-expert">
               <div class="ckc-icon-conseils-text-container">
-                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="Icône conseils expert" width="27" height="27" ></div>
+                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="27" height="27" ></div>
                 <div class="ckc-expert__body">
                   <p class="ckc-expert__title_text"><strong x-text="$store.configurator.stepAdvice['step_1'].title" x-show="$store.configurator.stepAdvice['step_1'].title"></strong></p>
                   <p class="ckc-expert__text" x-html="$store.configurator.stepAdvice['step_1'].content"></p>
                 </div>
               </div>
               <div class="ckc-icon-conseils-img-container">
-                <img class="ckc-icon-conseils-masques" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-masques.svg" alt="Icône conseils expert" width="22" height="16" >
-                <img class="ckc-icon-conseils-affiches" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-affiches.svg" alt="Icône conseils expert" width="24" height="24" >
+                <img class="ckc-icon-conseils-masques" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-masques.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="22" height="16" >
+                <img class="ckc-icon-conseils-affiches" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-affiches.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="24" height="24" >
               </div>
             </div>
           </template>
@@ -259,15 +262,15 @@ window.CKC_CFG_I18N = {
           <template x-if="$store.configurator.stepAdvice['step_2'] && $store.configurator.stepAdvice['step_2'].active && $store.configurator.stepAdvice['step_2'].content">
             <div class="ckc-expert">
               <div class="ckc-icon-conseils-text-container">
-                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="Icône conseils expert" width="27" height="27" ></div>
+                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="27" height="27" ></div>
                 <div class="ckc-expert__body">
                   <p class="ckc-expert__title_text"><strong x-text="$store.configurator.stepAdvice['step_2'].title" x-show="$store.configurator.stepAdvice['step_2'].title"></strong></p>
                   <p class="ckc-expert__text" x-html="$store.configurator.stepAdvice['step_2'].content"></p>
                 </div>
               </div>
               <div class="ckc-icon-conseils-img-container">
-                <img class="ckc-icon-conseils-masques" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-masques.svg" alt="Icône conseils expert" width="22" height="16" >
-                <img class="ckc-icon-conseils-affiches" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-affiches.svg" alt="Icône conseils expert" width="24" height="24" >
+                <img class="ckc-icon-conseils-masques" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-masques.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="22" height="16" >
+                <img class="ckc-icon-conseils-affiches" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-affiches.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="24" height="24" >
               </div>
             </div>
           </template>
@@ -416,7 +419,7 @@ window.CKC_CFG_I18N = {
 
                       <template x-if="item.expert_advice && item.expert_advice.active && item.expert_advice.content">
                         <div class="ckc-expert" style="margin:.75rem 0 0;padding:.6rem .875rem;">
-                          <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="Icône conseils expert" width="27" height="27" ></div>
+                          <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="27" height="27" ></div>
                           <p class="ckc-expert__text" x-text="item.expert_advice.content"></p>
                         </div>
                       </template>
@@ -488,15 +491,15 @@ window.CKC_CFG_I18N = {
           <template x-if="$store.configurator.stepAdvice['step_3'] && $store.configurator.stepAdvice['step_3'].active && $store.configurator.stepAdvice['step_3'].content">
             <div class="ckc-expert">
               <div class="ckc-icon-conseils-text-container">
-                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="Icône conseils expert" width="27" height="27" ></div>
+                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="27" height="27" ></div>
                 <div class="ckc-expert__body">
                   <p class="ckc-expert__title_text"><strong x-text="$store.configurator.stepAdvice['step_3'].title" x-show="$store.configurator.stepAdvice['step_3'].title"></strong></p>
                   <p class="ckc-expert__text" x-html="$store.configurator.stepAdvice['step_3'].content"></p>
                 </div>
               </div>
               <div class="ckc-icon-conseils-img-container">
-                <img class="ckc-icon-conseils-masques" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-masques.svg" alt="Icône conseils expert" width="22" height="16" >
-                <img class="ckc-icon-conseils-affiches" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-affiches.svg" alt="Icône conseils expert" width="24" height="24" >
+                <img class="ckc-icon-conseils-masques" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-masques.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="22" height="16" >
+                <img class="ckc-icon-conseils-affiches" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-affiches.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="24" height="24" >
               </div>
             </div>
           </template>
@@ -556,7 +559,7 @@ window.CKC_CFG_I18N = {
 
                     <template x-if="r.expert_advice && r.expert_advice.active && r.expert_advice.content">
                       <div class="ckc-expert" style="margin:.75rem 0 0;padding:.6rem .875rem;">
-                        <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="Icône conseils expert" width="27" height="27" ></div>
+                        <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="27" height="27" ></div>
                         <p class="ckc-expert__text" x-text="r.expert_advice.content"></p>
                       </div>
                     </template>
@@ -615,7 +618,7 @@ window.CKC_CFG_I18N = {
 
                     <template x-if="r.expert_advice && r.expert_advice.active && r.expert_advice.content">
                       <div class="ckc-expert" style="margin:.75rem 0 0;padding:.6rem .875rem;">
-                        <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="Icône conseils expert" width="27" height="27" ></div>
+                        <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="27" height="27" ></div>
                         <p class="ckc-expert__text" x-text="r.expert_advice.content"></p>
                       </div>
                     </template>
@@ -690,7 +693,7 @@ window.CKC_CFG_I18N = {
                 </template>
               </div>
               <div class="ckc-apercu-coloris-info">
-                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-coloris-info.svg" alt="Icône conseils expert" width="20" height="20" ></div>
+                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-coloris-info.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="20" height="20" ></div>
                 <div class="ckc-expert__body">
                   <p class="ckc-expert__title_text"><strong>{l s='Aperçu des coloris' d='Shop.Theme.Customconfigurator'}</strong></p>
                   <p class="ckc-expert__text">{l s='Les couleurs affichées peuvent varier légèrement selon votre écran.' d='Shop.Theme.Customconfigurator'}</p>
@@ -717,15 +720,15 @@ window.CKC_CFG_I18N = {
           <template x-if="$store.configurator.stepAdvice['step_soubassement'] && $store.configurator.stepAdvice['step_soubassement'].active && $store.configurator.stepAdvice['step_soubassement'].content">
             <div class="ckc-expert">
               <div class="ckc-icon-conseils-text-container">
-                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="Icône conseils expert" width="27" height="27" ></div>
+                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="27" height="27" ></div>
                 <div class="ckc-expert__body">
                   <p class="ckc-expert__title_text"><strong x-text="$store.configurator.stepAdvice['step_soubassement'].title" x-show="$store.configurator.stepAdvice['step_soubassement'].title"></strong></p>
                   <p class="ckc-expert__text" x-html="$store.configurator.stepAdvice['step_soubassement'].content"></p>
                 </div>
               </div>
               <div class="ckc-icon-conseils-img-container">
-                <img class="ckc-icon-conseils-masques" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-masques.svg" alt="Icône conseils expert" width="22" height="16" >
-                <img class="ckc-icon-conseils-affiches" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-affiches.svg" alt="Icône conseils expert" width="24" height="24" >
+                <img class="ckc-icon-conseils-masques" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-masques.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="22" height="16" >
+                <img class="ckc-icon-conseils-affiches" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-affiches.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="24" height="24" >
               </div>
             </div>
           </template>
@@ -881,7 +884,7 @@ window.CKC_CFG_I18N = {
           <template x-if="$store.configurator.stepAdvice['step_options'] && $store.configurator.stepAdvice['step_options'].active && $store.configurator.stepAdvice['step_options'].content">
             <div class="ckc-expert">
               <div class="ckc-icon-conseils-text-container">
-                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="Icône conseils expert" width="27" height="27" ></div>
+                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="27" height="27" ></div>
                 <div class="ckc-expert__body">
                   <p class="ckc-expert__title_text"><strong x-text="$store.configurator.stepAdvice['step_options'].title" x-show="$store.configurator.stepAdvice['step_options'].title"></strong></p>
                   <p class="ckc-expert__text" x-html="$store.configurator.stepAdvice['step_options'].content"></p>
@@ -889,8 +892,8 @@ window.CKC_CFG_I18N = {
               </div>
             </div>
             <div class="ckc-icon-conseils-img-container">
-              <img class="ckc-icon-conseils-masques" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-masques.svg" alt="Icône conseils expert" width="22" height="16" >
-              <img class="ckc-icon-conseils-affiches" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-affiches.svg" alt="Icône conseils expert" width="24" height="24" >
+              <img class="ckc-icon-conseils-masques" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-masques.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="22" height="16" >
+              <img class="ckc-icon-conseils-affiches" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-affiches.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="24" height="24" >
             </div>
           </template>
 
@@ -2059,6 +2062,43 @@ document.addEventListener('alpine:init', () => {
   Alpine.store('configurator', {
     _i18n() { return window.CKC_CFG_I18N || {}; },
 
+    /** Translate DB/API FR strings via catalogue (EN FO fallback). */
+    _t(s) {
+      if (s == null || s === '') return s;
+      const cat = window.CKC_CFG_CATALOGUE;
+      if (!cat || typeof s !== 'string') return s;
+      if (Object.prototype.hasOwnProperty.call(cat, s)) return cat[s];
+      if (s.indexOf('&') !== -1) {
+        const el = document.createElement('textarea');
+        el.innerHTML = s;
+        const decoded = el.value;
+        if (Object.prototype.hasOwnProperty.call(cat, decoded)) return cat[decoded];
+      }
+      return s;
+    },
+
+    _localizeEntity(obj) {
+      if (!obj) return obj;
+      if (Array.isArray(obj)) return obj.map((item) => this._localizeEntity(item));
+      if (typeof obj !== 'object') return obj;
+      const out = { ...obj };
+      ['title', 'subtitle', 'description', 'name', 'label', 'content', 'text', 'promo_message', 'fixation_label'].forEach((f) => {
+        if (typeof out[f] === 'string') out[f] = this._t(out[f]);
+      });
+      if (out.info_items) out.info_items = this._localizeEntity(out.info_items);
+      if (out.tech_specs) out.tech_specs = this._localizeEntity(out.tech_specs);
+      if (out.expert_advice) out.expert_advice = this._localizeEntity(out.expert_advice);
+      if (out.options) out.options = this._localizeEntity(out.options);
+      return out;
+    },
+
+    _localizeAdvice(map) {
+      if (!map || typeof map !== 'object') return map || {};
+      const out = {};
+      Object.keys(map).forEach((k) => { out[k] = this._localizeEntity(map[k]); });
+      return out;
+    },
+
     // ── État ──────────────────────────────────────────────────
     loading:        true,
     error:          null,
@@ -2246,12 +2286,12 @@ document.addEventListener('alpine:init', () => {
 
         if (!data.ok) { this.error = data.error || (this._i18n().bootstrapError || 'Erreur bootstrap'); return; }
 
-        this.fenceTypes = data.fence_types || [];
+        this.fenceTypes = this._localizeEntity(data.fence_types || []);
 
         const tunnel = data.tunnel || {};
         // hasSoubassementStep is now set per fence_type in selectFenceType()
         this.hasSoubassementStep = false;
-        this.stepAdvice = data.step_advice || {};
+        this.stepAdvice = this._localizeAdvice(data.step_advice || {});
         // info_items are now per-entity (in each fence_type, install_type, range object)
 
       } catch (e) {
@@ -2363,10 +2403,11 @@ document.addEventListener('alpine:init', () => {
       });
       const data = await res.json();
       if (data.ok) {
-        this.ranges    = data.ranges     || [];
-        this.colors    = data.colors     || [];
-        this.postTypes = data.post_types || [];
-        this.heights   = this.sortHeights(data.heights || []);
+        this.ranges    = this._localizeEntity(data.ranges     || []);
+        this.colors    = this._localizeEntity(data.colors     || []);
+        this.postTypes = this._localizeEntity(data.post_types || []);
+        this.heights   = this._localizeEntity(this.sortHeights(data.heights || []));
+        this.notAvailablesRanges = this._localizeEntity(data.not_available_ranges || []);
         if (this.heights.length === 1 && !t.heightAttrId) {
           t.heightAttrId = this.heights[0].id;
         }
@@ -2388,7 +2429,7 @@ document.addEventListener('alpine:init', () => {
         });
         const data = await res.json();
         if (data.ok) {
-          this.installTypes = data.install_types || [];
+          this.installTypes = this._localizeEntity(data.install_types || []);
         }
         // Recharge les gammes (+ couleurs/poteaux/hauteurs) si une pose est déjà choisie
         if (t.installTypeId) {
@@ -2415,7 +2456,7 @@ document.addEventListener('alpine:init', () => {
           body: JSON.stringify({ tunnel_id: this.tunnelId, post_type_id: this.currentTronconData().postTypeId || 0 }),
         });
         const data = await res.json();
-        if (data.ok) this.soubassements = data.soubassements || [];
+        if (data.ok) this.soubassements = this._localizeEntity(data.soubassements || []);
       }
 
       if (step === this.stepOptions) {
@@ -2427,8 +2468,12 @@ document.addEventListener('alpine:init', () => {
         });
         const data = await res.json();
         if (data.ok) {
-          this.options = data.options || [];
-          this.optionTypes = data.option_types || [];
+          this.options = this._localizeEntity(data.options || []);
+          this.optionTypes = (data.option_types || []).map((ot) => ({
+            ...ot,
+            label: this._t(ot.label),
+            options: this._localizeEntity(ot.options || []),
+          }));
           // Ouvrir automatiquement le premier type d'options à l'arrivée
           this.activeOptionType = this.optionTypes.length > 0 ? this.optionTypes[0].key : null;
         }

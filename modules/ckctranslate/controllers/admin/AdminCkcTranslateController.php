@@ -1058,12 +1058,15 @@ class AdminCkcTranslateController extends ModuleAdminController
             }
 
             if ($onlyMissing && $targetLangId > 0) {
-                $sql .= ' AND NOT EXISTS (
-                    SELECT 1 FROM `' . _DB_PREFIX_ . $meta['lang_table'] . '` tgt
-                    WHERE tgt.`' . $meta['id_column'] . '` = c.`' . $meta['id_column'] . '`
-                      AND tgt.id_lang = ' . (int) $targetLangId . '
-                      AND tgt.content IS NOT NULL
-                      AND TRIM(tgt.content) != \'\'
+                $sql .= ' AND (
+                    NOT EXISTS (
+                        SELECT 1 FROM `' . _DB_PREFIX_ . $meta['lang_table'] . '` tgt
+                        WHERE tgt.`' . $meta['id_column'] . '` = c.`' . $meta['id_column'] . '`
+                          AND tgt.id_lang = ' . (int) $targetLangId . '
+                          AND tgt.content IS NOT NULL
+                          AND TRIM(tgt.content) != \'\'
+                          AND tgt.content != src.content
+                    )
                 )';
             }
 
