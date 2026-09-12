@@ -96,6 +96,12 @@
                                       el.innerHTML = el.innerHTML.replace(/\bavis\b/gi, labelReviews);
                                     }
                                   });
+                                  // Évite le double onglet « Avis vérifiés »
+                                  var avisLinks = document.querySelectorAll('.nav.nav-tabs[role="tablist"] a.avisVerfies');
+                                  for (var i = 1; i < avisLinks.length; i++) {
+                                    var li = avisLinks[i].closest('li.nav-item');
+                                    if (li) li.parentNode.removeChild(li);
+                                  }
                                 }
                                 document.addEventListener('DOMContentLoaded', function () {
                                   apply();
@@ -116,7 +122,7 @@
                               })();
                             </script>
                             <a href="javascript:av_widget_click()" id="AV_button">
-                                <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
+                                <div class="skeepers_product__stars" data-product-id="{$product.id}" data-locale="{$language.locale|replace:'-':'_'}"></div>
                             </a>
                         </div>
 
@@ -721,7 +727,7 @@
 
                                         <div class="skeepers_product__reviews"
                                              data-product-id="{$product.id}"
-                                             data-locale="fr_FR"
+                                             data-locale="{$language.locale|replace:'-':'_'}"
                                              data-price="{$product.price}"
                                              data-currency="{$currency.iso_code}"
                                              data-name="{$product.title}"

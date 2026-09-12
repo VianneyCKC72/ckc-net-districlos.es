@@ -75,7 +75,7 @@
                 {$product.price}
               </span>
                                             {/if}
-                                            <span class="taxe">{if isset($env_pro) && $env_pro == 1}HT{else}TTC{/if}</span>
+                                            <span class="taxe">{if isset($env_pro) && $env_pro == 1}{l s='HT' d='Shop.Theme.Custommodules'}{else}{l s='TTC' d='Shop.Theme.Custommodules'}{/if}</span>
                                         </div>
                                         {if $product.has_discount}
                                             {hook h='displayProductPriceBlock' product=$product type="old_price"}
