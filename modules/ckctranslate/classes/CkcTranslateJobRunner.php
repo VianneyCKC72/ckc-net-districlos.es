@@ -1240,7 +1240,10 @@ PROMPT;
                  AND id_lang = ' . (int) $this->targetLangId
             );
 
-            if (trim(strip_tags($targetContent)) !== '') {
+            // Une copie FR déjà présente en EN ne doit PAS être considérée comme traduite.
+            if (trim(strip_tags($targetContent)) !== ''
+                && trim($targetContent) !== trim($sourceContent)
+            ) {
                 $this->logHistory('evercontentseo', $type, $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
                 return $this->nextResult(sprintf(

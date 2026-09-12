@@ -16,7 +16,7 @@
       <trans-unit id="12"><source>Avis</source><target>Reviews</target></trans-unit>
       <trans-unit id="13"><source>Banière newsletter</source><target>Newsletter banner</target></trans-unit>
       <trans-unit id="14"><source>Calcul mètres linéaires : addition de toutes les longueurs en mètres</source><target>Linear meters calculation: sum of all lengths in meters</target></trans-unit>
-      <trans-unit id="15"><source>Ces produits existent aussi en kit !</source><target>These products are also available as kits!</target></trans-unit>
+      <trans-unit id="15"><source>Ces produits existent aussi en kit !</source><target>These products are available as kits!</target></trans-unit>
       <trans-unit id="16"><source>Choisissez la longueur en mètres linéaires</source><target>Choose the length in linear meters</target></trans-unit>
       <trans-unit id="17"><source>Choisissez votre kit idéal en fonction du type de pose souhaité. Ils contiennent tout le nécessaire pour une clôture réussie !</source><target>Choose your ideal kit based on the type of installation you want. They contain everything you need for a successful fence!</target></trans-unit>
       <trans-unit id="18"><source>Commander</source><target>Checkout</target></trans-unit>
@@ -159,6 +159,16 @@
       <trans-unit id="155"><source>Configurez votre clôture</source><target>Configure your fence</target></trans-unit>
       <trans-unit id="156"><source>Vous préférez du sur-mesure ? Composez votre clôture et choisissez ses caractéristiques uniques.</source><target>Prefer a custom-made solution? Build your fence and choose its unique features.</target></trans-unit>
       <trans-unit id="157"><source>Configurer votre clôture</source><target>Configure your fence</target></trans-unit>
+      <trans-unit id="158"><source>Produits garantis</source><target>Guaranteed products</target></trans-unit>
+      <trans-unit id="159"><source>au meilleur prix en ligne</source><target>at the lowest price online</target></trans-unit>
+      <trans-unit id="160"><source>Vous l'avez trouvé moins cher ailleurs ?</source><target>Found it cheaper elsewhere?</target></trans-unit>
+      <trans-unit id="161"><source>Nous vous remboursons la différence.</source><target>We'll refund the difference.</target></trans-unit>
+      <trans-unit id="162"><source>Valable pour des produits identiques de même provenance</source><target>Valid for identical products from the same source</target></trans-unit>
+      <trans-unit id="163"><source>En savoir plus</source><target>Learn more</target></trans-unit>
+      <trans-unit id="164"><source>Besoin spécifique ?</source><target>Specific requirements?</target></trans-unit>
+      <trans-unit id="165"><source>Réinitialiser tous les filtres</source><target>Reset all filters</target></trans-unit>
+      <trans-unit id="166"><source>TTC</source><target>incl. tax</target></trans-unit>
+      <trans-unit id="167"><source>HT</source><target>excl. tax</target></trans-unit>
     </body>
   </file>
 </xliff>
