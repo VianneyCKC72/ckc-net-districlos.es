@@ -103,7 +103,7 @@
             <div class="netreviews_reviews_tab d-flex">
                 <div class="skeepers_product__reviews"
                      data-product-id="{$product.id}"
-                     data-locale="fr_FR"
+                     data-locale="{$language.locale|replace:'-':'_'}"
                      data-price="{$product.price}"
                      data-currency="{$currency.iso_code}"
                      data-name="{$product.title}"

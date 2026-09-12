@@ -43,8 +43,13 @@
                     <div class="elementor-text-editor elementor-clearfix">
                       <p><img src="{$img_cms|escape:'html':'UTF-8'}logo_garantie_prix.png" alt="" width="38" height="38"></p>
                       <p>
-                        {l s='Produits garantis' d='Shop.Theme.Custommodules'}<br>
-                        <strong><span class="h3 block-titre">{l s='au meilleur prix en ligne' d='Shop.Theme.Custommodules'}</span></strong>
+                        {if $language.iso_code == 'en'}
+                          Guaranteed products<br>
+                          <strong><span class="h3 block-titre">at the lowest price online</span></strong>
+                        {else}
+                          Produits garantis<br>
+                          <strong><span class="h3 block-titre">au meilleur prix en ligne</span></strong>
+                        {/if}
                       </p>
                     </div>
                   </div>
@@ -53,7 +58,7 @@
                 <div class="elementor-element elementor-element-682edaf elementor-widget elementor-widget-text-editor" data-id="682edaf" data-element_type="widget">
                   <div class="elementor-widget-container">
                     <div class="elementor-text-editor elementor-clearfix">
-                      <p>{l s='Vous l\'avez trouvé moins cher ailleurs ?' d='Shop.Theme.Custommodules'}<br>{l s='Nous vous remboursons la différence.' d='Shop.Theme.Custommodules'}</p>
+                      <p>{l s='Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.' d='Shop.Theme.Custommodules'}</p>
                     </div>
                   </div>
                 </div>
@@ -61,7 +66,7 @@
                 <div class="elementor-element elementor-element-4ca4fc8 elementor-widget elementor-widget-text-editor" data-id="4ca4fc8" data-element_type="widget">
                   <div class="elementor-widget-container">
                     <div class="elementor-text-editor elementor-clearfix">
-                      <p>{l s='Valable pour des produits identiques de même provenance' d='Shop.Theme.Custommodules'}</p>
+                      <p>{if $language.iso_code == 'en'}Valid for identical products from the same source{else}Valable pour des produits identiques de même provenance{/if}</p>
                     </div>
                   </div>
                 </div>
@@ -71,7 +76,7 @@
                     <div class="elementor-text-editor elementor-clearfix">
                       <p style="text-align: center;">
                         <a style="display: inline-flex; align-items: center; justify-content: center;" href="{$link->getCMSLink(650, null, $language.id)|escape:'html':'UTF-8'}" class="link-arrow blue-light">
-                          {l s='En savoir plus' d='Shop.Theme.Custommodules'}&nbsp;<span class="btn-primary-arrow">{$ce_arrow_svg nofilter}</span>
+                          {l s='En savoir plus' d='Shop.Theme.Customcatalog'}&nbsp;<span class="btn-primary-arrow">{$ce_arrow_svg nofilter}</span>
                         </a>
                       </p>
                     </div>
@@ -96,7 +101,7 @@
                   <div class="elementor-widget-container">
                     <div class="elementor-text-editor elementor-clearfix">
                       <p>
-                        {l s='Besoin spécifique ?' d='Shop.Theme.Custommodules'}<br>
+                        {if $language.iso_code == 'en'}Specific requirements?{else}Besoin spécifique ?{/if}<br>
                         <strong><span class="h3 block-titre">{l s='Demandez votre devis en 30 secondes' d='Shop.Theme.Custommodules'}</span></strong>
                       </p>
                     </div>
