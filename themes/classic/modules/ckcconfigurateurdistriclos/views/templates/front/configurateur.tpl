@@ -47,7 +47,21 @@ window.CKC_CFG_I18N = {
 };
 </script>
 {if isset($language.iso_code) && $language.iso_code != 'fr'}
-<script src="{$urls.base_url|escape:'htmlall':'UTF-8'}modules/ckcconfigurateurdistriclos/views/js/cfg-catalogue-en.js"></script>
+{* Catalogue FR→EN for API/DB strings — served from theme (tracked in parent repo) *}
+<script src="{$urls.base_url|escape:'htmlall':'UTF-8'}themes/classic/modules/ckcconfigurateurdistriclos/views/js/cfg-catalogue-en.js"></script>
+<script>
+(function () {
+  var cat = window.CKC_CFG_CATALOGUE;
+  var i18n = window.CKC_CFG_I18N;
+  if (!cat || !i18n) return;
+  Object.keys(i18n).forEach(function (k) {
+    var v = i18n[k];
+    if (typeof v === 'string' && Object.prototype.hasOwnProperty.call(cat, v)) {
+      i18n[k] = cat[v];
+    }
+  });
+})();
+</script>
 {/if}
 
 <div id="ckc-configurator"
@@ -1982,7 +1996,7 @@ window.CKC_CFG_I18N = {
           </template>
           <div>
             <span class="ckc-footer__etape"
-                  x-text="((window.CKC_CFG_I18N&&window.CKC_CFG_I18N.stepPrefix)||'Étape') + ' ' + $store.configurator.currentStep"></span>
+                  x-text="$store.configurator.footerStepLabel"></span>
           </div>
           {* ---- Barre de progression ---- *}
           <div class="ckc-progress" role="progressbar"
@@ -2068,11 +2082,15 @@ document.addEventListener('alpine:init', () => {
       const cat = window.CKC_CFG_CATALOGUE;
       if (!cat || typeof s !== 'string') return s;
       if (Object.prototype.hasOwnProperty.call(cat, s)) return cat[s];
+      const trimmed = s.trim();
+      if (trimmed !== s && Object.prototype.hasOwnProperty.call(cat, trimmed)) return cat[trimmed];
       if (s.indexOf('&') !== -1) {
         const el = document.createElement('textarea');
         el.innerHTML = s;
         const decoded = el.value;
         if (Object.prototype.hasOwnProperty.call(cat, decoded)) return cat[decoded];
+        const decodedTrim = decoded.trim();
+        if (decodedTrim !== decoded && Object.prototype.hasOwnProperty.call(cat, decodedTrim)) return cat[decodedTrim];
       }
       return s;
     },
@@ -2259,7 +2277,14 @@ document.addEventListener('alpine:init', () => {
       if (this.currentStep === this.stepOptions) return I.stepOptions || 'Options';
       if (this.multiTroncons && this.currentStep === this.stepMultiTroncons) return I.stepSections || 'Sections';
       if (this.currentStep === this.totalSteps) return I.stepRecap || 'Récapitulatif';
-      return (I.stepPrefix || 'Étape') + ' ' + this.currentStep;
+      return this.footerStepLabel;
+    },
+
+    /** Footer "Step N" — always via catalogue so EN FO never keeps "Étape". */
+    get footerStepLabel() {
+      const I = this._i18n();
+      const prefix = this._t(I.stepPrefix || 'Étape') || I.stepPrefix || 'Étape';
+      return prefix + ' ' + this.currentStep;
     },
 
     // Validation pour activer le bouton "Continuer"
