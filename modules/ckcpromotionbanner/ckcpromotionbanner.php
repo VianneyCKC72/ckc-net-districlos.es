@@ -43,7 +43,7 @@ class Ckcpromotionbanner extends Module
     {
         $this->name = 'ckcpromotionbanner';
         $this->tab = 'pricing_promotion';
-        $this->version = '1.1.2';
+        $this->version = '1.1.3';
         $this->author = 'Agence CKC';
         $this->need_instance = 1;
         $this->className = 'AdminManagesBarrePromo';
@@ -178,14 +178,29 @@ class Ckcpromotionbanner extends Module
         }
 
         // Prefer named submit buttons; keep legacy isSubmit('id_promotexts*') for old templates.
+        $promoSaved = false;
         if (Tools::isSubmit('submitPromoTextsB2c') || Tools::isSubmit('id_promotexts')) {
             $this->saveExceptions();
-            Tools::redirectAdmin($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]));
+            $promoSaved = true;
         }
 
         if (Tools::isSubmit('submitPromoTextsPro') || Tools::isSubmit('id_promotextsPro')) {
             $this->saveExceptionsPro();
-            Tools::redirectAdmin($this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]));
+            $promoSaved = true;
+        }
+
+        if ($promoSaved) {
+            Tools::redirectAdmin(
+                $this->context->link->getAdminLink('AdminModules', true, [], [
+                    'configure' => $this->name,
+                    'promo_texts_saved' => 1,
+                ])
+            );
+        }
+
+        $output = '';
+        if ((int) Tools::getValue('promo_texts_saved') === 1) {
+            $output .= $this->displayConfirmation($this->l('Promotional texts saved.'));
         }
 
         $moduleAdminLink = $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]);
@@ -215,7 +230,7 @@ class Ckcpromotionbanner extends Module
 
 
 
-        $output = $this->context->smarty->fetch($this->local_path . 'views/templates/admin/configure.tpl');
+        $output .= $this->context->smarty->fetch($this->local_path . 'views/templates/admin/configure.tpl');
 
         return $output . $this->renderForm();
     }
@@ -246,7 +261,7 @@ class Ckcpromotionbanner extends Module
 
             $values = $this->getExistingPromoTextsEncoded($configKey);
             $values[$defaultLangId] = $this->encodePromoTexts((string) $payload);
-            Configuration::updateValue($configKey, $values);
+            $this->updatePromoTextsConfig($configKey, $values);
 
             return;
         }
@@ -281,8 +296,31 @@ class Ckcpromotionbanner extends Module
         }
 
         if (!empty($values)) {
-            Configuration::updateValue($configKey, $values);
+            $this->updatePromoTextsConfig($configKey, $values);
         }
+    }
+
+    /**
+     * Persist multilang promo texts in the current shop context.
+     *
+     * @param string $configKey
+     * @param array<int, string> $values
+     *
+     * @return bool
+     */
+    protected function updatePromoTextsConfig($configKey, array $values)
+    {
+        $idShop = Shop::getContextShopID(true);
+        $idShopGroup = Shop::getContextShopGroupID(true);
+
+        // html=false: values are base64(serialize(...)), not HTML.
+        return Configuration::updateValue(
+            $configKey,
+            $values,
+            false,
+            $idShopGroup ? (int) $idShopGroup : null,
+            $idShop ? (int) $idShop : null
+        );
     }
 
     /**
@@ -310,7 +348,7 @@ class Ckcpromotionbanner extends Module
 
         $values = $this->getExistingPromoTextsEncoded($configKey);
         $values[$defaultLangId] = $this->encodePromoTexts(implode(',,', $legacyArr));
-        Configuration::updateValue($configKey, $values);
+        $this->updatePromoTextsConfig($configKey, $values);
     }
 
     /**
