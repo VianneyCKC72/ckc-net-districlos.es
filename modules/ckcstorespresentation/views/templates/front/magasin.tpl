@@ -32,7 +32,7 @@
                 <span class="ckc-store-rating__stars" aria-hidden="true"
                       style="--rating: {$magasin.google_rating|string_format:"%.2f"}"></span>
                 {if isset($magasin.google_rating_count) && $magasin.google_rating_count}
-                    <span class="ckc-store-rating__count">{$magasin.google_rating_count|intval} avis</span>
+                    <span class="ckc-store-rating__count">{$magasin.google_rating_count|intval} {l s='avis' d='Shop.Theme.Customstores'}</span>
                 {/if}
             </div>
         {/if}
@@ -82,11 +82,11 @@
             {if isset($magasin.horaires_heures) && $magasin.horaires_heures}
                 <span class="heures" itemprop="openingHours">{$magasin.horaires_heures}</span>
             {/if}
-            <span class="heures" itemprop="openingHours">Samedi</span>
+            <span class="heures" itemprop="openingHours">{l s='Samedi' d='Shop.Theme.Customstores'}</span>
             {if isset($magasin.horaires_samedi) && $magasin.horaires_samedi}
                 <span class="heures" itemprop="openingHours">{$magasin.horaires_samedi}</span>
             {else}
-                <span class="heures" itemprop="openingHours">Fermé</span>
+                <span class="heures" itemprop="openingHours">{l s='Fermé' d='Shop.Theme.Customstores'}</span>
             {/if}
             {if isset($magasin.horaires_info_suppl) && $magasin.horaires_info_suppl}
                 <span class="heures magasins-info-suppl" itemprop="openingHours">{$magasin.horaires_info_suppl}</span>
@@ -104,7 +104,7 @@
                 </svg>
             </a>
             <a href="{Context::getContext()->link->getCMSLink($magasin.id_cms_detail)}" class="btn btn-primary btn-primary-small" itemprop="url">
-                Voir la page <span class="only-lg">&nbsp;du magasin</span>
+                {l s='Voir la page du magasin' d='Shop.Theme.Customstores'}
             </a>
         </div>
     </div>

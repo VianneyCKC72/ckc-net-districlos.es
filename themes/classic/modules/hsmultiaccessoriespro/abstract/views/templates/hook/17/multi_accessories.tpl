@@ -10,7 +10,7 @@
     {if !empty($accessory_groups) && !empty($accessories_groups)}
         <script type="text/javascript">
             changeMainPrice = {$change_main_price|escape:'htmlall':'UTF-8'};
-            accessoriesTablePrice = {$accessories_table_price nofilter};
+            accessoriesTablePrice = {$accessories_table_price|ckc_hsma_table_price nofilter};
             randomMainProductId = '{$random_main_product_id|escape:'htmlall':'UTF-8'}';
             subTotal = '{$sub_total|escape:'htmlall':'UTF-8'}';
             showTablePrice = {$show_table_price|escape:'htmlall':'UTF-8'};
@@ -70,7 +70,7 @@
                             {if $group.collapse_expand != HsMaDisplayStyle::DISPLAY_GROUPS_NONE}
                                 <i style="font-style: normal;" class="{$class_collapse|escape:'htmlall':'UTF-8'} {$class_expand|escape:'htmlall':'UTF-8'}">{if $icon_utf8 == 1}+{else}-{/if}</i>
                             {/if}
-                                {$group.name|escape:'html':'UTF-8'}
+                                {$group.name|ckc_hsma_group_name|escape:'html':'UTF-8'}
                             </h4>
                         {/if}
                         <div class="content_group" style="display: {$is_show_group|escape:'htmlall':'UTF-8'}">

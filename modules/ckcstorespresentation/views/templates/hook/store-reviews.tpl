@@ -24,18 +24,18 @@
                     {/for}
                 </span>
                 {if $store.google_rating_count}
-                    <span class="ckc-store-reviews__count">{$store.google_rating_count|intval} avis</span>
+                    <span class="ckc-store-reviews__count">{$store.google_rating_count|intval} {l s='avis' d='Shop.Theme.Customstores'}</span>
                 {/if}
                 {if $maps_url}
                     <a href="{$maps_url|escape:'html':'UTF-8'}" class="btn btn-primary btn-sm ckc-store-reviews__google" target="_blank" rel="noopener noreferrer">
-                        {l s='Voir sur Google' mod='ckcstorespresentation'}
+                        {l s='Voir sur Google' d='Shop.Theme.Customstores'}
                     </a>
                 {/if}
             </div>
         {/if}
 
         {if $reviews|@count}
-            <div class="ckc-store-reviews__slider" aria-label="{l s='Avis clients' mod='ckcstorespresentation'}">
+            <div class="ckc-store-reviews__slider" aria-label="{l s='Avis clients' d='Shop.Theme.Customstores'}">
                 {foreach from=$reviews item=review}
                     <article class="ckc-store-reviews__card" itemprop="review" itemscope itemtype="https://schema.org/Review">
                         <div class="ckc-store-reviews__card-stars" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
