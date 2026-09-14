@@ -148,7 +148,7 @@ class CkcTranslateJobRunner
             ));
         }
 
-        if ($this->shouldSkipFilledFields($targetProduct, array('name', 'meta_title', 'meta_description', 'meta_keywords', 'link_rewrite'))) {
+        if ($this->shouldSkipFilledFields($targetProduct, array('name', 'meta_title', 'meta_description', 'meta_keywords', 'link_rewrite'), $product)) {
             $this->logHistory('product_seo', 'product', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -256,7 +256,7 @@ PROMPT;
             ));
         }
 
-        if ($this->shouldSkipFilledFields($targetProduct, array('description_short', 'description'))) {
+        if ($this->shouldSkipFilledFields($targetProduct, array('description_short', 'description'), $product)) {
             $this->logHistory('product_description', 'product', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -345,7 +345,7 @@ PROMPT;
             ));
         }
 
-        if ($this->shouldSkipFilledFields($targetCategory, array('name', 'meta_title', 'meta_description', 'link_rewrite'))) {
+        if ($this->shouldSkipFilledFields($targetCategory, array('name', 'meta_title', 'meta_description', 'link_rewrite'), $category)) {
             $this->logHistory('category_seo', 'category', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -448,7 +448,7 @@ PROMPT;
             ));
         }
 
-        if ($this->shouldSkipFilledFields($targetCategory, array('description', 'additional_description'))) {
+        if ($this->shouldSkipFilledFields($targetCategory, array('description', 'additional_description'), $category)) {
             $this->logHistory('category_description', 'category', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -537,7 +537,7 @@ PROMPT;
             ));
         }
 
-        if ($this->shouldSkipFilledFields($targetCms, array('meta_title', 'meta_description', 'meta_keywords', 'content', 'link_rewrite'))) {
+        if ($this->shouldSkipFilledFields($targetCms, array('meta_title', 'meta_description', 'meta_keywords', 'content', 'link_rewrite'), $cms)) {
             $this->logHistory('cms', 'cms', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -685,20 +685,232 @@ PROMPT;
         }
     }
 
-    protected function getFilteredSql($jobCode)
+    /**
+     * Count entities still needing translation for a job (respects filters + only-missing).
+     *
+     * @param string $jobCode
+     * @param bool   $forceOnlyMissing Always count missing/untranslated even if config is off
+     *
+     * @return int
+     */
+    public function countUntranslated($jobCode, $forceOnlyMissing = true)
+    {
+        switch ($jobCode) {
+            case 'evercontentseo':
+                return $this->countEverContentSeoMissing($forceOnlyMissing);
+
+            case 'features':
+                return $this->countFeaturesMissing($forceOnlyMissing);
+
+            case 'attributes':
+                return $this->countAttributesMissing($forceOnlyMissing);
+
+            default:
+                $filtered = $this->getFilteredSql($jobCode, $forceOnlyMissing);
+                if (empty($filtered['sql']) || empty($filtered['column'])) {
+                    return 0;
+                }
+
+                $rows = Db::getInstance()->executeS($filtered['sql']);
+
+                return is_array($rows) ? count($rows) : 0;
+        }
+    }
+
+    protected function countEverContentSeoMissing($onlyMissing = true)
+    {
+        if (!$onlyMissing) {
+            return count($this->buildEverContentSeoQueue());
+        }
+
+        $items = array();
+        $shopId = (int) Context::getContext()->shop->id;
+        $filterType = (string) Configuration::get(CkcTranslate::CONF_FILTER_TYPE);
+        $filterIds = $this->parseIds((string) Configuration::get(CkcTranslate::CONF_FILTER_IDS));
+        $filterCategoryId = (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID);
+        $types = array('category', 'manufacturer', 'supplier');
+
+        foreach (self::discoverEverContentSeoModules() as $module) {
+            foreach ($types as $type) {
+                $meta = self::getEverContentSeoTypeMetaForModule($module, $type);
+                if (!$meta) {
+                    continue;
+                }
+                if (!(bool) Db::getInstance()->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . $meta['table'] . '"')) {
+                    continue;
+                }
+
+                $sql = 'SELECT COUNT(*)
+                        FROM `' . _DB_PREFIX_ . $meta['table'] . '` c
+                        INNER JOIN `' . _DB_PREFIX_ . $meta['lang_table'] . '` src
+                          ON src.`' . $meta['id_column'] . '` = c.`' . $meta['id_column'] . '`
+                         AND src.id_lang = ' . (int) $this->sourceLangId . '
+                        WHERE src.content IS NOT NULL
+                          AND TRIM(src.content) != \'\'
+                          AND c.id_shop = ' . (int) $shopId . '
+                          AND NOT EXISTS (
+                            SELECT 1 FROM `' . _DB_PREFIX_ . $meta['lang_table'] . '` tgt
+                            WHERE tgt.`' . $meta['id_column'] . '` = c.`' . $meta['id_column'] . '`
+                              AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                              AND tgt.content IS NOT NULL
+                              AND TRIM(tgt.content) != \'\'
+                              AND tgt.content != src.content
+                          )';
+
+                if ($type === 'category') {
+                    if ($filterType === 'ids' && !empty($filterIds)) {
+                        $sql .= ' AND c.`' . $meta['ref_column'] . '` IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                    }
+                    if ($filterType === 'category' && $filterCategoryId > 0) {
+                        $sql .= ' AND c.`' . $meta['ref_column'] . '` = ' . (int) $filterCategoryId;
+                    }
+                }
+
+                $items[] = (int) Db::getInstance()->getValue($sql);
+            }
+        }
+
+        return array_sum($items);
+    }
+
+    protected function countFeaturesMissing($onlyMissing = true)
+    {
+        if (!$onlyMissing) {
+            return count($this->buildFeaturesQueue());
+        }
+
+        $filterType = (string) Configuration::get(CkcTranslate::CONF_FILTER_TYPE);
+        $filterIds = $this->parseIds((string) Configuration::get(CkcTranslate::CONF_FILTER_IDS));
+        $db = Db::getInstance();
+
+        $featureSql = 'SELECT COUNT(*)
+                       FROM `' . _DB_PREFIX_ . 'feature` f
+                       INNER JOIN `' . _DB_PREFIX_ . 'feature_lang` src
+                         ON src.id_feature = f.id_feature
+                        AND src.id_lang = ' . (int) $this->sourceLangId . '
+                       WHERE src.name IS NOT NULL
+                         AND TRIM(src.name) != \'\'
+                         AND NOT EXISTS (
+                            SELECT 1 FROM `' . _DB_PREFIX_ . 'feature_lang` tgt
+                            WHERE tgt.id_feature = f.id_feature
+                              AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                              AND tgt.name IS NOT NULL
+                              AND TRIM(tgt.name) != \'\'
+                              AND tgt.name != src.name
+                         )';
+
+        if ($filterType === 'ids' && !empty($filterIds)) {
+            $featureSql .= ' AND f.id_feature IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+        }
+
+        $valueSql = 'SELECT COUNT(*)
+                     FROM `' . _DB_PREFIX_ . 'feature_value` fv
+                     INNER JOIN `' . _DB_PREFIX_ . 'feature_value_lang` src
+                       ON src.id_feature_value = fv.id_feature_value
+                      AND src.id_lang = ' . (int) $this->sourceLangId . '
+                     WHERE src.value IS NOT NULL
+                       AND TRIM(src.value) != \'\'
+                       AND NOT EXISTS (
+                          SELECT 1 FROM `' . _DB_PREFIX_ . 'feature_value_lang` tgt
+                          WHERE tgt.id_feature_value = fv.id_feature_value
+                            AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                            AND tgt.value IS NOT NULL
+                            AND TRIM(tgt.value) != \'\'
+                            AND tgt.value != src.value
+                       )';
+
+        if ($filterType === 'ids' && !empty($filterIds)) {
+            $valueSql .= ' AND fv.id_feature IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+        }
+
+        return (int) $db->getValue($featureSql) + (int) $db->getValue($valueSql);
+    }
+
+    protected function countAttributesMissing($onlyMissing = true)
+    {
+        if (!$onlyMissing) {
+            return count($this->buildAttributesQueue());
+        }
+
+        $filterType = (string) Configuration::get(CkcTranslate::CONF_FILTER_TYPE);
+        $filterIds = $this->parseIds((string) Configuration::get(CkcTranslate::CONF_FILTER_IDS));
+        $db = Db::getInstance();
+
+        $groupSql = 'SELECT COUNT(*)
+                     FROM `' . _DB_PREFIX_ . 'attribute_group` ag
+                     INNER JOIN `' . _DB_PREFIX_ . 'attribute_group_lang` src
+                       ON src.id_attribute_group = ag.id_attribute_group
+                      AND src.id_lang = ' . (int) $this->sourceLangId . '
+                     WHERE (
+                        (src.name IS NOT NULL AND TRIM(src.name) != \'\')
+                        OR (src.public_name IS NOT NULL AND TRIM(src.public_name) != \'\')
+                     )
+                     AND NOT EXISTS (
+                        SELECT 1 FROM `' . _DB_PREFIX_ . 'attribute_group_lang` tgt
+                        WHERE tgt.id_attribute_group = ag.id_attribute_group
+                          AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                          AND tgt.name IS NOT NULL AND TRIM(tgt.name) != \'\' AND tgt.name != src.name
+                          AND tgt.public_name IS NOT NULL AND TRIM(tgt.public_name) != \'\' AND tgt.public_name != src.public_name
+                     )';
+
+        if ($filterType === 'ids' && !empty($filterIds)) {
+            $groupSql .= ' AND ag.id_attribute_group IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+        }
+
+        $attrSql = 'SELECT COUNT(*)
+                    FROM `' . _DB_PREFIX_ . 'attribute` a
+                    INNER JOIN `' . _DB_PREFIX_ . 'attribute_lang` src
+                      ON src.id_attribute = a.id_attribute
+                     AND src.id_lang = ' . (int) $this->sourceLangId . '
+                    WHERE src.name IS NOT NULL
+                      AND TRIM(src.name) != \'\'
+                      AND NOT EXISTS (
+                        SELECT 1 FROM `' . _DB_PREFIX_ . 'attribute_lang` tgt
+                        WHERE tgt.id_attribute = a.id_attribute
+                          AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                          AND tgt.name IS NOT NULL
+                          AND TRIM(tgt.name) != \'\'
+                          AND tgt.name != src.name
+                      )';
+
+        if ($filterType === 'ids' && !empty($filterIds)) {
+            $attrSql .= ' AND a.id_attribute_group IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+        }
+
+        return (int) $db->getValue($groupSql) + (int) $db->getValue($attrSql);
+    }
+
+    protected function getFilteredSql($jobCode, $forceOnlyMissing = null)
     {
         $filterType = (string) Configuration::get(CkcTranslate::CONF_FILTER_TYPE);
         $filterIds = $this->parseIds((string) Configuration::get(CkcTranslate::CONF_FILTER_IDS));
         $filterCategoryId = (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID);
+        if ($forceOnlyMissing === null) {
+            $onlyMissing = (bool) (int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS);
+        } else {
+            $onlyMissing = (bool) $forceOnlyMissing;
+        }
+        $shopId = (int) Context::getContext()->shop->id;
 
         switch ($jobCode) {
             case 'product_seo':
             case 'product_description':
-                $sql = 'SELECT p.id_product
+                $sql = 'SELECT DISTINCT p.id_product
                         FROM ' . _DB_PREFIX_ . 'product p';
 
                 if ($filterType === 'category' && $filterCategoryId > 0) {
                     $sql .= ' INNER JOIN ' . _DB_PREFIX_ . 'category_product cp ON cp.id_product = p.id_product';
+                }
+
+                if ($onlyMissing) {
+                    $sql .= ' INNER JOIN `' . _DB_PREFIX_ . 'product_lang` src
+                                ON src.id_product = p.id_product
+                               AND src.id_lang = ' . (int) $this->sourceLangId . '
+                               AND src.id_shop = ' . (int) $shopId . '
+                              LEFT JOIN `' . _DB_PREFIX_ . 'product_lang` tgt
+                                ON tgt.id_product = p.id_product
+                               AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                               AND tgt.id_shop = ' . (int) $shopId;
                 }
 
                 $sql .= ' WHERE p.active = 1';
@@ -711,6 +923,29 @@ PROMPT;
                     $sql .= ' AND cp.id_category = ' . (int) $filterCategoryId;
                 }
 
+                if ($onlyMissing) {
+                    if ($jobCode === 'product_seo') {
+                        $sql .= ' AND (
+                            tgt.id_product IS NULL
+                            OR TRIM(IFNULL(tgt.name, \'\')) = \'\'
+                            OR TRIM(IFNULL(tgt.meta_title, \'\')) = \'\'
+                            OR TRIM(IFNULL(tgt.meta_description, \'\')) = \'\'
+                            OR TRIM(IFNULL(tgt.link_rewrite, \'\')) = \'\'
+                            OR (TRIM(IFNULL(src.name, \'\')) != \'\' AND tgt.name = src.name)
+                            OR (TRIM(IFNULL(src.meta_title, \'\')) != \'\' AND tgt.meta_title = src.meta_title)
+                            OR (TRIM(IFNULL(src.link_rewrite, \'\')) != \'\' AND tgt.link_rewrite = src.link_rewrite)
+                        )';
+                    } else {
+                        $sql .= ' AND (
+                            tgt.id_product IS NULL
+                            OR TRIM(IFNULL(tgt.description, \'\')) = \'\'
+                            OR TRIM(IFNULL(tgt.description_short, \'\')) = \'\'
+                            OR (TRIM(IFNULL(src.description, \'\')) != \'\' AND tgt.description = src.description)
+                            OR (TRIM(IFNULL(src.description_short, \'\')) != \'\' AND tgt.description_short = src.description_short)
+                        )';
+                    }
+                }
+
                 $sql .= ' ORDER BY p.id_product ASC';
 
                 return array(
@@ -720,13 +955,45 @@ PROMPT;
 
             case 'category_seo':
             case 'category_description':
-                $sql = 'SELECT c.id_category
-                        FROM ' . _DB_PREFIX_ . 'category c
-                        WHERE c.active = 1
+                $sql = 'SELECT DISTINCT c.id_category
+                        FROM ' . _DB_PREFIX_ . 'category c';
+
+                if ($onlyMissing) {
+                    $sql .= ' INNER JOIN `' . _DB_PREFIX_ . 'category_lang` src
+                                ON src.id_category = c.id_category
+                               AND src.id_lang = ' . (int) $this->sourceLangId . '
+                               AND src.id_shop = ' . (int) $shopId . '
+                              LEFT JOIN `' . _DB_PREFIX_ . 'category_lang` tgt
+                                ON tgt.id_category = c.id_category
+                               AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                               AND tgt.id_shop = ' . (int) $shopId;
+                }
+
+                $sql .= ' WHERE c.active = 1
                         AND c.id_parent != 0';
 
                 if ($filterType === 'ids' && !empty($filterIds)) {
                     $sql .= ' AND c.id_category IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                }
+
+                if ($onlyMissing) {
+                    if ($jobCode === 'category_seo') {
+                        $sql .= ' AND (
+                            tgt.id_category IS NULL
+                            OR TRIM(IFNULL(tgt.name, \'\')) = \'\'
+                            OR TRIM(IFNULL(tgt.meta_title, \'\')) = \'\'
+                            OR TRIM(IFNULL(tgt.link_rewrite, \'\')) = \'\'
+                            OR (TRIM(IFNULL(src.name, \'\')) != \'\' AND tgt.name = src.name)
+                            OR (TRIM(IFNULL(src.meta_title, \'\')) != \'\' AND tgt.meta_title = src.meta_title)
+                            OR (TRIM(IFNULL(src.link_rewrite, \'\')) != \'\' AND tgt.link_rewrite = src.link_rewrite)
+                        )';
+                    } else {
+                        $sql .= ' AND (
+                            tgt.id_category IS NULL
+                            OR TRIM(IFNULL(tgt.description, \'\')) = \'\'
+                            OR (TRIM(IFNULL(src.description, \'\')) != \'\' AND tgt.description = src.description)
+                        )';
+                    }
                 }
 
                 $sql .= ' ORDER BY c.id_category ASC';
@@ -737,12 +1004,36 @@ PROMPT;
                 );
 
             case 'cms':
-                $sql = 'SELECT c.id_cms
-                        FROM ' . _DB_PREFIX_ . 'cms c
-                        WHERE c.active = 1';
+                $sql = 'SELECT DISTINCT c.id_cms
+                        FROM ' . _DB_PREFIX_ . 'cms c';
+
+                if ($onlyMissing) {
+                    $sql .= ' INNER JOIN `' . _DB_PREFIX_ . 'cms_lang` src
+                                ON src.id_cms = c.id_cms
+                               AND src.id_lang = ' . (int) $this->sourceLangId . '
+                               AND src.id_shop = ' . (int) $shopId . '
+                              LEFT JOIN `' . _DB_PREFIX_ . 'cms_lang` tgt
+                                ON tgt.id_cms = c.id_cms
+                               AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                               AND tgt.id_shop = ' . (int) $shopId;
+                }
+
+                $sql .= ' WHERE c.active = 1';
 
                 if ($filterType === 'ids' && !empty($filterIds)) {
                     $sql .= ' AND c.id_cms IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                }
+
+                if ($onlyMissing) {
+                    $sql .= ' AND (
+                        tgt.id_cms IS NULL
+                        OR TRIM(IFNULL(tgt.meta_title, \'\')) = \'\'
+                        OR TRIM(IFNULL(tgt.content, \'\')) = \'\'
+                        OR TRIM(IFNULL(tgt.link_rewrite, \'\')) = \'\'
+                        OR (TRIM(IFNULL(src.meta_title, \'\')) != \'\' AND tgt.meta_title = src.meta_title)
+                        OR (TRIM(IFNULL(src.content, \'\')) != \'\' AND tgt.content = src.content)
+                        OR (TRIM(IFNULL(src.link_rewrite, \'\')) != \'\' AND tgt.link_rewrite = src.link_rewrite)
+                    )';
                 }
 
                 $sql .= ' ORDER BY c.id_cms ASC';
@@ -757,8 +1048,20 @@ PROMPT;
                         FROM `' . _DB_PREFIX_ . 'ce_theme_lang` cl
                         WHERE cl.id_lang = ' . (int) $this->sourceLangId . '
                         AND cl.content IS NOT NULL
-                        AND cl.content != \'\'
-                        ORDER BY cl.id_ce_theme ASC';
+                        AND cl.content != \'\'';
+
+                if ($onlyMissing) {
+                    $sql .= ' AND NOT EXISTS (
+                        SELECT 1 FROM `' . _DB_PREFIX_ . 'ce_theme_lang` tgt
+                        WHERE tgt.id_ce_theme = cl.id_ce_theme
+                          AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                          AND tgt.content IS NOT NULL
+                          AND TRIM(tgt.content) != \'\'
+                          AND tgt.content != cl.content
+                    )';
+                }
+
+                $sql .= ' ORDER BY cl.id_ce_theme ASC';
 
                 return array(
                     'sql' => $sql,
@@ -767,11 +1070,30 @@ PROMPT;
 
             case 'ce_meta':
                 $langPad = sprintf('%02d', $this->sourceLangId);
-                $sql = 'SELECT id AS source_uid
-                        FROM `' . _DB_PREFIX_ . 'ce_meta`
-                        WHERE `name` = \'_elementor_data\'
-                        AND SUBSTRING(CAST(id AS CHAR), LENGTH(CAST(id AS CHAR))-3, 2) = \'' . pSQL($langPad) . '\'
-                        ORDER BY id ASC';
+                $targetLangPad = sprintf('%02d', $this->targetLangId);
+                $sql = 'SELECT src.id AS source_uid
+                        FROM `' . _DB_PREFIX_ . 'ce_meta` src
+                        WHERE src.`name` = \'_elementor_data\'
+                        AND SUBSTRING(CAST(src.id AS CHAR), LENGTH(CAST(src.id AS CHAR))-3, 2) = \'' . pSQL($langPad) . '\'';
+
+                if ($onlyMissing) {
+                    $sql .= ' AND NOT EXISTS (
+                        SELECT 1 FROM `' . _DB_PREFIX_ . 'ce_meta` tgt
+                        WHERE tgt.`name` = \'_elementor_data\'
+                          AND tgt.id = CAST(
+                            CONCAT(
+                              SUBSTRING(CAST(src.id AS CHAR), 1, LENGTH(CAST(src.id AS CHAR)) - 4),
+                              \'' . pSQL($targetLangPad) . '\',
+                              SUBSTRING(CAST(src.id AS CHAR), -2)
+                            ) AS UNSIGNED
+                          )
+                          AND tgt.value IS NOT NULL
+                          AND TRIM(tgt.value) != \'\'
+                          AND tgt.value != src.value
+                    )';
+                }
+
+                $sql .= ' ORDER BY src.id ASC';
 
                 return array(
                     'sql' => $sql,
@@ -781,8 +1103,33 @@ PROMPT;
             case 'reassurance':
                 $sql = 'SELECT pr.id_psreassurance
                         FROM `' . _DB_PREFIX_ . 'psreassurance` pr
-                        WHERE pr.status = 1
-                        ORDER BY pr.position ASC';
+                        WHERE pr.status = 1';
+
+                if ($onlyMissing) {
+                    $sql .= ' AND EXISTS (
+                        SELECT 1
+                        FROM `' . _DB_PREFIX_ . 'psreassurance_lang` src
+                        LEFT JOIN `' . _DB_PREFIX_ . 'psreassurance_lang` tgt
+                          ON tgt.id_psreassurance = src.id_psreassurance
+                         AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                        WHERE src.id_psreassurance = pr.id_psreassurance
+                          AND src.id_lang = ' . (int) $this->sourceLangId . '
+                          AND (
+                            tgt.id_psreassurance IS NULL
+                            OR TRIM(IFNULL(tgt.title, \'\')) = \'\'
+                            OR (TRIM(IFNULL(src.title, \'\')) != \'\' AND tgt.title = src.title)
+                            OR (
+                              TRIM(IFNULL(src.description, \'\')) != \'\'
+                              AND (
+                                TRIM(IFNULL(tgt.description, \'\')) = \'\'
+                                OR tgt.description = src.description
+                              )
+                            )
+                          )
+                    )';
+                }
+
+                $sql .= ' ORDER BY pr.position ASC';
 
                 return array(
                     'sql' => $sql,
@@ -792,8 +1139,19 @@ PROMPT;
             case 'brand_reviews':
                 $this->ensureBrandReviewsReady();
                 $sql = 'SELECT r.id_ckc_brand_review
-                        FROM `' . _DB_PREFIX_ . 'ckc_brand_review` r
-                        ORDER BY r.publish_date DESC, r.id_ckc_brand_review DESC';
+                        FROM `' . _DB_PREFIX_ . 'ckc_brand_review` r';
+
+                if ($onlyMissing) {
+                    $sql .= ' WHERE NOT EXISTS (
+                        SELECT 1 FROM `' . _DB_PREFIX_ . 'ckc_brand_review_lang` rl
+                        WHERE rl.id_ckc_brand_review = r.id_ckc_brand_review
+                          AND rl.id_lang = ' . (int) $this->targetLangId . '
+                          AND rl.review_content IS NOT NULL
+                          AND rl.review_content != \'\'
+                    )';
+                }
+
+                $sql .= ' ORDER BY r.publish_date DESC, r.id_ckc_brand_review DESC';
 
                 return array(
                     'sql' => $sql,
@@ -802,9 +1160,24 @@ PROMPT;
 
             case 'order_states':
                 $sql = 'SELECT os.id_order_state
-                        FROM `' . _DB_PREFIX_ . 'order_state` os
-                        WHERE os.deleted = 0
-                        ORDER BY os.id_order_state ASC';
+                        FROM `' . _DB_PREFIX_ . 'order_state` os';
+
+                if ($onlyMissing) {
+                    $sql .= ' INNER JOIN `' . _DB_PREFIX_ . 'order_state_lang` src
+                                ON src.id_order_state = os.id_order_state
+                               AND src.id_lang = ' . (int) $this->sourceLangId . '
+                              LEFT JOIN `' . _DB_PREFIX_ . 'order_state_lang` tgt
+                                ON tgt.id_order_state = os.id_order_state
+                               AND tgt.id_lang = ' . (int) $this->targetLangId;
+                }
+
+                $sql .= ' WHERE os.deleted = 0';
+
+                if ($onlyMissing) {
+                    $sql .= ' AND (tgt.name IS NULL OR tgt.name = \'\' OR tgt.name = src.name)';
+                }
+
+                $sql .= ' ORDER BY os.id_order_state ASC';
 
                 return array(
                     'sql' => $sql,
@@ -812,7 +1185,6 @@ PROMPT;
                 );
 
             case 'carrier_delays':
-                $shopId = (int) Context::getContext()->shop->id;
                 $sql = 'SELECT c.id_carrier
                         FROM `' . _DB_PREFIX_ . 'carrier` c
                         INNER JOIN `' . _DB_PREFIX_ . 'carrier_lang` cl
@@ -825,6 +1197,18 @@ PROMPT;
 
                 if ($filterType === 'ids' && !empty($filterIds)) {
                     $sql .= ' AND c.id_carrier IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                }
+
+                if ($onlyMissing) {
+                    $sql .= ' AND NOT EXISTS (
+                        SELECT 1 FROM `' . _DB_PREFIX_ . 'carrier_lang` tgt
+                        WHERE tgt.id_carrier = c.id_carrier
+                          AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                          AND tgt.id_shop = ' . (int) $shopId . '
+                          AND tgt.delay IS NOT NULL
+                          AND TRIM(tgt.delay) != \'\'
+                          AND tgt.delay != cl.delay
+                    )';
                 }
 
                 $sql .= ' ORDER BY c.id_carrier ASC';
@@ -881,7 +1265,7 @@ PROMPT;
             );
             $targetContent = ($targetRows && !empty($targetRows[0]['content'])) ? $targetRows[0]['content'] : '';
 
-            if (!empty($targetContent)) {
+            if (!empty($targetContent) && $targetContent !== $sourceRow['content']) {
                 $this->logHistory('creative_elements', 'ce_theme', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
                 return $this->nextResult(sprintf(
@@ -1192,27 +1576,31 @@ PROMPT;
 
     protected function runEverContentSeo()
     {
-        if (!$this->everContentSeoTablesExist()) {
+        $modules = self::discoverEverContentSeoModules();
+        if (empty($modules)) {
             return array(
                 'success' => false,
-                'message' => $this->module->l('Ever Content SEO tables not found. Is the module everpscontentseo installed?', 'CkcTranslateJobRunner'),
+                'message' => $this->module->l('Ever Content SEO tables not found. Install everpscontentseo / everpscontentseo3 (or another everpscontentseo* clone).', 'CkcTranslateJobRunner'),
                 'finished' => true,
             );
         }
 
         $item = $this->getNextEverContentSeoItem();
         if (!$item) {
-            return $this->finishedResult($this->module->l('Ever Content SEO translation finished.', 'CkcTranslateJobRunner'));
+            return $this->finishedResult($this->module->l('Ever Content SEO translation finished (all modules).', 'CkcTranslateJobRunner'));
         }
 
+        $module = !empty($item['module']) ? (string) $item['module'] : 'everpscontentseo';
         $type = $item['type'];
         $id = (int) $item['id'];
-        $meta = $this->getEverContentSeoTypeMeta($type);
+        $historyType = $module . ':' . $type;
+        $meta = self::getEverContentSeoTypeMetaForModule($module, $type);
         if (!$meta) {
-            $this->logHistory('evercontentseo', $type, $id, 'skipped', 'Unknown entity type');
+            $this->logHistory('evercontentseo', $historyType, $id, 'skipped', 'Unknown entity type');
 
             return $this->nextResult(sprintf(
-                $this->module->l('Ever Content SEO item skipped (unknown type: %s).', 'CkcTranslateJobRunner'),
+                $this->module->l('Ever Content SEO item skipped (unknown type: %s / %s).', 'CkcTranslateJobRunner'),
+                $module,
                 $type
             ));
         }
@@ -1224,10 +1612,11 @@ PROMPT;
         );
 
         if (trim(strip_tags($sourceContent)) === '') {
-            $this->logHistory('evercontentseo', $type, $id, 'skipped', $this->module->l('No source content.', 'CkcTranslateJobRunner'));
+            $this->logHistory('evercontentseo', $historyType, $id, 'skipped', $this->module->l('No source content.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
-                $this->module->l('Ever Content SEO %1$s #%2$d has no source content, skipped.', 'CkcTranslateJobRunner'),
+                $this->module->l('Ever Content SEO %1$s %2$s #%3$d has no source content, skipped.', 'CkcTranslateJobRunner'),
+                $module,
                 $type,
                 $id
             ));
@@ -1244,10 +1633,11 @@ PROMPT;
             if (trim(strip_tags($targetContent)) !== ''
                 && trim($targetContent) !== trim($sourceContent)
             ) {
-                $this->logHistory('evercontentseo', $type, $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+                $this->logHistory('evercontentseo', $historyType, $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
                 return $this->nextResult(sprintf(
-                    $this->module->l('Ever Content SEO %1$s #%2$d already translated, skipped.', 'CkcTranslateJobRunner'),
+                    $this->module->l('Ever Content SEO %1$s %2$s #%3$d already translated, skipped.', 'CkcTranslateJobRunner'),
+                    $module,
                     $type,
                     $id
                 ));
@@ -1272,10 +1662,11 @@ PROMPT;
         $data = $this->ai->requestJson($systemPrompt, $prompt);
 
         if (!$this->isValidFields($data, array('content'))) {
-            $this->logHistory('evercontentseo', $type, $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+            $this->logHistory('evercontentseo', $historyType, $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
-                $this->module->l('Invalid AI response for Ever Content SEO %1$s #%2$d.', 'CkcTranslateJobRunner'),
+                $this->module->l('Invalid AI response for Ever Content SEO %1$s %2$s #%3$d.', 'CkcTranslateJobRunner'),
+                $module,
                 $type,
                 $id
             ));
@@ -1302,42 +1693,103 @@ PROMPT;
             ));
         }
 
-        $this->logHistory('evercontentseo', $type, $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
+        $this->logHistory('evercontentseo', $historyType, $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
 
         return $this->nextResult(sprintf(
-            $this->module->l('Ever Content SEO %1$s #%2$d translated.', 'CkcTranslateJobRunner'),
+            $this->module->l('Ever Content SEO %1$s %2$s #%3$d translated.', 'CkcTranslateJobRunner'),
+            $module,
             $type,
             $id
         ));
     }
 
-    protected function everContentSeoTablesExist()
+    /**
+     * Discover all Ever Content SEO module clones (everpscontentseo, everpscontentseo3, …).
+     *
+     * @return string[]
+     */
+    public static function discoverEverContentSeoModules()
     {
+        static $cache = null;
+        if ($cache !== null) {
+            return $cache;
+        }
+
+        $found = array();
         $db = Db::getInstance();
 
-        return (bool) $db->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . 'everpscontentseo_categories"')
-            && (bool) $db->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . 'everpscontentseo_categories_lang"');
+        // 1) Module folders everpscontentseo*
+        $dirs = glob(_PS_MODULE_DIR_ . 'everpscontentseo*', GLOB_ONLYDIR);
+        if (is_array($dirs)) {
+            foreach ($dirs as $dir) {
+                $name = basename($dir);
+                if (!preg_match('/^everpscontentseo[a-z0-9_]*$/', $name)) {
+                    continue;
+                }
+                if ((bool) $db->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . pSQL($name) . '_categories"')
+                    && (bool) $db->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . pSQL($name) . '_categories_lang"')
+                ) {
+                    $found[$name] = true;
+                }
+            }
+        }
+
+        // 2) DB tables (covers clones present in DB even if folder missing locally)
+        $tables = $db->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . 'everpscontentseo%_categories"');
+        if (is_array($tables)) {
+            foreach ($tables as $row) {
+                $tableName = (string) reset($row);
+                $prefix = _DB_PREFIX_;
+                if (strpos($tableName, $prefix) !== 0) {
+                    continue;
+                }
+                $withoutPrefix = substr($tableName, strlen($prefix));
+                if (!preg_match('/^(everpscontentseo[a-z0-9]*)_categories$/', $withoutPrefix, $m)) {
+                    continue;
+                }
+                $name = $m[1];
+                if ((bool) $db->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . pSQL($name) . '_categories_lang"')) {
+                    $found[$name] = true;
+                }
+            }
+        }
+
+        $cache = array_keys($found);
+        sort($cache);
+
+        return $cache;
     }
 
-    protected function getEverContentSeoTypeMeta($type)
+    /**
+     * @param string $module Module technical name (e.g. everpscontentseo3)
+     * @param string $type category|manufacturer|supplier
+     *
+     * @return array|null
+     */
+    public static function getEverContentSeoTypeMetaForModule($module, $type)
     {
+        $module = preg_replace('/[^a-z0-9_]/', '', strtolower((string) $module));
+        if ($module === '' || strpos($module, 'everpscontentseo') !== 0) {
+            return null;
+        }
+
         $map = array(
             'category' => array(
-                'table' => 'everpscontentseo_categories',
-                'lang_table' => 'everpscontentseo_categories_lang',
-                'id_column' => 'id_everpscontentseo_category',
+                'table' => $module . '_categories',
+                'lang_table' => $module . '_categories_lang',
+                'id_column' => 'id_' . $module . '_category',
                 'ref_column' => 'id_category',
             ),
             'manufacturer' => array(
-                'table' => 'everpscontentseo_manufacturers',
-                'lang_table' => 'everpscontentseo_manufacturers_lang',
-                'id_column' => 'id_everpscontentseo_manufacturer',
+                'table' => $module . '_manufacturers',
+                'lang_table' => $module . '_manufacturers_lang',
+                'id_column' => 'id_' . $module . '_manufacturer',
                 'ref_column' => 'id_manufacturer',
             ),
             'supplier' => array(
-                'table' => 'everpscontentseo_suppliers',
-                'lang_table' => 'everpscontentseo_suppliers_lang',
-                'id_column' => 'id_everpscontentseo_supplier',
+                'table' => $module . '_suppliers',
+                'lang_table' => $module . '_suppliers_lang',
+                'id_column' => 'id_' . $module . '_supplier',
                 'ref_column' => 'id_supplier',
             ),
         );
@@ -1354,46 +1806,60 @@ PROMPT;
         $filterCategoryId = (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID);
 
         $types = array('category', 'manufacturer', 'supplier');
-        foreach ($types as $type) {
-            $meta = $this->getEverContentSeoTypeMeta($type);
-            if (!$meta) {
-                continue;
-            }
-
-            if (!(bool) Db::getInstance()->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . $meta['table'] . '"')) {
-                continue;
-            }
-
-            $sql = 'SELECT c.`' . $meta['id_column'] . '` AS id
-                    FROM `' . _DB_PREFIX_ . $meta['table'] . '` c
-                    INNER JOIN `' . _DB_PREFIX_ . $meta['lang_table'] . '` cl
-                      ON cl.`' . $meta['id_column'] . '` = c.`' . $meta['id_column'] . '`
-                     AND cl.id_lang = ' . (int) $this->sourceLangId . '
-                    WHERE cl.content IS NOT NULL
-                      AND TRIM(cl.content) != \'\'
-                      AND c.id_shop = ' . (int) $shopId;
-
-            if ($type === 'category') {
-                if ($filterType === 'ids' && !empty($filterIds)) {
-                    $sql .= ' AND c.`' . $meta['ref_column'] . '` IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+        foreach (self::discoverEverContentSeoModules() as $module) {
+            foreach ($types as $type) {
+                $meta = self::getEverContentSeoTypeMetaForModule($module, $type);
+                if (!$meta) {
+                    continue;
                 }
-                if ($filterType === 'category' && $filterCategoryId > 0) {
-                    $sql .= ' AND c.`' . $meta['ref_column'] . '` = ' . (int) $filterCategoryId;
+
+                if (!(bool) Db::getInstance()->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . $meta['table'] . '"')) {
+                    continue;
                 }
-            }
 
-            $sql .= ' ORDER BY c.`' . $meta['id_column'] . '` ASC';
+                $sql = 'SELECT c.`' . $meta['id_column'] . '` AS id
+                        FROM `' . _DB_PREFIX_ . $meta['table'] . '` c
+                        INNER JOIN `' . _DB_PREFIX_ . $meta['lang_table'] . '` cl
+                          ON cl.`' . $meta['id_column'] . '` = c.`' . $meta['id_column'] . '`
+                         AND cl.id_lang = ' . (int) $this->sourceLangId . '
+                        WHERE cl.content IS NOT NULL
+                          AND TRIM(cl.content) != \'\'
+                          AND c.id_shop = ' . (int) $shopId;
 
-            $rows = Db::getInstance()->executeS($sql);
-            if (!is_array($rows)) {
-                continue;
-            }
+                if ($type === 'category') {
+                    if ($filterType === 'ids' && !empty($filterIds)) {
+                        $sql .= ' AND c.`' . $meta['ref_column'] . '` IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                    }
+                    if ($filterType === 'category' && $filterCategoryId > 0) {
+                        $sql .= ' AND c.`' . $meta['ref_column'] . '` = ' . (int) $filterCategoryId;
+                    }
+                }
 
-            foreach ($rows as $row) {
-                $items[] = array(
-                    'type' => $type,
-                    'id' => (int) $row['id'],
-                );
+                if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+                    $sql .= ' AND NOT EXISTS (
+                        SELECT 1 FROM `' . _DB_PREFIX_ . $meta['lang_table'] . '` tgt
+                        WHERE tgt.`' . $meta['id_column'] . '` = c.`' . $meta['id_column'] . '`
+                          AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                          AND tgt.content IS NOT NULL
+                          AND TRIM(tgt.content) != \'\'
+                          AND tgt.content != cl.content
+                    )';
+                }
+
+                $sql .= ' ORDER BY c.`' . $meta['id_column'] . '` ASC';
+
+                $rows = Db::getInstance()->executeS($sql);
+                if (!is_array($rows)) {
+                    continue;
+                }
+
+                foreach ($rows as $row) {
+                    $items[] = array(
+                        'module' => $module,
+                        'type' => $type,
+                        'id' => (int) $row['id'],
+                    );
+                }
             }
         }
 
@@ -1504,6 +1970,17 @@ PROMPT;
             $featureSql .= ' AND f.id_feature IN (' . implode(',', array_map('intval', $filterIds)) . ')';
         }
 
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+            $featureSql .= ' AND NOT EXISTS (
+                SELECT 1 FROM `' . _DB_PREFIX_ . 'feature_lang` tgt
+                WHERE tgt.id_feature = f.id_feature
+                  AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                  AND tgt.name IS NOT NULL
+                  AND TRIM(tgt.name) != \'\'
+                  AND tgt.name != fl.name
+            )';
+        }
+
         $featureSql .= ' ORDER BY f.id_feature ASC';
 
         $featureRows = Db::getInstance()->executeS($featureSql);
@@ -1523,6 +2000,17 @@ PROMPT;
 
         if ($filterType === 'ids' && !empty($filterIds)) {
             $valueSql .= ' AND fv.id_feature IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+        }
+
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+            $valueSql .= ' AND NOT EXISTS (
+                SELECT 1 FROM `' . _DB_PREFIX_ . 'feature_value_lang` tgt
+                WHERE tgt.id_feature_value = fv.id_feature_value
+                  AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                  AND tgt.value IS NOT NULL
+                  AND TRIM(tgt.value) != \'\'
+                  AND tgt.value != fvl.value
+            )';
         }
 
         $valueSql .= ' ORDER BY fv.id_feature_value ASC';
@@ -1557,6 +2045,16 @@ PROMPT;
             $groupSql .= ' AND ag.id_attribute_group IN (' . implode(',', array_map('intval', $filterIds)) . ')';
         }
 
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+            $groupSql .= ' AND NOT EXISTS (
+                SELECT 1 FROM `' . _DB_PREFIX_ . 'attribute_group_lang` tgt
+                WHERE tgt.id_attribute_group = ag.id_attribute_group
+                  AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                  AND tgt.name IS NOT NULL AND TRIM(tgt.name) != \'\' AND tgt.name != agl.name
+                  AND tgt.public_name IS NOT NULL AND TRIM(tgt.public_name) != \'\' AND tgt.public_name != agl.public_name
+            )';
+        }
+
         $groupSql .= ' ORDER BY ag.id_attribute_group ASC';
 
         $groupRows = Db::getInstance()->executeS($groupSql);
@@ -1576,6 +2074,17 @@ PROMPT;
 
         if ($filterType === 'ids' && !empty($filterIds)) {
             $attrSql .= ' AND a.id_attribute_group IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+        }
+
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+            $attrSql .= ' AND NOT EXISTS (
+                SELECT 1 FROM `' . _DB_PREFIX_ . 'attribute_lang` tgt
+                WHERE tgt.id_attribute = a.id_attribute
+                  AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                  AND tgt.name IS NOT NULL
+                  AND TRIM(tgt.name) != \'\'
+                  AND tgt.name != al.name
+            )';
         }
 
         $attrSql .= ' ORDER BY a.id_attribute ASC';
@@ -1748,10 +2257,15 @@ PROMPT;
             return $this->getNextTypedQueueItem($queueName, $builder);
         }
 
-        return array(
+        $result = array(
             'type' => (string) $item['type'],
             'id' => (int) $item['id'],
         );
+        if (!empty($item['module'])) {
+            $result['module'] = (string) $item['module'];
+        }
+
+        return $result;
     }
 
     protected function translateSimpleLangField(
@@ -2510,15 +3024,30 @@ PROMPT;
         return $slug;
     }
 
-    protected function shouldSkipFilledFields($targetObject, array $fields)
+    protected function shouldSkipFilledFields($targetObject, array $fields, $sourceObject = null)
     {
         if (!(int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
             return false;
         }
 
         foreach ($fields as $field) {
-            if (!isset($targetObject->{$field}) || trim(strip_tags((string) $targetObject->{$field})) === '') {
+            $targetValue = isset($targetObject->{$field})
+                ? trim(strip_tags((string) $targetObject->{$field}))
+                : '';
+
+            if ($targetValue === '') {
                 return false;
+            }
+
+            if ($sourceObject !== null) {
+                $sourceValue = isset($sourceObject->{$field})
+                    ? trim(strip_tags((string) $sourceObject->{$field}))
+                    : '';
+
+                // New entities often copy source language into target: treat as untranslated.
+                if ($sourceValue !== '' && $targetValue === $sourceValue) {
+                    return false;
+                }
             }
         }
 

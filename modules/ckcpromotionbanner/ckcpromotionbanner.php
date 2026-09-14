@@ -38,12 +38,15 @@ class Ckcpromotionbanner extends Module
 {
     protected $config_form = false;
 
+    /** JSON map per shop: {"1":["texte FR"],"2":["texte EN"]} — avoids PrestaShop multilang Configuration bugs */
+    const CONF_TEXTS_I18N = 'CKC_BARREPROMO_TEXTE_I18N';
+    const CONF_TEXTS_PRO_I18N = 'CKC_BARREPROMO_TEXTE_PRO_I18N';
 
     public function __construct()
     {
         $this->name = 'ckcpromotionbanner';
         $this->tab = 'pricing_promotion';
-        $this->version = '1.1.3';
+        $this->version = '1.2.0';
         $this->author = 'Agence CKC';
         $this->need_instance = 1;
         $this->className = 'AdminManagesBarrePromo';
@@ -135,6 +138,9 @@ class Ckcpromotionbanner extends Module
         Configuration::deleteByName('CKC_BARREPROMO_DISPLAY_BOTTOM');
         Configuration::deleteByName('CKC_BARREPROMO_DISPLAY');
         Configuration::deleteByName('CKC_BARREPROMO_TEXTE');
+        Configuration::deleteByName(self::CONF_TEXTS_I18N);
+        Configuration::deleteByName(self::CONF_TEXTS_PRO_I18N);
+        Configuration::deleteByName('CKC_BARREPROMO_TEXTE_PRO');
         Configuration::deleteByName('CKC_BARREPROMO_COLOR');
         Configuration::deleteByName('CKC_BARREPROMO_TIMER');
         Configuration::deleteByName('CKC_BARREPROMO_TIMER_COLOR');
@@ -170,37 +176,33 @@ class Ckcpromotionbanner extends Module
      */
     public function getContent()
     {
-        /**
-         * If values have been submitted in the form, process.
-         */
-        if (((bool)Tools::isSubmit('submitCkc_barrepromoModule')) == true) {
+        if (((bool) Tools::isSubmit('submitCkc_barrepromoModule')) == true) {
             $this->postProcess();
         }
 
-        // Prefer named submit buttons; keep legacy isSubmit('id_promotexts*') for old templates.
-        $promoSaved = false;
-        if (Tools::isSubmit('submitPromoTextsB2c') || Tools::isSubmit('id_promotexts')) {
-            $this->saveExceptions();
-            $promoSaved = true;
-        }
+        $flash = '';
 
-        if (Tools::isSubmit('submitPromoTextsPro') || Tools::isSubmit('id_promotextsPro')) {
-            $this->saveExceptionsPro();
-            $promoSaved = true;
-        }
-
-        if ($promoSaved) {
-            Tools::redirectAdmin(
-                $this->context->link->getAdminLink('AdminModules', true, [], [
-                    'configure' => $this->name,
-                    'promo_texts_saved' => 1,
-                ])
-            );
-        }
-
-        $output = '';
-        if ((int) Tools::getValue('promo_texts_saved') === 1) {
-            $output .= $this->displayConfirmation($this->l('Promotional texts saved.'));
+        if (Tools::isSubmit('submitTranslatePromoTextsB2c')) {
+            // Persist current BO state first (unsaved FR edits), then translate.
+            if (!empty($_POST['id_promotexts_json'])) {
+                $this->savePromoTextsFromPost('id_promotexts_json', self::CONF_TEXTS_I18N);
+            }
+            $flash = $this->translateAndSavePromoTexts(self::CONF_TEXTS_I18N, 'CKC_BARREPROMO_TEXTE');
+        } elseif (Tools::isSubmit('submitTranslatePromoTextsPro')) {
+            if (!empty($_POST['id_promotextsPro_json'])) {
+                $this->savePromoTextsFromPost('id_promotextsPro_json', self::CONF_TEXTS_PRO_I18N);
+            }
+            $flash = $this->translateAndSavePromoTexts(self::CONF_TEXTS_PRO_I18N, 'CKC_BARREPROMO_TEXTE_PRO');
+        } elseif (Tools::isSubmit('submitPromoTextsB2c')) {
+            $ok = $this->savePromoTextsFromPost('id_promotexts_json', self::CONF_TEXTS_I18N);
+            $flash = $ok
+                ? $this->displayConfirmation($this->l('Promotional texts saved.'))
+                : $this->displayError($this->l('Could not save promotional texts.'));
+        } elseif (Tools::isSubmit('submitPromoTextsPro')) {
+            $ok = $this->savePromoTextsFromPost('id_promotextsPro_json', self::CONF_TEXTS_PRO_I18N);
+            $flash = $ok
+                ? $this->displayConfirmation($this->l('Promotional texts saved.'))
+                : $this->displayError($this->l('Could not save promotional texts.'));
         }
 
         $moduleAdminLink = $this->context->link->getAdminLink('AdminModules', true, [], ['configure' => $this->name]);
@@ -209,12 +211,16 @@ class Ckcpromotionbanner extends Module
         $defaultLangId = (int) Configuration::get('PS_LANG_DEFAULT');
         $employeeLangId = (int) $this->context->language->id;
 
-        // Auto-heal: if multilang rows were wiped but legacy value still exists, restore default lang.
-        $this->ensurePromoTextsMultilangMigrated('CKC_BARREPROMO_TEXTE');
-        $this->ensurePromoTextsMultilangMigrated('CKC_BARREPROMO_TEXTE_PRO');
+        $promotextsByLang = $this->loadPromoTextsCsvByLang(self::CONF_TEXTS_I18N, 'CKC_BARREPROMO_TEXTE', $languages, $defaultLangId);
+        $promotextsProByLang = $this->loadPromoTextsCsvByLang(self::CONF_TEXTS_PRO_I18N, 'CKC_BARREPROMO_TEXTE_PRO', $languages, $defaultLangId);
 
-        $promotextsByLang = $this->loadPromoTextsByLang('CKC_BARREPROMO_TEXTE', $languages, $defaultLangId);
-        $promotextsProByLang = $this->loadPromoTextsByLang('CKC_BARREPROMO_TEXTE_PRO', $languages, $defaultLangId);
+        $ckctranslateReady = $this->isCkcTranslateReady();
+        $targetLangId = $ckctranslateReady
+            ? (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG)
+            : (int) Language::getIdByIso('en');
+        if ($targetLangId <= 0) {
+            $targetLangId = $defaultLangId;
+        }
 
         $this->context->smarty->assign(array(
             'module_dir' => $this->_path,
@@ -226,199 +232,320 @@ class Ckcpromotionbanner extends Module
             'promotextsProByLang' => $promotextsProByLang,
             'promotextsByLangJson' => $this->jsonForJs($promotextsByLang),
             'promotextsProByLangJson' => $this->jsonForJs($promotextsProByLang),
+            'ckctranslate_ready' => $ckctranslateReady,
+            'ckctranslate_target_lang_id' => $targetLangId,
+            'current_shop_id' => (int) $this->context->shop->id,
         ));
 
-
-
+        $output = $flash;
         $output .= $this->context->smarty->fetch($this->local_path . 'views/templates/admin/configure.tpl');
 
         return $output . $this->renderForm();
     }
 
-    public function saveExceptions(){
-        $this->savePromoTextsMultilang('id_promotexts', 'CKC_BARREPROMO_TEXTE');
-    }
-
-    public function saveExceptionsPro(){
-        $this->savePromoTextsMultilang('id_promotextsPro', 'CKC_BARREPROMO_TEXTE_PRO');
-    }
-
-    protected function savePromoTextsMultilang($postKey, $configKey)
+    /**
+     * @return bool
+     */
+    protected function isCkcTranslateReady()
     {
-        // Prefer raw POST: Tools::getValue() is fine for arrays, but keep an explicit fallback.
-        $payload = isset($_POST[$postKey]) ? $_POST[$postKey] : Tools::getValue($postKey);
-        $activeLangId = (int) Tools::getValue($postKey . '_active_lang', 0);
-        $defaultLangId = (int) Configuration::get('PS_LANG_DEFAULT');
-
-        // Ensure legacy global value is migrated into the default language before any write.
-        $this->ensurePromoTextsMultilangMigrated($configKey);
-
-        if (!is_array($payload)) {
-            // Legacy single-string payload: only touch the default language, never wipe others.
-            if ($payload === false || $payload === null || $payload === '') {
-                return;
-            }
-
-            $values = $this->getExistingPromoTextsEncoded($configKey);
-            $values[$defaultLangId] = $this->encodePromoTexts((string) $payload);
-            $this->updatePromoTextsConfig($configKey, $values);
-
-            return;
+        if (!Module::isInstalled('ckctranslate') || !Module::isEnabled('ckctranslate')) {
+            return false;
         }
 
-        $values = $this->getExistingPromoTextsEncoded($configKey);
-
-        foreach (Language::getLanguages(false) as $lang) {
-            $idLang = (int) $lang['id_lang'];
-            if (!array_key_exists($idLang, $payload) && !array_key_exists((string) $idLang, $payload)) {
-                // Language not present in POST: keep existing value (do not erase).
-                continue;
-            }
-
-            $raw = array_key_exists($idLang, $payload)
-                ? (string) $payload[$idLang]
-                : (string) $payload[(string) $idLang];
-
-            $existingArr = $this->decodePromoTexts(isset($values[$idLang]) ? $values[$idLang] : '');
-
-            // Guard: empty POST for a non-active language must never wipe existing texts
-            // (classic bug when hidden fields were empty before JS render / inactive tabs).
-            if (trim($raw) === '' && !empty($existingArr) && $activeLangId > 0 && $idLang !== $activeLangId) {
-                continue;
-            }
-
-            // Second guard: if active lang is unknown, never replace non-empty with empty.
-            if (trim($raw) === '' && !empty($existingArr) && $activeLangId <= 0) {
-                continue;
-            }
-
-            $values[$idLang] = $this->encodePromoTexts($raw);
+        if (!class_exists('CkcTranslate', false)) {
+            require_once _PS_MODULE_DIR_ . 'ckctranslate/ckctranslate.php';
+        }
+        if (!class_exists('CkcTranslateAi', false)) {
+            require_once _PS_MODULE_DIR_ . 'ckctranslate/classes/CkcTranslateAi.php';
         }
 
-        if (!empty($values)) {
-            $this->updatePromoTextsConfig($configKey, $values);
-        }
+        $ai = $this->buildCkcTranslateAi();
+
+        return $ai && $ai->isConfigured();
     }
 
     /**
-     * Persist multilang promo texts in the current shop context.
-     *
-     * @param string $configKey
-     * @param array<int, string> $values
-     *
-     * @return bool
+     * @return CkcTranslateAi|null
      */
-    protected function updatePromoTextsConfig($configKey, array $values)
+    protected function buildCkcTranslateAi()
     {
-        $idShop = Shop::getContextShopID(true);
-        $idShopGroup = Shop::getContextShopGroupID(true);
+        if (!Module::isInstalled('ckctranslate') || !Module::isEnabled('ckctranslate')) {
+            return null;
+        }
 
-        // html=false: values are base64(serialize(...)), not HTML.
-        return Configuration::updateValue(
-            $configKey,
-            $values,
-            false,
-            $idShopGroup ? (int) $idShopGroup : null,
-            $idShop ? (int) $idShop : null
+        if (!class_exists('CkcTranslate', false)) {
+            require_once _PS_MODULE_DIR_ . 'ckctranslate/ckctranslate.php';
+        }
+        if (!class_exists('CkcTranslateAi', false)) {
+            require_once _PS_MODULE_DIR_ . 'ckctranslate/classes/CkcTranslateAi.php';
+        }
+
+        return new CkcTranslateAi(
+            (string) Configuration::get(CkcTranslate::CONF_API_KEY),
+            (string) Configuration::get(CkcTranslate::CONF_MODEL),
+            (float) Configuration::get(CkcTranslate::CONF_TEMPERATURE),
+            (int) Configuration::get(CkcTranslate::CONF_MAX_TOKENS),
+            (string) Configuration::get(CkcTranslate::CONF_PROMPT)
         );
     }
 
     /**
-     * If the key still has a legacy global value and empty/missing lang rows, copy it to default lang.
+     * Translate source-language promo texts to ckctranslate target language and persist.
      *
-     * @param string $configKey
+     * @param string $i18nKey
+     * @param string $legacyKey
+     *
+     * @return string HTML flash message
      */
-    protected function ensurePromoTextsMultilangMigrated($configKey)
+    protected function translateAndSavePromoTexts($i18nKey, $legacyKey)
     {
-        $defaultLangId = (int) Configuration::get('PS_LANG_DEFAULT');
-        $legacyArr = $this->decodePromoTexts($this->getLegacyConfigurationValue($configKey));
-
-        if (empty($legacyArr)) {
-            return;
+        if (!$this->isCkcTranslateReady()) {
+            return $this->displayError($this->l('ckctranslate is not available or has no API key configured.'));
         }
 
-        $defaultArr = array();
-        if (Configuration::isLangKey($configKey)) {
-            $defaultArr = $this->decodePromoTexts($this->getConfigurationRaw($configKey, $defaultLangId));
+        $ai = $this->buildCkcTranslateAi();
+        $sourceLangId = (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
+        $targetLangId = (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG);
+        if ($sourceLangId <= 0) {
+            $sourceLangId = (int) Configuration::get('PS_LANG_DEFAULT');
+        }
+        if ($targetLangId <= 0) {
+            $targetLangId = (int) Language::getIdByIso('en');
+        }
+        if ($sourceLangId <= 0 || $targetLangId <= 0 || $sourceLangId === $targetLangId) {
+            return $this->displayError($this->l('Invalid source/target languages in ckctranslate.'));
         }
 
-        if (!empty($defaultArr)) {
-            return;
+        $map = $this->loadTextsMap($i18nKey, $legacyKey);
+        $sourceTexts = isset($map[$sourceLangId]) ? $map[$sourceLangId] : array();
+        if (empty($sourceTexts)) {
+            return $this->displayError($this->l('No source-language promotional texts to translate.'));
         }
 
-        $values = $this->getExistingPromoTextsEncoded($configKey);
-        $values[$defaultLangId] = $this->encodePromoTexts(implode(',,', $legacyArr));
-        $this->updatePromoTextsConfig($configKey, $values);
+        $sourceIso = Language::getIsoById($sourceLangId) ?: 'fr';
+        $targetIso = Language::getIsoById($targetLangId) ?: 'en';
+        $jobPrompt = (string) Configuration::get(CkcTranslate::CONF_PROMPT_REASSURANCE);
+
+        $system = trim($jobPrompt . "\n\nTranslate short e-commerce promo banner texts. Keep them short and punchy. "
+            . 'Preserve currency amounts, percentages, brand codes (e.g. BLACK2WEEKS) and * markers. '
+            . 'Return ONLY valid JSON.');
+
+        $user = 'Translate from ' . $sourceIso . ' to ' . $targetIso . ".\n"
+            . "Return ONLY valid JSON:\n{\"texts\":[\"\",\"\"]}\n\n"
+            . "Source texts (JSON array):\n" . json_encode(array_values($sourceTexts), JSON_UNESCAPED_UNICODE);
+
+        $data = $ai->requestJson($system, $user);
+        if (!is_array($data) || !isset($data['texts']) || !is_array($data['texts'])) {
+            return $this->displayError($this->l('Translation failed (invalid AI response). Check ckctranslate API key / logs.'));
+        }
+
+        $translated = array();
+        foreach ($data['texts'] as $text) {
+            $text = trim((string) $text);
+            if ($text !== '') {
+                $translated[] = $text;
+            }
+        }
+
+        if (empty($translated)) {
+            return $this->displayError($this->l('Translation returned empty texts.'));
+        }
+
+        $map[$targetLangId] = $translated;
+        if (!$this->saveTextsMap($i18nKey, $map)) {
+            return $this->displayError($this->l('Translated texts could not be saved.'));
+        }
+
+        return $this->displayConfirmation(sprintf(
+            $this->l('Translated %d text(s) to language #%d and saved for shop #%d.'),
+            count($translated),
+            $targetLangId,
+            (int) $this->context->shop->id
+        ));
     }
 
     /**
-     * Current encoded values per language (never returns empty map if langs exist).
+     * @param string $postJsonKey
+     * @param string $i18nKey
      *
-     * @param string $configKey
-     *
-     * @return array<int, string>
+     * @return bool
      */
-    protected function getExistingPromoTextsEncoded($configKey)
+    protected function savePromoTextsFromPost($postJsonKey, $i18nKey)
     {
-        $values = array();
-        $defaultLangId = (int) Configuration::get('PS_LANG_DEFAULT');
-        $isMultilang = Configuration::isLangKey($configKey);
-        $legacyArr = $this->decodePromoTexts($this->getLegacyConfigurationValue($configKey));
+        // Avoid Tools::getValue() urldecode which can corrupt "%" in promo texts.
+        $rawJson = isset($_POST[$postJsonKey]) ? $_POST[$postJsonKey] : Tools::getValue($postJsonKey);
+        if ($rawJson === false || $rawJson === null || $rawJson === '') {
+            return false;
+        }
 
+        $decoded = json_decode((string) $rawJson, true);
+        if (!is_array($decoded)) {
+            return false;
+        }
+
+        $map = array();
         foreach (Language::getLanguages(false) as $lang) {
             $idLang = (int) $lang['id_lang'];
-
-            if ($isMultilang) {
-                $arr = $this->decodePromoTexts($this->getConfigurationRaw($configKey, $idLang));
-            } elseif ($idLang === $defaultLangId) {
-                $arr = $legacyArr;
-            } else {
-                $arr = array();
+            $items = array();
+            if (isset($decoded[$idLang]) && is_array($decoded[$idLang])) {
+                $items = $decoded[$idLang];
+            } elseif (isset($decoded[(string) $idLang]) && is_array($decoded[(string) $idLang])) {
+                $items = $decoded[(string) $idLang];
             }
 
-            if (empty($arr) && $idLang === $defaultLangId && !empty($legacyArr)) {
-                $arr = $legacyArr;
+            $clean = array();
+            foreach ($items as $item) {
+                $item = trim((string) $item);
+                if ($item !== '') {
+                    $clean[] = $item;
+                }
             }
-
-            $values[$idLang] = $this->encodePromoTexts(implode(',,', $arr));
+            $map[$idLang] = $clean;
         }
 
-        return $values;
+        return $this->saveTextsMap($i18nKey, $map);
     }
 
     /**
-     * Read configuration for a language, with legacy fallback helpers.
+     * @param string $i18nKey
+     * @param array<int, array<int, string>> $map
      *
-     * @param string $configKey
-     * @param int $idLang 0 = ask for global/legacy only via Configuration::get
-     *
-     * @return string
+     * @return bool
      */
-    protected function getConfigurationRaw($configKey, $idLang = 0)
+    protected function saveTextsMap($i18nKey, array $map)
     {
-        $idLang = (int) $idLang;
-
-        if ($idLang > 0) {
-            if (Configuration::isLangKey($configKey)) {
-                $raw = Configuration::get($configKey, $idLang);
-
-                return $raw === false || $raw === null ? '' : (string) $raw;
+        $normalized = array();
+        foreach ($map as $idLang => $texts) {
+            $idLang = (int) $idLang;
+            if ($idLang <= 0 || !is_array($texts)) {
+                continue;
             }
-
-            // Not yet multilingual: only default language should read the global value
-            // (callers already branch on default vs other langs).
-            $raw = Configuration::get($configKey);
-
-            return $raw === false || $raw === null ? '' : (string) $raw;
+            $normalized[(string) $idLang] = array_values($texts);
         }
 
-        return $this->getLegacyConfigurationValue($configKey);
+        $payload = base64_encode(json_encode($normalized, JSON_UNESCAPED_UNICODE));
+        if ($payload === false) {
+            return false;
+        }
+
+        $idShop = (int) $this->context->shop->id;
+
+        return (bool) Configuration::updateValue($i18nKey, $payload, false, null, $idShop > 0 ? $idShop : null);
+    }
+
+    /**
+     * @param string $i18nKey
+     * @param string $legacyKey
+     *
+     * @return array<int, array<int, string>>
+     */
+    protected function loadTextsMap($i18nKey, $legacyKey)
+    {
+        $idShop = (int) $this->context->shop->id;
+        $raw = Configuration::get($i18nKey, null, null, $idShop > 0 ? $idShop : null);
+        if ($raw === false || $raw === null || $raw === '') {
+            $raw = Configuration::get($i18nKey);
+        }
+
+        $map = array();
+        if (is_string($raw) && $raw !== '') {
+            $json = base64_decode($raw, true);
+            if ($json === false) {
+                $json = $raw;
+            }
+            $decoded = json_decode($json, true);
+            if (is_array($decoded)) {
+                foreach ($decoded as $idLang => $texts) {
+                    if (!is_array($texts)) {
+                        continue;
+                    }
+                    $clean = array();
+                    foreach ($texts as $t) {
+                        $t = trim((string) $t);
+                        if ($t !== '') {
+                            $clean[] = $t;
+                        }
+                    }
+                    $map[(int) $idLang] = $clean;
+                }
+            }
+        }
+
+        // Migrate once from legacy serialized / multilang keys if I18N empty
+        $hasAny = false;
+        foreach ($map as $texts) {
+            if (!empty($texts)) {
+                $hasAny = true;
+                break;
+            }
+        }
+
+        if (!$hasAny) {
+            $map = $this->migrateLegacyTextsMap($legacyKey);
+            if (!empty($map)) {
+                $this->saveTextsMap($i18nKey, $map);
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param string $legacyKey
+     *
+     * @return array<int, array<int, string>>
+     */
+    protected function migrateLegacyTextsMap($legacyKey)
+    {
+        $map = array();
+        $defaultLangId = (int) Configuration::get('PS_LANG_DEFAULT');
+
+        if (Configuration::isLangKey($legacyKey)) {
+            foreach (Language::getLanguages(false) as $lang) {
+                $idLang = (int) $lang['id_lang'];
+                $raw = Configuration::get($legacyKey, $idLang);
+                $arr = $this->decodePromoTexts($raw === false || $raw === null ? '' : (string) $raw);
+                if (!empty($arr)) {
+                    $map[$idLang] = $arr;
+                }
+            }
+        }
+
+        if (empty($map[$defaultLangId])) {
+            $legacyRaw = $this->getLegacyConfigurationValue($legacyKey);
+            $legacyArr = $this->decodePromoTexts($legacyRaw);
+            if (!empty($legacyArr)) {
+                $map[$defaultLangId] = $legacyArr;
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param string $i18nKey
+     * @param string $legacyKey
+     * @param array $languages
+     * @param int $defaultLangId
+     *
+     * @return array<int, string> CSV per lang for the BO widget
+     */
+    protected function loadPromoTextsCsvByLang($i18nKey, $legacyKey, array $languages, $defaultLangId)
+    {
+        $map = $this->loadTextsMap($i18nKey, $legacyKey);
+        $byLang = array();
+
+        foreach ($languages as $lang) {
+            $idLang = (int) $lang['id_lang'];
+            $arr = isset($map[$idLang]) ? $map[$idLang] : array();
+            $byLang[$idLang] = implode(',,', $arr);
+        }
+
+        return $byLang;
     }
 
     /**
      * Read the raw value column from ps_configuration (legacy / non-lang storage).
-     * Configuration::get() on a multilang key ignores this column — which caused wipes
-     * when empty _lang rows were created while the legacy value still existed.
      *
      * @param string $configKey
      *
@@ -426,19 +553,14 @@ class Ckcpromotionbanner extends Module
      */
     protected function getLegacyConfigurationValue($configKey)
     {
-        $idShop = Shop::isFeatureActive() ? (int) Shop::getContextShopID(true) : 0;
-        $idShopGroup = Shop::isFeatureActive() ? (int) Shop::getContextShopGroupID(true) : 0;
+        $idShop = (int) $this->context->shop->id;
 
         $sql = 'SELECT `value` FROM `' . _DB_PREFIX_ . 'configuration`
             WHERE `name` = \'' . pSQL($configKey) . '\'';
-
         if ($idShop > 0) {
             $sql .= ' AND `id_shop` = ' . (int) $idShop;
-        } elseif ($idShopGroup > 0) {
-            $sql .= ' AND `id_shop_group` = ' . (int) $idShopGroup . ' AND (`id_shop` IS NULL OR `id_shop` = 0)';
         } else {
-            $sql .= ' AND (`id_shop` IS NULL OR `id_shop` = 0)
-                AND (`id_shop_group` IS NULL OR `id_shop_group` = 0)';
+            $sql .= ' AND (`id_shop` IS NULL OR `id_shop` = 0)';
         }
 
         $raw = Db::getInstance()->getValue($sql);
@@ -446,7 +568,6 @@ class Ckcpromotionbanner extends Module
             return (string) $raw;
         }
 
-        // Fallback: any row for this name (shop context mismatch)
         $raw = Db::getInstance()->getValue(
             'SELECT `value` FROM `' . _DB_PREFIX_ . 'configuration`
             WHERE `name` = \'' . pSQL($configKey) . '\'
@@ -478,34 +599,6 @@ class Ckcpromotionbanner extends Module
         $decoded = @unserialize(base64_decode((string) $raw));
 
         return is_array($decoded) ? $decoded : array();
-    }
-
-    protected function loadPromoTextsByLang($configKey, array $languages, $defaultLangId)
-    {
-        $isMultilang = Configuration::isLangKey($configKey);
-        $legacyArr = $this->decodePromoTexts($this->getLegacyConfigurationValue($configKey));
-        $byLang = array();
-
-        foreach ($languages as $lang) {
-            $idLang = (int) $lang['id_lang'];
-
-            if ($isMultilang) {
-                $arr = $this->decodePromoTexts($this->getConfigurationRaw($configKey, $idLang));
-            } elseif ($idLang === (int) $defaultLangId) {
-                // Not yet migrated: only the default language inherits the legacy global value.
-                $arr = $legacyArr;
-            } else {
-                $arr = array();
-            }
-
-            if (empty($arr) && $idLang === (int) $defaultLangId && !empty($legacyArr)) {
-                $arr = $legacyArr;
-            }
-
-            $byLang[$idLang] = implode(',,', $arr);
-        }
-
-        return $byLang;
     }
 
     /**
@@ -665,8 +758,6 @@ class Ckcpromotionbanner extends Module
             'CKC_BARREPROMO_DISPLAY_BOTTOM' => Configuration::get('CKC_BARREPROMO_DISPLAY_BOTTOM', false),
             'CKC_BARREPROMO_COLOR' => Configuration::get('CKC_BARREPROMO_COLOR',false),
             'CKC_BARREPROMO_TIMER' => Configuration::get('CKC_BARREPROMO_TIMER', false),
-            'CKC_BARREPROMO_TEXTE' => Configuration::get('CKC_BARREPROMO_TEXTE',false),
-            'CKC_BARREPROMO_TEXTE_PRO' => Configuration::get('CKC_BARREPROMO_TEXTE_PRO',false),
             'CKC_BARREPROMO_TIMER_COLOR' => Configuration::get('CKC_BARREPROMO_TIMER_COLOR', false),
             'CKC_BARREPROMO_TIMER_DISPLAY' => Configuration::get('CKC_BARREPROMO_TIMER_DISPLAY', false),
         );
@@ -718,37 +809,42 @@ class Ckcpromotionbanner extends Module
 
         $form_values = $this->getConfigFormValuesFront();
         $addClass = '';
-        if(Configuration::get('CKC_BARREPROMO_DISPLAY_BOTTOM') == true) {
+        if (Configuration::get('CKC_BARREPROMO_DISPLAY_BOTTOM') == true) {
             $addClass .= 'bottom';
         }
 
         $idLang = (int) $this->context->language->id;
         $defaultLangId = (int) Configuration::get('PS_LANG_DEFAULT');
 
+        $b2cMap = $this->loadTextsMap(self::CONF_TEXTS_I18N, 'CKC_BARREPROMO_TEXTE');
+        $proMap = $this->loadTextsMap(self::CONF_TEXTS_PRO_I18N, 'CKC_BARREPROMO_TEXTE_PRO');
+
+        $b2cTexts = isset($b2cMap[$idLang]) ? $b2cMap[$idLang] : array();
+        if (empty($b2cTexts) && isset($b2cMap[$defaultLangId])) {
+            $b2cTexts = $b2cMap[$defaultLangId];
+        }
+
+        $proTexts = isset($proMap[$idLang]) ? $proMap[$idLang] : array();
+        if (empty($proTexts) && isset($proMap[$defaultLangId])) {
+            $proTexts = $proMap[$defaultLangId];
+        }
+
+        $this->smarty->assign('ckcpromobarretexts', !empty($b2cTexts) ? $b2cTexts : '');
+        $this->smarty->assign('ckcpromobarretextsPro', !empty($proTexts) ? $proTexts : '');
+
         foreach (array_keys($form_values) as $key) {
-            if ($key === 'CKC_BARREPROMO_TEXTE' || $key === 'CKC_BARREPROMO_TEXTE_PRO') {
-                $texts = $this->decodePromoTexts($this->getConfigurationRaw($key, $idLang));
-
-                if (empty($texts) && $idLang === $defaultLangId) {
-                    $texts = $this->decodePromoTexts($this->getConfigurationRaw($key, 0));
-                }
-
-                $assignVar = $key === 'CKC_BARREPROMO_TEXTE' ? 'ckcpromobarretexts' : 'ckcpromobarretextsPro';
-                $this->smarty->assign($assignVar, !empty($texts) ? $texts : '');
-            } else {
-                $this->smarty->assign($key, Configuration::get($key));
-            }
+            $this->smarty->assign($key, Configuration::get($key));
         }
 
         $this->smarty->assign('class', $addClass);
 
         $today = new DateTime();
         $timer = null;
-        if(!empty(Configuration::get('CKC_BARREPROMO_TIMER'))) {
+        if (!empty(Configuration::get('CKC_BARREPROMO_TIMER'))) {
             $timer = new DateTime(Configuration::get('CKC_BARREPROMO_TIMER'));
         }
-        if(Configuration::get('CKC_BARREPROMO_DISPLAY') == 1) {
-            if(($today < $timer) || $timer == null) {
+        if (Configuration::get('CKC_BARREPROMO_DISPLAY') == 1) {
+            if (($today < $timer) || $timer == null) {
                 return $this->display(__FILE__, 'views/templates/front/alert.tpl');
             } else {
                 return $this->display(__FILE__, 'views/templates/front/alert.tpl');

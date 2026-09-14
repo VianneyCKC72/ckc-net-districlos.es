@@ -2,7 +2,7 @@
 <module>
 	<name>ckcpromotionbanner</name>
 	<displayName><![CDATA[Promotion banner]]></displayName>
-	<version><![CDATA[1.1.3]]></version>
+	<version><![CDATA[1.2.0]]></version>
 	<description><![CDATA[Generate a customizable promo banner with a timer with the help of this module.]]></description>
 	<author><![CDATA[Agence CKC]]></author>
 	<tab><![CDATA[pricing_promotion]]></tab>
