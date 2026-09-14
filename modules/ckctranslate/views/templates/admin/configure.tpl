@@ -37,6 +37,61 @@
     {$form_html nofilter}
 
     <div class="panel">
+        <h3><i class="icon icon-list-alt"></i> {l s='Untranslated entities' mod='ckctranslate'}</h3>
+        <p class="ckc-muted">
+            {l s='New or incomplete translations detected for the target language (empty fields or still identical to the source language). Click Run to rebuild the queue and translate only those items.' mod='ckctranslate'}
+        </p>
+
+        {if $untranslated_rows|@count}
+            <div class="table-responsive">
+                <table class="table ckc-untranslated-table">
+                    <thead>
+                    <tr>
+                        <th>{l s='Type' mod='ckctranslate'}</th>
+                        <th>{l s='Untranslated' mod='ckctranslate'}</th>
+                        <th>{l s='Details' mod='ckctranslate'}</th>
+                        <th style="width:140px;">{l s='Action' mod='ckctranslate'}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {foreach from=$untranslated_rows item=row}
+                        <tr class="{if $row.untranslated > 0}ckc-row--pending{else}ckc-row--done{/if}">
+                            <td>
+                                <strong>{$row.label|escape:'htmlall':'UTF-8'}</strong>
+                                <div class="ckc-muted" style="font-size:12px;">{$row.code|escape:'htmlall':'UTF-8'}</div>
+                            </td>
+                            <td>
+                                {if $row.untranslated > 0}
+                                    <span class="ckc-badge ckc-badge--warn">{$row.untranslated|intval}</span>
+                                {else}
+                                    <span class="ckc-badge ckc-badge--ok">0</span>
+                                {/if}
+                            </td>
+                            <td class="ckc-muted">{$row.advice|escape:'htmlall':'UTF-8'}</td>
+                            <td>
+                                {if $row.untranslated > 0}
+                                    <a class="btn btn-primary btn-sm" href="{$row.run_url|escape:'htmlall':'UTF-8'}">
+                                        <i class="icon icon-play"></i>
+                                        {l s='Run' mod='ckctranslate'}
+                                    </a>
+                                {else}
+                                    <button type="button" class="btn btn-default btn-sm" disabled="disabled">
+                                        <i class="icon icon-ok"></i>
+                                        {l s='Done' mod='ckctranslate'}
+                                    </button>
+                                {/if}
+                            </td>
+                        </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+            </div>
+        {else}
+            <p class="ckc-muted">{l s='No translation jobs available.' mod='ckctranslate'}</p>
+        {/if}
+    </div>
+
+    <div class="panel">
         <h3><i class="icon icon-wrench"></i> {l s='Maintenance tools' mod='ckctranslate'}</h3>
 
         <div class="ckc-actions">
@@ -77,10 +132,11 @@
                         <div class="ckc-job-meta">
                             <span class="ckc-stat">{l s='Total:' mod='ckctranslate'} {$job.total|intval}</span>
                             <span class="ckc-stat">{l s='Remaining:' mod='ckctranslate'} {$job.remaining|intval}</span>
+                            <span class="ckc-stat">{l s='Untranslated:' mod='ckctranslate'} {$job.untranslated|intval}</span>
                         </div>
 
                         <p>
-                            <a class="btn btn-primary" href="{$current_url|escape:'htmlall':'UTF-8'}&run_job={$job.code|escape:'htmlall':'UTF-8'}">
+                            <a class="btn btn-primary" href="{$current_url|escape:'htmlall':'UTF-8'}&run_job={$job.code|escape:'htmlall':'UTF-8'}&fresh_queue=1">
                                 <i class="icon icon-play"></i>
                                 {l s='Launch' mod='ckctranslate'}
                             </a>

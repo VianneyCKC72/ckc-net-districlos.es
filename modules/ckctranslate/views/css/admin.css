@@ -108,6 +108,29 @@
     font-weight: 700;
 }
 
+#content .ckc-translate-wrap .ckc-badge--warn {
+    background: #fff1f1;
+    color: #c0392b;
+}
+
+#content .ckc-translate-wrap .ckc-badge--ok {
+    background: #eefaf1;
+    color: #1e7e34;
+}
+
+#content .ckc-translate-wrap .ckc-untranslated-table .ckc-row--pending td:first-child {
+    border-left: 3px solid var(--ckc-primary);
+}
+
+#content .ckc-translate-wrap .ckc-untranslated-table .ckc-row--done td {
+    opacity: 0.72;
+}
+
+#content .ckc-translate-wrap .btn-sm {
+    padding: 6px 14px !important;
+    font-size: 12px;
+}
+
 #content .ckc-translate-wrap .btn {
     border-radius: 999px !important;
     padding: 10px 18px;

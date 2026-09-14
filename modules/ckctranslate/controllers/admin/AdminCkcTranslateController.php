@@ -79,7 +79,13 @@ class AdminCkcTranslateController extends ModuleAdminController
         }
 
         if (Tools::getValue('run_job')) {
-            $this->runJob((string) Tools::getValue('run_job'));
+            $jobCode = (string) Tools::getValue('run_job');
+            if (Tools::getValue('fresh_queue')) {
+                $this->resetJobQueue($jobCode);
+                // Rebuild queue against missing translations (new entities / source copies).
+                Configuration::set(CkcTranslate::CONF_ONLY_MISSING_FIELDS, 1);
+            }
+            $this->runJob($jobCode);
 
             return;
         }
@@ -93,6 +99,7 @@ class AdminCkcTranslateController extends ModuleAdminController
         $this->context->smarty->assign(array(
             'form_html' => $this->renderFormConfig(),
             'jobs' => $this->getJobsWithCounters(),
+            'untranslated_rows' => $this->getUntranslatedRows(),
             'current_url' => self::$currentIndex . '&token=' . $this->token,
             'history_rows' => $this->getHistoryRows(),
             'prompt_example' => $this->getAdvancedPromptExample(),
@@ -420,7 +427,7 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'name' => CkcTranslate::CONF_PROMPT_EVERCONTENTSEO,
                         'rows' => 4,
                         'cols' => 60,
-                        'desc' => $this->module->l('For Ever Content SEO HTML blocks (categories, manufacturers, suppliers).'),
+                        'desc' => $this->module->l('For Ever Content SEO HTML blocks on all clones (everpscontentseo, everpscontentseo3, …) — categories, manufacturers, suppliers.'),
                     ),
                     array(
                         'type' => 'textarea',
@@ -675,8 +682,8 @@ class AdminCkcTranslateController extends ModuleAdminController
             ),
             array(
                 'code' => 'evercontentseo',
-                'label' => $this->module->l('Translate Ever Content SEO (everpscontentseo)'),
-                'advice' => $this->module->l('Translates SEO HTML footers for categories, manufacturers and suppliers. Category filters apply to category contents only.'),
+                'label' => $this->module->l('Translate Ever Content SEO (all everpscontentseo* clones)'),
+                'advice' => $this->getEverContentSeoJobAdvice(),
             ),
             array(
                 'code' => 'features',
@@ -709,36 +716,123 @@ class AdminCkcTranslateController extends ModuleAdminController
     protected function getJobsWithCounters()
     {
         $jobs = $this->getJobs();
+        $runner = $this->createJobRunner(false);
 
         foreach ($jobs as &$job) {
             $job['total'] = 0;
             $job['remaining'] = 0;
+            $job['untranslated'] = 0;
 
             if (!isset($job['code'])) {
                 continue;
             }
 
-            $counters = $this->getJobCounters($job['code']);
+            $counters = $this->getJobCounters($job['code'], $runner);
             $job['total'] = isset($counters['total']) ? (int) $counters['total'] : 0;
             $job['remaining'] = isset($counters['remaining']) ? (int) $counters['remaining'] : 0;
+            $job['untranslated'] = isset($counters['untranslated'])
+                ? (int) $counters['untranslated']
+                : (int) $job['remaining'];
         }
         unset($job);
 
         return $jobs;
     }
 
-    protected function getJobCounters($jobCode)
+    /**
+     * Rows for the "untranslated entities" table (new / missing translations).
+     *
+     * @return array
+     */
+    protected function getUntranslatedRows()
+    {
+        $rows = array();
+        $runner = $this->createJobRunner(false);
+
+        foreach ($this->getJobs() as $job) {
+            if (empty($job['code'])) {
+                continue;
+            }
+
+            $untranslated = 0;
+            try {
+                $untranslated = (int) $runner->countUntranslated($job['code']);
+            } catch (Throwable $e) {
+                $untranslated = 0;
+            }
+
+            $rows[] = array(
+                'code' => $job['code'],
+                'label' => $job['label'],
+                'advice' => isset($job['advice']) ? $job['advice'] : '',
+                'untranslated' => $untranslated,
+                'run_url' => self::$currentIndex
+                    . '&token=' . $this->token
+                    . '&run_job=' . urlencode($job['code'])
+                    . '&fresh_queue=1',
+            );
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @param bool $withAi
+     *
+     * @return CkcTranslateJobRunner
+     */
+    protected function createJobRunner($withAi = true)
+    {
+        $ai = new CkcTranslateAi(
+            $withAi ? Configuration::get(CkcTranslate::CONF_API_KEY) : '',
+            Configuration::get(CkcTranslate::CONF_MODEL),
+            (float) Configuration::get(CkcTranslate::CONF_TEMPERATURE),
+            (int) Configuration::get(CkcTranslate::CONF_MAX_TOKENS),
+            Configuration::get(CkcTranslate::CONF_PROMPT)
+        );
+
+        return new CkcTranslateJobRunner(
+            $this->module,
+            $ai,
+            (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG),
+            (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG)
+        );
+    }
+
+    protected function resetJobQueue($jobCode)
+    {
+        $queueName = CkcTranslateJobRunner::jobCodeToQueueName($jobCode);
+        CkcTranslateJobRunner::resetFileQueue($queueName);
+    }
+
+    protected function getJobCounters($jobCode, $runner = null)
     {
         $fileCounters = CkcTranslateJobRunner::getFileQueueCounters(
             CkcTranslateJobRunner::jobCodeToQueueName($jobCode)
         );
         if (is_array($fileCounters)) {
+            $fileCounters['untranslated'] = isset($fileCounters['remaining'])
+                ? (int) $fileCounters['remaining']
+                : 0;
+
             return $fileCounters;
+        }
+
+        if (!$runner instanceof CkcTranslateJobRunner) {
+            $runner = $this->createJobRunner(false);
+        }
+
+        $untranslated = 0;
+        try {
+            $untranslated = (int) $runner->countUntranslated($jobCode);
+        } catch (Throwable $e) {
+            $untranslated = 0;
         }
 
         $filterType = (string) Configuration::get(CkcTranslate::CONF_FILTER_TYPE);
         $filterIds = $this->parseIds((string) Configuration::get(CkcTranslate::CONF_FILTER_IDS));
         $filterCategoryId = (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID);
+        $onlyMissing = (int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS);
 
         switch ($jobCode) {
             case 'product_seo':
@@ -761,8 +855,6 @@ class AdminCkcTranslateController extends ModuleAdminController
                 }
 
                 $total = (int) Db::getInstance()->getValue($sql);
-                $cookieKey = $jobCode === 'product_seo' ? 'ckctranslate_product_seo_ids' : 'ckctranslate_product_desc_ids';
-                $indexKey = $jobCode === 'product_seo' ? 'ckctranslate_product_seo_index' : 'ckctranslate_product_desc_index';
                 break;
 
             case 'category_seo':
@@ -775,8 +867,6 @@ class AdminCkcTranslateController extends ModuleAdminController
                 }
 
                 $total = (int) Db::getInstance()->getValue($sql);
-                $cookieKey = $jobCode === 'category_seo' ? 'ckctranslate_category_seo_ids' : 'ckctranslate_category_desc_ids';
-                $indexKey = $jobCode === 'category_seo' ? 'ckctranslate_category_seo_index' : 'ckctranslate_category_desc_index';
                 break;
 
             case 'cms':
@@ -787,8 +877,6 @@ class AdminCkcTranslateController extends ModuleAdminController
                 }
 
                 $total = (int) Db::getInstance()->getValue($sql);
-                $cookieKey = 'ckctranslate_cms_ids';
-                $indexKey = 'ckctranslate_cms_index';
                 break;
 
             case 'creative_elements':
@@ -800,8 +888,6 @@ class AdminCkcTranslateController extends ModuleAdminController
                         AND cl.content != \'\'';
 
                 $total = (int) Db::getInstance()->getValue($sql);
-                $cookieKey = 'ckctranslate_ce_ids';
-                $indexKey = 'ckctranslate_ce_index';
                 break;
 
             case 'ce_meta':
@@ -813,52 +899,29 @@ class AdminCkcTranslateController extends ModuleAdminController
                         AND SUBSTRING(CAST(id AS CHAR), LENGTH(CAST(id AS CHAR))-3, 2) = \'' . pSQL($langPad) . '\'';
 
                 $total = (int) Db::getInstance()->getValue($sql);
-                $cookieKey = 'ckctranslate_cemeta_ids';
-                $indexKey = 'ckctranslate_cemeta_index';
                 break;
 
             case 'reassurance':
-                $sql = 'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'psreassurance` WHERE status = 1';
-
-                $total = (int) Db::getInstance()->getValue($sql);
-                $cookieKey = 'ckctranslate_reassurance_ids';
-                $indexKey = 'ckctranslate_reassurance_index';
+                $total = (int) Db::getInstance()->getValue(
+                    'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'psreassurance` WHERE status = 1'
+                );
                 break;
 
             case 'evercontentseo':
                 $total = $this->countEverContentSeoItems();
-                $remainingFallback = $total;
-                if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
-                    $remainingFallback = $this->countEverContentSeoItems(true);
-                }
-                $cookieKey = 'ckctranslate_evercontentseo_ids';
-                $indexKey = 'ckctranslate_evercontentseo_index';
                 break;
 
             case 'features':
                 $total = $this->countFeaturesItems();
-                $remainingFallback = $total;
-                if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
-                    $remainingFallback = $this->countFeaturesItems(true);
-                }
-                $cookieKey = 'ckctranslate_features_ids';
-                $indexKey = 'ckctranslate_features_index';
                 break;
 
             case 'attributes':
                 $total = $this->countAttributesItems();
-                $remainingFallback = $total;
-                if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
-                    $remainingFallback = $this->countAttributesItems(true);
-                }
-                $cookieKey = 'ckctranslate_attributes_ids';
-                $indexKey = 'ckctranslate_attributes_index';
                 break;
 
             case 'carrier_delays':
                 $shopId = (int) $this->context->shop->id;
                 $sourceLangId = (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
-                $targetLangId = (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG);
                 $sql = 'SELECT COUNT(*)
                         FROM `' . _DB_PREFIX_ . 'carrier` c
                         INNER JOIN `' . _DB_PREFIX_ . 'carrier_lang` cl
@@ -874,116 +937,35 @@ class AdminCkcTranslateController extends ModuleAdminController
                 }
 
                 $total = (int) Db::getInstance()->getValue($sql);
-
-                if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS) && $targetLangId > 0) {
-                    $remainingFallback = (int) Db::getInstance()->getValue(
-                        'SELECT COUNT(*)
-                         FROM `' . _DB_PREFIX_ . 'carrier` c
-                         INNER JOIN `' . _DB_PREFIX_ . 'carrier_lang` src
-                           ON src.id_carrier = c.id_carrier
-                          AND src.id_lang = ' . (int) $sourceLangId . '
-                          AND src.id_shop = ' . (int) $shopId . '
-                         LEFT JOIN `' . _DB_PREFIX_ . 'carrier_lang` tgt
-                           ON tgt.id_carrier = c.id_carrier
-                          AND tgt.id_lang = ' . (int) $targetLangId . '
-                          AND tgt.id_shop = ' . (int) $shopId . '
-                         WHERE c.deleted = 0
-                           AND src.delay IS NOT NULL
-                           AND TRIM(src.delay) != \'\'
-                           AND (
-                                tgt.delay IS NULL
-                                OR TRIM(tgt.delay) = \'\'
-                                OR tgt.delay = src.delay
-                           )'
-                        . (($filterType === 'ids' && !empty($filterIds))
-                            ? ' AND c.id_carrier IN (' . implode(',', array_map('intval', $filterIds)) . ')'
-                            : '')
-                    );
-                } else {
-                    $remainingFallback = $total;
-                }
-
-                $cookieKey = 'ckctranslate_carrier_delays_ids';
-                $indexKey = 'ckctranslate_carrier_delays_index';
                 break;
 
             case 'brand_reviews':
                 $this->ensureBrandReviewsTables();
-                $targetLangId = (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG);
                 $total = (int) Db::getInstance()->getValue(
                     'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'ckc_brand_review`'
                 );
-
-                if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS) && $targetLangId > 0) {
-                    $remainingFallback = (int) Db::getInstance()->getValue(
-                        'SELECT COUNT(*)
-                         FROM `' . _DB_PREFIX_ . 'ckc_brand_review` r
-                         WHERE NOT EXISTS (
-                            SELECT 1 FROM `' . _DB_PREFIX_ . 'ckc_brand_review_lang` rl
-                            WHERE rl.id_ckc_brand_review = r.id_ckc_brand_review
-                              AND rl.id_lang = ' . $targetLangId . '
-                              AND rl.review_content IS NOT NULL
-                              AND rl.review_content != \'\'
-                         )'
-                    );
-                } else {
-                    $remainingFallback = $total;
-                }
-
-                $cookieKey = 'ckctranslate_brand_reviews_ids';
-                $indexKey = 'ckctranslate_brand_reviews_index';
                 break;
 
             case 'order_states':
-                $sourceLangId = (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
-                $targetLangId = (int) Configuration::get(CkcTranslate::CONF_TARGET_LANG);
                 $total = (int) Db::getInstance()->getValue(
                     'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'order_state` WHERE deleted = 0'
                 );
-
-                if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS) && $targetLangId > 0 && $sourceLangId > 0) {
-                    $remainingFallback = (int) Db::getInstance()->getValue(
-                        'SELECT COUNT(*)
-                         FROM `' . _DB_PREFIX_ . 'order_state` os
-                         INNER JOIN `' . _DB_PREFIX_ . 'order_state_lang` src
-                           ON src.id_order_state = os.id_order_state AND src.id_lang = ' . $sourceLangId . '
-                         LEFT JOIN `' . _DB_PREFIX_ . 'order_state_lang` tgt
-                           ON tgt.id_order_state = os.id_order_state AND tgt.id_lang = ' . $targetLangId . '
-                         WHERE os.deleted = 0
-                           AND (tgt.name IS NULL OR tgt.name = \'\' OR tgt.name = src.name)'
-                    );
-                } else {
-                    $remainingFallback = $total;
-                }
-
-                $cookieKey = 'ckctranslate_order_states_ids';
-                $indexKey = 'ckctranslate_order_states_index';
                 break;
 
             default:
                 return array(
                     'total' => 0,
                     'remaining' => 0,
+                    'untranslated' => 0,
                 );
         }
 
-        $cookie = $this->context->cookie;
-
-        if (isset($cookie->{$cookieKey}) && isset($cookie->{$indexKey})) {
-            $ids = json_decode($cookie->{$cookieKey}, true);
-            $index = (int) $cookie->{$indexKey};
-
-            if (is_array($ids)) {
-                return array(
-                    'total' => count($ids),
-                    'remaining' => max(count($ids) - $index, 0),
-                );
-            }
-        }
+        $remaining = $onlyMissing ? $untranslated : $total;
 
         return array(
             'total' => (int) $total,
-            'remaining' => isset($remainingFallback) ? (int) $remainingFallback : (int) $total,
+            'remaining' => (int) $remaining,
+            'untranslated' => (int) $untranslated,
         );
     }
 
@@ -1001,6 +983,17 @@ class AdminCkcTranslateController extends ModuleAdminController
         }
     }
 
+    protected function getEverContentSeoJobAdvice()
+    {
+        $modules = CkcTranslateJobRunner::discoverEverContentSeoModules();
+        $list = !empty($modules) ? implode(', ', $modules) : '—';
+
+        return sprintf(
+            $this->module->l('Translates SEO HTML blocks for every Ever Content SEO clone — categories, manufacturers and suppliers. Detected: %s. Category filters apply to category contents only. Reset the queue after upgrading so all modules are included.', 'AdminCkcTranslateController'),
+            $list
+        );
+    }
+
     protected function countEverContentSeoItems($onlyMissing = false)
     {
         $shopId = (int) $this->context->shop->id;
@@ -1010,67 +1003,54 @@ class AdminCkcTranslateController extends ModuleAdminController
         $filterIds = $this->parseIds((string) Configuration::get(CkcTranslate::CONF_FILTER_IDS));
         $filterCategoryId = (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID);
 
-        $types = array(
-            'category' => array(
-                'table' => 'everpscontentseo_categories',
-                'lang_table' => 'everpscontentseo_categories_lang',
-                'id_column' => 'id_everpscontentseo_category',
-                'ref_column' => 'id_category',
-            ),
-            'manufacturer' => array(
-                'table' => 'everpscontentseo_manufacturers',
-                'lang_table' => 'everpscontentseo_manufacturers_lang',
-                'id_column' => 'id_everpscontentseo_manufacturer',
-                'ref_column' => 'id_manufacturer',
-            ),
-            'supplier' => array(
-                'table' => 'everpscontentseo_suppliers',
-                'lang_table' => 'everpscontentseo_suppliers_lang',
-                'id_column' => 'id_everpscontentseo_supplier',
-                'ref_column' => 'id_supplier',
-            ),
-        );
-
         $total = 0;
         $db = Db::getInstance();
+        $types = array('category', 'manufacturer', 'supplier');
 
-        foreach ($types as $type => $meta) {
-            if (!(bool) $db->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . $meta['table'] . '"')) {
-                continue;
-            }
-
-            $sql = 'SELECT COUNT(*)
-                    FROM `' . _DB_PREFIX_ . $meta['table'] . '` c
-                    INNER JOIN `' . _DB_PREFIX_ . $meta['lang_table'] . '` src
-                      ON src.`' . $meta['id_column'] . '` = c.`' . $meta['id_column'] . '`
-                     AND src.id_lang = ' . (int) $sourceLangId . '
-                    WHERE src.content IS NOT NULL
-                      AND TRIM(src.content) != \'\'
-                      AND c.id_shop = ' . (int) $shopId;
-
-            if ($type === 'category') {
-                if ($filterType === 'ids' && !empty($filterIds)) {
-                    $sql .= ' AND c.`' . $meta['ref_column'] . '` IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+        foreach (CkcTranslateJobRunner::discoverEverContentSeoModules() as $module) {
+            foreach ($types as $type) {
+                $meta = CkcTranslateJobRunner::getEverContentSeoTypeMetaForModule($module, $type);
+                if (!$meta) {
+                    continue;
                 }
-                if ($filterType === 'category' && $filterCategoryId > 0) {
-                    $sql .= ' AND c.`' . $meta['ref_column'] . '` = ' . (int) $filterCategoryId;
+
+                if (!(bool) $db->executeS('SHOW TABLES LIKE "' . _DB_PREFIX_ . $meta['table'] . '"')) {
+                    continue;
                 }
-            }
 
-            if ($onlyMissing && $targetLangId > 0) {
-                $sql .= ' AND (
-                    NOT EXISTS (
-                        SELECT 1 FROM `' . _DB_PREFIX_ . $meta['lang_table'] . '` tgt
-                        WHERE tgt.`' . $meta['id_column'] . '` = c.`' . $meta['id_column'] . '`
-                          AND tgt.id_lang = ' . (int) $targetLangId . '
-                          AND tgt.content IS NOT NULL
-                          AND TRIM(tgt.content) != \'\'
-                          AND tgt.content != src.content
-                    )
-                )';
-            }
+                $sql = 'SELECT COUNT(*)
+                        FROM `' . _DB_PREFIX_ . $meta['table'] . '` c
+                        INNER JOIN `' . _DB_PREFIX_ . $meta['lang_table'] . '` src
+                          ON src.`' . $meta['id_column'] . '` = c.`' . $meta['id_column'] . '`
+                         AND src.id_lang = ' . (int) $sourceLangId . '
+                        WHERE src.content IS NOT NULL
+                          AND TRIM(src.content) != \'\'
+                          AND c.id_shop = ' . (int) $shopId;
 
-            $total += (int) $db->getValue($sql);
+                if ($type === 'category') {
+                    if ($filterType === 'ids' && !empty($filterIds)) {
+                        $sql .= ' AND c.`' . $meta['ref_column'] . '` IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                    }
+                    if ($filterType === 'category' && $filterCategoryId > 0) {
+                        $sql .= ' AND c.`' . $meta['ref_column'] . '` = ' . (int) $filterCategoryId;
+                    }
+                }
+
+                if ($onlyMissing && $targetLangId > 0) {
+                    $sql .= ' AND (
+                        NOT EXISTS (
+                            SELECT 1 FROM `' . _DB_PREFIX_ . $meta['lang_table'] . '` tgt
+                            WHERE tgt.`' . $meta['id_column'] . '` = c.`' . $meta['id_column'] . '`
+                              AND tgt.id_lang = ' . (int) $targetLangId . '
+                              AND tgt.content IS NOT NULL
+                              AND TRIM(tgt.content) != \'\'
+                              AND tgt.content != src.content
+                        )
+                    )';
+                }
+
+                $total += (int) $db->getValue($sql);
+            }
         }
 
         return $total;
