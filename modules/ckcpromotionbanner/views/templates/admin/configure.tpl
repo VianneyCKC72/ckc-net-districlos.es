@@ -100,7 +100,7 @@
 
 <div class="panel panel-promobanner">
 	<h3 style="margin-top: 1px !important; border: none; margin-bottom: 5px; margin-left: -7px; background: none;" class="h3-ckctitle ckch3"><i class="icon icon-link"></i> {l s='Add text(s) for promotion' mod='ckcpromotionbanner'}</h3>
-	<p class="help-block">{l s='If you have several promotional texts to show, you can add as many as necessary here (if only one too). Configure each language separately.' mod='ckcpromotionbanner'}</p>
+	<p class="help-block">{l s='If you have several promotional texts to show, you can add as many as necessary here (if only one too). Configure each language separately.' mod='ckcpromotionbanner'} {l s='Type your text, click +, then Save — or just type and Save, the text in the field will be kept.' mod='ckcpromotionbanner'}</p>
 	<div class="mt-5 id-select-container">
 		<form id="id_promotexts" class="context-form" action="{$moduleAdminLink}" method="post" enctype="multipart/form-data" novalidate>
 			{call name="ckcpromobarre_lang_widget"
@@ -121,7 +121,7 @@
 
 <div class="panel panel-promobanner">
 	<h3 style="margin-top: 1px !important; border: none; margin-bottom: 5px; margin-left: -7px; background: none;" class="h3-ckctitle ckch3"><i class="icon icon-link"></i> {l s='Ajouter du/des texte(s) pour la promotion PRO' mod='ckcpromotionbanner'}</h3>
-	<p class="help-block">{l s='If you have several promotional texts to show, you can add as many as necessary here (if only one too). Configure each language separately.' mod='ckcpromotionbanner'}</p>
+	<p class="help-block">{l s='If you have several promotional texts to show, you can add as many as necessary here (if only one too). Configure each language separately.' mod='ckcpromotionbanner'} {l s='Type your text, click +, then Save — or just type and Save, the text in the field will be kept.' mod='ckcpromotionbanner'}</p>
 	<div class="mt-5 id-select-container">
 		<form id="id_promotextsPro" class="context-form" action="{$moduleAdminLink}" method="post" enctype="multipart/form-data" novalidate>
 			{call name="ckcpromobarre_lang_widget"
@@ -215,16 +215,36 @@
 		$('.ckcpromobarre-active-lang[data-group="' + group + '"]').val(String(langId));
 	}
 
+	/** If the user typed a text but did not click +, include it before save. */
+	function commitPendingInputs(group) {
+		$('.ckcpromobarre-input[data-group="' + group + '"]').each(function () {
+			var $input = $(this);
+			var langId = String($input.data('lang'));
+			var value = ($input.val() || '').trim();
+			if (value === '') {
+				return;
+			}
+			state[group][langId] = state[group][langId] || [];
+			if (state[group][langId].indexOf(value) < 0) {
+				state[group][langId].push(value);
+			}
+			$input.val('');
+			setActiveLang(group, langId);
+		});
+	}
+
 	$(document).ready(function () {
 		init('b2c', promotextsByLang);
 		init('pro', promotextsProByLang);
 		renderAll();
 
-		// Sync only the submitted group so every language hidden is filled before POST
+		// Sync pending input + all language hiddens before POST
 		$('#id_promotexts').on('submit', function () {
+			commitPendingInputs('b2c');
 			renderGroup('b2c');
 		});
 		$('#id_promotextsPro').on('submit', function () {
+			commitPendingInputs('pro');
 			renderGroup('pro');
 		});
 
