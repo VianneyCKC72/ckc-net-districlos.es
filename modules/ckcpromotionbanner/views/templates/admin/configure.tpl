@@ -87,10 +87,15 @@
 					   data-group="{$group}"
 					   data-lang="{$lang.id_lang}"
 					   name="{$post_key}[{$lang.id_lang}]"
-					   form="{$post_key}">
+					   value="{if isset($texts_by_lang[$lang.id_lang])}{$texts_by_lang[$lang.id_lang]|escape:'html':'UTF-8'}{/if}">
 			</div>
 		{/foreach}
 	</div>
+	<input type="hidden"
+		   class="ckcpromobarre-active-lang"
+		   data-group="{$group}"
+		   name="{$post_key}_active_lang"
+		   value="{$employee_lang_id|intval}">
 {/function}
 
 <div class="panel panel-promobanner">
@@ -109,7 +114,7 @@
 				container_id_prefix="selectedIds"
 				hidden_id_prefix="idsField"
 				post_key="id_promotexts"}
-			<input class="btn btn-success mt-3 saveExceptions" type="submit" value="{l s='Save the list of promo texts' mod='ckcpromotionbanner'}" form="id_promotexts">
+			<input class="btn btn-success mt-3 saveExceptions" type="submit" name="submitPromoTextsB2c" value="{l s='Save the list of promo texts' mod='ckcpromotionbanner'}">
 		</form>
 	</div>
 </div>
@@ -130,7 +135,7 @@
 				container_id_prefix="selectedIdsPro"
 				hidden_id_prefix="idsFieldPro"
 				post_key="id_promotextsPro"}
-			<input class="btn btn-success mt-3 saveExceptions" type="submit" value="{l s='Save the list of promo texts' mod='ckcpromotionbanner'}" form="id_promotextsPro">
+			<input class="btn btn-success mt-3 saveExceptions" type="submit" name="submitPromoTextsPro" value="{l s='Save the list of promo texts' mod='ckcpromotionbanner'}">
 		</form>
 	</div>
 </div>
@@ -139,6 +144,9 @@
 (function ($) {
 	var promotextsByLang = {$promotextsByLangJson nofilter};
 	var promotextsProByLang = {$promotextsProByLangJson nofilter};
+	var knownLangIds = [
+		{foreach from=$languages item=lang name=ckclang}{$lang.id_lang|intval}{if !$smarty.foreach.cklang.last},{/if}{/foreach}
+	];
 
 	var state = {
 		b2c: {},
@@ -153,8 +161,17 @@
 	}
 
 	function init(group, source) {
-		Object.keys(source).forEach(function (langId) {
-			state[group][langId] = csvToArray(source[langId]);
+		source = source || {};
+		knownLangIds.forEach(function (langId) {
+			var key = String(langId);
+			var fromJson = source[key] !== undefined ? source[key] : source[langId];
+			if (fromJson !== undefined && fromJson !== null) {
+				state[group][key] = csvToArray(fromJson);
+				return;
+			}
+			// Fallback: read server-rendered hidden value (never start empty if PHP had data)
+			var $hidden = $('.ckcpromobarre-hidden[data-group="' + group + '"][data-lang="' + key + '"]');
+			state[group][key] = csvToArray($hidden.length ? $hidden.val() : '');
 		});
 	}
 
@@ -168,6 +185,7 @@
 	}
 
 	function render(group, langId) {
+		langId = String(langId);
 		var $container = $('.ckcpromobarre-selected[data-group="' + group + '"][data-lang="' + langId + '"]');
 		var $hidden = $('.ckcpromobarre-hidden[data-group="' + group + '"][data-lang="' + langId + '"]');
 		$container.empty();
@@ -183,19 +201,32 @@
 		$hidden.val(items.join(',,'));
 	}
 
-	function renderAll() {
-		['b2c', 'pro'].forEach(function (group) {
-			Object.keys(state[group]).forEach(function (langId) {
-				render(group, langId);
-			});
+	function renderGroup(group) {
+		Object.keys(state[group]).forEach(function (langId) {
+			render(group, langId);
 		});
 	}
 
-	init('b2c', promotextsByLang);
-	init('pro', promotextsProByLang);
+	function renderAll() {
+		['b2c', 'pro'].forEach(renderGroup);
+	}
+
+	function setActiveLang(group, langId) {
+		$('.ckcpromobarre-active-lang[data-group="' + group + '"]').val(String(langId));
+	}
 
 	$(document).ready(function () {
+		init('b2c', promotextsByLang);
+		init('pro', promotextsProByLang);
 		renderAll();
+
+		// Sync only the submitted group so every language hidden is filled before POST
+		$('#id_promotexts').on('submit', function () {
+			renderGroup('b2c');
+		});
+		$('#id_promotextsPro').on('submit', function () {
+			renderGroup('pro');
+		});
 
 		// Tab switching
 		$(document).on('click', '.ckcpromobarre-lang-tab', function (e) {
@@ -209,6 +240,7 @@
 
 			$('.ckcpromobarre-lang-pane[data-group="' + group + '"]').hide().removeClass('active');
 			$('.ckcpromobarre-lang-pane[data-group="' + group + '"][data-lang="' + langId + '"]').show().addClass('active');
+			setActiveLang(group, langId);
 		});
 
 		// Add tag
@@ -232,13 +264,14 @@
 			state[group][langId].push(value);
 			$input.val('');
 			render(group, langId);
+			setActiveLang(group, langId);
 		});
 
 		// Submit on Enter inside the text input
 		$(document).on('keydown', '.ckcpromobarre-input', function (e) {
 			if (e.which === 13) {
 				e.preventDefault();
-				$(this).siblings('.ckcpromobarre-add').first().trigger('click');
+				$(this).closest('.input-group').find('.ckcpromobarre-add').first().trigger('click');
 			}
 		});
 
@@ -255,6 +288,7 @@
 			}
 			state[group][langId].splice(index, 1);
 			render(group, langId);
+			setActiveLang(group, langId);
 		});
 
 		// Copy from default language
@@ -272,6 +306,7 @@
 
 			state[group][langId] = source;
 			render(group, langId);
+			setActiveLang(group, langId);
 		});
 	});
 })(jQuery);
