@@ -1,41 +1,26 @@
 {**
- * Copyright since 2007 PrestaShop SA and Contributors
- * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Academic Free License 3.0 (AFL-3.0)
- * that is bundled with this package in the file LICENSE.md.
- * It is also available through the world-wide-web at this URL:
- * https://opensource.org/licenses/AFL-3.0
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
- *
- * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright Since 2007 PrestaShop SA and Contributors
- * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
+ * Theme override - GDPR personal data page (i18n via Shop.Theme.Custommodules)
  *}
 {extends file='customer/page.tpl'}
 
 {block name='page_title'}
-    {l s='RGPD - Données personnelles' mod='psgdpr'}
+    {l s='RGPD - Données personnelles' d='Shop.Theme.Custommodules'}
 {/block}
 
 {block name='page_content'}
 <div class="container">
     <section class="page_content">
         <div class="col-xs-12 psgdprinfo17">
-            <h2>{l s='Access to my data' mod='psgdpr'}</h2>
-            <p>{l s='At any time, you have the right to retrieve the data you have provided to our site. Click on "Get my data" to automatically download a copy of your personal data on a pdf or csv file.' mod='psgdpr'}</p>
-            <a id="exportDataToCsv" class="btn btn-primary psgdprgetdatabtn17" target="_blank" href="{$psgdpr_csv_controller|escape:'htmlall':'UTF-8'}">{l s='GET MY DATA TO CSV' mod='psgdpr'}</a>
-            <a id="exportDataToPdf" class="btn btn-primary psgdprgetdatabtn17" target="_blank" href="{$psgdpr_pdf_controller|escape:'htmlall':'UTF-8'}">{l s='GET MY DATA TO PDF' mod='psgdpr'}</a>
+            <h2>{l s='Accès à mes données' d='Shop.Theme.Custommodules'}</h2>
+            <p>{l s='À tout moment, vous avez le droit de récupérer les données que vous avez fournies à notre site. Cliquez sur « Obtenir mes données » pour télécharger automatiquement une copie de vos données personnelles au format PDF ou CSV.' d='Shop.Theme.Custommodules'}</p>
+            <a id="exportDataToCsv" class="btn btn-primary psgdprgetdatabtn17" target="_blank" href="{$psgdpr_csv_controller|escape:'htmlall':'UTF-8'}">{l s='OBTENIR MES DONNÉES EN CSV' d='Shop.Theme.Custommodules'}</a>
+            <a id="exportDataToPdf" class="btn btn-primary psgdprgetdatabtn17" target="_blank" href="{$psgdpr_pdf_controller|escape:'htmlall':'UTF-8'}">{l s='OBTENIR MES DONNÉES EN PDF' d='Shop.Theme.Custommodules'}</a>
         </div>
         <div class="col-xs-12 psgdprinfo17">
-            <h2>{l s='Rectification & Erasure requests' mod='psgdpr'}</h2>
-            <p>{l s='You have the right to modify all the personal information found in the "My Account" page. For any other request you might have regarding the rectification and/or erasure of your personal data, please contact us through our' mod='psgdpr'} <a href="{$psgdpr_contactUrl|escape:'htmlall':'UTF-8'}">{l s='contact page' mod='psgdpr'}</a>. {l s='We will review your request and reply as soon as possible.' mod='psgdpr'}</p>
+            <h2>{l s='Demandes de rectification et d\'effacement' d='Shop.Theme.Custommodules'}</h2>
+            <p>{l s='Vous avez le droit de modifier toutes les informations personnelles présentes dans la page « Mon compte ». Pour toute autre demande concernant la rectification et/ou l\'effacement de vos données personnelles, veuillez nous contacter via notre' d='Shop.Theme.Custommodules'} <a href="{$psgdpr_contactUrl|escape:'htmlall':'UTF-8'}">{l s='page de contact' d='Shop.Theme.Custommodules'}</a>. {l s='Nous examinerons votre demande et vous répondrons dans les meilleurs délais.' d='Shop.Theme.Custommodules'}</p>
         </div>
-        <a href="/identite"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left-icon lucide-move-left"><path d="M6 8L2 12L6 16"/><path d="M2 12H22"/></svg> Mon compte</a>
+        <a href="{$urls.pages.identity}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-move-left-icon lucide-move-left"><path d="M6 8L2 12L6 16"/><path d="M2 12H22"/></svg> {l s='Mon compte' d='Shop.Theme.Custommodules'}</a>
 
     </section>
 </div>

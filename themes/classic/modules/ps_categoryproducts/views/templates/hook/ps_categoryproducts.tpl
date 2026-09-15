@@ -24,7 +24,7 @@
  *}
 <section class="featured-products my-section">
   <h3 class="h2">
-    Dans la même catégorie
+    {l s='Dans la même catégorie' d='Shop.Theme.Custommodules'}
   </h3>
   {include file="catalog/_partials/productlist-slider.tpl" products=$products}
 </section>

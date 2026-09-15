@@ -24,13 +24,13 @@ class Dispatcher extends DispatcherCore
 {
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public $etsAwuDispatcher = null;
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     protected function __construct()
@@ -53,7 +53,7 @@ class Dispatcher extends DispatcherCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function getController($id_shop = null)
@@ -61,29 +61,27 @@ class Dispatcher extends DispatcherCore
         if (Tools::getIsset('controller') && (Tools::getValue('controller') != '')) {
             return parent::getController($id_shop);
         }
-        if (!Module::isEnabled('ets_awesomeurl') || !Module::getInstanceByName('ets_awesomeurl')) {
-            return parent::getController($id_shop);
-        }
-        $this->etsAwuDispatcher && $this->etsAwuDispatcher->checkForRedirect($this->request_uri);
-        parent::getController($id_shop);
-        if ($this->etsAwuDispatcher) {
-            if ($this->enabledRemoveIdInUrl()) {
-                $this->controller = $this->etsAwuDispatcher->getController($this, $this->controller);
-            }
-            if (('404' == $this->controller || 'pagenotfound' == $this->controller) && (int) Configuration::get('ETS_AWU_ENABLE_REDIRECT_NOTFOUND')) {
+        if (Module::isEnabled('ets_awesomeurl') && Module::getInstanceByName('ets_awesomeurl')) {
+            $this->etsAwuDispatcher && $this->etsAwuDispatcher->checkForRedirect($this->request_uri);
+            parent::getController($id_shop);
+            if ($this->etsAwuDispatcher) {
                 if ($this->enabledRemoveIdInUrl()) {
-                    $this->etsAwuDispatcher->redirectToOldUrl($this, true);
-                } else {
-                    $this->etsAwuDispatcher->redirectToOldUrl($this);
+                    $this->controller = $this->etsAwuDispatcher->getController($this, $this->controller);
+                }
+                if (('404' == $this->controller || 'pagenotfound' == $this->controller) && (int) Configuration::get('ETS_AWU_ENABLE_REDIRECT_NOTFOUND')) {
+                    if ($this->enabledRemoveIdInUrl()) {
+                        $this->etsAwuDispatcher->redirectToOldUrl($this, true);
+                    } else {
+                        $this->etsAwuDispatcher->redirectToOldUrl($this);
+                    }
                 }
             }
         }
-
         return $this->controller;
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function getControllerForRedirect($id_shop = null)
@@ -98,7 +96,7 @@ class Dispatcher extends DispatcherCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function getControllerChecking($id_shop = null)
@@ -109,7 +107,7 @@ class Dispatcher extends DispatcherCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function getRoutes()
@@ -118,7 +116,7 @@ class Dispatcher extends DispatcherCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function setRoutes($routes)
@@ -127,7 +125,7 @@ class Dispatcher extends DispatcherCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function enabledRemoveIdInUrl()
@@ -138,7 +136,7 @@ class Dispatcher extends DispatcherCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function setOldRoutes($id_shop = null)
@@ -193,7 +191,7 @@ class Dispatcher extends DispatcherCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function validateRoute($route_id, $rule, &$errors = [])
@@ -216,7 +214,7 @@ class Dispatcher extends DispatcherCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function getFontController()
@@ -225,7 +223,7 @@ class Dispatcher extends DispatcherCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function setFrontController($front_controller)
@@ -235,7 +233,7 @@ class Dispatcher extends DispatcherCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function getUseDefaultController()
@@ -244,7 +242,7 @@ class Dispatcher extends DispatcherCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function setDefaultRoutes($routes)
@@ -253,7 +251,7 @@ class Dispatcher extends DispatcherCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function publicLoadRoutes()
@@ -262,7 +260,7 @@ class Dispatcher extends DispatcherCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     public function computeRoute($rule, $controller, array $keywords = [], array $params = [])
@@ -324,7 +322,7 @@ class Dispatcher extends DispatcherCore
     }
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     protected function setRequestUri()

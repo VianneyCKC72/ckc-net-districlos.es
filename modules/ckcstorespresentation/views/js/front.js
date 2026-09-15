@@ -16,7 +16,7 @@ $(document).ready(function () {
                     },
                     dataType: "html",
                     success: function (responseData) {
-                        if ($.trim(responseData) === '' || responseData.includes("Aucun magasin trouvé")) {
+                        if ($.trim(responseData) === '' || $(responseData).filter('.no-results').length || $(responseData).find('.no-results').length) {
                             console.log("Aucun résultat textuel, tentative géolocalisation de la ville...");
                             geocodeVille(query); // tentative géolocalisation
                         } else {

@@ -26,16 +26,6 @@ class DbPDO extends DbPDOCore
         $databaseStreamer->addQuery($sql, $timeToExecute);
         return $queryResult;
     }
-    /**
-     * Override executeS to sample row counts.
-     * This is more reliable than PDOStatement::rowCount().
-     *
-     * @param string|\DbQuery $sql
-     * @param bool $array
-     * @param bool $use_cache
-     *
-     * @return array<int, array<string, mixed>>|false
-     */
     /*
     * module: scalizy
     * date: 2026-05-12 09:39:30
@@ -51,9 +41,6 @@ class DbPDO extends DbPDOCore
         }
         return $result;
     }
-    /**
-     * @return \Softizy\Module\Scalizy\Service\Profiler\Component\Database|null
-     */
     /*
     * module: scalizy
     * date: 2026-05-12 09:39:30
@@ -83,5 +70,23 @@ class DbPDO extends DbPDOCore
             }
         }
         return self::$databaseStreamer === false ? null : self::$databaseStreamer;
+    }
+    /*
+    * module: softizyquerycache
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
+    */
+    public $lastInsertId;
+    /*
+    * module: softizyquerycache
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
+    */
+    public function Insert_ID()
+    {
+        if ($this->lastInsertId === null) {
+            $this->lastInsertId = $this->link->lastInsertId();
+        }
+        return $this->lastInsertId;
     }
 }

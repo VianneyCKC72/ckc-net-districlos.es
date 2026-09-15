@@ -31,7 +31,7 @@
                     {$element.title|replace:'__':'<br>' nofilter}
                     {if $element.description == '__picto3x4x10x12x'}
                         <br>
-                        <img src="/themes/classic/assets/img/services/multiple-paiement.svg" width="80" height="16" alt="Paiement en plusieurs fois">
+                        <img src="/themes/classic/assets/img/services/multiple-paiement.svg" width="80" height="16" alt="{l s='Paiement en plusieurs fois' d='Shop.Theme.Custommodules'}">
                     {/if}
                 </p>
             </div>

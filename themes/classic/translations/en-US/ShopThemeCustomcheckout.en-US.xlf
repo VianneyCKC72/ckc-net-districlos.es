@@ -22,6 +22,10 @@
         <source>PASSER COMMANDE</source>
         <target>PROCEED TO CHECKOUT</target>
       </trans-unit>
+      <trans-unit id="5b" resname="Passer commande">
+        <source>Passer commande</source>
+        <target>Place order</target>
+      </trans-unit>
       <trans-unit id="6" resname="Moyens de paiements">
         <source>Moyens de paiements</source>
         <target>Payment methods</target>
@@ -77,6 +81,202 @@
       <trans-unit id="19" resname="étape %step%">
         <source>étape %step%</source>
         <target>Step %step%</target>
+      </trans-unit>
+      <trans-unit id="20" resname="Créer un compte">
+        <source>Créer un compte</source>
+        <target>Create an account</target>
+      </trans-unit>
+      <trans-unit id="21" resname="Informations">
+        <source>Informations</source>
+        <target>Information</target>
+      </trans-unit>
+      <trans-unit id="22" resname="Livraison">
+        <source>Livraison</source>
+        <target>Delivery</target>
+      </trans-unit>
+      <trans-unit id="23" resname="Aucun résultat.">
+        <source>Aucun résultat.</source>
+        <target>No results.</target>
+      </trans-unit>
+      <trans-unit id="24" resname="Disponible à partir du">
+        <source>Disponible à partir du</source>
+        <target>Available from</target>
+      </trans-unit>
+      <trans-unit id="25" resname="Sur rendez-vous">
+        <source>Sur rendez-vous</source>
+        <target>By appointment</target>
+      </trans-unit>
+      <trans-unit id="26" resname="Vous recevrez un email de confirmation.">
+        <source>Vous recevrez un email de confirmation.</source>
+        <target>You will receive a confirmation email.</target>
+      </trans-unit>
+      <trans-unit id="27" resname="Se situe à %distance% km de chez vous">
+        <source>Se situe à %distance% km de chez vous</source>
+        <target>Located %distance% km from you</target>
+      </trans-unit>
+      <trans-unit id="28" resname="Se situe à environ %distance% km de chez vous">
+        <source>Se situe à environ %distance% km de chez vous</source>
+        <target>About %distance% km from you</target>
+      </trans-unit>
+      <trans-unit id="29" resname="Voir les autres magasins">
+        <source>Voir les autres magasins</source>
+        <target>See other stores</target>
+      </trans-unit>
+      <trans-unit id="30" resname="Fermé">
+        <source>Fermé</source>
+        <target>Closed</target>
+      </trans-unit>
+      <trans-unit id="31" resname="Lundi">
+        <source>Lundi</source>
+        <target>Monday</target>
+      </trans-unit>
+      <trans-unit id="32" resname="Mardi">
+        <source>Mardi</source>
+        <target>Tuesday</target>
+      </trans-unit>
+      <trans-unit id="33" resname="Mercredi">
+        <source>Mercredi</source>
+        <target>Wednesday</target>
+      </trans-unit>
+      <trans-unit id="34" resname="Jeudi">
+        <source>Jeudi</source>
+        <target>Thursday</target>
+      </trans-unit>
+      <trans-unit id="35" resname="Vendredi">
+        <source>Vendredi</source>
+        <target>Friday</target>
+      </trans-unit>
+      <trans-unit id="36" resname="Samedi">
+        <source>Samedi</source>
+        <target>Saturday</target>
+      </trans-unit>
+      <trans-unit id="37" resname="Dimanche">
+        <source>Dimanche</source>
+        <target>Sunday</target>
+      </trans-unit>
+      <trans-unit id="38" resname="Sous 10 jours (sous réserve des stocks disponibles) et sur rendez-vous uniquement après confirmation que votre commande est prête">
+        <source>Sous 10 jours (sous réserve des stocks disponibles) et sur rendez-vous uniquement après confirmation que votre commande est prête</source>
+        <target>Within 10 days (subject to stock availability) and by appointment only after confirmation that your order is ready</target>
+      </trans-unit>
+      <trans-unit id="39" resname="Livré entre le">
+        <source>Livré entre le</source>
+        <target>Delivered between</target>
+      </trans-unit>
+      <trans-unit id="40" resname=" et le ">
+        <source> et le </source>
+        <target> and </target>
+      </trans-unit>
+      <trans-unit id="41" resname="Sous réserve de stock">
+        <source>Sous réserve de stock</source>
+        <target>Subject to stock availability</target>
+      </trans-unit>
+      <trans-unit id="42" resname="Déchargement avec aide requise">
+        <source>Déchargement avec aide requise</source>
+        <target>Unloading with assistance required</target>
+      </trans-unit>
+      <trans-unit id="43" resname="Déchargement par nos soins">
+        <source>Déchargement par nos soins</source>
+        <target>Unloaded by our team</target>
+      </trans-unit>
+      <trans-unit id="44" resname="Economisez sur la livraison">
+        <source>Economisez sur la livraison</source>
+        <target>Save on delivery</target>
+      </trans-unit>
+      <trans-unit id="45" resname="Économisez sur la livraison">
+        <source>Économisez sur la livraison</source>
+        <target>Save on delivery</target>
+      </trans-unit>
+      <trans-unit id="46" resname="Livraison Economique">
+        <source>Livraison Economique</source>
+        <target>Economy delivery</target>
+      </trans-unit>
+      <trans-unit id="47" resname="Livraison Économique">
+        <source>Livraison Économique</source>
+        <target>Economy delivery</target>
+      </trans-unit>
+      <trans-unit id="48" resname="Livraison Standard">
+        <source>Livraison Standard</source>
+        <target>Standard delivery</target>
+      </trans-unit>
+      <trans-unit id="49" resname="Retrait chez DISTRICLOS">
+        <source>Retrait chez DISTRICLOS</source>
+        <target>Pickup at DISTRICLOS</target>
+      </trans-unit>
+      <trans-unit id="50" resname="Retrait chez">
+        <source>Retrait chez</source>
+        <target>Pickup at</target>
+      </trans-unit>
+      <trans-unit id="51" resname="Étape précédente">
+        <source>Étape précédente</source>
+        <target>Previous step</target>
+      </trans-unit>
+      <trans-unit id="52" resname="Passer au paiement">
+        <source>Passer au paiement</source>
+        <target>Proceed to payment</target>
+      </trans-unit>
+      <trans-unit id="53" resname="Choisir ma livraison">
+        <source>Choisir ma livraison</source>
+        <target>Choose my delivery</target>
+      </trans-unit>
+      <trans-unit id="54" resname="Ajouter une nouvelle adresse">
+        <source>Ajouter une nouvelle adresse</source>
+        <target>Add a new address</target>
+      </trans-unit>
+      <trans-unit id="55" resname="Mon adresse de facturation est différente de l'adresse de livraison">
+        <source>Mon adresse de facturation est différente de l'adresse de livraison</source>
+        <target>My billing address is different from my delivery address</target>
+      </trans-unit>
+      <trans-unit id="56" resname="Veuillez nous appeler immédiatement après la confirmation de votre commande pour procéder au paiement. Vous recevrez une confirmation de commande par e-mail contenant les détails et le numéro de commande. Nous traiterons la commande immédiatement après réception du paiement.">
+        <source>Veuillez nous appeler immédiatement après la confirmation de votre commande pour procéder au paiement. Vous recevrez une confirmation de commande par e-mail contenant les détails et le numéro de commande. Nous traiterons la commande immédiatement après réception du paiement.</source>
+        <target>Please call us immediately after confirming your order to proceed with payment. You will receive an order confirmation email with the details and order number. We will process the order as soon as payment is received.</target>
+      </trans-unit>
+      <trans-unit id="57" resname="Vous payez lors de la livraison de votre commande">
+        <source>Vous payez lors de la livraison de votre commande</source>
+        <target>You pay when your order is delivered</target>
+      </trans-unit>
+      <trans-unit id="58" resname="Vous payez un acompte, le solde sera facturé ensuite">
+        <source>Vous payez un acompte, le solde sera facturé ensuite</source>
+        <target>You pay a deposit; the balance will be invoiced later</target>
+      </trans-unit>
+      <trans-unit id="59" resname="Carte bleue, Visa, Mastercard">
+        <source>Carte bleue, Visa, Mastercard</source>
+        <target>Debit card, Visa, Mastercard</target>
+      </trans-unit>
+      <trans-unit id="60" resname="Paiement sécurisé en ligne">
+        <source>Paiement sécurisé en ligne</source>
+        <target>Secure online payment</target>
+      </trans-unit>
+      <trans-unit id="61" resname="Au comptant ou quatre fois sans frais">
+        <source>Au comptant ou quatre fois sans frais</source>
+        <target>Pay in full or in four interest-free installments</target>
+      </trans-unit>
+      <trans-unit id="62" resname="Payez en plusieurs fois avec Oney">
+        <source>Payez en plusieurs fois avec Oney</source>
+        <target>Pay in installments with Oney</target>
+      </trans-unit>
+      <trans-unit id="63" resname="Payez en 3 ou 4 fois sans frais avec votre carte bancaire">
+        <source>Payez en 3 ou 4 fois sans frais avec votre carte bancaire</source>
+        <target>Pay in 3 or 4 interest-free installments with your bank card</target>
+      </trans-unit>
+      <trans-unit id="64" resname="Distance non calculable">
+        <source>Distance non calculable</source>
+        <target>Distance not calculable</target>
+      </trans-unit>
+      <trans-unit id="65" resname="Point">
+        <source>Point</source>
+        <target>Point</target>
+      </trans-unit>
+      <trans-unit id="66" resname="Téléphone">
+        <source>Téléphone</source>
+        <target>Phone</target>
+      </trans-unit>
+      <trans-unit id="67" resname="Horaires">
+        <source>Horaires</source>
+        <target>Opening hours</target>
+      </trans-unit>
+      <trans-unit id="68" resname="Erreur de lecture des horaires">
+        <source>Erreur de lecture des horaires</source>
+        <target>Unable to read opening hours</target>
       </trans-unit>
     </body>
   </file>

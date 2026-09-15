@@ -53,6 +53,6 @@
 <a  class="pro-items-links" href="#">
     {l s='Mes notifications' d='Shop.Theme.Customcustomer'}
 </a>
-<a  class="pro-items-links" href="/?mylogout=">
+<a  class="pro-items-links" href="{$urls.actions.logout}">
    {l s='Déconnexion' d='Shop.Theme.Customcustomer'}
 </a>

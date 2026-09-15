@@ -36,7 +36,7 @@
                             {*                    <p>{$block['description'] nofilter}</p>*}
                             {if $block['description']== '__picto3x4x10x12x'}
                                 <br>
-                                <img class="paiement_plusieurs_fois" height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="Payer en plusieurs fois">
+                                <img class="paiement_plusieurs_fois" height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="{l s='Payer en plusieurs fois' d='Shop.Theme.Custommodules'}">
                             {/if}
                         </p>
                     {/if}
@@ -67,7 +67,7 @@
                                     {*                    <p>{$block['description'] nofilter}</p>*}
                                     {if $block['description']== '__picto3x4x10x12x'}
                                         <br>
-                                        <img class="paiement_plusieurs_fois" height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="Payer en plusieurs fois">
+                                        <img class="paiement_plusieurs_fois" height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="{l s='Payer en plusieurs fois' d='Shop.Theme.Custommodules'}">
                                     {/if}
                                 </p>
                             {/if}
@@ -107,7 +107,7 @@
                                 {*                    <p>{$block['description'] nofilter}</p>*}
                                 {if $block['description']== '__picto3x4x10x12x'}
                                     <br>
-                                    <img class="paiement_plusieurs_fois" height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="Payer en plusieurs fois">
+                                    <img class="paiement_plusieurs_fois" height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="{l s='Payer en plusieurs fois' d='Shop.Theme.Custommodules'}">
                                 {/if}
                             </p>
                         {/if}

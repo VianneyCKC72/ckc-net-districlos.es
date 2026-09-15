@@ -24,6 +24,48 @@ class OrderController extends OrderControllerCore
     * date: 2025-04-03 10:54:57
     * version: 1.1.6
     */
+    public function initContent()
+    {
+        $victimeSuccesError = $this->getVictimeSuccesCartError();
+        if ($victimeSuccesError !== null && !$this->ajax) {
+            Tools::redirect($this->context->link->getPageLink('cart', null, null, ['action' => 'show']));
+        }
+
+        parent::initContent();
+    }
+
+    public function displayAjaxCheckCartStillOrderable(): void
+    {
+        $victimeSuccesError = $this->getVictimeSuccesCartError();
+        if ($victimeSuccesError !== null) {
+            header('Content-Type: application/json');
+            $this->ajaxRender(json_encode([
+                'errors' => true,
+                'cartUrl' => $this->context->link->getPageLink('cart', null, null, ['action' => 'show']),
+            ]));
+
+            return;
+        }
+
+        parent::displayAjaxCheckCartStillOrderable();
+    }
+
+    private function getVictimeSuccesCartError(): ?string
+    {
+        if (!$this->context->cart || !$this->context->cart->id) {
+            return null;
+        }
+
+        require_once _PS_MODULE_DIR_ . 'ckc_stores_stock/classes/StockManager.php';
+
+        return (new StockManager())->getCartVictimeSuccesError($this->context->cart);
+    }
+
+    /*
+    * module: ets_promotion
+    * date: 2025-04-03 10:54:57
+    * version: 1.1.6
+    */
     public function displayAjaxselectDeliveryOption()
     {
         $cart = $this->cart_presenter->present(

@@ -21,18 +21,20 @@ class CacheApc extends CacheApcCore
 {
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     public function __construct()
     {
         parent::__construct();
-        Cache::__construct();
+        if (method_exists(Cache::class, 'bootQueryCacheEngine')) {
+            Cache::__construct();
+        }
     }
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     public function isConnected()
     {
@@ -40,8 +42,8 @@ class CacheApc extends CacheApcCore
     }
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     protected function shouldStoreResult()
     {
@@ -49,8 +51,8 @@ class CacheApc extends CacheApcCore
     }
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     protected function _set($key, $value, $ttl = 0)
     {

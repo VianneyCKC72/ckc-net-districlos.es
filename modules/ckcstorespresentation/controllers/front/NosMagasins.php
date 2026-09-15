@@ -44,6 +44,7 @@ class CkcstorespresentationNosMagasinsModuleFrontController extends ModuleFrontC
             LEFT JOIN `' . _DB_PREFIX_ . 'presentation_place` p
                 ON p.`id_ckcstorespresentation` = s.`id_ckcstorespresentation`'
         );
+        $magasins = $this->module->localizeStoresForDisplay($magasins ?: []);
         $this->context->controller->addJquery();
 
         $this->context->smarty->assign(array(
@@ -114,6 +115,7 @@ class CkcstorespresentationNosMagasinsModuleFrontController extends ModuleFrontC
 
         // Affichage des résultats si recherche effectuée
         if (!empty($search)) {
+            $search = $this->module->localizeStoresForDisplay($search);
             $this->context->smarty->assign([
                 'magasins' => $search,
                 'modulePath' => $this->context->link->getModuleLink('ckcstorespresentation', 'NosMagasins'),
@@ -126,7 +128,7 @@ class CkcstorespresentationNosMagasinsModuleFrontController extends ModuleFrontC
         }
 
         // Optionnel : si aucune recherche ou résultat vide
-        die('<p class="no-results">Aucun magasin trouvé.</p>');
+        die('<p class="no-results">' . $this->trans('Aucun magasin trouvé.', [], 'Shop.Theme.Customstores') . '</p>');
     }
 
 }

@@ -13,42 +13,6 @@ class ProductController extends ProductControllerCore
         }
         return $module->getCampaignProductDiscountForProduct($product);
     }
-    protected function assignAttributesGroups($product_for_template = null)
-    {
-        parent::assignAttributesGroups($product_for_template);
-        $groups = $this->context->smarty->getTemplateVars('groups');
-        if (empty($groups) || empty($this->combinations)) {
-            return;
-        }
-        foreach ($this->combinations as $combo) {
-            if (empty($combo['attributes_values']) || empty($combo['attributes'])) {
-                continue;
-            }
-            $index = 0;
-            foreach ($combo['attributes_values'] as $groupId => $name) {
-                $attributeId = (int) ($combo['attributes'][$index++] ?? 0);
-                if (!$attributeId || !isset($groups[$groupId])) {
-                    continue;
-                }
-                if (isset($groups[$groupId]['attributes'][$attributeId])) {
-                    continue;
-                }
-                $groups[$groupId]['attributes'][$attributeId] = [
-                    'name' => $name,
-                    'html_color_code' => '',
-                    'texture' => '',
-                    'selected' => false,
-                ];
-            }
-        }
-        foreach ($groups as &$group) {
-            if (!empty($group['attributes'])) {
-                ksort($group['attributes'], SORT_NUMERIC);
-            }
-        }
-        unset($group);
-        $this->context->smarty->assign('groups', $groups);
-    }
     public function initContent()
     {
         $product = $this->getTemplateVarProduct();
@@ -126,9 +90,10 @@ class ProductController extends ProductControllerCore
     }
     
     
+    
     /*
     * module: ets_awesomeurl
-    * date: 2026-08-28 14:28:38
+    * date: 2026-09-01 11:03:12
     * version: 1.4.2
     */
     protected $redirectionExtraExcludedKeys = ['category', 'rewrite', 'id_product_attribute'];

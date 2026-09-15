@@ -61,6 +61,8 @@
       <trans-unit id="57"><source>Zone bien définie, bornée, propre</source><target>Well-defined, marked-out, clean area</target></trans-unit>
       <trans-unit id="58"><source>[1]Un formulaire TVA simplifié sera à fournir.[/1]</source><target>[1]A simplified VAT form will need to be provided.[/1]</target></trans-unit>
       <trans-unit id="59"><source>Êtes-vous éligible à la TVA à 10&amp;nbsp;% ?</source><target>Are you eligible for 10% VAT?</target></trans-unit>
+      <trans-unit id="60"><source>Disponible: </source><target>Available: </target></trans-unit>
+      <trans-unit id="61"><source>Service d'installation disponible via notre partenaire</source><target>Installation service available via our partner</target></trans-unit>
     </body>
   </file>
 </xliff>

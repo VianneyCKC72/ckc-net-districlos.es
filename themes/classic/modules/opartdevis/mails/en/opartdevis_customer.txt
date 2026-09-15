@@ -1,0 +1,4 @@
+Hello {firstname} {lastname}, and thank you for your trust.
+Please find your quotation attached.
+You can contact us by email at Commercial@districlos.com or by phone on 04 22 53 10 34
+See you soon on {shopUrl}

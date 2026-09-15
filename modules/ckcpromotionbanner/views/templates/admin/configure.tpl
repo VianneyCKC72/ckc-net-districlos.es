@@ -29,12 +29,11 @@
 		<strong>{l s='Closable promotion bar' mod='ckcpromotionbanner'}</strong><br />
 		{l s='at the bottom / top of the page (with customizable message)' mod='ckcpromotionbanner'}<br />
 		{l s='With or without timer' mod='ckcpromotionbanner'} <br />
+		<small>{l s='Current shop' mod='ckcpromotionbanner'}: #{$current_shop_id|intval}</small>
 	</p>
-	<br />
-
 </div>
 
-{function name="ckcpromobarre_lang_widget" group="" config_key="" texts_by_lang=[] languages=[] default_lang_id=0 employee_lang_id=0 input_id_prefix="" container_id_prefix="" hidden_id_prefix="" post_key=""}
+{function name="ckcpromobarre_lang_widget" group="" texts_by_lang=[] languages=[] default_lang_id=0 employee_lang_id=0 input_id_prefix="" container_id_prefix=""}
 	<ul class="nav nav-tabs ckcpromobarre-lang-tabs" role="tablist" data-group="{$group}">
 		{foreach from=$languages item=lang}
 			<li class="nav-item" style="display:inline-block;">
@@ -81,13 +80,6 @@
 					 class="ckcpromobarre-selected"
 					 data-group="{$group}"
 					 data-lang="{$lang.id_lang}"></div>
-				<input type="hidden"
-					   id="{$hidden_id_prefix}-{$lang.id_lang}"
-					   class="ckcpromobarre-hidden"
-					   data-group="{$group}"
-					   data-lang="{$lang.id_lang}"
-					   name="{$post_key}[{$lang.id_lang}]"
-					   form="{$post_key}">
 			</div>
 		{/foreach}
 	</div>
@@ -95,42 +87,69 @@
 
 <div class="panel panel-promobanner">
 	<h3 style="margin-top: 1px !important; border: none; margin-bottom: 5px; margin-left: -7px; background: none;" class="h3-ckctitle ckch3"><i class="icon icon-link"></i> {l s='Add text(s) for promotion' mod='ckcpromotionbanner'}</h3>
-	<p class="help-block">{l s='If you have several promotional texts to show, you can add as many as necessary here (if only one too). Configure each language separately.' mod='ckcpromotionbanner'}</p>
+	<p class="help-block">
+		{l s='Configure each language separately. Type a text then click + (or Save — pending text is kept).' mod='ckcpromotionbanner'}
+		{if $ckctranslate_ready}
+			{l s='Or use “Translate with ckctranslate” to fill the target language from the source language automatically.' mod='ckcpromotionbanner'}
+		{/if}
+	</p>
 	<div class="mt-5 id-select-container">
 		<form id="id_promotexts" class="context-form" action="{$moduleAdminLink}" method="post" enctype="multipart/form-data" novalidate>
 			{call name="ckcpromobarre_lang_widget"
 				group="b2c"
-				config_key="CKC_BARREPROMO_TEXTE"
 				texts_by_lang=$promotextsByLang
 				languages=$languages
 				default_lang_id=$default_lang_id
 				employee_lang_id=$employee_lang_id
 				input_id_prefix="idInput"
-				container_id_prefix="selectedIds"
-				hidden_id_prefix="idsField"
-				post_key="id_promotexts"}
-			<input class="btn btn-success mt-3 saveExceptions" type="submit" value="{l s='Save the list of promo texts' mod='ckcpromotionbanner'}" form="id_promotexts">
+				container_id_prefix="selectedIds"}
+			<input type="hidden" name="id_promotexts_json" id="id_promotexts_json" value="">
+			<div class="ckcpromobarre-actions mt-3">
+				<input class="btn btn-success saveExceptions" type="submit" name="submitPromoTextsB2c" value="{l s='Save the list of promo texts' mod='ckcpromotionbanner'}">
+				{if $ckctranslate_ready}
+					<button class="btn btn-info"
+							type="submit"
+							name="submitTranslatePromoTextsB2c"
+							value="1"
+							onclick="return confirm('{l s='Translate source texts with ckctranslate and overwrite the target language?' mod='ckcpromotionbanner'|escape:'javascript':'UTF-8'}');">
+						{l s='Translate with ckctranslate' mod='ckcpromotionbanner'}
+					</button>
+				{else}
+					<span class="help-block" style="display:inline-block;margin-left:10px;">
+						{l s='Enable ckctranslate + API key to translate in one click.' mod='ckcpromotionbanner'}
+					</span>
+				{/if}
+			</div>
 		</form>
 	</div>
 </div>
 
 <div class="panel panel-promobanner">
 	<h3 style="margin-top: 1px !important; border: none; margin-bottom: 5px; margin-left: -7px; background: none;" class="h3-ckctitle ckch3"><i class="icon icon-link"></i> {l s='Ajouter du/des texte(s) pour la promotion PRO' mod='ckcpromotionbanner'}</h3>
-	<p class="help-block">{l s='If you have several promotional texts to show, you can add as many as necessary here (if only one too). Configure each language separately.' mod='ckcpromotionbanner'}</p>
+	<p class="help-block">{l s='Configure each language separately. Type a text then click + (or Save — pending text is kept).' mod='ckcpromotionbanner'}</p>
 	<div class="mt-5 id-select-container">
 		<form id="id_promotextsPro" class="context-form" action="{$moduleAdminLink}" method="post" enctype="multipart/form-data" novalidate>
 			{call name="ckcpromobarre_lang_widget"
 				group="pro"
-				config_key="CKC_BARREPROMO_TEXTE_PRO"
 				texts_by_lang=$promotextsProByLang
 				languages=$languages
 				default_lang_id=$default_lang_id
 				employee_lang_id=$employee_lang_id
 				input_id_prefix="idInputPro"
-				container_id_prefix="selectedIdsPro"
-				hidden_id_prefix="idsFieldPro"
-				post_key="id_promotextsPro"}
-			<input class="btn btn-success mt-3 saveExceptions" type="submit" value="{l s='Save the list of promo texts' mod='ckcpromotionbanner'}" form="id_promotextsPro">
+				container_id_prefix="selectedIdsPro"}
+			<input type="hidden" name="id_promotextsPro_json" id="id_promotextsPro_json" value="">
+			<div class="ckcpromobarre-actions mt-3">
+				<input class="btn btn-success saveExceptions" type="submit" name="submitPromoTextsPro" value="{l s='Save the list of promo texts' mod='ckcpromotionbanner'}">
+				{if $ckctranslate_ready}
+					<button class="btn btn-info"
+							type="submit"
+							name="submitTranslatePromoTextsPro"
+							value="1"
+							onclick="return confirm('{l s='Translate source texts with ckctranslate and overwrite the target language?' mod='ckcpromotionbanner'|escape:'javascript':'UTF-8'}');">
+						{l s='Translate with ckctranslate' mod='ckcpromotionbanner'}
+					</button>
+				{/if}
+			</div>
 		</form>
 	</div>
 </div>
@@ -139,6 +158,9 @@
 (function ($) {
 	var promotextsByLang = {$promotextsByLangJson nofilter};
 	var promotextsProByLang = {$promotextsProByLangJson nofilter};
+	var knownLangIds = [
+		{foreach from=$languages item=lang name=cklang}{$lang.id_lang|intval}{if !$smarty.foreach.cklang.last},{/if}{/foreach}
+	];
 
 	var state = {
 		b2c: {},
@@ -153,8 +175,11 @@
 	}
 
 	function init(group, source) {
-		Object.keys(source).forEach(function (langId) {
-			state[group][langId] = csvToArray(source[langId]);
+		source = source || {};
+		knownLangIds.forEach(function (langId) {
+			var key = String(langId);
+			var fromJson = source[key] !== undefined ? source[key] : source[langId];
+			state[group][key] = csvToArray(fromJson);
 		});
 	}
 
@@ -168,8 +193,8 @@
 	}
 
 	function render(group, langId) {
+		langId = String(langId);
 		var $container = $('.ckcpromobarre-selected[data-group="' + group + '"][data-lang="' + langId + '"]');
-		var $hidden = $('.ckcpromobarre-hidden[data-group="' + group + '"][data-lang="' + langId + '"]');
 		$container.empty();
 		var items = state[group][langId] || [];
 		items.forEach(function (text, index) {
@@ -180,24 +205,60 @@
 				'</span>'
 			);
 		});
-		$hidden.val(items.join(',,'));
 	}
 
-	function renderAll() {
-		['b2c', 'pro'].forEach(function (group) {
-			Object.keys(state[group]).forEach(function (langId) {
-				render(group, langId);
-			});
+	function renderGroup(group) {
+		Object.keys(state[group]).forEach(function (langId) {
+			render(group, langId);
 		});
 	}
 
-	init('b2c', promotextsByLang);
-	init('pro', promotextsProByLang);
+	function buildPayload(group) {
+		var payload = {};
+		knownLangIds.forEach(function (langId) {
+			var key = String(langId);
+			payload[key] = state[group][key] || [];
+		});
+		return JSON.stringify(payload);
+	}
+
+	function commitPendingInputs(group) {
+		$('.ckcpromobarre-input[data-group="' + group + '"]').each(function () {
+			var $input = $(this);
+			var langId = String($input.data('lang'));
+			var value = ($input.val() || '').trim();
+			if (value === '') {
+				return;
+			}
+			state[group][langId] = state[group][langId] || [];
+			if (state[group][langId].indexOf(value) < 0) {
+				state[group][langId].push(value);
+			}
+			$input.val('');
+		});
+	}
+
+	function syncHidden(group, hiddenId) {
+		commitPendingInputs(group);
+		renderGroup(group);
+		$('#' + hiddenId).val(buildPayload(group));
+	}
 
 	$(document).ready(function () {
-		renderAll();
+		init('b2c', promotextsByLang);
+		init('pro', promotextsProByLang);
+		renderGroup('b2c');
+		renderGroup('pro');
+		$('#id_promotexts_json').val(buildPayload('b2c'));
+		$('#id_promotextsPro_json').val(buildPayload('pro'));
 
-		// Tab switching
+		$('#id_promotexts').on('submit', function () {
+			syncHidden('b2c', 'id_promotexts_json');
+		});
+		$('#id_promotextsPro').on('submit', function () {
+			syncHidden('pro', 'id_promotextsPro_json');
+		});
+
 		$(document).on('click', '.ckcpromobarre-lang-tab', function (e) {
 			e.preventDefault();
 			var $tab = $(this);
@@ -211,7 +272,6 @@
 			$('.ckcpromobarre-lang-pane[data-group="' + group + '"][data-lang="' + langId + '"]').show().addClass('active');
 		});
 
-		// Add tag
 		$(document).on('click', '.ckcpromobarre-add', function (e) {
 			e.preventDefault();
 			var $btn = $(this);
@@ -234,15 +294,13 @@
 			render(group, langId);
 		});
 
-		// Submit on Enter inside the text input
 		$(document).on('keydown', '.ckcpromobarre-input', function (e) {
 			if (e.which === 13) {
 				e.preventDefault();
-				$(this).siblings('.ckcpromobarre-add').first().trigger('click');
+				$(this).closest('.input-group').find('.ckcpromobarre-add').first().trigger('click');
 			}
 		});
 
-		// Remove tag
 		$(document).on('click', '.ckcpromobarre-selected .remove', function (e) {
 			e.preventDefault();
 			var $rm = $(this);
@@ -257,7 +315,6 @@
 			render(group, langId);
 		});
 
-		// Copy from default language
 		$(document).on('click', '.ckcpromobarre-copy-default', function (e) {
 			e.preventDefault();
 			var $btn = $(this);

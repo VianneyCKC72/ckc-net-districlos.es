@@ -55,16 +55,16 @@
           {if isset($pro.env) && $pro.env == 1}
             <div class="already-account-banner-center">
               <div class="already-account-banner-left">
-                <span class="already-account-banner-title">Formulaire d'inscription</span>
+                <span class="already-account-banner-title">{l s='Formulaire d\'inscription' d='Shop.Theme.Customcustomer'}</span>
               </div>
               <div class="already-account-banner-right">
-                <span class="already-account-banner-question">Vous avez déjà un compte ?</span>
+                <span class="already-account-banner-question">{l s='Vous avez déjà un compte ?' d='Shop.Theme.Customcustomer'}</span>
                 {if Tools::getValue("ep") == 1}
                   {assign var="auth_url" value=$urls.pages.authentication|cat:'?back=my-account&ep=1'}
                 {else}
                   {assign var="auth_url" value=$urls.pages.authentication}
                 {/if}
-                <a href="{$auth_url}" class="btn btn-secondary btn-banner-connect" id="inscription">Je me connecte</a>
+                <a href="{$auth_url}" class="btn btn-secondary btn-banner-connect" id="inscription">{l s='Je me connecte' d='Shop.Theme.Customcustomer'}</a>
               </div>
             </div>
           {else}
@@ -80,9 +80,9 @@
             {/if}
             {if isset($pro_registration_url) && !empty($pro_registration_url)}
               <div class="pro-registration-wrapper">
-                <h2 class="pro-registration-title">{l s='Vous êtes un professionnel ?' d='Shop.Theme.Customeraccount'}</h2>
+                <h2 class="pro-registration-title">{l s='Vous êtes un professionnel ?' d='Shop.Theme.Customcustomer'}</h2>
                 <a href="{$pro_registration_url}" class="btn btn-secondary" id="inscription-pro">
-                  {l s='Créer un compte professionnel' d='Shop.Theme.Customeraccount'}
+                  {l s='Créer un compte professionnel' d='Shop.Theme.Customcustomer'}
                 </a>
               </div>
             {/if}

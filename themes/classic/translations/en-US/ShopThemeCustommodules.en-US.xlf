@@ -16,7 +16,7 @@
       <trans-unit id="12"><source>Avis</source><target>Reviews</target></trans-unit>
       <trans-unit id="13"><source>Banière newsletter</source><target>Newsletter banner</target></trans-unit>
       <trans-unit id="14"><source>Calcul mètres linéaires : addition de toutes les longueurs en mètres</source><target>Linear meters calculation: sum of all lengths in meters</target></trans-unit>
-      <trans-unit id="15"><source>Ces produits existent aussi en kit !</source><target>These products are also available as kits!</target></trans-unit>
+      <trans-unit id="15"><source>Ces produits existent aussi en kit !</source><target>These products are available as kits!</target></trans-unit>
       <trans-unit id="16"><source>Choisissez la longueur en mètres linéaires</source><target>Choose the length in linear meters</target></trans-unit>
       <trans-unit id="17"><source>Choisissez votre kit idéal en fonction du type de pose souhaité. Ils contiennent tout le nécessaire pour une clôture réussie !</source><target>Choose your ideal kit based on the type of installation you want. They contain everything you need for a successful fence!</target></trans-unit>
       <trans-unit id="18"><source>Commander</source><target>Checkout</target></trans-unit>
@@ -46,7 +46,7 @@
       <trans-unit id="42"><source>Garantie les moins chers</source><target>Lowest price guarantee</target></trans-unit>
       <trans-unit id="43"><source>Grillages rigides</source><target>Rigid mesh fencing</target></trans-unit>
       <trans-unit id="44"><source>Il y a %products_count% articles dans votre panier.</source><target>There are %products_count% items in your cart.</target></trans-unit>
-      <trans-unit id="45"><source>Inscrivez-vous à la newsletter Districlos pour rester informés de nos nouveaux produits, bons plans et faire le plein d’inspirations !</source><target>Sign up for the Districlos newsletter to stay informed about our new products, great deals and get plenty of inspiration!</target></trans-unit>
+      <trans-unit id="45"><source>Inscrivez-vous à la newsletter Districlos pour rester informés de nos nouveaux produits, bons plans et faire le plein d’inspirations !</source><target>Get Districlos news, deals and inspiration in your inbox!</target></trans-unit>
       <trans-unit id="46"><source>Je configure ma clôture</source><target>Configure my fence</target></trans-unit>
       <trans-unit id="47"><source>Je m'inscris</source><target>Sign up</target></trans-unit>
       <trans-unit id="48"><source>J’accepte de recevoir d’autres communications de Districlos. Vous pourrez vous désabonner d’un simple clic !</source><target>I agree to receive other communications from Districlos. You can unsubscribe with a single click!</target></trans-unit>
@@ -136,6 +136,39 @@
       <trans-unit id="132"><source>Sous 3 à 4 semaines.</source><target>Within 3 to 4 weeks.</target></trans-unit>
       <trans-unit id="133"><source>Sous 10 jours.</source><target>Within 10 days.</target></trans-unit>
       <trans-unit id="134"><source>Nos clients ont également acheté</source><target>Our customers also bought</target></trans-unit>
+      <trans-unit id="135"><source>RGPD - Données personnelles</source><target>GDPR - Personal data</target></trans-unit>
+      <trans-unit id="136"><source>RGPD</source><target>GDPR</target></trans-unit>
+      <trans-unit id="137"><source>Accès à mes données</source><target>Access to my data</target></trans-unit>
+      <trans-unit id="138"><source>À tout moment, vous avez le droit de récupérer les données que vous avez fournies à notre site. Cliquez sur « Obtenir mes données » pour télécharger automatiquement une copie de vos données personnelles au format PDF ou CSV.</source><target>At any time, you have the right to retrieve the data you have provided to our site. Click on "Get my data" to automatically download a copy of your personal data as a PDF or CSV file.</target></trans-unit>
+      <trans-unit id="139"><source>OBTENIR MES DONNÉES EN CSV</source><target>GET MY DATA AS CSV</target></trans-unit>
+      <trans-unit id="140"><source>OBTENIR MES DONNÉES EN PDF</source><target>GET MY DATA AS PDF</target></trans-unit>
+      <trans-unit id="141"><source>Demandes de rectification et d'effacement</source><target>Rectification &amp; erasure requests</target></trans-unit>
+      <trans-unit id="142"><source>Vous avez le droit de modifier toutes les informations personnelles présentes dans la page « Mon compte ». Pour toute autre demande concernant la rectification et/ou l'effacement de vos données personnelles, veuillez nous contacter via notre</source><target>You have the right to modify all the personal information found on the "My account" page. For any other request regarding the rectification and/or erasure of your personal data, please contact us through our</target></trans-unit>
+      <trans-unit id="143"><source>page de contact</source><target>contact page</target></trans-unit>
+      <trans-unit id="144"><source>Nous examinerons votre demande et vous répondrons dans les meilleurs délais.</source><target>We will review your request and reply as soon as possible.</target></trans-unit>
+      <trans-unit id="145"><source>BON PLAN</source><target>GREAT DEAL</target></trans-unit>
+      <trans-unit id="146"><source>Livraison offerte dès</source><target>Free shipping from</target></trans-unit>
+      <trans-unit id="147"><source>Parcourir d'autres types de produits</source><target>Browse other product types</target></trans-unit>
+      <trans-unit id="148"><source>Grillage rigide</source><target>Rigid fencing</target></trans-unit>
+      <trans-unit id="149"><source>Grillage souple</source><target>Flexible fencing</target></trans-unit>
+      <trans-unit id="150"><source>Portails</source><target>Gates</target></trans-unit>
+      <trans-unit id="151"><source>Brise-vue</source><target>Privacy screens</target></trans-unit>
+      <trans-unit id="152"><source>Brise%br%vue</source><target>Privacy%br%screens</target></trans-unit>
+      <trans-unit id="153"><source>Aluminium</source><target>Aluminium</target></trans-unit>
+      <trans-unit id="154"><source>Portillons</source><target>Pedestrian gates</target></trans-unit>
+      <trans-unit id="155"><source>Configurez votre clôture</source><target>Configure your fence</target></trans-unit>
+      <trans-unit id="156"><source>Vous préférez du sur-mesure ? Composez votre clôture et choisissez ses caractéristiques uniques.</source><target>Prefer a custom-made solution? Build your fence and choose its unique features.</target></trans-unit>
+      <trans-unit id="157"><source>Configurer votre clôture</source><target>Configure your fence</target></trans-unit>
+      <trans-unit id="158"><source>Produits garantis</source><target>Guaranteed products</target></trans-unit>
+      <trans-unit id="159"><source>au meilleur prix en ligne</source><target>at the lowest price online</target></trans-unit>
+      <trans-unit id="160"><source>Vous l'avez trouvé moins cher ailleurs ?</source><target>Found it cheaper elsewhere?</target></trans-unit>
+      <trans-unit id="161"><source>Nous vous remboursons la différence.</source><target>We'll refund the difference.</target></trans-unit>
+      <trans-unit id="162"><source>Valable pour des produits identiques de même provenance</source><target>Valid for identical products from the same source</target></trans-unit>
+      <trans-unit id="163"><source>En savoir plus</source><target>Learn more</target></trans-unit>
+      <trans-unit id="164"><source>Besoin spécifique ?</source><target>Specific requirements?</target></trans-unit>
+      <trans-unit id="165"><source>Réinitialiser tous les filtres</source><target>Reset all filters</target></trans-unit>
+      <trans-unit id="166"><source>TTC</source><target>incl. tax</target></trans-unit>
+      <trans-unit id="167"><source>HT</source><target>excl. tax</target></trans-unit>
     </body>
   </file>
 </xliff>

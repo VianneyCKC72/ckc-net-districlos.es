@@ -24,22 +24,25 @@
  *}
 {* Visible uniquement en preview (?ckc=1). Pas de liens EN exposés hors preview. *}
 {if isset($ckc_lang_preview) && $ckc_lang_preview}
-{* Sélecteur de langue – mise en forme custom (sans drapeaux). Les classes
-   fonctionnelles PrestaShop (dropdown / js-dropdown / btn-unstyle / dropdown-menu)
-   sont conservées pour le JS d'ouverture du thème. *}
-<div id="_desktop_language_selector" class="ckc-lang">
+{* Sélecteur de langue – même disposition que les .ico du header (icône au-dessus, label en dessous). *}
+<div id="_desktop_language_selector" class="ckc-lang ico">
   <div class="language-selector-wrapper">
-    <span id="language-selector-label" class="ckc-lang__label hidden-md-up">{l s='Language:' d='Shop.Theme.Global'}</span>
+    <span id="language-selector-label" class="ckc-lang__label sr-only">{l s='Language:' d='Shop.Theme.Global'}</span>
     <div class="language-selector dropdown js-dropdown">
       <button data-toggle="dropdown" class="ckc-lang__toggle btn-unstyle hidden-sm-down" aria-haspopup="true" aria-expanded="false" aria-label="{l s='Language dropdown' d='Shop.Theme.Global'}">
-        <span class="ckc-lang__current">{$current_language.name_simple}</span>
-        <svg class="ckc-lang__chevron" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        <span class="ckc-lang__icon" aria-hidden="true">
+          <svg class="ckc-lang__globe" xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        </span>
+        <span class="ckc-lang__label-row">
+          <span class="ckc-lang__current">{$current_language.iso_code|upper}</span>
+          <svg class="ckc-lang__chevron" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </span>
       </button>
       <ul class="dropdown-menu ckc-lang__menu hidden-sm-down" aria-labelledby="language-selector-label">
         {foreach from=$languages item=language}
           {capture assign=lang_href}{url entity='language' id=$language.id_lang}{/capture}
           <li {if $language.id_lang == $current_language.id_lang}class="current"{/if}>
-            <a href="{$lang_href}{if $lang_href|strstr:'?'}&{else}?{/if}ckc=1" class="dropdown-item ckc-lang__item" data-iso-code="{$language.iso_code}" rel="nofollow">{$language.name_simple}</a>
+            <a href="{$lang_href}{if $lang_href|strstr:'?'}&{else}?{/if}ckc=1" class="dropdown-item ckc-lang__item" data-iso-code="{$language.iso_code}" rel="nofollow">{$language.iso_code|upper}</a>
           </li>
         {/foreach}
       </ul>
@@ -47,7 +50,7 @@
         {foreach from=$languages item=language}
           {capture assign=lang_href}{url entity='language' id=$language.id_lang}{/capture}
           <option value="{$lang_href}{if $lang_href|strstr:'?'}&{else}?{/if}ckc=1"{if $language.id_lang == $current_language.id_lang} selected="selected"{/if} data-iso-code="{$language.iso_code}">
-            {$language.name_simple}
+            {$language.iso_code|upper}
           </option>
         {/foreach}
       </select>
@@ -57,46 +60,103 @@
 
 <style>
   .ckc-lang { --ckc-lang-accent: #15616d; }
+  .ckc-lang .language-selector-wrapper,
   .ckc-lang .language-selector { position: relative; }
 
   .ckc-lang__toggle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 3px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #000;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 15px;
+    letter-spacing: 0;
+    text-align: center;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity .15s ease;
+  }
+  .ckc-lang__toggle:hover { opacity: .75; }
+  .ckc-lang__toggle:focus-visible {
+    outline: 2px solid var(--ckc-lang-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .ckc-lang__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 21px;
+    height: 21px;
+    flex: 0 0 auto;
+  }
+
+  .ckc-lang__globe {
+    display: block;
+    width: 21px;
+    height: 21px;
+  }
+
+  .ckc-lang__label-row {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
-    border: 1px solid transparent;
-    border-radius: 8px;
-    background: transparent;
-    color: #1a1a1a;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1;
-    cursor: pointer;
-    transition: background-color .15s ease, border-color .15s ease;
+    justify-content: center;
+    gap: 2px;
+    min-height: 15px;
+    line-height: 15px;
   }
-  .ckc-lang__toggle:hover { background-color: #f3f4f6; }
-  .ckc-lang__toggle:focus-visible { outline: 2px solid var(--ckc-lang-accent); outline-offset: 2px; }
 
-  .ckc-lang__chevron { flex: 0 0 auto; transition: transform .2s ease; }
-  .ckc-lang__toggle[aria-expanded="true"] .ckc-lang__chevron { transform: rotate(180deg); }
+  .ckc-lang__current {
+    line-height: 15px;
+  }
+
+  .ckc-lang__chevron {
+    flex: 0 0 auto;
+    width: 10px;
+    height: 10px;
+    margin-top: 1px;
+    opacity: .4;
+    transition: transform .2s ease, opacity .15s ease;
+  }
+  .ckc-lang__toggle:hover .ckc-lang__chevron { opacity: .65; }
+  .ckc-lang__toggle[aria-expanded="true"] .ckc-lang__chevron {
+    transform: rotate(180deg);
+    opacity: .65;
+  }
 
   .ckc-lang__menu.dropdown-menu {
-    min-width: 168px;
-    margin-top: 8px;
-    padding: 6px;
+    left: 50%;
+    right: auto;
+    min-width: 72px;
+    margin-top: 6px;
+    padding: 4px;
     border: 1px solid #e5e7eb;
-    border-radius: 12px;
+    border-radius: 10px;
     background: #fff;
     box-shadow: 0 10px 28px rgba(17, 24, 39, .12);
+    transform: translateX(-50%);
   }
   .ckc-lang__menu li { list-style: none; }
 
   .ckc-lang__item.dropdown-item {
     display: block;
-    padding: 9px 12px;
-    border-radius: 8px;
+    padding: 8px 12px;
+    border-radius: 7px;
     color: #1a1a1a;
-    font-size: 14px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-align: center;
+    text-transform: uppercase;
     white-space: nowrap;
     text-decoration: none;
     transition: background-color .12s ease, color .12s ease;
@@ -104,7 +164,6 @@
   .ckc-lang__item.dropdown-item:hover { background-color: #f3f4f6; }
 
   .ckc-lang__menu li.current .ckc-lang__item {
-    font-weight: 700;
     color: var(--ckc-lang-accent);
     background-color: rgba(21, 97, 109, .08);
   }
@@ -115,8 +174,28 @@
     border-radius: 8px;
     background: #fff;
     color: #1a1a1a;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .ckc-lang__label.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media only screen and (max-width: 1620px) {
+    .ckc-lang__toggle { font-size: 9px; gap: 4px; }
+  }
+  @media only screen and (max-width: 1420px) {
+    .ckc-lang__toggle { font-size: 8px; }
   }
 </style>
 {/if}

@@ -21,14 +21,14 @@ abstract class Db extends DbCore
 {
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     protected $lastInsertId = null;
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     protected $inCacheInvalidation = false;
     /**
@@ -46,8 +46,8 @@ abstract class Db extends DbCore
      */
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     public function delete($table, $where = '', $limit = 0, $use_cache = true, $add_prefix = true)
     {
@@ -69,8 +69,8 @@ abstract class Db extends DbCore
      */
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     public function execute($sql, $use_cache = true)
     {
@@ -90,8 +90,8 @@ abstract class Db extends DbCore
      */
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     public function executeS($sql, $array = true, $use_cache = true)
     {
@@ -129,8 +129,8 @@ abstract class Db extends DbCore
      */
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     public function executeQuery($sql, $array)
     {
@@ -157,8 +157,8 @@ abstract class Db extends DbCore
      */
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     public function getRow($sql, $use_cache = true)
     {
@@ -176,8 +176,8 @@ abstract class Db extends DbCore
      */
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     public function numRows()
     {
@@ -188,8 +188,8 @@ abstract class Db extends DbCore
     }
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     public static function isDDL($sql)
     {
@@ -204,8 +204,8 @@ abstract class Db extends DbCore
     }
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     protected function q($sql, $use_cache = true)
     {
@@ -214,8 +214,8 @@ abstract class Db extends DbCore
         }
         $this->result = false;
         $result = $this->query($sql);
-        if ($this->is_cache_enabled && !$this->inCacheInvalidation &&
-            method_exists(Cache::class, 'isCacheEnabled') && Cache::getInstance()->isCacheEnabled()) {
+        if (!$this->inCacheInvalidation &&
+            method_exists(Cache::class, 'isInvalidationEnabled') && Cache::getInstance()->isInvalidationEnabled()) {
             if ($result !== false && ($this->Affected_Rows() > 0 || self::isDDL($sql))) {
                 $this->Insert_ID();
                 $this->inCacheInvalidation = true;
@@ -231,8 +231,8 @@ abstract class Db extends DbCore
     }
     /*
     * module: softizyquerycache
-    * date: 2026-04-22 11:53:49
-    * version: 2.30.5
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
     */
     public function disableCache()
     {

@@ -81,19 +81,6 @@
                                 <h1 class="product-title">{block name='page_title'}{$product.name}{/block}</h1>
                             {/block}
                         {/block}
-                        {if !$pro.env}
-                            <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mb-3">
-                                <div>
-                                    <p class="small mb-0 font-weight-bold mb-1">
-                                        {l s='Produit garanti moins cher du web' d='Shop.Theme.Customcatalog'}
-                                    </p>
-                                    <p class="thin mb-0">
-                                        {l s='Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.' d='Shop.Theme.Customcatalog'}
-                                    </p>
-                                </div>
-                                <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
-                            </div>
-                        {/if}
                         <div class="d-flex align-items-center mb-3 gap-16 flex-wrap">
                             {if $product.quantity > 0}
                                 <div class="small text-secondary">
@@ -112,8 +99,57 @@
                                 <div class="small">{l s='REF' d='Shop.Theme.Customcatalog'} <span
                                             class="font-weight-bold" id="product_reference">{$product.reference_to_display}</span></div>
                             {/if}
+                            <script>
+                              window.CKC_AVIS_I18N = {
+                                verifiedReviews: '{l s='Avis vérifiés' d='Shop.Theme.Customckc' js=1}',
+                                reviews: '{l s='avis' d='Shop.Theme.Customckc' js=1}'
+                              };
+                              (function () {
+                                var i18n = window.CKC_AVIS_I18N || {};
+                                var labelReviews = i18n.reviews || 'avis';
+                                var labelVerified = i18n.verifiedReviews || 'Avis vérifiés';
+                                function apply() {
+                                  document.querySelectorAll('[data-lang="SKEEPERS_AVIS"]').forEach(function (el) {
+                                    el.textContent = labelReviews;
+                                  });
+                                  document.querySelectorAll('.avis-verifie-logo > span').forEach(function (el) {
+                                    if (/avis v[eé]rifi[eé]s/i.test(el.textContent || '')) {
+                                      el.textContent = labelVerified;
+                                    }
+                                  });
+                                  document.querySelectorAll('.avis_verifies_inserted, .rate-total').forEach(function (el) {
+                                    if (el.querySelector('[data-lang="SKEEPERS_AVIS"]')) return;
+                                    if (/\bavis\b/i.test(el.textContent || '')) {
+                                      el.innerHTML = el.innerHTML.replace(/\bavis\b/gi, labelReviews);
+                                    }
+                                  });
+                                  // Évite le double onglet « Avis vérifiés »
+                                  var avisLinks = document.querySelectorAll('.nav.nav-tabs[role="tablist"] a.avisVerfies');
+                                  for (var i = 1; i < avisLinks.length; i++) {
+                                    var li = avisLinks[i].closest('li.nav-item');
+                                    if (li) li.parentNode.removeChild(li);
+                                  }
+                                }
+                                document.addEventListener('DOMContentLoaded', function () {
+                                  apply();
+                                  var root = document.querySelector('.skeepers_product__stars') || document.body;
+                                  if (!root || typeof MutationObserver === 'undefined') return;
+                                  var busy = false;
+                                  var obs = new MutationObserver(function () {
+                                    if (busy) return;
+                                    busy = true;
+                                    obs.disconnect();
+                                    apply();
+                                    obs.observe(root, { childList: true, subtree: true });
+                                    busy = false;
+                                  });
+                                  obs.observe(root, { childList: true, subtree: true });
+                                  setTimeout(function () { obs.disconnect(); }, 15000);
+                                });
+                              })();
+                            </script>
                             <a href="javascript:av_widget_click()" id="AV_button">
-                                <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
+                                <div class="skeepers_product__stars" data-product-id="{$product.id}" data-locale="{$language.locale|replace:'-':'_'}"></div>
                             </a>
                         </div>
 
@@ -133,7 +169,7 @@
                                 {*                                    Lire davantage</a>*}
                                 {if $pro.env}
                                     <div class="text-left">
-                                        <a href="#block-description-long" class="text-bold product-description-read-more-link">+ Lire davantage</a>
+                                        <a href="#block-description-long" class="text-bold product-description-read-more-link">+ {l s='Lire davantage' d='Shop.Theme.Custommodules'}</a>
                                     </div>
                                 {/if}
                             </div>
@@ -229,10 +265,10 @@
                             <div class="rounded-4 bg-primary text-white px-4 py-2 d-flex align-items-center justify-content-start mt-3 mb-3">
                                 <div>
                                     <p class="small mb-0 font-weight-bold mb-1">
-                                        Produit garanti moins cher du web
+                                        {l s='Produit garanti moins cher du web' d='Shop.Theme.Customcatalog'}
                                     </p>
                                     <p class="thin mb-0">
-                                        Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.
+                                        {l s='Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.' d='Shop.Theme.Customcatalog'}
                                     </p>
                                 </div>
                                 <img class="ml-2" src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
@@ -408,7 +444,7 @@
                                             <div class="netreviews_reviews_tab d-flex">
                                                 <div class="skeepers_product__reviews"
                                                      data-product-id="{$product.id}"
-                                                     data-locale="fr_FR"
+                                                     data-locale="{$language.locale|replace:'-':'_'}"
                                                      data-price="{$product.price}"
                                                      data-currency="{$currency.iso_code}"
                                                      data-name="{$product.title}"
@@ -459,7 +495,7 @@
                                                     <div class="netreviews_reviews_tab d-flex">
                                                         <div class="skeepers_product__reviews"
                                                              data-product-id="{$product.id}"
-                                                             data-locale="fr_FR"
+                                                             data-locale="{$language.locale|replace:'-':'_'}"
                                                              data-price="{$product.price}"
                                                              data-currency="{$currency.iso_code}"
                                                              data-name="{$product.title}"
@@ -478,7 +514,7 @@
 
                                         <div class="skeepers_product__reviews"
                                              data-product-id="{$product.id}"
-                                             data-locale="fr_FR"
+                                             data-locale="{$language.locale|replace:'-':'_'}"
                                              data-price="{$product.price}"
                                              data-currency="{$currency.iso_code}"
                                              data-name="{$product.title}"
@@ -510,7 +546,7 @@
                                             <div class="netreviews_reviews_tab d-flex">
                                                 <div class="skeepers_product__reviews"
                                                      data-product-id="{$product.id}"
-                                                     data-locale="fr_FR"
+                                                     data-locale="{$language.locale|replace:'-':'_'}"
                                                      data-price="{$product.price}"
                                                      data-currency="{$currency.iso_code}"
                                                      data-name="{$product.title}"
