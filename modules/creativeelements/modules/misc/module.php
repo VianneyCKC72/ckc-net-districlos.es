@@ -191,7 +191,7 @@ class ModulesXMiscXModule extends BaseModule
                     return $link;
                 }
 
-                $link = Tools::getShopProtocol() . Tools::getHttpHost(false, false)
+                $link = \Tools::getShopProtocol() . \Tools::getHttpHost(false, false)
                     . rtrim(__PS_BASE_URI__, '/') . '/' . $admin . '/index.php?' . http_build_query([
                     'controller' => $tab,
                     'token' => (string) $token,
