@@ -2692,9 +2692,6 @@ class pm_advancedpack extends AdvancedPackCoreClass implements WidgetInterface
                     foreach ($packInformations as &$row) {
                         $row['reduction_type'] = 'percentage';
                         $row['reduction_amount'] = 0;
-                        if ($priceRules === 5) {
-                            $row['use_reduc'] = 1;
-                        }
                     }
                     unset($row);
                 } else {
