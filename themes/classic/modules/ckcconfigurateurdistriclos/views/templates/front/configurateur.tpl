@@ -1665,7 +1665,12 @@ window.CKC_CFG_I18N = {
                     <div class="ckc-recap-row">
                       <span class="ckc-recap-row__label">{l s='Prix de la section' d='Shop.Theme.Customconfigurator'}</span>
                       <span class="ckc-recap-row__value"></span>
-                      <strong class="ckc-recap-row__price" x-text="t.price.toFixed(2) + ((window.CKC_CFG_I18N&&window.CKC_CFG_I18N.ttcSuffix)||' € TTC')"></strong>
+                      <span class="ckc-recap-row__price-wrap">
+                        <template x-if="t.ml_discount_percent > 0">
+                          <span class="ckc-recap-row__price-before" x-text="t.price_before_discount.toFixed(2) + ' €'"></span>
+                        </template>
+                        <strong class="ckc-recap-row__price" x-text="t.price.toFixed(2) + ((window.CKC_CFG_I18N&&window.CKC_CFG_I18N.ttcSuffix)||' € TTC')"></strong>
+                      </span>
                     </div>
 
                     {* Product list for this troncon *}
@@ -1933,12 +1938,37 @@ window.CKC_CFG_I18N = {
             </template>
           </div>
         </template>
+        <template x-if="$store.configurator.mlDiscountTiers.length">
+          <div class="ckc-sidebar-ml-degressive">
+            <div class="ckc-sidebar-ml-degressive__title">{l s='Remise dégressive' d='Shop.Theme.Customconfigurator'}</div>
+            <table class="ckc-sidebar-ml-degressive__table">
+              <thead>
+                <tr>
+                  <th>{l s='Longueur (m)' d='Shop.Theme.Customconfigurator'}</th>
+                  <th>{l s='Remise' d='Shop.Theme.Customconfigurator'}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <template x-for="(tier, idx) in $store.configurator.mlDiscountTiers" :key="'ml-tier-' + idx">
+                  <tr :class="{ 'is-active': $store.configurator.isMlTierActive(tier) }">
+                    <td x-text="tier.from + ' – ' + (tier.to !== null && tier.to !== undefined ? tier.to : '+')"></td>
+                    <td x-text="'-' + tier.percent + '%'"></td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </template>
         <div class="ckc-footer__price">
           <div class="ckc-footer__total_container">
             <div><span class="ckc-footer__ttc">{l s='Total TTC' d='Shop.Theme.Customconfigurator'}</span></div>
-            <div>
-            <span class="ckc-footer__amount"
-                  x-text="$store.configurator.totalPrice.toFixed(2) + ' €'"></span>
+            <div class="ckc-footer__amount-wrap">
+              <template x-if="$store.configurator.totalPriceBeforeDiscount && $store.configurator.totalPriceBeforeDiscount > $store.configurator.totalPrice">
+                <span class="ckc-footer__amount-before"
+                      x-text="$store.configurator.totalPriceBeforeDiscount.toFixed(2) + ' €'"></span>
+              </template>
+              <span class="ckc-footer__amount"
+                    x-text="$store.configurator.totalPrice.toFixed(2) + ' €'"></span>
             </div>
           </div>
           <div  class="ckc-footer__total_note">{l s='Prix indicatif, devis final après configuration complète.' d='Shop.Theme.Customconfigurator'}</div>
@@ -1988,6 +2018,9 @@ window.CKC_CFG_I18N = {
             <div class="ckc-footer-fixed-total__container">
               <div class="ckc-footer-fixed-total__label">{l s='Total TTC' d='Shop.Theme.Customconfigurator'}</div>
               <div class="ckc-footer-fixed-total__text">
+                <template x-if="$store.configurator.totalPriceBeforeDiscount && $store.configurator.totalPriceBeforeDiscount > $store.configurator.totalPrice">
+                  <span class="ckc-footer-fixed-total__amount-before" x-text="$store.configurator.totalPriceBeforeDiscount.toFixed(2) + ' €'"></span>
+                </template>
                 <span class="ckc-price-from">{l s='À partir de' d='Shop.Theme.Customconfigurator'}</span>
                 <span class="ckc-footer-fixed-total__amount_int" x-text="Math.floor($store.configurator.totalPrice)"></span>
                 <span class="ckc-footer-fixed-total__amount_decimal" x-text="',' + ($store.configurator.totalPrice.toFixed(2).split('.')[1] || '00') + ' €'"></span>
@@ -2178,6 +2211,8 @@ document.addEventListener('alpine:init', () => {
     cartMessage:    '',
     cartOk:         true,
     totalPrice:     0,
+    totalPriceBeforeDiscount: null,
+    mlDiscountPercent: 0,
     _serverSidebar: null,
 
     // ── Getters ───────────────────────────────────────────────
@@ -2243,6 +2278,32 @@ document.addEventListener('alpine:init', () => {
     get selectedFenceType() {
       const t = this.currentTronconData();
       return this.fenceTypes.find(f => f.id === t.fenceTypeId) || null;
+    },
+
+    get mlDiscountTiers() {
+      const ft = this.selectedFenceType;
+      if (!ft || !Array.isArray(ft.ml_discount_tiers)) {
+        return [];
+      }
+      return ft.ml_discount_tiers;
+    },
+
+    isMlTierActive(tier) {
+      const ml = parseFloat(this.currentTronconData().longueur) || 0;
+      const from = parseFloat(tier.from) || 0;
+      const to = tier.to !== null && tier.to !== undefined ? parseFloat(tier.to) : null;
+      if (ml < from) return false;
+      if (to === null) return true;
+      return ml <= to;
+    },
+
+    _syncMlDiscountDisplay(totalPrice, totalBefore) {
+      this.totalPriceBeforeDiscount = totalBefore || null;
+      if (totalBefore && totalBefore > totalPrice) {
+        this.mlDiscountPercent = Math.round((1 - totalPrice / totalBefore) * 1000) / 10;
+      } else {
+        this.mlDiscountPercent = 0;
+      }
     },
 
     get sidebarItems() {
@@ -2995,6 +3056,7 @@ document.addEventListener('alpine:init', () => {
         const data = await res.json();
         if (data.ok) {
           this.totalPrice = data.total_price;
+          this._syncMlDiscountDisplay(data.total_price, data.total_price_before_discount);
           if (data.sidebar) {
             this._serverSidebar = data.sidebar;
           }
