@@ -2282,14 +2282,7 @@ document.addEventListener('alpine:init', () => {
 
     get mlDiscountTiers() {
       const ft = this.selectedFenceType;
-      if (!ft || !Array.isArray(ft.ml_discount_tiers)) {
-        // #region agent log
-        if (this.currentStep > 1) {
-          fetch('http://127.0.0.1:7660/ingest/e4eded95-e335-4205-a8d5-964d73fe922f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'83d6ec'},body:JSON.stringify({sessionId:'83d6ec',runId:'post-fix',hypothesisId:'D',location:'theme/configurateur.tpl:mlDiscountTiers',message:'tiers empty for UI',data:{step:this.currentStep,fenceTypeId:this.currentTronconData()?.fenceTypeId||null,hasFt:!!ft},timestamp:Date.now()})}).catch(()=>{});
-        }
-        // #endregion
-        return [];
-      }
+      if (!ft || !Array.isArray(ft.ml_discount_tiers)) return [];
       return ft.ml_discount_tiers;
     },
 
@@ -2378,10 +2371,6 @@ document.addEventListener('alpine:init', () => {
         if (!data.ok) { this.error = data.error || (this._i18n().bootstrapError || 'Erreur bootstrap'); return; }
 
         this.fenceTypes = this._localizeEntity(data.fence_types || []);
-
-        // #region agent log
-        fetch('http://127.0.0.1:7660/ingest/e4eded95-e335-4205-a8d5-964d73fe922f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'83d6ec'},body:JSON.stringify({sessionId:'83d6ec',runId:'post-fix',hypothesisId:'B',location:'theme/configurateur.tpl:boot',message:'THEME bootstrap fenceTypes ml tiers',data:{count:this.fenceTypes.length,types:(this.fenceTypes||[]).map(f=>({id:f.id,title:f.title,tiersLen:Array.isArray(f.ml_discount_tiers)?f.ml_discount_tiers.length:0}))},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
 
         const tunnel = data.tunnel || {};
         // hasSoubassementStep is now set per fence_type in selectFenceType()
@@ -3066,9 +3055,6 @@ document.addEventListener('alpine:init', () => {
         if (data.ok) {
           this.totalPrice = data.total_price;
           this._syncMlDiscountDisplay(data.total_price, data.total_price_before_discount);
-          // #region agent log
-          fetch('http://127.0.0.1:7660/ingest/e4eded95-e335-4205-a8d5-964d73fe922f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'83d6ec'},body:JSON.stringify({sessionId:'83d6ec',runId:'post-fix',hypothesisId:'E',location:'theme/configurateur.tpl:_fetchPrice',message:'THEME price response',data:{total:data.total_price,before:data.total_price_before_discount,mlPct:this.mlDiscountPercent,tiersLen:this.mlDiscountTiers.length,fenceTypeId:this.currentTronconData()?.fenceTypeId||null,longueur:this.currentTronconData()?.longueur||null},timestamp:Date.now()})}).catch(()=>{});
-          // #endregion
           if (data.sidebar) {
             this._serverSidebar = data.sidebar;
           }
@@ -3208,6 +3194,7 @@ document.addEventListener('alpine:init', () => {
         if (data.ok) {
           this.summary    = data;
           this.totalPrice = data.total_price;
+          this._syncMlDiscountDisplay(data.total_price, data.total_price_before_discount);
           this.qtyOverrides = {};
         } else {
           console.error('Summary error:', data.error);
