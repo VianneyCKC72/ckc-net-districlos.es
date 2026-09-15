@@ -36,7 +36,12 @@ class CreativeElementsPreviewModuleFrontController extends ModuleFrontController
 
                 $admin->write();
             }
-            Tools::redirectAdmin(urldecode(Tools::getValue('redirect')));
+            $redirect = urldecode((string) Tools::getValue('redirect'));
+            // CKC: refuse host-less Location (browser treats admin folder as DNS hostname)
+            if (!preg_match('#^https?://[^/]+#i', $redirect)) {
+                $redirect = Tools::getShopProtocol() . Tools::getHttpHost(false, false) . '/' . ltrim($redirect, '/');
+            }
+            Tools::redirectAdmin($redirect);
         }
 
         $this->uid = CreativeElements::getPreviewUId(false);
