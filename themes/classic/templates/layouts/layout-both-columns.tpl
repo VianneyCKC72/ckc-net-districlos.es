@@ -55,9 +55,17 @@
                     {include file='module:ckc_espacepro/views/templates/hook/pro-home-login.tpl'
                     login_action=$link->getModuleLink('ckc_espacepro','login')
                     back=$urls.current_url}
-                    {hook h='CETemplate' id=37}
+                    {if isset($language.iso_code) && $language.iso_code == 'en'}
+                        {hook h='CETemplate' id=63}
+                    {else}
+                        {hook h='CETemplate' id=37}
+                    {/if}
                 {elseif $page.page_name == 'index' && !empty($pro) && $pro.env && $pro.user.is_logged}
-                    {hook h='CETemplate' id=36}
+                    {if isset($language.iso_code) && $language.iso_code == 'en'}
+                        {hook h='CETemplate' id=62}
+                    {else}
+                        {hook h='CETemplate' id=36}
+                    {/if}
                 {/if}
 
                 <div class="row">

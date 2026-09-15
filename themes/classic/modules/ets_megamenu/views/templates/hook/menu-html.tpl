@@ -332,15 +332,15 @@
                             <p>{l s='Espace Pro' d='Shop.Theme.Custommodules'}</p>
                         </a>
                     {/if}
-                    <a class="menu-mobile-useful-link" href="/module/opartdevis/simplequotation">
+                    <a class="menu-mobile-useful-link" href="{$link->getModuleLink('opartdevis', 'simplequotation')|escape:'html':'UTF-8'}">
                         <img src="/img/menu-mobile-devis.svg" alt="{l s='Devis' d='Shop.Theme.Custommodules'}" width="20px" height="19px">
                         <p>{l s='Devis' d='Shop.Theme.Custommodules'}</p>
                     </a>
-                    <a class="menu-mobile-useful-link" href="/content/11-nos-magasins-de-cloture">
+                    <a class="menu-mobile-useful-link" href="{$link->getCMSLink(11)|escape:'html':'UTF-8'}">
                         <img src="/img/menu-mobile-magasins.svg" alt="{l s='Magasins' d='Shop.Theme.Custommodules'}" width="19px" height="19px">
                         <p>{l s='Magasins' d='Shop.Theme.Custommodules'}</p>
                     </a>
-                    <a class="menu-mobile-useful-link" href="/content/657-service-de-pose">
+                    <a class="menu-mobile-useful-link" href="{$link->getCMSLink(657)|escape:'html':'UTF-8'}">
                         <img src="themes/classic/assets/img/service-de-pose.svg" alt="{l s='Service de pose' d='Shop.Theme.Customglobal'}" width="19px" height="19px">
                         <p style="color: #026473;">{l s='Service de pose' d='Shop.Theme.Customglobal'}</p>
                     </a>

@@ -19,11 +19,11 @@
     </a>
 {/if}
 
-<a href="/module/opartdevis/simplequotation" class="ico btn-devis">
+<a href="{$link->getModuleLink('opartdevis', 'simplequotation')|escape:'html':'UTF-8'}" class="ico btn-devis">
     <img src="/themes/classic/assets/img/ico-devis.svg" alt="{l s='Page de de demande de Devis' d='Shop.Theme.Custommodules'}" width="21" height="21">
     <span class="text">{l s='Devis' d='Shop.Theme.Custommodules'}</span>
 </a>
-<a href="{$link->getCMSLink(11)}" class="ico btn-magasin">
+<a href="{$link->getCMSLink(11)|escape:'html':'UTF-8'}" class="ico btn-magasin">
     <img src="/themes/classic/assets/img/ico-magasins.svg" alt="{l s='Consultez nos magasins' d='Shop.Theme.Custommodules'}" width="20" height="20">
     <span class="text">{l s='Magasins' d='Shop.Theme.Custommodules'}</span>
 </a>

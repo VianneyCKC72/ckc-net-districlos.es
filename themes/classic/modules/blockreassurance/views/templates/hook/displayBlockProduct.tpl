@@ -23,24 +23,18 @@
                 onclick="window.open('{$block['link']}')" {/if}>
                 {if $block['icon'] != 'undefined'}
                     {if $block['custom_icon']}
-                        <img src="{$block['custom_icon']}" loading="lazy" alt="{$block['title']}">
+                        <img src="{$block['custom_icon']}" loading="lazy" alt="{$block['title']|replace:'__':' '}">
                     {elseif $block['icon']}
-                        <img src="{$block['icon']}" loading="lazy" alt="{$block['title']}">
+                        <img src="{$block['icon']}" loading="lazy" alt="{$block['title']|replace:'__':' '}">
                     {/if}
                 {/if}
                 <div>
-                    {if empty($block['description'])}
-                        <p>{$block['title']|replace:'__':'<br>' nofilter}</p>
-                    {else}
-                        <p>{$block['title']}
-                            {*                    <p>{$block['description'] nofilter}</p>*}
-                            {if $block['description']== '__picto3x4x10x12x'}
-                                <br>
-                                <img class="paiement_plusieurs_fois" height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="{l s='Payer en plusieurs fois' d='Shop.Theme.Custommodules'}">
-                            {/if}
-                        </p>
-                    {/if}
-
+                    <p>{$block['title']|replace:'__':'<br>' nofilter}
+                        {if $block['description'] == '__picto3x4x10x12x'}
+                            <br>
+                            <img class="paiement_plusieurs_fois" height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="{l s='Payer en plusieurs fois' d='Shop.Theme.Custommodules'}">
+                        {/if}
+                    </p>
                 </div>
             </div>
         {/foreach}
@@ -48,30 +42,19 @@
 {elseif $page.page_name == 'product'}
     <div class="banner-services stack-row__cards my-section">
         {foreach from=$blocks item=$block key=$key}
-            {if $block['title'] == 'Fabrication__européenne'}
+            {if $block['title'] == 'Fabrication__européenne' || $block['title']|strstr:'Made in __Europe'}
                 {if $from_europe}
                     <div class="service" {if $block['type_link'] !==$LINK_TYPE_NONE && !empty($block['link'])} style="cursor:pointer;"
                         onclick="window.open('{$block['link']}')" {/if}>
                         {if $block['icon'] != 'undefined'}
                             {if $block['custom_icon']}
-                                <img src="{$block['custom_icon']}" loading="lazy" alt="{$block['title']}">
+                                <img src="{$block['custom_icon']}" loading="lazy" alt="{$block['title']|replace:'__':' '}">
                             {elseif $block['icon']}
-                                <img src="{$block['icon']}" loading="lazy" alt="{$block['title']}">
+                                <img src="{$block['icon']}" loading="lazy" alt="{$block['title']|replace:'__':' '}">
                             {/if}
                         {/if}
                         <div>
-                            {if empty($block['description'])}
-                                <p>{$block['title']|replace:'__':'<br>' nofilter}</p>
-                            {else}
-                                <p>{$block['title']}
-                                    {*                    <p>{$block['description'] nofilter}</p>*}
-                                    {if $block['description']== '__picto3x4x10x12x'}
-                                        <br>
-                                        <img class="paiement_plusieurs_fois" height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="{l s='Payer en plusieurs fois' d='Shop.Theme.Custommodules'}">
-                                    {/if}
-                                </p>
-                            {/if}
-
+                            <p>{$block['title']|replace:'__':'<br>' nofilter}</p>
                         </div>
                     </div>
                 {else}
@@ -79,13 +62,14 @@
                         onclick="window.open('{$block['link']}')" {/if}>
                         {if $block['icon'] != 'undefined'}
                             {if $block['custom_icon']}
-                                <img src="{$block['custom_icon']}" loading="lazy" alt="{$block['title']}">
+                                <img src="{$block['custom_icon']}" loading="lazy" alt="{l s='Fabrication française' d='Shop.Theme.Custommodules'}">
                             {elseif $block['icon']}
-                                <img src="{$block['icon']}" loading="lazy" alt="{$block['title']}">
+                                <img src="{$block['icon']}" loading="lazy" alt="{l s='Fabrication française' d='Shop.Theme.Custommodules'}">
                             {/if}
                         {/if}
                         <div>
-                            <p>Fabrication<br>française</p>
+                            {capture assign="ckc_fab_fr"}{l s='Fabrication__française' d='Shop.Theme.Custommodules'}{/capture}
+                            <p>{$ckc_fab_fr|replace:'__':'<br>' nofilter}</p>
                         </div>
                     </div>
                 {/if}
@@ -94,24 +78,18 @@
                     onclick="window.open('{$block['link']}')" {/if}>
                     {if $block['icon'] != 'undefined'}
                         {if $block['custom_icon']}
-                            <img src="{$block['custom_icon']}" loading="lazy" alt="{$block['title']}">
+                            <img src="{$block['custom_icon']}" loading="lazy" alt="{$block['title']|replace:'__':' '}">
                         {elseif $block['icon']}
-                            <img src="{$block['icon']}" loading="lazy" alt="{$block['title']}">
+                            <img src="{$block['icon']}" loading="lazy" alt="{$block['title']|replace:'__':' '}">
                         {/if}
                     {/if}
                     <div>
-                        {if empty($block['description'])}
-                            <p>{$block['title']|replace:'__':'<br>' nofilter}</p>
-                        {else}
-                            <p>{$block['title']}
-                                {*                    <p>{$block['description'] nofilter}</p>*}
-                                {if $block['description']== '__picto3x4x10x12x'}
-                                    <br>
-                                    <img class="paiement_plusieurs_fois" height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="{l s='Payer en plusieurs fois' d='Shop.Theme.Custommodules'}">
-                                {/if}
-                            </p>
-                        {/if}
-
+                        <p>{$block['title']|replace:'__':'<br>' nofilter}
+                            {if $block['description'] == '__picto3x4x10x12x'}
+                                <br>
+                                <img class="paiement_plusieurs_fois" height="21px" width="102px" src="/themes/classic/assets/img/services/paiement_plusieurs_fois.png" loading="lazy" alt="{l s='Payer en plusieurs fois' d='Shop.Theme.Custommodules'}">
+                            {/if}
+                        </p>
                     </div>
                 </div>
             {/if}
