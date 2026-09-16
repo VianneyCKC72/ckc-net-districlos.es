@@ -391,8 +391,8 @@
             <td width="15%"> <img src="/themes/auto_store/assets/img/devis/tuto_clientqr.png" width="300px"/></td>
             </tr>
             <tr style="display:flex; justify-content:space-between; width:600px;">
-            <td width="15%"> Votre espace client</td>
-            <td width="15%"> Tutoriels de pose</td>
+            <td width="15%"> {l s='Votre espace client' d='Shop.Theme.Custommodules'}</td>
+            <td width="15%"> {l s='Tutoriels de pose' d='Shop.Theme.Custommodules'}</td>
             </tr>
         </table>
     {/if}

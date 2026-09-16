@@ -223,7 +223,9 @@ fabric.properties
 !/admin024h9xfokhvsbvfmnzn/export/.htaccess
 !/admin024h9xfokhvsbvfmnzn/export/index.php
 
-/admin024h9xfokhvsbvfmnzn/prices/products.csv
+# Exports tarif / prix générés en prod (ne pas versionner)
+/admin024h9xfokhvsbvfmnzn/prices/*.csv
+/admin024h9xfokhvsbvfmnzn/prices/*.json
 
 # Downloaded RTL files
 /admin024h9xfokhvsbvfmnzn/themes/default/css/bundle/default_rtl.css
@@ -257,6 +259,7 @@ modules/*
 !modules/ckc*/
 !modules/pm_advancedpack/
 !modules/ps_shoppingcart/
+!modules/custompickup/
 modules/ckcstorespresentation/uploads/*
 !modules/creativeelements
 !modules/everpspopup
@@ -461,9 +464,10 @@ modules/ckc_realisation/uploads/2/
 !/modules/dealt/
 /modules/ckcspcache/
 
-/EDI_TARIF_DV_WEB
 /demande-encours/
 /ekonsilio/
+/ekonsilio/**/*.csv
+/diag_*.php
 override/classes/cache/
 override/classes/db/
 themes/classic/assets/js/theme.js.map
@@ -473,3 +477,10 @@ config/defines_uri.inc.php
 modules/ckc*/config_fr.xml
 modules/ckcproductreviews/cache/
 themes/classic/assets/css/theme.css.map
+.claude/
+/fix_*.php
+/fix_configurateur.php
+themes/classic/assets/css/theme.css
+themes/classic/assets/js/theme.js
+/fix_*.php
+/fix_configurateur.php

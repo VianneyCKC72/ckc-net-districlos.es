@@ -21,6 +21,7 @@ $_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_86f2ff44d6e0b0dd1dd
 $_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_fe03d436e920662a063cde2727c53b7c'] = 'Choisissez la couleur du texte du timer';
 $_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_498f79c4c5bbde77f1bceb6c86fd0f6d'] = 'Afficher';
 $_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_62a5e490880a92eef74f167d9dc6dca0'] = 'Masquer';
+$_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_4f666425d066020a410f94c8a013f4c4'] = 'Afficher un timer';
 $_MODULE['<{ckcpromotionbanner}prestashop>ckcpromotionbanner_c9cc8cce247e49bae79f15173ce97354'] = 'Enregistrer';
 $_MODULE['<{ckcpromotionbanner}prestashop>configure_ce53f8cf340ee89e3a03fe2a3f5acca0'] = 'Barre de promotion';
 $_MODULE['<{ckcpromotionbanner}prestashop>configure_bba714c79f7284465cd12951f3c3da1c'] = 'Barre de promotion refermable';
@@ -32,3 +33,12 @@ $_MODULE['<{ckcpromotionbanner}prestashop>configure_aebf29982400ac46b14cf782e4e0
 $_MODULE['<{ckcpromotionbanner}prestashop>configure_ae91330360ee794972aacd1d6afd590b'] = 'Mettez un texte promotionnel à ajouter :';
 $_MODULE['<{ckcpromotionbanner}prestashop>configure_a2388e5908cce37681a83146dbbeb339'] = 'Enregistrer la liste des textes promotionnels';
 $_MODULE['<{ckcpromotionbanner}prestashop>alert_62a5e490880a92eef74f167d9dc6dca0'] = 'Masquer';
+$_MODULE['<{ckcpromotionbanner}prestashop>alert_7872cb33905881ff9cbe8ce2ec8fafe2'] = 'Bons plans';
+$_MODULE['<{ckcpromotionbanner}prestashop>alert_328ba2ca5572897d3824adc74333df18'] = 'Des questions ?';
+$_MODULE['<{ckcpromotionbanner}prestashop>alert_8277e0910d750195b448797616e091ad'] = 'j';
+$_MODULE['<{ckcpromotionbanner}prestashop>alert_2510c39011c5be704182423e3a695e91'] = 'h';
+$_MODULE['<{ckcpromotionbanner}prestashop>alert_6f8f57715090da2632453988d9a1501b'] = 'm';
+$_MODULE['<{ckcpromotionbanner}prestashop>alert_03c7c0ace395d80182db07ae2c30f034'] = 's';
+$_MODULE['<{ckcpromotionbanner}prestashop>configure_be58cd234eba64f8240ee84f89fe5012'] = 'Si vous avez plusieurs textes promotionnels à afficher, vous pouvez en ajouter autant que nécessaire ici (même un seul aussi). Configurez chaque langue séparément.';
+$_MODULE['<{ckcpromotionbanner}prestashop>configure_f0c20b21954082dc9bf2d988e2df6b16'] = 'Mettez un texte promotionnel à ajouter (langue : %s)';
+$_MODULE['<{ckcpromotionbanner}prestashop>configure_148b07cc5668269f0ddfc77e7d49bd60'] = 'Copier depuis la langue par défaut';

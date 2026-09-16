@@ -1,0 +1,88 @@
+/* Conteneur principal */
+.pickup-main label {
+    display: block;
+}
+
+/* Paragraphe : distance */
+.pickup-distance {
+    font-size: 13px;
+    color: #7D7D7D;
+    margin: 0;
+}
+
+.pickup-address {
+    font-size: 13px;
+    color: #7D7D7D;
+}
+
+/* Paragraphe : téléphone */
+.pickup-phone {
+    font-size: 13px;
+    color: #7D7D7D;
+}
+
+/* Liste des autres magasins */
+#other-pickups {
+    display: none;
+    list-style: none;
+    padding-left: 0;
+}
+
+/* Ouverture */
+.opening-hours {
+    margin-top: 10px;
+    color: #7D7D7D;
+    display: flex;
+}
+
+.hours-list {
+    padding: 0;
+    margin: 0;
+    width: 80%;
+}
+
+.hours-list li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
+
+.hours-list .today {
+    font-weight: bold;
+}
+
+.icon-space {
+    margin-right: 14px;
+}
+
+.clickShop {
+    color: #79C046;
+    text-decoration: underline;
+    justify-content: center;
+    display: flex;
+    font-size: 13px;
+}
+
+.pickup-item {
+    display: flex;
+    gap: 10px;
+}
+
+.pickup-text {
+    display: flex;
+    flex-direction: column;
+}
+.pickup_map_store_container {
+  display:flex;
+  gap:20px;
+  margin-top: 30px;
+}
+@media screen and (max-width: 1200px) {
+  .pickup_map_store_container {
+    flex-direction: column;
+  }
+}
+
+.leaflet-bottom.leaflet-right {
+    display: none;
+}

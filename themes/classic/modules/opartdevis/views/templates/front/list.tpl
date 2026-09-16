@@ -40,8 +40,8 @@
                         {if isset($quotation.expiration_date) && $quotation.expiration_date > 0}
                             <td class="history_method">{dateFormat date=$quotation.expiration_date full=1}</td>
                         {/if}
-                        <td class="history_method" data-label="Nom">{$quotation.name|escape:'htmlall':'UTF-8'}</td>
-                        <td class="history_method" data-label="Modifier/Valider">
+                        <td class="history_method" data-label="{l s='Nom' d='Shop.Theme.Custommodules'}">{$quotation.name|escape:'htmlall':'UTF-8'}</td>
+                        <td class="history_method" data-label="{l s='Modifier/Valider' d='Shop.Theme.Custommodules'}">
                             {if $quotation.status == OpartQuotation::VALIDATED}
                                 <a href="{$link->getModuleLink('opartdevis','loadquotation',['opartquotationId'=>$quotation.id_opartdevis,'proceedCheckout'=>true])|escape:'htmlall':'UTF-8'}" class="btn btn-default button button-small">
                                     <span class="opartDevisHide">{l s='proceed to checkout' mod='opartdevis'}<i class="icon-chevron-right right"></i></span><i class="icon-chevron-right right opartDevisShow"></i>
@@ -58,12 +58,12 @@
                                 </a>
                             {/if}
                         </td>
-                        <td class="history_method" data-label="Supprimer">
+                        <td class="history_method" data-label="{l s='Supprimer' d='Shop.Theme.Custommodules'}">
                             {if $quotation.status == OpartQuotation::NOT_VALIDATED || $quotation.status == OpartQuotation::EXPIRED}
                                 <a href="{$link->getModuleLink('opartdevis','listquotation',['action' => 'delete', 'opartquotationId' => $quotation.id_opartdevis])|escape:'htmlall':'UTF-8'}" class="btn btn-default button button-small"><span class="opartDevisHide">{l s='Delete' mod='opartdevis'}<i class="icon-trash right"></i></span><i class="icon-trash right opartDevisShow"></i> </a>
                             {/if}
                         </td>
-                        <td class="history_method" data-label="Télécharger">
+                        <td class="history_method" data-label="{l s='Télécharger' d='Shop.Theme.Custommodules'}">
                             <a href="{$link->getModuleLink('opartdevis','showquotation',['id_cart' => $quotation.id_cart])|escape:'htmlall':'UTF-8'}" class="btn btn-default button button-small">
                                 <span>{l s='Download' mod='opartdevis'}
                                     <i class="icon-download right"></i>

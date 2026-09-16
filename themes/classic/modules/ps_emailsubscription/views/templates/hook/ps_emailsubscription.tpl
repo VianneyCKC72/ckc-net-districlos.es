@@ -1,7 +1,7 @@
 {if $page.page_name == 'category'}
     <div class="col-xs-12 only-category-block">
         {if Context::getContext()->shop->id != 2}
-            {hook h='CETemplate' id=14}
+            {include file='_partials/ce-templates/category-browse-14.tpl'}
         {else}
             {hook h='CETemplate' id=40}
         {/if}
@@ -28,10 +28,8 @@
             {if $msg}
                 <p class="notification newsletter-message {if $nw_error}notification-error{else}notification-success{/if}">{$msg}</p>
             {/if}
-            <div class="h2">Newsletter</div>
-            <p>Inscrivez-vous à la newsletter Districlos pour rester informés de nos nouveaux produits, bons plans et faire
-                le
-                plein d’inspirations !</p>
+            <div class="h2">{l s='Newsletter' d='Shop.Theme.Custommodules'}</div>
+            <p>{l s='Inscrivez-vous à la newsletter Districlos pour rester informés de nos nouveaux produits, bons plans et faire le plein d’inspirations !' d='Shop.Theme.Custommodules'}</p>
             <form class="form-newsletter" action="{$urls.current_url}#blockEmailSubscription_{$hookName}" method="post">
                 <input type="hidden" name="blockHookName" value="{$hookName}" />
 
@@ -44,12 +42,11 @@
                             aria-label="Email"
                             required
                     >
-                    <button class="btn btn-primary-light d-md-block" name="submitNewsletter">Je m'inscris</button>
+                    <button class="btn btn-primary-light d-md-block" name="submitNewsletter">{l s='Je m\'inscris' d='Shop.Theme.Custommodules'}</button>
                 </div>
 
                 <label class="input-checkbox">
-                    J’accepte de recevoir d’autres communications de Districlos. Vous pourrez vous
-                    désabonner d’un simple clic !
+                    {l s='J’accepte de recevoir d’autres communications de Districlos. Vous pourrez vous désabonner d’un simple clic !' d='Shop.Theme.Custommodules'}
                     <input type="checkbox">
                     <span class="checkmark"></span>
                     {hook h='displayNewsletterRegistration'}
@@ -61,7 +58,7 @@
             </form>
         </div>
         <div class="col-img">
-            <img class="img-cover" src="/img/photo-portail-newsletter.png" alt="Banière newsletter" loading="lazy"/>
+            <img class="img-cover" src="/img/photo-portail-newsletter.png" alt="{l s='Banière newsletter' d='Shop.Theme.Custommodules'}" loading="lazy"/>
         </div>
     </div>
 {elseif Context::getContext()->shop->id == 2 AND $page.page_name != 'index' AND $page.page_name != 'checkout' AND $page.page_name != 'identity' AND $page.page_name != 'authentication' AND $page.page_name != 'registration'}
@@ -70,10 +67,8 @@
             {if $msg}
                 <p class="notification newsletter-message {if $nw_error}notification-error{else}notification-success{/if}">{$msg}</p>
             {/if}
-            <div class="h2">Newsletter</div>
-            <p>Inscrivez-vous à la newsletter Districlos pour rester informés de nos nouveaux produits, bons plans et faire
-                le
-                plein d’inspirations !</p>
+            <div class="h2">{l s='Newsletter' d='Shop.Theme.Custommodules'}</div>
+            <p>{l s='Inscrivez-vous à la newsletter Districlos pour rester informés de nos nouveaux produits, bons plans et faire le plein d’inspirations !' d='Shop.Theme.Custommodules'}</p>
             <form class="form-newsletter" action="{$urls.current_url}#blockEmailSubscription_{$hookName}" method="post">
                 <input type="hidden" name="blockHookName" value="{$hookName}" />
 
@@ -86,12 +81,11 @@
                             aria-label="Email"
                             required
                     >
-                    <button class="btn btn-primary-light d-md-block" name="submitNewsletter">Je m'inscris</button>
+                    <button class="btn btn-primary-light d-md-block" name="submitNewsletter">{l s='Je m\'inscris' d='Shop.Theme.Custommodules'}</button>
                 </div>
 
                 <label class="input-checkbox">
-                    J’accepte de recevoir d’autres communications de Districlos. Vous pourrez vous
-                    désabonner d’un simple clic !
+                    {l s='J’accepte de recevoir d’autres communications de Districlos. Vous pourrez vous désabonner d’un simple clic !' d='Shop.Theme.Custommodules'}
                     <input type="checkbox">
                     <span class="checkmark"></span>
                     {hook h='displayNewsletterRegistration'}
@@ -103,7 +97,7 @@
             </form>
         </div>
         <div class="col-img">
-            <img class="img-cover" src="/img/photo-portail-newsletter.png" alt="Banière newsletter" loading="lazy"/>
+            <img class="img-cover" src="/img/photo-portail-newsletter.png" alt="{l s='Banière newsletter' d='Shop.Theme.Custommodules'}" loading="lazy"/>
         </div>
     </div>
     {if $page.page_name == 'category' OR $page.page_name == 'product'}

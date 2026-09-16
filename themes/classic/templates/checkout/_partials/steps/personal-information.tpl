@@ -44,18 +44,30 @@
 
   {else}
     <div class="account-switch texte-left">
+      <script>
+        window.CKC_CHECKOUT_I18N = {
+          loginTitle: '{l s='Connexion' d='Shop.Theme.Customcheckout' js=1}',
+          registerTitle: '{l s='Créer un compte' d='Shop.Theme.Customcheckout' js=1}',
+          alreadyAccount: '{l s='Vous avez déjà un compte ?' d='Shop.Theme.Customcheckout' js=1}',
+          noAccount: '{l s='Pas encore de compte ?' d='Shop.Theme.Customcheckout' js=1}',
+          logIn: '{l s='Connectez-vous' d='Shop.Theme.Customcheckout' js=1}',
+          createAccount: '{l s='Créez un compte' d='Shop.Theme.Customcheckout' js=1}'
+        };
+      </script>
       {if $show_login_form}
+        <h2 class="sous-titre">{l s='Connexion' d='Shop.Theme.Customcheckout'}</h2>
         <p>
-          Vous avez déjà un compte ?
+          {l s='Pas encore de compte ?' d='Shop.Theme.Customcheckout'}
           <a href="#checkout-guest-form" data-toggle="tab" role="tab" aria-controls="checkout-guest-form" aria-selected="false">
-            Connectez-vous →
+            {l s='Créez un compte' d='Shop.Theme.Customcheckout'} →
           </a>
         </p>
       {else}
+        <h2 class="sous-titre">{l s='Créer un compte' d='Shop.Theme.Customcheckout'}</h2>
         <p>
-          Pas encore de compte ?
+          {l s='Vous avez déjà un compte ?' d='Shop.Theme.Customcheckout'}
           <a href="#checkout-login-form" data-toggle="tab" role="tab" aria-controls="checkout-login-form" aria-selected="false">
-            Créez un compte →
+            {l s='Connectez-vous' d='Shop.Theme.Customcheckout'} →
           </a>
         </p>
       {/if}

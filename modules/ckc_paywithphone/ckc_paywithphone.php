@@ -48,8 +48,13 @@ class ckc_PayWithPhone extends PaymentModule
             $order_state->name = array();
 
             foreach (Language::getLanguages() as $language) {
-                if (Tools::strtolower($language['iso_code']) == 'fr') {
+                $iso = Tools::strtolower($language['iso_code']);
+                if ($iso == 'fr') {
                     $order_state->name[$language['id_lang']] = 'En attente de paiement par téléphone';
+                } elseif ($iso == 'en') {
+                    $order_state->name[$language['id_lang']] = 'Awaiting payment by phone';
+                } else {
+                    $order_state->name[$language['id_lang']] = 'Awaiting payment by phone';
                 }
             }
 
@@ -267,6 +272,11 @@ class ckc_PayWithPhone extends PaymentModule
             Configuration::get('PS_OS_OUTOFSTOCK'),
             Configuration::get('PS_OS_OUTOFSTOCK_UNPAID')
         ))) {
+            require_once _PS_OVERRIDE_DIR_ . 'classes/OrderStoreHelper.php';
+            $store = OrderStoreHelper::getStoreForOrder((int) $params['order']->id) ?? [];
+            $storeName = $store['name'] ?? '';
+            $phone = $store['presentation_phone'] ?? Configuration::get('CKC_PAYWITHPHONE_PHONE');
+
             $this->smarty->assign(array(
                 'shop_name' => $this->context->shop->name,
                 'total' => Tools::displayPrice(
@@ -276,7 +286,8 @@ class ckc_PayWithPhone extends PaymentModule
                 ),
                 'status' => 'ok',
                 'reference' => $params['order']->reference,
-                'ckc_paywithphonePhone' => Configuration::get('CKC_PAYWITHPHONE_PHONE'),
+                'store_name' => $storeName,
+                'ckc_paywithphonePhone' => $phone,
             ));
         } else {
             $this->smarty->assign('status', 'failed');

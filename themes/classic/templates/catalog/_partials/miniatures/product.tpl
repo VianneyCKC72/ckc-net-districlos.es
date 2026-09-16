@@ -31,7 +31,7 @@
                  data-product-price="{$product.price}" data-product-reference="{$product.reference_to_display}"
                  data-product-category="{$product.category_name}">
             <div class="thumbnail-container">
-                <div class="thumbnail-top">
+                <div class="thumbnail-top{if !$product.from_europe} has-pastille-fr{/if}">
 
                     {*{if $page.page_name == 'category'}
                         <div class="product-first-ribbon" aria-hidden="true">
@@ -41,12 +41,6 @@
                             <span class="product-first-ribbon__text">BLACK 2 WEEKS</span>
                         </div>
                     {/if}*}
-
-                    {if !$product.from_europe}
-                        <div class="pastille_fr">
-                            <img src="/img/pastille_produit_france.svg" alt="Fabriqué en France" class="pastille_fr_icon">
-                        </div>
-                    {/if}
 
                     {block name='product_thumbnail'}
                         <a href="{$link->getProductLink($product.id_product, $product.link_rewrite)}" class="thumbnail product-thumbnail hover-images">
@@ -178,7 +172,7 @@
                                             <span class="price">
                                                 {$product.specific_price_ht} € HT
                                             </span>
-                                            <small>dès {$product.from_quantity} unités*</small>
+                                            <small>dès {$product.from_quantity} {l s='unités' d='Shop.Theme.Customcatalog'}*</small>
                                             <div class="product-price-and-shipping">
                                                 <span class="regular-price">{$product.initial_price_ht} € HT </span>
                                             </div>
@@ -218,7 +212,7 @@
                         {/block}
                     </div>
                     {if $pro.env == 0 OR ($pro.env == 1 && $page.page_name == 'product') OR ($pro.env == 1 && $page.page_name == 'category')}
-                        <a href="{$product.url}" class="btn btn-primary">Voir le produit</a>
+                        <a href="{$product.url}" class="btn btn-primary">{l s='Voir le produit' d='Shop.Theme.Customcatalog'}</a>
                     {/if}
                 </div>
 

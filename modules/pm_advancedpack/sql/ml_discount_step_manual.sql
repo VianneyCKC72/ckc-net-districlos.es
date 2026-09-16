@@ -1,0 +1,2 @@
+-- Ancienne version « tous les X ML » (obsolète, remplacée par ml_discount_tiers).
+-- Ne plus utiliser. Voir ml_discount_tiers_manual.sql

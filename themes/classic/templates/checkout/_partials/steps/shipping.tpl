@@ -136,10 +136,10 @@
 
         <div class="delivery-actions">
           <button type="button" class="btn-link js-checkout-prev-step">
-            {l s='Étape précédente' d='Shop.Theme.Checkout'}
+            {l s='Étape précédente' d='Shop.Theme.Customcheckout'}
           </button>
           <button type="submit" class="continue btn btn-primary" name="confirmDeliveryOption" value="1">
-            {l s='Passer au paiement' d='Shop.Theme.Checkout'}
+            {l s='Passer au paiement' d='Shop.Theme.Customcheckout'}
           </button>
         </div>
       </form>

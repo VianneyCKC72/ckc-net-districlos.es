@@ -1,0 +1,3 @@
+New quotation request from: {firstname} {lastname} - {customerMail} - {customerPhone}
+Message:
+{customerMessage}

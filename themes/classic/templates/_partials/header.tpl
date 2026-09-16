@@ -13,20 +13,7 @@
 
 {block name='header_top'}
 
-    {* START BANDEAU BONS PLANS *}
-    <div class="bandeau-soldes" role="region" aria-label="Bons plans">
-        <div class="bandeau-soldes__inner">
-            <a href="/400-bons-plans" class="bandeau-soldes__link">
-                <span class="bandeau-soldes__badge">
-                    BONS PLANS
-                </span>
-                <span class="bandeau-soldes__text">
-                    Jusqu'à <strong>-12%</strong> offerts dès 2000€ d'achat !
-                </span>
-            </a>
-        </div>
-    </div>
-    {* END BANDEAU BONS PLANS *}
+    {hook h='displayBandeauSoldes'}
 
     <div class="header-top">
         <div class="row-header d-flex align-items-center">
@@ -64,20 +51,20 @@
                         <a href="{$link->getModuleLink('ckcconfigurateurdistriclos', 'configurator')|escape:'htmlall':'UTF-8'}" class="btn btn-primary btn-configurateur">
                             <div class="text-btn">
                                 <span class="small-text">
-                                    Configurez<br>
+                                    {l s='Configurez' d='Shop.Theme.Customglobal'}<br>
                                 </span>
-                                <span class="medium-text">votre clôture</span>
+                                <span class="medium-text">{l s='votre clôture' d='Shop.Theme.Customglobal'}</span>
                             </div>
-                            <img width="37" height="35" alt="Configurez votre clôture" src="/themes/classic/assets/img/configurer-icon.svg">
+                            <img width="37" height="35" alt="{l s='Configurez votre clôture' d='Shop.Theme.Customglobal'}" src="/themes/classic/assets/img/configurer-icon.svg">
                         </a>
-                        <a href="{$urls.base_url}content/657-service-de-pose" class="ico btn-service-pose" title="Service de pose">
-                            <img src="/themes/classic/assets/img/service-de-pose.svg" alt="Service de pose" width="28" height="28" class="btn-service-pose__icon" loading="lazy">
-                            <span>Service de pose</span>
+                        <a href="{$link->getCMSLink(657)}" class="ico btn-service-pose" title="{l s='Service de pose' d='Shop.Theme.Customglobal'}">
+                            <img src="/themes/classic/assets/img/service-de-pose.svg" alt="{l s='Service de pose' d='Shop.Theme.Customglobal'}" width="28" height="28" class="btn-service-pose__icon" loading="lazy">
+                            <span>{l s='Service de pose' d='Shop.Theme.Customglobal'}</span>
                         </a>
                         <div class="block-question block-question-header">
-                            <img loading="lazy" src="/img/menu-mobile-phone.svg" width="22" height="20" class="ico-question" alt="des question?">
+                            <img loading="lazy" src="/img/menu-mobile-phone.svg" width="22" height="20" class="ico-question" alt="{l s='des question?' d='Shop.Theme.Customglobal'}">
                             <div>
-                                Des questions ?
+                                {l s='Des questions ?' d='Shop.Theme.Customglobal'}
                                 <a href="tel:0422531034"><strong>04 22 53 10 34</strong></a>
                             </div>
                         </div>

@@ -13,7 +13,8 @@
 {/if}
 {assign var=image_width value=800}
 <table id="product_list_accessory_{$group.id_accessory_group|intval}" class="accessorygroup clear">
-    {foreach from=$accessories_groups[$group.id_accessory_group] item=accessory key=key} 
+    {foreach from=$accessories_groups[$group.id_accessory_group] item=accessory key=key}
+        {assign var=accessory_display_name value=$accessory.name|ckc_hsma_product_name:$accessory.id_accessory}
         {assign var=is_checked value=0}
         {assign var=is_disabled value=0}
         {if $input_type === 'checkbox' && $accessory_configuration_keys.HSMA_SELECTED_ALL_ACCESSORIES == 1}
@@ -54,9 +55,9 @@
   
                         <div class="hsma_product-cover">
                           {if !$accessory_configuration_keys.HSMA_APPLY_FANCYBOX_TO_IMAGE}
-                              <a href="{$accessory.link|escape:'htmlall':'UTF-8'}" target="_blank" class="product_img_link" title="{$accessory.name|escape:'htmlall':'UTF-8'}">
+                              <a href="{$accessory.link|escape:'htmlall':'UTF-8'}" target="_blank" class="product_img_link" title="{$accessory_display_name|escape:'htmlall':'UTF-8'}">
                           {/if}
-                                <img loading="lazy" class="accessory_image hsma-js-qv-product-cover"  src="{$accessory.image|escape:'htmlall':'UTF-8'}" title="{$accessory.name|escape:'htmlall':'UTF-8'}" alt="{$accessory.name|escape:'htmlall':'UTF-8'}" itemprop="image">
+                                <img loading="lazy" class="accessory_image hsma-js-qv-product-cover"  src="{$accessory.image|escape:'htmlall':'UTF-8'}" title="{$accessory_display_name|escape:'htmlall':'UTF-8'}" alt="{$accessory_display_name|escape:'htmlall':'UTF-8'}" itemprop="image">
                           {if !$accessory_configuration_keys.HSMA_APPLY_FANCYBOX_TO_IMAGE}
                               </a>
                           {/if}
@@ -80,7 +81,7 @@
                                 <span aria-hidden="true">×</span>
                             </button>
                             <figure>
-                                <img loading="lazy" class="hsma-js-modal-product-cover hsma-product-cover-modal hsma-product_img_link accessory_img_link" width="{$image_width|escape:'htmlall':'UTF-8'}"  src="{$accessory.image_fancybox|escape:'htmlall':'UTF-8'}" alt="{$accessory.name|escape:'htmlall':'UTF-8'}" title="{$accessory.name|escape:'htmlall':'UTF-8'}" itemprop="image">
+                                <img loading="lazy" class="hsma-js-modal-product-cover hsma-product-cover-modal hsma-product_img_link accessory_img_link" width="{$image_width|escape:'htmlall':'UTF-8'}"  src="{$accessory.image_fancybox|escape:'htmlall':'UTF-8'}" alt="{$accessory_display_name|escape:'htmlall':'UTF-8'}" title="{$accessory_display_name|escape:'htmlall':'UTF-8'}" itemprop="image">
                                 <figcaption class="image-caption">
                                     {block name='product_description_short'}
                                         <div id="product-description-short" itemprop="description">{$accessory.description_short nofilter}</div>
@@ -99,13 +100,13 @@
                 <p class="block_accessory_name">
                     {if $accessory.is_adding_link == 1}
                         <a class="ma_accessory_name" href="{$accessory.link|escape:'htmlall':'UTF-8'}" target="{if $accessory_configuration_keys.HSMA_OPEN_ACCESSORIES_IN_NEW_TAB}_blank{/if}" title="{$hs_i18n.click_to_view_details|strip_tags:'UTF-8'}">
-                            {$accessory.name|escape:'htmlall':'UTF-8'}
+                            {$accessory_display_name|escape:'htmlall':'UTF-8'}
                         </a>
                     {else}
-                        {$accessory.name|escape:'htmlall':'UTF-8'}
+                        {$accessory_display_name|escape:'htmlall':'UTF-8'}
                     {/if}
                     {if $accessory_victime_succes == true}
-                        <span class="forbidden_ordering" title="Victime de son succès - Produit épuisé"></span>
+                        <span class="forbidden_ordering" title="{l s='Victime de son succès - Produit épuisé' d='Shop.Theme.Custommodules'}"></span>
                     {else if $accessory.is_available_when_out_of_stock && $accessory_configuration_keys.HSMA_SHOW_ICON_OUT_OF_STOCK}
                         <span class="warning_out_of_stock" title="{$accessory.available_later|escape:'html':'UTF-8'}"></span>
                     {else if $accessory.is_available_for_order && $accessory_configuration_keys.HSMA_SHOW_ICON_OUT_OF_STOCK}
@@ -139,7 +140,7 @@
                     {*<a class="icon-info-sign tooltip accessories-btn" title="{l s='view detail' mod='hsmultiaccessoriespro'}">&nbsp;</a>*}
                     <div class="tooltipster-content" style="display:none;">
                         {if $accessory_configuration_keys.HSMA_SHOW_IMAGES}
-                            <img loading="lazy" class="accessory_image" src="{$link->getImageLink($accessory.link_rewrite|escape:'htmlall':'UTF-8', $accessory.id_image, {$accessory_image_type})|escape:'html'}" title="{$accessory.name|escape:'htmlall':'UTF-8'}" title="{$hs_i18n.click_to_view_details|escape:'html':'UTF-8'}" />
+                            <img loading="lazy" class="accessory_image" src="{$link->getImageLink($accessory.link_rewrite|escape:'htmlall':'UTF-8', $accessory.id_image, {$accessory_image_type})|escape:'html'}" title="{$accessory_display_name|escape:'htmlall':'UTF-8'}" title="{$hs_i18n.click_to_view_details|escape:'html':'UTF-8'}" />
                         {/if}
                         {$accessory.description_short|escape:'htmlall':'UTF-8'}{*HTML should be kept. PrestaShop accepts html in back office, therefore there is no result to escape here.*}
                     </div>

@@ -15,7 +15,7 @@ class Ckc_Stores_Stock extends Module
     {
         $this->name = 'ckc_stores_stock';
         $this->tab = 'administration';
-        $this->version = '1.0.0';
+        $this->version = '1.0.3';
         $this->author = 'CKC-Net';
         $this->need_instance = 0;
 
@@ -83,7 +83,7 @@ class Ckc_Stores_Stock extends Module
                 require_once _PS_MODULE_DIR_ . 'ckc_stores_stock/classes/StockManager.php';
                 $stockManager = new StockManager();
                 $stockData = $stockManager->getStockData($id_product, $id_product_attribute, null);
-                $victime_succes = isset($stockData['victime_succes']) ? (bool)$stockData['victime_succes'] : false;
+                $victime_succes = $stockManager->isVictimeSucces($id_product, $id_product_attribute, $stockData);
             }
         }
         

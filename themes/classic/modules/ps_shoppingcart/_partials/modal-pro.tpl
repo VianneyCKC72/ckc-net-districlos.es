@@ -28,14 +28,14 @@
 
         {* Nombre d'articles *}
         <p class="cart-products-count cart-pro-count">
-            Il y a {$cart.products_count} articles dans votre panier.
+            {l s='Il y a %products_count% articles dans votre panier.' sprintf=['%products_count%' => $cart.products_count] d='Shop.Theme.Custommodules'}
         </p>
 
         <div class="cart-pro-table">
 
             {* Prix unitaire HT *}
             <div class="cart-pro-row">
-                <div class="cart-pro-label">Prix unitaire HT</div>
+                <div class="cart-pro-label">{l s='Prix unitaire HT' d='Shop.Theme.Custommodules'}</div>
                 <div class="cart-pro-value">
                     {if isset($product.price_tax_exc)}{$product.price_tax_exc} €{/if}
                 </div>
@@ -43,7 +43,7 @@
 
             {* Quantité ajoutée *}
             <div class="cart-pro-row">
-                <div class="cart-pro-label">Quantité ajoutée</div>
+                <div class="cart-pro-label">{l s='Quantité ajoutée' d='Shop.Theme.Custommodules'}</div>
                 <div class="cart-pro-value">
                     {if isset($product.cart_quantity)}{$product.cart_quantity}{/if}
                 </div>
@@ -51,7 +51,7 @@
 
             {* Total ligne HT *}
             <div class="cart-pro-row">
-                <div class="cart-pro-label">Total HT</div>
+                <div class="cart-pro-label">{l s='Total HT' d='Shop.Theme.Custommodules'}</div>
                 <div class="cart-pro-value">
                     {if isset($product.total)}{$product.total}{/if}
                 </div>
@@ -61,7 +61,7 @@
 
             {* Sous-total HT du panier *}
             <div class="cart-pro-row">
-                <div class="cart-pro-label">Sous-total panier HT</div>
+                <div class="cart-pro-label">{l s='Sous-total panier HT' d='Shop.Theme.Custommodules'}</div>
                 <div class="cart-pro-value">
                     {if isset($cart.totals.total_excluding_tax.value)}{$cart.totals.total_excluding_tax.value}{/if}
                 </div>
@@ -79,7 +79,7 @@
 
             {* Total TTC *}
             <div class="cart-pro-row cart-pro-total-row">
-                <div class="cart-pro-label cart-pro-total-label">Total TTC</div>
+                <div class="cart-pro-label cart-pro-total-label">{l s='Total TTC' d='Shop.Theme.Custommodules'}</div>
                 <div class="cart-pro-value cart-pro-total-value">
                     {if isset($cart.totals.total_including_tax.value)}
                         {$cart.totals.total_including_tax.value}
@@ -99,11 +99,11 @@
                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="15 18 9 12 15 6"></polyline>
                 </svg>
-                Continuer mes achats
+                {l s='Continuer mes achats' d='Shop.Theme.Custommodules'}
             </a>
 
             <a href="{$cart_url}" class="btn btn-primary cart-pro-btn-primary">
-                Commander
+                {l s='Commander' d='Shop.Theme.Custommodules'}
             </a>
 
         </div>

@@ -57,7 +57,7 @@
             </span>
                 {else}
                     <span class="discount discount-amount">
-              -{$product.discount_to_display}
+              {$product.discount_to_display}
             </span>
                 {/if}
             {/if}
@@ -77,7 +77,7 @@
             {/foreach}
 
             <div class="product-line-info prix-unitaire">
-                <span class="label">Prix unitaire {if $pro.env == 1}HT{else}TTC{/if} </span>
+                <span class="label">{l s='Prix unitaire' d='Shop.Theme.Customdealt'} {if $pro.env == 1}{l s='HT' d='Shop.Theme.Customcustomer'}{else}TTC{/if} </span>
                 <span class="value">{$product.price}</span>
             </div>
             {if is_array($product.customizations) && $product.customizations|count}

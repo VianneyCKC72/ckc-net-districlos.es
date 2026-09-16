@@ -2,7 +2,7 @@
 <module>
     <name>ckcstorespresentation</name>
     <displayName><![CDATA[Ckc Magasins]]></displayName>
-    <version><![CDATA[1.0.1]]></version>
+    <version><![CDATA[1.2.0]]></version>
     <description><![CDATA[Optimisez la gestion de vos magasins avec ce module Prestashop. Cr&eacute;ez, modifiez et administrez facilement vos points de vente en leur attribuant des coordonn&eacute;es pr&eacute;cises et en les rattachant &agrave; une boutique sp&eacute;cifique]]></description>
     <author><![CDATA[ckc-net]]></author>
     <tab><![CDATA[front_office_features]]></tab>

@@ -71,3 +71,68 @@ li.ui-menu-item .ui-menu-item-wrapper{
 #selectedIdsPro{
     flex-wrap: wrap;
 }
+
+.ckcpromobarre-input{
+    max-width: 400px;
+}
+.ckcpromobarre-add{
+    height: 39px;
+    margin-left: 15px;
+}
+.ckcpromobarre-selected{
+    flex-wrap: wrap;
+    display: flex;
+}
+.ckcpromobarre-selected .remove{
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.ckcpromobarre-lang-tabs{
+    border-bottom: 1px solid #ddd;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+.ckcpromobarre-lang-tabs .nav-item{
+    list-style: none;
+}
+.ckcpromobarre-lang-tab{
+    display: inline-block;
+    padding: 8px 14px;
+    border: 1px solid transparent;
+    border-bottom: none;
+    margin-bottom: -1px;
+    border-radius: 4px 4px 0 0;
+    text-decoration: none;
+    color: #555;
+    background: #f5f5f5;
+}
+.ckcpromobarre-lang-tab:hover{
+    background: #eaeaea;
+    text-decoration: none;
+}
+.ckcpromobarre-lang-tab.active{
+    background: #fff;
+    border-color: #ddd #ddd #fff;
+    color: #25b9d7;
+    font-weight: 600;
+}
+.ckcpromobarre-tab-content{
+    border: 1px solid #ddd;
+    border-top: none;
+    padding: 15px;
+    background: #fff;
+}
+.ckcpromobarre-copy-default{
+    margin-left: 8px;
+}
+.ckcpromobarre-actions{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.ckcpromobarre-actions .btn-info{
+    margin-top: 20px;
+}

@@ -288,11 +288,11 @@
         {/foreach}
         {if $pro.env != 1}
             <li class="info-menu-mobile-only mm_menus_li distri_megamenu mm_sub_align_full"><a href="/400-bons-plans">
-                    <span class="mm_menu_content_title"><svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" viewBox="0 0 576 512"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/></svg>Bons plans</span>
+                    <span class="mm_menu_content_title"><svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" viewBox="0 0 576 512"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/></svg>{l s='Bons plans' d='Shop.Theme.Customglobal'}</span>
                 </a></li>
         {else}
             <li class="info-menu-mobile-only mm_menus_li distri_megamenu mm_sub_align_full"><a href="/content/660-les-offres-au-volume">
-                    <span class="mm_menu_content_title">{*<svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" viewBox="0 0 576 512"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/></svg>*}Les offres au volume</span>
+                    <span class="mm_menu_content_title">{*<svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" viewBox="0 0 576 512"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/></svg>*}{l s='Les offres au volume' d='Shop.Theme.Customglobal'}</span>
                 </a></li>
         {/if}
         <li class="menu-mobile-custom-container-links mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
@@ -300,14 +300,14 @@
             {if Context::getContext()->shop->id == 2}
                 <a href="/avantages-pro" class="btn btn-primary btn-avantages-mobile">
                     <div class="text-btn">
-                        <span class="medium-text">Mes avantages</span>
+                        <span class="medium-text">{l s='Mes avantages' d='Shop.Theme.Customglobal'}</span>
                     </div>
                 </a>
             {else}
                 <a href="{$link->getModuleLink('ckcconfigurateurdistriclos', 'configurator')|escape:'htmlall':'UTF-8'}" class="btn-configurateur-mobile">
-                <img width="45px" height="45px" alt="configurer votre clôture" src="themes/classic/assets/img/configurer-icon.svg">
+                <img width="45px" height="45px" alt="{l s='Configurez votre clôture' d='Shop.Theme.Customglobal'}" src="themes/classic/assets/img/configurer-icon.svg">
                 <div class="text-btn">
-                    <span class="medium-text">Configurez votre clôture</span>
+                    <span class="medium-text">{l s='Configurez votre clôture' d='Shop.Theme.Customglobal'}</span>
                 </div>
                 </a>
             {/if}
@@ -324,36 +324,35 @@
                             <svg width="22" height="20" viewBox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M3.83347 0C2.59109 0 1.49585 0.840662 1.17564 2.04102L0.0748041 6.16992C-0.233113 7.32435 0.442452 8.4839 1.49798 8.86719V15.75C1.49798 16.9838 2.51446 18 3.74849 18H8.74962C8.94857 18 9.13937 17.921 9.28005 17.7803C9.42073 17.6397 9.49977 17.4489 9.49979 17.25V12.9648C9.49979 12.4027 9.93775 11.9648 10.5 11.9648C11.0623 11.9648 11.5002 12.4027 11.5002 12.9648V17.25C11.5003 17.4489 11.5793 17.6397 11.72 17.7803C11.8607 17.921 12.0515 18 12.2504 18H17.2515C18.4856 18 19.5021 16.9838 19.5021 15.75V8.86621C20.5573 8.48279 21.2331 7.32422 20.9252 6.16992L19.8244 2.04102C19.5042 0.840662 18.4089 0 17.1666 0H3.83347ZM3.83347 1.5H17.1666C17.7366 1.5 18.228 1.87709 18.3748 2.42773L19.4757 6.55664C19.6076 7.0512 19.2619 7.5 18.7509 7.5H14.7744C14.3719 7.5 13.9961 7.30743 13.7605 6.98145L11.6946 4.12207C11.119 3.32649 9.88058 3.32578 9.30541 4.12207L7.24049 6.98145C7.00513 7.30718 6.62841 7.5 6.22659 7.5H2.24912C1.73738 7.5 1.39244 7.0512 1.52435 6.55664L2.62519 2.42773C2.77208 1.87709 3.26343 1.5 3.83347 1.5ZM10.5 5.03125L12.5444 7.86035C13.0611 8.57536 13.8916 9 14.7744 9H18.0017V15.75C18.0017 16.1733 17.6749 16.5 17.2515 16.5H13.0006V12.9648C13.0006 11.593 11.8722 10.4648 10.5 10.4648C9.12784 10.4648 7.99945 11.593 7.99945 12.9648V16.5H3.74849C3.32514 16.5 2.99832 16.1733 2.99832 15.75V9H6.22659C7.10905 9 7.93977 8.57562 8.45658 7.86035L10.5 5.03125ZM5.49888 11C4.94626 11 4.49866 11.4475 4.49866 12V13C4.49866 13.5525 4.94626 14 5.49888 14C6.05151 14 6.49911 13.5525 6.49911 13V12C6.49911 11.4475 6.05151 11 5.49888 11ZM15.5011 11C14.9485 11 14.5009 11.4475 14.5009 12V13C14.5009 13.5525 14.9485 14 15.5011 14C16.0538 14 16.5014 13.5525 16.5014 13V12C16.5014 11.4475 16.0538 11 15.5011 11Z" fill="currentColor"/>
                             </svg>
-                            <p>PARTICULIERS</p>
+                            <p>{l s='Particuliers' d='Shop.Theme.Custommodules'}</p>
                         </a>
                     {elseif $pro.env != 1}
                         <a class="menu-mobile-useful-link" href="{$pro.url_domain}">
-                            <img src="/img/menu-mobile-espace-pro.svg" alt="espace pro" width="19px" height="18px">
-                            <p>ESPACE<br>
-                                PRO</p>
+                            <img src="/img/menu-mobile-espace-pro.svg" alt="{l s='Espace Pro' d='Shop.Theme.Custommodules'}" width="19px" height="18px">
+                            <p>{l s='Espace Pro' d='Shop.Theme.Custommodules'}</p>
                         </a>
                     {/if}
-                    <a class="menu-mobile-useful-link" href="/module/opartdevis/simplequotation">
-                        <img src="/img/menu-mobile-devis.svg" alt="devis" width="20px" height="19px">
-                        <p>DEVIS</p>
+                    <a class="menu-mobile-useful-link" href="{$link->getModuleLink('opartdevis', 'simplequotation')|escape:'html':'UTF-8'}">
+                        <img src="/img/menu-mobile-devis.svg" alt="{l s='Devis' d='Shop.Theme.Custommodules'}" width="20px" height="19px">
+                        <p>{l s='Devis' d='Shop.Theme.Custommodules'}</p>
                     </a>
-                    <a class="menu-mobile-useful-link" href="/content/11-nos-magasins-de-cloture">
-                        <img src="/img/menu-mobile-magasins.svg" alt="magasins" width="19px" height="19px">
-                        <p>MAGASINS</p>
+                    <a class="menu-mobile-useful-link" href="{$link->getCMSLink(11)|escape:'html':'UTF-8'}">
+                        <img src="/img/menu-mobile-magasins.svg" alt="{l s='Magasins' d='Shop.Theme.Custommodules'}" width="19px" height="19px">
+                        <p>{l s='Magasins' d='Shop.Theme.Custommodules'}</p>
                     </a>
-                    <a class="menu-mobile-useful-link" href="/content/657-service-de-pose">
-                        <img src="themes/classic/assets/img/service-de-pose.svg" alt="magasins" width="19px" height="19px">
-                        <p style="color: #026473;">SERVICE DE POSE</p>
+                    <a class="menu-mobile-useful-link" href="{$link->getCMSLink(657)|escape:'html':'UTF-8'}">
+                        <img src="themes/classic/assets/img/service-de-pose.svg" alt="{l s='Service de pose' d='Shop.Theme.Customglobal'}" width="19px" height="19px">
+                        <p style="color: #026473;">{l s='Service de pose' d='Shop.Theme.Customglobal'}</p>
                     </a>
                     <a class="menu-mobile-useful-link" href="{$urls.pages.authentication}" onclick="window.location.href='{$urls.pages.authentication}?back={$urls.current_url|urlencode}'">
-                        <img src="/img/menu-mobile-compte.svg" alt="compte" width="16px" height="19px">
-                        <p>COMPTE</p>
+                        <img src="/img/menu-mobile-compte.svg" alt="{l s='Mon compte' d='Shop.Theme.Custommodules'}" width="16px" height="19px">
+                        <p>{l s='Mon compte' d='Shop.Theme.Custommodules'}</p>
                     </a>
                 </div>
 
                 <a href="tel:+33422531034" class="menu-mobile-phone-contact">
-                    <img loading="lazy" src="/img/menu-mobile-phone.svg" alt="contact téléphone" width="27px" height="25px">
-                    <span class="menu-mobile-phone-text">Des questions ?&nbsp;</span>
+                    <img loading="lazy" src="/img/menu-mobile-phone.svg" alt="{l s='Des questions ?' d='Shop.Theme.Customglobal'}" width="27px" height="25px">
+                    <span class="menu-mobile-phone-text">{l s='Des questions ?' d='Shop.Theme.Customglobal'}&nbsp;</span>
                     <span class="menu-mobile-phone-number">04 22 53 10 34</span>
                 </a>
                 <div class="menu-mobile-stars-container">

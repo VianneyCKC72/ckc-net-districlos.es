@@ -45,7 +45,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
     {
         $this->name = 'ckcstorespresentation';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.1';
+        $this->version = '1.2.0';
         $this->author = 'ckc-net';
         $this->need_instance = 0;
 
@@ -549,7 +549,7 @@ class Ckcstorespresentation extends Module implements WidgetInterface
         }
         $storeSelectorRendered = true;
 
-        $key = 'ckcstorespresentation|' . $hookName;
+        $key = 'ckcstorespresentation|' . $hookName . '|' . (int) $this->context->language->id;
         $template = $this->templateFile;
 
         if (!$this->isCached($template, $this->getCacheId($key))) {
@@ -578,8 +578,64 @@ class Ckcstorespresentation extends Module implements WidgetInterface
         return [
             'modulePath' => $this->context->link->getModuleLink('ckcstorespresentation', 'NosMagasins'),
             'lang' => Context::getContext()->language->iso_code,
-            'elements' => $magasins,
+            'elements' => $this->localizeStoresForDisplay($magasins ?: []),
         ];
+    }
+
+    /**
+     * Traduit les libellés d'horaires saisis en FR (jours, "et", "Fermé") pour l'affichage FO.
+     *
+     * @param array $stores
+     *
+     * @return array
+     */
+    public function localizeStoresForDisplay(array $stores)
+    {
+        if ($this->context->language->iso_code === 'fr') {
+            return $stores;
+        }
+
+        foreach ($stores as &$store) {
+            foreach (['horaires_jours', 'horaires_heures', 'horaires_samedi', 'horaires_info_suppl'] as $field) {
+                if (!empty($store[$field])) {
+                    $store[$field] = $this->translateStoreScheduleText((string) $store[$field]);
+                }
+            }
+        }
+        unset($store);
+
+        return $stores;
+    }
+
+    /**
+     * @param string $text
+     *
+     * @return string
+     */
+    protected function translateStoreScheduleText($text)
+    {
+        $domain = 'Shop.Theme.Customstores';
+
+        // Correspondance exacte (ex. "Lundi - Vendredi")
+        $exact = $this->trans($text, [], $domain);
+        if ($exact !== $text) {
+            return $exact;
+        }
+
+        $map = [
+            'Lundi' => $this->trans('Lundi', [], $domain),
+            'Mardi' => $this->trans('Mardi', [], $domain),
+            'Mercredi' => $this->trans('Mercredi', [], $domain),
+            'Jeudi' => $this->trans('Jeudi', [], $domain),
+            'Vendredi' => $this->trans('Vendredi', [], $domain),
+            'Samedi' => $this->trans('Samedi', [], $domain),
+            'Dimanche' => $this->trans('Dimanche', [], $domain),
+            'Fermé' => $this->trans('Fermé', [], $domain),
+        ];
+
+        $translated = str_replace(array_keys($map), array_values($map), $text);
+
+        return preg_replace('/\bet\b/u', $this->trans('et', [], $domain), $translated);
     }
 
     public function getCoordinatesFromAddress($address)

@@ -37,7 +37,7 @@
 <div id="search_widget" class="search-widgets" data-search-controller-url="{$search_controller_url}">
     <form method="get" action="{$search_controller_url}">
         <input type="hidden" name="controller" value="search">
-        <input type="text" name="s" value="{$search_string}" placeholder="Je recherche..."
+        <input type="text" name="s" value="{$search_string}" placeholder="{l s='Je recherche...' d='Shop.Theme.Customespacepro'}"
                aria-label="{l s='Search' d='Shop.Theme.Catalog'}">
         <!-- Bouton de fermeture pour mobile uniquement -->
         <i class="material-icons clear d-md-none" aria-hidden="true" id="close_search">clear</i>

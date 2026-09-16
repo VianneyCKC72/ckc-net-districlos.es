@@ -25,7 +25,7 @@
             {if (empty($jsInitOnly))}
             {if isset($as_location_name) && $as_location_name}
             $(document).ready(function() {ldelim}
-                $('#PM_ASBlock_{$as_search.id_search|intval} .PM_ASResetSearch').html("{l s='Réinitialiser tous les filtres' mod='pm_advancedsearch4' js=1}{*{l s='Back to' mod='pm_advancedsearch4' js=1} {$as_location_name|escape:'javascript'}*}");
+                $('#PM_ASBlock_{$as_search.id_search|intval} .PM_ASResetSearch').html("{l s='Réinitialiser tous les filtres' d='Shop.Theme.Custommodules' js=1}{*{l s='Back to' mod='pm_advancedsearch4' js=1} {$as_location_name|escape:'javascript'}*}");
                 {rdelim});
             {/if}
             {if is_array($as_search.selected_criterion) && sizeof($as_search.selected_criterion) && $as_search.selected_criterion != $as_search.selected_criterion_from_emplacement && isset($ajaxMode) && $ajaxMode}

@@ -18,11 +18,11 @@
  *}
 
 <section>
-  <p><span><b>Vous recevrez les coordonnées bancaires du magasin par email.<br/>
-    </b></span><i>Pensez à vérifiez votre dossier courrier indésirable.</i><br/></p>
-  <p><span><b>Indiquez bien la référence de votre commande dans le libellé</b> du virement bancaire.</span>
-    <br/><i>Les délais de traitement seront plus rapides.</i><br/></p>
-  <p><br/>Pour tout complément d'information :
+  <p><span><b>{l s='Vous recevrez les coordonnées bancaires du magasin par email.' d='Shop.Theme.Custommodules'}<br/>
+    </b></span><i>{l s='Pensez à vérifiez votre dossier courrier indésirable.' d='Shop.Theme.Custommodules'}</i><br/></p>
+  <p><span>{capture assign="ckc_wire_ref"}{l s='[1]Indiquez bien la référence de votre commande dans le libellé[/1] du virement bancaire.' sprintf=['[1]' => '<b>', '[/1]' => '</b>'] d='Shop.Theme.Custommodules'}{/capture}{$ckc_wire_ref nofilter}</span>
+    <br/><i>{l s='Les délais de traitement seront plus rapides.' d='Shop.Theme.Custommodules'}</i><br/></p>
+  <p><br/>{l s='Pour tout complément d\'information :' d='Shop.Theme.Custommodules'}
     <br/><br/><i class="fa fa-phone"></i> <span class="contact-info">04 22 53 10 34</span>
     <br/><i class="fa fa-envelope"></i> <span class="contact-info">commercial@districlos.com</span><br/>
   </p>

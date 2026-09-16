@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="fr-FR" target-language="en-US" datatype="plaintext" original="ShopThemeCustomcatalog">
+    <body>
+      <trans-unit id="1"><source>Produit garanti moins cher du web</source><target>Guaranteed cheapest product on the web</target></trans-unit>
+      <trans-unit id="2"><source>Vous trouvez moins cher ailleurs ? Nous vous remboursons la différence.</source><target>Found it cheaper elsewhere? We'll refund the difference.</target></trans-unit>
+      <trans-unit id="3"><source>En stock</source><target>In stock</target></trans-unit>
+      <trans-unit id="4"><source>REF</source><target>REF</target></trans-unit>
+      <trans-unit id="5"><source>Couleurs disponibles</source><target>Available colours</target></trans-unit>
+      <trans-unit id="6"><source>Produits associés</source><target>Related products</target></trans-unit>
+      <trans-unit id="7"><source>En savoir plus</source><target>Read more</target></trans-unit>
+      <trans-unit id="8"><source>Fabriqué en France</source><target>Made in France</target></trans-unit>
+      <trans-unit id="9"><source>HT</source><target>excl. tax</target></trans-unit>
+      <trans-unit id="10"><source>dès</source><target>from</target></trans-unit>
+      <trans-unit id="11"><source>unités</source><target>units</target></trans-unit>
+      <trans-unit id="12"><source>Voir le produit</source><target>View product</target></trans-unit>
+      <trans-unit id="13"><source>Quantité</source><target>Quantity</target></trans-unit>
+      <trans-unit id="14"><source>Prix par unité</source><target>Price per unit</target></trans-unit>
+      <trans-unit id="15"><source>pièce</source><target>piece</target></trans-unit>
+      <trans-unit id="16"><source>Économisez</source><target>You save</target></trans-unit>
+      <trans-unit id="17"><source>Caractéristiques techniques</source><target>Technical specifications</target></trans-unit>
+      <trans-unit id="18"><source>Lire d'avantage</source><target>Read more</target></trans-unit>
+      <trans-unit id="19"><source>Promotion</source><target>Promotion</target></trans-unit>
+      <trans-unit id="20"><source>Bénéficiez de</source><target>Get</target></trans-unit>
+      <trans-unit id="21"><source>directement [1]dans votre panier[/1]</source><target>directly [1]in your cart[/1]</target></trans-unit>
+      <trans-unit id="22"><source>à l'unité</source><target>per unit</target></trans-unit>
+      <trans-unit id="23"><source>Prix remisé</source><target>Discounted price</target></trans-unit>
+      <trans-unit id="24"><source>PROMOS</source><target>DEALS</target></trans-unit>
+      <trans-unit id="25"><source>Payez en plusieurs fois</source><target>Pay in installments</target></trans-unit>
+      <trans-unit id="26"><source>en carte bancaire sans frais</source><target>by credit card with no fees</target></trans-unit>
+      <trans-unit id="27"><source>Simuler</source><target>Simulate</target></trans-unit>
+      <trans-unit id="28"><source>Un crédit vous engage et doit être remboursé. vérifiez vos capacités de remboursement avant de vous engager.</source><target>A loan commits you and must be repaid. Check your repayment capacity before committing.</target></trans-unit>
+      <trans-unit id="29"><source>Choisissez votre produit</source><target>Choose your product</target></trans-unit>
+      <trans-unit id="30"><source>Aucune FAQ disponible pour ce produit.</source><target>No FAQ available for this product.</target></trans-unit>
+      <trans-unit id="31"><source>Guide de mesure</source><target>Measuring guide</target></trans-unit>
+      <trans-unit id="32"><source>Outils</source><target>Tools</target></trans-unit>
+      <trans-unit id="33"><source>Fermer</source><target>Close</target></trans-unit>
+    </body>
+  </file>
+</xliff>

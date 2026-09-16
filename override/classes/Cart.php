@@ -431,4 +431,181 @@ class Cart extends CartCore
             --$depth;
         }
     }
+
+    /**
+     * SP panier (pack ML prix fixe / configurateur % ML) : badges et prix barrés.
+     * getProductProperties pose la promo catalogue ; on la remplace par la SP panier.
+     */
+    protected function applyProductCalculations($row, $shopContext, $productQuantity = null, bool $keepOrderPrices = false)
+    {
+        $row = parent::applyProductCalculations($row, $shopContext, $productQuantity, $keepOrderPrices);
+
+        $productQuantity = null === $productQuantity ? (int) $row['cart_quantity'] : (int) $productQuantity;
+        $displayTaxExcluded = Product::getTaxCalculationMethod((int) Context::getContext()->customer->id) == PS_TAX_EXC;
+
+        if ((int) $this->id <= 0 || $keepOrderPrices) {
+            return $this->enrichCartLineReductionDisplay($row, $displayTaxExcluded);
+        }
+
+        $cartSp = Db::getInstance()->getRow(
+            'SELECT `price`, `reduction`, `reduction_type`
+             FROM `' . _DB_PREFIX_ . 'specific_price`
+             WHERE `id_cart` = ' . (int) $this->id . '
+               AND `id_product` = ' . (int) $row['id_product'] . '
+               AND `id_product_attribute` = ' . (int) $row['id_product_attribute']
+        );
+        if (!$cartSp) {
+            return $this->enrichCartLineReductionDisplay($row, $displayTaxExcluded);
+        }
+
+        // Configurateur : SP panier en % — le prix est déjà bon, seul le badge catalogue est faux
+        if ((string) $cartSp['reduction_type'] === 'percentage' && (float) $cartSp['reduction'] > 0) {
+            $row['specific_prices'] = [
+                'id_cart' => (int) $this->id,
+                'price' => -1,
+                'reduction_type' => 'percentage',
+                'reduction' => (string) $cartSp['reduction'],
+            ];
+
+            return $this->enrichCartLineReductionDisplay($row, $displayTaxExcluded);
+        }
+
+        // Pack ML : SP panier à prix fixe
+        if ((float) $cartSp['price'] < 0 || (float) $cartSp['reduction'] != 0) {
+            return $this->enrichCartLineReductionDisplay($row, $displayTaxExcluded);
+        }
+
+        $addressId = $this->getCartLineTaxAddressId($row);
+        // Pack ML exclusive : prix barré / badge vs catalogue brut (sans promo produit)
+        $useCatalogReduc = !$this->isMlPackCartFixedPriceLine((int) $row['id_product'], (int) $row['id_product_attribute']);
+        $catalogPriceHt = $this->getCatalogUnitPriceWithoutCartSp($row, false, $productQuantity, $shopContext, $addressId, $useCatalogReduc);
+        $catalogPriceTtc = $this->getCatalogUnitPriceWithoutCartSp($row, true, $productQuantity, $shopContext, $addressId, $useCatalogReduc);
+        $reductionWithoutTax = $catalogPriceHt - (float) $row['price_with_reduction_without_tax'];
+        $reductionWithTax = $catalogPriceTtc - (float) $row['price_with_reduction'];
+
+        if ($reductionWithoutTax <= 0.000001 && $reductionWithTax <= 0.000001) {
+            return $row;
+        }
+
+        $row['price_without_reduction_without_tax'] = $catalogPriceHt;
+        $row['price_without_reduction'] = $catalogPriceTtc;
+        $row['reduction_without_tax'] = $reductionWithoutTax;
+        $row['reduction'] = $displayTaxExcluded ? $reductionWithoutTax : $reductionWithTax;
+
+        $referencePrice = $displayTaxExcluded ? $catalogPriceHt : $catalogPriceTtc;
+        $percentRatio = $referencePrice > 0 ? ($row['reduction'] / $referencePrice) : 0;
+        $row['specific_prices'] = [
+            'id_cart' => (int) $this->id,
+            'price' => (float) $cartSp['price'],
+            'reduction_type' => 'percentage',
+            'reduction' => (string) (round($percentRatio * 100) / 100),
+        ];
+
+        return $row;
+    }
+
+    private function getCartLineTaxAddressId(array $row): ?int
+    {
+        if (Configuration::get('PS_TAX_ADDRESS_TYPE') == 'id_address_invoice') {
+            $addressId = (int) $this->id_address_invoice;
+        } else {
+            $addressId = (int) $row['id_address_delivery'];
+        }
+
+        return Address::addressExists($addressId, true) ? $addressId : null;
+    }
+
+    /**
+     * Ligne issue d'un pack explosé avec tranches ML configurées.
+     * Cache une requête par panier pour rester léger.
+     */
+    private function isMlPackCartFixedPriceLine(int $idProduct, int $idProductAttribute): bool
+    {
+        static $mlLinesByCart = [];
+
+        $idCart = (int) $this->id;
+        if ($idCart <= 0) {
+            return false;
+        }
+
+        if (!isset($mlLinesByCart[$idCart])) {
+            $mlLinesByCart[$idCart] = [];
+            $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                'SELECT app.`id_product`, acp.`id_product_attribute`
+                 FROM `' . _DB_PREFIX_ . 'pm_advancedpack_cart_products` acp
+                 INNER JOIN `' . _DB_PREFIX_ . 'pm_advancedpack` ap
+                   ON ap.`id_pack` = acp.`id_pack`
+                 INNER JOIN `' . _DB_PREFIX_ . 'pm_advancedpack_products` app
+                   ON app.`id_product_pack` = acp.`id_product_pack`
+                 WHERE acp.`id_cart` = ' . $idCart . '
+                   AND ap.`ml_discount_tiers` IS NOT NULL
+                   AND ap.`ml_discount_tiers` != \'\'
+                   AND ap.`ml_discount_tiers` != \'[]\''
+            );
+            if (is_array($rows)) {
+                foreach ($rows as $r) {
+                    $mlLinesByCart[$idCart][(int) $r['id_product'] . '_' . (int) $r['id_product_attribute']] = true;
+                }
+            }
+        }
+
+        return isset($mlLinesByCart[$idCart][$idProduct . '_' . $idProductAttribute]);
+    }
+
+    private function getCatalogUnitPriceWithoutCartSp(
+        array $row,
+        bool $withTax,
+        int $productQuantity,
+        $shopContext,
+        ?int $addressId,
+        bool $useReduc = true
+    ): float {
+        $specificPriceOutput = null;
+
+        return (float) Product::getPriceStatic(
+            (int) $row['id_product'],
+            $withTax,
+            (int) $row['id_product_attribute'],
+            6,
+            null,
+            false,
+            $useReduc,
+            $productQuantity,
+            false,
+            (int) $this->id_customer ?: null,
+            0,
+            $addressId,
+            $specificPriceOutput,
+            true,
+            $useReduc,
+            $shopContext,
+            true,
+            (int) $row['id_customization']
+        );
+    }
+
+    private function enrichCartLineReductionDisplay(array $row, bool $displayTaxExcluded): array
+    {
+        $reductionWithoutTax = (float) $row['price_without_reduction_without_tax'] - (float) $row['price_with_reduction_without_tax'];
+        $reductionWithTax = (float) $row['price_without_reduction'] - (float) $row['price_with_reduction'];
+
+        if (empty($row['reduction_applies']) && $reductionWithoutTax <= 0.000001 && $reductionWithTax <= 0.000001) {
+            return $row;
+        }
+
+        $row['reduction_without_tax'] = $reductionWithoutTax;
+        $row['reduction'] = $displayTaxExcluded ? $reductionWithoutTax : $reductionWithTax;
+
+        if (empty($row['specific_prices']) || !is_array($row['specific_prices'])) {
+            $withoutTaxIncl = (float) $row['price_without_reduction'];
+            $row['specific_prices'] = [
+                'reduction_type' => (!empty($row['reduction_type']) && $row['reduction_type'] !== 0) ? $row['reduction_type'] : 'percentage',
+                'reduction' => (string) ($withoutTaxIncl > 0 ? ($reductionWithTax / $withoutTaxIncl) : 0),
+            ];
+        } elseif (isset($row['specific_prices']['reduction']) && !is_string($row['specific_prices']['reduction'])) {
+            $row['specific_prices']['reduction'] = (string) $row['specific_prices']['reduction'];
+        }
+
+        return $row;
+    }
 }

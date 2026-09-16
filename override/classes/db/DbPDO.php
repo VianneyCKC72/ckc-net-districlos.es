@@ -4,14 +4,14 @@ class DbPDO extends DbPDOCore
     
     /*
     * module: scalizy
-    * date: 2026-04-16 13:06:36
-    * version: 3.16.2
+    * date: 2026-05-12 09:39:30
+    * version: 3.17.1
     */
     private static $databaseStreamer = false;
     /*
     * module: scalizy
-    * date: 2026-04-16 13:06:36
-    * version: 3.16.2
+    * date: 2026-05-12 09:39:30
+    * version: 3.17.1
     */
     protected function _query($sql)
     {
@@ -26,20 +26,10 @@ class DbPDO extends DbPDOCore
         $databaseStreamer->addQuery($sql, $timeToExecute);
         return $queryResult;
     }
-    /**
-     * Override executeS to sample row counts.
-     * This is more reliable than PDOStatement::rowCount().
-     *
-     * @param string|\DbQuery $sql
-     * @param bool $array
-     * @param bool $use_cache
-     *
-     * @return array<int, array<string, mixed>>|false
-     */
     /*
     * module: scalizy
-    * date: 2026-04-16 13:06:36
-    * version: 3.16.2
+    * date: 2026-05-12 09:39:30
+    * version: 3.17.1
     */
     public function executeS($sql, $array = true, $use_cache = true)
     {
@@ -51,13 +41,10 @@ class DbPDO extends DbPDOCore
         }
         return $result;
     }
-    /**
-     * @return \Softizy\Module\Scalizy\Service\Profiler\Component\Database|null
-     */
     /*
     * module: scalizy
-    * date: 2026-04-16 13:06:36
-    * version: 3.16.2
+    * date: 2026-05-12 09:39:30
+    * version: 3.17.1
     */
     private function getDatabaseStreamer(): ?Softizy\Module\Scalizy\Service\Profiler\Component\Database
     {
@@ -83,5 +70,23 @@ class DbPDO extends DbPDOCore
             }
         }
         return self::$databaseStreamer === false ? null : self::$databaseStreamer;
+    }
+    /*
+    * module: softizyquerycache
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
+    */
+    public $lastInsertId;
+    /*
+    * module: softizyquerycache
+    * date: 2026-09-02 18:22:21
+    * version: 2.32.2
+    */
+    public function Insert_ID()
+    {
+        if ($this->lastInsertId === null) {
+            $this->lastInsertId = $this->link->lastInsertId();
+        }
+        return $this->lastInsertId;
     }
 }

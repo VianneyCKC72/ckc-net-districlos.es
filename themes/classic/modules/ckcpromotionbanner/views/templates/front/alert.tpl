@@ -74,7 +74,7 @@
                     {/if}
                     <strong><span id="ckctimer" style="color: {$CKC_BARREPROMO_TIMER_COLOR} !important;"></span></strong>
                 </div>
-                <div class="block-question"><img src="/img/cms/ico-question.png" width="22" height="20" class="ico-question" alt="des question?" />Des questions ?<a href="tel:0422531034"><strong>04 22 53 10 34</strong></a></div>
+                <div class="block-question"><img src="/img/cms/ico-question.png" width="22" height="20" class="ico-question" alt="{l s='des question?' d='Shop.Theme.Customglobal'}" />{l s='Des questions ?' d='Shop.Theme.Customglobal'}<a href="tel:0422531034"><strong>04 22 53 10 34</strong></a></div>
                 <div class="clients">
                     {hook h='displaySkeepersRating' mod='dtc_skeepers'}
                 </div>
@@ -88,7 +88,7 @@
             <div class="container">
                 <div class="ckcpromobarre-text-change-container">
                 </div>
-                <div class="block-question"><img src="/img/cms/ico-question.png" width="22" height="20" class="ico-question" alt="des question?" />Des questions ?<a href="tel:0422531034"><strong>04 22 53 10 34</strong></a></div>
+                <div class="block-question"><img src="/img/cms/ico-question.png" width="22" height="20" class="ico-question" alt="{l s='des question?' d='Shop.Theme.Customglobal'}" />{l s='Des questions ?' d='Shop.Theme.Customglobal'}<a href="tel:0422531034"><strong>04 22 53 10 34</strong></a></div>
                 <div class="clients">
                     {hook h='displaySkeepersRating' mod='dtc_skeepers'}
                 </div>

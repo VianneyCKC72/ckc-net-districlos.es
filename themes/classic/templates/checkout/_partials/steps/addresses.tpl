@@ -76,7 +76,7 @@
               <path d="M5 12h14" />
               <path d="M12 5v14" />
             </svg>
-            Ajouter une nouvelle adresse
+            {l s='Ajouter une nouvelle adresse' d='Shop.Theme.Customcheckout'}
           </a>
         </p>
 
@@ -84,7 +84,7 @@
           <p class="different-invoice-address">
             <a data-link-action="different-invoice-address" href="{$use_different_address_url}">
               <span class="custom-radio" aria-hidden="true"><span></span></span>
-              Mon adresse de facturation est différente de l'adresse de livraison
+              {l s="Mon adresse de facturation est différente de l'adresse de livraison" d='Shop.Theme.Customcheckout'}
             </a>
           </p>
         {/if}
@@ -130,7 +130,7 @@
                 <path d="M5 12h14" />
                 <path d="M12 5v14" />
               </svg>
-              Ajouter une nouvelle adresse
+              {l s='Ajouter une nouvelle adresse' d='Shop.Theme.Customcheckout'}
             </a>
           </p>
         {/if}
@@ -140,10 +140,10 @@
       {if !$form_has_continue_button}
         <div class="addresses-actions clearfix">
           <button type="button" class="btn-link js-checkout-prev-step">
-            Étape précédente
+            {l s='Étape précédente' d='Shop.Theme.Customcheckout'}
           </button>
           <button type="submit" class="btn btn-primary continue" name="confirm-addresses" value="1">
-            Choisir ma livraison
+            {l s='Choisir ma livraison' d='Shop.Theme.Customcheckout'}
           </button>
           <input type="hidden" id="not-valid-addresses" class="js-not-valid-addresses" value="{$not_valid_addresses}">
         </div>
