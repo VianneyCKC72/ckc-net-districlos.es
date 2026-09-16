@@ -142,4 +142,22 @@ class FrontController extends FrontControllerCore
     * version: 1.4.2
     */
     protected $redirectionExtraExcludedKeys = ['rewrite', 'category'];
+
+    /**
+     * CKC Vianney — CE Full Width points to its module layout (hooks FR only).
+     * Prefer the theme copy so accueil pro can switch 36/37 vs 62/63.
+     */
+    public function getLayout()
+    {
+        $layout = parent::getLayout();
+        if (!is_string($layout) || strpos($layout, 'layout-header-footer.tpl') === false) {
+            return $layout;
+        }
+        if (strpos($layout, _PS_THEME_DIR_) !== false) {
+            return $layout;
+        }
+        $themeFile = _PS_THEME_DIR_ . 'modules/creativeelements/views/templates/front/theme/layouts/layout-header-footer.tpl';
+
+        return is_file($themeFile) ? $themeFile : $layout;
+    }
 }
