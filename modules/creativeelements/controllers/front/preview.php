@@ -24,18 +24,21 @@ class CreativeElementsPreviewModuleFrontController extends ModuleFrontController
     public function init()
     {
         if (Tools::getIsset('redirect') && CreativeElements::hasAdminToken('AdminCEEditor')) {
+            $lifetime = max(1, (int) Configuration::get('PS_COOKIE_LIFETIME_BO')) * 3600 + time();
+            $admin = new Cookie('psAdmin', '', $lifetime);
             if ($cookie = CE\get_post_meta(0, 'cookie', true)) {
                 CE\delete_post_meta(0, 'cookie');
-                $lifetime = max(1, (int) Configuration::get('PS_COOKIE_LIFETIME_BO')) * 3600 + time();
-                $admin = new Cookie('psAdmin', '', $lifetime);
-
                 foreach ($cookie as $key => &$value) {
                     $admin->$key = $value;
                 }
                 unset($admin->remote_addr);
-
-                $admin->write();
             }
+            $matched = $this->context->link->getMatchingUrlShopId();
+            if ($matched) {
+                $admin->shopContext = 's-' . (int) $matched;
+            }
+            $admin->write();
+
             $redirect = urldecode(Tools::getValue('redirect'));
             $host = (string) parse_url($redirect, PHP_URL_HOST);
             // CKC Vianney — Location host without TLD is the admin folder (NXDOMAIN)
@@ -48,6 +51,11 @@ class CreativeElementsPreviewModuleFrontController extends ModuleFrontController
                 $redirect = Tools::getShopProtocol() . Tools::getHttpHost(false, false)
                     . '/' . $adminFolder . ($path !== '' ? $path : '/')
                     . ($query !== '' ? '?' . $query : '');
+            }
+            // Stay on current host + switch BO shop context (avoids preview ↔ editor loop)
+            if ($matched && strpos($redirect, 'setShopContext=') === false) {
+                $redirect .= (strpos($redirect, '?') !== false ? '&' : '?')
+                    . 'setShopContext=s-' . (int) $matched;
             }
             Tools::redirectAdmin($redirect);
         }
