@@ -11,7 +11,7 @@ class ckc_label extends Module
     {
         $this->name = 'ckc_label';
         $this->tab = 'administration';
-        $this->version = '1.1.0';
+        $this->version = '1.1.1';
         $this->author = 'CKC-Net';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -99,6 +99,7 @@ class ckc_label extends Module
 
     public function getContent()
     {
+        $this->ensureLangTable();
 
         $output = '';
 
@@ -684,6 +685,7 @@ class ckc_label extends Module
 
     public function hookDisplayHeader()
     {
+        $this->ensureLangTable();
         $this->context->controller->registerStylesheet(
             'ckc-label-front',
             'modules/' . $this->name . '/views/css/ckc_label.css',
@@ -692,10 +694,66 @@ class ckc_label extends Module
     }
 
     /**
+     * Crée ps_ckc_labels_lang si l’upgrade 1.1.0 n’a pas encore été lancé.
+     */
+    public function ensureLangTable()
+    {
+        static $done = false;
+        if ($done) {
+            return true;
+        }
+
+        try {
+            $table = _DB_PREFIX_ . 'ckc_labels_lang';
+            $exists = (int) Db::getInstance()->getValue(
+                'SELECT COUNT(*) FROM information_schema.TABLES
+                 WHERE TABLE_SCHEMA = DATABASE()
+                   AND TABLE_NAME = \'' . pSQL($table) . '\''
+            );
+            if ($exists) {
+                $done = true;
+                return true;
+            }
+
+            $ok = Db::getInstance()->execute(
+                'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckc_labels_lang` (
+                    `id_label` INT(11) NOT NULL,
+                    `id_lang` INT(11) NOT NULL,
+                    `text` TEXT NOT NULL,
+                    PRIMARY KEY (`id_label`, `id_lang`)
+                ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;'
+            );
+            if (!$ok) {
+                return false;
+            }
+
+            $idLangDefault = (int) Configuration::get('PS_LANG_DEFAULT');
+            if ($idLangDefault <= 0) {
+                $idLangDefault = 1;
+            }
+
+            Db::getInstance()->execute(
+                'INSERT IGNORE INTO `' . _DB_PREFIX_ . 'ckc_labels_lang` (`id_label`, `id_lang`, `text`)
+                 SELECT `id_label`, ' . $idLangDefault . ', `text`
+                 FROM `' . _DB_PREFIX_ . 'ckc_labels`
+                 WHERE `text` IS NOT NULL AND TRIM(`text`) != \'\''
+            );
+        } catch (Exception $e) {
+            return false;
+        }
+
+        $done = true;
+
+        return true;
+    }
+
+    /**
      * Catalogue labels actifs (1 SQL / requête HTTP), puis filtre produit/catégorie.
      */
     private function getActiveLabelsCatalog()
     {
+        $this->ensureLangTable();
+
         static $catalogByLang = [];
         $idLang = (int) $this->context->language->id;
         if (isset($catalogByLang[$idLang])) {
@@ -713,8 +771,10 @@ class ckc_label extends Module
         $currentDate = date('Y-m-d H:i:s');
         $idLang = (int) $this->context->language->id;
         $idLangDefault = (int) Configuration::get('PS_LANG_DEFAULT');
-        $rows = Db::getInstance()->executeS(
-            'SELECT l.*,
+        $whereActive = ' WHERE l.`active` = 1
+            AND (l.`start_date` IS NULL OR l.`start_date` = "0000-00-00 00:00:00" OR l.`start_date` <= "' . pSQL($currentDate) . '")
+            AND (l.`end_date` IS NULL OR l.`end_date` = "0000-00-00 00:00:00" OR l.`end_date` >= "' . pSQL($currentDate) . '")';
+        $sqlWithLang = 'SELECT l.*,
                 COALESCE(NULLIF(TRIM(ll.`text`), ""), llfb.`text`, l.`text`) AS `text`,
                 p.`id_product` AS `map_id_product`, c.`id_category` AS `map_id_category`
             FROM `' . _DB_PREFIX_ . 'ckc_labels` l
@@ -723,11 +783,21 @@ class ckc_label extends Module
             LEFT JOIN `' . _DB_PREFIX_ . 'ckc_labels_lang` llfb
                 ON llfb.`id_label` = l.`id_label` AND llfb.`id_lang` = ' . $idLangDefault . '
             LEFT JOIN `' . _DB_PREFIX_ . 'ckc_labels_product` p ON p.`id_label` = l.`id_label`
-            LEFT JOIN `' . _DB_PREFIX_ . 'ckc_labels_category` c ON c.`id_label` = l.`id_label`
-            WHERE l.`active` = 1
-            AND (l.`start_date` IS NULL OR l.`start_date` = "0000-00-00 00:00:00" OR l.`start_date` <= "' . pSQL($currentDate) . '")
-            AND (l.`end_date` IS NULL OR l.`end_date` = "0000-00-00 00:00:00" OR l.`end_date` >= "' . pSQL($currentDate) . '")'
-        );
+            LEFT JOIN `' . _DB_PREFIX_ . 'ckc_labels_category` c ON c.`id_label` = l.`id_label`'
+            . $whereActive;
+        $sqlLegacy = 'SELECT l.*,
+                l.`text`,
+                p.`id_product` AS `map_id_product`, c.`id_category` AS `map_id_category`
+            FROM `' . _DB_PREFIX_ . 'ckc_labels` l
+            LEFT JOIN `' . _DB_PREFIX_ . 'ckc_labels_product` p ON p.`id_label` = l.`id_label`
+            LEFT JOIN `' . _DB_PREFIX_ . 'ckc_labels_category` c ON c.`id_label` = l.`id_label`'
+            . $whereActive;
+
+        try {
+            $rows = Db::getInstance()->executeS($sqlWithLang);
+        } catch (Exception $e) {
+            $rows = Db::getInstance()->executeS($sqlLegacy);
+        }
 
         $catalog = [
             'all' => [],

@@ -2,7 +2,7 @@
 <module>
     <name>ckc_label</name>
     <displayName><![CDATA[Module de gestion d&#039;&eacute;tiquettes]]></displayName>
-    <version><![CDATA[1.1.0]]></version>
+    <version><![CDATA[1.1.1]]></version>
     <description><![CDATA[Module permettant de g&eacute;rer des &eacute;tiquettes pour les produits.]]></description>
     <author><![CDATA[CKC-Net]]></author>
     <tab><![CDATA[administration]]></tab>
