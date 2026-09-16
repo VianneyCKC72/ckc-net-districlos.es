@@ -330,7 +330,7 @@ class ckc_espacepro extends Module
     /** Enfile les JS/CSS côté front */
     public function hookActionFrontControllerSetMedia()
     {
-
+        $this->registerCeThemeLayoutFilter();
 
         $this->context->controller->registerJavascript(
             'ckc-espacepro-auth',
@@ -374,6 +374,31 @@ class ckc_espacepro extends Module
             'modules/' . $this->name . '/views/css/front/promotion.css',
             ['position' => 'head', 'priority' => 1000]
         );
+    }
+
+    /**
+     * CKC Vianney — CE Full Width charge son layout module (hooks 36/37 FR only).
+     * On pointe vers le même fichier dans le thème, sans modifier Creative Elements.
+     */
+    private function registerCeThemeLayoutFilter(): void
+    {
+        if (!Module::isInstalled('creativeelements') || !Module::isEnabled('creativeelements')) {
+            return;
+        }
+        if (!function_exists('CE\\add_filter')) {
+            return;
+        }
+        \CE\add_filter('template_include', [$this, 'filterCeTemplateInclude'], 20);
+    }
+
+    public function filterCeTemplateInclude($template)
+    {
+        if (!is_string($template) || strpos($template, 'layout-header-footer.tpl') === false) {
+            return $template;
+        }
+        $themeFile = _PS_THEME_DIR_ . 'modules/creativeelements/views/templates/front/theme/layouts/layout-header-footer.tpl';
+
+        return is_file($themeFile) ? $themeFile : $template;
     }
 
     /**
