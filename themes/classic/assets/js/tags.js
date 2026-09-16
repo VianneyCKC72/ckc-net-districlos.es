@@ -81,7 +81,8 @@ let dataLayerStructure = {
     'userId': loggedCustomer.id || '',
     'userLogged': loggedCustomer.is_logged,
     'newClient': getNewClientStatus(),
-    'conseiller': (typeof window.isAdminConnected !== 'undefined' && window.isAdminConnected)
+    'conseiller': (typeof window.isAdminConnected !== 'undefined' && window.isAdminConnected),
+    'id_lang': prestashop.language.id
 };
 
 // Push event on GTM datalayer
