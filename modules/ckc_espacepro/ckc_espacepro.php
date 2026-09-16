@@ -382,13 +382,19 @@ class ckc_espacepro extends Module
      */
     private function registerCeThemeLayoutFilter(): void
     {
+        static $done = false;
+        if ($done) {
+            return;
+        }
         if (!Module::isInstalled('creativeelements') || !Module::isEnabled('creativeelements')) {
             return;
         }
+        Module::getInstanceByName('creativeelements');
         if (!function_exists('CE\\add_filter')) {
             return;
         }
         \CE\add_filter('template_include', [$this, 'filterCeTemplateInclude'], 20);
+        $done = true;
     }
 
     public function filterCeTemplateInclude($template)
@@ -452,6 +458,7 @@ class ckc_espacepro extends Module
     /** Variables Smarty globales */
     public function hookActionFrontControllerSetVariables($params)
     {
+        $this->registerCeThemeLayoutFilter();
         $loginEmail = (string)Tools::getValue('login_email', '');
 
         // ne plus alimenter login_error
@@ -906,9 +913,12 @@ class ckc_espacepro extends Module
             }
         }
 
+        $iso = strtolower((string) ($this->context->language->iso_code ?? ''));
         $pro = [
             'env' => (int)$isProEnv,
             'suffix' => $frontSuffix,
+            'lang_iso' => $iso,
+            'is_en' => (int) (strpos($iso, 'en') === 0),
             'url_domain' => (string)Configuration::get(
                 'CKC_PRO_URL_BOUTIQUE',
                 null,
