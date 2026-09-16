@@ -131,14 +131,48 @@ class Link extends LinkCore
 
     /**
      * CKC Vianney — Shop(0) has empty domain → Location https://adminXXX/ (NXDOMAIN).
-     * Creative Elements templates pass id_shop=0 to getAdminBaseLink().
+     * Creative Elements templates pass id_shop=0. Stay on the current host
+     * (pro vs www), never fall back to PS_SHOP_DEFAULT.
      */
     public function getAdminBaseLink($idShop = null, $ssl = null, $relativeProtocol = false)
     {
         if ($idShop !== null && (int) $idShop <= 0) {
-            $idShop = null;
+            $matched = $this->getMatchingUrlShopId();
+            if ($matched) {
+                $idShop = (int) $matched;
+            } else {
+                $ctxShop = Context::getContext()->shop;
+                $idShop = ($ctxShop && (int) $ctxShop->id > 0) ? (int) $ctxShop->id : null;
+            }
         }
 
         return parent::getAdminBaseLink($idShop, $ssl, $relativeProtocol);
+    }
+
+    /**
+     * CKC Vianney — CE preview with id_shop 0 used the cookie shop (www)
+     * while the request was on pro → redirect loop.
+     */
+    public function getModuleLink(
+        $module,
+        $controller = 'default',
+        array $params = [],
+        $ssl = null,
+        $idLang = null,
+        $idShop = null,
+        $relativeProtocol = false
+    ) {
+        if (
+            ($idShop === null || (int) $idShop <= 0)
+            && $module === 'creativeelements'
+            && $controller === 'preview'
+        ) {
+            $matched = $this->getMatchingUrlShopId();
+            if ($matched) {
+                $idShop = (int) $matched;
+            }
+        }
+
+        return parent::getModuleLink($module, $controller, $params, $ssl, $idLang, $idShop, $relativeProtocol);
     }
 }
