@@ -36,10 +36,18 @@ class CreativeElementsPreviewModuleFrontController extends ModuleFrontController
 
                 $admin->write();
             }
-            $redirect = urldecode((string) Tools::getValue('redirect'));
-            // CKC: refuse host-less Location (browser treats admin folder as DNS hostname)
-            if (!preg_match('#^https?://[^/]+#i', $redirect)) {
-                $redirect = Tools::getShopProtocol() . Tools::getHttpHost(false, false) . '/' . ltrim($redirect, '/');
+            $redirect = urldecode(Tools::getValue('redirect'));
+            $host = (string) parse_url($redirect, PHP_URL_HOST);
+            // CKC Vianney — Location host without TLD is the admin folder (NXDOMAIN)
+            if ($host === '' || strpos($host, '.') === false) {
+                $path = (string) parse_url($redirect, PHP_URL_PATH);
+                $query = (string) parse_url($redirect, PHP_URL_QUERY);
+                $adminFolder = ($host !== '' && strpos($host, '.') === false)
+                    ? $host
+                    : basename(_PS_ADMIN_DIR_);
+                $redirect = Tools::getShopProtocol() . Tools::getHttpHost(false, false)
+                    . '/' . $adminFolder . ($path !== '' ? $path : '/')
+                    . ($query !== '' ? '?' . $query : '');
             }
             Tools::redirectAdmin($redirect);
         }
