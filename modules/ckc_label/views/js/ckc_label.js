@@ -23,6 +23,46 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (applyToSelect) {
         applyToSelect.addEventListener('change', toggleSelectionFields);
-        toggleSelectionFields(); // Initial call
+        toggleSelectionFields();
+    }
+
+    const translateBtn = document.getElementById('ckc-label-translate-en');
+    if (translateBtn && window.ckcLabelBo) {
+        translateBtn.addEventListener('click', function () {
+            const src = document.getElementById('text_' + ckcLabelBo.idLangDefault)
+                || document.querySelector('[name="text_' + ckcLabelBo.idLangDefault + '"]');
+            const dest = document.getElementById('text_' + ckcLabelBo.idLangEn)
+                || document.querySelector('[name="text_' + ckcLabelBo.idLangEn + '"]');
+            if (!src || !dest) {
+                return;
+            }
+            const sourceText = (src.value || '').trim();
+            if (!sourceText) {
+                alert(ckcLabelBo.errorEmpty);
+                return;
+            }
+            if ((dest.value || '').trim() !== '' && !window.confirm(ckcLabelBo.confirmOverwrite)) {
+                return;
+            }
+            translateBtn.disabled = true;
+            const body = new URLSearchParams();
+            body.append('text', sourceText);
+            fetch(ckcLabelBo.ajaxUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                credentials: 'same-origin',
+                body: body.toString(),
+            }).then(function (r) { return r.json(); }).then(function (json) {
+                if (!json || !json.success) {
+                    alert((json && json.message) ? json.message : ckcLabelBo.errorGeneric);
+                    return;
+                }
+                dest.value = json.text;
+            }).catch(function () {
+                alert(ckcLabelBo.errorGeneric);
+            }).finally(function () {
+                translateBtn.disabled = false;
+            });
+        });
     }
 });
