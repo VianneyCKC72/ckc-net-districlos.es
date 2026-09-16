@@ -556,8 +556,9 @@ function _print_script(&$args)
         echo '<script>' . PHP_EOL;
 
         foreach ($args['l10n'] as $key => &$value) {
-            // JSON_HEX_AMP: prevents HTML parser from eating "&token=..." inside <script>
-            $json = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_HEX_AMP | JSON_HEX_TAG | JSON_HEX_APOS);
+            // Fix: Allow escaped slashes for embed code
+            $json = json_encode($value, JSON_UNESCAPED_UNICODE);
+            // Fix: Line too long
             echo "var $key = " . str_replace('}},"', "}},\n\"", $json) . ";\n";
         }
         echo '</script>' . PHP_EOL;

@@ -128,4 +128,17 @@ class Link extends LinkCore
         }
         return $category;
     }
+
+    /**
+     * CKC Vianney — Shop(0) has empty domain → Location https://adminXXX/ (NXDOMAIN).
+     * Creative Elements templates pass id_shop=0 to getAdminBaseLink().
+     */
+    public function getAdminBaseLink($idShop = null, $ssl = null, $relativeProtocol = false)
+    {
+        if ($idShop !== null && (int) $idShop <= 0) {
+            $idShop = null;
+        }
+
+        return parent::getAdminBaseLink($idShop, $ssl, $relativeProtocol);
+    }
 }
