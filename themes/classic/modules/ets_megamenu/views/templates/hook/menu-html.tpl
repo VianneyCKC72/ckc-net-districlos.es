@@ -19,6 +19,15 @@
 *  International Registered Trademark & Property of ETS-Soft
 *}
 {if isset($menus) && $menus}
+{if (isset($ckc_is_english) && $ckc_is_english) || (isset($language.iso_code) && $language.iso_code == 'en')}
+    {assign var='ckc_mm_logo' value='/img/logo_multilingue.png'}
+    {assign var='ckc_mm_logo_text' value='/img/logo_multilingue.png'}
+    {assign var='ckc_mm_logo_white' value='/img/logo_multilingue.png'}
+{else}
+    {assign var='ckc_mm_logo' value='/img/logo-mobile.svg'}
+    {assign var='ckc_mm_logo_text' value='/img/logo-1739869573.svg'}
+    {assign var='ckc_mm_logo_white' value='/img/logo-text-white.svg'}
+{/if}
  
     <ul class="mm_menus_ul {if isset($mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB) && $mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB} clicktext_show_submenu{/if} {if isset($mm_config.ETS_MM_SHOW_ICON_VERTICAL)&& !$mm_config.ETS_MM_SHOW_ICON_VERTICAL} hide_icon_vertical{/if}">
         <li class="mm-menu-section-top">
@@ -28,7 +37,7 @@
                 {if Context::getContext()->shop->id == 2}
                     <img class="logo img-fluid" src="/img/logo-mobile-pro.svg" alt="Districlos" width="40" height="40" loading="lazy">
                 {else}
-                    <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="40" height="40" loading="lazy">
+                    <img class="logo img-fluid" src="{$ckc_mm_logo}" alt="Districlos" width="40" height="40" loading="lazy">
                 {/if}
                 <span class="txt-logo-mobile">Menu</span>
             </a>
@@ -98,7 +107,7 @@
                                         {if Context::getContext()->shop->id == 2}
                                             <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
                                         {else}
-                                            <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="40" height="40" loading="lazy">
+                                            <img class="logo img-fluid" src="{$ckc_mm_logo}" alt="Districlos" width="40" height="40" loading="lazy">
                                         {/if}
                                         <span class="txt-logo-mobile">Menu</span>
                                     </a>
@@ -168,7 +177,7 @@
                                                             {if Context::getContext()->shop->id == 2}
                                                                 <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
                                                             {else}
-                                                                <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="40" height="40" loading="lazy">
+                                                                <img class="logo img-fluid" src="{$ckc_mm_logo}" alt="Districlos" width="40" height="40" loading="lazy">
                                                             {/if}
                                                             <span class="txt-logo-mobile">Menu</span>
                                                         </a>
@@ -211,7 +220,7 @@
                                                     {if Context::getContext()->shop->id == 2}
                                                         <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo_mobile.png" alt="Districlos" width="178" height="48" loading="lazy">>
                                                     {else}
-                                                        <img class="logo img-fluid" src="/img/logo-text-white.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                                                        <img class="logo img-fluid" src="{$ckc_mm_logo_white}" alt="Districlos" width="178" height="48" loading="lazy">
                                                     {/if}
                                                 </a>
                                             </ul>
@@ -225,7 +234,7 @@
                                 {if Context::getContext()->shop->id == 2}
                                     <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
                                 {else}
-                                    <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                                    <img class="logo img-fluid" src="{$ckc_mm_logo_text}" alt="Districlos" width="178" height="48" loading="lazy">
                                 {/if}
                             </a>
                         </ul>

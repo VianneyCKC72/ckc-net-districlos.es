@@ -23,24 +23,14 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
 
-{function renderLogo}
+{function renderLogo src=''}
   <a href="{$urls.pages.index}" class="d-flex logos_container">
-    {if isset($language.iso_code) && $language.iso_code == 'en'}
-      <img
-        class="logo img-fluid"
-        src="/img/logo_multilingue.png"
-        alt="{$shop.name}"
-        loading="lazy"
-        {if isset($shop.logo_details.width) && $shop.logo_details.width}width="{$shop.logo_details.width}"{/if}
-        {if isset($shop.logo_details.height) && $shop.logo_details.height}height="{$shop.logo_details.height}"{/if}>
-    {else}
-      <img
-        class="logo img-fluid"
-        src="{$shop.logo_details.src}"
-        alt="{$shop.name}"
-        loading="lazy"
-        width="{$shop.logo_details.width}"
-        height="{$shop.logo_details.height}">
-    {/if}
+    <img
+      class="logo img-fluid"
+      src="{if $src}{$src}{else}{$shop.logo_details.src}{/if}"
+      alt="{$shop.name}"
+      loading="lazy"
+      {if isset($shop.logo_details.width) && $shop.logo_details.width}width="{$shop.logo_details.width}"{/if}
+      {if isset($shop.logo_details.height) && $shop.logo_details.height}height="{$shop.logo_details.height}"{/if}>
   </a>
 {/function}

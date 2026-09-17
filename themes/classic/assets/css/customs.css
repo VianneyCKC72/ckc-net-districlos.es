@@ -75,3 +75,117 @@ body#checkout .payment-options .payment-option-card--quote .custom-radio {
     width: var(--step-progress, 0%);
 }
 
+/* ==========================================================================
+   Home EN (CE 1170201) — resserrer le margin-top mobile
+   !important : le CSS généré Creative Elements est combiné après le thème
+   ========================================================================== */
+@media (max-width: 767px) {
+    .elementor-1170201 .elementor-element.elementor-element-541d4cb,
+    .elementor-1170201 .elementor-element.elementor-element-ade2160 {
+        margin-top: 0 !important;
+    }
+
+    /* Vignettes catégories home : bandeau compact (le CSS CE force min-height 300px) */
+    #index .elementor-top-section:has(> .elementor-container .bloc_vignette_category) {
+        max-width: 100%;
+        overflow: visible;
+    }
+
+    #index .elementor-top-section:has(> .elementor-container .bloc_vignette_category) > .elementor-container {
+        display: block !important;
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x;
+    }
+
+    #index .elementor-top-section:has(> .elementor-container .bloc_vignette_category) .elementor-row {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        width: max-content !important;
+        max-width: none !important;
+        gap: 8px;
+    }
+
+    #index .elementor-top-column:has(.bloc_vignette_category) {
+        flex: 0 0 120px !important;
+        max-width: 120px !important;
+        min-width: 120px !important;
+        width: 120px !important;
+        scroll-snap-align: start;
+    }
+
+    #index .bloc_vignette_category .elementor-cta,
+    #index .bloc_vignette_category .elementor-cta-content,
+    #index .bloc_vignette_category .elementor-cta-bg-wrapper {
+        min-height: 150px !important;
+        height: 150px !important;
+    }
+
+    #index .bloc_vignette_category .elementor-cta-content {
+        padding: 12px !important;
+    }
+
+    #index .bloc_vignette_category .elementor-cta-title {
+        font-size: 14px !important;
+        line-height: 1.2 !important;
+    }
+
+    #index .bloc_vignette_category img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    /* Carousel produits home : IDs CE FR-only (6d7a216c / 597a68ca) — EN a d’autres IDs */
+    #index .elementor-top-section:has(.elementor-widget-product-carousel) {
+        max-width: 100%;
+    }
+
+    #index .elementor-top-column:has(.elementor-widget-product-carousel) {
+        position: relative;
+        width: calc(100% + 32px);
+        transform: translateX(-16px);
+    }
+
+    #index .elementor-widget-product-carousel .elementor-carousel-wrapper.swiper {
+        width: 100%;
+        transform: translate(0);
+        overflow: visible;
+        padding-bottom: 0;
+    }
+
+    #index .elementor-widget-product-carousel .elementor-carousel-wrapper.swiper .swiper-wrapper {
+        margin-left: 6%;
+    }
+
+    #index .elementor-widget-product-carousel .swiper-wrapper .swiper-slide.swiper-slide-active,
+    #index .elementor-widget-product-carousel .swiper-wrapper .swiper-slide.swiper-slide-next {
+        display: block;
+        padding: 0;
+        min-width: 40%;
+        max-width: 42%;
+    }
+
+    #index .elementor-widget-product-carousel .swiper-wrapper .swiper-slide:not(.swiper-slide-active):not(.swiper-slide-next) {
+        visibility: hidden;
+    }
+
+    #index .elementor-widget-product-carousel .elementor-swiper-button-prev.swiper-button-prev,
+    #index .elementor-widget-product-carousel .elementor-swiper-button-next.swiper-button-next {
+        display: flex;
+        margin-top: calc(0px - (var(--swiper-navigation-size)));
+    }
+
+    #index .elementor-widget-product-carousel .elementor-swiper-button-prev.swiper-button-prev {
+        left: 0;
+    }
+
+    #index .elementor-widget-product-carousel .elementor-swiper-button-next.swiper-button-next {
+        right: 0;
+    }
+}
+

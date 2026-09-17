@@ -86,6 +86,13 @@ class FrontController extends FrontControllerCore
             'ckc_lang_preview',
             (string) Tools::getValue('ckc') === '1'
         );
+        $isEnglish = $this->isCurrentLanguageEnglish();
+        $this->context->smarty->assign([
+            'ckc_is_english' => $isEnglish,
+            'ckc_logo_src' => $isEnglish ? '/img/logo_multilingue.png' : '',
+        ]);
+        Media::addJsDef(['ckc_is_english' => $isEnglish]);
+
         return parent::initHeader();
     }
     public function getTemplateVarUrls()
@@ -113,7 +120,7 @@ class FrontController extends FrontControllerCore
     public function getShopLogo(): array
     {
         $englishLogo = $this->getEnglishShopLogo();
-        if ($englishLogo) {
+        if (!empty($englishLogo['src'])) {
             return $englishLogo;
         }
 
@@ -123,8 +130,10 @@ class FrontController extends FrontControllerCore
     public function getTemplateVarShop()
     {
         $shop = parent::getTemplateVarShop();
-        if (!empty($shop['logo_details']['src']) && $this->isEnglishLangCode((string) $this->context->language->iso_code)) {
-            $shop['logo'] = $shop['logo_details']['src'];
+        $englishLogo = $this->getEnglishShopLogo();
+        if (!empty($englishLogo['src'])) {
+            $shop['logo'] = $englishLogo['src'];
+            $shop['logo_details'] = $englishLogo;
         }
 
         return $shop;
@@ -132,25 +141,24 @@ class FrontController extends FrontControllerCore
 
     /**
      * CKC Vianney — logo EN : /img/logo_multilingue.png
+     * On ne bloque plus si is_file échoue : le tpl doit quand même pointer vers ce fichier.
      */
     private function getEnglishShopLogo()
     {
-        if (!$this->isEnglishLangCode((string) $this->context->language->iso_code)) {
+        if (!$this->isCurrentLanguageEnglish()) {
             return [];
         }
 
         $logoFileName = 'logo_multilingue.png';
         $logoFileDir = _PS_IMG_DIR_ . $logoFileName;
-        if (!is_file($logoFileDir)) {
-            return [];
-        }
-
-        $logoWidth = 0;
-        $logoHeight = 0;
-        $size = @getimagesize($logoFileDir);
-        if (is_array($size)) {
-            $logoWidth = (int) $size[0];
-            $logoHeight = (int) $size[1];
+        $logoWidth = 178;
+        $logoHeight = 48;
+        if (is_file($logoFileDir)) {
+            $size = @getimagesize($logoFileDir);
+            if (is_array($size)) {
+                $logoWidth = (int) $size[0];
+                $logoHeight = (int) $size[1];
+            }
         }
 
         $urls = $this->getTemplateVarUrls();
@@ -162,10 +170,21 @@ class FrontController extends FrontControllerCore
             'height' => $logoHeight,
         ];
     }
+
+    private function isCurrentLanguageEnglish()
+    {
+        if (!isset($this->context->language)) {
+            return false;
+        }
+
+        return $this->isEnglishLangCode((string) $this->context->language->iso_code)
+            || $this->isEnglishLangCode((string) $this->context->language->language_code);
+    }
+
     private function isEnglishLangCode($code)
     {
         $code = strtolower(str_replace('_', '-', (string) $code));
-        return $code === 'en' || strpos($code, 'en-') === 0;
+        return $code === 'en' || $code === 'gb' || strpos($code, 'en-') === 0;
     }
     public function getTemplateVarCustomer($customer = null)
     {
