@@ -86,6 +86,13 @@ class FrontController extends FrontControllerCore
             'ckc_lang_preview',
             (string) Tools::getValue('ckc') === '1'
         );
+        $isEnglish = $this->isCurrentLanguageEnglish();
+        $this->context->smarty->assign([
+            'ckc_is_english' => $isEnglish,
+            'ckc_logo_src' => $isEnglish ? '/img/logo_multilingue.png' : '',
+        ]);
+        Media::addJsDef(['ckc_is_english' => $isEnglish]);
+
         return parent::initHeader();
     }
     public function getTemplateVarUrls()
@@ -109,10 +116,75 @@ class FrontController extends FrontControllerCore
         }
         return $page;
     }
+
+    public function getShopLogo(): array
+    {
+        $englishLogo = $this->getEnglishShopLogo();
+        if (!empty($englishLogo['src'])) {
+            return $englishLogo;
+        }
+
+        return parent::getShopLogo();
+    }
+
+    public function getTemplateVarShop()
+    {
+        $shop = parent::getTemplateVarShop();
+        $englishLogo = $this->getEnglishShopLogo();
+        if (!empty($englishLogo['src'])) {
+            $shop['logo'] = $englishLogo['src'];
+            $shop['logo_details'] = $englishLogo;
+        }
+
+        return $shop;
+    }
+
+    /**
+     * CKC Vianney — logo EN : /img/logo_multilingue.png
+     * On ne bloque plus si is_file échoue : le tpl doit quand même pointer vers ce fichier.
+     */
+    private function getEnglishShopLogo()
+    {
+        if (!$this->isCurrentLanguageEnglish()) {
+            return [];
+        }
+
+        $logoFileName = 'logo_multilingue.png';
+        $logoFileDir = _PS_IMG_DIR_ . $logoFileName;
+        $logoWidth = 178;
+        $logoHeight = 48;
+        if (is_file($logoFileDir)) {
+            $size = @getimagesize($logoFileDir);
+            if (is_array($size)) {
+                $logoWidth = (int) $size[0];
+                $logoHeight = (int) $size[1];
+            }
+        }
+
+        $urls = $this->getTemplateVarUrls();
+        $psImageUrl = $urls['img_ps_url'] ?? _PS_IMG_;
+
+        return [
+            'src' => $psImageUrl . $logoFileName,
+            'width' => $logoWidth,
+            'height' => $logoHeight,
+        ];
+    }
+
+    private function isCurrentLanguageEnglish()
+    {
+        if (!isset($this->context->language)) {
+            return false;
+        }
+
+        return $this->isEnglishLangCode((string) $this->context->language->iso_code)
+            || $this->isEnglishLangCode((string) $this->context->language->language_code);
+    }
+
     private function isEnglishLangCode($code)
     {
         $code = strtolower(str_replace('_', '-', (string) $code));
-        return $code === 'en' || strpos($code, 'en-') === 0;
+        return $code === 'en' || $code === 'gb' || strpos($code, 'en-') === 0;
     }
     public function getTemplateVarCustomer($customer = null)
     {
@@ -142,4 +214,22 @@ class FrontController extends FrontControllerCore
     * version: 1.4.2
     */
     protected $redirectionExtraExcludedKeys = ['rewrite', 'category'];
+
+    /**
+     * CKC Vianney — CE Full Width points to its module layout (hooks FR only).
+     * Prefer the theme copy so accueil pro can switch 36/37 vs 62/63.
+     */
+    public function getLayout()
+    {
+        $layout = parent::getLayout();
+        if (!is_string($layout) || strpos($layout, 'layout-header-footer.tpl') === false) {
+            return $layout;
+        }
+        if (strpos($layout, _PS_THEME_DIR_) !== false) {
+            return $layout;
+        }
+        $themeFile = _PS_THEME_DIR_ . 'modules/creativeelements/views/templates/front/theme/layouts/layout-header-footer.tpl';
+
+        return is_file($themeFile) ? $themeFile : $layout;
+    }
 }

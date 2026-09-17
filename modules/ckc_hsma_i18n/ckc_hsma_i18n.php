@@ -76,8 +76,18 @@ class Ckc_hsma_i18n extends Module
         $registered = true;
 
         $smarty = $this->context->smarty;
-        $smarty->registerPlugin('modifier', 'ckc_hsma_product_name', array('CkcHsmaI18nHelper', 'smartyProductName'));
-        $smarty->registerPlugin('modifier', 'ckc_hsma_group_name', array('CkcHsmaI18nHelper', 'smartyGroupName'));
-        $smarty->registerPlugin('modifier', 'ckc_hsma_table_price', array('CkcHsmaI18nHelper', 'smartyTablePrice'));
+        $plugins = array(
+            'ckc_hsma_product_name' => array('CkcHsmaI18nHelper', 'smartyProductName'),
+            'ckc_hsma_group_name' => array('CkcHsmaI18nHelper', 'smartyGroupName'),
+            'ckc_hsma_table_price' => array('CkcHsmaI18nHelper', 'smartyTablePrice'),
+        );
+
+        foreach ($plugins as $name => $callback) {
+            // Override may have registered identity fallbacks earlier — replace with real helpers.
+            if (isset($smarty->registered_plugins['modifier'][$name])) {
+                $smarty->unregisterPlugin('modifier', $name);
+            }
+            $smarty->registerPlugin('modifier', $name, $callback);
+        }
     }
 }

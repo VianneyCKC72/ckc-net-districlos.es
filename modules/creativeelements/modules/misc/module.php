@@ -165,14 +165,37 @@ class ModulesXMiscXModule extends BaseModule
             $link = '';
 
             if (\Configuration::get('elementor_frontend_edit', null, null, null, true)
-                && ($id_employee = $this->getCurrentEmployeeId())
-                && ($dir = glob(_PS_ROOT_DIR_ . '/*/filemanager', GLOB_ONLYDIR))
+                && ($id_employee = (int) $this->getCurrentEmployeeId())
             ) {
                 $tab = 'AdminCEEditor';
-                $link = __PS_BASE_URI__ . basename(dirname($dir[0])) . '/index.php?' . http_build_query([
+                $id_tab = (int) \Tab::getIdFromClassName($tab);
+                $token = \Tools::getAdminToken($tab . $id_tab . $id_employee);
+                // PHP 8.1+ skips false/null in http_build_query → URL without token → BO login redirect
+                if (!$token) {
+                    return $link;
+                }
+
+                $admin = '';
+                // Prefer admin*/filemanager (avoids picking a random */filemanager)
+                foreach (glob(_PS_ROOT_DIR_ . '/admin*/filemanager', GLOB_ONLYDIR) ?: [] as $dir) {
+                    $admin = basename(dirname($dir));
+                    break;
+                }
+                if ($admin === '') {
+                    $dirs = glob(_PS_ROOT_DIR_ . '/*/filemanager', GLOB_ONLYDIR);
+                    if (!empty($dirs[0])) {
+                        $admin = basename(dirname($dirs[0]));
+                    }
+                }
+                if ($admin === '') {
+                    return $link;
+                }
+
+                $link = \Tools::getShopProtocol() . \Tools::getHttpHost(false, false)
+                    . rtrim(__PS_BASE_URI__, '/') . '/' . $admin . '/index.php?' . http_build_query([
                     'controller' => $tab,
-                    'token' => \Tools::getAdminToken($tab . (int) \Tab::getIdFromClassName($tab) . $id_employee),
-                ]);
+                    'token' => (string) $token,
+                ], '', '&');
             }
         }
 

@@ -19,6 +19,15 @@
 *  International Registered Trademark & Property of ETS-Soft
 *}
 {if isset($menus) && $menus}
+{if (isset($ckc_is_english) && $ckc_is_english) || (isset($language.iso_code) && $language.iso_code == 'en')}
+    {assign var='ckc_mm_logo' value='/img/logo_multilingue.png'}
+    {assign var='ckc_mm_logo_text' value='/img/logo_multilingue.png'}
+    {assign var='ckc_mm_logo_white' value='/img/logo_multilingue.png'}
+{else}
+    {assign var='ckc_mm_logo' value='/img/logo-mobile.svg'}
+    {assign var='ckc_mm_logo_text' value='/img/logo-1739869573.svg'}
+    {assign var='ckc_mm_logo_white' value='/img/logo-text-white.svg'}
+{/if}
  
     <ul class="mm_menus_ul {if isset($mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB) && $mm_config.ETS_MM_CLICK_TEXT_SHOW_SUB} clicktext_show_submenu{/if} {if isset($mm_config.ETS_MM_SHOW_ICON_VERTICAL)&& !$mm_config.ETS_MM_SHOW_ICON_VERTICAL} hide_icon_vertical{/if}">
         <li class="mm-menu-section-top">
@@ -28,7 +37,7 @@
                 {if Context::getContext()->shop->id == 2}
                     <img class="logo img-fluid" src="/img/logo-mobile-pro.svg" alt="Districlos" width="40" height="40" loading="lazy">
                 {else}
-                    <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="40" height="40" loading="lazy">
+                    <img class="logo img-fluid" src="{$ckc_mm_logo}" alt="Districlos" width="40" height="40" loading="lazy">
                 {/if}
                 <span class="txt-logo-mobile">Menu</span>
             </a>
@@ -98,7 +107,7 @@
                                         {if Context::getContext()->shop->id == 2}
                                             <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
                                         {else}
-                                            <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="40" height="40" loading="lazy">
+                                            <img class="logo img-fluid" src="{$ckc_mm_logo}" alt="Districlos" width="40" height="40" loading="lazy">
                                         {/if}
                                         <span class="txt-logo-mobile">Menu</span>
                                     </a>
@@ -168,7 +177,7 @@
                                                             {if Context::getContext()->shop->id == 2}
                                                                 <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
                                                             {else}
-                                                                <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="40" height="40" loading="lazy">
+                                                                <img class="logo img-fluid" src="{$ckc_mm_logo}" alt="Districlos" width="40" height="40" loading="lazy">
                                                             {/if}
                                                             <span class="txt-logo-mobile">Menu</span>
                                                         </a>
@@ -211,7 +220,7 @@
                                                     {if Context::getContext()->shop->id == 2}
                                                         <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo_mobile.png" alt="Districlos" width="178" height="48" loading="lazy">>
                                                     {else}
-                                                        <img class="logo img-fluid" src="/img/logo-text-white.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                                                        <img class="logo img-fluid" src="{$ckc_mm_logo_white}" alt="Districlos" width="178" height="48" loading="lazy">
                                                     {/if}
                                                 </a>
                                             </ul>
@@ -225,7 +234,7 @@
                                 {if Context::getContext()->shop->id == 2}
                                     <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
                                 {else}
-                                    <img class="logo img-fluid" src="/img/logo-1739869573.svg" alt="Districlos" width="178" height="48" loading="lazy">
+                                    <img class="logo img-fluid" src="{$ckc_mm_logo_text}" alt="Districlos" width="178" height="48" loading="lazy">
                                 {/if}
                             </a>
                         </ul>
@@ -332,15 +341,15 @@
                             <p>{l s='Espace Pro' d='Shop.Theme.Custommodules'}</p>
                         </a>
                     {/if}
-                    <a class="menu-mobile-useful-link" href="/module/opartdevis/simplequotation">
+                    <a class="menu-mobile-useful-link" href="{$link->getModuleLink('opartdevis', 'simplequotation')|escape:'html':'UTF-8'}">
                         <img src="/img/menu-mobile-devis.svg" alt="{l s='Devis' d='Shop.Theme.Custommodules'}" width="20px" height="19px">
                         <p>{l s='Devis' d='Shop.Theme.Custommodules'}</p>
                     </a>
-                    <a class="menu-mobile-useful-link" href="/content/11-nos-magasins-de-cloture">
+                    <a class="menu-mobile-useful-link" href="{$link->getCMSLink(11)|escape:'html':'UTF-8'}">
                         <img src="/img/menu-mobile-magasins.svg" alt="{l s='Magasins' d='Shop.Theme.Custommodules'}" width="19px" height="19px">
                         <p>{l s='Magasins' d='Shop.Theme.Custommodules'}</p>
                     </a>
-                    <a class="menu-mobile-useful-link" href="/content/657-service-de-pose">
+                    <a class="menu-mobile-useful-link" href="{$link->getCMSLink(657)|escape:'html':'UTF-8'}">
                         <img src="themes/classic/assets/img/service-de-pose.svg" alt="{l s='Service de pose' d='Shop.Theme.Customglobal'}" width="19px" height="19px">
                         <p style="color: #026473;">{l s='Service de pose' d='Shop.Theme.Customglobal'}</p>
                     </a>
