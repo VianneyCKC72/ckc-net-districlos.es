@@ -46,6 +46,8 @@ $map = [
     'pose' => 'Installation',
     'passage' => 'Opening width',
     'largeur' => 'Width',
+    'largeur du portail/largeur de passage' => 'Gate width / Opening width',
+    'largeur du portail / largeur de passage' => 'Gate width / Opening width',
     'avec/sans occultation' => 'With / without privacy',
     'prix' => 'Price',
     'marque' => 'Brand',
@@ -89,100 +91,139 @@ if ($idLangFrom <= 0 || $idLangTo <= 0) {
     exit(1);
 }
 
-$langTable = ckcAs4FindTable($db, $prefix, [
-    'pm_advancedsearch_criterion_group_lang',
-    'pm_advancedsearch_criteria_group_lang',
-]);
-if (!$langTable) {
-    fwrite(STDERR, "Table *_criterion_group_lang introuvable.\n");
+$langTables = ckcAs4FindAllLangTables($db, $prefix);
+if (!$langTables) {
+    fwrite(STDERR, "Table *_criterion_group_*_lang introuvable.\n");
     exit(1);
 }
 
-$groupTable = preg_replace('/_lang$/', '', $langTable);
-$pk = ckcAs4FindPk($db, $prefix . $groupTable);
-$nameCol = ckcAs4FindNameColumn($db, $prefix . $langTable);
-$langCols = ckcAs4ColumnNames($db, $prefix . $langTable);
-$hasLangShop = in_array('id_shop', $langCols, true);
 $shopTable = ckcAs4TableExists($db, $prefix . 'pm_advancedsearch_shop')
     ? $prefix . 'pm_advancedsearch_shop'
     : '';
+$shopList = implode(',', array_map('intval', $shops));
 
-echo "Table : {$prefix}{$langTable} (colonne {$nameCol}, pk {$pk})\n";
+echo 'Tables : ' . count($langTables) . ' moteur(s) de recherche' . "\n";
 echo "Langues : {$isoFrom}={$idLangFrom} → {$isoTo}={$idLangTo}\n";
 echo 'Boutiques : ' . implode(',', $shops) . "\n";
 echo $apply ? "Mode : APPLY\n\n" : "Mode : DRY-RUN (ajouter --apply pour écrire)\n\n";
-
-$shopList = implode(',', array_map('intval', $shops));
-$joinShop = '';
-$whereShop = '';
-$selectShop = '0 AS id_shop, \'-\' AS shop_name';
-
-if ($hasLangShop) {
-    $selectShop = 'gl.`id_shop`, COALESCE(s.`name`, CONCAT(\'shop \', gl.`id_shop`)) AS shop_name';
-    $joinShop = 'LEFT JOIN `' . $prefix . 'shop` s ON s.`id_shop` = gl.`id_shop`';
-    $whereShop = 'AND gl.`id_shop` IN (' . $shopList . ')';
-} elseif ($shopTable && ckcAs4TableExists($db, $prefix . $groupTable)) {
-    $selectShop = 'ss.`id_shop`, COALESCE(s.`name`, CONCAT(\'shop \', ss.`id_shop`)) AS shop_name';
-    $joinShop = 'INNER JOIN `' . $shopTable . '` ss ON ss.`id_search` = g.`id_search`
-        LEFT JOIN `' . $prefix . 'shop` s ON s.`id_shop` = ss.`id_shop`';
-    $whereShop = 'AND ss.`id_shop` IN (' . $shopList . ')';
-}
-
-$sql = 'SELECT g.`' . $pk . '` AS id_group, gl.`' . $nameCol . '` AS fr_name, ' . $selectShop . '
-    FROM `' . $prefix . $groupTable . '` g
-    INNER JOIN `' . $prefix . $langTable . '` gl
-        ON gl.`' . $pk . '` = g.`' . $pk . '` AND gl.`id_lang` = ' . (int) $idLangFrom . '
-    ' . $joinShop . '
-    WHERE 1 ' . $whereShop . '
-    ORDER BY id_shop, id_group';
-
-$rows = $db->executeS($sql);
-if (!$rows) {
-    echo "Aucun groupe trouvé. Vérifier les id_shop / tables.\n";
-    exit(1);
-}
 
 $updated = 0;
 $inserted = 0;
 $skipped = 0;
 $unmatched = [];
+$anyRow = false;
 
-foreach ($rows as $row) {
-    $idGroup = (int) $row['id_group'];
-    $idShop = (int) $row['id_shop'];
-    $frName = (string) $row['fr_name'];
-    $key = ckcAs4Norm($frName);
-    $shopLabel = $row['shop_name'] . ($idShop ? ' #' . $idShop : '');
-
-    if (!isset($map[$key])) {
-        $unmatched[$frName] = true;
-        $skipped++;
+foreach ($langTables as $langTable) {
+    $groupTable = preg_replace('/_lang$/', '', $langTable);
+    if (!ckcAs4TableExists($db, $prefix . $groupTable)) {
         continue;
     }
 
-    $enName = $map[$key];
-    $existing = ckcAs4GetLangName($db, $prefix . $langTable, $pk, $nameCol, $idGroup, $idLangTo, $hasLangShop ? $idShop : null);
+    $pk = ckcAs4FindPk($db, $prefix . $groupTable);
+    $nameCol = ckcAs4FindNameColumn($db, $prefix . $langTable);
+    $langCols = ckcAs4ColumnNames($db, $prefix . $langTable);
+    $groupCols = ckcAs4ColumnNames($db, $prefix . $groupTable);
+    $hasLangShop = in_array('id_shop', $langCols, true);
+    $hasGroupSearch = in_array('id_search', $groupCols, true);
+    $idSearchFromName = 0;
+    if (preg_match('/_(\d+)$/', $groupTable, $m)) {
+        $idSearchFromName = (int) $m[1];
+    }
 
-    if ($existing === $enName) {
-        echo "[OK]     {$shopLabel} #{$idGroup} « {$frName} » déjà « {$enName} »\n";
-        $skipped++;
+    $joinShop = '';
+    $whereShop = '';
+    $selectShop = '0 AS id_shop, \'-\' AS shop_name';
+
+    if ($hasLangShop) {
+        $selectShop = 'gl.`id_shop`, COALESCE(s.`name`, CONCAT(\'shop \', gl.`id_shop`)) AS shop_name';
+        $joinShop = 'LEFT JOIN `' . $prefix . 'shop` s ON s.`id_shop` = gl.`id_shop`';
+        $whereShop = 'AND gl.`id_shop` IN (' . $shopList . ')';
+    } elseif ($shopTable && $hasGroupSearch) {
+        $selectShop = 'ss.`id_shop`, COALESCE(s.`name`, CONCAT(\'shop \', ss.`id_shop`)) AS shop_name';
+        $joinShop = 'INNER JOIN `' . $shopTable . '` ss ON ss.`id_search` = g.`id_search`
+            LEFT JOIN `' . $prefix . 'shop` s ON s.`id_shop` = ss.`id_shop`';
+        $whereShop = 'AND ss.`id_shop` IN (' . $shopList . ')';
+    } elseif ($shopTable && $idSearchFromName > 0) {
+        $selectShop = 'ss.`id_shop`, COALESCE(s.`name`, CONCAT(\'shop \', ss.`id_shop`)) AS shop_name';
+        $joinShop = 'INNER JOIN `' . $shopTable . '` ss ON ss.`id_search` = ' . $idSearchFromName . '
+            LEFT JOIN `' . $prefix . 'shop` s ON s.`id_shop` = ss.`id_shop`';
+        $whereShop = 'AND ss.`id_shop` IN (' . $shopList . ')';
+    }
+
+    $sql = 'SELECT g.`' . $pk . '` AS id_group, gl.`' . $nameCol . '` AS fr_name, ' . $selectShop . '
+        FROM `' . $prefix . $groupTable . '` g
+        INNER JOIN `' . $prefix . $langTable . '` gl
+            ON gl.`' . $pk . '` = g.`' . $pk . '` AND gl.`id_lang` = ' . (int) $idLangFrom . '
+        ' . $joinShop . '
+        WHERE 1 ' . $whereShop . '
+        ORDER BY id_shop, id_group';
+
+    $rows = $db->executeS($sql);
+    if (!$rows && $whereShop !== '') {
+        $sql = 'SELECT g.`' . $pk . '` AS id_group, gl.`' . $nameCol . '` AS fr_name,
+                ' . ($idSearchFromName ?: 0) . ' AS id_shop, CONCAT(\'id_search \', ' . ($idSearchFromName ?: 0) . ') AS shop_name
+            FROM `' . $prefix . $groupTable . '` g
+            INNER JOIN `' . $prefix . $langTable . '` gl
+                ON gl.`' . $pk . '` = g.`' . $pk . '` AND gl.`id_lang` = ' . (int) $idLangFrom . '
+            ORDER BY id_group';
+        $rows = $db->executeS($sql);
+    }
+    if (!$rows) {
         continue;
     }
 
-    $action = ($existing === null) ? 'INSERT' : 'UPDATE';
-    echo "[{$action}] {$shopLabel} #{$idGroup} « {$frName} » → « {$enName} »" . ($existing !== null && $existing !== '' ? " (était « {$existing} »)" : '') . "\n";
+    $anyRow = true;
+    echo "--- {$prefix}{$langTable}" . ($idSearchFromName ? " (id_search={$idSearchFromName})" : '') . " ---\n";
 
-    if (!$apply) {
-        continue;
+    foreach ($rows as $row) {
+        $idGroup = (int) $row['id_group'];
+        $idShop = (int) $row['id_shop'];
+        $frName = (string) $row['fr_name'];
+        $key = ckcAs4Norm($frName);
+        $shopLabel = $row['shop_name'] . ($idShop ? ' #' . $idShop : '');
+
+        if (!isset($map[$key])) {
+            $unmatched[$frName] = true;
+            $skipped++;
+            continue;
+        }
+
+        $enName = $map[$key];
+        $existing = ckcAs4GetLangName($db, $prefix . $langTable, $pk, $nameCol, $idGroup, $idLangTo, $hasLangShop ? $idShop : null);
+
+        if ($existing === $enName) {
+            echo "[OK]     {$shopLabel} #{$idGroup} « {$frName} » déjà « {$enName} »\n";
+            $skipped++;
+            continue;
+        }
+
+        $action = ($existing === null) ? 'INSERT' : 'UPDATE';
+        echo "[{$action}] {$shopLabel} #{$idGroup} « {$frName} » → « {$enName} »" . ($existing !== null && $existing !== '' ? " (était « {$existing} »)" : '') . "\n";
+
+        if (!$apply) {
+            if ($action === 'INSERT') {
+                $inserted++;
+            } else {
+                $updated++;
+            }
+            continue;
+        }
+
+        if ($existing === null) {
+            ckcAs4InsertLang($db, $prefix . $langTable, $pk, $nameCol, $langCols, $idGroup, $idLangFrom, $idLangTo, $enName, $hasLangShop ? $idShop : null);
+            $inserted++;
+        } else {
+            ckcAs4UpdateLang($db, $prefix . $langTable, $pk, $nameCol, $idGroup, $idLangTo, $enName, $hasLangShop ? $idShop : null);
+            $updated++;
+        }
     }
 
-    if ($existing === null) {
-        ckcAs4InsertLang($db, $prefix . $langTable, $pk, $nameCol, $langCols, $idGroup, $idLangFrom, $idLangTo, $enName, $hasLangShop ? $idShop : null);
-        $inserted++;
-    } else {
-        ckcAs4UpdateLang($db, $prefix . $langTable, $pk, $nameCol, $idGroup, $idLangTo, $enName, $hasLangShop ? $idShop : null);
-        $updated++;
-    }
+    echo "\n";
+}
+
+if (!$anyRow) {
+    echo "Aucun groupe trouvé pour les boutiques " . $shopList . ".\n";
+    exit(1);
 }
 
 echo "\nRésumé : update={$updated} insert={$inserted} skip={$skipped}" . ($apply ? '' : ' (dry-run)') . "\n";
@@ -213,21 +254,20 @@ function ckcAs4TableExists($db, $table)
     return !empty($row);
 }
 
-function ckcAs4FindTable($db, $prefix, array $candidates)
+function ckcAs4FindAllLangTables($db, $prefix)
 {
-    foreach ($candidates as $name) {
-        if (ckcAs4TableExists($db, $prefix . $name)) {
-            return $name;
-        }
+    $safePrefix = str_replace(['%', '_'], ['\%', '\_'], $prefix);
+    $pattern = $safePrefix . 'pm\_advancedsearch\_criterion\_group%\_lang';
+    $rows = $db->executeS('SHOW TABLES LIKE \'' . $pattern . '\'');
+    $tables = [];
+    foreach ($rows as $row) {
+        $full = array_values($row);
+        $tables[] = preg_replace('/^' . preg_quote($prefix, '/') . '/', '', (string) $full[0]);
     }
-    $like = $db->executeS('SHOW TABLES LIKE \'' . pSQL($prefix) . '%advancedsearch%group%lang%\'');
-    if (!empty($like)) {
-        $full = array_values($like[0]);
+    $tables = array_values(array_unique($tables));
+    sort($tables);
 
-        return preg_replace('/^' . preg_quote($prefix, '/') . '/', '', $full[0]);
-    }
-
-    return '';
+    return $tables;
 }
 
 function ckcAs4ColumnNames($db, $table)
