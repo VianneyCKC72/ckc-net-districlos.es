@@ -88,24 +88,33 @@
   #liste-category-home,
   .elementor-top-section:has(> .elementor-container .bloc_vignette_category) {
     @media (max-width: 1024px) {
+      max-width: 100%;
+      overflow: visible;
+
       > .elementor-container {
+        display: block;
+        max-width: 100%;
         overflow-x: auto;
+        overflow-y: hidden;
         scroll-snap-type: x mandatory;
-        display: flex;
         gap: 10px;
         padding: 0;
         scroll-padding: 20px;
         -webkit-overflow-scrolling: touch;
+        touch-action: pan-x;
 
         .elementor-row {
           display: flex;
           flex-wrap: nowrap;
+          width: max-content;
+          max-width: none;
           gap: 5px;
         }
 
         .elementor-top-column:has(.bloc_vignette_category) {
           flex: 0 0 auto;
           max-width: 160px;
+          min-width: 160px;
           width: 160px;
           scroll-snap-align: start;
           transition: transform 0.3s ease-in-out;
@@ -138,7 +147,9 @@
 
     @media (max-width: 767px) {
       .elementor-top-column:has(.bloc_vignette_category) {
+        flex: 0 0 120px;
         max-width: 120px;
+        min-width: 120px;
         width: 120px;
       }
 

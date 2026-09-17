@@ -1,35 +1,46 @@
 document.addEventListener('DOMContentLoaded', function () {
-    new Swiper('.ckc-review-carousel', {
-        loop: false,
-        spaceBetween: 20,
-        slidesPerView: 3, // par défaut sur mobile
-        breakpoints: {
-            0: {
-                slidesPerView: 1,
-                spaceBetween: 20
+    document.querySelectorAll('.ckc-review-carousel').forEach(function (el) {
+        var swiper = new Swiper(el, {
+            loop: false,
+            spaceBetween: 20,
+            slidesPerView: 1,
+            breakpoints: {
+                0: {
+                    slidesPerView: 1,
+                    spaceBetween: 20
+                },
+                461: {
+                    slidesPerView: 2,
+                    spaceBetween: 24
+                },
+                768: {
+                    slidesPerView: 3,
+                    spaceBetween: 24
+                },
             },
-            461: {
-                slidesPerView: 2,
-                spaceBetween: 24
+            observer: true,
+            observeParents: true,
+            watchOverflow: true,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
             },
-            768: {
-                slidesPerView: 3,
-                spaceBetween: 24
+            pagination: {
+                el: el.querySelector('.swiper-pagination'),
+                clickable: true,
             },
-        },
-        observer: true,
-        observeParents: true,
-        autoplay: {
-            delay: 5000,
-            disableOnInteraction: false,
-        },
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-        },
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev',
-        },
+            navigation: {
+                nextEl: el.querySelector('.swiper-button-next'),
+                prevEl: el.querySelector('.swiper-button-prev'),
+            },
+        });
+
+        var refresh = function () {
+            swiper.update();
+        };
+        window.addEventListener('resize', refresh);
+        window.addEventListener('load', refresh);
+        setTimeout(refresh, 0);
+        setTimeout(refresh, 300);
     });
 });
