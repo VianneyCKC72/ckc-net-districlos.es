@@ -1,8 +1,18 @@
-/* Important ! : sinon il casse la largeur du swiper en mobile */
-.elementor-element-826041c{
+/* CKC Vianney — ne pas cibler un ID CE (826041c = FR only) : sinon Swiper EN calcule des slides à 3000px+ */
+.elementor-element:has(#ckcproductreviews),
+#ckcproductreviews,
+#ckcproductreviews .line-review,
+#ckcproductreviews .ckc-avis-items,
+#ckcproductreviews .ckc-review-carousel {
     max-width: 100%;
 }
-/* Important ! */
+#ckcproductreviews .ckc-avis-items {
+    min-width: 0;
+}
+#ckcproductreviews .ckc-review-carousel {
+    width: 100%;
+    overflow: hidden;
+}
 
 .review-card {
     max-width: 300px;
