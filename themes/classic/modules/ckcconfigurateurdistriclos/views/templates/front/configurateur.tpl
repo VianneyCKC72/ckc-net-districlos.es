@@ -2443,11 +2443,27 @@ document.addEventListener('alpine:init', () => {
       this.currentTroncon = idx;
       this.currentStep    = 2;
       this._serverSidebar = null;
-      // Restore hasSoubassementStep from this troncon's fence type
-      const ftId = this.troncons[idx].fenceTypeId;
-      const ft = ftId ? this.fenceTypes.find(f => f.id === ftId) : null;
-      this.hasSoubassementStep = !!(ft && ft.has_soubassement);
       await this.loadStep(2);
+      this.syncSoubassementStep();
+    },
+
+    // Pose sur platine : pas d'étape soubassement (règle métier, non configurable en BO)
+    isPlatineInstall(installTypeId) {
+      const it = this.installTypes.find(i => i.id === installTypeId);
+      if (!it || !it.title) return false;
+      return /platine|plates?/i.test(String(it.title));
+    },
+
+    syncSoubassementStep() {
+      const t = this.currentTronconData();
+      const ft = t.fenceTypeId ? this.fenceTypes.find(f => f.id === t.fenceTypeId) : null;
+      const fenceAllows = !!(ft && ft.has_soubassement);
+      const hideForPlatine = this.isPlatineInstall(t.installTypeId);
+      this.hasSoubassementStep = fenceAllows && !hideForPlatine;
+      if (!this.hasSoubassementStep) {
+        t.soubassements = {};
+        t.soubassementSelections = {};
+      }
     },
 
     // ── Navigation ────────────────────────────────────────────
@@ -2517,6 +2533,7 @@ document.addEventListener('alpine:init', () => {
         if (data.ok) {
           this.installTypes = this._localizeEntity(data.install_types || []);
         }
+        this.syncSoubassementStep();
         // Recharge les gammes (+ couleurs/poteaux/hauteurs) si une pose est déjà choisie
         if (t.installTypeId) {
           await this.loadRanges();
@@ -2577,8 +2594,6 @@ document.addEventListener('alpine:init', () => {
       if (ft && ft.min_length) {
         t.longueur = ft.min_length;
       }
-      // Per fence_type soubassement toggle
-      this.hasSoubassementStep = !!(ft && ft.has_soubassement);
       t.heightAttrId   = null;
       t.installTypeId  = null;
       t.rangeId        = null;
@@ -2589,6 +2604,7 @@ document.addEventListener('alpine:init', () => {
       this._serverSidebar = null;
       t.soubassements          = {};
       t.soubassementSelections = {};
+      this.syncSoubassementStep();
       this.colors      = [];
       this.postTypes   = [];
       this.computePrice();
@@ -2605,6 +2621,7 @@ document.addEventListener('alpine:init', () => {
       this.colors    = [];
       this.postTypes = [];
       this.heights   = [];
+      this.syncSoubassementStep();
       this.computePrice();
       this.loadRanges();
     },
@@ -3196,6 +3213,7 @@ document.addEventListener('alpine:init', () => {
         if (data.ok) {
           this.summary    = data;
           this.totalPrice = data.total_price;
+          this._syncMlDiscountDisplay(data.total_price, data.total_price_before_discount);
           this.qtyOverrides = {};
         } else {
           console.error('Summary error:', data.error);
@@ -3209,8 +3227,11 @@ document.addEventListener('alpine:init', () => {
 
     // ── Ajout au panier ───────────────────────────────────────
     async addToCart() {
+      // Empêche un 2e clic / double-clic pendant l'ajout (évite panier doublé)
+      if (this.addingToCart) return;
       this.addingToCart = true;
       this.cartMessage  = '';
+      let success = false;
       try {
         const res  = await fetch(this.apiUrl + '?action=add_to_cart', {
           method: 'POST',
@@ -3237,6 +3258,7 @@ document.addEventListener('alpine:init', () => {
         });
         const data = await res.json();
         if (data.ok) {
+          success = true;
           this.cartOk      = true;
           this.cartMessage = this._i18n().cartSuccess || 'Produits ajoutés au panier avec succès !';
           if (data.cart_url) setTimeout(() => { window.location.href = data.cart_url; }, 1500);
@@ -3248,7 +3270,10 @@ document.addEventListener('alpine:init', () => {
         this.cartOk      = false;
         this.cartMessage = e.message;
       } finally {
-        this.addingToCart = false;
+        // En cas de succès, on laisse le bouton désactivé jusqu'à la redirection
+        if (!success) {
+          this.addingToCart = false;
+        }
       }
     },
   });
