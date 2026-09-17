@@ -109,6 +109,59 @@ class FrontController extends FrontControllerCore
         }
         return $page;
     }
+
+    public function getShopLogo(): array
+    {
+        $englishLogo = $this->getEnglishShopLogo();
+        if ($englishLogo) {
+            return $englishLogo;
+        }
+
+        return parent::getShopLogo();
+    }
+
+    public function getTemplateVarShop()
+    {
+        $shop = parent::getTemplateVarShop();
+        if (!empty($shop['logo_details']['src']) && $this->isEnglishLangCode((string) $this->context->language->iso_code)) {
+            $shop['logo'] = $shop['logo_details']['src'];
+        }
+
+        return $shop;
+    }
+
+    /**
+     * CKC Vianney — logo EN : /img/logo_multilingue.png
+     */
+    private function getEnglishShopLogo()
+    {
+        if (!$this->isEnglishLangCode((string) $this->context->language->iso_code)) {
+            return [];
+        }
+
+        $logoFileName = 'logo_multilingue.png';
+        $logoFileDir = _PS_IMG_DIR_ . $logoFileName;
+        if (!is_file($logoFileDir)) {
+            return [];
+        }
+
+        $logoWidth = 0;
+        $logoHeight = 0;
+        $size = @getimagesize($logoFileDir);
+        if (is_array($size)) {
+            $logoWidth = (int) $size[0];
+            $logoHeight = (int) $size[1];
+        }
+
+        $urls = $this->getTemplateVarUrls();
+        $psImageUrl = $urls['img_ps_url'] ?? _PS_IMG_;
+
+        return [
+            'src' => $psImageUrl . $logoFileName,
+            'width' => $logoWidth,
+            'height' => $logoHeight,
+        ];
+    }
     private function isEnglishLangCode($code)
     {
         $code = strtolower(str_replace('_', '-', (string) $code));

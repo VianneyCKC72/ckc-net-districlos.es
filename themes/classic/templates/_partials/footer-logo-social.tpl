@@ -3,7 +3,11 @@
         <div class="elementor-widget-container">
             <div class="elementor-image">
                 <a href="{$urls.pages.index}">
-                    <img width="144px" src="/img/logo-1744701147.svg" alt="Districlos">
+                    {if isset($language.iso_code) && $language.iso_code == 'en'}
+                        <img width="144px" src="/img/logo_multilingue.png" alt="Districlos">
+                    {else}
+                        <img width="144px" src="/img/logo-1744701147.svg" alt="Districlos">
+                    {/if}
                 </a>
             </div>
         </div>

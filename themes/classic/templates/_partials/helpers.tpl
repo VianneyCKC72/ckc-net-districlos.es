@@ -25,13 +25,22 @@
 
 {function renderLogo}
   <a href="{$urls.pages.index}" class="d-flex logos_container">
-    <img
-      class="logo img-fluid"
-      src="{$shop.logo_details.src}"
-      alt="{$shop.name}"
-      loading="lazy"
-      width="{$shop.logo_details.width}"
-      height="{$shop.logo_details.height}">
-{*    <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="42" height="42" loading="lazy">*}
+    {if isset($language.iso_code) && $language.iso_code == 'en'}
+      <img
+        class="logo img-fluid"
+        src="/img/logo_multilingue.png"
+        alt="{$shop.name}"
+        loading="lazy"
+        {if isset($shop.logo_details.width) && $shop.logo_details.width}width="{$shop.logo_details.width}"{/if}
+        {if isset($shop.logo_details.height) && $shop.logo_details.height}height="{$shop.logo_details.height}"{/if}>
+    {else}
+      <img
+        class="logo img-fluid"
+        src="{$shop.logo_details.src}"
+        alt="{$shop.name}"
+        loading="lazy"
+        width="{$shop.logo_details.width}"
+        height="{$shop.logo_details.height}">
+    {/if}
   </a>
 {/function}

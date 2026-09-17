@@ -27,7 +27,7 @@
                             <img class="desktop_only" width="180" src="/img/DISTRICLOS_pro_logo.png" alt="{$shop.name} Pro" />
                         </picture>
                     </a>
-                {elseif $shop.logo_details}
+                {elseif $shop.logo_details || (isset($language.iso_code) && $language.iso_code == 'en')}
                     {renderLogo}
                 {/if}
             </div>
