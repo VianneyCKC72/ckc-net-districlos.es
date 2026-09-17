@@ -27,8 +27,6 @@
                             <img class="desktop_only" width="180" src="/img/DISTRICLOS_pro_logo.png" alt="{$shop.name} Pro" />
                         </picture>
                     </a>
-                {elseif (isset($ckc_is_english) && $ckc_is_english) || (isset($language.iso_code) && $language.iso_code == 'en')}
-                    {renderLogo src='/img/logo_multilingue.png'}
                 {elseif $shop.logo_details}
                     {renderLogo}
                 {/if}
@@ -41,9 +39,9 @@
 
             <!-- Logo Mobile (Visible seulement sur xs et sm) -->
             <div class="d-block d-xl-none">
-                <a href="{$urls.base_url}" class="d-flex{if (isset($ckc_is_english) && $ckc_is_english) || (isset($language.iso_code) && $language.iso_code == 'en')} logos_container{/if}">
-                    {if (isset($ckc_is_english) && $ckc_is_english) || (isset($language.iso_code) && $language.iso_code == 'en')}
-                        <img class="logo img-fluid" src="/img/logo_multilingue.png" alt="{$shop.name}" width="140" loading="lazy">
+                <a href="{$urls.base_url}" class="d-flex{if isset($ckc_logo_src) && $ckc_logo_src} logos_container{/if}">
+                    {if isset($ckc_logo_src) && $ckc_logo_src}
+                        <img class="logo img-fluid" src="{$ckc_logo_src}" alt="{$shop.name}" width="140" loading="lazy">
                     {else}
                         <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="42" height="42" loading="lazy">
                     {/if}

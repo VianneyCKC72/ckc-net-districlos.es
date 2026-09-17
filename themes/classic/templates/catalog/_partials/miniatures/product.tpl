@@ -43,7 +43,7 @@
                     {/if}*}
 
                     {block name='product_thumbnail'}
-                        <a href="{$link->getProductLink($product.id_product, $product.link_rewrite)}" class="thumbnail product-thumbnail hover-images">
+                        <a href="{$product.url}" class="thumbnail product-thumbnail hover-images">
                             <img class="tag-web-price tag-web-price-miniature"
                                  src="/themes/classic/assets/img/tag-price.svg" loading="lazy" alt="">
 
@@ -148,7 +148,7 @@
                     <div class="product-info-custom-block-miniature">
                         {block name='product_name'}
                             {if $page.page_name == 'category'}
-                                <h3 class="h3 product-title"><a href="{$link->getProductLink($product.id_product, $product.link_rewrite)}"
+                                <h3 class="h3 product-title"><a href="{$product.url}"
                                                                 content="{$product.url}">{$product.name}</a></h3>
                             {else}
                                 <div class="h3 product-title"><a href="{$product.url}"
