@@ -169,6 +169,11 @@
       <trans-unit id="165"><source>Réinitialiser tous les filtres</source><target>Reset all filters</target></trans-unit>
       <trans-unit id="166"><source>TTC</source><target>incl. tax</target></trans-unit>
       <trans-unit id="167"><source>HT</source><target>excl. tax</target></trans-unit>
+      <trans-unit id="168"><source>Accessoires pour poteau</source><target>Post accessories</target></trans-unit>
+      <trans-unit id="169"><source>Accessoire</source><target>Accessory</target></trans-unit>
+      <trans-unit id="170"><source>Fabrication__française</source><target>Made in__France</target></trans-unit>
+      <trans-unit id="171"><source>Fabrication française</source><target>Made in France</target></trans-unit>
+      <trans-unit id="172"><source>Payer en plusieurs fois</source><target>Pay in installments</target></trans-unit>
     </body>
   </file>
 </xliff>

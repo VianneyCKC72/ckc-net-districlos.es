@@ -1,0 +1,87 @@
+/* dtc_closy — bulles questions fiche produit */
+
+.dtc-closy-debug {
+  clear: both;
+}
+
+.dtc-closy-questions {
+  margin: 1rem 0 1.5rem;
+  padding: 0;
+}
+
+.dtc-closy-questions__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.dtc-closy-questions__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #7cba49;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.dtc-closy-questions__title {
+  margin: 0;
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+.dtc-closy-questions__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.dtc-closy-questions__bubble {
+  appearance: none;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #1f2937;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.05s ease;
+  font-family: inherit;
+}
+
+.dtc-closy-questions__bubble:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.dtc-closy-questions__bubble:active {
+  transform: scale(0.98);
+}
+
+.dtc-closy-questions__bubble:focus-visible {
+  outline: 2px solid #7cba49;
+  outline-offset: 2px;
+}
+
+.dtc-closy-questions__bubble--static {
+  border-color: #d1d5db;
+}
+
+.dtc-closy-questions__bubble--cta {
+  background: #7cba49;
+  border-color: #7cba49;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.dtc-closy-questions__bubble--cta:hover {
+  background: #6aa53d;
+  border-color: #6aa53d;
+  color: #ffffff;
+}

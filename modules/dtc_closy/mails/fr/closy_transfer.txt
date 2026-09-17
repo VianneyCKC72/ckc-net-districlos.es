@@ -1,0 +1,10 @@
+{subject}
+
+Boutique : {shop_name}
+Date : {date}
+
+Contact client
+{contact}
+
+Conversation
+{message}

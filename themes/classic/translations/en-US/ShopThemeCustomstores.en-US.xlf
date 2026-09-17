@@ -8,11 +8,11 @@
       </trans-unit>
       <trans-unit id="2" resname="Pour connaître nos stocks et les délais de livraison, enregistrez votre magasin favori.">
         <source>Pour connaître nos stocks et les délais de livraison, enregistrez votre magasin favori.</source>
-        <target>Check our stock and delivery times — save your favourite store.</target>
+        <target>To check stock availability and delivery times, save your favorite store.</target>
       </trans-unit>
       <trans-unit id="3" resname="Ville, région, code postal...">
         <source>Ville, région, code postal...</source>
-        <target>City, region, postal code...</target>
+        <target>City, region, postcode...</target>
       </trans-unit>
       <trans-unit id="4" resname="Lundi - Vendredi">
         <source>Lundi - Vendredi</source>
@@ -21,6 +21,66 @@
       <trans-unit id="5" resname="Voir la page du magasin">
         <source>Voir la page du magasin</source>
         <target>See the store page</target>
+      </trans-unit>
+      <trans-unit id="6" resname="avis">
+        <source>avis</source>
+        <target>reviews</target>
+      </trans-unit>
+      <trans-unit id="7" resname="Samedi">
+        <source>Samedi</source>
+        <target>Saturday</target>
+      </trans-unit>
+      <trans-unit id="8" resname="Fermé">
+        <source>Fermé</source>
+        <target>Closed</target>
+      </trans-unit>
+      <trans-unit id="9" resname="recherche">
+        <source>recherche</source>
+        <target>search</target>
+      </trans-unit>
+      <trans-unit id="10" resname="Aucun magasin trouvé.">
+        <source>Aucun magasin trouvé.</source>
+        <target>No store found.</target>
+      </trans-unit>
+      <trans-unit id="11" resname="Lundi">
+        <source>Lundi</source>
+        <target>Monday</target>
+      </trans-unit>
+      <trans-unit id="12" resname="Mardi">
+        <source>Mardi</source>
+        <target>Tuesday</target>
+      </trans-unit>
+      <trans-unit id="13" resname="Mercredi">
+        <source>Mercredi</source>
+        <target>Wednesday</target>
+      </trans-unit>
+      <trans-unit id="14" resname="Jeudi">
+        <source>Jeudi</source>
+        <target>Thursday</target>
+      </trans-unit>
+      <trans-unit id="15" resname="Vendredi">
+        <source>Vendredi</source>
+        <target>Friday</target>
+      </trans-unit>
+      <trans-unit id="16" resname="Dimanche">
+        <source>Dimanche</source>
+        <target>Sunday</target>
+      </trans-unit>
+      <trans-unit id="17" resname="et">
+        <source>et</source>
+        <target>and</target>
+      </trans-unit>
+      <trans-unit id="18" resname="Lundi - Jeudi, Vendredi">
+        <source>Lundi - Jeudi, Vendredi</source>
+        <target>Monday - Thursday, Friday</target>
+      </trans-unit>
+      <trans-unit id="19" resname="Voir sur Google">
+        <source>Voir sur Google</source>
+        <target>View on Google</target>
+      </trans-unit>
+      <trans-unit id="20" resname="Avis clients">
+        <source>Avis clients</source>
+        <target>Customer reviews</target>
       </trans-unit>
     </body>
   </file>
