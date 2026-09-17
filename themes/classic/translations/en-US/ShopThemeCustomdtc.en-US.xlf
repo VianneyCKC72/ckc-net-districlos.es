@@ -33,6 +33,7 @@
       <trans-unit id="29"><source>Nos clients sont satisfaits</source><target>Our customers are satisfied</target></trans-unit>
       <trans-unit id="30"><source>BONS PLANS</source><target>GREAT DEALS</target></trans-unit>
       <trans-unit id="31"><source>Jusqu'à &lt;strong&gt;-12%&lt;/strong&gt; offerts dès 2000€ d'achat !</source><target>Up to &lt;strong&gt;-12%&lt;/strong&gt; off from €2,000 spent!</target></trans-unit>
+      <trans-unit id="31b"><source>Jusqu'à -17% sur nos kits !</source><target>Up to -17% on our kits!</target></trans-unit>
       <trans-unit id="32"><source>Méthode non autorisée</source><target>Method not allowed</target></trans-unit>
       <trans-unit id="33"><source>Token invalide</source><target>Invalid token</target></trans-unit>
       <trans-unit id="34"><source>Nom requis</source><target>Last name required</target></trans-unit>
@@ -87,6 +88,9 @@
       <trans-unit id="83"><source>Posez votre question…</source><target>Ask your question…</target></trans-unit>
       <trans-unit id="84"><source>Quel sont les délais de livraison ?</source><target>What are the delivery times?</target></trans-unit>
       <trans-unit id="85"><source>Bonjour ! Je suis là pour répondre à vos questions sur ce produit.</source><target>Hello! I'm here to answer your questions about this product.</target></trans-unit>
+      <trans-unit id="85b"><source>Bonjour ! Je suis là pour répondre à vos questions sur ce produit (pose, fixation, usage…).</source><target>Hello! I'm here to answer your questions about this product (fitting, fixing, usage…).</target></trans-unit>
+      <trans-unit id="85c"><source>Bonjour ! Je suis Closy, votre assistant. Comment puis-je vous aider aujourd’hui ?</source><target>Hello! I'm Closy, your assistant. How can I help you today?</target></trans-unit>
+      <trans-unit id="94b"><source>Assistant Closy</source><target>Closy assistant</target></trans-unit>
       <trans-unit id="86"><source>Réflexion en cours…</source><target>Thinking…</target></trans-unit>
       <trans-unit id="87"><source>Utile</source><target>Helpful</target></trans-unit>
       <trans-unit id="88"><source>Pas utile</source><target>Not helpful</target></trans-unit>

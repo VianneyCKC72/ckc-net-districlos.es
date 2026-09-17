@@ -276,6 +276,11 @@
   }
 }
 
+/* Closy : masquer le bloc FR du module dès que la version i18n thème est présente */
+body:has(.dtc-closy-questions--i18n) .dtc-closy-questions:not(.dtc-closy-questions--i18n) {
+  display: none;
+}
+
 .product-images-grid {
   position: relative;
   overflow: hidden;
