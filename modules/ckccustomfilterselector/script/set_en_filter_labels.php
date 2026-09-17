@@ -71,6 +71,31 @@ $map = [
     'nouveautes' => 'New products',
     'promotions' => 'Promotions',
     'conditionnement' => 'Packaging',
+    'type de fermeture' => 'Closure type',
+    'type de remplissage' => 'Infill type',
+    'ø des fils' => 'Wire diameter',
+    'o des fils' => 'Wire diameter',
+    'fil' => 'Wire',
+    'matériaux' => 'Materials',
+    'materiaux' => 'Materials',
+    'couleur soubassement' => 'Plinth color',
+    'couleur des lattes pvc' => 'PVC slat color',
+    'gamme' => 'Range',
+    'portillon' => 'Pedestrian gate',
+    'longueur cloture piscine' => 'Pool fence length',
+    'longueur clôture piscine' => 'Pool fence length',
+    'longueur du module' => 'Module length',
+    'profondeur' => 'Depth',
+    'hauteur du poteau' => 'Post height',
+    'dimensions' => 'Dimensions',
+    'nombre de brins' => 'Number of strands',
+    'longueur (mètre linéaire)' => 'Length (linear meter)',
+    'longueur (metre lineaire)' => 'Length (linear meter)',
+    'couleur du grillage' => 'Mesh color',
+    'hauteur du grillage' => 'Mesh height',
+    'prix du grillage' => 'Mesh price',
+    'gamme du grillage' => 'Mesh range',
+    'longueur du kit' => 'Kit length',
 ];
 
 $db = Db::getInstance();
@@ -243,6 +268,7 @@ function ckcAs4Norm($value)
     $value = html_entity_decode((string) $value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     $value = preg_replace('/\s+/u', ' ', trim($value));
     $value = str_replace(['’', '`'], "'", $value);
+    $value = str_replace(['Ø', 'ø'], 'ø', $value);
 
     return mb_strtolower($value, 'UTF-8');
 }
