@@ -1,0 +1,12 @@
+Bonjour {firstname},
+
+Félicitations ! Vous êtes passé au niveau supérieur de notre programme Club Pro.
+
+Grâce à vos commandes sur les 12 derniers mois, vous accédez désormais au statut {tier_label} — et bénéficiez de {discount} de réduction !
+
+Cette remise s'appliquera automatiquement sur vos prochaines commandes.
+
+Vérifier mon statut : {status_url}
+
+{shop_name}
+{shop_url}

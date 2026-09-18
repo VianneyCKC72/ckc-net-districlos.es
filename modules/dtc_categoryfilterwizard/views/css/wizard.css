@@ -1,0 +1,340 @@
+/* ============================================================
+   Category Filter Wizard — Styles
+   ============================================================ */
+
+.dtc-wizard {
+  /* Palette identique à la version legacy `category-filter-wizard-215.tpl` */
+  --dtc-primary:     #6abf50; /* green */
+  --dtc-primary-h:   #58a640; /* green hover */
+  --dtc-border:      #e5e5e5;
+  --dtc-bg:          #F6F2EB;
+  --dtc-text:        #111827;
+  --dtc-muted:       #555;
+  --dtc-success:     #6abf50;
+  --dtc-radius:      10px;
+  --dtc-radius-sm:   12px;
+  --dtc-transition:  0.2s ease;
+
+  background: #F6F2EB;
+  border: none;
+  border-radius: 0;
+  padding: 1.5rem 2rem;
+  margin-bottom: 32px;
+  font-family: inherit;
+  color: var(--dtc-text);
+}
+
+/* ---- Titre & intro ---- */
+
+.dtc-wizard__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.dtc-wizard__intro {
+  color: var(--dtc-muted);
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+}
+
+/* ---- Indicateur de progression ---- */
+
+.dtc-wizard__progress {
+  display: flex;
+  gap: 6px;
+}
+
+.dtc-wizard__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.dtc-wizard__step-count {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.dtc-wizard__current-step {
+  font-weight: 700;
+  color: #555;
+}
+
+.dtc-wizard__btn--reset-all {
+  margin-left: auto;
+  background: none;
+  border: 1px solid #999;
+  border-radius: 50px;
+  padding: 0.4rem 1rem;
+  font-size: 0.8rem;
+  color: #555;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  font-weight: 400;
+}
+
+.dtc-wizard__btn--reset-all:hover {
+  border-color: #666;
+  color: #333;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.dtc-wizard__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #d9d9d9;
+  transition: background 0.3s;
+}
+
+.dtc-wizard__dot--active {
+  background: #6abf50;
+}
+
+.dtc-wizard__dot--done {
+  background: #a8d98f;
+}
+
+/* ---- Étape ---- */
+
+.dtc-wizard__step {
+  display: block;
+}
+
+.dtc-wizard__step--hidden {
+  display: none;
+}
+
+.dtc-wizard__step-label {
+  font-weight: 700;
+  font-size: 18px;
+  margin: 0 0 1.25rem;
+  color: #000;
+}
+
+/* ---- Options ---- */
+
+.dtc-wizard__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dtc-wizard__option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem;
+  border: 2px solid var(--dtc-border);
+  border-radius: 12px;
+  background: #fff;
+  color: #333;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  user-select: none;
+  line-height: 1.2;
+}
+
+.dtc-wizard__option-img {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.dtc-wizard__option-label {
+  text-align: center;
+}
+
+.dtc-wizard__option:hover {
+  border-color: #6abf50;
+  color: #333;
+}
+
+.dtc-wizard__option--selected,
+.dtc-wizard__option[aria-pressed="true"] {
+  border-color: #6abf50;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(106, 191, 80, 0.15);
+  color: #333;
+}
+
+.dtc-wizard__empty {
+  color: var(--dtc-muted);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+/* ---- Navigation ---- */
+
+.dtc-wizard__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.dtc-wizard__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.55rem 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 50px;
+  background: transparent;
+  color: #555;
+  font-size: 0.85rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.dtc-wizard__btn:hover:not(:disabled) {
+  border-color: #888;
+}
+
+.dtc-wizard__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.dtc-wizard__btn--submit,
+.dtc-wizard__btn--next {
+  background: #6abf50;
+  border: none;
+  color: #fff;
+}
+
+.dtc-wizard__btn--submit:hover:not(:disabled),
+.dtc-wizard__btn--next:hover:not(:disabled) {
+  background: #58a640;
+}
+
+.dtc-wizard__btn--submit:disabled,
+.dtc-wizard__btn--next:disabled {
+  background: #e5e5e5;
+  border-color: #e5e5e5;
+  color: #999;
+}
+
+.dtc-wizard__btn--reset {
+  margin-left: auto;
+  background: none;
+  border-color: #999;
+  color: #555;
+  font-weight: 400;
+  font-size: 0.8rem;
+  padding: 0.4rem 1rem;
+}
+
+.dtc-wizard__btn--reset:hover {
+  background: #555;
+  color: #fff;
+}
+
+/* Retour (prev) */
+.dtc-wizard__btn--prev {
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 50px;
+  padding: 0.4rem 1.2rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #555;
+  transition: border-color 0.2s;
+}
+
+.dtc-wizard__btn--prev:hover {
+  border-color: #888;
+}
+
+/* ---- Récapitulatif ---- */
+
+.dtc-wizard__summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--dtc-radius-sm);
+  margin-top: 16px;
+  font-size: 0.9rem;
+}
+
+.dtc-wizard__summary[hidden] {
+  display: none;
+}
+
+.dtc-wizard__summary-text {
+  flex: 1;
+  color: var(--dtc-primary);
+  font-weight: 500;
+}
+
+/* ---- Loader ---- */
+
+.dtc-wizard__loader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 0;
+  color: var(--dtc-muted);
+  font-size: 0.9rem;
+}
+
+.dtc-wizard__loader[hidden] {
+  display: none;
+}
+
+.dtc-wizard__spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--dtc-border);
+  border-top-color: var(--dtc-primary);
+  border-radius: 50%;
+  animation: dtc-spin 0.7s linear infinite;
+}
+
+@keyframes dtc-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 600px) {
+  .dtc-wizard {
+    padding: 20px 16px;
+  }
+
+  .dtc-wizard__options {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .dtc-wizard__option {
+    width: 100%;
+    text-align: left;
+  }
+
+  .dtc-wizard__nav {
+    flex-direction: column;
+    align-items: stretch;
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .dtc-wizard__btn--reset {
+    margin-left: 0;
+  }
+}

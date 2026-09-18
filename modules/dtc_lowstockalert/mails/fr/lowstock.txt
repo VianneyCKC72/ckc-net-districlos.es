@@ -1,0 +1,8 @@
+Bonjour,
+
+Les produits suivants sont passés sous le seuil de stock ({threshold}) :
+
+{products_text}
+
+Boutique : {shop_name}
+{shop_url}

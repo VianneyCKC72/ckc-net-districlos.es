@@ -1,0 +1,12 @@
+﻿Hello {firstname},
+
+Please note: within the next 2 weeks, some of your orders will leave your 12-month rolling total.
+
+Without a new order, you may lose your {tier_label} status and your {discount} discount.
+
+Please place an order to maintain your total and keep your Club Pro benefit.
+
+Check my status: {status_url}
+
+{shop_name}
+{shop_url}
