@@ -11578,7 +11578,9 @@ $(document).ready(function () {
         var linksBlockFooter = $(".linksBlockFooter")
 
         $(".logoFooterContainer img").attr('loading', 'lazy')
-        $(".logoFooterContainer img").attr('src', '/img/logo-text-white.svg')
+        if (!$('body').hasClass('lang-en')) {
+            $(".logoFooterContainer img").attr('src', '/img/logo-text-white.svg')
+        }
         $(".logoFooterContainerPro img").attr('loading', 'lazy')
         $(".logoFooterContainerPro img").attr('src', '/img/DISTRICLOS_pro_logo_mobile.png')
 

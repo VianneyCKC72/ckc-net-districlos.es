@@ -776,7 +776,7 @@ class AdvancedPack extends Product
                         $productPackPrice -= Tools::ps_round($packReductionAmount, 6);
                         $productPackPriceWt -= Tools::ps_round($useTax ? $productTaxCalculator->addTaxes($packReductionAmount) : $packReductionAmount, 6);
                     } elseif ($packReductionType == 'percentage') {
-                        if ((float) $packReductionAmount <= 0 && !empty($packProduct['use_reduc'])) {
+                        if ((float) $packReductionAmount <= 0) {
                             $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
                                 'SELECT `reduction_type`, `reduction_amount`
                                  FROM `' . _DB_PREFIX_ . 'pm_advancedpack_pack_shop_discount`

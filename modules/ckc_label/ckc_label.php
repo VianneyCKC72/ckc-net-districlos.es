@@ -11,7 +11,7 @@ class ckc_label extends Module
     {
         $this->name = 'ckc_label';
         $this->tab = 'administration';
-        $this->version = '1.0.1';
+        $this->version = '1.1.1';
         $this->author = 'CKC-Net';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -68,6 +68,13 @@ class ckc_label extends Module
         PRIMARY KEY (`id_label_category`))
         ENGINE=" . _MYSQL_ENGINE_ . " DEFAULT CHARSET=utf8;";
 
+        $sqls[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckc_labels_lang` (
+            `id_label` INT(11) NOT NULL,
+            `id_lang` INT(11) NOT NULL,
+            `text` TEXT NOT NULL,
+            PRIMARY KEY (`id_label`, `id_lang`)
+        ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
+
         foreach ($sqls as $sql){
             $result = Db::getInstance()->execute($sql);
         }
@@ -81,6 +88,7 @@ class ckc_label extends Module
         $sqls[] = "DROP TABLE IF EXISTS `" . _DB_PREFIX_ . "ckc_labels`;";
         $sqls[] = "DROP TABLE IF EXISTS `" . _DB_PREFIX_ . "ckc_labels_product`;";
         $sqls[] = "DROP TABLE IF EXISTS `" . _DB_PREFIX_ . "ckc_labels_category`;";
+        $sqls[] = "DROP TABLE IF EXISTS `" . _DB_PREFIX_ . "ckc_labels_lang`;";
 
         foreach ($sqls as $sql){
             $result = Db::getInstance()->execute($sql);
@@ -91,8 +99,23 @@ class ckc_label extends Module
 
     public function getContent()
     {
+        $this->ensureLangTable();
 
         $output = '';
+
+        if (Tools::getValue('ajaxCkcLabelTranslate')) {
+            $this->ajaxTranslateLabelText();
+        }
+
+        if (Tools::getValue('ckcLabelTranslateMissing')) {
+            if (Module::isInstalled('ckctranslate') && Module::isEnabled('ckctranslate')) {
+                Tools::redirectAdmin(
+                    $this->context->link->getAdminLink('AdminCkcTranslate')
+                    . '&run_job=ckc_labels&fresh_queue=1'
+                );
+            }
+            $output .= $this->displayError($this->l('Le module CKC Translate n’est pas actif.'));
+        }
 
         if (Tools::isSubmit('submitCkcLabelConfig')) {
             $errors = $this->processFormSubmission();
@@ -173,6 +196,13 @@ class ckc_label extends Module
                 'desc' => $this->l('Add New Label'),
             ],
         ];
+        if (Module::isInstalled('ckctranslate') && Module::isEnabled('ckctranslate')) {
+            $helper->toolbar_btn['cogs'] = [
+                'href' => $this->context->link->getAdminLink('AdminModules', true)
+                    . '&configure=' . $this->name . '&ckcLabelTranslateMissing=1',
+                'desc' => $this->l('Traduire les textes manquants (EN)'),
+            ];
+        }
         $helper->title = $this->l('Étiquettes');
         $helper->no_link = true;
         $helper->module = $this;
@@ -215,10 +245,21 @@ class ckc_label extends Module
                         'type' => 'textarea',
                         'label' => $this->l('Texte'),
                         'name' => 'text',
+                        'lang' => true,
                         'required' => true,
                         'rows' => 3,
                         'cols' => 40,
-                        'desc' => $this->l('Autorisé : <strong>, <br>, ↓. Ex. : ↓ <strong>PRIX<br>DÉGRESSIF</strong>'),
+                        'desc' => $this->l('Autorisé : <strong>, <br>, ↓. Un onglet par langue. Ex. : ↓ <strong>PRIX<br>DÉGRESSIF</strong>'),
+                    ],
+                    [
+                        'type' => 'html',
+                        'name' => 'ckc_label_translate_btn',
+                        'html_content' => (Module::isInstalled('ckctranslate') && Module::isEnabled('ckctranslate'))
+                            ? '<button type="button" class="btn btn-default" id="ckc-label-translate-en">'
+                                . $this->l('Traduire le texte FR vers l’anglais (IA)')
+                                . '</button>'
+                                . '<p class="help-block">' . $this->l('Remplit l’onglet anglais à partir du texte français, sans écraser si vous avez déjà saisi une traduction.') . '</p>'
+                            : '',
                     ],
                     [
                         'type' => 'switch',
@@ -317,7 +358,19 @@ class ckc_label extends Module
         $helper->table = $this->table;
         $this->fields_form = array();
 
+        $languages = [];
+        foreach (Language::getLanguages(false) as $lang) {
+            $languages[] = [
+                'id_lang' => (int) $lang['id_lang'],
+                'iso_code' => $lang['iso_code'],
+                'name' => $lang['name'],
+                'is_default' => ((int) $lang['id_lang'] === (int) Configuration::get('PS_LANG_DEFAULT')),
+            ];
+        }
+
+        $helper->languages = $languages;
         $helper->default_form_language = (int) Configuration::get('PS_LANG_DEFAULT');
+        $helper->allow_employee_form_lang = (int) Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG');
         $helper->submit_action = 'submitCkcLabelConfig';
         $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false) .
             '&configure=' . $this->name .
@@ -332,36 +385,81 @@ class ckc_label extends Module
 
     private function getConfigFormValues()
     {
-        if (Tools::isSubmit('id_label')) {
-            $id_label = Tools::getValue('id_label');
-            $label = Db::getInstance()->getRow('SELECT * FROM ' . _DB_PREFIX_ . 'ckc_labels WHERE id_label = ' . (int) $id_label);
+        $idLangDefault = (int) Configuration::get('PS_LANG_DEFAULT');
+        $textByLang = [];
+        foreach (Language::getLanguages(false) as $lang) {
+            $textByLang[(int) $lang['id_lang']] = '';
+        }
 
-            if($label['apply_to'] == 'products'){
-                $product_ids_sql = Db::getInstance()->executeS('SELECT GROUP_CONCAT(DISTINCT `id_product` SEPARATOR ",") as id_product FROM ' . _DB_PREFIX_ . 'ckc_labels_product WHERE id_label = ' . (int) $id_label);
-                $product_ids = $product_ids_sql[0]['id_product'];
-                $category_ids = '';
-            } else if ($label['apply_to'] == 'categories'){
-                $product_ids = '';
-                $category_ids_sql = Db::getInstance()->executeS('SELECT GROUP_CONCAT(DISTINCT `id_category` SEPARATOR ",") as id_category FROM ' . _DB_PREFIX_ . 'ckc_labels_category WHERE id_label = ' . (int) $id_label);
-                $category_ids = $category_ids_sql[0]['id_category'];
-            } else {
-                $product_ids = '';
-                $category_ids = '';
-            }
-
+        if (!Tools::isSubmit('id_label') && !Tools::getValue('id_label')) {
             return [
-                'color' => $label['color'],
-                'background_color' => $label['background_color'],
-                'text' => $label['text'],
-                'show_discount_percent' => (int) ($label['show_discount_percent'] ?? 1),
-                'start_date' => $label['start_date'],
-                'end_date' => $label['end_date'],
-                'active' => $label['active'],
-                'apply_to' => $label['apply_to'],
-                'product_ids[]' => explode(',', $product_ids),
-                'category_ids[]' => explode(',', $category_ids),
+                'color' => '#FFFFFF',
+                'background_color' => '#FF144E',
+                'text' => $textByLang,
+                'show_discount_percent' => 1,
+                'start_date' => '',
+                'end_date' => '',
+                'active' => 1,
+                'apply_to' => 'all',
+                'product_ids[]' => [],
+                'category_ids[]' => [],
             ];
         }
+
+        $id_label = (int) Tools::getValue('id_label');
+        $label = Db::getInstance()->getRow('SELECT * FROM ' . _DB_PREFIX_ . 'ckc_labels WHERE id_label = ' . (int) $id_label);
+        if (!$label) {
+            return [
+                'color' => '#FFFFFF',
+                'background_color' => '#FF144E',
+                'text' => $textByLang,
+                'show_discount_percent' => 1,
+                'start_date' => '',
+                'end_date' => '',
+                'active' => 1,
+                'apply_to' => 'all',
+                'product_ids[]' => [],
+                'category_ids[]' => [],
+            ];
+        }
+
+        $langRows = Db::getInstance()->executeS(
+            'SELECT id_lang, text FROM `' . _DB_PREFIX_ . 'ckc_labels_lang` WHERE id_label = ' . (int) $id_label
+        );
+        if (is_array($langRows)) {
+            foreach ($langRows as $row) {
+                $textByLang[(int) $row['id_lang']] = $row['text'];
+            }
+        }
+        if (empty($textByLang[$idLangDefault]) && !empty($label['text'])) {
+            $textByLang[$idLangDefault] = $label['text'];
+        }
+
+        if ($label['apply_to'] == 'products') {
+            $product_ids_sql = Db::getInstance()->executeS('SELECT GROUP_CONCAT(DISTINCT `id_product` SEPARATOR ",") as id_product FROM ' . _DB_PREFIX_ . 'ckc_labels_product WHERE id_label = ' . (int) $id_label);
+            $product_ids = $product_ids_sql[0]['id_product'];
+            $category_ids = '';
+        } elseif ($label['apply_to'] == 'categories') {
+            $product_ids = '';
+            $category_ids_sql = Db::getInstance()->executeS('SELECT GROUP_CONCAT(DISTINCT `id_category` SEPARATOR ",") as id_category FROM ' . _DB_PREFIX_ . 'ckc_labels_category WHERE id_label = ' . (int) $id_label);
+            $category_ids = $category_ids_sql[0]['id_category'];
+        } else {
+            $product_ids = '';
+            $category_ids = '';
+        }
+
+        return [
+            'color' => $label['color'],
+            'background_color' => $label['background_color'],
+            'text' => $textByLang,
+            'show_discount_percent' => (int) ($label['show_discount_percent'] ?? 1),
+            'start_date' => $label['start_date'],
+            'end_date' => $label['end_date'],
+            'active' => $label['active'],
+            'apply_to' => $label['apply_to'],
+            'product_ids[]' => explode(',', $product_ids),
+            'category_ids[]' => explode(',', $category_ids),
+        ];
     }
 
     private function validateFormData($data)
@@ -424,10 +522,18 @@ class ckc_label extends Module
         }
 
 
+        $idLangDefault = (int) Configuration::get('PS_LANG_DEFAULT');
+        $textByLang = [];
+        foreach (Language::getLanguages(false) as $lang) {
+            $idLang = (int) $lang['id_lang'];
+            $textByLang[$idLang] = $this->sanitizeLabelText(Tools::getValue('text_' . $idLang, ''));
+        }
+        $defaultText = $textByLang[$idLangDefault] ?? reset($textByLang);
+
         $data = [
             'color' => Tools::getValue('color'),
             'background_color' => Tools::getValue('background_color'),
-            'text' => $this->sanitizeLabelText(Tools::getValue('text')),
+            'text' => $defaultText,
             'show_discount_percent' => (int) Tools::getValue('show_discount_percent', 1),
             'start_date' => Tools::getValue('start_date'),
             'end_date' => Tools::getValue('end_date'),
@@ -449,24 +555,12 @@ class ckc_label extends Module
             Db::getInstance()->update('ckc_labels', $data, 'id_label = ' . (int) $id_label);
         } else {
             Db::getInstance()->insert('ckc_labels', $data);
+            $id_label = (int) Db::getInstance()->Insert_ID();
         }
 
-        $new_label = false;
+        $this->saveLabelLangs((int) $id_label, $textByLang);
 
-        if(!$id_label) {
-            $new_label = true;
-            $id_label_sql = Db::getInstance()->executeS('SELECT `id_label` FROM  `' . _DB_PREFIX_ . 'ckc_labels` 
-            WHERE `color` LIKE "'.$data["color"].'" AND 
-            `background_color` LIKE "'.$data["background_color"].'" AND
-            `text` LIKE "'.$data["text"].'" AND 
-            `show_discount_percent` = ' . (int) $data['show_discount_percent'] . ' AND 
-            `start_date` LIKE "'.$data["start_date"].'" AND 
-            `end_date` LIKE "'.$data["end_date"].'" AND 
-            `apply_to` LIKE "'.$data["apply_to"].'"
-            ');
-
-            $id_label = $id_label_sql[0]['id_label'];
-        }
+        $new_label = !Tools::getValue('id_label');
 
         if(count($categoriesArray)){
 
@@ -505,6 +599,7 @@ class ckc_label extends Module
         Db::getInstance()->delete('ckc_labels', 'id_label = ' . (int) $id_label);
         Db::getInstance()->delete('ckc_labels_product', 'id_label = ' . (int) $id_label);
         Db::getInstance()->delete('ckc_labels_category', 'id_label = ' . (int) $id_label);
+        Db::getInstance()->delete('ckc_labels_lang', 'id_label = ' . (int) $id_label);
     }
 
     private function copyLabel($id_label){
@@ -532,6 +627,24 @@ class ckc_label extends Module
             ');
 
         $id_label_new = $id_label_new_sql[0]['id_label'];
+
+        $idLangDefault = (int) Configuration::get('PS_LANG_DEFAULT');
+        $langRows = Db::getInstance()->executeS(
+            'SELECT id_lang, text FROM `' . _DB_PREFIX_ . 'ckc_labels_lang` WHERE id_label = ' . (int) $id_label
+        );
+        if (is_array($langRows)) {
+            foreach ($langRows as $langRow) {
+                $copiedText = $langRow['text'];
+                if ((int) $langRow['id_lang'] === $idLangDefault) {
+                    $copiedText .= ' copie ' . $date;
+                }
+                Db::getInstance()->insert('ckc_labels_lang', [
+                    'id_label' => (int) $id_label_new,
+                    'id_lang' => (int) $langRow['id_lang'],
+                    'text' => pSQL($copiedText, true),
+                ]);
+            }
+        }
 
         if(isset($labelInfoCategories[0]['id_category'])){
             $categoriesArray = explode(',', $labelInfoCategories[0]['id_category']);
@@ -572,6 +685,7 @@ class ckc_label extends Module
 
     public function hookDisplayHeader()
     {
+        $this->ensureLangTable();
         $this->context->controller->registerStylesheet(
             'ckc-label-front',
             'modules/' . $this->name . '/views/css/ckc_label.css',
@@ -580,32 +694,110 @@ class ckc_label extends Module
     }
 
     /**
+     * Crée ps_ckc_labels_lang si l’upgrade 1.1.0 n’a pas encore été lancé.
+     */
+    public function ensureLangTable()
+    {
+        static $done = false;
+        if ($done) {
+            return true;
+        }
+
+        try {
+            $table = _DB_PREFIX_ . 'ckc_labels_lang';
+            $exists = (int) Db::getInstance()->getValue(
+                'SELECT COUNT(*) FROM information_schema.TABLES
+                 WHERE TABLE_SCHEMA = DATABASE()
+                   AND TABLE_NAME = \'' . pSQL($table) . '\''
+            );
+            if ($exists) {
+                $done = true;
+                return true;
+            }
+
+            $ok = Db::getInstance()->execute(
+                'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'ckc_labels_lang` (
+                    `id_label` INT(11) NOT NULL,
+                    `id_lang` INT(11) NOT NULL,
+                    `text` TEXT NOT NULL,
+                    PRIMARY KEY (`id_label`, `id_lang`)
+                ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;'
+            );
+            if (!$ok) {
+                return false;
+            }
+
+            $idLangDefault = (int) Configuration::get('PS_LANG_DEFAULT');
+            if ($idLangDefault <= 0) {
+                $idLangDefault = 1;
+            }
+
+            Db::getInstance()->execute(
+                'INSERT IGNORE INTO `' . _DB_PREFIX_ . 'ckc_labels_lang` (`id_label`, `id_lang`, `text`)
+                 SELECT `id_label`, ' . $idLangDefault . ', `text`
+                 FROM `' . _DB_PREFIX_ . 'ckc_labels`
+                 WHERE `text` IS NOT NULL AND TRIM(`text`) != \'\''
+            );
+        } catch (Exception $e) {
+            return false;
+        }
+
+        $done = true;
+
+        return true;
+    }
+
+    /**
      * Catalogue labels actifs (1 SQL / requête HTTP), puis filtre produit/catégorie.
      */
     private function getActiveLabelsCatalog()
     {
-        static $catalog = null;
-        if ($catalog !== null) {
-            return $catalog;
+        $this->ensureLangTable();
+
+        static $catalogByLang = [];
+        $idLang = (int) $this->context->language->id;
+        if (isset($catalogByLang[$idLang])) {
+            return $catalogByLang[$idLang];
         }
 
         $ver = (int) Configuration::get('CKC_LABEL_CACHE_VER');
-        $cacheId = 'ckc_label_catalog_' . $ver . '_' . date('YmdH');
+        $idLang = (int) $this->context->language->id;
+        $cacheId = 'ckc_label_catalog_' . $ver . '_' . $idLang . '_' . date('YmdH');
 
         if (Cache::isStored($cacheId)) {
-            return $catalog = Cache::retrieve($cacheId);
+            return $catalogByLang[$idLang] = Cache::retrieve($cacheId);
         }
 
         $currentDate = date('Y-m-d H:i:s');
-        $rows = Db::getInstance()->executeS(
-            'SELECT l.*, p.`id_product` AS `map_id_product`, c.`id_category` AS `map_id_category`
+        $idLang = (int) $this->context->language->id;
+        $idLangDefault = (int) Configuration::get('PS_LANG_DEFAULT');
+        $whereActive = ' WHERE l.`active` = 1
+            AND (l.`start_date` IS NULL OR l.`start_date` = "0000-00-00 00:00:00" OR l.`start_date` <= "' . pSQL($currentDate) . '")
+            AND (l.`end_date` IS NULL OR l.`end_date` = "0000-00-00 00:00:00" OR l.`end_date` >= "' . pSQL($currentDate) . '")';
+        $sqlWithLang = 'SELECT l.*,
+                COALESCE(NULLIF(TRIM(ll.`text`), ""), llfb.`text`, l.`text`) AS `text`,
+                p.`id_product` AS `map_id_product`, c.`id_category` AS `map_id_category`
+            FROM `' . _DB_PREFIX_ . 'ckc_labels` l
+            LEFT JOIN `' . _DB_PREFIX_ . 'ckc_labels_lang` ll
+                ON ll.`id_label` = l.`id_label` AND ll.`id_lang` = ' . $idLang . '
+            LEFT JOIN `' . _DB_PREFIX_ . 'ckc_labels_lang` llfb
+                ON llfb.`id_label` = l.`id_label` AND llfb.`id_lang` = ' . $idLangDefault . '
+            LEFT JOIN `' . _DB_PREFIX_ . 'ckc_labels_product` p ON p.`id_label` = l.`id_label`
+            LEFT JOIN `' . _DB_PREFIX_ . 'ckc_labels_category` c ON c.`id_label` = l.`id_label`'
+            . $whereActive;
+        $sqlLegacy = 'SELECT l.*,
+                l.`text`,
+                p.`id_product` AS `map_id_product`, c.`id_category` AS `map_id_category`
             FROM `' . _DB_PREFIX_ . 'ckc_labels` l
             LEFT JOIN `' . _DB_PREFIX_ . 'ckc_labels_product` p ON p.`id_label` = l.`id_label`
-            LEFT JOIN `' . _DB_PREFIX_ . 'ckc_labels_category` c ON c.`id_label` = l.`id_label`
-            WHERE l.`active` = 1
-            AND (l.`start_date` IS NULL OR l.`start_date` = "0000-00-00 00:00:00" OR l.`start_date` <= "' . pSQL($currentDate) . '")
-            AND (l.`end_date` IS NULL OR l.`end_date` = "0000-00-00 00:00:00" OR l.`end_date` >= "' . pSQL($currentDate) . '")'
-        );
+            LEFT JOIN `' . _DB_PREFIX_ . 'ckc_labels_category` c ON c.`id_label` = l.`id_label`'
+            . $whereActive;
+
+        try {
+            $rows = Db::getInstance()->executeS($sqlWithLang);
+        } catch (Exception $e) {
+            $rows = Db::getInstance()->executeS($sqlLegacy);
+        }
 
         $catalog = [
             'all' => [],
@@ -615,7 +807,7 @@ class ckc_label extends Module
 
         if (!is_array($rows)) {
             Cache::store($cacheId, $catalog);
-            return $catalog;
+            return $catalogByLang[$idLang] = $catalog;
         }
 
         $seenAll = [];
@@ -642,7 +834,7 @@ class ckc_label extends Module
         }
 
         Cache::store($cacheId, $catalog);
-        return $catalog;
+        return $catalogByLang[$idLang] = $catalog;
     }
 
     private function getActiveLabelsForProduct($idProduct, $idCategory)
@@ -683,6 +875,7 @@ class ckc_label extends Module
         $idCategory = (int) $product['id_category_default'];
         $cacheId = 'ckc_label_'
             . (int) Configuration::get('CKC_LABEL_CACHE_VER')
+            . '_' . (int) $this->context->language->id
             . '_' . $idProduct . '_' . $idCategory;
 
         if (!$this->isCached('views/templates/hook/product_labels.tpl', $cacheId)) {
@@ -706,6 +899,97 @@ class ckc_label extends Module
     {
         if (Tools::getValue('configure') == $this->name) {
             $this->context->controller->addJS($this->_path . 'views/js/back.js');
+            $this->context->controller->addJS($this->_path . 'views/js/ckc_label.js');
+            $idLangEn = (int) Language::getIdByIso('en');
+            Media::addJsDef([
+                'ckcLabelBo' => [
+                    'ajaxUrl' => $this->context->link->getAdminLink('AdminModules', true)
+                        . '&configure=' . $this->name . '&ajaxCkcLabelTranslate=1',
+                    'idLangDefault' => (int) Configuration::get('PS_LANG_DEFAULT'),
+                    'idLangEn' => $idLangEn > 0 ? $idLangEn : 2,
+                    'confirmOverwrite' => $this->l('L’onglet anglais n’est pas vide. Remplacer par la traduction IA ?'),
+                    'errorEmpty' => $this->l('Saisissez d’abord le texte français.'),
+                    'errorGeneric' => $this->l('Traduction impossible. Vérifiez CKC Translate (clé API).'),
+                ],
+            ]);
         }
+    }
+
+    private function saveLabelLangs($idLabel, array $textByLang)
+    {
+        $idLabel = (int) $idLabel;
+        if ($idLabel <= 0) {
+            return;
+        }
+        foreach ($textByLang as $idLang => $text) {
+            $idLang = (int) $idLang;
+            if ($idLang <= 0) {
+                continue;
+            }
+            $exists = (int) Db::getInstance()->getValue(
+                'SELECT id_label FROM `' . _DB_PREFIX_ . 'ckc_labels_lang`
+                 WHERE id_label = ' . $idLabel . ' AND id_lang = ' . $idLang
+            );
+            $payload = [
+                'text' => pSQL($text, true),
+            ];
+            if ($exists) {
+                if ($text === '') {
+                    Db::getInstance()->delete(
+                        'ckc_labels_lang',
+                        'id_label = ' . $idLabel . ' AND id_lang = ' . $idLang
+                    );
+                    continue;
+                }
+                Db::getInstance()->update(
+                    'ckc_labels_lang',
+                    $payload,
+                    'id_label = ' . $idLabel . ' AND id_lang = ' . $idLang
+                );
+            } elseif ($text !== '') {
+                $payload['id_label'] = $idLabel;
+                $payload['id_lang'] = $idLang;
+                Db::getInstance()->insert('ckc_labels_lang', $payload);
+            }
+        }
+    }
+
+    private function ajaxTranslateLabelText()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        if (!$this->context->employee || !$this->context->employee->isLoggedBack()) {
+            die(json_encode(['success' => false, 'message' => 'Forbidden']));
+        }
+        $source = $this->sanitizeLabelText(Tools::getValue('text'));
+        if ($source === '') {
+            die(json_encode(['success' => false, 'message' => $this->l('Texte source vide.')]));
+        }
+        if (!Module::isInstalled('ckctranslate') || !Module::isEnabled('ckctranslate')) {
+            die(json_encode(['success' => false, 'message' => $this->l('CKC Translate inactif.')]));
+        }
+        if (!class_exists('CkcTranslate', false)) {
+            require_once _PS_MODULE_DIR_ . 'ckctranslate/ckctranslate.php';
+        }
+        $ai = new CkcTranslateAi(
+            (string) Configuration::get(CkcTranslate::CONF_API_KEY),
+            (string) Configuration::get(CkcTranslate::CONF_MODEL),
+            (float) Configuration::get(CkcTranslate::CONF_TEMPERATURE),
+            (int) Configuration::get(CkcTranslate::CONF_MAX_TOKENS),
+            (string) Configuration::get(CkcTranslate::CONF_PROMPT)
+        );
+        $jobPrompt = (string) Configuration::get(CkcTranslate::CONF_PROMPT_CKC_LABELS);
+        $system = 'You translate short PrestaShop product badge labels from French to English. '
+            . 'Preserve HTML tags (<strong>, <b>, <br>), CSS classes and the ↓ character. '
+            . 'Keep similar length. Do not invent promotions.'
+            . ($jobPrompt !== '' ? "\n" . $jobPrompt : '');
+        $prompt = "Return ONLY valid JSON:\n{\n  \"text\": \"\"\n}\n\nSource label HTML:\n" . $source;
+        $data = $ai->requestJson($system, $prompt);
+        if (!is_array($data) || empty($data['text'])) {
+            die(json_encode(['success' => false, 'message' => $this->l('Réponse IA invalide.')]));
+        }
+        die(json_encode([
+            'success' => true,
+            'text' => $this->sanitizeLabelText($data['text']),
+        ]));
     }
 }

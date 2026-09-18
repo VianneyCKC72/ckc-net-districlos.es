@@ -4,6 +4,9 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
+	if (!window.ceFrontendEdit || !ceFrontendEdit.editor_url || ceFrontendEdit.editor_url.indexOf('token=') === -1) {
+		return;
+	}
 	var prev;
 	$('.elementor:not(:empty)').each(function() {
 		var uid = this.dataset.elementorId;

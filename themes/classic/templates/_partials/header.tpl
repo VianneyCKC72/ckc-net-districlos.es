@@ -39,8 +39,12 @@
 
             <!-- Logo Mobile (Visible seulement sur xs et sm) -->
             <div class="d-block d-xl-none">
-                <a href="{$urls.base_url}" class="d-flex">
-                    <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="42" height="42" loading="lazy">
+                <a href="{$urls.base_url}" class="d-flex{if isset($ckc_logo_src) && $ckc_logo_src} logos_container{/if}">
+                    {if isset($ckc_logo_src) && $ckc_logo_src}
+                        <img class="logo img-fluid" src="{$ckc_logo_src}" alt="{$shop.name}" width="140" loading="lazy">
+                    {else}
+                        <img class="logo img-fluid" src="/img/logo-mobile.svg" alt="Districlos" width="42" height="42" loading="lazy">
+                    {/if}
                 </a>
             </div>
 

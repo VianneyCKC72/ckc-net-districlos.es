@@ -41,6 +41,7 @@ class CkcTranslate extends Module
     public const CONF_PROMPT_FEATURES = 'CKCTRANSLATE_PROMPT_FEATURES';
     public const CONF_PROMPT_ATTRIBUTES = 'CKCTRANSLATE_PROMPT_ATTRIBUTES';
     public const CONF_PROMPT_CARRIER_DELAYS = 'CKCTRANSLATE_PROMPT_CARRIER_DELAYS';
+    public const CONF_PROMPT_CKC_LABELS = 'CKCTRANSLATE_PROMPT_CKC_LABELS';
 
     public const CONF_FILTER_TYPE = 'CKCTRANSLATE_FILTER_TYPE';
     public const CONF_FILTER_IDS = 'CKCTRANSLATE_FILTER_IDS';
@@ -50,7 +51,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.8.4';
+        $this->version = '2.9.0';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -149,6 +150,7 @@ class CkcTranslate extends Module
             && Configuration::updateValue(self::CONF_PROMPT_FEATURES, 'Translate product feature names and feature values for an e-commerce catalog. Keep labels short, accurate and consistent. Preserve units, numbers, codes and brand/model names when they must stay unchanged.')
             && Configuration::updateValue(self::CONF_PROMPT_ATTRIBUTES, 'Translate product attribute group names, public names and attribute values (color, size, etc.). Keep them short for product pages and filters. Preserve codes, measurements and brand-specific terms when needed.')
             && Configuration::updateValue(self::CONF_PROMPT_CARRIER_DELAYS, 'Translate carrier delivery delay texts for checkout and shipping estimators. Keep them short and clear. Preserve numbers, time units and carrier brand names. Do not invent delivery promises.')
+            && Configuration::updateValue(self::CONF_PROMPT_CKC_LABELS, 'Translate short product badge labels. Preserve HTML tags (<strong>, <b>, <br>), CSS classes and the ↓ character. Keep the result short, similar in length, suitable for a product card flag. Do not invent promotions.')
             && Configuration::updateValue(self::CONF_FILTER_TYPE, 'all')
             && Configuration::updateValue(self::CONF_FILTER_IDS, '')
             && Configuration::updateValue(self::CONF_FILTER_CATEGORY_ID, 0);
@@ -187,6 +189,7 @@ class CkcTranslate extends Module
             && Configuration::deleteByName(self::CONF_PROMPT_FEATURES)
             && Configuration::deleteByName(self::CONF_PROMPT_ATTRIBUTES)
             && Configuration::deleteByName(self::CONF_PROMPT_CARRIER_DELAYS)
+            && Configuration::deleteByName(self::CONF_PROMPT_CKC_LABELS)
             && Configuration::deleteByName(self::CONF_FILTER_TYPE)
             && Configuration::deleteByName(self::CONF_FILTER_IDS)
             && Configuration::deleteByName(self::CONF_FILTER_CATEGORY_ID);

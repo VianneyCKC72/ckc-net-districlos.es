@@ -3,7 +3,11 @@
         <div class="elementor-widget-container">
             <div class="elementor-image">
                 <a href="{$urls.pages.index}">
-                    <img width="144px" src="/img/logo-1744701147.svg" alt="Districlos">
+                    {if $shop.logo}
+                        <img width="144px" src="{$shop.logo}" alt="{$shop.name}">
+                    {else}
+                        <img width="144px" src="/img/logo-1744701147.svg" alt="Districlos">
+                    {/if}
                 </a>
             </div>
         </div>

@@ -2,7 +2,7 @@
 <module>
 	<name>ckc_label</name>
 	<displayName><![CDATA[Label]]></displayName>
-	<version><![CDATA[1.0.1]]></version>
+	<version><![CDATA[1.1.1]]></version>
 	<description><![CDATA[Ajout une étiquette sur les product card]]></description>
 	<author><![CDATA[ckc-net]]></author>
 	<is_configurable>0</is_configurable>

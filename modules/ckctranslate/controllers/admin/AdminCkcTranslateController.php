@@ -61,6 +61,12 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'Translate carrier delivery delay texts for checkout and shipping estimators. Keep them short and clear. Preserve numbers, time units and carrier brand names. Do not invent delivery promises.'
             );
         }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_CKC_LABELS)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_CKC_LABELS,
+                'Translate short product badge labels. Preserve HTML tags (<strong>, <b>, <br>), CSS classes and the ↓ character. Keep the result short, similar in length, suitable for a product card flag. Do not invent promotions.'
+            );
+        }
 
         if (Tools::isSubmit('submitCkcTranslateConfig')) {
             $this->postProcessConfig();
@@ -143,6 +149,7 @@ class AdminCkcTranslateController extends ModuleAdminController
         $promptFeatures = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_FEATURES));
         $promptAttributes = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_ATTRIBUTES));
         $promptCarrierDelays = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CARRIER_DELAYS));
+        $promptCkcLabels = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CKC_LABELS));
         $filterType = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_TYPE));
         $filterIds = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_IDS));
         $filterCategoryId = (int) Tools::getValue(CkcTranslate::CONF_FILTER_CATEGORY_ID);
@@ -208,6 +215,7 @@ class AdminCkcTranslateController extends ModuleAdminController
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_FEATURES, $promptFeatures);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_ATTRIBUTES, $promptAttributes);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_CARRIER_DELAYS, $promptCarrierDelays);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_CKC_LABELS, $promptCkcLabels);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_TYPE, $filterType);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_IDS, $filterIds);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_CATEGORY_ID, $filterCategoryId);
@@ -454,6 +462,14 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'desc' => $this->module->l('For carrier delivery delay texts (checkout + shipping estimator).'),
                     ),
                     array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Product labels (ckc_label)'),
+                        'name' => CkcTranslate::CONF_PROMPT_CKC_LABELS,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For product card badge texts. Preserve HTML and the down-arrow.'),
+                    ),
+                    array(
                         'type' => 'select',
                         'label' => $this->module->l('Filter type'),
                         'name' => CkcTranslate::CONF_FILTER_TYPE,
@@ -571,7 +587,8 @@ class AdminCkcTranslateController extends ModuleAdminController
                 ?: 'Translate product feature names and feature values for an e-commerce catalog. Keep labels short, accurate and consistent. Preserve units, numbers, codes and brand/model names when they must stay unchanged.',
             CkcTranslate::CONF_PROMPT_ATTRIBUTES => Configuration::get(CkcTranslate::CONF_PROMPT_ATTRIBUTES)
                 ?: 'Translate product attribute group names, public names and attribute values (color, size, etc.). Keep them short for product pages and filters. Preserve codes, measurements and brand-specific terms when needed.',
-            CkcTranslate::CONF_PROMPT_CARRIER_DELAYS => Configuration::get(CkcTranslate::CONF_PROMPT_CARRIER_DELAYS)
+            CkcTranslate::CONF_PROMPT_CARRIER_DELAYS => Configuration::get(CkcTranslate::CONF_PROMPT_CARRIER_DELAYS),
+            CkcTranslate::CONF_PROMPT_CKC_LABELS => Configuration::get(CkcTranslate::CONF_PROMPT_CKC_LABELS)
                 ?: 'Translate carrier delivery delay texts for checkout and shipping estimators. Keep them short and clear. Preserve numbers, time units and carrier brand names. Do not invent delivery promises.',
             CkcTranslate::CONF_FILTER_TYPE => Configuration::get(CkcTranslate::CONF_FILTER_TYPE),
             CkcTranslate::CONF_FILTER_IDS => Configuration::get(CkcTranslate::CONF_FILTER_IDS),
@@ -709,6 +726,11 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'code' => 'order_states',
                 'label' => $this->module->l('Translate order statuses'),
                 'advice' => $this->module->l('Translates order status names shown in FO account/history and used in status emails.'),
+            ),
+            array(
+                'code' => 'ckc_labels',
+                'label' => $this->module->l('Translate product labels (ckc_label)'),
+                'advice' => $this->module->l('Translates badge texts (PRIX DEGRESSIF, etc.) into the target language. Requires ckc_label.'),
             ),
         );
     }
@@ -950,6 +972,15 @@ class AdminCkcTranslateController extends ModuleAdminController
                 $total = (int) Db::getInstance()->getValue(
                     'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'order_state` WHERE deleted = 0'
                 );
+                break;
+
+            case 'ckc_labels':
+                $total = 0;
+                if (Module::isInstalled('ckc_label')) {
+                    $total = (int) Db::getInstance()->getValue(
+                        'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'ckc_labels`'
+                    );
+                }
                 break;
 
             default:
@@ -1204,6 +1235,8 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_brand_reviews_index',
             'ckctranslate_order_states_ids',
             'ckctranslate_order_states_index',
+            'ckctranslate_ckc_labels_ids',
+            'ckctranslate_ckc_labels_index',
         );
 
         foreach ($keys as $key) {
@@ -1250,6 +1283,8 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_brand_reviews_index',
             'ckctranslate_order_states_ids',
             'ckctranslate_order_states_index',
+            'ckctranslate_ckc_labels_ids',
+            'ckctranslate_ckc_labels_index',
         );
 
         foreach ($keys as $key) {

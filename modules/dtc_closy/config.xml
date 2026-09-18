@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>dtc_closy</name>
+    <displayName><![CDATA[Districlos - Closy]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Assistant Closy : questions IA sur fiche produit et panneau YourGPT avec carrousel produits.]]></description>
+    <author><![CDATA[Districlos]]></author>
+    <tab><![CDATA[front_office_features]]></tab>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+</module>

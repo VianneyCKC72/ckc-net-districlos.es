@@ -34,6 +34,11 @@ class BenefitsService
                     'text' => $this->trans('Districlos vous garantit des tarifs ultra-compétitifs, spécialement pensés pour les pros du jardin.'),
                 ],
                 [
+                    'title' => $this->trans("100 € offert dès 1000€ d'achat"),
+                    'icon'  => 'clef_molette',
+                    'text' => $this->trans("Bénéficiez de 100 € offerts dès 1000 € d'achat : un coup de pouce direct pour augmenter votre rentabilité."),
+                ],
+                [
                     'title' => $this->trans('Reprise de marchandise'),
                     'icon'  => 'teleoperateur',
                     'text' => $this->trans('Districlos reprend vos marchandises inutilisées pour vous offrir plus de flexibilité dans votre gestion de stock.'),

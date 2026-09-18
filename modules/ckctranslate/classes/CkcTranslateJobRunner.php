@@ -97,6 +97,10 @@ class CkcTranslateJobRunner
                     $result = $this->runCarrierDelays();
                     break;
 
+                case 'ckc_labels':
+                    $result = $this->runCkcLabels();
+                    break;
+
                 default:
                     return array(
                         'success' => false,
@@ -680,6 +684,9 @@ PROMPT;
             case 'carrier_delays':
                 return (string) Configuration::get(CkcTranslate::CONF_PROMPT_CARRIER_DELAYS);
 
+            case 'ckc_labels':
+                return (string) Configuration::get(CkcTranslate::CONF_PROMPT_CKC_LABELS);
+
             default:
                 return '';
         }
@@ -1216,6 +1223,40 @@ PROMPT;
                 return array(
                     'sql' => $sql,
                     'column' => 'id_carrier',
+                );
+
+            case 'ckc_labels':
+                if (!Module::isInstalled('ckc_label') || !Module::isEnabled('ckc_label')) {
+                    return array('sql' => '', 'column' => '');
+                }
+                $sql = 'SELECT l.id_label
+                        FROM `' . _DB_PREFIX_ . 'ckc_labels` l
+                        INNER JOIN `' . _DB_PREFIX_ . 'ckc_labels_lang` src
+                          ON src.id_label = l.id_label
+                         AND src.id_lang = ' . (int) $this->sourceLangId . '
+                        WHERE src.text IS NOT NULL
+                          AND TRIM(src.text) != \'\'';
+
+                if ($filterType === 'ids' && !empty($filterIds)) {
+                    $sql .= ' AND l.id_label IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                }
+
+                if ($onlyMissing) {
+                    $sql .= ' AND NOT EXISTS (
+                        SELECT 1 FROM `' . _DB_PREFIX_ . 'ckc_labels_lang` tgt
+                        WHERE tgt.id_label = l.id_label
+                          AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                          AND tgt.text IS NOT NULL
+                          AND TRIM(tgt.text) != \'\'
+                          AND tgt.text != src.text
+                    )';
+                }
+
+                $sql .= ' ORDER BY l.id_label ASC';
+
+                return array(
+                    'sql' => $sql,
+                    'column' => 'id_label',
                 );
 
             default:
@@ -2195,6 +2236,7 @@ PROMPT;
             'carrier_delays',
             'brand_reviews',
             'order_states',
+            'ckc_labels',
         );
     }
 
@@ -2222,6 +2264,7 @@ PROMPT;
             'carrier_delays' => 'carrier_delays',
             'brand_reviews' => 'brand_reviews',
             'order_states' => 'order_states',
+            'ckc_labels' => 'ckc_labels',
         );
 
         return isset($map[$jobCode]) ? $map[$jobCode] : self::normalizeQueueName($jobCode);
@@ -2701,6 +2744,123 @@ PROMPT;
             $this->module->l('Order state #%d translated (%s).', 'CkcTranslateJobRunner'),
             (int) $id,
             $translatedName
+        ));
+    }
+
+    protected function runCkcLabels()
+    {
+        if (!Module::isInstalled('ckc_label') || !Module::isEnabled('ckc_label')) {
+            return $this->finishedResult($this->module->l('ckc_label is not installed.', 'CkcTranslateJobRunner'));
+        }
+
+        $filtered = $this->getFilteredSql('ckc_labels');
+        $id = $this->getNextId(
+            'ckctranslate_ckc_labels_ids',
+            'ckctranslate_ckc_labels_index',
+            $filtered['sql'],
+            $filtered['column']
+        );
+
+        if (!$id) {
+            return $this->finishedResult($this->module->l('Product labels translation finished.', 'CkcTranslateJobRunner'));
+        }
+
+        $sourceText = (string) Db::getInstance()->getValue(
+            'SELECT text FROM `' . _DB_PREFIX_ . 'ckc_labels_lang`
+             WHERE id_label = ' . (int) $id . '
+               AND id_lang = ' . (int) $this->sourceLangId
+        );
+        if ($sourceText === '') {
+            $sourceText = (string) Db::getInstance()->getValue(
+                'SELECT text FROM `' . _DB_PREFIX_ . 'ckc_labels` WHERE id_label = ' . (int) $id
+            );
+        }
+
+        if (trim(strip_tags($sourceText)) === '') {
+            $this->logHistory('ckc_labels', 'ckc_label', (int) $id, 'skipped', $this->module->l('No source content.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Label #%d has no source text, skipped.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        $targetText = (string) Db::getInstance()->getValue(
+            'SELECT text FROM `' . _DB_PREFIX_ . 'ckc_labels_lang`
+             WHERE id_label = ' . (int) $id . '
+               AND id_lang = ' . (int) $this->targetLangId
+        );
+
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+            if ($targetText !== '' && $targetText !== $sourceText) {
+                $this->logHistory('ckc_labels', 'ckc_label', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+
+                return $this->nextResult(sprintf(
+                    $this->module->l('Label #%d already translated, skipped.', 'CkcTranslateJobRunner'),
+                    (int) $id
+                ));
+            }
+        }
+
+        $systemPrompt = $this->buildSystemPrompt(
+            'You translate short PrestaShop product badge labels. Preserve HTML tags (<strong>, <b>, <br>), CSS classes and the ↓ character. Keep similar length. Do not invent promotions.',
+            'ckc_labels'
+        );
+
+        $prompt = <<<PROMPT
+Return ONLY valid JSON:
+{
+  "text": ""
+}
+
+Source label HTML:
+{$sourceText}
+PROMPT;
+
+        $data = $this->ai->requestJson($systemPrompt, $prompt);
+
+        if (!$this->isValidFields($data, array('text'))) {
+            $this->logHistory('ckc_labels', 'ckc_label', (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Invalid AI response for label #%d.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        $translated = trim((string) $data['text']);
+        $exists = (int) Db::getInstance()->getValue(
+            'SELECT id_label FROM `' . _DB_PREFIX_ . 'ckc_labels_lang`
+             WHERE id_label = ' . (int) $id . '
+               AND id_lang = ' . (int) $this->targetLangId
+        );
+
+        if ($exists) {
+            Db::getInstance()->update(
+                'ckc_labels_lang',
+                array('text' => pSQL($translated, true)),
+                'id_label = ' . (int) $id . ' AND id_lang = ' . (int) $this->targetLangId
+            );
+        } else {
+            Db::getInstance()->insert('ckc_labels_lang', array(
+                'id_label' => (int) $id,
+                'id_lang' => (int) $this->targetLangId,
+                'text' => pSQL($translated, true),
+            ));
+        }
+
+        if (Module::isInstalled('ckc_label')) {
+            $labelModule = Module::getInstanceByName('ckc_label');
+            if ($labelModule && method_exists($labelModule, 'clearCache')) {
+                $labelModule->clearCache();
+            }
+        }
+
+        $this->logHistory('ckc_labels', 'ckc_label', (int) $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
+
+        return $this->nextResult(sprintf(
+            $this->module->l('Label #%d translated.', 'CkcTranslateJobRunner'),
+            (int) $id
         ));
     }
 

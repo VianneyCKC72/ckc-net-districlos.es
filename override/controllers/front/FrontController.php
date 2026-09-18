@@ -86,6 +86,12 @@ class FrontController extends FrontControllerCore
             'ckc_lang_preview',
             (string) Tools::getValue('ckc') === '1'
         );
+        $langLogo = $this->getLanguageShopLogo();
+        $this->context->smarty->assign([
+            'ckc_is_english' => $this->isCurrentLanguageEnglish(),
+            'ckc_logo_src' => !empty($langLogo['src']) ? $langLogo['src'] : '',
+        ]);
+
         return parent::initHeader();
     }
     public function getTemplateVarUrls()
@@ -109,10 +115,67 @@ class FrontController extends FrontControllerCore
         }
         return $page;
     }
+
+    public function getShopLogo(): array
+    {
+        $langLogo = $this->getLanguageShopLogo();
+        if (!empty($langLogo['src'])) {
+            return $langLogo;
+        }
+
+        return parent::getShopLogo();
+    }
+
+    public function getTemplateVarShop()
+    {
+        $shop = parent::getTemplateVarShop();
+        $langLogo = $this->getLanguageShopLogo();
+        if (!empty($langLogo['src'])) {
+            $shop['logo'] = $langLogo['src'];
+            $shop['logo_details'] = $langLogo;
+        }
+
+        return $shop;
+    }
+
+    /**
+     * CKC Vianney — logo FO selon la langue (module ckc_logo_lang).
+     */
+    private function getLanguageShopLogo()
+    {
+        if (!Module::isInstalled('ckc_logo_lang') || !Module::isEnabled('ckc_logo_lang')) {
+            return [];
+        }
+
+        if (!class_exists('CkcLogoLangHelper', false)) {
+            $helperFile = _PS_MODULE_DIR_ . 'ckc_logo_lang/classes/CkcLogoLangHelper.php';
+            if (!is_file($helperFile)) {
+                return [];
+            }
+            require_once $helperFile;
+        }
+
+        if (!class_exists('CkcLogoLangHelper')) {
+            return [];
+        }
+
+        return CkcLogoLangHelper::getLogoDetails($this->context);
+    }
+
+    private function isCurrentLanguageEnglish()
+    {
+        if (!isset($this->context->language)) {
+            return false;
+        }
+
+        return $this->isEnglishLangCode((string) $this->context->language->iso_code)
+            || $this->isEnglishLangCode((string) $this->context->language->language_code);
+    }
+
     private function isEnglishLangCode($code)
     {
         $code = strtolower(str_replace('_', '-', (string) $code));
-        return $code === 'en' || strpos($code, 'en-') === 0;
+        return $code === 'en' || $code === 'gb' || strpos($code, 'en-') === 0;
     }
     public function getTemplateVarCustomer($customer = null)
     {
@@ -142,4 +205,22 @@ class FrontController extends FrontControllerCore
     * version: 1.4.2
     */
     protected $redirectionExtraExcludedKeys = ['rewrite', 'category'];
+
+    /**
+     * CKC Vianney — CE Full Width points to its module layout (hooks FR only).
+     * Prefer the theme copy so accueil pro can switch 36/37 vs 62/63.
+     */
+    public function getLayout()
+    {
+        $layout = parent::getLayout();
+        if (!is_string($layout) || strpos($layout, 'layout-header-footer.tpl') === false) {
+            return $layout;
+        }
+        if (strpos($layout, _PS_THEME_DIR_) !== false) {
+            return $layout;
+        }
+        $themeFile = _PS_THEME_DIR_ . 'modules/creativeelements/views/templates/front/theme/layouts/layout-header-footer.tpl';
+
+        return is_file($themeFile) ? $themeFile : $layout;
+    }
 }
