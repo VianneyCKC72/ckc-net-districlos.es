@@ -1,0 +1,169 @@
+/* Styles pour la modal Noël */
+
+/* Modal Noël */
+.modal-noel {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    background: rgba(0,0,0,0.7);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content-noel {
+    position: relative;
+    width: auto;
+    max-width: 500px;
+}
+
+/* Canvas de neige */
+#snow-canvas-noel {
+    position: absolute;
+    left: 0;
+}
+
+.close-noel {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.5em;
+    color: white;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+    z-index: 10;
+}
+
+.close-noel:hover {
+    color: black;
+    transform: scale(1.2);
+}
+
+/* Cadeau */
+.cadeau-container {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer;
+    width: 100%;
+}
+
+.cadeau-wrapper {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+    font-size: 0;
+    animation: cadeauTremble 0.3s infinite;
+}
+
+/* Animation de tremblement pour le cadeau et le couvercle */
+@keyframes cadeauTremble {
+    0%, 100% {
+        transform: translateX(0) translateY(0) rotate(0deg);
+    }
+    10% {
+        transform: translateX(-1px) translateY(-0.5px) rotate(-0.2deg);
+    }
+    20% {
+        transform: translateX(1px) translateY(0.5px) rotate(0.2deg);
+    }
+    30% {
+        transform: translateX(-0.5px) translateY(0.5px) rotate(-0.15deg);
+    }
+    40% {
+        transform: translateX(0.5px) translateY(-0.5px) rotate(0.15deg);
+    }
+    50% {
+        transform: translateX(-1px) translateY(0) rotate(-0.2deg);
+    }
+    60% {
+        transform: translateX(1px) translateY(0) rotate(0.2deg);
+    }
+    70% {
+        transform: translateX(-0.5px) translateY(-0.5px) rotate(-0.15deg);
+    }
+    80% {
+        transform: translateX(0.5px) translateY(0.5px) rotate(0.15deg);
+    }
+    90% {
+        transform: translateX(-0.5px) translateY(0) rotate(-0.1deg);
+    }
+}
+
+.cadeau-base {
+    width: 100%;
+    height: auto;
+    display: block;
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+    pointer-events: auto;
+}
+
+.cadeau-couvercle {
+    position: absolute;
+    top: var(--lid-offset, 0px);
+    left: 0;
+    width: 100%;
+    height: auto;
+    display: block;
+    z-index: 3;
+    transform-origin: bottom center;
+    transform-style: preserve-3d;
+    transition: transform 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    pointer-events: none;
+    object-fit: cover;
+    object-position: top center;
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+}
+
+.cadeau-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.8s ease-out;
+    z-index: 1;
+    background: transparent;
+    pointer-events: none;
+}
+
+.cadeau-interieur {
+    width: 100%;
+    height: auto;
+    display: block;
+    opacity: 0;
+    transform: translateY(100%);
+    transition: transform 0.8s ease-out, opacity 0.6s ease;
+}
+
+.cadeau-container.opened .cadeau-wrapper {
+    animation: none;
+}
+
+.cadeau-container.opened .cadeau-couvercle {
+    transform: translateY(calc(-1 * var(--lid-offset, 0px) - 20px)) rotate(-8deg) scale(1.02);
+}
+
+.cadeau-container.opened .cadeau-content {
+    height: 100%;
+}
+
+.cadeau-container.opened .cadeau-interieur {
+    opacity: 1;
+    transform: translateY(0);
+}

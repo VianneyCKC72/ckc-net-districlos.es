@@ -1,0 +1,12 @@
+Bonjour {firstname},
+
+Attention : dans les 2 prochaines semaines, certaines de vos commandes sortiront du calcul de votre cumul sur 12 mois.
+
+Sans nouvelle commande, vous risquez de perdre votre statut {tier_label} et votre remise de {discount}.
+
+Pensez à commander pour maintenir votre cumul et conserver votre avantage Club Pro.
+
+Vérifier mon statut : {status_url}
+
+{shop_name}
+{shop_url}

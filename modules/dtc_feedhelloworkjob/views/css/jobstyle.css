@@ -1,0 +1,175 @@
+
+#module-dtc_feedhelloworkjob-jobs #content-wrapper
+{
+	width: 100%;
+}
+
+.job-search
+{
+	padding: 20px 0;
+	margin-bottom: 30px;
+}
+
+.job-search form
+{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: center;
+}
+
+.job-search input[type="text"]
+{
+	flex: 1 1 200px;
+	padding: 15px 10px 15px 25px;
+	background: #F8F4ED;
+	font-size: 16px;
+	border: none;
+	border-radius: 75px;
+}
+
+.job-search button
+{
+	color: #026473;
+	background: none;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.job-search button .fa-search
+{
+	font-size: 2em;
+}
+
+.job-search button:hover
+{
+	opacity: 0.9;
+}
+
+.job-list
+{
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	gap: 20px;
+}
+
+.job-item
+{
+	border: 1px solid #f8f4ed;
+	transition: background-color 700ms;
+	background-color: #f8f4ed;
+	display: flex	;
+	flex-direction: column;
+	height: 100%;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	justify-content: space-between;
+}
+
+a:hover .job-item {
+    background-color: #026473;
+    color: white;
+    transition: background-color 700ms;
+}
+
+a:hover h3, a:hover .job-item strong, a:hover .job-item p {
+	color:white;
+	transition: color 700ms;
+}
+
+.job-item strong
+{
+	color: rgb(59, 59, 59);
+}
+
+.job-item h3
+{
+	margin-top: 0;
+	color: rgb(59, 59, 59);
+	font-weight: 700;
+	padding: 15px;
+}
+
+.job-item p
+{
+	margin: 6px 0;
+	color: #555;
+	padding: 0 15px;
+	font-size: 14px;
+	word-break: break-word;
+	overflow-wrap: break-word;
+}
+
+/* .job-item a.cta
+{
+	margin: 20px 0px 0px -30px;
+	transform: translateX(15px);
+	text-decoration: none;
+	display: block;
+	width: auto;
+	text-align: center;
+	background-color: #026473;
+	color: #ffffff;
+	padding: 10px;
+	text-decoration: none;
+	font-weight: bold;
+	border-top: 1px solid #ddd;
+} */
+
+/* .job-item a.cta:hover
+{
+	background-color: #218838;
+} */
+
+.job-item span.btn-primary-arrow {
+	padding: 10px;
+    display: flex;
+    justify-content: center;
+    justify-self: right;
+    width: fit-content;
+    margin-bottom: 10px;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    background-color: #026473;
+    border-radius: 10px;
+}
+
+
+
+#module-dtc_feedhelloworkjob-jobs .pagination a
+{
+	height: 35px;
+	margin: 0 4px;
+	padding: 7px;
+	width: 35px;
+	color: #3a3a3a;
+	background: 0 0;
+	display: block;
+	width: auto;
+	min-width: 35px;
+	font-weight: 600;
+	border: 1px solid #fff;
+	text-align: center;
+	border: solid rgb(2, 100, 115) 1px;
+	border-radius: 100px;
+	overflow: hidden;
+	cursor: pointer;
+	color: rgb(2, 100, 115);
+}
+
+#module-dtc_feedhelloworkjob-jobs .pagination a.active
+{
+	border: none;
+	background-color: rgb(2, 100, 115);
+	--background-color: rgb(2, 100, 115);
+	--tve-applied-background-color: var $(--tcb-color-5);
+	color: white;
+}
+
+#module-dtc_feedhelloworkjob-jobs .pagination
+{
+	align-items: center;
+	display: flex;
+	height: 100%;
+}

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2">
+  <file original="modules/dtc_lengow_marketplace" source-language="fr-FR" target-language="en-US" datatype="plaintext">
+    <body>
+      <trans-unit id="dtc_lgwmp_carrier_legend">
+        <source>Transporteur des commandes marketplace</source>
+        <target>Marketplace orders carrier</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_carrier_saved">
+        <source>Configuration des transporteurs marketplace enregistree.</source>
+        <target>Marketplace carrier settings saved.</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_carrier_enable">
+        <source>Activer la regle transporteur</source>
+        <target>Enable the carrier rule</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_carrier_enable_desc">
+        <source>Lorsque la regle est desactivee, Lengow applique son propre transporteur par defaut.</source>
+        <target>When the rule is disabled, Lengow applies its own default carrier.</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_carrier_gate">
+        <source>Portail ou pack portail + portillon</source>
+        <target>Gate or gate + pedestrian gate pack</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_carrier_wicket">
+        <source>Portillon seul</source>
+        <target>Pedestrian gate only</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_carrier_other">
+        <source>Autres produits</source>
+        <target>Other products</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_carrier_none">
+        <source>-- Aucun --</source>
+        <target>-- None --</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_priority">
+        <source>Ordre de priorite</source>
+        <target>Priority order</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_priority_desc">
+        <source>Determine le transporteur retenu quand une commande melange plusieurs types de produits.</source>
+        <target>Decides which carrier wins when an order mixes several product types.</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_priority_invalid">
+        <source>L'ordre de priorite selectionne est invalide.</source>
+        <target>The selected priority order is invalid.</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_products_gate">
+        <source>Produits "portail"</source>
+        <target>"Gate" products</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_products_gate_desc">
+        <source>Lister aussi les packs portail + portillon : la marketplace commande le SKU du pack, pas ses composants.</source>
+        <target>Also list the gate + pedestrian gate packs: the marketplace orders the pack SKU, not its components.</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_products_wicket">
+        <source>Produits "portillon"</source>
+        <target>"Pedestrian gate" products</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_products_other">
+        <source>Produits "autres"</source>
+        <target>"Other" products</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_products_other_desc">
+        <source>Facultatif : un produit absent des trois listes est deja traite comme "Autres produits". A remplir uniquement pour rendre la regle explicite dans l'ordre de priorite.</source>
+        <target>Optional: a product missing from all three lists is already handled as "Other products". Fill it in only to make the rule explicit in the priority order.</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_product_disabled">
+        <source>(desactive)</source>
+        <target>(disabled)</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_carrier_inactive">
+        <source>Le transporteur selectionne pour "%field%" n'est plus actif.</source>
+        <target>The carrier selected for "%field%" is no longer active.</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_carrier_required">
+        <source>Le transporteur "%field%" est obligatoire lorsque la regle est activee.</source>
+        <target>The "%field%" carrier is required when the rule is enabled.</target>
+      </trans-unit>
+      <trans-unit id="dtc_lgwmp_products_required">
+        <source>Selectionnez au moins un produit lorsque la regle est activee.</source>
+        <target>Select at least one product when the rule is enabled.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

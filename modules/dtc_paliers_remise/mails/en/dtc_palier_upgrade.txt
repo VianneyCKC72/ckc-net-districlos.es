@@ -1,0 +1,12 @@
+﻿Hello {firstname},
+
+Congratulations! You have reached the next level of our Club Pro programme.
+
+Thanks to your orders over the past 12 months, you now have {tier_label} status — and enjoy a {discount} discount!
+
+This discount will apply automatically to your next orders.
+
+Check my status: {status_url}
+
+{shop_name}
+{shop_url}
