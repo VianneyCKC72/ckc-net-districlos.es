@@ -722,3 +722,88 @@ a {
     font-size: 1rem;
   }
 }
+
+/* ——— Règlement ——— */
+
+.sv--rules {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #fff 0%, var(--sv-beige) 40%, #fff 100%);
+}
+
+.sv-rules {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0.5rem 1.25rem 3.5rem;
+}
+
+.sv-rules__back {
+  margin: 0 0 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.sv-rules__back a {
+  color: var(--sv-orange);
+  text-decoration: none;
+}
+
+.sv-rules__back a:hover {
+  text-decoration: underline;
+}
+
+.sv-rules__header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 2px solid var(--sv-orange);
+}
+
+.sv-rules__title {
+  margin: 0 0 0.4rem;
+  font-size: clamp(1.45rem, 3vw, 1.85rem);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.sv-rules__subtitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--sv-orange);
+}
+
+.sv-rules__body {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #222;
+}
+
+.sv-rules__body section {
+  margin-bottom: 1.75rem;
+}
+
+.sv-rules__body h2 {
+  margin: 0 0 0.65rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--sv-text);
+}
+
+.sv-rules__body p {
+  margin: 0 0 0.75rem;
+  color: var(--sv-muted);
+}
+
+.sv-rules__body p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+  .sv-rules {
+    padding: 0.25rem 1rem 2.5rem;
+  }
+
+  .sv-rules__body {
+    font-size: 0.9rem;
+  }
+}
