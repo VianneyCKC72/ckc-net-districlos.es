@@ -566,6 +566,7 @@ function executeEvent(name, replay = false) {
                     selectedPaymentName = 'Chèque';
                     break;
                 case 'ps_wirepayment':
+                case 'dtc_wirepayment':
                     selectedPaymentName = 'Virement';
                     break;
                 case 'opartdevis':

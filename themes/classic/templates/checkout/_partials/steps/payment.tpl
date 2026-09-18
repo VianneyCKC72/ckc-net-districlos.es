@@ -106,7 +106,7 @@
             {capture assign='payment_option_desc'}
               {if $option.module_name == 'ps_cashondelivery'}
                 {l s='Vous payez lors de la livraison de votre commande' d='Shop.Theme.Customcheckout'}
-              {elseif $option.module_name == 'ps_wirepayment'}
+              {elseif $option.module_name == 'ps_wirepayment' || $option.module_name == 'dtc_wirepayment'}
               {elseif $option.module_name == 'everpsadvancepayment'}
                 {l s='Vous payez un acompte, le solde sera facturé ensuite' d='Shop.Theme.Customcheckout'}
               {elseif $option.module_name == 'payplug'}

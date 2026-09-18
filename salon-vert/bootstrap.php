@@ -82,8 +82,27 @@ function sv_lang_url(string $lang, array $extra = []): string
 {
     $params = array_merge($_GET, $extra, ['lang' => $lang]);
     $query = http_build_query($params);
+    $script = basename((string) ($_SERVER['SCRIPT_NAME'] ?? 'index.php'));
+    $path = sv_base_path() . '/';
+    if ($script !== '' && $script !== 'index.php') {
+        $path .= $script;
+    }
 
-    return sv_base_path() . '/' . ($query !== '' ? '?' . $query : '');
+    return $path . ($query !== '' ? '?' . $query : '');
+}
+
+/** URL relative à /salon-vert/ avec langue courante. */
+function sv_page_url(string $page = '', ?string $lang = null): string
+{
+    $lang = $lang ?? sv_lang();
+    $path = sv_base_path() . '/';
+    $page = ltrim($page, '/');
+    if ($page !== '' && $page !== 'index.php') {
+        $path .= $page;
+    }
+    $query = http_build_query(['lang' => $lang]);
+
+    return $path . ($query !== '' ? '?' . $query : '');
 }
 
 function sv_params(): array

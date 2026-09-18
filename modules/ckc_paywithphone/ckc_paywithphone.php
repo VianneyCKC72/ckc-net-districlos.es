@@ -304,9 +304,21 @@ class ckc_PayWithPhone extends PaymentModule
             Tools::displayPrice($cart->getOrderTotal(true, Cart::BOTH))
         );
 
+        require_once _PS_OVERRIDE_DIR_ . 'classes/OrderStoreHelper.php';
+        $wireModule = Module::getInstanceByName('dtc_wirepayment');
+        $wire = OrderStoreHelper::getWireBankDetailsForCart(
+            $cart,
+            $wireModule && method_exists($wireModule, 'getFallbackWireDetails')
+                ? $wireModule->getFallbackWireDetails()
+                : array()
+        );
+
         return array(
             'ckc_paywithphonePhone' => Configuration::get('CKC_PAYWITHPHONE_PHONE'),
             'total' => $total,
+            'bankwireOwner' => $wire['owner'],
+            'bankwireDetails' => Tools::nl2br($wire['details']),
+            'bankwireAddress' => Tools::nl2br($wire['address']),
         );
     }
 

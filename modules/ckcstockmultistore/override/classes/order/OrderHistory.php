@@ -50,13 +50,12 @@ class OrderHistory extends OrderHistoryCore
             $data['{total_paid}'] = Tools::getContextLocale($context)->formatPrice((float) $order->total_paid, Currency::getIsoCodeById((int) $order->id_currency));
 
             if (isset($data['{bankwire_details}'])) {
-                $store = Db::getInstance()->getRow('SELECT `id_store` FROM `' . _DB_PREFIX_ . 'orders` WHERE `id_order` = ' . (int) $this->id_order);
-                $store = Db::getInstance()->getRow('SELECT `iban`, `bic` FROM `' . _DB_PREFIX_ . 'ckcstockstores_stores` WHERE `id_store` = ' . (int) $store['id_store']);
-                $data['{bankwire_details}'] = str_replace(
-                    ['{iban}', '{bic}'],
-                    [$store['iban'], $store['bic']],
-                    $data['{bankwire_details}']
-                );
+                $fallback = [
+                    'owner' => Configuration::get('DTC_WIRE_OWNER') ?: Configuration::get('BANK_WIRE_OWNER'),
+                    'details' => Configuration::get('DTC_WIRE_DETAILS') ?: Configuration::get('BANK_WIRE_DETAILS'),
+                    'address' => Configuration::get('DTC_WIRE_ADDRESS') ?: Configuration::get('BANK_WIRE_ADDRESS'),
+                ];
+                $data = OrderStoreHelper::applyWireDetailsToMailVars($data, (int) $this->id_order, $fallback);
             }
 
             if (Validate::isLoadedObject($order)) {
