@@ -75,7 +75,7 @@ $shop = static function (string $path) use ($shopRoot): string {
           </div>
         <?php else : ?>
           <div class="sv-form-card__links">
-            <a href="<?= htmlspecialchars($shopUrl, ENT_QUOTES) ?>/content/3-conditions-generales-de-ventes" target="_blank" rel="noopener"><?= sv_e('link_rules') ?></a>
+            <a href="<?= htmlspecialchars(sv_page_url('reglement.php'), ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener"><?= sv_e('link_rules') ?></a>
             <a href="<?= htmlspecialchars($shopUrl, ENT_QUOTES) ?>/content/16-politique-de-confidentialite-et-de-cookies" target="_blank" rel="noopener"><?= sv_e('link_privacy') ?></a>
           </div>
 

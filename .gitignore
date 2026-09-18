@@ -261,6 +261,7 @@ modules/*
 !modules/ps_shoppingcart/
 !modules/custompickup/
 !modules/dtc_closy/
+!modules/dtc_wirepayment/
 modules/ckcstorespresentation/uploads/*
 !modules/creativeelements
 !modules/everpspopup

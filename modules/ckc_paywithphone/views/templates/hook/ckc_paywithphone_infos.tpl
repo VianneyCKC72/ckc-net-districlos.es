@@ -14,7 +14,7 @@
         </div>
         <div class="modal-body">
           <p>{l s='Payment by phone :' mod='ckc_paywithphone'}</p>
-			{include file='module:ps_wirepayment/views/templates/hook/_partials/payment_infos.tpl'}
+			{include file='module:dtc_wirepayment/views/templates/hook/_partials/payment_infos.tpl'}
         </div>
       </div>
     </div>
