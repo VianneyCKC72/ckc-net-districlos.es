@@ -1,0 +1,276 @@
+/* Timeline responsive : horizontal desktop, vertical mobile */
+
+.dtc-ordertracking .dtc-ot-hero {
+  background: #f8f9fa;
+  padding: 24px 0;
+  margin-bottom: 18px;
+}
+
+.dtc-ot-hero__inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.dtc-ot-hero__kicker {
+  font-size: 0.85rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.dtc-ot-hero__title {
+  margin: 6px 0 6px;
+  font-size: 1.6rem;
+}
+
+.dtc-ot-hero__meta {
+  color: #495057;
+}
+
+.dtc-ot-hero__sep {
+  margin: 0 8px;
+  color: #adb5bd;
+}
+
+.dtc-ot-hero__status {
+  font-weight: 600;
+  color: #0d6efd;
+}
+
+.dtc-ot-hero__totalLabel {
+  color: #6c757d;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.dtc-ot-hero__totalValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.dtc-ot-card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.dtc-timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.dtc-timeline__item {
+  position: relative;
+  flex: 1 1 0;
+  padding: 8px 10px 8px 30px;
+  min-width: 0;
+}
+
+.dtc-timeline__item:before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  left: 14px;
+  right: -6px;
+  height: 2px;
+  background: #dee2e6;
+  z-index: 0;
+}
+
+.dtc-timeline__item:last-child:before {
+  display: none;
+}
+
+.dtc-timeline__dot {
+  position: absolute;
+  top: 10px;
+  left: 6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #adb5bd;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px #adb5bd;
+  z-index: 2;
+}
+
+.dtc-timeline__content {
+  position: relative;
+  z-index: 1;
+}
+
+.dtc-timeline__label {
+  display: inline-block;
+  font-weight: 600;
+  color: #212529;
+  line-height: 1.2;
+  background: #fff;
+  padding-right: 6px;
+}
+
+.dtc-timeline__date {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.dtc-timeline__item.is-done .dtc-timeline__dot {
+  background: #79C046;
+  box-shadow: 0 0 0 2px #79C046;
+}
+
+.dtc-timeline__item.is-done:before {
+  background: #79C046;
+}
+
+.dtc-timeline__item.is-current .dtc-timeline__dot {
+  background: #0d6efd;
+  box-shadow: 0 0 0 2px #0d6efd;
+  animation: dtc-ot-pulse 1.4s ease-in-out infinite;
+}
+
+.dtc-timeline__item.is-current .dtc-timeline__label {
+  font-weight: 700;
+  color: #0d6efd;
+}
+
+.dtc-timeline__item.is-todo .dtc-timeline__label {
+  color: #6c757d;
+  font-weight: 600;
+}
+
+@keyframes dtc-ot-pulse {
+  0%   { transform: scale(1);   box-shadow: 0 0 0 2px #0d6efd, 0 0 0 0 rgba(13,110,253,.4); }
+  70%  { transform: scale(1.06); box-shadow: 0 0 0 2px #0d6efd, 0 0 0 10px rgba(13,110,253,0); }
+  100% { transform: scale(1);   box-shadow: 0 0 0 2px #0d6efd, 0 0 0 0 rgba(13,110,253,0); }
+}
+
+.dtc-ot-product {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.dtc-ot-product__img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  background: #fff;
+}
+
+.dtc-ot-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.dtc-ot-card--cta {
+  padding: 18px;
+}
+
+.dtc-ot-card--cta .btn {
+  min-width: 260px;
+}
+
+.dtc-ot-order-confirmation {
+  margin: 12px 0;
+}
+
+.dtc-ot-account-card {
+  display: block;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 14px;
+  background: #fff;
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
+}
+
+.dtc-ot-account-card:hover {
+  border-color: #0d6efd;
+}
+
+.dtc-ot-account-card__icon {
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  background: #e7f1ff;
+  color: #0d6efd;
+  margin-bottom: 10px;
+}
+
+.dtc-ot-account-card__title {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.dtc-ot-account-card__text {
+  display: block;
+  color: #6c757d;
+  margin-bottom: 8px;
+}
+
+.dtc-ot-account-card__cta {
+  display: inline-block;
+  font-weight: 600;
+  color: #0d6efd;
+}
+
+/* Mobile : timeline verticale */
+@media (max-width: 991.98px) {
+  .dtc-ot-hero__inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dtc-ot-hero__totalLabel,
+  .dtc-ot-hero__totalValue {
+    text-align: left;
+  }
+
+  .dtc-timeline {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .dtc-timeline__item {
+    padding-left: 36px;
+  }
+
+  .dtc-timeline__item:before {
+    top: 16px;
+    left: 14px;
+    right: auto;
+    width: 2px;
+    height: calc(100% + 12px);
+  }
+
+  .dtc-timeline__item:last-child:before {
+    display: none;
+  }
+
+  .dtc-timeline__dot {
+    top: 8px;
+  }
+  .dtc-ot-card--cta .btn {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
