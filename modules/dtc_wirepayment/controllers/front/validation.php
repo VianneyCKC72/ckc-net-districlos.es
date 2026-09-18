@@ -30,6 +30,9 @@ class Dtc_WirepaymentValidationModuleFrontController extends ModuleFrontControll
         $currency = $this->context->currency;
         $total = (float) $cart->getOrderTotal(true, Cart::BOTH);
         $fallback = $this->module->getFallbackWireDetails();
+        if (!class_exists('OrderStoreHelper', false)) {
+            require_once _PS_OVERRIDE_DIR_ . 'classes/OrderStoreHelper.php';
+        }
         $wire = OrderStoreHelper::getWireBankDetailsForCart($cart, $fallback);
 
         $mailVars = [

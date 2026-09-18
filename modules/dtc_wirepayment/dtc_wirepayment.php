@@ -115,6 +115,7 @@ class Dtc_Wirepayment extends PaymentModule
             'module_currency' => ['id_shop', 'id_currency'],
             'module_country' => ['id_shop', 'id_country'],
             'module_group' => ['id_shop', 'id_group'],
+            'module_carrier' => ['id_shop', 'id_reference'],
         ];
 
         foreach ($tables as $table => $columns) {
@@ -266,14 +267,16 @@ class Dtc_Wirepayment extends PaymentModule
             return;
         }
 
+        $this->ensureOrderStoreHelper();
+
         $order = $params['order'];
         $wire = OrderStoreHelper::getWireBankDetailsForOrder((int) $order->id, $this->getFallbackWireDetails());
 
         $totalToPaid = $order->getOrdersTotalPaid() - $order->getTotalPaid();
         $this->smarty->assign([
             'shop_name' => $this->context->shop->name,
-            'total' => $this->context->getCurrentLocale()->formatPrice(
-                $totalToPaid,
+            'total' => $this->formatPriceAmount(
+                (float) $totalToPaid,
                 (new Currency($order->id_currency))->iso_code
             ),
             'bankwireDetails' => Tools::nl2br($wire['details']),
@@ -285,6 +288,39 @@ class Dtc_Wirepayment extends PaymentModule
         ]);
 
         return $this->fetch('module:dtc_wirepayment/views/templates/hook/payment_return.tpl');
+    }
+
+    /**
+     * Formatage prix robuste : getCurrentLocale() peut être null selon le contexte.
+     */
+    protected function formatPriceAmount(float $amount, ?string $currencyIso = null): string
+    {
+        $iso = $currencyIso
+            ?: (isset($this->context->currency) ? $this->context->currency->iso_code : 'EUR');
+
+        try {
+            $locale = $this->context->getCurrentLocale();
+            if ($locale !== null) {
+                return $locale->formatPrice($amount, $iso);
+            }
+        } catch (Throwable $e) {
+            // continue fallback
+        }
+
+        try {
+            return Tools::getContextLocale($this->context)->formatPrice($amount, $iso);
+        } catch (Throwable $e) {
+            // CLI / contexte sans kernel Symfony
+        }
+
+        return number_format($amount, 2, ',', ' ') . ' ' . $iso;
+    }
+
+    protected function ensureOrderStoreHelper(): void
+    {
+        if (!class_exists('OrderStoreHelper', false)) {
+            require_once _PS_OVERRIDE_DIR_ . 'classes/OrderStoreHelper.php';
+        }
     }
 
     public function checkCurrency($cart)
@@ -417,12 +453,14 @@ class Dtc_Wirepayment extends PaymentModule
 
     public function getTemplateVarInfos()
     {
+        $this->ensureOrderStoreHelper();
+
         $cart = $this->context->cart;
         $total = sprintf(
             $this->l('%s (TTC)'),
-            $this->context->getCurrentLocale()->formatPrice(
-                $cart->getOrderTotal(true, Cart::BOTH),
-                $this->context->currency->iso_code
+            $this->formatPriceAmount(
+                (float) $cart->getOrderTotal(true, Cart::BOTH),
+                isset($this->context->currency) ? $this->context->currency->iso_code : null
             )
         );
 
