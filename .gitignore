@@ -254,9 +254,11 @@ themes/*/config/settings_*.json
 app/config/parameters.old.yml
 app/config/config.php
 # Themes, modules and overrides
+/modules.bak.*/
 
 modules/*
 !modules/ckc*/
+!modules/dtc*/
 !modules/pm_advancedpack/
 !modules/ps_shoppingcart/
 !modules/custompickup/
@@ -477,6 +479,7 @@ themes/classic/assets/js/theme.js.map
 /license_query_cache.txt
 config/defines_uri.inc.php
 modules/ckc*/config_fr.xml
+modules/dtc*/config_fr.xml
 modules/ckcproductreviews/cache/
 themes/classic/assets/css/theme.css.map
 .claude/
@@ -486,3 +489,6 @@ themes/classic/assets/css/theme.css
 themes/classic/assets/js/theme.js
 /fix_*.php
 /fix_configurateur.php
+
+modules/dtc*/cache/*
+!modules/dtc*/cache/index.php

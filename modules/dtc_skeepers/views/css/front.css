@@ -1,0 +1,72 @@
+/**
+ * Module dtc_skeepers
+ * Styles pour l'affichage de la note client
+ *
+ * @author    Agence CKC
+ * @copyright 2024
+ */
+
+.clients .avis-link {
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.clients .avis-link:hover {
+    text-decoration: underline;
+}
+
+.clients .dtc-skeepers-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    line-height: 1;
+    margin-left: 4px;
+}
+
+.clients .dtc-skeepers-stars .dtc-star {
+    font-size: 16px;
+    color: #ddd;
+    display: inline-block;
+    position: relative;
+}
+
+@media only screen and (max-width: 1620px) {
+    .clients .dtc-skeepers-stars .dtc-star {
+        font-size: 14px;
+    }
+}
+
+@media only screen and (max-width: 1180px) {
+    .clients .dtc-skeepers-stars .dtc-star {
+        font-size: 13px;
+    }
+}
+
+.clients .dtc-skeepers-stars .dtc-star-full {
+    color: #ffc107 !important;
+    text-shadow: 0 0 2px rgba(255, 193, 7, 0.5);
+}
+
+.clients .dtc-skeepers-stars .dtc-star-half {
+    color: #ffc107 !important;
+    text-shadow: 0 0 2px rgba(255, 193, 7, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.clients .dtc-skeepers-stars .dtc-star-half::after {
+    content: '★';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 50%;
+    overflow: hidden;
+    color: #ddd;
+}
+
+.clients .dtc-skeepers-stars .dtc-star-empty {
+    color: #ddd;
+}
