@@ -120,7 +120,7 @@ class CartRuleRepeatDiscountService
 
         $cartRule->description = self::RULE_CODE_MARKER;
         $cartRule->code = '';
-        $cartRule->highlight = true;
+        $cartRule->highlight = false; // Pas d'affichage "offre promo" tant que le palier n'est pas atteint
         $cartRule->partial_use = false;
         $cartRule->priority = 1;
         $cartRule->active = $active;

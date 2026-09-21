@@ -69,6 +69,7 @@ class Dtc_Cartrule extends Module
             CartRuleRepeatDiscountService::CFG_DISCOUNT,
             CartRuleRepeatDiscountService::CFG_TAX,
             CartRuleRepeatDiscountService::CFG_ID_CART_RULE,
+            'DTC_CARTRULE_REPEAT_NO_HIGHLIGHT',
         ] as $key) {
             Configuration::deleteByName($key);
         }
@@ -231,6 +232,19 @@ class Dtc_Cartrule extends Module
         }
 
         $this->registerHook('actionCartSave');
+
+        // Désactive le highlight sur la règle existante (évite le bloc promo orange < 500 €).
+        if ((int) Configuration::get('DTC_CARTRULE_REPEAT_NO_HIGHLIGHT') !== 1) {
+            $idCartRule = CartRuleRepeatDiscountService::getIdCartRule();
+            if ($idCartRule > 0) {
+                Db::getInstance()->update(
+                    'cart_rule',
+                    ['highlight' => 0],
+                    'id_cart_rule = ' . (int) $idCartRule
+                );
+            }
+            Configuration::updateValue('DTC_CARTRULE_REPEAT_NO_HIGHLIGHT', 1);
+        }
     }
 
     public function hookActionCartSave($params)
