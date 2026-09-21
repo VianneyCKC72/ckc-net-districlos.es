@@ -198,6 +198,9 @@ class CartRule extends CartRuleCore
      * Important : on laisse reduction_amount à la valeur dynamique sur l'objet
      * en mémoire pour que CartRuleCalculator (qui ne passe pas par
      * getContextualValue) applique le bon total, pas seulement l'affichage.
+     *
+     * On aligne aussi reduction_currency sur la devise du contexte : sinon le
+     * core peut convertir via Currency(0) et renvoyer value_real = 0 (−0,00 €).
      */
     public function getContextualValue($use_tax, Context $context = null, $filter = null, $package = null, $use_cache = true)
     {
@@ -214,6 +217,14 @@ class CartRule extends CartRuleCore
                     }
                     if ($context && Validate::isLoadedObject($context->cart)) {
                         $this->reduction_amount = CartRuleRepeatDiscountService::getDiscountForCart($context->cart);
+
+                        $idCurrency = !empty($context->currency->id)
+                            ? (int) $context->currency->id
+                            : (int) Configuration::get('PS_CURRENCY_DEFAULT');
+                        if ($idCurrency > 0) {
+                            $this->reduction_currency = $idCurrency;
+                        }
+
                         // Le cache core n'inclut pas le total panier : on le purge pour cette règle.
                         Cache::clean('getContextualValue_' . (int) $this->id . '_*');
                     }

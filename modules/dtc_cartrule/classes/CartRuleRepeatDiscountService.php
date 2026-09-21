@@ -114,6 +114,9 @@ class CartRuleRepeatDiscountService
         $tax = self::useTax();
         $active = self::isEnabled();
         $idCurrency = (int) Configuration::get('PS_CURRENCY_DEFAULT');
+        if ($idCurrency <= 0 && Context::getContext()->currency) {
+            $idCurrency = (int) Context::getContext()->currency->id;
+        }
 
         $cartRule->description = self::RULE_CODE_MARKER;
         $cartRule->code = '';
