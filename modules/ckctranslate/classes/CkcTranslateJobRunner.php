@@ -105,6 +105,10 @@ class CkcTranslateJobRunner
                     $result = $this->runHelloworkJobs();
                     break;
 
+                case 'ets_cfu':
+                    $result = $this->runEtsCfu();
+                    break;
+
                 default:
                     return array(
                         'success' => false,
@@ -694,6 +698,9 @@ PROMPT;
             case 'hellowork_jobs':
                 return (string) Configuration::get(CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS);
 
+            case 'ets_cfu':
+                return (string) Configuration::get(CkcTranslate::CONF_PROMPT_ETS_CFU);
+
             default:
                 return '';
         }
@@ -718,6 +725,9 @@ PROMPT;
 
             case 'attributes':
                 return $this->countAttributesMissing($forceOnlyMissing);
+
+            case 'ets_cfu':
+                return count($this->buildEtsCfuQueueItems($forceOnlyMissing));
 
             default:
                 $filtered = $this->getFilteredSql($jobCode, $forceOnlyMissing);
@@ -2279,6 +2289,7 @@ PROMPT;
             'order_states',
             'ckc_labels',
             'hellowork_jobs',
+            'ets_cfu',
         );
     }
 
@@ -2308,6 +2319,7 @@ PROMPT;
             'order_states' => 'order_states',
             'ckc_labels' => 'ckc_labels',
             'hellowork_jobs' => 'hellowork_jobs',
+            'ets_cfu' => 'ets_cfu',
         );
 
         return isset($map[$jobCode]) ? $map[$jobCode] : self::normalizeQueueName($jobCode);
@@ -3029,6 +3041,448 @@ PROMPT;
         return $this->nextResult(sprintf(
             $this->module->l('Job offer #%d translated.', 'CkcTranslateJobRunner'),
             (int) $id
+        ));
+    }
+
+    /**
+     * CKC Vianney — Contact Form Ultimate (ets_cfu / ets_cfultimate).
+     */
+    protected function runEtsCfu()
+    {
+        $tables = self::discoverEtsCfuLangTables();
+        if (empty($tables)) {
+            return array(
+                'success' => false,
+                'message' => $this->module->l('Contact Form Ultimate tables not found. Install and enable ets_cfultimate (ets_cfu).', 'CkcTranslateJobRunner'),
+                'finished' => true,
+            );
+        }
+
+        $item = $this->getNextTypedQueueItem('ets_cfu', array($this, 'buildEtsCfuQueue'));
+        if (!$item) {
+            return $this->finishedResult($this->module->l('Contact Form Ultimate translation finished.', 'CkcTranslateJobRunner'));
+        }
+
+        return $this->translateEtsCfuRow((string) $item['type'], (int) $item['id']);
+    }
+
+    /**
+     * @return array<int, array{table: string, id_column: string, fields: array, has_id_shop: bool, parent_table: string, form_id_column: string}>
+     */
+    public static function discoverEtsCfuLangTables()
+    {
+        static $cache = null;
+        if ($cache !== null) {
+            return $cache;
+        }
+
+        $found = array();
+        $db = Db::getInstance();
+        $like = str_replace('_', '\\_', _DB_PREFIX_) . 'ets\\_cfu%\\_lang';
+        $rows = $db->executeS('SHOW TABLES LIKE "' . $like . '"');
+        if (!is_array($rows)) {
+            $cache = array();
+
+            return $cache;
+        }
+
+        foreach ($rows as $row) {
+            $fullName = (string) reset($row);
+            $prefix = _DB_PREFIX_;
+            if (strpos($fullName, $prefix) !== 0) {
+                continue;
+            }
+            $table = substr($fullName, strlen($prefix));
+            if (!preg_match('/^ets_cfu[a-z0-9_]*_lang$/', $table)) {
+                continue;
+            }
+            $meta = self::getEtsCfuLangTableMeta($table);
+            if ($meta) {
+                $found[] = $meta;
+            }
+        }
+
+        $cache = $found;
+
+        return $cache;
+    }
+
+    /**
+     * @param string $table Table name without prefix
+     *
+     * @return array|null
+     */
+    public static function getEtsCfuLangTableMeta($table)
+    {
+        $table = preg_replace('/[^a-z0-9_]/', '', strtolower((string) $table));
+        if ($table === '' || strpos($table, 'ets_cfu') !== 0 || substr($table, -5) !== '_lang') {
+            return null;
+        }
+
+        $cols = Db::getInstance()->executeS('SHOW COLUMNS FROM `' . _DB_PREFIX_ . bqSQL($table) . '`');
+        if (!is_array($cols) || empty($cols)) {
+            return null;
+        }
+
+        $idColumn = '';
+        $hasIdShop = false;
+        $fields = array();
+        foreach ($cols as $col) {
+            $name = (string) $col['Field'];
+            $type = strtolower((string) $col['Type']);
+            if ($name === 'id_lang') {
+                continue;
+            }
+            if ($name === 'id_shop') {
+                $hasIdShop = true;
+                continue;
+            }
+            if ($idColumn === '' && strpos($name, 'id_') === 0) {
+                $idColumn = $name;
+                continue;
+            }
+            if (!preg_match('/char|text|enum|json|blob/', $type)) {
+                continue;
+            }
+            if (preg_match('/^(tiny|medium|long)?blob$/', $type)) {
+                continue;
+            }
+            $length = 0;
+            if (preg_match('/\((\d+)\)/', $type, $m)) {
+                $length = (int) $m[1];
+            }
+            $fields[$name] = array(
+                'html' => (bool) preg_match('/text|blob|json/', $type),
+                'slug' => in_array($name, array('alias', 'link_rewrite', 'friendly_url', 'url_alias'), true),
+                'length' => $length,
+            );
+        }
+
+        if ($idColumn === '' || empty($fields)) {
+            return null;
+        }
+
+        $parentTable = substr($table, 0, -5);
+        $formIdColumn = '';
+        if ($idColumn === 'id_ets_cfu_form') {
+            $formIdColumn = 'id_ets_cfu_form';
+        } elseif (self::etsCfuTableHasColumn($parentTable, 'id_ets_cfu_form')) {
+            $formIdColumn = 'id_ets_cfu_form';
+        }
+
+        return array(
+            'table' => $table,
+            'id_column' => $idColumn,
+            'fields' => $fields,
+            'has_id_shop' => $hasIdShop,
+            'parent_table' => $parentTable,
+            'form_id_column' => $formIdColumn,
+        );
+    }
+
+    /**
+     * @param string $table
+     * @param string $column
+     *
+     * @return bool
+     */
+    protected static function etsCfuTableHasColumn($table, $column)
+    {
+        $table = preg_replace('/[^a-z0-9_]/', '', strtolower((string) $table));
+        $column = preg_replace('/[^a-z0-9_]/', '', strtolower((string) $column));
+        if ($table === '' || $column === '') {
+            return false;
+        }
+        $tableLike = str_replace('_', '\\_', _DB_PREFIX_ . $table);
+        if (!(bool) Db::getInstance()->executeS('SHOW TABLES LIKE "' . $tableLike . '"')) {
+            return false;
+        }
+
+        $columnLike = str_replace('_', '\\_', $column);
+
+        return (bool) Db::getInstance()->executeS(
+            'SHOW COLUMNS FROM `' . _DB_PREFIX_ . bqSQL($table) . '` LIKE "' . $columnLike . '"'
+        );
+    }
+
+    /**
+     * @return array<int, array{type: string, id: int}>
+     */
+    protected function buildEtsCfuQueue()
+    {
+        return $this->buildEtsCfuQueueItems((bool) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS));
+    }
+
+    /**
+     * @param bool $onlyMissing
+     *
+     * @return array<int, array{type: string, id: int}>
+     */
+    protected function buildEtsCfuQueueItems($onlyMissing)
+    {
+        $items = array();
+        $shopId = (int) Context::getContext()->shop->id;
+        $filterType = (string) Configuration::get(CkcTranslate::CONF_FILTER_TYPE);
+        $filterIds = $this->parseIds((string) Configuration::get(CkcTranslate::CONF_FILTER_IDS));
+
+        foreach (self::discoverEtsCfuLangTables() as $meta) {
+            $idCol = bqSQL($meta['id_column']);
+            $table = bqSQL($meta['table']);
+            $contentParts = array();
+            foreach (array_keys($meta['fields']) as $field) {
+                $contentParts[] = 'TRIM(IFNULL(src.`' . bqSQL($field) . '`, \'\')) != \'\'';
+            }
+            $sql = 'SELECT DISTINCT src.`' . $idCol . '` AS id
+                    FROM `' . _DB_PREFIX_ . $table . '` src';
+
+            if ($meta['form_id_column'] && $meta['form_id_column'] !== $meta['id_column'] && $meta['parent_table']) {
+                $sql .= ' INNER JOIN `' . _DB_PREFIX_ . bqSQL($meta['parent_table']) . '` p
+                            ON p.`' . $idCol . '` = src.`' . $idCol . '`';
+            }
+
+            $sql .= ' WHERE src.id_lang = ' . (int) $this->sourceLangId;
+            if (!empty($contentParts)) {
+                $sql .= ' AND (' . implode(' OR ', $contentParts) . ')';
+            }
+            if (!empty($meta['has_id_shop']) && $shopId > 0) {
+                $sql .= ' AND src.id_shop = ' . (int) $shopId;
+            }
+            if ($filterType === 'ids' && !empty($filterIds) && $meta['form_id_column']) {
+                $in = implode(',', array_map('intval', $filterIds));
+                if ($meta['form_id_column'] === $meta['id_column']) {
+                    $sql .= ' AND src.`' . bqSQL($meta['form_id_column']) . '` IN (' . $in . ')';
+                } else {
+                    $sql .= ' AND p.`' . bqSQL($meta['form_id_column']) . '` IN (' . $in . ')';
+                }
+            }
+
+            if ($onlyMissing) {
+                $sql .= ' LEFT JOIN `' . _DB_PREFIX_ . $table . '` tgt
+                            ON tgt.`' . $idCol . '` = src.`' . $idCol . '`
+                           AND tgt.id_lang = ' . (int) $this->targetLangId;
+                if (!empty($meta['has_id_shop']) && $shopId > 0) {
+                    $sql .= ' AND tgt.id_shop = src.id_shop';
+                }
+                $missingParts = array();
+                foreach (array_keys($meta['fields']) as $field) {
+                    $f = bqSQL($field);
+                    $missingParts[] = '(
+                        TRIM(IFNULL(src.`' . $f . '`, \'\')) != \'\'
+                        AND (
+                            tgt.`' . $idCol . '` IS NULL
+                            OR TRIM(IFNULL(tgt.`' . $f . '`, \'\')) = \'\'
+                            OR tgt.`' . $f . '` = src.`' . $f . '`
+                        )
+                    )';
+                }
+                if (!empty($missingParts)) {
+                    $sql .= ' AND (' . implode(' OR ', $missingParts) . ')';
+                }
+            }
+
+            $sql .= ' ORDER BY src.`' . $idCol . '` ASC';
+            $rows = Db::getInstance()->executeS($sql);
+            if (!is_array($rows)) {
+                continue;
+            }
+            foreach ($rows as $row) {
+                $id = (int) $row['id'];
+                if ($id <= 0) {
+                    continue;
+                }
+                $items[] = array(
+                    'type' => $meta['table'],
+                    'id' => $id,
+                );
+            }
+        }
+
+        return $items;
+    }
+
+    /**
+     * Total rows with source content (all ets_cfu lang tables).
+     *
+     * @return int
+     */
+    public function countEtsCfuItems()
+    {
+        return count($this->buildEtsCfuQueueItems(false));
+    }
+
+    /**
+     * @param string $table
+     * @param int    $id
+     *
+     * @return array
+     */
+    protected function translateEtsCfuRow($table, $id)
+    {
+        $meta = self::getEtsCfuLangTableMeta($table);
+        $id = (int) $id;
+        if (!$meta || $id <= 0) {
+            $this->logHistory('ets_cfu', $table, $id, 'skipped', $this->module->l('Invalid Contact Form Ultimate row.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult($this->module->l('Invalid Contact Form Ultimate row skipped.', 'CkcTranslateJobRunner'));
+        }
+
+        $shopId = (int) Context::getContext()->shop->id;
+        $shopSql = '';
+        if (!empty($meta['has_id_shop']) && $shopId > 0) {
+            $shopSql = ' AND id_shop = ' . (int) $shopId;
+        }
+
+        $source = Db::getInstance()->getRow(
+            'SELECT * FROM `' . _DB_PREFIX_ . bqSQL($meta['table']) . '`
+             WHERE `' . bqSQL($meta['id_column']) . '` = ' . $id . '
+               AND id_lang = ' . (int) $this->sourceLangId . $shopSql
+        );
+        if (!$source) {
+            $this->logHistory('ets_cfu', $meta['table'], $id, 'skipped', $this->module->l('No source content.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Contact Form Ultimate %1$s #%2$d has no source row, skipped.', 'CkcTranslateJobRunner'),
+                $meta['table'],
+                $id
+            ));
+        }
+
+        $target = Db::getInstance()->getRow(
+            'SELECT * FROM `' . _DB_PREFIX_ . bqSQL($meta['table']) . '`
+             WHERE `' . bqSQL($meta['id_column']) . '` = ' . $id . '
+               AND id_lang = ' . (int) $this->targetLangId . $shopSql
+        );
+
+        $toTranslate = array();
+        foreach ($meta['fields'] as $field => $fieldMeta) {
+            $sourceVal = isset($source[$field]) ? (string) $source[$field] : '';
+            if (trim(strip_tags($sourceVal)) === '' && trim($sourceVal) === '') {
+                continue;
+            }
+            if (preg_match('/^[\d.\s]+$/', trim($sourceVal))) {
+                continue;
+            }
+            if (preg_match('/^#[0-9a-fA-F]{3,8}$/', trim($sourceVal))) {
+                continue;
+            }
+            $targetVal = ($target && isset($target[$field])) ? (string) $target[$field] : '';
+            if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)
+                && $targetVal !== ''
+                && $targetVal !== $sourceVal
+            ) {
+                continue;
+            }
+            $toTranslate[$field] = $sourceVal;
+        }
+
+        if (empty($toTranslate)) {
+            $this->logHistory('ets_cfu', $meta['table'], $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Contact Form Ultimate %1$s #%2$d already translated, skipped.', 'CkcTranslateJobRunner'),
+                $meta['table'],
+                $id
+            ));
+        }
+
+        $jsonKeys = array();
+        $sourceBlocks = '';
+        foreach ($toTranslate as $field => $value) {
+            $jsonKeys[] = '  "' . $field . '": ""';
+            $sourceBlocks .= "\nSource {$field}:\n{$value}\n";
+        }
+        $jsonExample = "{\n" . implode(",\n", $jsonKeys) . "\n}";
+
+        $systemPrompt = $this->buildSystemPrompt(
+            'You translate PrestaShop Contact Form Ultimate texts (forms, fields, options, emails, thank-you pages). Preserve HTML, attributes, links, emails and phone numbers. If a value is JSON, keep the JSON structure and translate string values only. Keep URL aliases slug-safe.',
+            'ets_cfu'
+        );
+
+        $prompt = <<<PROMPT
+Return ONLY valid JSON with these keys:
+{$jsonExample}
+{$sourceBlocks}
+PROMPT;
+
+        $data = $this->ai->requestJson($systemPrompt, $prompt);
+        if (!is_array($data)) {
+            $this->logHistory('ets_cfu', $meta['table'], $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Invalid AI response for Contact Form Ultimate %1$s #%2$d.', 'CkcTranslateJobRunner'),
+                $meta['table'],
+                $id
+            ));
+        }
+
+        $translated = array();
+        foreach ($toTranslate as $field => $sourceVal) {
+            if (!isset($data[$field])) {
+                continue;
+            }
+            $value = (string) $data[$field];
+            if (trim(strip_tags($value)) === '' && trim(strip_tags($sourceVal)) !== '') {
+                continue;
+            }
+            $fieldMeta = $meta['fields'][$field];
+            if (!empty($fieldMeta['slug'])) {
+                $value = $this->normalizeSlug($value);
+            }
+            if (!empty($fieldMeta['length']) && Tools::strlen($value) > (int) $fieldMeta['length']) {
+                $value = Tools::substr($value, 0, (int) $fieldMeta['length']);
+            }
+            $translated[$field] = $value;
+        }
+
+        if (empty($translated)) {
+            $this->logHistory('ets_cfu', $meta['table'], $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Invalid AI response for Contact Form Ultimate %1$s #%2$d.', 'CkcTranslateJobRunner'),
+                $meta['table'],
+                $id
+            ));
+        }
+
+        $payload = array();
+        foreach ($translated as $field => $value) {
+            $html = !empty($meta['fields'][$field]['html']) || strpos($value, '<') !== false;
+            $payload[$field] = pSQL($value, $html);
+        }
+
+        $where = '`' . bqSQL($meta['id_column']) . '` = ' . $id
+            . ' AND id_lang = ' . (int) $this->targetLangId
+            . $shopSql;
+
+        if ($target) {
+            Db::getInstance()->update($meta['table'], $payload, $where);
+        } else {
+            $insert = array();
+            foreach ($source as $col => $value) {
+                if ($col === 'id_lang') {
+                    $insert[$col] = (int) $this->targetLangId;
+                    continue;
+                }
+                if (isset($payload[$col])) {
+                    $insert[$col] = $payload[$col];
+                    continue;
+                }
+                if (strpos($col, 'id_') === 0) {
+                    $insert[$col] = (int) $value;
+                    continue;
+                }
+                $html = isset($meta['fields'][$col]) && !empty($meta['fields'][$col]['html']);
+                $insert[$col] = pSQL((string) $value, $html);
+            }
+            Db::getInstance()->insert($meta['table'], $insert);
+        }
+
+        $this->logHistory('ets_cfu', $meta['table'], $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
+
+        return $this->nextResult(sprintf(
+            $this->module->l('Contact Form Ultimate %1$s #%2$d translated.', 'CkcTranslateJobRunner'),
+            $meta['table'],
+            $id
         ));
     }
 

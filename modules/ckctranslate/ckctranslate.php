@@ -43,6 +43,7 @@ class CkcTranslate extends Module
     public const CONF_PROMPT_CARRIER_DELAYS = 'CKCTRANSLATE_PROMPT_CARRIER_DELAYS';
     public const CONF_PROMPT_CKC_LABELS = 'CKCTRANSLATE_PROMPT_CKC_LABELS';
     public const CONF_PROMPT_HELLOWORK_JOBS = 'CKCTRANSLATE_PROMPT_HELLOWORK_JOBS';
+    public const CONF_PROMPT_ETS_CFU = 'CKCTRANSLATE_PROMPT_ETS_CFU';
 
     public const CONF_FILTER_TYPE = 'CKCTRANSLATE_FILTER_TYPE';
     public const CONF_FILTER_IDS = 'CKCTRANSLATE_FILTER_IDS';
@@ -52,7 +53,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.10.0';
+        $this->version = '2.11.0';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -153,6 +154,7 @@ class CkcTranslate extends Module
             && Configuration::updateValue(self::CONF_PROMPT_CARRIER_DELAYS, 'Translate carrier delivery delay texts for checkout and shipping estimators. Keep them short and clear. Preserve numbers, time units and carrier brand names. Do not invent delivery promises.')
             && Configuration::updateValue(self::CONF_PROMPT_CKC_LABELS, 'Translate short product badge labels. Preserve HTML tags (<strong>, <b>, <br>), CSS classes and the ↓ character. Keep the result short, similar in length, suitable for a product card flag. Do not invent promotions.')
             && Configuration::updateValue(self::CONF_PROMPT_HELLOWORK_JOBS, 'Translate job offer titles and descriptions for a careers page. Keep a professional recruitment tone. Preserve HTML tags. Do not invent benefits, salaries or locations. Keep H/F and similar gender marks when present, adapted to English (M/F).')
+            && Configuration::updateValue(self::CONF_PROMPT_ETS_CFU, 'Translate Contact Form Ultimate (ets_cfu) texts: form titles, URL aliases, SEO, descriptions, field labels, placeholders, help texts, dropdown/radio options, submit buttons, thank-you pages and notification emails. Preserve HTML tags, attributes, links, emails, phone numbers and brand names. If a field is JSON, keep the JSON structure and translate string values only. Keep URL aliases slug-safe. Do not invent legal clauses.')
             && Configuration::updateValue(self::CONF_FILTER_TYPE, 'all')
             && Configuration::updateValue(self::CONF_FILTER_IDS, '')
             && Configuration::updateValue(self::CONF_FILTER_CATEGORY_ID, 0);
@@ -193,6 +195,7 @@ class CkcTranslate extends Module
             && Configuration::deleteByName(self::CONF_PROMPT_CARRIER_DELAYS)
             && Configuration::deleteByName(self::CONF_PROMPT_CKC_LABELS)
             && Configuration::deleteByName(self::CONF_PROMPT_HELLOWORK_JOBS)
+            && Configuration::deleteByName(self::CONF_PROMPT_ETS_CFU)
             && Configuration::deleteByName(self::CONF_FILTER_TYPE)
             && Configuration::deleteByName(self::CONF_FILTER_IDS)
             && Configuration::deleteByName(self::CONF_FILTER_CATEGORY_ID);
