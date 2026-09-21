@@ -36,7 +36,7 @@ class Dtc_Odoo_Api extends Module
     {
         $this->name = 'dtc_odoo_api';
         $this->tab = 'administration';
-        $this->version = '1.13.0';
+        $this->version = '1.14.4';
         $this->author = 'DISTRICLOS';
         $this->need_instance = 0;
         $this->bootstrap = false;
