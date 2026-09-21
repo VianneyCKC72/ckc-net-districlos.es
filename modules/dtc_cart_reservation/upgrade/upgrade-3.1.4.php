@@ -1,12 +1,23 @@
 <?php
+/**
+ * DTC_CART_RESERVATION_FIX_3.1.4
+ *
+ * Upgrade prod : Modules → dtc_cart_reservation → Mettre à jour
+ * (ou vérifier que ce fichier existe après git pull).
+ *
+ * Réalignement hooks :
+ * - displayBeforeCartOverview + actionFrontControllerSetMedia
+ * - retire displayShoppingCartFooter / displayHeader (v2.x)
+ *
+ * Vérif : grep -n "DTC_CART_RESERVATION_FIX_3.1.4" modules/dtc_cart_reservation/upgrade/upgrade-3.1.4.php
+ */
 
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
 /**
- * Réalignement hooks : displayBeforeCartOverview + actionFrontControllerSetMedia
- * (le thème cart.tpl appelle displayBeforeCartOverview).
+ * DTC_CART_RESERVATION_FIX_3.1.4 — le thème cart.tpl appelle displayBeforeCartOverview.
  */
 function upgrade_module_3_1_4($module)
 {

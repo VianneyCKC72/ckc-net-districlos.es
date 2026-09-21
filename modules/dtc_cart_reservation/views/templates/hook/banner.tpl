@@ -1,8 +1,12 @@
 {**
  * Bandeau réservation panier (compte à rebours visuel)
+ * DTC_CART_RESERVATION_FIX_3.1.4 — si absent en prod, le déploiement n'est pas passé
  *}
+{* DTC_CART_RESERVATION_FIX_3.1.4 — marqueur FO (code source /panier) *}
+<!-- DTC_CART_RESERVATION_FIX_3.1.4 -->
 {if isset($dtc_reservation_duration_seconds) && $dtc_reservation_duration_seconds > 0}
 <div class="dtc-reserved-banner" id="dtc-reserved-banner"
+     data-fix-marker="DTC_CART_RESERVATION_FIX_3.1.4"
      style="display: none;"
      aria-live="polite"
      data-duration="{$dtc_reservation_duration_seconds|intval}"
