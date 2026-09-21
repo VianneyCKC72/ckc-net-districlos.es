@@ -157,7 +157,7 @@ class CartRule extends CartRuleCore
 
     /*
      * module: dtc_cartrule
-     * Ajoute la/les conditions custom Districtlos aux règles panier.
+     * Ajoute la/les conditions custom Districlos aux règles panier.
      * Délègue toute la logique aux services du module ; ne touche pas au reste
      * du comportement natif. Si un service n'est pas disponible (module
      * désinstallé ou feature non chargée), l'override se comporte comme le parent.
@@ -188,5 +188,41 @@ class CartRule extends CartRuleCore
         }
 
         return parent::checkValidity($context, $alreadyInCart, $display_error, $check_carrier, $useOrderPrices);
+    }
+
+    /*
+     * module: dtc_cartrule
+     * Remise répétitive : remplace le montant unitaire de la règle dédiée
+     * par floor(total / palier) × remise (sans plafond).
+     *
+     * Important : on laisse reduction_amount à la valeur dynamique sur l'objet
+     * en mémoire pour que CartRuleCalculator (qui ne passe pas par
+     * getContextualValue) applique le bon total, pas seulement l'affichage.
+     */
+    public function getContextualValue($use_tax, Context $context = null, $filter = null, $package = null, $use_cache = true)
+    {
+        try {
+            $repeatServicePath = _PS_MODULE_DIR_ . 'dtc_cartrule/classes/CartRuleRepeatDiscountService.php';
+            if (file_exists($repeatServicePath)) {
+                if (!class_exists('CartRuleRepeatDiscountService', false)) {
+                    require_once $repeatServicePath;
+                }
+
+                if (CartRuleRepeatDiscountService::isRepeatRule((int) $this->id)) {
+                    if (!$context) {
+                        $context = Context::getContext();
+                    }
+                    if ($context && Validate::isLoadedObject($context->cart)) {
+                        $this->reduction_amount = CartRuleRepeatDiscountService::getDiscountForCart($context->cart);
+                        // Le cache core n'inclut pas le total panier : on le purge pour cette règle.
+                        Cache::clean('getContextualValue_' . (int) $this->id . '_*');
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            PrestaShopLogger::addLog('dtc_cartrule getContextualValue failed: ' . $e->getMessage(), 2);
+        }
+
+        return parent::getContextualValue($use_tax, $context, $filter, $package, $use_cache);
     }
 }
