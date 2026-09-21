@@ -1,5 +1,13 @@
+/**
+ * DTC_CART_RESERVATION_FIX_3.1.4
+ * Vérif prod : grep -n "DTC_CART_RESERVATION_FIX_3.1.4" modules/dtc_cart_reservation/views/js/cart-reservation.js
+ * Console FO /panier : window.DTC_CART_RESERVATION_FIX_VERSION
+ */
 (function () {
   'use strict';
+
+  // Marqueur déploiement (console navigateur sur /panier)
+  window.DTC_CART_RESERVATION_FIX_VERSION = '3.1.4';
 
   var interval = null;
   var config = null;

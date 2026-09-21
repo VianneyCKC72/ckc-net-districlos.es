@@ -2,8 +2,9 @@
 <module>
     <name>dtc_cart_reservation</name>
     <displayName><![CDATA[Bandeau réservation panier]]></displayName>
-    <version><![CDATA[2.0.0]]></version>
-    <description><![CDATA[Affiche un compte à rebours visuel dans le panier pour inciter à finaliser la commande.]]></description>
+    <!-- DTC_CART_RESERVATION_FIX_3.1.4 — version attendue après déploiement -->
+    <version><![CDATA[3.1.4]]></version>
+    <description><![CDATA[Affiche un compte à rebours visuel dans le panier pour inciter à finaliser la commande. FIX 3.1.4 hooks displayBeforeCartOverview.]]></description>
     <author><![CDATA[Districlos]]></author>
     <tab><![CDATA[front_office_features]]></tab>
     <is_configurable>1</is_configurable>

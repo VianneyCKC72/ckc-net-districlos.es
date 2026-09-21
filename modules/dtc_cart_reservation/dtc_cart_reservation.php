@@ -1,4 +1,18 @@
 <?php
+/**
+ * DTC_CART_RESERVATION_FIX_3.1.4
+ *
+ * Fix bandeau panier (sept. 2026) :
+ * - Hook d'affichage : displayBeforeCartOverview (appelé dans themes/classic/.../cart.tpl)
+ * - Hook assets     : actionFrontControllerSetMedia
+ * - NE PAS utiliser displayShoppingCartFooter / displayHeader (ancien code v2.x cassé)
+ *
+ * Vérif prod (SSH) :
+ *   grep -n "DTC_CART_RESERVATION_FIX_3.1.4" modules/dtc_cart_reservation/dtc_cart_reservation.php
+ *   → doit trouver cette ligne. Sinon le déploiement n'est pas passé.
+ * Vérif BO : Modules → dtc_cart_reservation → version 3.1.4
+ * Vérif FO : code source /panier → chercher DTC_CART_RESERVATION_FIX_3.1.4
+ */
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -10,7 +24,8 @@ class dtc_cart_reservation extends Module
     {
         $this->name = 'dtc_cart_reservation';
         $this->tab = 'front_office_features';
-        $this->version = '2.0.1';
+        // DTC_CART_RESERVATION_FIX_3.1.4 — version fichier (doit matcher ps_module.version après upgrade BO)
+        $this->version = '3.1.4';
         $this->author = 'Districlos';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -24,10 +39,11 @@ class dtc_cart_reservation extends Module
 
     public function install()
     {
+        // DTC_CART_RESERVATION_FIX_3.1.4 — hooks corrects à l'install
         return parent::install()
             && $this->installConfiguration()
-            && $this->registerHook('displayHeader')
-            && $this->registerHook('displayShoppingCartFooter');
+            && $this->registerHook('displayBeforeCartOverview')
+            && $this->registerHook('actionFrontControllerSetMedia');
     }
 
     public function uninstall()
@@ -46,6 +62,8 @@ class dtc_cart_reservation extends Module
 
     public function getContent()
     {
+        $this->ensureModuleGroupRestrictions();
+
         $output = '';
 
         if (Tools::isSubmit('submitDtcCartReservation')) {
@@ -144,9 +162,51 @@ class dtc_cart_reservation extends Module
         return max(1, $duration) * 60;
     }
 
-    public function hookDisplayHeader()
+    private function isCartController()
+    {
+        if (!isset($this->context->controller)) {
+            return false;
+        }
+
+        $controller = $this->context->controller;
+
+        return ($controller instanceof CartController)
+            || (isset($controller->php_self) && $controller->php_self === 'cart')
+            || Tools::getValue('controller') === 'cart';
+    }
+
+    /**
+     * DTC_CART_RESERVATION_FIX_3.1.4
+     * Bandeau sous le titre panier via displayBeforeCartOverview
+     * (themes/classic/templates/checkout/cart.tpl).
+     * Si cette méthode est absente en prod → ancien code v2.x, bandeau invisible.
+     */
+    public function hookDisplayBeforeCartOverview($params)
     {
         if (!(int) Configuration::get('DTC_CART_RESERVATION_ACTIVE')) {
+            return '';
+        }
+
+        $cart = isset($params['cart']) ? $params['cart'] : $this->context->cart;
+        if (!Validate::isLoadedObject($cart) || !(int) $cart->nbProducts()) {
+            return '';
+        }
+
+        $this->context->smarty->assign([
+            'dtc_reservation_duration_seconds' => $this->getDurationSeconds(),
+        ]);
+
+        return $this->display(__FILE__, 'views/templates/hook/banner.tpl');
+    }
+
+    /**
+     * DTC_CART_RESERVATION_FIX_3.1.4
+     * Assets : reset-bridge.js (toutes pages) + CSS/JS panier.
+     * Remplace l'ancien hookDisplayHeader (v2.x).
+     */
+    public function hookActionFrontControllerSetMedia($params)
+    {
+        if (!(int) Configuration::get('DTC_CART_RESERVATION_ACTIVE') || !isset($this->context->controller)) {
             return;
         }
 
@@ -156,7 +216,7 @@ class dtc_cart_reservation extends Module
             ['position' => 'bottom', 'priority' => 149]
         );
 
-        if (Tools::getValue('controller') !== 'cart') {
+        if (!$this->isCartController()) {
             return;
         }
 
@@ -173,21 +233,19 @@ class dtc_cart_reservation extends Module
         );
     }
 
-    public function hookDisplayShoppingCartFooter($params)
+    private function ensureModuleGroupRestrictions()
     {
-        if (!(int) Configuration::get('DTC_CART_RESERVATION_ACTIVE')) {
-            return '';
+        if (!Group::isFeatureActive() || !(int) $this->id) {
+            return;
         }
 
-        $cart = isset($params['cart']) ? $params['cart'] : $this->context->cart;
-        if (!Validate::isLoadedObject($cart) || !(int) $cart->nbProducts()) {
-            return '';
+        $count = (int) Db::getInstance()->getValue(
+            'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'module_group` WHERE id_module = ' . (int) $this->id
+        );
+
+        if ($count === 0) {
+            Group::addRestrictionsForModule($this->id, Shop::getShops(true, null, true));
+            Cache::clean(Hook::MODULE_LIST_BY_HOOK_KEY . '*');
         }
-
-        $this->context->smarty->assign([
-            'dtc_reservation_duration_seconds' => $this->getDurationSeconds(),
-        ]);
-
-        return $this->display(__FILE__, 'views/templates/hook/banner.tpl');
     }
 }
