@@ -1,0 +1,33 @@
+<?php
+
+global $_MODULE;
+$_MODULE = array();
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.0'] = 'DTC Skeepers - Avis Vérifiés';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.1'] = 'Intégration API Skeepers pour affichage dynamique des notes clients et génération de liens personnalisés par commande';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.2'] = 'Configuration API Skeepers';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.3'] = 'Client ID (Skeepers)';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.4'] = 'Votre Client ID depuis https://app.netreviews.eu/ → Account management > API Access';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.5'] = 'Client Secret (Skeepers)';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.6'] = 'Votre Client Secret depuis https://app.netreviews.eu/ → Account management > API Access';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.7'] = 'URL d\'authentification';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.8'] = 'URL pour l\'authentification OAuth';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.9'] = 'Endpoint API';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.10'] = 'URL de l\'endpoint pour récupérer les données';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.11'] = 'Durée du cache (en minutes)';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.12'] = 'Durée de mise en cache des données API (recommandé: 60 minutes)';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.13'] = 'Texte de secours';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.14'] = 'Texte affiché si l\'API est indisponible';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.15'] = 'Note de secours';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.16'] = 'Note affichée si l\'API est indisponible (ex: 4.8/5)';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.17'] = 'Save';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.18'] = 'Configuration mise à jour avec succès';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.19'] = 'L\'URL d\'authentification n\'est pas valide.';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.20'] = 'L\'URL de l\'endpoint API n\'est pas valide.';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.21'] = 'La durée du cache doit être un nombre entier.';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.22'] = 'La durée du cache doit être entre 1 et 1440 minutes.';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.23'] = 'Website ID (UUID)';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.24'] = 'L\'ID du website depuis votre compte Skeepers (format UUID)';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.25'] = 'Activer Purchase Events';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.26'] = 'Activer l\'envoi automatique des commandes à Skeepers pour générer des liens personnalisés';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.27'] = 'Oui';
+$_MODULE['<{dtc_skeepers}prestashop>dtc_skeepers_1.0.28'] = 'Non';

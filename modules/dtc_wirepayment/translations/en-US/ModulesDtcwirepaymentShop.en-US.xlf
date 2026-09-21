@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="modules/dtc_wirepayment" source-language="fr-FR" target-language="en-US" datatype="plaintext">
+    <body>
+      <trans-unit id="wire-cta">
+        <source>Payer par virement bancaire</source>
+        <target>Pay by bank wire</target>
+      </trans-unit>
+      <trans-unit id="wire-unavailable">
+        <source>Ce mode de paiement n'est pas disponible.</source>
+        <target>This payment method is not available.</target>
+      </trans-unit>
+      <trans-unit id="wire-amount">
+        <source>Montant</source>
+        <target>Amount</target>
+      </trans-unit>
+      <trans-unit id="wire-owner">
+        <source>Titulaire du compte</source>
+        <target>Account owner</target>
+      </trans-unit>
+      <trans-unit id="wire-details">
+        <source>Coordonnées bancaires</source>
+        <target>Account details</target>
+      </trans-unit>
+      <trans-unit id="wire-bank">
+        <source>Banque</source>
+        <target>Bank</target>
+      </trans-unit>
+      <trans-unit id="wire-complete">
+        <source>Votre commande sur %s est bien enregistrée.</source>
+        <target>Your order on %s is complete.</target>
+      </trans-unit>
+      <trans-unit id="wire-please-send">
+        <source>Merci d'effectuer un virement avec les informations suivantes :</source>
+        <target>Please send us a bank wire with:</target>
+      </trans-unit>
+      <trans-unit id="wire-ref">
+        <source>Indiquez la référence de commande %s dans le libellé du virement.</source>
+        <target>Please specify your order reference %s in the bankwire description.</target>
+      </trans-unit>
+      <trans-unit id="wire-email">
+        <source>Ces informations vous ont également été envoyées par e-mail.</source>
+        <target>We've also sent you this information by e-mail.</target>
+      </trans-unit>
+      <trans-unit id="wire-process">
+        <source>Votre commande sera traitée dès réception du paiement.</source>
+        <target>Your order will be sent as soon as we receive payment.</target>
+      </trans-unit>
+      <trans-unit id="wire-contact">
+        <source>Pour toute question, contactez notre [1]service client[/1].</source>
+        <target>If you have questions, please contact our [1]customer support team[/1].</target>
+      </trans-unit>
+      <trans-unit id="wire-intro">
+        <source>Veuillez virer le montant de la facture sur notre compte bancaire. Vous recevrez la confirmation de commande par e-mail avec les coordonnées bancaires et le numéro de commande.</source>
+        <target>Please transfer the invoice amount to our bank account. You will receive our order confirmation by email containing bank details and order number.</target>
+      </trans-unit>
+      <trans-unit id="wire-reserve-days">
+        <source>Les articles seront réservés %s jours et la commande sera traitée dès réception du paiement.</source>
+        <target>Goods will be reserved %s days for you and we'll process the order immediately after receiving the payment.</target>
+      </trans-unit>
+      <trans-unit id="wire-reserve-day">
+        <source>Les articles seront réservés %s jour et la commande sera traitée dès réception du paiement.</source>
+        <target>Goods will be reserved %s day for you and we'll process the order immediately after receiving the payment.</target>
+      </trans-unit>
+      <trans-unit id="wire-more">
+        <source>Plus d'informations</source>
+        <target>More information</target>
+      </trans-unit>
+      <trans-unit id="wire-title">
+        <source>Virement bancaire</source>
+        <target>Bank wire</target>
+      </trans-unit>
+      <trans-unit id="wire-account">
+        <source>Le paiement s'effectue par virement sur le compte suivant :</source>
+        <target>Payment is made by transfer of the invoice amount to the following account:</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

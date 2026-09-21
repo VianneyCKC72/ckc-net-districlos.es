@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>dtc_stats_general</name>
+    <displayName><![CDATA[DASHBOARD - Général]]></displayName>
+    <version><![CDATA[1.0.0]]></version>
+    <description><![CDATA[Tableau de bord général avec statistiques et KPIs]]></description>
+    <author><![CDATA[DISTRICLOS]]></author>
+    <tab><![CDATA[administration]]></tab>
+    <is_configurable>0</is_configurable>
+    <need_instance>0</need_instance>
+</module>
+

@@ -86,12 +86,11 @@ class FrontController extends FrontControllerCore
             'ckc_lang_preview',
             (string) Tools::getValue('ckc') === '1'
         );
-        $isEnglish = $this->isCurrentLanguageEnglish();
+        $langLogo = $this->getLanguageShopLogo();
         $this->context->smarty->assign([
-            'ckc_is_english' => $isEnglish,
-            'ckc_logo_src' => $isEnglish ? '/img/logo_multilingue.png' : '',
+            'ckc_is_english' => $this->isCurrentLanguageEnglish(),
+            'ckc_logo_src' => !empty($langLogo['src']) ? $langLogo['src'] : '',
         ]);
-        Media::addJsDef(['ckc_is_english' => $isEnglish]);
 
         return parent::initHeader();
     }
@@ -119,9 +118,9 @@ class FrontController extends FrontControllerCore
 
     public function getShopLogo(): array
     {
-        $englishLogo = $this->getEnglishShopLogo();
-        if (!empty($englishLogo['src'])) {
-            return $englishLogo;
+        $langLogo = $this->getLanguageShopLogo();
+        if (!empty($langLogo['src'])) {
+            return $langLogo;
         }
 
         return parent::getShopLogo();
@@ -130,45 +129,37 @@ class FrontController extends FrontControllerCore
     public function getTemplateVarShop()
     {
         $shop = parent::getTemplateVarShop();
-        $englishLogo = $this->getEnglishShopLogo();
-        if (!empty($englishLogo['src'])) {
-            $shop['logo'] = $englishLogo['src'];
-            $shop['logo_details'] = $englishLogo;
+        $langLogo = $this->getLanguageShopLogo();
+        if (!empty($langLogo['src'])) {
+            $shop['logo'] = $langLogo['src'];
+            $shop['logo_details'] = $langLogo;
         }
 
         return $shop;
     }
 
     /**
-     * CKC Vianney — logo EN : /img/logo_multilingue.png
-     * On ne bloque plus si is_file échoue : le tpl doit quand même pointer vers ce fichier.
+     * CKC Vianney — logo FO selon la langue (module ckc_logo_lang).
      */
-    private function getEnglishShopLogo()
+    private function getLanguageShopLogo()
     {
-        if (!$this->isCurrentLanguageEnglish()) {
+        if (!Module::isInstalled('ckc_logo_lang') || !Module::isEnabled('ckc_logo_lang')) {
             return [];
         }
 
-        $logoFileName = 'logo_multilingue.png';
-        $logoFileDir = _PS_IMG_DIR_ . $logoFileName;
-        $logoWidth = 178;
-        $logoHeight = 48;
-        if (is_file($logoFileDir)) {
-            $size = @getimagesize($logoFileDir);
-            if (is_array($size)) {
-                $logoWidth = (int) $size[0];
-                $logoHeight = (int) $size[1];
+        if (!class_exists('CkcLogoLangHelper', false)) {
+            $helperFile = _PS_MODULE_DIR_ . 'ckc_logo_lang/classes/CkcLogoLangHelper.php';
+            if (!is_file($helperFile)) {
+                return [];
             }
+            require_once $helperFile;
         }
 
-        $urls = $this->getTemplateVarUrls();
-        $psImageUrl = $urls['img_ps_url'] ?? _PS_IMG_;
+        if (!class_exists('CkcLogoLangHelper')) {
+            return [];
+        }
 
-        return [
-            'src' => $psImageUrl . $logoFileName,
-            'width' => $logoWidth,
-            'height' => $logoHeight,
-        ];
+        return CkcLogoLangHelper::getLogoDetails($this->context);
     }
 
     private function isCurrentLanguageEnglish()

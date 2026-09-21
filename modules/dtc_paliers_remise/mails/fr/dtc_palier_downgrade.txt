@@ -1,0 +1,12 @@
+Bonjour {firstname},
+
+Nous vous informons que votre statut de fidélité a été rétrogradé au niveau inférieur.
+
+Vous passez de {previous_tier_label} à {tier_label}{discount_sentence}.
+
+Pour rappel, votre statut est recalculé en continu : chaque nouvelle commande s'y ajoute, tandis que les commandes de plus d'un an en sortent progressivement. Reprenez vos commandes pour faire remonter votre cumul et retrouver un niveau supérieur.
+
+Vérifier mon statut : {status_url}
+
+{shop_name}
+{shop_url}

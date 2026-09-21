@@ -1,0 +1,12 @@
+﻿Hello {firstname},
+
+We are writing to let you know that your loyalty status has been moved down a level.
+
+You are moving from {previous_tier_label} to {tier_label}{discount_sentence}.
+
+As a reminder, your status is recalculated continuously: each new order is added, while orders older than one year gradually leave the calculation. Keep ordering to rebuild your total and reach a higher level again.
+
+Check my status: {status_url}
+
+{shop_name}
+{shop_url}
