@@ -3124,12 +3124,24 @@ PROMPT;
             return null;
         }
 
-        $idColumn = '';
+        $parentTable = substr($table, 0, -5);
+        $shortName = preg_replace('/^ets_cfu_/', '', $parentTable);
+        $expectedPks = array_values(array_unique(array_filter(array(
+            'id_' . $parentTable,
+            $shortName !== '' ? 'id_' . $shortName : '',
+            $table === 'ets_cfu_contact_lang' ? 'id_contact' : '',
+        ))));
+        $skipFields = array('short_code', 'thank_you_url');
+        $slugFields = array('alias', 'link_rewrite', 'friendly_url', 'url_alias', 'title_alias', 'thank_you_alias');
+        $idCandidates = array();
+        $priKeys = array();
         $hasIdShop = false;
+        $hasFormId = false;
         $fields = array();
         foreach ($cols as $col) {
             $name = (string) $col['Field'];
             $type = strtolower((string) $col['Type']);
+            $key = isset($col['Key']) ? strtoupper((string) $col['Key']) : '';
             if ($name === 'id_lang') {
                 continue;
             }
@@ -3137,8 +3149,17 @@ PROMPT;
                 $hasIdShop = true;
                 continue;
             }
-            if ($idColumn === '' && strpos($name, 'id_') === 0) {
-                $idColumn = $name;
+            if ($name === 'id_ets_cfu_form' || $name === 'id_contact') {
+                $hasFormId = true;
+            }
+            if (strpos($name, 'id_') === 0) {
+                $idCandidates[] = $name;
+                if ($key === 'PRI') {
+                    $priKeys[] = $name;
+                }
+                continue;
+            }
+            if (in_array($name, $skipFields, true)) {
                 continue;
             }
             if (!preg_match('/char|text|enum|json|blob/', $type)) {
@@ -3153,21 +3174,26 @@ PROMPT;
             }
             $fields[$name] = array(
                 'html' => (bool) preg_match('/text|blob|json/', $type),
-                'slug' => in_array($name, array('alias', 'link_rewrite', 'friendly_url', 'url_alias'), true),
+                'slug' => in_array($name, $slugFields, true),
                 'length' => $length,
             );
         }
 
+        $idColumn = self::pickEtsCfuIdColumn($expectedPks, $idCandidates, $priKeys);
         if ($idColumn === '' || empty($fields)) {
             return null;
         }
 
-        $parentTable = substr($table, 0, -5);
         $formIdColumn = '';
-        if ($idColumn === 'id_ets_cfu_form') {
+        if (in_array('id_ets_cfu_form', $idCandidates, true)) {
             $formIdColumn = 'id_ets_cfu_form';
+        } elseif ($idColumn === 'id_contact' || in_array('id_contact', $idCandidates, true)) {
+            $formIdColumn = 'id_contact';
+            $hasFormId = true;
         } elseif (self::etsCfuTableHasColumn($parentTable, 'id_ets_cfu_form')) {
             $formIdColumn = 'id_ets_cfu_form';
+        } elseif (self::etsCfuTableHasColumn($parentTable, 'id_contact')) {
+            $formIdColumn = 'id_contact';
         }
 
         return array(
@@ -3175,9 +3201,39 @@ PROMPT;
             'id_column' => $idColumn,
             'fields' => $fields,
             'has_id_shop' => $hasIdShop,
+            'has_form_id_on_lang' => $hasFormId,
             'parent_table' => $parentTable,
             'form_id_column' => $formIdColumn,
         );
+    }
+
+    /**
+     * @param string[] $expectedPks
+     * @param string[] $idCandidates
+     * @param string[] $priKeys
+     *
+     * @return string
+     */
+    protected static function pickEtsCfuIdColumn(array $expectedPks, array $idCandidates, array $priKeys)
+    {
+        foreach ($expectedPks as $expectedPk) {
+            if ($expectedPk !== '' && in_array($expectedPk, $idCandidates, true)) {
+                return $expectedPk;
+            }
+        }
+        $priWithoutForm = array_values(array_diff($priKeys, array('id_ets_cfu_form')));
+        if (count($priWithoutForm) === 1) {
+            return $priWithoutForm[0];
+        }
+        if (count($priKeys) === 1) {
+            return $priKeys[0];
+        }
+        $candidatesWithoutForm = array_values(array_diff($idCandidates, array('id_ets_cfu_form')));
+        if (!empty($candidatesWithoutForm)) {
+            return $candidatesWithoutForm[0];
+        }
+
+        return !empty($idCandidates) ? $idCandidates[0] : '';
     }
 
     /**
@@ -3224,6 +3280,7 @@ PROMPT;
         $shopId = (int) Context::getContext()->shop->id;
         $filterType = (string) Configuration::get(CkcTranslate::CONF_FILTER_TYPE);
         $filterIds = $this->parseIds((string) Configuration::get(CkcTranslate::CONF_FILTER_IDS));
+        $useFormFilter = ($filterType === 'ids' && !empty($filterIds));
 
         foreach (self::discoverEtsCfuLangTables() as $meta) {
             $idCol = bqSQL($meta['id_column']);
@@ -3232,12 +3289,27 @@ PROMPT;
             foreach (array_keys($meta['fields']) as $field) {
                 $contentParts[] = 'TRIM(IFNULL(src.`' . bqSQL($field) . '`, \'\')) != \'\'';
             }
+
             $sql = 'SELECT DISTINCT src.`' . $idCol . '` AS id
                     FROM `' . _DB_PREFIX_ . $table . '` src';
 
-            if ($meta['form_id_column'] && $meta['form_id_column'] !== $meta['id_column'] && $meta['parent_table']) {
+            $needParentJoin = $useFormFilter
+                && !empty($meta['form_id_column'])
+                && empty($meta['has_form_id_on_lang'])
+                && !empty($meta['parent_table'])
+                && $meta['form_id_column'] !== $meta['id_column'];
+            if ($needParentJoin) {
                 $sql .= ' INNER JOIN `' . _DB_PREFIX_ . bqSQL($meta['parent_table']) . '` p
                             ON p.`' . $idCol . '` = src.`' . $idCol . '`';
+            }
+
+            if ($onlyMissing) {
+                $sql .= ' LEFT JOIN `' . _DB_PREFIX_ . $table . '` tgt
+                            ON tgt.`' . $idCol . '` = src.`' . $idCol . '`
+                           AND tgt.id_lang = ' . (int) $this->targetLangId;
+                if (!empty($meta['has_id_shop'])) {
+                    $sql .= ' AND tgt.id_shop = src.id_shop';
+                }
             }
 
             $sql .= ' WHERE src.id_lang = ' . (int) $this->sourceLangId;
@@ -3245,24 +3317,18 @@ PROMPT;
                 $sql .= ' AND (' . implode(' OR ', $contentParts) . ')';
             }
             if (!empty($meta['has_id_shop']) && $shopId > 0) {
-                $sql .= ' AND src.id_shop = ' . (int) $shopId;
+                $sql .= ' AND src.id_shop IN (0, ' . (int) $shopId . ')';
             }
-            if ($filterType === 'ids' && !empty($filterIds) && $meta['form_id_column']) {
+            if ($useFormFilter && !empty($meta['form_id_column'])) {
                 $in = implode(',', array_map('intval', $filterIds));
-                if ($meta['form_id_column'] === $meta['id_column']) {
+                if (!empty($meta['has_form_id_on_lang']) || $meta['form_id_column'] === $meta['id_column']) {
                     $sql .= ' AND src.`' . bqSQL($meta['form_id_column']) . '` IN (' . $in . ')';
-                } else {
+                } elseif ($needParentJoin) {
                     $sql .= ' AND p.`' . bqSQL($meta['form_id_column']) . '` IN (' . $in . ')';
                 }
             }
 
             if ($onlyMissing) {
-                $sql .= ' LEFT JOIN `' . _DB_PREFIX_ . $table . '` tgt
-                            ON tgt.`' . $idCol . '` = src.`' . $idCol . '`
-                           AND tgt.id_lang = ' . (int) $this->targetLangId;
-                if (!empty($meta['has_id_shop']) && $shopId > 0) {
-                    $sql .= ' AND tgt.id_shop = src.id_shop';
-                }
                 $missingParts = array();
                 foreach (array_keys($meta['fields']) as $field) {
                     $f = bqSQL($field);
@@ -3281,7 +3347,16 @@ PROMPT;
             }
 
             $sql .= ' ORDER BY src.`' . $idCol . '` ASC';
-            $rows = Db::getInstance()->executeS($sql);
+
+            try {
+                $rows = Db::getInstance()->executeS($sql);
+            } catch (Exception $e) {
+                PrestaShopLogger::addLog(
+                    'CKC Translate ets_cfu SQL error on ' . $meta['table'] . ': ' . $e->getMessage(),
+                    3
+                );
+                continue;
+            }
             if (!is_array($rows)) {
                 continue;
             }
@@ -3329,7 +3404,7 @@ PROMPT;
         $shopId = (int) Context::getContext()->shop->id;
         $shopSql = '';
         if (!empty($meta['has_id_shop']) && $shopId > 0) {
-            $shopSql = ' AND id_shop = ' . (int) $shopId;
+            $shopSql = ' AND id_shop IN (0, ' . (int) $shopId . ')';
         }
 
         $source = Db::getInstance()->getRow(
@@ -3337,6 +3412,13 @@ PROMPT;
              WHERE `' . bqSQL($meta['id_column']) . '` = ' . $id . '
                AND id_lang = ' . (int) $this->sourceLangId . $shopSql
         );
+        if (!$source && $shopSql !== '') {
+            $source = Db::getInstance()->getRow(
+                'SELECT * FROM `' . _DB_PREFIX_ . bqSQL($meta['table']) . '`
+                 WHERE `' . bqSQL($meta['id_column']) . '` = ' . $id . '
+                   AND id_lang = ' . (int) $this->sourceLangId
+            );
+        }
         if (!$source) {
             $this->logHistory('ets_cfu', $meta['table'], $id, 'skipped', $this->module->l('No source content.', 'CkcTranslateJobRunner'));
 
@@ -3385,53 +3467,50 @@ PROMPT;
             ));
         }
 
-        $jsonKeys = array();
-        $sourceBlocks = '';
-        foreach ($toTranslate as $field => $value) {
-            $jsonKeys[] = '  "' . $field . '": ""';
-            $sourceBlocks .= "\nSource {$field}:\n{$value}\n";
-        }
-        $jsonExample = "{\n" . implode(",\n", $jsonKeys) . "\n}";
+        $translated = array();
+        $chunks = array_chunk($toTranslate, 8, true);
+        foreach ($chunks as $chunk) {
+            $jsonKeys = array();
+            $sourceBlocks = '';
+            foreach ($chunk as $field => $value) {
+                $jsonKeys[] = '  "' . $field . '": ""';
+                $sourceBlocks .= "\nSource {$field}:\n{$value}\n";
+            }
+            $jsonExample = "{\n" . implode(",\n", $jsonKeys) . "\n}";
 
-        $systemPrompt = $this->buildSystemPrompt(
-            'You translate PrestaShop Contact Form Ultimate texts (forms, fields, options, emails, thank-you pages). Preserve HTML, attributes, links, emails and phone numbers. If a value is JSON, keep the JSON structure and translate string values only. Keep URL aliases slug-safe.',
-            'ets_cfu'
-        );
+            $systemPrompt = $this->buildSystemPrompt(
+                'You translate PrestaShop Contact Form Ultimate texts (form titles, SEO, labels, emails, validation messages, thank-you pages). Preserve HTML, attributes, links, emails and phone numbers. If a value is JSON, keep the JSON structure and translate string values only. Keep URL aliases slug-safe (title_alias, thank_you_alias). Do not invent legal terms.',
+                'ets_cfu'
+            );
 
-        $prompt = <<<PROMPT
+            $prompt = <<<PROMPT
 Return ONLY valid JSON with these keys:
 {$jsonExample}
 {$sourceBlocks}
 PROMPT;
 
-        $data = $this->ai->requestJson($systemPrompt, $prompt);
-        if (!is_array($data)) {
-            $this->logHistory('ets_cfu', $meta['table'], $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
-
-            return $this->nextResult(sprintf(
-                $this->module->l('Invalid AI response for Contact Form Ultimate %1$s #%2$d.', 'CkcTranslateJobRunner'),
-                $meta['table'],
-                $id
-            ));
-        }
-
-        $translated = array();
-        foreach ($toTranslate as $field => $sourceVal) {
-            if (!isset($data[$field])) {
+            $data = $this->ai->requestJson($systemPrompt, $prompt);
+            if (!is_array($data)) {
                 continue;
             }
-            $value = (string) $data[$field];
-            if (trim(strip_tags($value)) === '' && trim(strip_tags($sourceVal)) !== '') {
-                continue;
+
+            foreach ($chunk as $field => $sourceVal) {
+                if (!isset($data[$field])) {
+                    continue;
+                }
+                $value = (string) $data[$field];
+                if (trim(strip_tags($value)) === '' && trim(strip_tags($sourceVal)) !== '') {
+                    continue;
+                }
+                $fieldMeta = $meta['fields'][$field];
+                if (!empty($fieldMeta['slug'])) {
+                    $value = $this->normalizeSlug($value);
+                }
+                if (!empty($fieldMeta['length']) && Tools::strlen($value) > (int) $fieldMeta['length']) {
+                    $value = Tools::substr($value, 0, (int) $fieldMeta['length']);
+                }
+                $translated[$field] = $value;
             }
-            $fieldMeta = $meta['fields'][$field];
-            if (!empty($fieldMeta['slug'])) {
-                $value = $this->normalizeSlug($value);
-            }
-            if (!empty($fieldMeta['length']) && Tools::strlen($value) > (int) $fieldMeta['length']) {
-                $value = Tools::substr($value, 0, (int) $fieldMeta['length']);
-            }
-            $translated[$field] = $value;
         }
 
         if (empty($translated)) {
