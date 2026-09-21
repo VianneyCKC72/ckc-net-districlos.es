@@ -1,4 +1,18 @@
 <?php
+/**
+ * DTC_CART_RESERVATION_FIX_3.1.4
+ *
+ * Fix bandeau panier (sept. 2026) :
+ * - Hook d'affichage : displayBeforeCartOverview (appelé dans themes/classic/.../cart.tpl)
+ * - Hook assets     : actionFrontControllerSetMedia
+ * - NE PAS utiliser displayShoppingCartFooter / displayHeader (ancien code v2.x cassé)
+ *
+ * Vérif prod (SSH) :
+ *   grep -n "DTC_CART_RESERVATION_FIX_3.1.4" modules/dtc_cart_reservation/dtc_cart_reservation.php
+ *   → doit trouver cette ligne. Sinon le déploiement n'est pas passé.
+ * Vérif BO : Modules → dtc_cart_reservation → version 3.1.4
+ * Vérif FO : code source /panier → chercher DTC_CART_RESERVATION_FIX_3.1.4
+ */
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -10,6 +24,7 @@ class dtc_cart_reservation extends Module
     {
         $this->name = 'dtc_cart_reservation';
         $this->tab = 'front_office_features';
+        // DTC_CART_RESERVATION_FIX_3.1.4 — version fichier (doit matcher ps_module.version après upgrade BO)
         $this->version = '3.1.4';
         $this->author = 'Districlos';
         $this->need_instance = 0;
@@ -24,6 +39,7 @@ class dtc_cart_reservation extends Module
 
     public function install()
     {
+        // DTC_CART_RESERVATION_FIX_3.1.4 — hooks corrects à l'install
         return parent::install()
             && $this->installConfiguration()
             && $this->registerHook('displayBeforeCartOverview')
@@ -160,7 +176,10 @@ class dtc_cart_reservation extends Module
     }
 
     /**
-     * Bandeau sous le titre panier (themes/classic/.../cart.tpl).
+     * DTC_CART_RESERVATION_FIX_3.1.4
+     * Bandeau sous le titre panier via displayBeforeCartOverview
+     * (themes/classic/templates/checkout/cart.tpl).
+     * Si cette méthode est absente en prod → ancien code v2.x, bandeau invisible.
      */
     public function hookDisplayBeforeCartOverview($params)
     {
@@ -181,7 +200,9 @@ class dtc_cart_reservation extends Module
     }
 
     /**
-     * Assets : bridge reset sur toutes les pages + CSS/JS sur le panier.
+     * DTC_CART_RESERVATION_FIX_3.1.4
+     * Assets : reset-bridge.js (toutes pages) + CSS/JS panier.
+     * Remplace l'ancien hookDisplayHeader (v2.x).
      */
     public function hookActionFrontControllerSetMedia($params)
     {
