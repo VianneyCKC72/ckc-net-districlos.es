@@ -101,6 +101,10 @@ class CkcTranslateJobRunner
                     $result = $this->runCkcLabels();
                     break;
 
+                case 'hellowork_jobs':
+                    $result = $this->runHelloworkJobs();
+                    break;
+
                 default:
                     return array(
                         'success' => false,
@@ -687,6 +691,9 @@ PROMPT;
             case 'ckc_labels':
                 return (string) Configuration::get(CkcTranslate::CONF_PROMPT_CKC_LABELS);
 
+            case 'hellowork_jobs':
+                return (string) Configuration::get(CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS);
+
             default:
                 return '';
         }
@@ -1257,6 +1264,40 @@ PROMPT;
                 return array(
                     'sql' => $sql,
                     'column' => 'id_label',
+                );
+
+            case 'hellowork_jobs':
+                if (!Module::isInstalled('dtc_feedhelloworkjob') || !Module::isEnabled('dtc_feedhelloworkjob')) {
+                    return array('sql' => '', 'column' => '');
+                }
+                $sql = 'SELECT j.id_job
+                        FROM `' . _DB_PREFIX_ . 'ckc_hellowork_job` j
+                        INNER JOIN `' . _DB_PREFIX_ . 'ckc_hellowork_job_lang` src
+                          ON src.id_job = j.id_job
+                         AND src.id_lang = ' . (int) $this->sourceLangId . '
+                        WHERE src.title IS NOT NULL
+                          AND TRIM(src.title) != \'\'';
+
+                if ($filterType === 'ids' && !empty($filterIds)) {
+                    $sql .= ' AND j.id_job IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                }
+
+                if ($onlyMissing) {
+                    $sql .= ' AND NOT EXISTS (
+                        SELECT 1 FROM `' . _DB_PREFIX_ . 'ckc_hellowork_job_lang` tgt
+                        WHERE tgt.id_job = j.id_job
+                          AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                          AND tgt.title IS NOT NULL
+                          AND TRIM(tgt.title) != \'\'
+                          AND tgt.title != src.title
+                    )';
+                }
+
+                $sql .= ' ORDER BY j.id_job ASC';
+
+                return array(
+                    'sql' => $sql,
+                    'column' => 'id_job',
                 );
 
             default:
@@ -2237,6 +2278,7 @@ PROMPT;
             'brand_reviews',
             'order_states',
             'ckc_labels',
+            'hellowork_jobs',
         );
     }
 
@@ -2265,6 +2307,7 @@ PROMPT;
             'brand_reviews' => 'brand_reviews',
             'order_states' => 'order_states',
             'ckc_labels' => 'ckc_labels',
+            'hellowork_jobs' => 'hellowork_jobs',
         );
 
         return isset($map[$jobCode]) ? $map[$jobCode] : self::normalizeQueueName($jobCode);
@@ -2860,6 +2903,131 @@ PROMPT;
 
         return $this->nextResult(sprintf(
             $this->module->l('Label #%d translated.', 'CkcTranslateJobRunner'),
+            (int) $id
+        ));
+    }
+
+    protected function runHelloworkJobs()
+    {
+        if (!Module::isInstalled('dtc_feedhelloworkjob') || !Module::isEnabled('dtc_feedhelloworkjob')) {
+            return $this->finishedResult($this->module->l('dtc_feedhelloworkjob is not installed.', 'CkcTranslateJobRunner'));
+        }
+
+        if (!class_exists('CkcHelloworkI18nHelper', false)) {
+            $helperFile = _PS_MODULE_DIR_ . 'dtc_feedhelloworkjob/classes/CkcHelloworkI18nHelper.php';
+            if (is_file($helperFile)) {
+                require_once $helperFile;
+            }
+        }
+        if (class_exists('CkcHelloworkI18nHelper', false)) {
+            CkcHelloworkI18nHelper::ensureSql();
+        }
+
+        $filtered = $this->getFilteredSql('hellowork_jobs');
+        $id = $this->getNextId(
+            'ckctranslate_hellowork_jobs_ids',
+            'ckctranslate_hellowork_jobs_index',
+            $filtered['sql'],
+            $filtered['column']
+        );
+
+        if (!$id) {
+            return $this->finishedResult($this->module->l('HelloWork jobs translation finished.', 'CkcTranslateJobRunner'));
+        }
+
+        $source = Db::getInstance()->getRow(
+            'SELECT title, description FROM `' . _DB_PREFIX_ . 'ckc_hellowork_job_lang`
+             WHERE id_job = ' . (int) $id . '
+               AND id_lang = ' . (int) $this->sourceLangId
+        );
+        $sourceTitle = $source ? trim((string) $source['title']) : '';
+        $sourceDescription = $source ? (string) $source['description'] : '';
+
+        if ($sourceTitle === '') {
+            $this->logHistory('hellowork_jobs', 'hellowork_job', (int) $id, 'skipped', $this->module->l('No source content.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Job offer #%d has no source title, skipped.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        $target = Db::getInstance()->getRow(
+            'SELECT title, description FROM `' . _DB_PREFIX_ . 'ckc_hellowork_job_lang`
+             WHERE id_job = ' . (int) $id . '
+               AND id_lang = ' . (int) $this->targetLangId
+        );
+        $targetTitle = $target ? (string) $target['title'] : '';
+
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+            if ($targetTitle !== '' && $targetTitle !== $sourceTitle) {
+                $this->logHistory('hellowork_jobs', 'hellowork_job', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+
+                return $this->nextResult(sprintf(
+                    $this->module->l('Job offer #%d already translated, skipped.', 'CkcTranslateJobRunner'),
+                    (int) $id
+                ));
+            }
+        }
+
+        $systemPrompt = $this->buildSystemPrompt(
+            'You translate job offers for a company careers page. Preserve HTML. Do not invent salary, benefits or locations. Adapt H/F to M/F when translating to English.',
+            'hellowork_jobs'
+        );
+
+        $prompt = <<<PROMPT
+Return ONLY valid JSON:
+{
+  "title": "",
+  "description": ""
+}
+
+Source job title:
+{$sourceTitle}
+
+Source job description HTML:
+{$sourceDescription}
+PROMPT;
+
+        $data = $this->ai->requestJson($systemPrompt, $prompt);
+
+        if (!$this->isValidFields($data, array('title'))) {
+            $this->logHistory('hellowork_jobs', 'hellowork_job', (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Invalid AI response for job offer #%d.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        $translatedTitle = trim((string) $data['title']);
+        $translatedDescription = isset($data['description']) ? (string) $data['description'] : '';
+        if (trim(strip_tags($translatedDescription)) === '' && trim(strip_tags($sourceDescription)) !== '') {
+            $this->logHistory('hellowork_jobs', 'hellowork_job', (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Invalid AI response for job offer #%d.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        if (!class_exists('CkcHelloworkI18nHelper', false)) {
+            $helperFile = _PS_MODULE_DIR_ . 'dtc_feedhelloworkjob/classes/CkcHelloworkI18nHelper.php';
+            if (is_file($helperFile)) {
+                require_once $helperFile;
+            }
+        }
+        CkcHelloworkI18nHelper::saveLangRow(
+            (int) $id,
+            (int) $this->targetLangId,
+            $translatedTitle,
+            $translatedDescription
+        );
+
+        $this->logHistory('hellowork_jobs', 'hellowork_job', (int) $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
+
+        return $this->nextResult(sprintf(
+            $this->module->l('Job offer #%d translated.', 'CkcTranslateJobRunner'),
             (int) $id
         ));
     }
