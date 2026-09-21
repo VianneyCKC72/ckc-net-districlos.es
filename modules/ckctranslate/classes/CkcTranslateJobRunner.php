@@ -3,6 +3,8 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
+require_once __DIR__ . '/CkcTranslateCfuI18n.php';
+
 class CkcTranslateJobRunner
 {
     /** @var Module */
@@ -3372,6 +3374,10 @@ PROMPT;
             }
         }
 
+        foreach ($this->buildEtsCfuFormQueueItems($onlyMissing, $useFormFilter, $filterIds) as $formItem) {
+            $items[] = $formItem;
+        }
+
         return $items;
     }
 
@@ -3393,8 +3399,12 @@ PROMPT;
      */
     protected function translateEtsCfuRow($table, $id)
     {
-        $meta = self::getEtsCfuLangTableMeta($table);
         $id = (int) $id;
+        if ($table === CkcTranslateCfuI18n::VIRTUAL_TYPE) {
+            return $this->translateEtsCfuFormBody($id);
+        }
+
+        $meta = self::getEtsCfuLangTableMeta($table);
         if (!$meta || $id <= 0) {
             $this->logHistory('ets_cfu', $table, $id, 'skipped', $this->module->l('Invalid Contact Form Ultimate row.', 'CkcTranslateJobRunner'));
 
@@ -3435,6 +3445,7 @@ PROMPT;
                AND id_lang = ' . (int) $this->targetLangId . $shopSql
         );
 
+        $translated = array();
         $toTranslate = array();
         foreach ($meta['fields'] as $field => $fieldMeta) {
             $sourceVal = isset($source[$field]) ? (string) $source[$field] : '';
@@ -3447,6 +3458,10 @@ PROMPT;
             if (preg_match('/^#[0-9a-fA-F]{3,8}$/', trim($sourceVal))) {
                 continue;
             }
+            $trimVal = ltrim($sourceVal);
+            if ($trimVal !== '' && preg_match('/^[aOsidbNC]:\d+[:;{]/', $trimVal)) {
+                continue;
+            }
             $targetVal = ($target && isset($target[$field])) ? (string) $target[$field] : '';
             if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)
                 && $targetVal !== ''
@@ -3454,10 +3469,21 @@ PROMPT;
             ) {
                 continue;
             }
+            $decodedJson = json_decode($sourceVal, true);
+            if (is_array($decodedJson)) {
+                $translatedJson = $this->translateEtsCfuJsonTree($decodedJson, $table, $id, $field);
+                if (is_array($translatedJson)) {
+                    $encoded = json_encode($translatedJson, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    if (is_string($encoded) && $encoded !== '') {
+                        $translated[$field] = $encoded;
+                    }
+                }
+                continue;
+            }
             $toTranslate[$field] = $sourceVal;
         }
 
-        if (empty($toTranslate)) {
+        if (empty($toTranslate) && empty($translated)) {
             $this->logHistory('ets_cfu', $meta['table'], $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -3467,7 +3493,6 @@ PROMPT;
             ));
         }
 
-        $translated = array();
         $chunks = array_chunk($toTranslate, 8, true);
         foreach ($chunks as $chunk) {
             $jsonKeys = array();
@@ -3563,6 +3588,321 @@ PROMPT;
             $meta['table'],
             $id
         ));
+    }
+
+    /**
+     * @param bool  $onlyMissing
+     * @param bool  $useFormFilter
+     * @param int[] $filterIds
+     *
+     * @return array<int, array{type: string, id: int}>
+     */
+    protected function buildEtsCfuFormQueueItems($onlyMissing, $useFormFilter, array $filterIds)
+    {
+        $items = array();
+        $formMeta = CkcTranslateCfuI18n::getContactFormMeta();
+        if (!$formMeta) {
+            return $items;
+        }
+
+        CkcTranslateCfuI18n::ensureTable();
+        $shopId = (int) Context::getContext()->shop->id;
+        $idCol = bqSQL($formMeta['id_column']);
+        $formCol = bqSQL($formMeta['form_column']);
+        $table = bqSQL($formMeta['table']);
+
+        $sql = 'SELECT DISTINCT c.`' . $idCol . '` AS id
+                FROM `' . _DB_PREFIX_ . $table . '` c
+                WHERE TRIM(IFNULL(c.`' . $formCol . '`, \'\')) != \'\'';
+        if (!empty($formMeta['has_id_shop']) && $shopId > 0) {
+            $sql .= ' AND c.id_shop IN (0, ' . (int) $shopId . ')';
+        }
+        if ($useFormFilter && !empty($filterIds)) {
+            $sql .= ' AND c.`' . $idCol . '` IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+        }
+        if ($onlyMissing) {
+            $sql .= ' AND NOT EXISTS (
+                SELECT 1 FROM `' . _DB_PREFIX_ . CkcTranslateCfuI18n::TABLE . '` t
+                WHERE t.id_contact = c.`' . $idCol . '`
+                  AND t.id_lang = ' . (int) $this->targetLangId . '
+                  AND t.id_shop IN (0, ' . (int) $shopId . ')
+                  AND TRIM(IFNULL(t.payload, \'\')) != \'\'
+            )';
+        }
+        $sql .= ' ORDER BY c.`' . $idCol . '` ASC';
+
+        try {
+            $rows = Db::getInstance()->executeS($sql);
+        } catch (Exception $e) {
+            PrestaShopLogger::addLog(
+                'CKC Translate ets_cfu form SQL error: ' . $e->getMessage(),
+                3
+            );
+
+            return $items;
+        }
+        if (!is_array($rows)) {
+            return $items;
+        }
+        foreach ($rows as $row) {
+            $id = (int) $row['id'];
+            if ($id <= 0) {
+                continue;
+            }
+            $items[] = array(
+                'type' => CkcTranslateCfuI18n::VIRTUAL_TYPE,
+                'id' => $id,
+            );
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return array
+     */
+    protected function translateEtsCfuFormBody($id)
+    {
+        $id = (int) $id;
+        $formMeta = CkcTranslateCfuI18n::getContactFormMeta();
+        $shopId = (int) Context::getContext()->shop->id;
+        if (!$formMeta || $id <= 0) {
+            $this->logHistory('ets_cfu', CkcTranslateCfuI18n::VIRTUAL_TYPE, $id, 'skipped', $this->module->l('Form body not found.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult($this->module->l('Contact Form Ultimate form body skipped.', 'CkcTranslateJobRunner'));
+        }
+
+        $shopSql = '';
+        if (!empty($formMeta['has_id_shop']) && $shopId > 0) {
+            $shopSql = ' AND id_shop IN (0, ' . (int) $shopId . ')';
+        }
+
+        $form = (string) Db::getInstance()->getValue(
+            'SELECT `' . bqSQL($formMeta['form_column']) . '`
+             FROM `' . _DB_PREFIX_ . bqSQL($formMeta['table']) . '`
+             WHERE `' . bqSQL($formMeta['id_column']) . '` = ' . $id . $shopSql
+        );
+        if ($form === '' && $shopSql !== '') {
+            $form = (string) Db::getInstance()->getValue(
+                'SELECT `' . bqSQL($formMeta['form_column']) . '`
+                 FROM `' . _DB_PREFIX_ . bqSQL($formMeta['table']) . '`
+                 WHERE `' . bqSQL($formMeta['id_column']) . '` = ' . $id
+            );
+        }
+        if (trim($form) === '') {
+            $this->logHistory('ets_cfu', CkcTranslateCfuI18n::VIRTUAL_TYPE, $id, 'skipped', $this->module->l('No form template.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Contact Form Ultimate form #%d has no template, skipped.', 'CkcTranslateJobRunner'),
+                $id
+            ));
+        }
+
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)
+            && CkcTranslateCfuI18n::hasMap($id, $this->targetLangId, $shopId)
+        ) {
+            $this->logHistory('ets_cfu', CkcTranslateCfuI18n::VIRTUAL_TYPE, $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Contact Form Ultimate form #%d already translated, skipped.', 'CkcTranslateJobRunner'),
+                $id
+            ));
+        }
+
+        $strings = CkcTranslateCfuI18n::extractStrings($form);
+        if (empty($strings)) {
+            $this->logHistory('ets_cfu', CkcTranslateCfuI18n::VIRTUAL_TYPE, $id, 'skipped', $this->module->l('No visible form labels.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Contact Form Ultimate form #%d has no labels to translate, skipped.', 'CkcTranslateJobRunner'),
+                $id
+            ));
+        }
+
+        $translatedMap = array();
+        $chunks = array_chunk($strings, 12, false);
+        foreach ($chunks as $chunk) {
+            $example = array();
+            foreach ($chunk as $text) {
+                $example[$text] = '';
+            }
+            $systemPrompt = $this->buildSystemPrompt(
+                'You translate visible Contact Form Ultimate field labels, dropdown options, placeholders and submit buttons. Keep required asterisks. Preserve HTML inside labels. Do not translate field names like menu-899, emails, URLs or file extensions. Return a JSON object whose keys are the exact source strings.',
+                'ets_cfu'
+            );
+            $prompt = "Return ONLY valid JSON mapping each source string to its translation:\n"
+                . json_encode($example, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                . "\n\nSource strings:\n"
+                . json_encode($chunk, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+            $data = $this->ai->requestJson($systemPrompt, $prompt);
+            if (!is_array($data)) {
+                continue;
+            }
+            foreach ($chunk as $sourceText) {
+                if (!isset($data[$sourceText])) {
+                    continue;
+                }
+                $value = trim((string) $data[$sourceText]);
+                if ($value === '') {
+                    continue;
+                }
+                $translatedMap[$sourceText] = $value;
+            }
+        }
+
+        if (empty($translatedMap)) {
+            $this->logHistory('ets_cfu', CkcTranslateCfuI18n::VIRTUAL_TYPE, $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Invalid AI response for Contact Form Ultimate form #%d.', 'CkcTranslateJobRunner'),
+                $id
+            ));
+        }
+
+        if (!CkcTranslateCfuI18n::saveMap($id, $this->targetLangId, $shopId, $translatedMap)) {
+            $this->logHistory('ets_cfu', CkcTranslateCfuI18n::VIRTUAL_TYPE, $id, 'error', $this->module->l('Could not save form labels.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Could not save Contact Form Ultimate form #%d labels.', 'CkcTranslateJobRunner'),
+                $id
+            ));
+        }
+
+        $this->logHistory('ets_cfu', CkcTranslateCfuI18n::VIRTUAL_TYPE, $id, 'success', $this->module->l('Form labels translated.', 'CkcTranslateJobRunner'));
+
+        return $this->nextResult(sprintf(
+            $this->module->l('Contact Form Ultimate form #%d labels translated.', 'CkcTranslateJobRunner'),
+            $id
+        ));
+    }
+
+    /**
+     * @param array  $tree
+     * @param string $table
+     * @param int    $id
+     * @param string $field
+     *
+     * @return array|null
+     */
+    protected function translateEtsCfuJsonTree(array $tree, $table, $id, $field)
+    {
+        $strings = array();
+        $this->collectEtsCfuJsonStrings($tree, '', $strings);
+        if (empty($strings)) {
+            return $tree;
+        }
+
+        $translated = array();
+        $chunks = array_chunk($strings, 12, true);
+        foreach ($chunks as $chunk) {
+            $example = array();
+            foreach ($chunk as $key => $value) {
+                $example[$key] = '';
+            }
+            $systemPrompt = $this->buildSystemPrompt(
+                'You translate Contact Form Ultimate JSON string values (labels, options, messages). Keep JSON keys unchanged in the response. Preserve HTML, emails and URLs. Do not invent legal clauses.',
+                'ets_cfu'
+            );
+            $prompt = "Return ONLY valid JSON with these keys and translated values:\n"
+                . json_encode($example, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                . "\n\nSource values:\n"
+                . json_encode($chunk, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            $data = $this->ai->requestJson($systemPrompt, $prompt);
+            if (!is_array($data)) {
+                continue;
+            }
+            foreach ($chunk as $key => $sourceVal) {
+                if (!isset($data[$key])) {
+                    continue;
+                }
+                $value = (string) $data[$key];
+                if (trim(strip_tags($value)) === '' && trim(strip_tags($sourceVal)) !== '') {
+                    continue;
+                }
+                $translated[$key] = $value;
+            }
+        }
+
+        if (empty($translated)) {
+            PrestaShopLogger::addLog(
+                'CKC Translate ets_cfu JSON empty for ' . $table . '#' . (int) $id . '.' . $field,
+                2
+            );
+
+            return null;
+        }
+
+        return $this->injectEtsCfuJsonStrings($tree, '', $translated);
+    }
+
+    /**
+     * @param mixed                $node
+     * @param string               $path
+     * @param array<string, string> $out
+     */
+    protected function collectEtsCfuJsonStrings($node, $path, array &$out)
+    {
+        if (is_string($node)) {
+            if (trim(strip_tags($node)) === '') {
+                return;
+            }
+            if (preg_match('/^[\d.\s]+$/', trim($node)) || preg_match('/^#[0-9a-fA-F]{3,8}$/', trim($node))) {
+                return;
+            }
+            if (preg_match('/^(https?:\/\/|www\.)/i', $node) || (strpos($node, '@') !== false && strpos($node, ' ') === false)) {
+                return;
+            }
+            $out[$path === '' ? 'root' : $path] = $node;
+
+            return;
+        }
+        if (!is_array($node)) {
+            return;
+        }
+        $skipKeys = array(
+            'short_code', 'thank_you_url', 'name', 'id', 'class', 'type', 'accept',
+            'filetypes', 'email', 'from', 'to', 'bcc', 'title_alias', 'thank_you_alias',
+        );
+        foreach ($node as $key => $value) {
+            $keyStr = is_string($key) ? $key : (string) $key;
+            if (in_array($keyStr, $skipKeys, true)) {
+                continue;
+            }
+            $childPath = $path === '' ? $keyStr : $path . '.' . $keyStr;
+            $this->collectEtsCfuJsonStrings($value, $childPath, $out);
+        }
+    }
+
+    /**
+     * @param mixed                $node
+     * @param string               $path
+     * @param array<string, string> $translated
+     *
+     * @return mixed
+     */
+    protected function injectEtsCfuJsonStrings($node, $path, array $translated)
+    {
+        if (is_string($node)) {
+            $key = $path === '' ? 'root' : $path;
+            if (isset($translated[$key])) {
+                return $translated[$key];
+            }
+
+            return $node;
+        }
+        if (!is_array($node)) {
+            return $node;
+        }
+        foreach ($node as $key => $value) {
+            $keyStr = is_string($key) ? $key : (string) $key;
+            $childPath = $path === '' ? $keyStr : $path . '.' . $keyStr;
+            $node[$key] = $this->injectEtsCfuJsonStrings($value, $childPath, $translated);
+        }
+
+        return $node;
     }
 
     protected function runCarrierDelays()

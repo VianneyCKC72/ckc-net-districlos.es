@@ -774,7 +774,7 @@ class AdminCkcTranslateController extends ModuleAdminController
             array(
                 'code' => 'ets_cfu',
                 'label' => $this->module->l('Translate Contact Form Ultimate (ets_cfu)'),
-                'advice' => $this->module->l('Translates all multilingual fields: form titles, aliases, SEO, labels, placeholders, options, emails and thank-you pages. Filter by IDs = form ID. Requires ets_cfultimate.'),
+                'advice' => $this->module->l('Translates SEO/emails AND the form builder texts (labels, dropdown options, submit). Filter by IDs = form ID. Requires ets_cfultimate. Relaunch after upgrade 2.12 with a fresh queue.'),
             ),
         );
     }
