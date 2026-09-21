@@ -5,6 +5,7 @@ if (!defined('_PS_VERSION_')) {
 
 require_once __DIR__ . '/classes/CkcTranslateAi.php';
 require_once __DIR__ . '/classes/CkcTranslateJobRunner.php';
+require_once __DIR__ . '/classes/CkcTranslateCfuI18n.php';
 
 class CkcTranslate extends Module
 {
@@ -53,7 +54,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.11.2';
+        $this->version = '2.12.0';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -73,7 +74,8 @@ class CkcTranslate extends Module
         return parent::install()
             && $this->installTab()
             && $this->installConfiguration()
-            && $this->installSql();
+            && $this->installSql()
+            && $this->registerHook('actionOutputHTMLBefore');
     }
 
     public function uninstall()
@@ -94,6 +96,7 @@ class CkcTranslate extends Module
         }
 
         $this->installSql();
+        $this->registerHook('actionOutputHTMLBefore');
 
         $html = '';
         $html .= '<div class="panel">';
@@ -216,7 +219,23 @@ class CkcTranslate extends Module
             PRIMARY KEY (`id_ckctranslate_history`)
         ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
-        return (bool) Db::getInstance()->execute($sql);
+        return (bool) Db::getInstance()->execute($sql) && CkcTranslateCfuI18n::ensureTable();
+    }
+
+    /**
+     * CKC Vianney — labels CFU rendus depuis la colonne form (non lang).
+     */
+    public function hookActionOutputHTMLBefore($params)
+    {
+        if (empty($params['html']) || strpos((string) $params['html'], 'ets-cfu-form') === false) {
+            return;
+        }
+        if (!Module::isInstalled('ets_cfultimate') || !Module::isEnabled('ets_cfultimate')) {
+            return;
+        }
+        $idLang = (int) $this->context->language->id;
+        $idShop = (int) $this->context->shop->id;
+        $params['html'] = CkcTranslateCfuI18n::replaceInHtml((string) $params['html'], $idLang, $idShop);
     }
 
     protected function uninstallSql()
