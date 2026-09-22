@@ -1,0 +1,47 @@
+.dtc-campaign-badge {
+  position: fixed;
+  right: 0;
+  bottom: 150px;
+  z-index: 9990;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  max-width: 150px;
+  padding: 15px;
+  background-color: #E7FBD8;
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: cover;
+  color: #79C046;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  text-decoration: none;
+  line-height: 1.25;
+}
+
+.dtc-campaign-badge__title {
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #79C046;
+}
+
+.dtc-campaign-badge__text {
+  font-size: 12px;
+  font-weight: 400;
+  text-align: center;
+  color: #000;
+}
+
+.dtc-campaign-badge__amount {
+  color: #79C046;
+  font-weight: 700;
+}
+
+@media (max-width: 767px) {
+  .dtc-campaign-badge {
+    display: none;
+  }
+}
