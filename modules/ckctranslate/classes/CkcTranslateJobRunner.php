@@ -111,6 +111,10 @@ class CkcTranslateJobRunner
                     $result = $this->runEtsCfu();
                     break;
 
+                case 'ckc_realisation':
+                    $result = $this->runCkcRealisation();
+                    break;
+
                 default:
                     return array(
                         'success' => false,
@@ -702,6 +706,9 @@ PROMPT;
 
             case 'ets_cfu':
                 return (string) Configuration::get(CkcTranslate::CONF_PROMPT_ETS_CFU);
+
+            case 'ckc_realisation':
+                return (string) Configuration::get(CkcTranslate::CONF_PROMPT_CKC_REALISATION);
 
             default:
                 return '';
@@ -1310,6 +1317,45 @@ PROMPT;
                 return array(
                     'sql' => $sql,
                     'column' => 'id_job',
+                );
+
+            case 'ckc_realisation':
+                if (!Module::isInstalled('ckc_realisation') || !Module::isEnabled('ckc_realisation')) {
+                    return array('sql' => '', 'column' => '');
+                }
+                $sql = 'SELECT r.id_realisation
+                        FROM `' . _DB_PREFIX_ . 'ckc_realisation` r
+                        INNER JOIN `' . _DB_PREFIX_ . 'ckc_realisation_lang` src
+                          ON src.id_realisation = r.id_realisation
+                         AND src.id_lang = ' . (int) $this->sourceLangId . '
+                        WHERE (
+                            (src.title IS NOT NULL AND TRIM(src.title) != \'\')
+                            OR (src.alt IS NOT NULL AND TRIM(src.alt) != \'\')
+                        )
+                          AND r.id_shop = ' . (int) $shopId;
+
+                if ($filterType === 'ids' && !empty($filterIds)) {
+                    $sql .= ' AND r.id_realisation IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                }
+
+                if ($onlyMissing) {
+                    $sql .= ' AND NOT EXISTS (
+                        SELECT 1 FROM `' . _DB_PREFIX_ . 'ckc_realisation_lang` tgt
+                        WHERE tgt.id_realisation = r.id_realisation
+                          AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                          AND (
+                            (src.title IS NULL OR TRIM(src.title) = \'\' OR (TRIM(IFNULL(tgt.title, \'\')) != \'\' AND tgt.title != src.title))
+                            AND
+                            (src.alt IS NULL OR TRIM(src.alt) = \'\' OR (TRIM(IFNULL(tgt.alt, \'\')) != \'\' AND tgt.alt != src.alt))
+                          )
+                    )';
+                }
+
+                $sql .= ' ORDER BY r.id_realisation ASC';
+
+                return array(
+                    'sql' => $sql,
+                    'column' => 'id_realisation',
                 );
 
             default:
@@ -2292,6 +2338,7 @@ PROMPT;
             'ckc_labels',
             'hellowork_jobs',
             'ets_cfu',
+            'ckc_realisation',
         );
     }
 
@@ -2322,6 +2369,7 @@ PROMPT;
             'ckc_labels' => 'ckc_labels',
             'hellowork_jobs' => 'hellowork_jobs',
             'ets_cfu' => 'ets_cfu',
+            'ckc_realisation' => 'ckc_realisation',
         );
 
         return isset($map[$jobCode]) ? $map[$jobCode] : self::normalizeQueueName($jobCode);
@@ -3047,6 +3095,137 @@ PROMPT;
     }
 
     /**
+     * CKC Vianney — titres / alt des photos de réalisations (ckc_realisation).
+     */
+    protected function runCkcRealisation()
+    {
+        if (!Module::isInstalled('ckc_realisation') || !Module::isEnabled('ckc_realisation')) {
+            return $this->finishedResult($this->module->l('ckc_realisation is not installed.', 'CkcTranslateJobRunner'));
+        }
+
+        $filtered = $this->getFilteredSql('ckc_realisation');
+        $id = $this->getNextId(
+            'ckctranslate_ckc_realisation_ids',
+            'ckctranslate_ckc_realisation_index',
+            $filtered['sql'],
+            $filtered['column']
+        );
+
+        if (!$id) {
+            return $this->finishedResult($this->module->l('Project photos translation finished.', 'CkcTranslateJobRunner'));
+        }
+
+        $source = Db::getInstance()->getRow(
+            'SELECT title, alt FROM `' . _DB_PREFIX_ . 'ckc_realisation_lang`
+             WHERE id_realisation = ' . (int) $id . '
+               AND id_lang = ' . (int) $this->sourceLangId
+        );
+        $sourceTitle = $source ? trim((string) $source['title']) : '';
+        $sourceAlt = $source ? trim((string) $source['alt']) : '';
+
+        if ($sourceTitle === '' && $sourceAlt === '') {
+            $this->logHistory('ckc_realisation', 'ckc_realisation', (int) $id, 'skipped', $this->module->l('No source content.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Project photo #%d has no source title/alt, skipped.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        $target = Db::getInstance()->getRow(
+            'SELECT title, alt FROM `' . _DB_PREFIX_ . 'ckc_realisation_lang`
+             WHERE id_realisation = ' . (int) $id . '
+               AND id_lang = ' . (int) $this->targetLangId
+        );
+        $targetTitle = $target ? trim((string) $target['title']) : '';
+        $targetAlt = $target ? trim((string) $target['alt']) : '';
+
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+            $titleDone = ($sourceTitle === '' || ($targetTitle !== '' && $targetTitle !== $sourceTitle));
+            $altDone = ($sourceAlt === '' || ($targetAlt !== '' && $targetAlt !== $sourceAlt));
+            if ($titleDone && $altDone) {
+                $this->logHistory('ckc_realisation', 'ckc_realisation', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+
+                return $this->nextResult(sprintf(
+                    $this->module->l('Project photo #%d already translated, skipped.', 'CkcTranslateJobRunner'),
+                    (int) $id
+                ));
+            }
+        }
+
+        $systemPrompt = $this->buildSystemPrompt(
+            'You translate short titles and image alt texts for customer project photos (garden, fencing, outdoor work). Keep them short, natural and descriptive. Do not invent product names, locations or materials. Leave a field empty if the source is empty.',
+            'ckc_realisation'
+        );
+
+        $prompt = <<<PROMPT
+Return ONLY valid JSON:
+{
+  "title": "",
+  "alt": ""
+}
+
+Source title:
+{$sourceTitle}
+
+Source alt:
+{$sourceAlt}
+PROMPT;
+
+        $data = $this->ai->requestJson($systemPrompt, $prompt);
+        $required = array();
+        if ($sourceTitle !== '') {
+            $required[] = 'title';
+        }
+        if ($sourceAlt !== '') {
+            $required[] = 'alt';
+        }
+
+        if (!$this->isValidFields($data, $required)) {
+            $this->logHistory('ckc_realisation', 'ckc_realisation', (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Invalid AI response for project photo #%d.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        $translatedTitle = $sourceTitle === '' ? '' : trim((string) $data['title']);
+        $translatedAlt = $sourceAlt === '' ? '' : trim((string) (isset($data['alt']) ? $data['alt'] : ''));
+
+        $exists = (int) Db::getInstance()->getValue(
+            'SELECT id_realisation FROM `' . _DB_PREFIX_ . 'ckc_realisation_lang`
+             WHERE id_realisation = ' . (int) $id . '
+               AND id_lang = ' . (int) $this->targetLangId
+        );
+
+        if ($exists) {
+            Db::getInstance()->update(
+                'ckc_realisation_lang',
+                array(
+                    'title' => pSQL($translatedTitle),
+                    'alt' => pSQL($translatedAlt),
+                ),
+                'id_realisation = ' . (int) $id . ' AND id_lang = ' . (int) $this->targetLangId
+            );
+        } else {
+            Db::getInstance()->insert('ckc_realisation_lang', array(
+                'id_realisation' => (int) $id,
+                'id_lang' => (int) $this->targetLangId,
+                'title' => pSQL($translatedTitle),
+                'alt' => pSQL($translatedAlt),
+            ));
+        }
+
+        $this->logHistory('ckc_realisation', 'ckc_realisation', (int) $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
+
+        return $this->nextResult(sprintf(
+            $this->module->l('Project photo #%d translated.', 'CkcTranslateJobRunner'),
+            (int) $id
+        ));
+    }
+
+    /**
      * CKC Vianney — Contact Form Ultimate (ets_cfu / ets_cfultimate).
      */
     protected function runEtsCfu()
@@ -3332,7 +3511,7 @@ PROMPT;
 
             if ($onlyMissing) {
                 $missingParts = array();
-                foreach (array_keys($meta['fields']) as $field) {
+                foreach (self::getEtsCfuMissingFieldNames($meta) as $field) {
                     $f = bqSQL($field);
                     $missingParts[] = '(
                         TRIM(IFNULL(src.`' . $f . '`, \'\')) != \'\'
@@ -3379,6 +3558,30 @@ PROMPT;
         }
 
         return $items;
+    }
+
+    /**
+     * Champs qui déterminent le badge « restant » (pas les 40 messages identiques FR/EN).
+     *
+     * @param array $meta
+     *
+     * @return string[]
+     */
+    protected static function getEtsCfuMissingFieldNames(array $meta)
+    {
+        $available = array_keys($meta['fields']);
+        $preferred = array(
+            'short_code',
+            'title',
+            'button_label',
+            'floating_label',
+            'subject',
+            'thank_you_page_title',
+            'thank_you_message',
+        );
+        $use = array_values(array_intersect($preferred, $available));
+
+        return !empty($use) ? $use : $available;
     }
 
     /**
@@ -3659,6 +3862,31 @@ PROMPT;
         }
 
         if (empty($map)) {
+            $systemPrompt = $this->buildSystemPrompt(
+                'You translate a Contact Form Ultimate form template. Preserve all HTML tags, CF7 shortcodes like [text* text-652], field names, attributes, emails and URLs. Translate only visible labels, options and submit text. Return JSON {"short_code": ""}.',
+                'ets_cfu'
+            );
+            $prompt = "Return ONLY valid JSON:\n{\"short_code\": \"\"}\n\nSource short_code:\n" . $sourceHtml;
+            $data = $this->ai->requestJson($systemPrompt, $prompt);
+            if (is_array($data) && !empty($data['short_code'])) {
+                $translatedHtml = (string) $data['short_code'];
+                if (trim(strip_tags($translatedHtml)) !== '') {
+                    $builtMap = array();
+                    $srcStrings = CkcTranslateCfuI18n::extractStrings($sourceHtml);
+                    $tgtStrings = CkcTranslateCfuI18n::extractStrings($translatedHtml);
+                    $limit = min(count($srcStrings), count($tgtStrings));
+                    for ($i = 0; $i < $limit; $i++) {
+                        $builtMap[$srcStrings[$i]] = $tgtStrings[$i];
+                    }
+                    if (!empty($builtMap)) {
+                        CkcTranslateCfuI18n::saveMap($idContact, $this->targetLangId, $shopId, $builtMap);
+                        CkcTranslateCfuI18n::updateRenderForm($idContact, $builtMap, $this->sourceLangId, $this->targetLangId);
+                    }
+
+                    return $translatedHtml;
+                }
+            }
+
             return '';
         }
 
