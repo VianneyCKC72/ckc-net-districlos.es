@@ -27,6 +27,11 @@
 //@ini_set('display_startup_errors', '1');
 //error_reporting(E_ALL);
 
+/* CKC Vianney — debug conditionnel (?ckc=1 + /en/) */
+if (is_file(__DIR__ . '/defines_custom.inc.php')) {
+    include_once __DIR__ . '/defines_custom.inc.php';
+}
+
 $authorizedDebugIps = array('91.172.226.76'); // Ajoute d'autres IP ici si besoin
 $remote_addr = [];
 
