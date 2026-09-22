@@ -80,6 +80,12 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'Translate Contact Form Ultimate (ets_cfu) texts: form titles, URL aliases, SEO, descriptions, field labels, placeholders, help texts, dropdown/radio options, submit buttons, thank-you pages and notification emails. Preserve HTML tags, attributes, links, emails, phone numbers and brand names. If a field is JSON, keep the JSON structure and translate string values only. Keep URL aliases slug-safe. Do not invent legal clauses.'
             );
         }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_CKC_REALISATION)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_CKC_REALISATION,
+                'Translate customer project photo titles and image alt texts (ckc_realisation). Keep them short, natural and descriptive. Do not invent product names, locations or materials. Leave empty fields empty.'
+            );
+        }
         if (Tools::isSubmit('submitCkcTranslateConfig')) {
             $this->postProcessConfig();
         }
@@ -164,6 +170,7 @@ class AdminCkcTranslateController extends ModuleAdminController
         $promptCkcLabels = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CKC_LABELS));
         $promptHelloworkJobs = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS));
         $promptEtsCfu = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_ETS_CFU));
+        $promptCkcRealisation = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CKC_REALISATION));
         $filterType = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_TYPE));
         $filterIds = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_IDS));
         $filterCategoryId = (int) Tools::getValue(CkcTranslate::CONF_FILTER_CATEGORY_ID);
@@ -232,6 +239,7 @@ class AdminCkcTranslateController extends ModuleAdminController
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_CKC_LABELS, $promptCkcLabels);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS, $promptHelloworkJobs);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_ETS_CFU, $promptEtsCfu);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_CKC_REALISATION, $promptCkcRealisation);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_TYPE, $filterType);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_IDS, $filterIds);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_CATEGORY_ID, $filterCategoryId);
@@ -502,6 +510,14 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'desc' => $this->module->l('For all multilingual Contact Form Ultimate fields: forms, inputs, options, emails, thank-you pages.'),
                     ),
                     array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Project photos (ckc_realisation)'),
+                        'name' => CkcTranslate::CONF_PROMPT_CKC_REALISATION,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For realisation photo titles and image alt texts.'),
+                    ),
+                    array(
                         'type' => 'select',
                         'label' => $this->module->l('Filter type'),
                         'name' => CkcTranslate::CONF_FILTER_TYPE,
@@ -624,6 +640,7 @@ class AdminCkcTranslateController extends ModuleAdminController
                 ?: 'Translate carrier delivery delay texts for checkout and shipping estimators. Keep them short and clear. Preserve numbers, time units and carrier brand names. Do not invent delivery promises.',
             CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS => Configuration::get(CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS),
             CkcTranslate::CONF_PROMPT_ETS_CFU => Configuration::get(CkcTranslate::CONF_PROMPT_ETS_CFU),
+            CkcTranslate::CONF_PROMPT_CKC_REALISATION => Configuration::get(CkcTranslate::CONF_PROMPT_CKC_REALISATION),
             CkcTranslate::CONF_FILTER_TYPE => Configuration::get(CkcTranslate::CONF_FILTER_TYPE),
             CkcTranslate::CONF_FILTER_IDS => Configuration::get(CkcTranslate::CONF_FILTER_IDS),
             CkcTranslate::CONF_FILTER_CATEGORY_ID => (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID),
@@ -775,6 +792,11 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'code' => 'ets_cfu',
                 'label' => $this->module->l('Translate Contact Form Ultimate (ets_cfu)'),
                 'advice' => $this->module->l('Translates SEO/emails AND the form builder texts (labels, dropdown options, submit). Filter by IDs = form ID. Requires ets_cfultimate. Relaunch after upgrade 2.12 with a fresh queue.'),
+            ),
+            array(
+                'code' => 'ckc_realisation',
+                'label' => $this->module->l('Translate project photos (ckc_realisation)'),
+                'advice' => $this->module->l('Translates title and alt of realisation photos for the current shop. Filter by IDs = id_realisation. Requires ckc_realisation.'),
             ),
         );
     }
@@ -1043,6 +1065,16 @@ class AdminCkcTranslateController extends ModuleAdminController
                 }
                 break;
 
+            case 'ckc_realisation':
+                $total = 0;
+                if (Module::isInstalled('ckc_realisation')) {
+                    $shopId = (int) $this->context->shop->id;
+                    $total = (int) Db::getInstance()->getValue(
+                        'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'ckc_realisation` WHERE id_shop = ' . (int) $shopId
+                    );
+                }
+                break;
+
             default:
                 return array(
                     'total' => 0,
@@ -1301,6 +1333,8 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_hellowork_jobs_index',
             'ckctranslate_ets_cfu_ids',
             'ckctranslate_ets_cfu_index',
+            'ckctranslate_ckc_realisation_ids',
+            'ckctranslate_ckc_realisation_index',
         );
 
         foreach ($keys as $key) {
@@ -1353,6 +1387,8 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_hellowork_jobs_index',
             'ckctranslate_ets_cfu_ids',
             'ckctranslate_ets_cfu_index',
+            'ckctranslate_ckc_realisation_ids',
+            'ckctranslate_ckc_realisation_index',
         );
 
         foreach ($keys as $key) {
