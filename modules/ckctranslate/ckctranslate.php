@@ -54,7 +54,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.12.0';
+        $this->version = '2.12.2';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;

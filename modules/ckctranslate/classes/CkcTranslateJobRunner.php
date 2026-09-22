@@ -3133,7 +3133,7 @@ PROMPT;
             $shortName !== '' ? 'id_' . $shortName : '',
             $table === 'ets_cfu_contact_lang' ? 'id_contact' : '',
         ))));
-        $skipFields = array('short_code', 'thank_you_url');
+        $skipFields = array('thank_you_url');
         $slugFields = array('alias', 'link_rewrite', 'friendly_url', 'url_alias', 'title_alias', 'thank_you_alias');
         $idCandidates = array();
         $priKeys = array();
@@ -3469,6 +3469,13 @@ PROMPT;
             ) {
                 continue;
             }
+            if ($field === 'short_code') {
+                $shortCodeResult = $this->translateEtsCfuShortCodeHtml($sourceVal, $id);
+                if (is_string($shortCodeResult) && $shortCodeResult !== '') {
+                    $translated[$field] = $shortCodeResult;
+                }
+                continue;
+            }
             $decodedJson = json_decode($sourceVal, true);
             if (is_array($decodedJson)) {
                 $translatedJson = $this->translateEtsCfuJsonTree($decodedJson, $table, $id, $field);
@@ -3591,6 +3598,76 @@ PROMPT;
     }
 
     /**
+     * Traduit le HTML/shortcode CFU (labels, options, submit) sans casser les tags [text* …].
+     *
+     * @param string $sourceHtml
+     * @param int    $idContact
+     *
+     * @return string
+     */
+    protected function translateEtsCfuShortCodeHtml($sourceHtml, $idContact)
+    {
+        $sourceHtml = (string) $sourceHtml;
+        $idContact = (int) $idContact;
+        if (trim($sourceHtml) === '') {
+            return '';
+        }
+
+        $shopId = (int) Context::getContext()->shop->id;
+        $map = CkcTranslateCfuI18n::getMap($idContact, $this->targetLangId, $shopId);
+        $strings = CkcTranslateCfuI18n::extractStrings($sourceHtml);
+        $missing = array();
+        foreach ($strings as $text) {
+            if (!isset($map[$text]) || trim((string) $map[$text]) === '') {
+                $missing[] = $text;
+            }
+        }
+
+        if (!empty($missing)) {
+            $chunks = array_chunk($missing, 12, false);
+            foreach ($chunks as $chunk) {
+                $example = array();
+                foreach ($chunk as $text) {
+                    $example[$text] = '';
+                }
+                $systemPrompt = $this->buildSystemPrompt(
+                    'You translate visible Contact Form Ultimate field labels, dropdown options, placeholders and submit buttons. Keep required asterisks. Preserve HTML inside labels. Do not translate field names like menu-899 or CF7 tags. Return a JSON object whose keys are the exact source strings.',
+                    'ets_cfu'
+                );
+                $prompt = "Return ONLY valid JSON mapping each source string to its translation:\n"
+                    . json_encode($example, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                    . "\n\nSource strings:\n"
+                    . json_encode($chunk, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $data = $this->ai->requestJson($systemPrompt, $prompt);
+                if (!is_array($data)) {
+                    continue;
+                }
+                foreach ($chunk as $sourceText) {
+                    if (!isset($data[$sourceText])) {
+                        continue;
+                    }
+                    $value = trim((string) $data[$sourceText]);
+                    if ($value === '') {
+                        continue;
+                    }
+                    $map[$sourceText] = $value;
+                }
+            }
+            if (!empty($map)) {
+                CkcTranslateCfuI18n::saveMap($idContact, $this->targetLangId, $shopId, $map);
+            }
+        }
+
+        if (empty($map)) {
+            return '';
+        }
+
+        CkcTranslateCfuI18n::updateRenderForm($idContact, $map, $this->sourceLangId, $this->targetLangId);
+
+        return CkcTranslateCfuI18n::applyMap($sourceHtml, $map);
+    }
+
+    /**
      * @param bool  $onlyMissing
      * @param bool  $useFormFilter
      * @param int[] $filterIds
@@ -3619,15 +3696,6 @@ PROMPT;
         }
         if ($useFormFilter && !empty($filterIds)) {
             $sql .= ' AND c.`' . $idCol . '` IN (' . implode(',', array_map('intval', $filterIds)) . ')';
-        }
-        if ($onlyMissing) {
-            $sql .= ' AND NOT EXISTS (
-                SELECT 1 FROM `' . _DB_PREFIX_ . CkcTranslateCfuI18n::TABLE . '` t
-                WHERE t.id_contact = c.`' . $idCol . '`
-                  AND t.id_lang = ' . (int) $this->targetLangId . '
-                  AND t.id_shop IN (0, ' . (int) $shopId . ')
-                  AND TRIM(IFNULL(t.payload, \'\')) != \'\'
-            )';
         }
         $sql .= ' ORDER BY c.`' . $idCol . '` ASC';
 
@@ -3700,9 +3768,11 @@ PROMPT;
             ));
         }
 
-        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)
-            && CkcTranslateCfuI18n::hasMap($id, $this->targetLangId, $shopId)
-        ) {
+        $translatedMap = CkcTranslateCfuI18n::getMap($id, $this->targetLangId, $shopId);
+        $onlyMissing = (int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS);
+        $needsEtsWrite = CkcTranslateCfuI18n::formNeedsEtsLangWrite($form, $this->targetLangId);
+
+        if ($onlyMissing && !empty($translatedMap) && !$needsEtsWrite) {
             $this->logHistory('ets_cfu', CkcTranslateCfuI18n::VIRTUAL_TYPE, $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
             return $this->nextResult(sprintf(
@@ -3711,45 +3781,46 @@ PROMPT;
             ));
         }
 
-        $strings = CkcTranslateCfuI18n::extractStrings($form);
-        if (empty($strings)) {
-            $this->logHistory('ets_cfu', CkcTranslateCfuI18n::VIRTUAL_TYPE, $id, 'skipped', $this->module->l('No visible form labels.', 'CkcTranslateJobRunner'));
+        if (empty($translatedMap)) {
+            $strings = CkcTranslateCfuI18n::extractStrings($form);
+            if (empty($strings)) {
+                $this->logHistory('ets_cfu', CkcTranslateCfuI18n::VIRTUAL_TYPE, $id, 'skipped', $this->module->l('No visible form labels.', 'CkcTranslateJobRunner'));
 
-            return $this->nextResult(sprintf(
-                $this->module->l('Contact Form Ultimate form #%d has no labels to translate, skipped.', 'CkcTranslateJobRunner'),
-                $id
-            ));
-        }
-
-        $translatedMap = array();
-        $chunks = array_chunk($strings, 12, false);
-        foreach ($chunks as $chunk) {
-            $example = array();
-            foreach ($chunk as $text) {
-                $example[$text] = '';
+                return $this->nextResult(sprintf(
+                    $this->module->l('Contact Form Ultimate form #%d has no labels to translate, skipped.', 'CkcTranslateJobRunner'),
+                    $id
+                ));
             }
-            $systemPrompt = $this->buildSystemPrompt(
-                'You translate visible Contact Form Ultimate field labels, dropdown options, placeholders and submit buttons. Keep required asterisks. Preserve HTML inside labels. Do not translate field names like menu-899, emails, URLs or file extensions. Return a JSON object whose keys are the exact source strings.',
-                'ets_cfu'
-            );
-            $prompt = "Return ONLY valid JSON mapping each source string to its translation:\n"
-                . json_encode($example, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
-                . "\n\nSource strings:\n"
-                . json_encode($chunk, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-            $data = $this->ai->requestJson($systemPrompt, $prompt);
-            if (!is_array($data)) {
-                continue;
-            }
-            foreach ($chunk as $sourceText) {
-                if (!isset($data[$sourceText])) {
+            $chunks = array_chunk($strings, 12, false);
+            foreach ($chunks as $chunk) {
+                $example = array();
+                foreach ($chunk as $text) {
+                    $example[$text] = '';
+                }
+                $systemPrompt = $this->buildSystemPrompt(
+                    'You translate visible Contact Form Ultimate field labels, dropdown options, placeholders and submit buttons. Keep required asterisks. Preserve HTML inside labels. Do not translate field names like menu-899, emails, URLs or file extensions. Return a JSON object whose keys are the exact source strings.',
+                    'ets_cfu'
+                );
+                $prompt = "Return ONLY valid JSON mapping each source string to its translation:\n"
+                    . json_encode($example, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+                    . "\n\nSource strings:\n"
+                    . json_encode($chunk, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+                $data = $this->ai->requestJson($systemPrompt, $prompt);
+                if (!is_array($data)) {
                     continue;
                 }
-                $value = trim((string) $data[$sourceText]);
-                if ($value === '') {
-                    continue;
+                foreach ($chunk as $sourceText) {
+                    if (!isset($data[$sourceText])) {
+                        continue;
+                    }
+                    $value = trim((string) $data[$sourceText]);
+                    if ($value === '') {
+                        continue;
+                    }
+                    $translatedMap[$sourceText] = $value;
                 }
-                $translatedMap[$sourceText] = $value;
             }
         }
 
@@ -3762,20 +3833,36 @@ PROMPT;
             ));
         }
 
-        if (!CkcTranslateCfuI18n::saveMap($id, $this->targetLangId, $shopId, $translatedMap)) {
-            $this->logHistory('ets_cfu', CkcTranslateCfuI18n::VIRTUAL_TYPE, $id, 'error', $this->module->l('Could not save form labels.', 'CkcTranslateJobRunner'));
+        CkcTranslateCfuI18n::saveMap($id, $this->targetLangId, $shopId, $translatedMap);
 
-            return $this->nextResult(sprintf(
-                $this->module->l('Could not save Contact Form Ultimate form #%d labels.', 'CkcTranslateJobRunner'),
-                $id
-            ));
+        $updatedForm = CkcTranslateCfuI18n::writeLangValuesIntoForm(
+            $form,
+            $translatedMap,
+            $this->sourceLangId,
+            $this->targetLangId
+        );
+        if ($updatedForm !== $form) {
+            $where = '`' . bqSQL($formMeta['id_column']) . '` = ' . $id . $shopSql;
+            Db::getInstance()->update(
+                $formMeta['table'],
+                array($formMeta['form_column'] => pSQL($updatedForm, true)),
+                $where
+            );
         }
+        CkcTranslateCfuI18n::writeLangValuesIntoAdditionalSettings(
+            $id,
+            $this->sourceLangId,
+            $this->targetLangId,
+            $shopId,
+            $translatedMap
+        );
 
         $this->logHistory('ets_cfu', CkcTranslateCfuI18n::VIRTUAL_TYPE, $id, 'success', $this->module->l('Form labels translated.', 'CkcTranslateJobRunner'));
 
         return $this->nextResult(sprintf(
-            $this->module->l('Contact Form Ultimate form #%d labels translated.', 'CkcTranslateJobRunner'),
-            $id
+            $this->module->l('Contact Form Ultimate form #%d labels written to ETS (label_%d).', 'CkcTranslateJobRunner'),
+            $id,
+            $this->targetLangId
         ));
     }
 

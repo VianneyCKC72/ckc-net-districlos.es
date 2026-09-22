@@ -44,6 +44,13 @@ class CkcTranslateCfuI18n
             return $meta;
         }
 
+        // FO lit contact_lang.short_code (multilang), pas une colonne form partagée.
+        if (self::columnExists('ets_cfu_contact_lang', 'short_code')) {
+            $meta = null;
+
+            return $meta;
+        }
+
         $formColumn = '';
         foreach (array('form', 'form_content', 'form_html', 'contact_form') as $column) {
             if (self::columnExists($table, $column)) {
@@ -295,6 +302,376 @@ class CkcTranslateCfuI18n
         }
 
         return $html;
+    }
+
+    /**
+     * CKC Vianney — canvas BO : ets_cfu_label_{id_lang}, ets_cfu_short_code_{id_lang}, etc.
+     *
+     * @param string               $html
+     * @param array<string, string> $map
+     * @param int                  $sourceLangId
+     * @param int                  $targetLangId
+     *
+     * @return string
+     */
+    public static function writeLangValuesIntoRenderForm($html, array $map, $sourceLangId, $targetLangId)
+    {
+        $html = (string) $html;
+        $sourceLangId = (int) $sourceLangId;
+        $targetLangId = (int) $targetLangId;
+        if ($html === '' || empty($map) || $targetLangId <= 0) {
+            return $html;
+        }
+
+        foreach (array('label', 'short_code', 'values', 'desc', 'content') as $key) {
+            $targetClass = 'ets_cfu_' . $key . '_' . $targetLangId;
+            $sourceClass = 'ets_cfu_' . $key . '_' . $sourceLangId;
+            if (!preg_match('/class="[^"]*' . preg_quote($targetClass, '/') . '[^"]*"/', $html)) {
+                $html = preg_replace_callback(
+                    '/<span class="' . preg_quote($sourceClass, '/') . '"([^>]*)>(.*?)<\/span>/is',
+                    static function (array $match) use ($targetClass, $map) {
+                        $inner = CkcTranslateCfuI18n::applyMap($match[2], $map);
+
+                        return $match[0] . '<span class="' . $targetClass . '"' . $match[1] . '>' . $inner . '</span>';
+                    },
+                    $html
+                );
+                continue;
+            }
+            $html = preg_replace_callback(
+                '/(<span class="' . preg_quote($targetClass, '/') . '"[^>]*>)(.*?)(<\/span>)/is',
+                static function (array $match) use ($map) {
+                    return $match[1] . CkcTranslateCfuI18n::applyMap($match[2], $map) . $match[3];
+                },
+                $html
+            );
+        }
+
+        return $html;
+    }
+
+    /**
+     * @param int                  $idContact
+     * @param array<string, string> $map
+     * @param int                  $sourceLangId
+     * @param int                  $targetLangId
+     *
+     * @return bool
+     */
+    public static function updateRenderForm($idContact, array $map, $sourceLangId, $targetLangId)
+    {
+        $idContact = (int) $idContact;
+        if ($idContact <= 0 || empty($map) || !self::columnExists('ets_cfu_contact', 'render_form')) {
+            return false;
+        }
+        $html = (string) Db::getInstance()->getValue(
+            'SELECT render_form FROM `' . _DB_PREFIX_ . 'ets_cfu_contact`
+             WHERE id_contact = ' . $idContact
+        );
+        if (trim($html) === '') {
+            return false;
+        }
+        $updated = self::writeLangValuesIntoRenderForm($html, $map, $sourceLangId, $targetLangId);
+        if ($updated === $html) {
+            return true;
+        }
+
+        return (bool) Db::getInstance()->update(
+            'ets_cfu_contact',
+            array('render_form' => pSQL($updated, true)),
+            'id_contact = ' . $idContact
+        );
+    }
+
+    /**
+     * CKC Vianney — écrit label_{id_lang} dans le HTML ETS (data-label) sans casser le FR.
+     *
+     * @param string               $form
+     * @param array<string, string> $map
+     * @param int                  $sourceLangId
+     * @param int                  $targetLangId
+     *
+     * @return string
+     */
+    public static function writeLangValuesIntoForm($form, array $map, $sourceLangId, $targetLangId)
+    {
+        $form = (string) $form;
+        $sourceLangId = (int) $sourceLangId;
+        $targetLangId = (int) $targetLangId;
+        if ($form === '' || $sourceLangId <= 0 || $targetLangId <= 0 || empty($map)) {
+            return $form;
+        }
+
+        $form = preg_replace_callback(
+            '/\b(data-(?:label|values|placeholder|defaultvalue|default_value|multi-lang|langs|submit))="([^"]*)"/i',
+            static function (array $match) use ($map, $sourceLangId, $targetLangId) {
+                $decoded = self::decodeLangMap($match[2]);
+                if ($decoded === null) {
+                    return $match[0];
+                }
+                $updated = self::fillLangMap($decoded, $map, $sourceLangId, $targetLangId);
+
+                return $match[1] . '="' . self::encodeLangMap($updated) . '"';
+            },
+            $form
+        );
+
+        $form = preg_replace_callback(
+            '/<span class="ets_cfu_span"([^>]*)>(.*?)<\/span>/is',
+            static function (array $match) use ($map, $sourceLangId, $targetLangId) {
+                $attrs = $match[1];
+                $inner = $match[2];
+                if (preg_match('/\bdata-label=/i', $attrs)) {
+                    return $match[0];
+                }
+                $text = html_entity_decode(trim(strip_tags($inner)), ENT_QUOTES, 'UTF-8');
+                if ($text === '' || !isset($map[$text])) {
+                    return $match[0];
+                }
+                $langMap = array(
+                    (string) $sourceLangId => $text,
+                    (string) $targetLangId => (string) $map[$text],
+                );
+
+                return '<span class="ets_cfu_span" data-label="' . self::encodeLangMap($langMap) . '"' . $attrs . '>' . $inner . '</span>';
+            },
+            $form
+        );
+
+        $form = preg_replace_callback(
+            '/<input\b([^>]*\btype=["\']submit["\'][^>]*)>/i',
+            static function (array $match) use ($map, $sourceLangId, $targetLangId) {
+                $tag = $match[0];
+                if (preg_match('/\bdata-label=/i', $tag)) {
+                    return $tag;
+                }
+                if (!preg_match('/\bvalue=["\']([^"\']+)["\']/', $tag, $valueMatch)) {
+                    return $tag;
+                }
+                $text = html_entity_decode($valueMatch[1], ENT_QUOTES, 'UTF-8');
+                if (!isset($map[$text])) {
+                    return $tag;
+                }
+                $langMap = array(
+                    (string) $sourceLangId => $text,
+                    (string) $targetLangId => (string) $map[$text],
+                );
+
+                return rtrim(substr($tag, 0, -1)) . ' data-label="' . self::encodeLangMap($langMap) . '">';
+            },
+            $form
+        );
+
+        return $form;
+    }
+
+    /**
+     * @param string $form
+     * @param int    $targetLangId
+     *
+     * @return bool
+     */
+    public static function formNeedsEtsLangWrite($form, $targetLangId)
+    {
+        $targetLangId = (int) $targetLangId;
+        if ((string) $form === '' || $targetLangId <= 0) {
+            return false;
+        }
+        if (!preg_match_all('/<span class="ets_cfu_span"([^>]*)>(.*?)<\/span>/is', $form, $matches, PREG_SET_ORDER)) {
+            return true;
+        }
+        foreach ($matches as $match) {
+            if (!preg_match('/\bdata-label="([^"]*)"/i', $match[1], $attr)) {
+                return true;
+            }
+            $decoded = self::decodeLangMap($attr[1]);
+            if ($decoded === null) {
+                return true;
+            }
+            $target = '';
+            if (isset($decoded[$targetLangId])) {
+                $target = trim((string) $decoded[$targetLangId]);
+            } elseif (isset($decoded[(string) $targetLangId])) {
+                $target = trim((string) $decoded[(string) $targetLangId]);
+            }
+            if ($target === '') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int                  $idContact
+     * @param int                  $sourceLangId
+     * @param int                  $targetLangId
+     * @param int                  $idShop
+     * @param array<string, string> $map
+     *
+     * @return bool
+     */
+    public static function writeLangValuesIntoAdditionalSettings($idContact, $sourceLangId, $targetLangId, $idShop, array $map)
+    {
+        $idContact = (int) $idContact;
+        $sourceLangId = (int) $sourceLangId;
+        $targetLangId = (int) $targetLangId;
+        if ($idContact <= 0 || empty($map) || !self::columnExists('ets_cfu_contact_lang', 'additional_settings')) {
+            return false;
+        }
+
+        $sourceRaw = (string) Db::getInstance()->getValue(
+            'SELECT additional_settings FROM `' . _DB_PREFIX_ . 'ets_cfu_contact_lang`
+             WHERE id_contact = ' . $idContact . '
+               AND id_lang = ' . $sourceLangId
+        );
+        if (trim($sourceRaw) === '') {
+            return false;
+        }
+        $tree = json_decode($sourceRaw, true);
+        if (!is_array($tree)) {
+            return false;
+        }
+
+        $updated = self::injectMapIntoSettings($tree, $map, $sourceLangId, $targetLangId);
+        $json = json_encode($updated, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        if (!is_string($json) || $json === '') {
+            return false;
+        }
+
+        $where = 'id_contact = ' . $idContact . ' AND id_lang = ' . $targetLangId;
+        $exists = (int) Db::getInstance()->getValue(
+            'SELECT id_contact FROM `' . _DB_PREFIX_ . 'ets_cfu_contact_lang` WHERE ' . $where
+        );
+        if ($exists) {
+            return (bool) Db::getInstance()->update(
+                'ets_cfu_contact_lang',
+                array('additional_settings' => pSQL($json, true)),
+                $where
+            );
+        }
+
+        return false;
+    }
+
+    /**
+     * @param mixed                $node
+     * @param array<string, string> $map
+     * @param int                  $sourceLangId
+     * @param int                  $targetLangId
+     *
+     * @return mixed
+     */
+    protected static function injectMapIntoSettings($node, array $map, $sourceLangId, $targetLangId)
+    {
+        if (is_string($node)) {
+            return isset($map[$node]) ? $map[$node] : $node;
+        }
+        if (!is_array($node)) {
+            return $node;
+        }
+        if (self::isLangKeyedArray($node)) {
+            $sourceVal = '';
+            if (isset($node[$sourceLangId])) {
+                $sourceVal = $node[$sourceLangId];
+            } elseif (isset($node[(string) $sourceLangId])) {
+                $sourceVal = $node[(string) $sourceLangId];
+            }
+            if (is_string($sourceVal) && isset($map[$sourceVal])) {
+                $node[$targetLangId] = $map[$sourceVal];
+                $node[(string) $targetLangId] = $map[$sourceVal];
+            } elseif (is_array($sourceVal)) {
+                $node[$targetLangId] = self::injectMapIntoSettings($sourceVal, $map, $sourceLangId, $targetLangId);
+            }
+
+            return $node;
+        }
+        foreach ($node as $key => $value) {
+            $node[$key] = self::injectMapIntoSettings($value, $map, $sourceLangId, $targetLangId);
+        }
+
+        return $node;
+    }
+
+    /**
+     * @param array $node
+     *
+     * @return bool
+     */
+    protected static function isLangKeyedArray(array $node)
+    {
+        if ($node === array()) {
+            return false;
+        }
+        foreach (array_keys($node) as $key) {
+            if (!preg_match('/^\d+$/', (string) $key) || (int) $key <= 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param mixed                $decoded
+     * @param array<string, string> $map
+     * @param int                  $sourceLangId
+     * @param int                  $targetLangId
+     *
+     * @return array
+     */
+    protected static function fillLangMap($decoded, array $map, $sourceLangId, $targetLangId)
+    {
+        if (!is_array($decoded)) {
+            return array();
+        }
+        $sourceVal = '';
+        if (isset($decoded[$sourceLangId])) {
+            $sourceVal = $decoded[$sourceLangId];
+        } elseif (isset($decoded[(string) $sourceLangId])) {
+            $sourceVal = $decoded[(string) $sourceLangId];
+        }
+        if (is_string($sourceVal) && isset($map[$sourceVal])) {
+            $decoded[$targetLangId] = $map[$sourceVal];
+            $decoded[(string) $targetLangId] = $map[$sourceVal];
+        } elseif (is_array($sourceVal)) {
+            $translated = array();
+            foreach ($sourceVal as $item) {
+                $translated[] = (is_string($item) && isset($map[$item])) ? $map[$item] : $item;
+            }
+            $decoded[$targetLangId] = $translated;
+            $decoded[(string) $targetLangId] = $translated;
+        }
+
+        return $decoded;
+    }
+
+    /**
+     * @param string $raw
+     *
+     * @return array|null
+     */
+    protected static function decodeLangMap($raw)
+    {
+        $raw = html_entity_decode((string) $raw, ENT_QUOTES, 'UTF-8');
+        $decoded = json_decode($raw, true);
+        if (!is_array($decoded)) {
+            return null;
+        }
+
+        return self::isLangKeyedArray($decoded) ? $decoded : null;
+    }
+
+    /**
+     * @param array $map
+     *
+     * @return string
+     */
+    protected static function encodeLangMap(array $map)
+    {
+        $json = json_encode($map, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        return htmlspecialchars(is_string($json) ? $json : '{}', ENT_QUOTES, 'UTF-8');
     }
 
     /**
