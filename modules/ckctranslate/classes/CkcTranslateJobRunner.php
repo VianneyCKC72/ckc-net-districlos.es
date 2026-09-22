@@ -115,6 +115,10 @@ class CkcTranslateJobRunner
                     $result = $this->runCkcRealisation();
                     break;
 
+                case 'responsivegallery':
+                    $result = $this->runResponsiveGallery();
+                    break;
+
                 default:
                     return array(
                         'success' => false,
@@ -710,6 +714,9 @@ PROMPT;
             case 'ckc_realisation':
                 return (string) Configuration::get(CkcTranslate::CONF_PROMPT_CKC_REALISATION);
 
+            case 'responsivegallery':
+                return (string) Configuration::get(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY);
+
             default:
                 return '';
         }
@@ -737,6 +744,9 @@ PROMPT;
 
             case 'ets_cfu':
                 return count($this->buildEtsCfuQueueItems($forceOnlyMissing));
+
+            case 'responsivegallery':
+                return count($this->buildResponsiveGalleryQueueItems($forceOnlyMissing));
 
             default:
                 $filtered = $this->getFilteredSql($jobCode, $forceOnlyMissing);
@@ -2339,6 +2349,7 @@ PROMPT;
             'hellowork_jobs',
             'ets_cfu',
             'ckc_realisation',
+            'responsivegallery',
         );
     }
 
@@ -2370,6 +2381,7 @@ PROMPT;
             'hellowork_jobs' => 'hellowork_jobs',
             'ets_cfu' => 'ets_cfu',
             'ckc_realisation' => 'ckc_realisation',
+            'responsivegallery' => 'responsivegallery',
         );
 
         return isset($map[$jobCode]) ? $map[$jobCode] : self::normalizeQueueName($jobCode);
@@ -3223,6 +3235,393 @@ PROMPT;
             $this->module->l('Project photo #%d translated.', 'CkcTranslateJobRunner'),
             (int) $id
         ));
+    }
+
+    /**
+     * CKC Vianney — Responsive Gallery (titre de page + titres de galeries).
+     */
+    protected function runResponsiveGallery()
+    {
+        if (!Module::isInstalled('responsivegallery') || !Module::isEnabled('responsivegallery')) {
+            return $this->finishedResult($this->module->l('responsivegallery is not installed.', 'CkcTranslateJobRunner'));
+        }
+
+        $item = $this->getNextTypedQueueItem('responsivegallery', array($this, 'buildResponsiveGalleryQueue'));
+        if (!$item) {
+            return $this->finishedResult($this->module->l('Responsive Gallery translation finished.', 'CkcTranslateJobRunner'));
+        }
+
+        $type = isset($item['type']) ? (string) $item['type'] : '';
+        if ($type === 'config') {
+            return $this->translateResponsiveGalleryConfig();
+        }
+        if ($type === 'gallery') {
+            return $this->translateResponsiveGalleryGallery((int) $item['id']);
+        }
+
+        $this->logHistory('responsivegallery', $type, (int) (isset($item['id']) ? $item['id'] : 0), 'skipped', $this->module->l('Unknown Responsive Gallery item.', 'CkcTranslateJobRunner'));
+
+        return $this->nextResult($this->module->l('Unknown Responsive Gallery item, skipped.', 'CkcTranslateJobRunner'));
+    }
+
+    protected function buildResponsiveGalleryQueue()
+    {
+        return $this->buildResponsiveGalleryQueueItems();
+    }
+
+    public function buildResponsiveGalleryQueueItems($forceOnlyMissing = null)
+    {
+        if (!Module::isInstalled('responsivegallery') || !Module::isEnabled('responsivegallery')) {
+            return array();
+        }
+
+        if ($forceOnlyMissing === null) {
+            $onlyMissing = (bool) (int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS);
+        } else {
+            $onlyMissing = (bool) $forceOnlyMissing;
+        }
+
+        $filterType = (string) Configuration::get(CkcTranslate::CONF_FILTER_TYPE);
+        $filterIds = $this->parseIds((string) Configuration::get(CkcTranslate::CONF_FILTER_IDS));
+        $shopId = (int) Context::getContext()->shop->id;
+        $items = array();
+
+        if ($filterType !== 'ids') {
+            $config = $this->getResponsiveGalleryConfigPair();
+            if ($this->responsiveGalleryFieldsNeedTranslation($config['source'], $config['target'], $onlyMissing)) {
+                $items[] = array('type' => 'config', 'id' => 1);
+            }
+        }
+
+        $sql = 'SELECT g.id_responsive_gallery_gallery AS id
+                FROM `' . _DB_PREFIX_ . 'responsive_gallery_gallery` g
+                INNER JOIN `' . _DB_PREFIX_ . 'responsive_gallery_gallery_lang` src
+                  ON src.id_responsive_gallery_gallery = g.id_responsive_gallery_gallery
+                 AND src.id_lang = ' . (int) $this->sourceLangId . '
+                 AND src.id_shop = ' . (int) $shopId . '
+                WHERE (
+                    (src.title IS NOT NULL AND TRIM(src.title) != \'\')
+                    OR (src.description IS NOT NULL AND TRIM(src.description) != \'\')
+                    OR (src.alt IS NOT NULL AND TRIM(src.alt) != \'\')
+                )';
+
+        if ($filterType === 'ids' && !empty($filterIds)) {
+            $sql .= ' AND g.id_responsive_gallery_gallery IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+        }
+
+        if ($onlyMissing) {
+            $sql .= ' AND NOT EXISTS (
+                SELECT 1 FROM `' . _DB_PREFIX_ . 'responsive_gallery_gallery_lang` tgt
+                WHERE tgt.id_responsive_gallery_gallery = g.id_responsive_gallery_gallery
+                  AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                  AND tgt.id_shop = ' . (int) $shopId . '
+                  AND (
+                    (src.title IS NULL OR TRIM(src.title) = \'\' OR (TRIM(IFNULL(tgt.title, \'\')) != \'\' AND tgt.title != src.title))
+                    AND
+                    (src.description IS NULL OR TRIM(src.description) = \'\' OR (TRIM(IFNULL(tgt.description, \'\')) != \'\' AND tgt.description != src.description))
+                    AND
+                    (src.alt IS NULL OR TRIM(src.alt) = \'\' OR (TRIM(IFNULL(tgt.alt, \'\')) != \'\' AND tgt.alt != src.alt))
+                  )
+            )';
+        }
+
+        $sql .= ' ORDER BY g.id_responsive_gallery_gallery ASC';
+        $rows = Db::getInstance()->executeS($sql);
+        if (is_array($rows)) {
+            foreach ($rows as $row) {
+                $items[] = array(
+                    'type' => 'gallery',
+                    'id' => (int) $row['id'],
+                );
+            }
+        }
+
+        return $items;
+    }
+
+    public function countResponsiveGalleryItems()
+    {
+        if (!Module::isInstalled('responsivegallery')) {
+            return 0;
+        }
+
+        $shopId = (int) Context::getContext()->shop->id;
+        $galleries = (int) Db::getInstance()->getValue(
+            'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'responsive_gallery_gallery_shop`
+             WHERE id_shop = ' . (int) $shopId
+        );
+
+        return 1 + $galleries;
+    }
+
+    protected function getResponsiveGalleryConfigPair()
+    {
+        $keys = array(
+            'title_page' => 'RG_TITLE_PAGE',
+            'description_page' => 'RG_DESCRIPTION_PAGE',
+            'title_home' => 'RG_TITLE_HOME',
+            'description_home' => 'RG_DESCRIPTION_HOME',
+        );
+        $source = array();
+        $target = array();
+        foreach ($keys as $field => $confKey) {
+            $source[$field] = trim((string) Configuration::get($confKey, (int) $this->sourceLangId));
+            $target[$field] = trim((string) Configuration::get($confKey, (int) $this->targetLangId));
+        }
+
+        return array(
+            'source' => $source,
+            'target' => $target,
+            'keys' => $keys,
+        );
+    }
+
+    protected function responsiveGalleryFieldsNeedTranslation(array $source, array $target, $onlyMissing)
+    {
+        $hasSource = false;
+        foreach ($source as $value) {
+            if (trim(strip_tags((string) $value)) !== '') {
+                $hasSource = true;
+                break;
+            }
+        }
+        if (!$hasSource) {
+            return false;
+        }
+        if (!$onlyMissing) {
+            return true;
+        }
+        foreach ($source as $field => $value) {
+            $src = trim(strip_tags((string) $value));
+            if ($src === '') {
+                continue;
+            }
+            $tgt = isset($target[$field]) ? trim((string) $target[$field]) : '';
+            if ($tgt === '' || $tgt === $value) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function translateResponsiveGalleryConfig()
+    {
+        $pair = $this->getResponsiveGalleryConfigPair();
+        $source = $pair['source'];
+        $target = $pair['target'];
+        $onlyMissing = (bool) (int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS);
+
+        if (!$this->responsiveGalleryFieldsNeedTranslation($source, $target, $onlyMissing)) {
+            $this->logHistory('responsivegallery', 'config', 1, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult($this->module->l('Responsive Gallery page texts already translated, skipped.', 'CkcTranslateJobRunner'));
+        }
+
+        $systemPrompt = $this->buildSystemPrompt(
+            'You translate Responsive Gallery page titles and short HTML descriptions for a fencing e-commerce site. Keep titles short. Preserve HTML. Do not invent product lines.',
+            'responsivegallery'
+        );
+
+        $prompt = <<<PROMPT
+Return ONLY valid JSON:
+{
+  "title_page": "",
+  "description_page": "",
+  "title_home": "",
+  "description_home": ""
+}
+
+Source page title:
+{$source['title_page']}
+
+Source page description HTML:
+{$source['description_page']}
+
+Source home title:
+{$source['title_home']}
+
+Source home description HTML:
+{$source['description_home']}
+PROMPT;
+
+        $data = $this->ai->requestJson($systemPrompt, $prompt);
+        $required = array();
+        foreach ($source as $field => $value) {
+            if (trim(strip_tags((string) $value)) !== '') {
+                $required[] = $field;
+            }
+        }
+
+        if (!$this->isValidFields($data, $required)) {
+            $this->logHistory('responsivegallery', 'config', 1, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult($this->module->l('Invalid AI response for Responsive Gallery page texts.', 'CkcTranslateJobRunner'));
+        }
+
+        foreach ($pair['keys'] as $field => $confKey) {
+            $sourceValue = $source[$field];
+            if (trim(strip_tags((string) $sourceValue)) === '') {
+                continue;
+            }
+            $translated = isset($data[$field]) ? trim((string) $data[$field]) : '';
+            if ($translated === '') {
+                continue;
+            }
+            $this->updateConfigurationLangValue($confKey, $translated, strpos($field, 'description') !== false);
+        }
+
+        $this->logHistory('responsivegallery', 'config', 1, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
+
+        return $this->nextResult($this->module->l('Responsive Gallery page texts translated.', 'CkcTranslateJobRunner'));
+    }
+
+    protected function translateResponsiveGalleryGallery($id)
+    {
+        $id = (int) $id;
+        $shopId = (int) Context::getContext()->shop->id;
+        $source = Db::getInstance()->getRow(
+            'SELECT title, description, alt FROM `' . _DB_PREFIX_ . 'responsive_gallery_gallery_lang`
+             WHERE id_responsive_gallery_gallery = ' . (int) $id . '
+               AND id_lang = ' . (int) $this->sourceLangId . '
+               AND id_shop = ' . (int) $shopId
+        );
+        $sourceTitle = $source ? trim((string) $source['title']) : '';
+        $sourceDescription = $source ? (string) $source['description'] : '';
+        $sourceAlt = $source ? trim((string) $source['alt']) : '';
+
+        if ($sourceTitle === '' && trim(strip_tags($sourceDescription)) === '' && $sourceAlt === '') {
+            $this->logHistory('responsivegallery', 'gallery', $id, 'skipped', $this->module->l('No source content.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Gallery #%d has no source content, skipped.', 'CkcTranslateJobRunner'),
+                $id
+            ));
+        }
+
+        $target = Db::getInstance()->getRow(
+            'SELECT title, description, alt FROM `' . _DB_PREFIX_ . 'responsive_gallery_gallery_lang`
+             WHERE id_responsive_gallery_gallery = ' . (int) $id . '
+               AND id_lang = ' . (int) $this->targetLangId . '
+               AND id_shop = ' . (int) $shopId
+        );
+        $targetFields = array(
+            'title' => $target ? trim((string) $target['title']) : '',
+            'description' => $target ? (string) $target['description'] : '',
+            'alt' => $target ? trim((string) $target['alt']) : '',
+        );
+        $sourceFields = array(
+            'title' => $sourceTitle,
+            'description' => $sourceDescription,
+            'alt' => $sourceAlt,
+        );
+
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)
+            && !$this->responsiveGalleryFieldsNeedTranslation($sourceFields, $targetFields, true)
+        ) {
+            $this->logHistory('responsivegallery', 'gallery', $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Gallery #%d already translated, skipped.', 'CkcTranslateJobRunner'),
+                $id
+            ));
+        }
+
+        $systemPrompt = $this->buildSystemPrompt(
+            'You translate Responsive Gallery titles for a fencing catalog. Titles are short product-family names (e.g. Grillage rigide → Rigid fencing). Keep them short. Preserve HTML in descriptions. Leave empty fields empty.',
+            'responsivegallery'
+        );
+
+        $prompt = <<<PROMPT
+Return ONLY valid JSON:
+{
+  "title": "",
+  "description": "",
+  "alt": ""
+}
+
+Source title:
+{$sourceTitle}
+
+Source description HTML:
+{$sourceDescription}
+
+Source alt:
+{$sourceAlt}
+PROMPT;
+
+        $data = $this->ai->requestJson($systemPrompt, $prompt);
+        $required = array();
+        if ($sourceTitle !== '') {
+            $required[] = 'title';
+        }
+        if (trim(strip_tags($sourceDescription)) !== '') {
+            $required[] = 'description';
+        }
+        if ($sourceAlt !== '') {
+            $required[] = 'alt';
+        }
+
+        if (!$this->isValidFields($data, $required)) {
+            $this->logHistory('responsivegallery', 'gallery', $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Invalid AI response for gallery #%d.', 'CkcTranslateJobRunner'),
+                $id
+            ));
+        }
+
+        $translatedTitle = $sourceTitle === '' ? '' : trim((string) $data['title']);
+        $translatedDescription = trim(strip_tags($sourceDescription)) === '' ? '' : (string) $data['description'];
+        $translatedAlt = $sourceAlt === '' ? '' : trim((string) (isset($data['alt']) ? $data['alt'] : ''));
+
+        $exists = (int) Db::getInstance()->getValue(
+            'SELECT id_responsive_gallery_gallery FROM `' . _DB_PREFIX_ . 'responsive_gallery_gallery_lang`
+             WHERE id_responsive_gallery_gallery = ' . (int) $id . '
+               AND id_lang = ' . (int) $this->targetLangId . '
+               AND id_shop = ' . (int) $shopId
+        );
+
+        if ($exists) {
+            Db::getInstance()->update(
+                'responsive_gallery_gallery_lang',
+                array(
+                    'title' => pSQL($translatedTitle, true),
+                    'description' => pSQL($translatedDescription, true),
+                    'alt' => pSQL($translatedAlt),
+                ),
+                'id_responsive_gallery_gallery = ' . (int) $id . '
+                 AND id_lang = ' . (int) $this->targetLangId . '
+                 AND id_shop = ' . (int) $shopId
+            );
+        } else {
+            Db::getInstance()->insert('responsive_gallery_gallery_lang', array(
+                'id_responsive_gallery_gallery' => (int) $id,
+                'id_shop' => (int) $shopId,
+                'id_lang' => (int) $this->targetLangId,
+                'title' => pSQL($translatedTitle, true),
+                'description' => pSQL($translatedDescription, true),
+                'alt' => pSQL($translatedAlt),
+            ));
+        }
+
+        $this->logHistory('responsivegallery', 'gallery', $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
+
+        return $this->nextResult(sprintf(
+            $this->module->l('Gallery #%d translated (%s).', 'CkcTranslateJobRunner'),
+            $id,
+            $translatedTitle !== '' ? $translatedTitle : $sourceTitle
+        ));
+    }
+
+    protected function updateConfigurationLangValue($key, $translated, $html = false)
+    {
+        $values = array();
+        foreach (Language::getLanguages(false) as $lang) {
+            $values[(int) $lang['id_lang']] = (string) Configuration::get($key, (int) $lang['id_lang']);
+        }
+        $values[(int) $this->targetLangId] = $translated;
+        Configuration::updateValue($key, $values, (bool) $html);
     }
 
     /**

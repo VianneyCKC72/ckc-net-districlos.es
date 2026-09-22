@@ -86,6 +86,12 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'Translate customer project photo titles and image alt texts (ckc_realisation). Keep them short, natural and descriptive. Do not invent product names, locations or materials. Leave empty fields empty.'
             );
         }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY,
+                'Translate Responsive Gallery page title, descriptions and gallery titles (product family names like Grillage rigide). Keep labels short, catalog-like and consistent with existing fence vocabulary. Preserve HTML in descriptions. Do not invent product lines.'
+            );
+        }
         if (Tools::isSubmit('submitCkcTranslateConfig')) {
             $this->postProcessConfig();
         }
@@ -171,6 +177,7 @@ class AdminCkcTranslateController extends ModuleAdminController
         $promptHelloworkJobs = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS));
         $promptEtsCfu = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_ETS_CFU));
         $promptCkcRealisation = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CKC_REALISATION));
+        $promptResponsiveGallery = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY));
         $filterType = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_TYPE));
         $filterIds = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_IDS));
         $filterCategoryId = (int) Tools::getValue(CkcTranslate::CONF_FILTER_CATEGORY_ID);
@@ -240,6 +247,7 @@ class AdminCkcTranslateController extends ModuleAdminController
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS, $promptHelloworkJobs);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_ETS_CFU, $promptEtsCfu);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_CKC_REALISATION, $promptCkcRealisation);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY, $promptResponsiveGallery);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_TYPE, $filterType);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_IDS, $filterIds);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_CATEGORY_ID, $filterCategoryId);
@@ -518,6 +526,14 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'desc' => $this->module->l('For realisation photo titles and image alt texts.'),
                     ),
                     array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Responsive Gallery'),
+                        'name' => CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For the /vos-realisations page title and gallery titles (Grillage rigide, etc.).'),
+                    ),
+                    array(
                         'type' => 'select',
                         'label' => $this->module->l('Filter type'),
                         'name' => CkcTranslate::CONF_FILTER_TYPE,
@@ -641,6 +657,7 @@ class AdminCkcTranslateController extends ModuleAdminController
             CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS => Configuration::get(CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS),
             CkcTranslate::CONF_PROMPT_ETS_CFU => Configuration::get(CkcTranslate::CONF_PROMPT_ETS_CFU),
             CkcTranslate::CONF_PROMPT_CKC_REALISATION => Configuration::get(CkcTranslate::CONF_PROMPT_CKC_REALISATION),
+            CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY => Configuration::get(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY),
             CkcTranslate::CONF_FILTER_TYPE => Configuration::get(CkcTranslate::CONF_FILTER_TYPE),
             CkcTranslate::CONF_FILTER_IDS => Configuration::get(CkcTranslate::CONF_FILTER_IDS),
             CkcTranslate::CONF_FILTER_CATEGORY_ID => (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID),
@@ -797,6 +814,11 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'code' => 'ckc_realisation',
                 'label' => $this->module->l('Translate project photos (ckc_realisation)'),
                 'advice' => $this->module->l('Translates title and alt of realisation photos for the current shop. Filter by IDs = id_realisation. Requires ckc_realisation.'),
+            ),
+            array(
+                'code' => 'responsivegallery',
+                'label' => $this->module->l('Translate Responsive Gallery (vos-realisations)'),
+                'advice' => $this->module->l('Translates the page H1/config texts and gallery titles (Grillage rigide, etc.). Filter by IDs = gallery ID. Requires responsivegallery.'),
             ),
         );
     }
@@ -1075,6 +1097,13 @@ class AdminCkcTranslateController extends ModuleAdminController
                 }
                 break;
 
+            case 'responsivegallery':
+                $total = 0;
+                if ($runner instanceof CkcTranslateJobRunner) {
+                    $total = (int) $runner->countResponsiveGalleryItems();
+                }
+                break;
+
             default:
                 return array(
                     'total' => 0,
@@ -1335,6 +1364,8 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_ets_cfu_index',
             'ckctranslate_ckc_realisation_ids',
             'ckctranslate_ckc_realisation_index',
+            'ckctranslate_responsivegallery_ids',
+            'ckctranslate_responsivegallery_index',
         );
 
         foreach ($keys as $key) {
@@ -1389,6 +1420,8 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_ets_cfu_index',
             'ckctranslate_ckc_realisation_ids',
             'ckctranslate_ckc_realisation_index',
+            'ckctranslate_responsivegallery_ids',
+            'ckctranslate_responsivegallery_index',
         );
 
         foreach ($keys as $key) {
