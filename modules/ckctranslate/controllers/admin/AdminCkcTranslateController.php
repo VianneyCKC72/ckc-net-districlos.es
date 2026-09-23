@@ -92,6 +92,18 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'Translate Responsive Gallery page title, descriptions and gallery titles (product family names like Grillage rigide). Keep labels short, catalog-like and consistent with existing fence vocabulary. Preserve HTML in descriptions. Do not invent product lines.'
             );
         }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_FAQ)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_PRODUCT_FAQ,
+                'Translate product FAQ questions and answers for a fencing e-commerce catalog. Preserve all HTML tags, attributes and lists. Keep a clear, helpful customer-support tone. Do not invent technical specs, dimensions, warranties or certifications. Keep brand names and product terms consistent.'
+            );
+        }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE,
+                'Translate the product measuring guide HTML (how to measure a fence, posts, panels). Preserve all HTML tags, attributes, images, lists and layout. Keep a clear instructional tone. Do not invent dimensions, tools or steps. Keep brand and product names.'
+            );
+        }
         if (Tools::isSubmit('submitCkcTranslateConfig')) {
             $this->postProcessConfig();
         }
@@ -178,6 +190,8 @@ class AdminCkcTranslateController extends ModuleAdminController
         $promptEtsCfu = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_ETS_CFU));
         $promptCkcRealisation = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CKC_REALISATION));
         $promptResponsiveGallery = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY));
+        $promptProductFaq = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_PRODUCT_FAQ));
+        $promptProductGuide = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE));
         $filterType = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_TYPE));
         $filterIds = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_IDS));
         $filterCategoryId = (int) Tools::getValue(CkcTranslate::CONF_FILTER_CATEGORY_ID);
@@ -248,6 +262,8 @@ class AdminCkcTranslateController extends ModuleAdminController
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_ETS_CFU, $promptEtsCfu);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_CKC_REALISATION, $promptCkcRealisation);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY, $promptResponsiveGallery);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_PRODUCT_FAQ, $promptProductFaq);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE, $promptProductGuide);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_TYPE, $filterType);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_IDS, $filterIds);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_CATEGORY_ID, $filterCategoryId);
@@ -534,6 +550,22 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'desc' => $this->module->l('For the /vos-realisations page title and gallery titles (Grillage rigide, etc.).'),
                     ),
                     array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Product FAQ'),
+                        'name' => CkcTranslate::CONF_PROMPT_PRODUCT_FAQ,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For product page FAQ questions and HTML answers.'),
+                    ),
+                    array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Product guide'),
+                        'name' => CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For product measuring guide HTML (Guide de mesure).'),
+                    ),
+                    array(
                         'type' => 'select',
                         'label' => $this->module->l('Filter type'),
                         'name' => CkcTranslate::CONF_FILTER_TYPE,
@@ -658,6 +690,8 @@ class AdminCkcTranslateController extends ModuleAdminController
             CkcTranslate::CONF_PROMPT_ETS_CFU => Configuration::get(CkcTranslate::CONF_PROMPT_ETS_CFU),
             CkcTranslate::CONF_PROMPT_CKC_REALISATION => Configuration::get(CkcTranslate::CONF_PROMPT_CKC_REALISATION),
             CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY => Configuration::get(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY),
+            CkcTranslate::CONF_PROMPT_PRODUCT_FAQ => Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_FAQ),
+            CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE => Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE),
             CkcTranslate::CONF_FILTER_TYPE => Configuration::get(CkcTranslate::CONF_FILTER_TYPE),
             CkcTranslate::CONF_FILTER_IDS => Configuration::get(CkcTranslate::CONF_FILTER_IDS),
             CkcTranslate::CONF_FILTER_CATEGORY_ID => (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID),
@@ -819,6 +853,16 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'code' => 'responsivegallery',
                 'label' => $this->module->l('Translate Responsive Gallery (vos-realisations)'),
                 'advice' => $this->module->l('Translates the page H1/config texts and gallery titles (Grillage rigide, etc.). Filter by IDs = gallery ID. Requires responsivegallery.'),
+            ),
+            array(
+                'code' => 'product_faq',
+                'label' => $this->module->l('Translate product FAQ'),
+                'advice' => $this->module->l('Translates product page FAQ questions and answers. Filter by IDs = id_product. Requires productfaq.'),
+            ),
+            array(
+                'code' => 'product_guide',
+                'label' => $this->module->l('Translate product measuring guide'),
+                'advice' => $this->module->l('Translates product page measuring guide HTML. Filter by IDs = id_product. Requires productguide.'),
             ),
         );
     }
@@ -1104,6 +1148,28 @@ class AdminCkcTranslateController extends ModuleAdminController
                 }
                 break;
 
+            case 'product_faq':
+                $total = 0;
+                if (Module::isInstalled('productfaq')) {
+                    $sql = 'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'product_faq`';
+                    if ($filterType === 'ids' && !empty($filterIds)) {
+                        $sql .= ' WHERE id_product IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                    }
+                    $total = (int) Db::getInstance()->getValue($sql);
+                }
+                break;
+
+            case 'product_guide':
+                $total = 0;
+                if (Module::isInstalled('productguide')) {
+                    $sql = 'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'product_guide`';
+                    if ($filterType === 'ids' && !empty($filterIds)) {
+                        $sql .= ' WHERE id_product IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                    }
+                    $total = (int) Db::getInstance()->getValue($sql);
+                }
+                break;
+
             default:
                 return array(
                     'total' => 0,
@@ -1366,6 +1432,10 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_ckc_realisation_index',
             'ckctranslate_responsivegallery_ids',
             'ckctranslate_responsivegallery_index',
+            'ckctranslate_product_faq_ids',
+            'ckctranslate_product_faq_index',
+            'ckctranslate_product_guide_ids',
+            'ckctranslate_product_guide_index',
         );
 
         foreach ($keys as $key) {
@@ -1422,6 +1492,10 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_ckc_realisation_index',
             'ckctranslate_responsivegallery_ids',
             'ckctranslate_responsivegallery_index',
+            'ckctranslate_product_faq_ids',
+            'ckctranslate_product_faq_index',
+            'ckctranslate_product_guide_ids',
+            'ckctranslate_product_guide_index',
         );
 
         foreach ($keys as $key) {

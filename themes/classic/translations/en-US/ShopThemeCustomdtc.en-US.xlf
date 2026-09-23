@@ -110,8 +110,6 @@
       <trans-unit id="102"><source>Votre commande %s a été enregistrée.</source><target>Your order %s has been recorded.</target></trans-unit>
       <trans-unit id="103"><source>Votre commande a été enregistrée.</source><target>Your order has been recorded.</target></trans-unit>
       <trans-unit id="104"><source>Commande Marketplace (réservé aux employés connectés au Back-Office).</source><target>Marketplace order (reserved for employees logged into the Back Office).</target></trans-unit>
-      <trans-unit id="105"><source>PROJET EN FÊTE</source><target>PROJECT CELEBRATION</target></trans-unit>
-      <trans-unit id="106"><source>75€ offert tous les 500€ d'achat !</source><target>€75 off for every €500 spent!</target></trans-unit>
     </body>
   </file>
 </xliff>

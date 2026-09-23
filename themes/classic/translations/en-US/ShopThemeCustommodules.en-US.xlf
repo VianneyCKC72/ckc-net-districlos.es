@@ -174,6 +174,9 @@
       <trans-unit id="170"><source>Fabrication__française</source><target>Made in__France</target></trans-unit>
       <trans-unit id="171"><source>Fabrication française</source><target>Made in France</target></trans-unit>
       <trans-unit id="172"><source>Payer en plusieurs fois</source><target>Pay in installments</target></trans-unit>
+      <trans-unit id="173"><source>acompte</source><target>deposit</target></trans-unit>
+      <trans-unit id="174"><source>Possibilité de payer un acompte de</source><target>Option to pay a deposit of</target></trans-unit>
+      <trans-unit id="175"><source>et le reste avant la livraison</source><target>and the rest before delivery</target></trans-unit>
     </body>
   </file>
 </xliff>
