@@ -58,7 +58,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.16.0';
+        $this->version = '2.16.2';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -248,6 +248,24 @@ class CkcTranslate extends Module
         $idLang = (int) $this->context->language->id;
         $idShop = (int) $this->context->shop->id;
         $params['html'] = CkcTranslateCfuI18n::replaceInHtml((string) $params['html'], $idLang, $idShop);
+    }
+
+    public static function getFrontProductFaqs($idProduct, $activeOnly = true)
+    {
+        if (!Module::isInstalled('productfaq') || !Module::isEnabled('productfaq')) {
+            return array();
+        }
+
+        return CkcTranslateJobRunner::getFrontProductFaqs((int) $idProduct, (bool) $activeOnly);
+    }
+
+    public static function getFrontProductGuideContent($idProduct)
+    {
+        if (!Module::isInstalled('productguide') || !Module::isEnabled('productguide')) {
+            return '';
+        }
+
+        return CkcTranslateJobRunner::getFrontProductGuideContent((int) $idProduct);
     }
 
     protected function uninstallSql()

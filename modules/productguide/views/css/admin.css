@@ -1,0 +1,33 @@
+/* ====================================
+   Product Guide - Admin Styles
+   ==================================== */
+
+#product-guide-panel {
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+}
+
+#product-guide-panel h3 {
+    background: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    padding: 15px 20px;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+#product-guide-panel .form-wrapper {
+    padding: 20px;
+}
+
+#guide-content-wrapper {
+    display: none;
+    margin-top: 20px;
+}
+
+.guide-active #guide-content-wrapper {
+    display: block;
+}
+

@@ -254,20 +254,18 @@ themes/*/config/settings_*.json
 app/config/parameters.old.yml
 app/config/config.php
 # Themes, modules and overrides
+
+# Sauvegardes locales (copie iso prod/dev) — jamais versionner
 /modules.bak.*/
 
 modules/*
 !modules/ckc*/
-!modules/dtc*/
+!modules/productfaq/
+!modules/productguide/
 !modules/pm_advancedpack/
 !modules/ps_shoppingcart/
 !modules/custompickup/
-!modules/dtc_closy/
-!modules/dtc_wirepayment/
-!modules/dtc_lengow_marketplace/
-!modules/dtc_ordertracking/
-modules/dtc_lengow_marketplace/cache/*
-!modules/dtc_lengow_marketplace/cache/index.php
+!modules/dtc*/
 modules/ckcstorespresentation/uploads/*
 !modules/creativeelements
 !modules/everpspopup
@@ -484,6 +482,8 @@ themes/classic/assets/js/theme.js.map
 config/defines_uri.inc.php
 modules/ckc*/config_fr.xml
 modules/dtc*/config_fr.xml
+modules/dtc*/cache/*
+!modules/dtc*/cache/index.php
 modules/ckcproductreviews/cache/
 themes/classic/assets/css/theme.css.map
 .claude/
@@ -493,6 +493,3 @@ themes/classic/assets/css/theme.css
 themes/classic/assets/js/theme.js
 /fix_*.php
 /fix_configurateur.php
-
-modules/dtc*/cache/*
-!modules/dtc*/cache/index.php
