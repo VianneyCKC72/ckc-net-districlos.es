@@ -35,7 +35,7 @@ class Dtc_closy extends Module
     {
         $this->name = 'dtc_closy';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.0';
+        $this->version = '1.1.1';
         $this->author = 'Districlos';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -53,24 +53,13 @@ class Dtc_closy extends Module
         Configuration::updateValue(self::CONF_ACTIVE, 1);
         Configuration::updateValue(self::CONF_API_KEY, '');
         Configuration::updateValue(self::CONF_MODEL, DtcProductQuestionsService::DEFAULT_MODEL);
-        Configuration::updateValue(self::CONF_HEADER_LABEL, 'Une question sur le produit ?');
-        Configuration::updateValue(self::CONF_STATIC_TRANSPORT, 'Quel sont les délais de livraison ?');
-        Configuration::updateValue(self::CONF_CTA_LABEL, 'Posez votre question');
+        DtcClosyConfig::seedTranslatableDefaults();
         Configuration::updateValue(self::CONF_BATCH_SIZE, 50);
         Configuration::updateValue(self::CONF_SHOW_FALLBACK, 1);
         Configuration::updateValue(self::CONF_PANEL_ACTIVE, 0);
         Configuration::updateValue(self::CONF_YOURGPT_API_TOKEN, '');
         Configuration::updateValue(self::CONF_YOURGPT_PROJECT_UID, '');
         Configuration::updateValue(self::CONF_YOURGPT_WIDGET_UID, '');
-        Configuration::updateValue(self::CONF_PANEL_TITLE, 'Assistant produit');
-        Configuration::updateValue(
-            self::CONF_PANEL_WELCOME,
-            'Bonjour ! Je suis là pour répondre à vos questions sur ce produit (pose, fixation, usage…).'
-        );
-        Configuration::updateValue(
-            self::CONF_PANEL_WELCOME_GLOBAL,
-            'Bonjour ! Je suis Closy, votre assistant. Comment puis-je vous aider aujourd’hui ?'
-        );
         Configuration::updateValue(self::CONF_SCHEDULE_ENABLED, 1);
         Configuration::updateValue(self::CONF_SCHEDULE_HOUR_START, 9);
         Configuration::updateValue(self::CONF_SCHEDULE_HOUR_END, 19);
@@ -231,7 +220,10 @@ class Dtc_closy extends Module
         }
 
         $this->context->smarty->assign([
-            'dtc_closy_panel_title' => (string) Configuration::get(self::CONF_PANEL_TITLE),
+            'dtc_closy_panel_title' => DtcClosyConfig::getLangValue(
+                self::CONF_PANEL_TITLE,
+                (int) $this->context->language->id
+            ),
             'dtc_closy_panel_logo_url' => $this->context->link->getMediaLink(
                 _MODULE_DIR_ . $this->name . '/views/img/logo.svg'
             ),
@@ -285,13 +277,14 @@ class Dtc_closy extends Module
 
     private function resolvePanelWelcomeMessage(bool $isProductPage): string
     {
+        $idLang = (int) $this->context->language->id;
         if ($isProductPage) {
-            return (string) Configuration::get(self::CONF_PANEL_WELCOME);
+            return DtcClosyConfig::getLangValue(self::CONF_PANEL_WELCOME, $idLang);
         }
 
-        $global = trim((string) Configuration::get(self::CONF_PANEL_WELCOME_GLOBAL));
+        $global = trim(DtcClosyConfig::getLangValue(self::CONF_PANEL_WELCOME_GLOBAL, $idLang));
 
-        return $global !== '' ? $global : (string) Configuration::get(self::CONF_PANEL_WELCOME);
+        return $global !== '' ? $global : DtcClosyConfig::getLangValue(self::CONF_PANEL_WELCOME, $idLang);
     }
 
     public function hookDisplayProductBelowGallery($params)
@@ -336,9 +329,9 @@ class Dtc_closy extends Module
             $aiQuestions[] = $r['question'];
         }
 
-        $staticTransport = (string) Configuration::get(self::CONF_STATIC_TRANSPORT);
-        $headerLabel = (string) Configuration::get(self::CONF_HEADER_LABEL);
-        $ctaLabel = (string) Configuration::get(self::CONF_CTA_LABEL);
+        $staticTransport = DtcClosyConfig::getLangValue(self::CONF_STATIC_TRANSPORT, $idLang);
+        $headerLabel = DtcClosyConfig::getLangValue(self::CONF_HEADER_LABEL, $idLang);
+        $ctaLabel = DtcClosyConfig::getLangValue(self::CONF_CTA_LABEL, $idLang);
         $showFallback = (int) Configuration::get(self::CONF_SHOW_FALLBACK) === 1;
 
         if (count($aiQuestions) === 0 && !$showFallback) {
@@ -520,6 +513,7 @@ class Dtc_closy extends Module
     {
         $output = '';
         $this->ensurePanelConfigDefaults();
+        DtcClosyConfig::migrateToMultilang();
 
         if ($this->context->controller instanceof AdminController) {
             $this->context->controller->addJS($this->_path . 'views/js/admin_configure.js');
@@ -531,17 +525,14 @@ class Dtc_closy extends Module
             Configuration::updateValue(self::CONF_ACTIVE, (int) Tools::getValue(self::CONF_ACTIVE));
             Configuration::updateValue(self::CONF_API_KEY, trim((string) Tools::getValue(self::CONF_API_KEY)));
             Configuration::updateValue(self::CONF_MODEL, trim((string) Tools::getValue(self::CONF_MODEL)));
-            Configuration::updateValue(self::CONF_HEADER_LABEL, trim((string) Tools::getValue(self::CONF_HEADER_LABEL)));
-            Configuration::updateValue(self::CONF_STATIC_TRANSPORT, trim((string) Tools::getValue(self::CONF_STATIC_TRANSPORT)));
-            Configuration::updateValue(self::CONF_CTA_LABEL, trim((string) Tools::getValue(self::CONF_CTA_LABEL)));
+            foreach (array_keys(DtcClosyConfig::getTranslatableConfigKeys()) as $langKey) {
+                Configuration::updateValue($langKey, DtcClosyConfig::collectLangPost($langKey), true);
+            }
             Configuration::updateValue(self::CONF_BATCH_SIZE, max(1, (int) Tools::getValue(self::CONF_BATCH_SIZE)));
             Configuration::updateValue(self::CONF_SHOW_FALLBACK, (int) Tools::getValue(self::CONF_SHOW_FALLBACK));
             Configuration::updateValue(self::CONF_PANEL_ACTIVE, (int) Tools::getValue(self::CONF_PANEL_ACTIVE));
             Configuration::updateValue(self::CONF_YOURGPT_API_TOKEN, trim((string) Tools::getValue(self::CONF_YOURGPT_API_TOKEN)));
             Configuration::updateValue(self::CONF_YOURGPT_WIDGET_UID, trim((string) Tools::getValue(self::CONF_YOURGPT_WIDGET_UID)));
-            Configuration::updateValue(self::CONF_PANEL_TITLE, trim((string) Tools::getValue(self::CONF_PANEL_TITLE)));
-            Configuration::updateValue(self::CONF_PANEL_WELCOME, trim((string) Tools::getValue(self::CONF_PANEL_WELCOME)));
-            Configuration::updateValue(self::CONF_PANEL_WELCOME_GLOBAL, trim((string) Tools::getValue(self::CONF_PANEL_WELCOME_GLOBAL)));
             Configuration::updateValue(self::CONF_SCHEDULE_ENABLED, (int) Tools::getValue(self::CONF_SCHEDULE_ENABLED));
             $scheduleDays = $this->collectScheduleDaysFromPost();
             Configuration::updateValue(self::CONF_SCHEDULE_ACTIVE_DAYS_SELECTED, $scheduleDays);
@@ -613,17 +604,21 @@ class Dtc_closy extends Module
             'dtc_closy_active' => (int) Configuration::get(self::CONF_ACTIVE),
             'dtc_closy_api_key' => (string) Configuration::get(self::CONF_API_KEY),
             'dtc_closy_model' => (string) Configuration::get(self::CONF_MODEL),
-            'dtc_closy_header_label' => (string) Configuration::get(self::CONF_HEADER_LABEL),
-            'dtc_closy_static_transport' => (string) Configuration::get(self::CONF_STATIC_TRANSPORT),
-            'dtc_closy_cta_label' => (string) Configuration::get(self::CONF_CTA_LABEL),
+            'dtc_closy_header_label' => DtcClosyConfig::getLangValues(self::CONF_HEADER_LABEL),
+            'dtc_closy_static_transport' => DtcClosyConfig::getLangValues(self::CONF_STATIC_TRANSPORT),
+            'dtc_closy_cta_label' => DtcClosyConfig::getLangValues(self::CONF_CTA_LABEL),
             'dtc_closy_batch_size' => (int) Configuration::get(self::CONF_BATCH_SIZE),
             'dtc_closy_show_fallback' => (int) Configuration::get(self::CONF_SHOW_FALLBACK),
             'dtc_closy_panel_active' => (int) Configuration::get(self::CONF_PANEL_ACTIVE),
             'dtc_closy_yourgpt_api_token' => (string) Configuration::get(self::CONF_YOURGPT_API_TOKEN),
             'dtc_closy_yourgpt_widget_uid' => (string) Configuration::get(self::CONF_YOURGPT_WIDGET_UID),
-            'dtc_closy_panel_title' => (string) Configuration::get(self::CONF_PANEL_TITLE),
-            'dtc_closy_panel_welcome' => (string) Configuration::get(self::CONF_PANEL_WELCOME),
-            'dtc_closy_panel_welcome_global' => (string) Configuration::get(self::CONF_PANEL_WELCOME_GLOBAL),
+            'dtc_closy_panel_title' => DtcClosyConfig::getLangValues(self::CONF_PANEL_TITLE),
+            'dtc_closy_panel_welcome' => DtcClosyConfig::getLangValues(self::CONF_PANEL_WELCOME),
+            'dtc_closy_panel_welcome_global' => DtcClosyConfig::getLangValues(self::CONF_PANEL_WELCOME_GLOBAL),
+            'dtc_closy_languages' => $this->context->controller instanceof AdminController
+                ? $this->context->controller->getLanguages()
+                : Language::getLanguages(false),
+            'dtc_closy_id_lang' => (int) $this->context->language->id,
             'dtc_closy_schedule_enabled' => (int) Configuration::get(self::CONF_SCHEDULE_ENABLED),
             'dtc_closy_schedule_hour_start' => (int) Configuration::get(self::CONF_SCHEDULE_HOUR_START),
             'dtc_closy_schedule_hour_end' => (int) Configuration::get(self::CONF_SCHEDULE_HOUR_END),
@@ -665,9 +660,6 @@ class Dtc_closy extends Module
             self::CONF_YOURGPT_API_TOKEN => '',
             self::CONF_YOURGPT_PROJECT_UID => '',
             self::CONF_YOURGPT_WIDGET_UID => '',
-            self::CONF_PANEL_TITLE => 'Assistant Closy',
-            self::CONF_PANEL_WELCOME => 'Bonjour ! Je suis là pour répondre à vos questions sur ce produit (pose, fixation, usage…).',
-            self::CONF_PANEL_WELCOME_GLOBAL => 'Bonjour ! Je suis Closy, votre assistant. Comment puis-je vous aider aujourd’hui ?',
             self::CONF_SCHEDULE_ENABLED => 1,
             self::CONF_SCHEDULE_HOUR_START => 9,
             self::CONF_SCHEDULE_HOUR_END => 19,
