@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Synchronise les jours du planning vers le champ hidden avant envoi du formulaire.
  */
 (function () {
@@ -28,6 +28,14 @@
     }
 
     function init() {
+        if (typeof window.hideOtherLanguage !== 'function') {
+            window.hideOtherLanguage = function (id) {
+                var fields = document.querySelectorAll('.dtc-closy-admin-config .translatable-field');
+                fields.forEach(function (el) {
+                    el.style.display = el.classList.contains('lang-' + id) ? 'block' : 'none';
+                });
+            };
+        }
         var form = document.querySelector('form.dtc-closy-admin-config');
         if (!form) {
             return;
@@ -50,3 +58,4 @@
         init();
     }
 })();
+

@@ -284,6 +284,159 @@ class DtcClosyConfig
 
         DtcClosyChatSecurity::ensureToken();
 
+        self::migrateToMultilang();
+
+    }
+
+    /**
+     * Textes FO éditables en BO, une valeur par langue.
+     *
+     * @return array<string, array{fr: string, en: string}>
+     */
+    public static function getTranslatableConfigKeys(): array
+    {
+        return [
+            'DTC_CLOSY_HEADER_LABEL' => [
+                'fr' => 'Une question sur le produit ?',
+                'en' => 'A question about this product?',
+            ],
+            'DTC_CLOSY_STATIC_TRANSPORT' => [
+                'fr' => 'Quel sont les délais de livraison ?',
+                'en' => 'What are the delivery times?',
+            ],
+            'DTC_CLOSY_CTA_LABEL' => [
+                'fr' => 'Posez votre question',
+                'en' => 'Ask your question',
+            ],
+            'DTC_CLOSY_PANEL_TITLE' => [
+                'fr' => 'Assistant produit',
+                'en' => 'Product assistant',
+            ],
+            'DTC_CLOSY_PANEL_WELCOME' => [
+                'fr' => 'Bonjour ! Je suis là pour répondre à vos questions sur ce produit (pose, fixation, usage…).',
+                'en' => 'Hello! I\'m here to answer your questions about this product (fitting, fixing, usage…).',
+            ],
+            'DTC_CLOSY_PANEL_WELCOME_GLOBAL' => [
+                'fr' => 'Bonjour ! Je suis Closy, votre assistant. Comment puis-je vous aider aujourd’hui ?',
+                'en' => 'Hello! I\'m Closy, your assistant. How can I help you today?',
+            ],
+        ];
+    }
+
+    public static function getLangValue(string $key, int $idLang): string
+    {
+        $defaults = self::getTranslatableConfigKeys();
+        $iso = strtolower((string) Language::getIsoById($idLang));
+        $value = Configuration::get($key, $idLang);
+        $raw = is_string($value) ? trim($value) : '';
+
+        if (isset($defaults[$key])) {
+            $frDefault = (string) ($defaults[$key]['fr'] ?? '');
+            $isoDefault = (string) ($defaults[$key][$iso] ?? '');
+            // EN encore vide ou copié depuis le FR
+            if ($iso !== 'fr' && $isoDefault !== '' && ($raw === '' || $raw === $frDefault)) {
+                return $isoDefault;
+            }
+        }
+
+        if ($raw !== '') {
+            return $raw;
+        }
+
+        $defaultLang = (int) Configuration::get('PS_LANG_DEFAULT');
+        if ($idLang !== $defaultLang) {
+            $fallback = Configuration::get($key, $defaultLang);
+            if (is_string($fallback) && $fallback !== '') {
+                return $fallback;
+            }
+        }
+
+        $plain = Configuration::get($key);
+
+        return is_string($plain) ? $plain : '';
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function getLangValues(string $key): array
+    {
+        $out = [];
+        foreach (Language::getLanguages(false) as $lang) {
+            $idLang = (int) $lang['id_lang'];
+            $out[$idLang] = self::getLangValue($key, $idLang);
+        }
+
+        return $out;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    public static function collectLangPost(string $key): array
+    {
+        $values = [];
+        foreach (Language::getLanguages(false) as $lang) {
+            $idLang = (int) $lang['id_lang'];
+            $values[$idLang] = trim((string) Tools::getValue($key . '_' . $idLang));
+        }
+
+        return $values;
+    }
+
+    public static function seedTranslatableDefaults(): void
+    {
+        foreach (self::getTranslatableConfigKeys() as $key => $defaults) {
+            self::seedOneTranslatableKey($key, $defaults);
+        }
+    }
+
+    /**
+     * Convertit les anciennes configs monolingues vers une valeur par langue.
+     */
+    public static function migrateToMultilang(): bool
+    {
+        foreach (self::getTranslatableConfigKeys() as $key => $defaults) {
+            self::seedOneTranslatableKey($key, $defaults, true);
+        }
+
+        return true;
+    }
+
+    /**
+     * @param array{fr: string, en: string} $defaults
+     */
+    private static function seedOneTranslatableKey(string $key, array $defaults, bool $keepExisting = false): void
+    {
+        $plain = (string) Configuration::get($key);
+        $defaultLangId = (int) Configuration::get('PS_LANG_DEFAULT');
+        $values = [];
+
+        foreach (Language::getLanguages(false) as $lang) {
+            $idLang = (int) $lang['id_lang'];
+            $iso = (string) $lang['iso_code'];
+
+            if ($keepExisting) {
+                $existing = Configuration::get($key, $idLang);
+                $frDefault = $defaults['fr'] ?? '';
+                if (is_string($existing) && $existing !== '' && !($iso === 'en' && $existing === $frDefault)) {
+                    $values[$idLang] = $existing;
+                    continue;
+                }
+            }
+
+            if ($iso === 'en') {
+                $values[$idLang] = $defaults['en'] ?? '';
+            } elseif ($idLang === $defaultLangId || $iso === 'fr') {
+                $values[$idLang] = $plain !== '' ? $plain : ($defaults['fr'] ?? '');
+            } else {
+                $values[$idLang] = $plain !== '' ? $plain : ($defaults['fr'] ?? '');
+            }
+        }
+
+        if (!empty($values)) {
+            Configuration::updateValue($key, $values, true);
+        }
     }
 
 }
