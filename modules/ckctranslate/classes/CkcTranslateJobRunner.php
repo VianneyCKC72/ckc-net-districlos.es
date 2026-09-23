@@ -119,6 +119,14 @@ class CkcTranslateJobRunner
                     $result = $this->runResponsiveGallery();
                     break;
 
+                case 'product_faq':
+                    $result = $this->runProductFaq();
+                    break;
+
+                case 'product_guide':
+                    $result = $this->runProductGuide();
+                    break;
+
                 default:
                     return array(
                         'success' => false,
@@ -716,6 +724,12 @@ PROMPT;
 
             case 'responsivegallery':
                 return (string) Configuration::get(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY);
+
+            case 'product_faq':
+                return (string) Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_FAQ);
+
+            case 'product_guide':
+                return (string) Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE);
 
             default:
                 return '';
@@ -1366,6 +1380,104 @@ PROMPT;
                 return array(
                     'sql' => $sql,
                     'column' => 'id_realisation',
+                );
+
+            case 'product_faq':
+                if (!Module::isInstalled('productfaq') || !Module::isEnabled('productfaq')) {
+                    return array('sql' => '', 'column' => '');
+                }
+                if (!class_exists('ProductFaq', false)) {
+                    require_once _PS_MODULE_DIR_ . 'productfaq/productfaq.php';
+                }
+                ProductFaq::ensureLangTable();
+
+                $defaultLang = (int) Configuration::get('PS_LANG_DEFAULT');
+                $sourceIsDefault = ((int) $this->sourceLangId === $defaultLang);
+                $targetIsDefault = ((int) $this->targetLangId === $defaultLang);
+                $sql = 'SELECT f.id FROM `' . _DB_PREFIX_ . 'product_faq` f';
+                if (!$sourceIsDefault) {
+                    $sql .= ' INNER JOIN `' . _DB_PREFIX_ . 'product_faq_lang` src
+                                ON src.id_faq = f.id
+                               AND src.id_lang = ' . (int) $this->sourceLangId;
+                }
+                $srcQuestion = $sourceIsDefault ? 'f.question' : 'src.question';
+                $sql .= ' WHERE TRIM(IFNULL(' . $srcQuestion . ', \'\')) != \'\'';
+
+                if ($filterType === 'ids' && !empty($filterIds)) {
+                    $sql .= ' AND f.id_product IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                }
+
+                if ($onlyMissing) {
+                    if ($targetIsDefault) {
+                        $sql .= ' AND (
+                            TRIM(IFNULL(f.question, \'\')) = \'\'
+                            OR f.question = ' . $srcQuestion . '
+                        )';
+                    } else {
+                        $sql .= ' AND NOT EXISTS (
+                            SELECT 1 FROM `' . _DB_PREFIX_ . 'product_faq_lang` tgt
+                            WHERE tgt.id_faq = f.id
+                              AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                              AND TRIM(IFNULL(tgt.question, \'\')) != \'\'
+                              AND tgt.question != ' . $srcQuestion . '
+                        )';
+                    }
+                }
+
+                $sql .= ' ORDER BY f.id ASC';
+
+                return array(
+                    'sql' => $sql,
+                    'column' => 'id',
+                );
+
+            case 'product_guide':
+                if (!Module::isInstalled('productguide') || !Module::isEnabled('productguide')) {
+                    return array('sql' => '', 'column' => '');
+                }
+                if (!class_exists('ProductGuide', false)) {
+                    require_once _PS_MODULE_DIR_ . 'productguide/productguide.php';
+                }
+                ProductGuide::ensureLangTable();
+
+                $defaultLang = (int) Configuration::get('PS_LANG_DEFAULT');
+                $sourceIsDefault = ((int) $this->sourceLangId === $defaultLang);
+                $targetIsDefault = ((int) $this->targetLangId === $defaultLang);
+                $sql = 'SELECT g.id_product FROM `' . _DB_PREFIX_ . 'product_guide` g';
+                if (!$sourceIsDefault) {
+                    $sql .= ' INNER JOIN `' . _DB_PREFIX_ . 'product_guide_lang` src
+                                ON src.id_product = g.id_product
+                               AND src.id_lang = ' . (int) $this->sourceLangId;
+                }
+                $srcContent = $sourceIsDefault ? 'g.guide_content' : 'src.guide_content';
+                $sql .= ' WHERE TRIM(IFNULL(' . $srcContent . ', \'\')) != \'\'';
+
+                if ($filterType === 'ids' && !empty($filterIds)) {
+                    $sql .= ' AND g.id_product IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                }
+
+                if ($onlyMissing) {
+                    if ($targetIsDefault) {
+                        $sql .= ' AND (
+                            TRIM(IFNULL(g.guide_content, \'\')) = \'\'
+                            OR g.guide_content = ' . $srcContent . '
+                        )';
+                    } else {
+                        $sql .= ' AND NOT EXISTS (
+                            SELECT 1 FROM `' . _DB_PREFIX_ . 'product_guide_lang` tgt
+                            WHERE tgt.id_product = g.id_product
+                              AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                              AND TRIM(IFNULL(tgt.guide_content, \'\')) != \'\'
+                              AND tgt.guide_content != ' . $srcContent . '
+                        )';
+                    }
+                }
+
+                $sql .= ' ORDER BY g.id_product ASC';
+
+                return array(
+                    'sql' => $sql,
+                    'column' => 'id_product',
                 );
 
             default:
@@ -2350,6 +2462,8 @@ PROMPT;
             'ets_cfu',
             'ckc_realisation',
             'responsivegallery',
+            'product_faq',
+            'product_guide',
         );
     }
 
@@ -2382,6 +2496,8 @@ PROMPT;
             'ets_cfu' => 'ets_cfu',
             'ckc_realisation' => 'ckc_realisation',
             'responsivegallery' => 'responsivegallery',
+            'product_faq' => 'product_faq',
+            'product_guide' => 'product_guide',
         );
 
         return isset($map[$jobCode]) ? $map[$jobCode] : self::normalizeQueueName($jobCode);
@@ -3233,6 +3349,194 @@ PROMPT;
 
         return $this->nextResult(sprintf(
             $this->module->l('Project photo #%d translated.', 'CkcTranslateJobRunner'),
+            (int) $id
+        ));
+    }
+
+    /**
+     * CKC Vianney — FAQ produit (question / réponse HTML).
+     */
+    protected function runProductFaq()
+    {
+        if (!Module::isInstalled('productfaq') || !Module::isEnabled('productfaq')) {
+            return $this->finishedResult($this->module->l('productfaq is not installed.', 'CkcTranslateJobRunner'));
+        }
+        if (!class_exists('ProductFaq', false)) {
+            require_once _PS_MODULE_DIR_ . 'productfaq/productfaq.php';
+        }
+        ProductFaq::ensureLangTable();
+
+        $filtered = $this->getFilteredSql('product_faq');
+        $id = $this->getNextId(
+            'ckctranslate_product_faq_ids',
+            'ckctranslate_product_faq_index',
+            $filtered['sql'],
+            $filtered['column']
+        );
+
+        if (!$id) {
+            return $this->finishedResult($this->module->l('Product FAQ translation finished.', 'CkcTranslateJobRunner'));
+        }
+
+        $source = ProductFaq::getFaqTexts((int) $id, (int) $this->sourceLangId);
+        $sourceQuestion = $source ? trim((string) $source['question']) : '';
+        $sourceAnswer = $source ? trim((string) $source['answer']) : '';
+
+        if ($sourceQuestion === '' && $sourceAnswer === '') {
+            $this->logHistory('product_faq', 'product_faq', (int) $id, 'skipped', $this->module->l('No source content.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Product FAQ #%d has no source content, skipped.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        $target = ProductFaq::getFaqTexts((int) $id, (int) $this->targetLangId);
+        $targetQuestion = $target ? trim((string) $target['question']) : '';
+        $targetAnswer = $target ? trim((string) $target['answer']) : '';
+
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
+            $questionDone = ($sourceQuestion === '' || ($targetQuestion !== '' && $targetQuestion !== $sourceQuestion));
+            $answerDone = ($sourceAnswer === '' || ($targetAnswer !== '' && $targetAnswer !== $sourceAnswer));
+            if ($questionDone && $answerDone) {
+                $this->logHistory('product_faq', 'product_faq', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+
+                return $this->nextResult(sprintf(
+                    $this->module->l('Product FAQ #%d already translated, skipped.', 'CkcTranslateJobRunner'),
+                    (int) $id
+                ));
+            }
+        }
+
+        $systemPrompt = $this->buildSystemPrompt(
+            'You translate product FAQ questions and answers for a fencing e-commerce catalog. Preserve all HTML tags, attributes and lists exactly. Keep a clear, helpful customer-support tone. Do not invent technical specs, dimensions, warranties or certifications. Leave a field empty if the source is empty.',
+            'product_faq'
+        );
+
+        $prompt = <<<PROMPT
+Return ONLY valid JSON:
+{
+  "question": "",
+  "answer": ""
+}
+
+Source question:
+{$sourceQuestion}
+
+Source answer:
+{$sourceAnswer}
+PROMPT;
+
+        $data = $this->ai->requestJson($systemPrompt, $prompt);
+        $required = array();
+        if ($sourceQuestion !== '') {
+            $required[] = 'question';
+        }
+        if ($sourceAnswer !== '') {
+            $required[] = 'answer';
+        }
+
+        if (!$this->isValidFields($data, $required)) {
+            $this->logHistory('product_faq', 'product_faq', (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Invalid AI response for product FAQ #%d.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        $translatedQuestion = $sourceQuestion === '' ? '' : trim((string) $data['question']);
+        $translatedAnswer = $sourceAnswer === '' ? '' : trim((string) (isset($data['answer']) ? $data['answer'] : ''));
+
+        ProductFaq::saveFaqTexts((int) $id, (int) $this->targetLangId, $translatedQuestion, $translatedAnswer);
+
+        $this->logHistory('product_faq', 'product_faq', (int) $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
+
+        return $this->nextResult(sprintf(
+            $this->module->l('Product FAQ #%d translated.', 'CkcTranslateJobRunner'),
+            (int) $id
+        ));
+    }
+
+    /**
+     * CKC Vianney — guide de mesure produit (HTML).
+     */
+    protected function runProductGuide()
+    {
+        if (!Module::isInstalled('productguide') || !Module::isEnabled('productguide')) {
+            return $this->finishedResult($this->module->l('productguide is not installed.', 'CkcTranslateJobRunner'));
+        }
+        if (!class_exists('ProductGuide', false)) {
+            require_once _PS_MODULE_DIR_ . 'productguide/productguide.php';
+        }
+        ProductGuide::ensureLangTable();
+
+        $filtered = $this->getFilteredSql('product_guide');
+        $id = $this->getNextId(
+            'ckctranslate_product_guide_ids',
+            'ckctranslate_product_guide_index',
+            $filtered['sql'],
+            $filtered['column']
+        );
+
+        if (!$id) {
+            return $this->finishedResult($this->module->l('Product guide translation finished.', 'CkcTranslateJobRunner'));
+        }
+
+        $sourceContent = trim(ProductGuide::getGuideContent((int) $id, (int) $this->sourceLangId));
+        if ($sourceContent === '') {
+            $this->logHistory('product_guide', 'product_guide', (int) $id, 'skipped', $this->module->l('No source content.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Product guide #%d has no source content, skipped.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        $targetContent = trim(ProductGuide::getGuideContent((int) $id, (int) $this->targetLangId));
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)
+            && $targetContent !== ''
+            && $targetContent !== $sourceContent
+        ) {
+            $this->logHistory('product_guide', 'product_guide', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Product guide #%d already translated, skipped.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        $systemPrompt = $this->buildSystemPrompt(
+            'You translate a product measuring guide (HTML) for a fencing e-commerce catalog. Preserve all HTML tags, attributes, images, lists and layout exactly. Keep a clear instructional tone. Do not invent dimensions, tools or steps. Leave the field empty if the source is empty.',
+            'product_guide'
+        );
+
+        $prompt = <<<PROMPT
+Return ONLY valid JSON:
+{
+  "guide_content": ""
+}
+
+Source HTML:
+{$sourceContent}
+PROMPT;
+
+        $data = $this->ai->requestJson($systemPrompt, $prompt);
+        if (!$this->isValidFields($data, array('guide_content'))) {
+            $this->logHistory('product_guide', 'product_guide', (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Invalid AI response for product guide #%d.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        ProductGuide::saveGuideContent((int) $id, (int) $this->targetLangId, trim((string) $data['guide_content']));
+
+        $this->logHistory('product_guide', 'product_guide', (int) $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
+
+        return $this->nextResult(sprintf(
+            $this->module->l('Product guide #%d translated.', 'CkcTranslateJobRunner'),
             (int) $id
         ));
     }

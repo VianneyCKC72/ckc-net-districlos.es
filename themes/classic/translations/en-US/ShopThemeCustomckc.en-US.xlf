@@ -82,6 +82,17 @@
       <trans-unit id="78"><source>Supprimer</source><target>Delete</target></trans-unit>
       <trans-unit id="79"><source>Statut :</source><target>Status:</target></trans-unit>
       <trans-unit id="80"><source>Supprimer ?</source><target>Delete?</target></trans-unit>
+      <trans-unit id="81"><source>Stock en magasin</source><target>In-store stock</target></trans-unit>
+      <trans-unit id="82"><source>Fin de série !</source><target>End of line!</target></trans-unit>
+      <trans-unit id="83"><source>Commandez vite, stock bas !</source><target>Order soon, low stock!</target></trans-unit>
+      <trans-unit id="84"><source>Victime de son succès</source><target>High demand</target></trans-unit>
+      <trans-unit id="85"><source>Ce produit n'est plus disponible</source><target>This product is no longer available</target></trans-unit>
+      <trans-unit id="86"><source>Produit épuisé</source><target>Out of stock</target></trans-unit>
+      <trans-unit id="87"><source>Disponible sous 10 jours</source><target>Available within 10 days</target></trans-unit>
+      <trans-unit id="88"><source>Changer de magasin</source><target>Change store</target></trans-unit>
+      <trans-unit id="89"><source>produit(s) en stock</source><target>product(s) in stock</target></trans-unit>
+      <trans-unit id="90"><source>%qty% en stock national</source><target>%qty% in stock nationwide</target></trans-unit>
+      <trans-unit id="91"><source>%qty% produits en stock</source><target>%qty% products in stock</target></trans-unit>
     </body>
   </file>
 </xliff>

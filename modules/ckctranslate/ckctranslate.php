@@ -47,6 +47,8 @@ class CkcTranslate extends Module
     public const CONF_PROMPT_ETS_CFU = 'CKCTRANSLATE_PROMPT_ETS_CFU';
     public const CONF_PROMPT_CKC_REALISATION = 'CKCTRANSLATE_PROMPT_CKC_REALISATION';
     public const CONF_PROMPT_RESPONSIVEGALLERY = 'CKCTRANSLATE_PROMPT_RESPONSIVEGALLERY';
+    public const CONF_PROMPT_PRODUCT_FAQ = 'CKCTRANSLATE_PROMPT_PRODUCT_FAQ';
+    public const CONF_PROMPT_PRODUCT_GUIDE = 'CKCTRANSLATE_PROMPT_PRODUCT_GUIDE';
 
     public const CONF_FILTER_TYPE = 'CKCTRANSLATE_FILTER_TYPE';
     public const CONF_FILTER_IDS = 'CKCTRANSLATE_FILTER_IDS';
@@ -56,7 +58,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.14.0';
+        $this->version = '2.16.0';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -162,6 +164,8 @@ class CkcTranslate extends Module
             && Configuration::updateValue(self::CONF_PROMPT_ETS_CFU, 'Translate Contact Form Ultimate (ets_cfu) texts: form titles, URL aliases, SEO, descriptions, field labels, placeholders, help texts, dropdown/radio options, submit buttons, thank-you pages and notification emails. Preserve HTML tags, attributes, links, emails, phone numbers and brand names. If a field is JSON, keep the JSON structure and translate string values only. Keep URL aliases slug-safe. Do not invent legal clauses.')
             && Configuration::updateValue(self::CONF_PROMPT_CKC_REALISATION, 'Translate customer project photo titles and image alt texts (ckc_realisation). Keep them short, natural and descriptive. Do not invent product names, locations or materials. Leave empty fields empty.')
             && Configuration::updateValue(self::CONF_PROMPT_RESPONSIVEGALLERY, 'Translate Responsive Gallery page title, descriptions and gallery titles (product family names like Grillage rigide). Keep labels short, catalog-like and consistent with existing fence vocabulary. Preserve HTML in descriptions. Do not invent product lines.')
+            && Configuration::updateValue(self::CONF_PROMPT_PRODUCT_FAQ, 'Translate product FAQ questions and answers for a fencing e-commerce catalog. Preserve all HTML tags, attributes and lists. Keep a clear, helpful customer-support tone. Do not invent technical specs, dimensions, warranties or certifications. Keep brand names and product terms consistent.')
+            && Configuration::updateValue(self::CONF_PROMPT_PRODUCT_GUIDE, 'Translate the product measuring guide HTML (how to measure a fence, posts, panels). Preserve all HTML tags, attributes, images, lists and layout. Keep a clear instructional tone. Do not invent dimensions, tools or steps. Keep brand and product names.')
             && Configuration::updateValue(self::CONF_FILTER_TYPE, 'all')
             && Configuration::updateValue(self::CONF_FILTER_IDS, '')
             && Configuration::updateValue(self::CONF_FILTER_CATEGORY_ID, 0);
@@ -205,6 +209,8 @@ class CkcTranslate extends Module
             && Configuration::deleteByName(self::CONF_PROMPT_ETS_CFU)
             && Configuration::deleteByName(self::CONF_PROMPT_CKC_REALISATION)
             && Configuration::deleteByName(self::CONF_PROMPT_RESPONSIVEGALLERY)
+            && Configuration::deleteByName(self::CONF_PROMPT_PRODUCT_FAQ)
+            && Configuration::deleteByName(self::CONF_PROMPT_PRODUCT_GUIDE)
             && Configuration::deleteByName(self::CONF_FILTER_TYPE)
             && Configuration::deleteByName(self::CONF_FILTER_IDS)
             && Configuration::deleteByName(self::CONF_FILTER_CATEGORY_ID);
