@@ -16,5 +16,5 @@ $iso = strtolower((string) ($_GET['isolang'] ?? ''));
 $isEn = $iso === 'en' || (bool) preg_match('#(?:^|/)en(?:/|$)#i', $path);
 
 if ($ckcDebug && $isEn) {
-    define('_PS_MODE_DEV_', true);
+    define('_PS_MODE_DEV_', false);
 }
