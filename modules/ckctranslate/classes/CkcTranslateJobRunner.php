@@ -1386,10 +1386,7 @@ PROMPT;
                 if (!Module::isInstalled('productfaq') || !Module::isEnabled('productfaq')) {
                     return array('sql' => '', 'column' => '');
                 }
-                if (!class_exists('ProductFaq', false)) {
-                    require_once _PS_MODULE_DIR_ . 'productfaq/productfaq.php';
-                }
-                ProductFaq::ensureLangTable();
+                $this->ensureProductFaqLangTable();
 
                 $defaultLang = (int) Configuration::get('PS_LANG_DEFAULT');
                 $sourceIsDefault = ((int) $this->sourceLangId === $defaultLang);
@@ -1435,10 +1432,7 @@ PROMPT;
                 if (!Module::isInstalled('productguide') || !Module::isEnabled('productguide')) {
                     return array('sql' => '', 'column' => '');
                 }
-                if (!class_exists('ProductGuide', false)) {
-                    require_once _PS_MODULE_DIR_ . 'productguide/productguide.php';
-                }
-                ProductGuide::ensureLangTable();
+                $this->ensureProductGuideLangTable();
 
                 $defaultLang = (int) Configuration::get('PS_LANG_DEFAULT');
                 $sourceIsDefault = ((int) $this->sourceLangId === $defaultLang);
@@ -3361,10 +3355,7 @@ PROMPT;
         if (!Module::isInstalled('productfaq') || !Module::isEnabled('productfaq')) {
             return $this->finishedResult($this->module->l('productfaq is not installed.', 'CkcTranslateJobRunner'));
         }
-        if (!class_exists('ProductFaq', false)) {
-            require_once _PS_MODULE_DIR_ . 'productfaq/productfaq.php';
-        }
-        ProductFaq::ensureLangTable();
+        $this->ensureProductFaqLangTable();
 
         $filtered = $this->getFilteredSql('product_faq');
         $id = $this->getNextId(
@@ -3378,7 +3369,7 @@ PROMPT;
             return $this->finishedResult($this->module->l('Product FAQ translation finished.', 'CkcTranslateJobRunner'));
         }
 
-        $source = ProductFaq::getFaqTexts((int) $id, (int) $this->sourceLangId);
+        $source = $this->getProductFaqTexts((int) $id, (int) $this->sourceLangId);
         $sourceQuestion = $source ? trim((string) $source['question']) : '';
         $sourceAnswer = $source ? trim((string) $source['answer']) : '';
 
@@ -3391,7 +3382,7 @@ PROMPT;
             ));
         }
 
-        $target = ProductFaq::getFaqTexts((int) $id, (int) $this->targetLangId);
+        $target = $this->getProductFaqTexts((int) $id, (int) $this->targetLangId);
         $targetQuestion = $target ? trim((string) $target['question']) : '';
         $targetAnswer = $target ? trim((string) $target['answer']) : '';
 
@@ -3448,7 +3439,7 @@ PROMPT;
         $translatedQuestion = $sourceQuestion === '' ? '' : trim((string) $data['question']);
         $translatedAnswer = $sourceAnswer === '' ? '' : trim((string) (isset($data['answer']) ? $data['answer'] : ''));
 
-        ProductFaq::saveFaqTexts((int) $id, (int) $this->targetLangId, $translatedQuestion, $translatedAnswer);
+        $this->saveProductFaqTexts((int) $id, (int) $this->targetLangId, $translatedQuestion, $translatedAnswer);
 
         $this->logHistory('product_faq', 'product_faq', (int) $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
 
@@ -3466,10 +3457,7 @@ PROMPT;
         if (!Module::isInstalled('productguide') || !Module::isEnabled('productguide')) {
             return $this->finishedResult($this->module->l('productguide is not installed.', 'CkcTranslateJobRunner'));
         }
-        if (!class_exists('ProductGuide', false)) {
-            require_once _PS_MODULE_DIR_ . 'productguide/productguide.php';
-        }
-        ProductGuide::ensureLangTable();
+        $this->ensureProductGuideLangTable();
 
         $filtered = $this->getFilteredSql('product_guide');
         $id = $this->getNextId(
@@ -3483,7 +3471,7 @@ PROMPT;
             return $this->finishedResult($this->module->l('Product guide translation finished.', 'CkcTranslateJobRunner'));
         }
 
-        $sourceContent = trim(ProductGuide::getGuideContent((int) $id, (int) $this->sourceLangId));
+        $sourceContent = trim($this->getProductGuideContent((int) $id, (int) $this->sourceLangId));
         if ($sourceContent === '') {
             $this->logHistory('product_guide', 'product_guide', (int) $id, 'skipped', $this->module->l('No source content.', 'CkcTranslateJobRunner'));
 
@@ -3493,7 +3481,7 @@ PROMPT;
             ));
         }
 
-        $targetContent = trim(ProductGuide::getGuideContent((int) $id, (int) $this->targetLangId));
+        $targetContent = trim($this->getProductGuideContent((int) $id, (int) $this->targetLangId));
         if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)
             && $targetContent !== ''
             && $targetContent !== $sourceContent
@@ -3531,7 +3519,7 @@ PROMPT;
             ));
         }
 
-        ProductGuide::saveGuideContent((int) $id, (int) $this->targetLangId, trim((string) $data['guide_content']));
+        $this->saveProductGuideContent((int) $id, (int) $this->targetLangId, trim((string) $data['guide_content']));
 
         $this->logHistory('product_guide', 'product_guide', (int) $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
 
@@ -3539,6 +3527,194 @@ PROMPT;
             $this->module->l('Product guide #%d translated.', 'CkcTranslateJobRunner'),
             (int) $id
         ));
+    }
+
+    /**
+     * CKC Vianney — autonome : productfaq 1.0.0 n'a pas ensureLangTable().
+     */
+    public static function ensureProductFaqLangTable()
+    {
+        return (bool) Db::getInstance()->execute(
+            'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'product_faq_lang` (
+            `id_faq` INT(11) NOT NULL,
+            `id_lang` INT UNSIGNED NOT NULL,
+            `question` TEXT NOT NULL,
+            `answer` TEXT NOT NULL,
+            PRIMARY KEY (`id_faq`, `id_lang`)
+        ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8mb4;'
+        );
+    }
+
+    /**
+     * @return array{question: string, answer: string}|false
+     */
+    public static function getProductFaqTexts($idFaq, $idLang)
+    {
+        self::ensureProductFaqLangTable();
+        $idFaq = (int) $idFaq;
+        $idLang = (int) $idLang;
+        $defaultLang = (int) Configuration::get('PS_LANG_DEFAULT');
+
+        if ($idLang === $defaultLang) {
+            return Db::getInstance()->getRow(
+                'SELECT question, answer FROM `' . _DB_PREFIX_ . 'product_faq` WHERE id = ' . (int) $idFaq
+            );
+        }
+
+        $row = Db::getInstance()->getRow(
+            'SELECT question, answer FROM `' . _DB_PREFIX_ . 'product_faq_lang`
+             WHERE id_faq = ' . (int) $idFaq . ' AND id_lang = ' . (int) $idLang
+        );
+        if ($row && trim((string) $row['question']) !== '') {
+            return $row;
+        }
+
+        return Db::getInstance()->getRow(
+            'SELECT question, answer FROM `' . _DB_PREFIX_ . 'product_faq` WHERE id = ' . (int) $idFaq
+        );
+    }
+
+    public static function getFrontProductFaqs($idProduct, $activeOnly = true, $idLang = null)
+    {
+        self::ensureProductFaqLangTable();
+        if ($idLang === null) {
+            $idLang = (int) Context::getContext()->language->id;
+        }
+
+        $sql = 'SELECT f.id, f.id_product, f.active,
+                COALESCE(NULLIF(TRIM(l.question), \'\'), f.question) AS question,
+                COALESCE(NULLIF(TRIM(l.answer), \'\'), f.answer) AS answer
+            FROM `' . _DB_PREFIX_ . 'product_faq` f
+            LEFT JOIN `' . _DB_PREFIX_ . 'product_faq_lang` l
+              ON l.id_faq = f.id AND l.id_lang = ' . (int) $idLang . '
+            WHERE f.id_product = ' . (int) $idProduct;
+
+        if ($activeOnly) {
+            $sql .= ' AND f.active = 1';
+        }
+
+        $rows = Db::getInstance()->executeS($sql);
+
+        return is_array($rows) ? $rows : array();
+    }
+
+    public static function saveProductFaqTexts($idFaq, $idLang, $question, $answer)
+    {
+        self::ensureProductFaqLangTable();
+        $idFaq = (int) $idFaq;
+        $idLang = (int) $idLang;
+        $defaultLang = (int) Configuration::get('PS_LANG_DEFAULT');
+        $data = array(
+            'question' => pSQL($question, true),
+            'answer' => pSQL($answer, true),
+        );
+
+        if ($idLang === $defaultLang) {
+            return Db::getInstance()->update('product_faq', $data, 'id = ' . (int) $idFaq);
+        }
+
+        $exists = (int) Db::getInstance()->getValue(
+            'SELECT id_faq FROM `' . _DB_PREFIX_ . 'product_faq_lang`
+             WHERE id_faq = ' . (int) $idFaq . ' AND id_lang = ' . (int) $idLang
+        );
+        if ($exists) {
+            return Db::getInstance()->update(
+                'product_faq_lang',
+                $data,
+                'id_faq = ' . (int) $idFaq . ' AND id_lang = ' . (int) $idLang
+            );
+        }
+
+        return Db::getInstance()->insert('product_faq_lang', array_merge($data, array(
+            'id_faq' => (int) $idFaq,
+            'id_lang' => (int) $idLang,
+        )));
+    }
+
+    public static function ensureProductGuideLangTable()
+    {
+        return (bool) Db::getInstance()->execute(
+            'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'product_guide_lang` (
+            `id_product` INT(11) NOT NULL,
+            `id_lang` INT UNSIGNED NOT NULL,
+            `guide_content` TEXT NOT NULL,
+            PRIMARY KEY (`id_product`, `id_lang`)
+        ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8mb4;'
+        );
+    }
+
+    public static function getProductGuideContent($idProduct, $idLang)
+    {
+        self::ensureProductGuideLangTable();
+        $idProduct = (int) $idProduct;
+        $idLang = (int) $idLang;
+        $defaultLang = (int) Configuration::get('PS_LANG_DEFAULT');
+
+        if ($idLang === $defaultLang) {
+            return (string) Db::getInstance()->getValue(
+                'SELECT guide_content FROM `' . _DB_PREFIX_ . 'product_guide` WHERE id_product = ' . (int) $idProduct
+            );
+        }
+
+        $row = (string) Db::getInstance()->getValue(
+            'SELECT guide_content FROM `' . _DB_PREFIX_ . 'product_guide_lang`
+             WHERE id_product = ' . (int) $idProduct . ' AND id_lang = ' . (int) $idLang
+        );
+        if (trim($row) !== '') {
+            return $row;
+        }
+
+        return (string) Db::getInstance()->getValue(
+            'SELECT guide_content FROM `' . _DB_PREFIX_ . 'product_guide` WHERE id_product = ' . (int) $idProduct
+        );
+    }
+
+    public static function getFrontProductGuideContent($idProduct, $idLang = null)
+    {
+        self::ensureProductGuideLangTable();
+        if ($idLang === null) {
+            $idLang = (int) Context::getContext()->language->id;
+        }
+
+        $row = Db::getInstance()->getRow(
+            'SELECT COALESCE(NULLIF(TRIM(l.guide_content), \'\'), g.guide_content) AS guide_content
+             FROM `' . _DB_PREFIX_ . 'product_guide` g
+             LEFT JOIN `' . _DB_PREFIX_ . 'product_guide_lang` l
+               ON l.id_product = g.id_product AND l.id_lang = ' . (int) $idLang . '
+             WHERE g.id_product = ' . (int) $idProduct
+        );
+
+        return $row ? (string) $row['guide_content'] : '';
+    }
+
+    public static function saveProductGuideContent($idProduct, $idLang, $content)
+    {
+        self::ensureProductGuideLangTable();
+        $idProduct = (int) $idProduct;
+        $idLang = (int) $idLang;
+        $defaultLang = (int) Configuration::get('PS_LANG_DEFAULT');
+        $data = array('guide_content' => pSQL($content, true));
+
+        if ($idLang === $defaultLang) {
+            return Db::getInstance()->update('product_guide', $data, 'id_product = ' . (int) $idProduct);
+        }
+
+        $exists = (int) Db::getInstance()->getValue(
+            'SELECT id_product FROM `' . _DB_PREFIX_ . 'product_guide_lang`
+             WHERE id_product = ' . (int) $idProduct . ' AND id_lang = ' . (int) $idLang
+        );
+        if ($exists) {
+            return Db::getInstance()->update(
+                'product_guide_lang',
+                $data,
+                'id_product = ' . (int) $idProduct . ' AND id_lang = ' . (int) $idLang
+            );
+        }
+
+        return Db::getInstance()->insert('product_guide_lang', array_merge($data, array(
+            'id_product' => (int) $idProduct,
+            'id_lang' => (int) $idLang,
+        )));
     }
 
     /**

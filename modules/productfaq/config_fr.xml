@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>productfaq</name>
+    <displayName><![CDATA[FAQ Produits]]></displayName>
+    <version><![CDATA[1.1.0]]></version>
+    <description><![CDATA[Ajoutez des FAQ personnalis&eacute;es &agrave; vos produits.]]></description>
+    <author><![CDATA[DISTRICLOS]]></author>
+    <tab><![CDATA[front_office_features]]></tab>
+	<confirmUninstall><![CDATA[Êtes-vous sûr de vouloir désinstaller ce module ?]]></confirmUninstall>
+    <is_configurable>0</is_configurable>
+    <need_instance>0</need_instance>
+</module>
