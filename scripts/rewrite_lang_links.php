@@ -94,8 +94,15 @@ final class CkcRewriteLangLinks
 
     private bool $apply = false;
 
-    public function __construct(private array $options)
+    /** @var array<string, mixed> */
+    private $options = [];
+
+    /**
+     * @param array<string, mixed> $options
+     */
+    public function __construct(array $options)
     {
+        $this->options = $options;
         $this->apply = !empty($options['apply']);
         $this->link = Context::getContext()->link;
         $this->dispatcher = Dispatcher::getInstance();
@@ -456,8 +463,8 @@ final class CkcRewriteLangLinks
     private function parseHref(string $href): ?array
     {
         $absolute = (bool) preg_match('#^https?://#i', $href);
-        $protoRelative = str_starts_with($href, '//');
-        $rootRelative = str_starts_with($href, '/');
+        $protoRelative = strpos($href, '//') === 0;
+        $rootRelative = strpos($href, '/') === 0;
         $legacy = (bool) preg_match('#(^|/)index\.php(\?|$)#i', $href);
 
         if (!$absolute && !$protoRelative && !$rootRelative && !$legacy) {
@@ -938,36 +945,50 @@ final class CkcRewriteLangLinks
         }
 
         $lang = $this->targetLangId;
+        $url = '';
         try {
-            $url = match ($resolved['type']) {
-                'product' => $this->link->getProductLink(
-                    $resolved['id'],
-                    null,
-                    null,
-                    null,
-                    $lang,
-                    $idShop,
-                    $resolved['ipa'] ?: null,
-                    false,
-                    false,
-                    false,
-                    [],
-                    false
-                ),
-                'category' => $this->link->getCategoryLink(
-                    $resolved['id'],
-                    null,
-                    $lang,
-                    $resolved['filters'] !== '' ? $resolved['filters'] : null,
-                    $idShop
-                ),
-                'cms' => $this->link->getCMSLink($resolved['id'], null, true, $lang, $idShop),
-                'cms_category' => $this->link->getCMSCategoryLink($resolved['id'], null, $lang, $idShop),
-                'manufacturer' => $this->link->getManufacturerLink($resolved['id'], null, $lang, $idShop),
-                'supplier' => $this->link->getSupplierLink($resolved['id'], null, $lang, $idShop),
-                'page' => $this->link->getPageLink($resolved['page'], true, $lang, null, false, $idShop),
-                default => '',
-            };
+            switch ($resolved['type']) {
+                case 'product':
+                    $url = $this->link->getProductLink(
+                        $resolved['id'],
+                        null,
+                        null,
+                        null,
+                        $lang,
+                        $idShop,
+                        $resolved['ipa'] ?: null,
+                        false,
+                        false,
+                        false,
+                        [],
+                        false
+                    );
+                    break;
+                case 'category':
+                    $url = $this->link->getCategoryLink(
+                        $resolved['id'],
+                        null,
+                        $lang,
+                        $resolved['filters'] !== '' ? $resolved['filters'] : null,
+                        $idShop
+                    );
+                    break;
+                case 'cms':
+                    $url = $this->link->getCMSLink($resolved['id'], null, true, $lang, $idShop);
+                    break;
+                case 'cms_category':
+                    $url = $this->link->getCMSCategoryLink($resolved['id'], null, $lang, $idShop);
+                    break;
+                case 'manufacturer':
+                    $url = $this->link->getManufacturerLink($resolved['id'], null, $lang, $idShop);
+                    break;
+                case 'supplier':
+                    $url = $this->link->getSupplierLink($resolved['id'], null, $lang, $idShop);
+                    break;
+                case 'page':
+                    $url = $this->link->getPageLink($resolved['page'], true, $lang, null, false, $idShop);
+                    break;
+            }
         } catch (Throwable $e) {
             $url = '';
         }
@@ -1033,12 +1054,12 @@ final class CkcRewriteLangLinks
 
     private function normalizeUrl(string $url): string
     {
-        $absolute = (bool) preg_match('#^https?://#i', $url) || str_starts_with($url, '//');
+        $absolute = (bool) preg_match('#^https?://#i', $url) || strpos($url, '//') === 0;
         $toParse = $url;
-        if (str_starts_with($url, '//')) {
+        if (strpos($url, '//') === 0) {
             $toParse = 'https:' . $url;
         } elseif (!$absolute) {
-            $toParse = 'https://internal.local' . (str_starts_with($url, '/') ? '' : '/') . $url;
+            $toParse = 'https://internal.local' . (strpos($url, '/') === 0 ? '' : '/') . $url;
         }
         $parsed = parse_url($toParse);
         if (!is_array($parsed)) {
