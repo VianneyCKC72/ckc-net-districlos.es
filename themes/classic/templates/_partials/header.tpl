@@ -21,7 +21,7 @@
             <!-- Logo Desktop (Visible seulement à partir de xl) -->
             <div class="d-none d-xl-block">
                 {if ($page.page_name == 'authentication' || $page.page_name == 'registration') && $pro.env == 1}
-                    <a href="/">
+                    <a href="{$urls.pages.index}">
                         <picture>
                             <source srcset="/img/DISTRICLOS_pro_logo.webp" type="image/webp">
                             <img class="desktop_only" width="180" src="/img/DISTRICLOS_pro_logo.png" alt="{$shop.name} Pro" />
@@ -39,7 +39,7 @@
 
             <!-- Logo Mobile (Visible seulement sur xs et sm) -->
             <div class="d-block d-xl-none">
-                <a href="{$urls.base_url}" class="d-flex{if isset($ckc_logo_src) && $ckc_logo_src} logos_container{/if}">
+                <a href="{$urls.pages.index}" class="d-flex{if isset($ckc_logo_src) && $ckc_logo_src} logos_container{/if}">
                     {if isset($ckc_logo_src) && $ckc_logo_src}
                         <img class="logo img-fluid" src="{$ckc_logo_src}" alt="{$shop.name}" width="140" loading="lazy">
                     {else}

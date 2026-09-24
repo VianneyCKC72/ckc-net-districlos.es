@@ -18,7 +18,7 @@
 
             <!-- Logo Mobile (Visible seulement sur xs et sm) -->
             <div class="d-block d-xl-none flex-grow-0 flex-shrink-0">
-                <a href="{$urls.base_url}" class="d-flex">
+                <a href="{$urls.pages.index}" class="d-flex">
                     <img class="logo img-fluid" src="/img/logo-mobile-pro.svg" alt="Districlos Pro" width="42" height="42"
                          loading="lazy">
                     <div style="width: 1px; height: 50px; background-color: #ccc;margin-left: 10px;" class="desktop_only">
@@ -36,7 +36,7 @@
 
                     <div class="displayTop">
                         {hook h='displayTop'}
-                        <a href="/avantages-pro" class="btn btn-primary d-none d-md-block">
+                        <a href="{$link->getModuleLink('ckc_espacepro', 'benefitsespacepro')|escape:'html':'UTF-8'}" class="btn btn-primary d-none d-md-block">
                             <div class="fs-6 font-weight-bold">
                                 {l s='Mes avantages' d='Shop.Theme.Customglobal'}
                             </div>

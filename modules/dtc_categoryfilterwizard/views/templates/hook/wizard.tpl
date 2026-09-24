@@ -19,12 +19,12 @@
         </div>
 
         <span class="dtc-wizard__step-count">
-      Étape <strong class="dtc-wizard__current-step">1</strong> / {$dtc_wizard_steps|count|intval}
+      {l s='Étape' d='Shop.Theme.Customdtc'} <strong class="dtc-wizard__current-step">1</strong> / {$dtc_wizard_steps|count|intval}
     </span>
 
         <button type="button" class="dtc-wizard__btn dtc-wizard__btn--reset-all"
-                aria-label="{l s='Réinitialiser tous les filtres' mod='dtc_categoryfilterwizard'}">
-            {l s='Réinitialiser' mod='dtc_categoryfilterwizard'}
+                aria-label="{l s='Réinitialiser tous les filtres' d='Shop.Theme.Customdtc'}">
+            {l s='Réinitialiser' d='Shop.Theme.Customdtc'}
         </button>
     </div>
 
@@ -67,27 +67,27 @@
                         </button>
                     {/if}
                     {foreachelse}
-                    <p class="dtc-wizard__empty">{l s='Aucune option disponible.' mod='dtc_categoryfilterwizard'}</p>
+                    <p class="dtc-wizard__empty">{l s='Aucune option disponible.' d='Shop.Theme.Customdtc'}</p>
                 {/foreach}
 
                 {* Nav dans le même flux flex que les options → se place juste après la dernière *}
                 <div class="dtc-wizard__nav">
                     {if $stepIdx > 0}
                         <button type="button" class="dtc-wizard__btn dtc-wizard__btn--prev">
-                            ← {l s='Retour' mod='dtc_categoryfilterwizard'}
+                            ← {l s='Retour' d='Shop.Theme.Customdtc'}
                         </button>
                     {/if}
                     {if !$step@last}
                         <button type="button"
                                 class="dtc-wizard__btn dtc-wizard__btn--next"
                                 disabled>
-                            {l s='Suivant' mod='dtc_categoryfilterwizard'} →
+                            {l s='Suivant' d='Shop.Theme.Customdtc'} →
                         </button>
                     {else}
                         <button type="button"
                                 class="dtc-wizard__btn dtc-wizard__btn--submit"
                                 disabled>
-                            {l s='Voir les produits' mod='dtc_categoryfilterwizard'}
+                            {l s='Voir les produits' d='Shop.Theme.Customdtc'}
                         </button>
                     {/if}
                 </div>

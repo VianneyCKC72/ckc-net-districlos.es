@@ -160,6 +160,9 @@
   {if $language.iso_code == 'en' && !Module::isEnabled('ckc_motive_i18n')}
     {include file='_partials/motive-en.tpl'}
   {/if}
+  {if Module::isEnabled('dealt')}
+    {include file='_partials/dealt-zip-i18n.tpl'}
+  {/if}
 {/block}
 
 {block name='hook_extra'}{/block}

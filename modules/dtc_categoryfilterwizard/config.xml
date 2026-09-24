@@ -2,7 +2,7 @@
 <module>
 	<name>dtc_categoryfilterwizard</name>
 	<displayName><![CDATA[Category Filter Wizard]]></displayName>
-	<version><![CDATA[1.0.0]]></version>
+	<version><![CDATA[1.1.0]]></version>
 	<description><![CDATA[Wizard de filtre interactif sur les pages catégorie (étapes, options, mapping produits).]]></description>
 	<author><![CDATA[DISTRICLOS]]></author>
 	<tab><![CDATA[front_office_features]]></tab>
