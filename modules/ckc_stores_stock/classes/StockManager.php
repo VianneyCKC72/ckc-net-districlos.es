@@ -240,7 +240,7 @@ class StockManager extends Module
             }
         }
 
-        // i18n: Shop.Theme.Customckc (pas de test iso_code, $this->l() est faux ici)
+        // i18n : fichiers translations/{iso}.php du module (en + gb)
         $i18n = [
             'stock_in_store' => $this->transUi('Stock en magasin'),
             'fin_de_serie' => $this->transUi('Fin de série !'),
@@ -640,24 +640,26 @@ class StockManager extends Module
     }
 
     /**
-     * CKC Vianney — traductions FO (thème + repli EN si le catalogue XLF n'est pas indexé).
+     * CKC Vianney — traductions FO du module (en.php / gb.php).
+     * Le catalogue thème ne s'applique pas ici : StockManager n'est pas le module nommé.
      *
      * @param array<string, string|int> $params
      */
     protected function transUi($string, array $params = [])
     {
         $string = (string) $string;
-        $context = Context::getContext();
-        $iso = $context->language ? $context->language->iso_code : 'fr';
-        $locale = $context->language ? $context->language->locale : null;
+        $translated = Translate::getModuleTranslation(
+            'ckc_stores_stock',
+            $string,
+            'stockmanager',
+            null,
+            false,
+            null,
+            false,
+            false
+        );
 
-        $translator = $context->getTranslator();
-        $translated = $string;
-        if ($translator) {
-            $translated = $translator->trans($string, $params, 'Shop.Theme.Customckc', $locale);
-        }
-
-        if ($iso === 'en' && $translated === $string) {
+        if ($this->isEnglishUi() && $translated === $string) {
             $en = [
                 'Stock en magasin' => 'In-store stock',
                 'Fin de série !' => 'End of line!',
@@ -679,5 +681,18 @@ class StockManager extends Module
         }
 
         return strtr($translated, $params);
+    }
+
+    protected function isEnglishUi(): bool
+    {
+        $language = Context::getContext()->language;
+        if (!$language) {
+            return false;
+        }
+
+        $iso = strtolower((string) $language->iso_code);
+        $locale = strtolower((string) $language->locale);
+
+        return in_array($iso, ['en', 'gb', 'us'], true) || strpos($locale, 'en') === 0;
     }
 }

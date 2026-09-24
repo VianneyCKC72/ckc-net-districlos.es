@@ -156,6 +156,10 @@
 
 {block name='hook_header'}
   {$HOOK_HEADER nofilter}
+  {* CKC Vianney — Motive n'injecte le layer qu'en FR ; fallback EN si ckc_motive_i18n pas encore installé *}
+  {if $language.iso_code == 'en' && !Module::isEnabled('ckc_motive_i18n')}
+    {include file='_partials/motive-en.tpl'}
+  {/if}
 {/block}
 
 {block name='hook_extra'}{/block}
