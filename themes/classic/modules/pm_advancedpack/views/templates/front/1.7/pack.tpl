@@ -379,7 +379,8 @@
                                             <div class="select_wrap">
                                                 <div class="clearfix dis_flex">
                                                     <span class="input-group-btn-vertical dis_flex w-100">
-                                                        <input type="number" name="qty_bis" id="quantity_ml" value="" class="form-control" style="display: block;" min="1" step="1" placeholder="{l s='Renseignez votre longueur' d='Shop.Theme.Custommodules'}" required>
+                                                        {l s='Renseignez votre longueur' d='Shop.Theme.Custommodules' assign='quantityMlPlaceholder'}
+                                                        <input type="number" name="qty_bis" id="quantity_ml" value="" class="form-control" style="display: block;" min="1" step="1" placeholder="{$quantityMlPlaceholder|escape:'html':'UTF-8'}" required>
                                                     </span>
                                                 </div>
                                             </div>
