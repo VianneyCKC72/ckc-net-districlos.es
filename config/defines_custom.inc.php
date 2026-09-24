@@ -1,36 +1,19 @@
 <?php
 /**
- * CKC Vianney — debug PHP si ?ckc=1 (avant le #) ou cookie ckc_debug.
+ * CKC Vianney — debug PHP uniquement si ?ckc=1 (avant le #).
  *
  * Bon :  /produit.html?ckc=1
- * Bon :  /produit.html?ckc=1#/123-attr
- * Mauvais : /produit.html#/123-attr?ckc=1  ← le serveur ne reçoit rien
+ * Mauvais : /produit.html#/123-attr?ckc=1
  */
-if (!function_exists('ckc_request_wants_debug')) {
-    function ckc_request_wants_debug()
-    {
-        if (isset($_GET['ckc']) && (string) $_GET['ckc'] === '1') {
-            return true;
-        }
-        if (!empty($_SERVER['QUERY_STRING']) && preg_match('/(?:^|&)ckc=1(?:&|$)/', $_SERVER['QUERY_STRING'])) {
-            return true;
-        }
-        if (!empty($_COOKIE['ckc_debug']) && (string) $_COOKIE['ckc_debug'] === '1') {
-            return true;
-        }
+$ckcDebug = (isset($_GET['ckc']) && (string) $_GET['ckc'] === '1')
+    || (!empty($_SERVER['QUERY_STRING']) && preg_match('/(?:^|&)ckc=1(?:&|$)/', $_SERVER['QUERY_STRING']));
 
-        return false;
-    }
+if (!empty($_COOKIE['ckc_debug'])) {
+    @setcookie('ckc_debug', '', time() - 3600, '/');
 }
-
-$ckcDebug = ckc_request_wants_debug();
 
 if ($ckcDebug && !defined('CKC_DEBUG')) {
     define('CKC_DEBUG', true);
-}
-
-if ($ckcDebug && isset($_GET['ckc']) && (string) $_GET['ckc'] === '1') {
-    @setcookie('ckc_debug', '1', time() + 3600, '/');
 }
 
 if ($ckcDebug && !defined('_PS_MODE_DEV_')) {
