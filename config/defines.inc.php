@@ -27,23 +27,28 @@
 //@ini_set('display_startup_errors', '1');
 //error_reporting(E_ALL);
 
-/* CKC Vianney — debug conditionnel (?ckc=1) */
-if (is_file(__DIR__ . '/defines_custom.inc.php')) {
-    include_once __DIR__ . '/defines_custom.inc.php';
+$authorizedDebugIps = array('91.172.226.76'); // Ajoute d'autres IP ici si besoin
+$remote_addr = [];
+
+if(!empty($_SERVER['REMOTE_ADDR'])) {
+    $remote_addr = $_SERVER['REMOTE_ADDR'];
 }
-
-$ckcDebug = (defined('CKC_DEBUG') && CKC_DEBUG === true)
-    || (isset($_GET['ckc']) && (string) $_GET['ckc'] === '1');
-
-if (!defined('_PS_MODE_DEV_')) {
-    define('_PS_MODE_DEV_', false);
+/* Debug only */
+if (in_array($remote_addr, $authorizedDebugIps)) {
+    if (!defined('_PS_MODE_DEV_')) {
+        define('_PS_MODE_DEV_', false);
+    }
+} else {
+    if (!defined('_PS_MODE_DEV_')) {
+        define('_PS_MODE_DEV_', false);
+    }
 }
 
 /* Compatibility warning */
 if (!defined('_PS_DISPLAY_COMPATIBILITY_WARNING_')) {
-    define('_PS_DISPLAY_COMPATIBILITY_WARNING_', false);
+define('_PS_DISPLAY_COMPATIBILITY_WARNING_', false);
 }
-if (_PS_MODE_DEV_ === true && $ckcDebug) {
+if (_PS_MODE_DEV_ === true && !in_array($remote_addr, array('91.134.17.217', '178.33.249.38'))) {
     $errorReportingLevel = E_ALL | E_STRICT;
     if (_PS_DISPLAY_COMPATIBILITY_WARNING_ === false) {
         $errorReportingLevel = $errorReportingLevel & ~E_DEPRECATED & ~E_USER_DEPRECATED;
