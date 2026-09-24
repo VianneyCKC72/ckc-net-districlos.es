@@ -36,6 +36,10 @@
       <trans-unit id="32"><source>Outils</source><target>Tools</target></trans-unit>
       <trans-unit id="33"><source>Fermer</source><target>Close</target></trans-unit>
       <trans-unit id="34"><source>Je configure[1]ma clôture</source><target>Configure[1]my fence</target></trans-unit>
+      <trans-unit id="35"><source>TTC</source><target>incl. tax</target></trans-unit>
+      <trans-unit id="36"><source>Prix total</source><target>Total price</target></trans-unit>
+      <trans-unit id="37"><source>Prix au mL</source><target>Price per lin. m</target></trans-unit>
+      <trans-unit id="38" resname="Filtres"><source>Filtres</source><target>Filters</target></trans-unit>
     </body>
   </file>
 </xliff>

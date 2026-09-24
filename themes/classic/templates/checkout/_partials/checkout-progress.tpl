@@ -14,9 +14,13 @@
         data-step="{$step.identifier|escape:'html':'UTF-8'}"
       >
         {if $step.identifier == 'checkout-personal-information-step'}
-          {assign var='progress_label' value={l s='Informations' d='Shop.Theme.Customcheckout'}}
+          {assign var='progress_label' value={l s='Vos informations' d='Shop.Theme.Customcheckout'}}
+        {elseif $step.identifier == 'checkout-addresses-step'}
+          {assign var='progress_label' value={l s='Vos adresses' d='Shop.Theme.Customcheckout'}}
         {elseif $step.identifier == 'checkout-delivery-step'}
-          {assign var='progress_label' value={l s='Livraison' d='Shop.Theme.Customcheckout'}}
+          {assign var='progress_label' value={l s='Votre livraison' d='Shop.Theme.Customcheckout'}}
+        {elseif $step.identifier == 'checkout-payment-step'}
+          {assign var='progress_label' value={l s='Votre paiement' d='Shop.Theme.Customcheckout'}}
         {else}
           {assign var='progress_label' value=$step.title}
         {/if}

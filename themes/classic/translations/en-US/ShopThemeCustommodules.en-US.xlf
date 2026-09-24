@@ -177,6 +177,7 @@
       <trans-unit id="173"><source>acompte</source><target>deposit</target></trans-unit>
       <trans-unit id="174"><source>Possibilité de payer un acompte de</source><target>Option to pay a deposit of</target></trans-unit>
       <trans-unit id="175"><source>et le reste avant la livraison</source><target>and the rest before delivery</target></trans-unit>
+      <trans-unit id="176"><source>Vous pouvez payer en utilisant le paiement anticipé. Total dû est :</source><target>You can pay using a deposit. Amount due:</target></trans-unit>
     </body>
   </file>
 </xliff>
