@@ -47,44 +47,6 @@ export default function initCheckoutNav() {
             }
         });
 
-        // Mise à jour du texte "Connectez-vous" ou "Créez un compte"
-        function updateAccountSwitch() {
-            let activeTab = $(".tab-pane.active").attr("id");
-            let switchContainer = $(".account-switch");
-
-            if (activeTab === "checkout-login-form") {
-                switchContainer.html(`
-                <h2 class="sous-titre">Connexion</h2>
-                <p>
-                    Pas encore de compte ?
-                    <a href="#checkout-guest-form" data-toggle="tab" role="tab" aria-controls="checkout-guest-form">
-                        Créez un compte →
-                    </a>
-                </p>
-            `);
-            } else {
-                switchContainer.html(`
-                <h2 class="sous-titre">Créer un compte</h2>
-                <p>
-                    Vous avez déjà un compte ?
-                    <a href="#checkout-login-form" data-toggle="tab" role="tab" aria-controls="checkout-login-form">
-                        Connectez-vous →
-                    </a>
-                </p>
-            `);
-            }
-
-            $('a[data-toggle="tab"]').off("click").on("click", function () {
-                setTimeout(updateAccountSwitch, 300);
-            });
-        }
-
-        $('a[data-toggle="tab"]').on("shown.bs.tab", function () {
-            updateAccountSwitch();
-        });
-
-        updateAccountSwitch();
-
         if (typeof default_address_id != 'undefined') {
             $("article.address-item").each(function () {
                 var isDefault = $(this).find("input").val() == default_address_id;

@@ -20,11 +20,20 @@
     }
   }
   .swiper__featured-products {
+    overflow: hidden;
     .swiper-slide {
       height: auto;
+      min-width: 0;
       .js-product.product {
         height: 100%;
       }
+    }
+    .product-title {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 44px;
     }
   }
   .swiper-pagination {
