@@ -440,7 +440,8 @@ final class CkcRewriteLangLinks
         }
 
         if ($resolved['type'] === 'product') {
-            $resolved['id'] = $this->followProductRedirect((int) $resolved['id'], $shopId);
+            $fromUrl = $this->productIdFromUrlRedirect($parts['path'], $shopId);
+            $resolved['id'] = $this->followProductRedirect($fromUrl ?: (int) $resolved['id'], $shopId);
         }
 
         $absolute = $this->buildAbsolute($resolved, $shopId);
@@ -935,6 +936,51 @@ final class CkcRewriteLangLinks
         }
 
         return $slugs;
+    }
+
+    /**
+     * Ancienne URL enregistrée dans ets_awu_redirect (le produit source peut être en 404).
+     */
+    private function productIdFromUrlRedirect(string $path, int $idShop): int
+    {
+        if (!preg_match('#(\d+-[_a-zA-Z0-9\pL\-]+\.html)#u', $path, $match)) {
+            return 0;
+        }
+        $table = $this->redirectTable();
+        if ($table === '') {
+            return 0;
+        }
+        $row = Db::getInstance()->getRow(
+            'SELECT target FROM `' . bqSQL($table) . '`
+            WHERE active = 1 AND id_shop = ' . (int) $idShop . '
+            AND url LIKE \'%/' . pSQL($match[1]) . '\'
+            ORDER BY id_ets_awu_redirect DESC'
+        );
+        if (!is_array($row) || empty($row['target'])) {
+            return 0;
+        }
+        if (!preg_match('#/(\d+)-[_a-zA-Z0-9\pL\-]+\.html#u', (string) $row['target'], $target)) {
+            return 0;
+        }
+        $id = (int) $target[1];
+
+        return $id > 0 ? $id : 0;
+    }
+
+    private function redirectTable(): string
+    {
+        static $table = null;
+        if ($table !== null) {
+            return $table;
+        }
+        $name = _DB_PREFIX_ . 'ets_awu_redirect';
+        $found = Db::getInstance()->getValue(
+            'SELECT TABLE_NAME FROM information_schema.TABLES
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = \'' . pSQL($name) . '\''
+        );
+        $table = $found ? $name : '';
+
+        return $table;
     }
 
     /**
