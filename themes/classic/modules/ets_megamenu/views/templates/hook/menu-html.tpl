@@ -19,10 +19,10 @@
 *  International Registered Trademark & Property of ETS-Soft
 *}
 {if isset($menus) && $menus}
-{if (isset($ckc_is_english) && $ckc_is_english) || (isset($language.iso_code) && $language.iso_code == 'en')}
-    {assign var='ckc_mm_logo' value='/img/logo_multilingue.png'}
-    {assign var='ckc_mm_logo_text' value='/img/logo_multilingue.png'}
-    {assign var='ckc_mm_logo_white' value='/img/logo_multilingue.png'}
+{if isset($ckc_logo_src) && $ckc_logo_src}
+    {assign var='ckc_mm_logo' value=$ckc_logo_src}
+    {assign var='ckc_mm_logo_text' value=$ckc_logo_src}
+    {assign var='ckc_mm_logo_white' value=$ckc_logo_src}
 {else}
     {assign var='ckc_mm_logo' value='/img/logo-mobile.svg'}
     {assign var='ckc_mm_logo_text' value='/img/logo-1739869573.svg'}

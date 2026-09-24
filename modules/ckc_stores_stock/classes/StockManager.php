@@ -640,17 +640,44 @@ class StockManager extends Module
     }
 
     /**
-     * CKC Vianney — traductions FO via le thème (StockManager n'a pas de domaine module fiable).
+     * CKC Vianney — traductions FO (thème + repli EN si le catalogue XLF n'est pas indexé).
      *
      * @param array<string, string|int> $params
      */
     protected function transUi($string, array $params = [])
     {
-        $translator = Context::getContext()->getTranslator();
-        if (!$translator) {
-            return strtr((string) $string, $params);
+        $string = (string) $string;
+        $context = Context::getContext();
+        $iso = $context->language ? $context->language->iso_code : 'fr';
+        $locale = $context->language ? $context->language->locale : null;
+
+        $translator = $context->getTranslator();
+        $translated = $string;
+        if ($translator) {
+            $translated = $translator->trans($string, $params, 'Shop.Theme.Customckc', $locale);
         }
 
-        return $translator->trans((string) $string, $params, 'Shop.Theme.Customckc');
+        if ($iso === 'en' && $translated === $string) {
+            $en = [
+                'Stock en magasin' => 'In-store stock',
+                'Fin de série !' => 'End of line!',
+                'Commandez vite, stock bas !' => 'Order soon, low stock!',
+                'Victime de son succès' => 'High demand',
+                'Ce produit n\'est plus disponible' => 'This product is no longer available',
+                'Produit épuisé' => 'Out of stock',
+                'En stock' => 'In stock',
+                'Arrivage en cours' => 'Incoming shipment',
+                'Disponible sous 10 jours' => 'Available within 10 days',
+                'Changer de magasin' => 'Change store',
+                'produit(s) en stock' => 'product(s) in stock',
+                '%qty% en stock national' => '%qty% in stock nationwide',
+                '%qty% produits en stock' => '%qty% products in stock',
+            ];
+            if (isset($en[$string])) {
+                $translated = $en[$string];
+            }
+        }
+
+        return strtr($translated, $params);
     }
 }

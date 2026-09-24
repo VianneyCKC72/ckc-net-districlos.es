@@ -14,7 +14,8 @@
 <body id="{$page.page_name}" class="{$page.body_classes|classnames}
              {if ($page.page_name == 'authentication' && $pro.env) || $pro.env} espace_pro{/if}
              {if $page.page_name == 'registration' && $pro.env} registration-pro{/if}
-             {$pro.suffix}">
+             {$pro.suffix}"
+      data-filters-label="{l s='Filtres' d='Shop.Theme.Customcatalog'}">
 
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T3HJWLD" height="0" width="0"
             style="display:none;visibility:hidden"></iframe></noscript>
@@ -104,6 +105,7 @@
     {block name='javascript_bottom'}
         {include file="_partials/password-policy-template.tpl"}
         {include file="_partials/javascript.tpl" javascript=$javascript.bottom}
+        {include file="_partials/skeepers-avis-i18n.tpl"}
         <script async type="text/javascript" src="/themes/classic/assets/js/lib/crypto-js.min.js"></script>
         <script async type="text/javascript" src="/themes/classic/assets/js/lib/jquery.inview.min.js"></script>
         <script async src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>

@@ -9,7 +9,7 @@
 {extends file='page.tpl'}
 {block name="page_content"}
     {if isset($RG_TITLE_PAGE) && !empty($RG_TITLE_PAGE)}
-        <h1 class="h1">{$RG_TITLE_PAGE}</h1>
+        <h1 class="h1">{l s='Vos réalisations' d='Shop.Theme.Customglobal'}</h1>
     {/if}
     {if isset($RG_DESCRIPTION_PAGE) && !empty($RG_DESCRIPTION_PAGE)}
         <div class="rte">{$RG_DESCRIPTION_PAGE nofilter}</div> {* cannot be escape *}

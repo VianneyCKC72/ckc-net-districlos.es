@@ -1,6 +1,12 @@
 {assign var="faq_module" value=Module::getInstanceByName('productfaq')}
 {assign var="product_id" value=$smarty.get.id_product|default:$product.id|default:0}
-{assign var="faq_faqs" value=$faq_module->getFaqsByProduct($product_id, true)}
+{if Module::isInstalled('ckctranslate') && Module::isEnabled('ckctranslate')}
+    {assign var="faq_faqs" value=CkcTranslate::getFrontProductFaqs($product_id, true)}
+{elseif $faq_module}
+    {assign var="faq_faqs" value=$faq_module->getFaqsByProduct($product_id, true)}
+{else}
+    {assign var="faq_faqs" value=[]}
+{/if}
 
 <link rel="stylesheet" href="{$faq_module->getPathUri()}views/css/front.css" type="text/css" media="all">
 

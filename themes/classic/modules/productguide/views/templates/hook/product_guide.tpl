@@ -18,7 +18,14 @@
         </button>
     </div>
     <div class="guide-content">
-        {$guide_content nofilter}
+        {assign var="guide_html" value=$guide_content}
+        {if Module::isInstalled('ckctranslate') && Module::isEnabled('ckctranslate')}
+            {assign var="translated_guide" value=CkcTranslate::getFrontProductGuideContent($product.id|default:$smarty.get.id_product|default:0)}
+            {if $translated_guide}
+                {assign var="guide_html" value=$translated_guide}
+            {/if}
+        {/if}
+        {$guide_html nofilter}
     </div>
 </div>
 
