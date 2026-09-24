@@ -473,6 +473,8 @@ modules/ckc_realisation/uploads/2/
 /demande-encours/
 /ekonsilio/
 /ekonsilio/**/*.csv
+modules/dtc_stats_general/data/export/
+!modules/dtc_stats_general/data/export/index.php
 /diag_*.php
 override/classes/cache/
 override/classes/db/
