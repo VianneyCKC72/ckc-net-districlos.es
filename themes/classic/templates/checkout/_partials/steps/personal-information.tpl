@@ -43,8 +43,8 @@
     </div>
 
   {else}
-    <div class="account-switch texte-left">
-      <div class="js-account-switch-login"{if !$show_login_form} hidden{/if}>
+    <div class="account-switch texte-left{if $show_login_form} -login{else} -register{/if}">
+      <div class="js-account-switch-login">
         <h2 class="sous-titre">{l s='Connexion' d='Shop.Theme.Customcheckout'}</h2>
         <p>
           {l s='Pas encore de compte ?' d='Shop.Theme.Customcheckout'}
@@ -53,7 +53,7 @@
           </a>
         </p>
       </div>
-      <div class="js-account-switch-register"{if $show_login_form} hidden{/if}>
+      <div class="js-account-switch-register">
         <h2 class="sous-titre">{l s='Créer un compte' d='Shop.Theme.Customcheckout'}</h2>
         <p>
           {l s='Vous avez déjà un compte ?' d='Shop.Theme.Customcheckout'}

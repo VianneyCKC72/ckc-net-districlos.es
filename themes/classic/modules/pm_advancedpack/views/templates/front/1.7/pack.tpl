@@ -408,7 +408,7 @@
                                         {if isset($packHasMlDiscountTiers) && $packHasMlDiscountTiers && isset($packMlDiscountTiers) && $packMlDiscountTiers|@count > 0}
                                         <div class="ap5-ml-degressive" role="region" aria-label="{l s='Prix dégressifs' d='Shop.Theme.Custommodules'}">
                                             <div class="ap5-ml-degressive__cta">
-                                                <strong><span class="ap5-ml-degressive__cta-line">{l s='Prix' d='Shop.Theme.Custommodules'}</span><span class="ap5-ml-degressive__cta-line">{l s='dégressifs !' d='Shop.Theme.Custommodules'}</span></strong>
+                                                <strong>{l s='[1]Prix[/1][2]dégressifs ![/2]' d='Shop.Theme.Custommodules' sprintf=['[1]' => '<span class="ap5-ml-degressive__cta-line">', '[/1]' => '</span>', '[2]' => '<span class="ap5-ml-degressive__cta-line">', '[/2]' => '</span>']}</strong>
                                             </div>
                                             <div class="ap5-ml-degressive__scroll">
                                                 <table class="ap5-ml-degressive__table">
@@ -416,11 +416,13 @@
                                                         <tr>
                                                             <th scope="row">{l s='Nombre de mL' d='Shop.Theme.Custommodules'}</th>
                                                             {foreach from=$packMlDiscountTiers item=tier}
+                                                                {capture assign='tier_from'}{$tier.from|string_format:"%g"}{/capture}
                                                                 <td>
                                                                     {if $tier.to === null || $tier.to === ''}
-                                                                        +{$tier.from|string_format:"%g"} mL
+                                                                        {l s='+%from% mL' d='Shop.Theme.Custommodules' sprintf=['%from%' => $tier_from]}
                                                                     {else}
-                                                                        {$tier.from|string_format:"%g"} {l s='à' d='Shop.Theme.Custommodules'} {$tier.to|string_format:"%g"} mL
+                                                                        {capture assign='tier_to'}{$tier.to|string_format:"%g"}{/capture}
+                                                                        {l s='%from% à %to% mL' d='Shop.Theme.Custommodules' sprintf=['%from%' => $tier_from, '%to%' => $tier_to]}
                                                                     {/if}
                                                                 </td>
                                                             {/foreach}
