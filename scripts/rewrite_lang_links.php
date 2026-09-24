@@ -938,26 +938,31 @@ final class CkcRewriteLangLinks
     }
 
     /**
-     * Produit redirigé (301/302 vers un autre produit) : on écrit l’URL de la cible.
+     * Produit inactif redirigé vers un autre produit : on écrit l’URL de la cible.
+     * Même règle que ProductController (type « default » = config boutique).
      */
     private function followProductRedirect(int $idProduct, int $idShop): int
     {
         $current = $idProduct;
         $seen = [];
+        $defaultType = (string) Configuration::get('PS_PRODUCT_REDIRECTION_DEFAULT');
         for ($i = 0; $i < 5; ++$i) {
             if ($current <= 0 || isset($seen[$current])) {
                 break;
             }
             $seen[$current] = true;
             $row = Db::getInstance()->getRow(
-                'SELECT redirect_type, id_type_redirected
+                'SELECT active, redirect_type, id_type_redirected
                 FROM `' . _DB_PREFIX_ . 'product_shop`
                 WHERE id_product = ' . (int) $current . ' AND id_shop = ' . (int) $idShop
             );
-            if (!is_array($row)) {
+            if (!is_array($row) || (int) $row['active'] === 1) {
                 break;
             }
             $type = (string) $row['redirect_type'];
+            if ($type === '' || $type === 'default') {
+                $type = $defaultType;
+            }
             $target = (int) $row['id_type_redirected'];
             if (($type === '301-product' || $type === '302-product') && $target > 0 && $target !== $current) {
                 $current = $target;
