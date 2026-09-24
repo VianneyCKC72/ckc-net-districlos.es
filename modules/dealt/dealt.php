@@ -30,7 +30,7 @@ class Dealt extends Module
     {
         $this->name = 'dealt';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.1';
+        $this->version = '1.0.3';
         $this->author = 'Agence CKC NET';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -200,7 +200,23 @@ class Dealt extends Module
 
     public function hookDisplayHeader()
     {
-        if (static::isPreprod()) return;
+        $translator = $this->context->getTranslator();
+        $domain = 'Shop.Theme.Customdealt';
+        Media::addJsDef([
+            'dealtServiceUrl' => $this->context->link->getCMSLink(656),
+            'dealtZipI18n' => [
+                'unavailable' => $translator->trans('Service indisponible à cette adresse.', [], $domain),
+                'empty' => $translator->trans('Veuillez saisir un code postal.', [], $domain),
+                'missingInfo' => $translator->trans('Informations manquantes.', [], $domain),
+                'missingConfig' => $translator->trans('Configuration manquante.', [], $domain),
+                'checking' => $translator->trans('Vérification en cours...', [], $domain),
+                'error' => $translator->trans('Erreur lors de la vérification.', [], $domain),
+            ],
+        ]);
+
+        if (static::isPreprod()) {
+            return;
+        }
         $this->context->controller->registerStylesheet(
             'module-dealt-css',
             'modules/' . $this->name . '/views/assets/css/main.css',

@@ -8,7 +8,7 @@
             <li>{l s='Les travaux sont réalisés par un professionnel' d='Shop.Theme.Customdealt'}</li>
         </ul>
         <p>{l s='[1]Un formulaire TVA simplifié sera à fournir.[/1]' sprintf=['[1]'=>'<strong>','[/1]'=>'</strong>'] d='Shop.Theme.Customdealt'}</p>
-        <a href="/content/21-formulaire-tva-reduite" target="_blank" class="btn btn-secondary btn-sm mt-2">
+        <a href="{$link->getCMSLink(21)|escape:'html':'UTF-8'}" target="_blank" class="btn btn-secondary btn-sm mt-2">
             {l s='Télécharger le formulaire' d='Shop.Theme.Customdealt'}
         </a>
     </div>

@@ -9,6 +9,13 @@ $(function () {
         return val === true || val === 1 || val === '1' || (typeof val === 'string' && val.toLowerCase() === 'true');
     }
 
+    function dealtZipText(key, fallback) {
+        if (typeof window.dealtZipI18n === 'object' && window.dealtZipI18n && window.dealtZipI18n[key]) {
+            return window.dealtZipI18n[key];
+        }
+        return fallback;
+    }
+
     // ---------- Service modal (eligibility)
     function moveServiceModalToBody($m) {
         if (!$m || !$m.length) return;
@@ -112,21 +119,21 @@ $(function () {
         /*console.log(window.dealt_check_availability_url)*/
 
         if (!zipcode) {
-            $res.css('color', 'red').text('Veuillez saisir un code postal.').show();
+            $res.css('color', 'red').text(dealtZipText('empty', 'Veuillez saisir un code postal.')).show();
             $input.focus();
             return;
         }
         if (!offerId || !storeId) {
-            $res.css('color', 'red').text('Informations manquantes.').show();
+            $res.css('color', 'red').text(dealtZipText('missingInfo', 'Informations manquantes.')).show();
             return;
         }
         if (!window.dealt_check_availability_url) {
-            $res.css('color', 'red').text('Configuration manquante.').show();
+            $res.css('color', 'red').text(dealtZipText('missingConfig', 'Configuration manquante.')).show();
             return;
         }
 
         $btn.addClass('is-loading').attr('aria-busy', 'true').css('pointer-events', 'none');
-        $res.css('color', '#333').text('Vérification en cours...').show();
+        $res.css('color', '#333').text(dealtZipText('checking', 'Vérification en cours...')).show();
 
         $.ajax({
             url: dealt_check_availability_url,
@@ -146,12 +153,12 @@ $(function () {
                     $(".dealt-conditions-list").append(resp.dealt_expert_requirements_description)
 
                 } else {
-                    $res.css('color', 'red').text('Service indisponible à cette adresse.').show();
+                    $res.css('color', 'red').text(dealtZipText('unavailable', 'Service indisponible à cette adresse.')).show();
                     $retry.hide();
                 }
             },
             error: function () {
-                $res.css('color', 'red').text('Erreur lors de la vérification.').show();
+                $res.css('color', 'red').text(dealtZipText('error', 'Erreur lors de la vérification.')).show();
                 $retry.hide();
             },
             complete: function () {
