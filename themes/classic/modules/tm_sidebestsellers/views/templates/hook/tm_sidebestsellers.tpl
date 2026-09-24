@@ -94,7 +94,7 @@
                                 {/if}
                                 {/if}
                             {/block}
-                            <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
+                            <div class="skeepers_product__stars" data-product-id="{$product.id}" data-locale="{$language.locale|replace:'-':'_'}"></div>
                         </div>
                     </div>
                 </div>

@@ -36,10 +36,11 @@ class ProductController extends ProductControllerCore
     {
         $product = $this->getTemplateVarProduct();
         $product['price_amount']         = round($product['price_amount'] * $product['quantity_wanted'], 2);
-        $product['price']           = number_format($product['price_amount'], 2, ',', ' ') . '€';
         $product['regular_price_amount'] = round((float)$product['regular_price_amount'] * $product['quantity_wanted'], 2);
-        $product['regular_price']        = number_format($product['regular_price_amount'], 2, ',', ' ') . '€';
-        $product['unit_price_full']     = number_format(round((float)$product['price_amount'] / $product['quantity_wanted'], 2), 2, ',', ' ') . '€';
+        // CKC Vianney — format prix selon la langue FO
+        $product['price']           = Tools::displayPrice($product['price_amount']);
+        $product['regular_price']        = Tools::displayPrice($product['regular_price_amount']);
+        $product['unit_price_full']     = Tools::displayPrice((float) $product['price_amount'] / max(1, (int) $product['quantity_wanted']));
         $campaignProductDiscount = $this->getCampaignProductDiscount($product);
         $minimalProductQuantity = $this->getProductMinimalQuantity($product);
         if ($product['cart_quantity'] >= $minimalProductQuantity) {

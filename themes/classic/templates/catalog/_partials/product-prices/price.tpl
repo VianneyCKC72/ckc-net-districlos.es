@@ -7,10 +7,11 @@
     {include file='catalog/_partials/product-prices/price-dual-ml.tpl'}
 {else}
 <div class="d-flex align-items-center product-prices">
+    {include file='catalog/_partials/product-prices/price-dec.tpl'}
     {if $has_campaign_discount}
-        {assign var="price_parts" value=","|explode:$campaignProductDiscount.price}
+        {assign var="price_parts" value=$ckc_price_dec|explode:$campaignProductDiscount.price}
     {else}
-        {assign var="price_parts" value=","|explode:$product.price}
+        {assign var="price_parts" value=$ckc_price_dec|explode:$product.price}
     {/if}
     {assign var="price_integer" value=$price_parts[0]}
     {assign var="price_decimal" value=$price_parts[1]}
@@ -18,7 +19,7 @@
         {if isset($initial_pack)}
             <span class="price-loader" style="display: inline-block;"></span>
         {else}
-            <span class="price-integer">{$price_integer}</span><span class="price-decimal">,{$price_decimal}</span>
+            <span class="price-integer">{$price_integer}</span><span class="price-decimal">{$ckc_price_dec}{$price_decimal}</span>
         {/if}
     </div>
     {hook h='displayProductPriceBlock' product=$product type="weight" hook_origin='product_sheet'}

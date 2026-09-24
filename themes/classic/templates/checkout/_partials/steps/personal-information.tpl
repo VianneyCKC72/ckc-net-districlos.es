@@ -43,17 +43,17 @@
     </div>
 
   {else}
+    <script>
+      window.CKC_CHECKOUT_I18N = {
+        loginTitle: '{l s='Connexion' d='Shop.Theme.Customcheckout' js=1}',
+        registerTitle: '{l s='Créer un compte' d='Shop.Theme.Customcheckout' js=1}',
+        alreadyAccount: '{l s='Vous avez déjà un compte ?' d='Shop.Theme.Customcheckout' js=1}',
+        noAccount: '{l s='Pas encore de compte ?' d='Shop.Theme.Customcheckout' js=1}',
+        logIn: '{l s='Connectez-vous' d='Shop.Theme.Customcheckout' js=1}',
+        createAccount: '{l s='Créez un compte' d='Shop.Theme.Customcheckout' js=1}'
+      };
+    </script>
     <div class="account-switch texte-left">
-      <script>
-        window.CKC_CHECKOUT_I18N = {
-          loginTitle: '{l s='Connexion' d='Shop.Theme.Customcheckout' js=1}',
-          registerTitle: '{l s='Créer un compte' d='Shop.Theme.Customcheckout' js=1}',
-          alreadyAccount: '{l s='Vous avez déjà un compte ?' d='Shop.Theme.Customcheckout' js=1}',
-          noAccount: '{l s='Pas encore de compte ?' d='Shop.Theme.Customcheckout' js=1}',
-          logIn: '{l s='Connectez-vous' d='Shop.Theme.Customcheckout' js=1}',
-          createAccount: '{l s='Créez un compte' d='Shop.Theme.Customcheckout' js=1}'
-        };
-      </script>
       {if $show_login_form}
         <h2 class="sous-titre">{l s='Connexion' d='Shop.Theme.Customcheckout'}</h2>
         <p>

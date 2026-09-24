@@ -198,7 +198,7 @@
                                 {/if}
                             {/block}
 
-                            <div class="skeepers_product__stars" data-product-id="{$product.id}"></div>
+                            <div class="skeepers_product__stars" data-product-id="{$product.id}" data-locale="{$language.locale|replace:'-':'_'}"></div>
                         </div>
 
                         {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')}
