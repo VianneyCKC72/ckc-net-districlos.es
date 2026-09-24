@@ -50,6 +50,13 @@ class Dispatcher extends DispatcherCore
         } else {
             parent::__construct();
         }
+
+        // CKC Vianney — /en/ met à jour context->language, pas $GLOBALS['language'].
+        // CE s'en sert pour les miniatures : slug EN, préfixe langue FR (absent).
+        $context = Context::getContext();
+        if (isset($context->language) && $context->language instanceof Language) {
+            $GLOBALS['language'] = $context->language;
+        }
     }
     /*
     * module: ets_awesomeurl

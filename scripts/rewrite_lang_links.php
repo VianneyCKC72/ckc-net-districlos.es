@@ -439,6 +439,10 @@ final class CkcRewriteLangLinks
             return ['status' => 'ambiguous', 'href' => $href, 'type' => '', 'entity_id' => ''];
         }
 
+        if ($resolved['type'] === 'product') {
+            $resolved['id'] = $this->followProductRedirect((int) $resolved['id'], $shopId);
+        }
+
         $absolute = $this->buildAbsolute($resolved, $shopId);
         if ($absolute === '') {
             return ['status' => 'unresolved', 'href' => $href, 'type' => $resolved['type'], 'entity_id' => (string) $resolved['id']];
@@ -931,6 +935,38 @@ final class CkcRewriteLangLinks
         }
 
         return $slugs;
+    }
+
+    /**
+     * Produit redirigé (301/302 vers un autre produit) : on écrit l’URL de la cible.
+     */
+    private function followProductRedirect(int $idProduct, int $idShop): int
+    {
+        $current = $idProduct;
+        $seen = [];
+        for ($i = 0; $i < 5; ++$i) {
+            if ($current <= 0 || isset($seen[$current])) {
+                break;
+            }
+            $seen[$current] = true;
+            $row = Db::getInstance()->getRow(
+                'SELECT redirect_type, id_type_redirected
+                FROM `' . _DB_PREFIX_ . 'product_shop`
+                WHERE id_product = ' . (int) $current . ' AND id_shop = ' . (int) $idShop
+            );
+            if (!is_array($row)) {
+                break;
+            }
+            $type = (string) $row['redirect_type'];
+            $target = (int) $row['id_type_redirected'];
+            if (($type === '301-product' || $type === '302-product') && $target > 0 && $target !== $current) {
+                $current = $target;
+                continue;
+            }
+            break;
+        }
+
+        return $current > 0 ? $current : $idProduct;
     }
 
     /**

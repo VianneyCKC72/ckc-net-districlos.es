@@ -152,8 +152,15 @@ function fetchStockData(isPack = false, packList = {}) {
             return;
         }
 
-        $.post('/modules/ckc_stores_stock/ajax.php', {
+        var stockAjaxUrl = (typeof ckcStoresStockAjax === 'string' && ckcStoresStockAjax)
+            ? ckcStoresStockAjax
+            : '/modules/ckc_stores_stock/ajax.php';
+        var stockIdLang = (typeof ckcStoresStockIdLang !== 'undefined' && ckcStoresStockIdLang)
+            ? ckcStoresStockIdLang
+            : (typeof prestashop !== 'undefined' && prestashop.language ? prestashop.language.id : null);
+        $.post(stockAjaxUrl, {
             ajax: 1,
+            id_lang: stockIdLang,
             id_product,
             id_product_attribute,
             id_store,
@@ -513,9 +520,15 @@ if ($('.delivery-option input').length > 0) {
     $('.delivery-option input').change(function () {
         let selectedDelivery = $('input[name*="delivery_option"]:checked').attr('id');
 
+        var checkoutAjaxUrl = (typeof ckcStoresStockCheckoutAjax === 'string' && ckcStoresStockCheckoutAjax)
+            ? ckcStoresStockCheckoutAjax
+            : '/modules/ckc_stores_stock/ajax_checkout.php';
+        var checkoutIdLang = (typeof ckcStoresStockIdLang !== 'undefined' && ckcStoresStockIdLang)
+            ? ckcStoresStockIdLang
+            : (typeof prestashop !== 'undefined' && prestashop.language ? prestashop.language.id : null);
         $.post(
-            '/modules/ckc_stores_stock/ajax_checkout.php',
-            {selectedDelivery: selectedDelivery},
+            checkoutAjaxUrl,
+            {selectedDelivery: selectedDelivery, id_lang: checkoutIdLang, ajax: 1},
             null,
             "json"
         ).then(function (resp) {
