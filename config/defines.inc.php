@@ -32,7 +32,8 @@ if (is_file(__DIR__ . '/defines_custom.inc.php')) {
     include_once __DIR__ . '/defines_custom.inc.php';
 }
 
-$ckcDebug = isset($_GET['ckc']) && (string) $_GET['ckc'] === '1';
+$ckcDebug = (defined('CKC_DEBUG') && CKC_DEBUG === true)
+    || (isset($_GET['ckc']) && (string) $_GET['ckc'] === '1');
 
 if (!defined('_PS_MODE_DEV_')) {
     define('_PS_MODE_DEV_', false);
