@@ -58,7 +58,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.16.2';
+        $this->version = '2.16.3';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -79,7 +79,10 @@ class CkcTranslate extends Module
             && $this->installTab()
             && $this->installConfiguration()
             && $this->installSql()
-            && $this->registerHook('actionOutputHTMLBefore');
+            && $this->registerHook('actionOutputHTMLBefore')
+            && $this->registerHook('actionFrontControllerInitAfter')
+            && $this->registerHook('actionPresentProduct')
+            && $this->registerHook('actionPresentProductListing');
     }
 
     public function uninstall()
@@ -101,6 +104,9 @@ class CkcTranslate extends Module
 
         $this->installSql();
         $this->registerHook('actionOutputHTMLBefore');
+        $this->registerHook('actionFrontControllerInitAfter');
+        $this->registerHook('actionPresentProduct');
+        $this->registerHook('actionPresentProductListing');
 
         $html = '';
         $html .= '<div class="panel">';
@@ -232,6 +238,86 @@ class CkcTranslate extends Module
         ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
         return (bool) Db::getInstance()->execute($sql) && CkcTranslateCfuI18n::ensureTable();
+    }
+
+    /**
+     * CKC Vianney — CE carousel uses $GLOBALS['language'] for product URLs.
+     */
+    public function hookActionFrontControllerInitAfter($params)
+    {
+        if (isset($this->context->language) && is_object($this->context->language)) {
+            $GLOBALS['language'] = $this->context->language;
+        }
+    }
+
+    public function hookActionPresentProduct($params)
+    {
+        $this->fixPresentedProductUrls($params);
+    }
+
+    public function hookActionPresentProductListing($params)
+    {
+        $this->fixPresentedProductUrls($params);
+    }
+
+    /**
+     * CKC Vianney — keep miniature / variant links in the current FO language.
+     */
+    protected function fixPresentedProductUrls($params)
+    {
+        if (empty($params['presentedProduct']) || !is_object($params['presentedProduct'])) {
+            return;
+        }
+        $presented = $params['presentedProduct'];
+        if (!method_exists($presented, 'offsetSet')) {
+            return;
+        }
+
+        $idProduct = (int) $presented['id_product'];
+        if ($idProduct <= 0) {
+            return;
+        }
+
+        $idLang = (int) $this->context->language->id;
+        $idAttr = !empty($presented['id_product_attribute']) ? (int) $presented['id_product_attribute'] : 0;
+        $url = $this->context->link->getProductLink(
+            $idProduct,
+            null,
+            null,
+            null,
+            $idLang,
+            null,
+            $idAttr > 0 ? $idAttr : null
+        );
+
+        $presented->offsetSet('url', $url, true);
+        $presented->offsetSet(
+            'canonical_url',
+            $this->context->link->getProductLink($idProduct, null, null, null, $idLang),
+            true
+        );
+
+        if (empty($presented['main_variants']) || !is_array($presented['main_variants'])) {
+            return;
+        }
+
+        $variants = $presented['main_variants'];
+        foreach ($variants as &$variant) {
+            if (empty($variant['id_product_attribute'])) {
+                continue;
+            }
+            $variant['url'] = $this->context->link->getProductLink(
+                $idProduct,
+                null,
+                null,
+                null,
+                $idLang,
+                null,
+                (int) $variant['id_product_attribute']
+            );
+        }
+        unset($variant);
+        $presented->offsetSet('main_variants', $variants, true);
     }
 
     /**
