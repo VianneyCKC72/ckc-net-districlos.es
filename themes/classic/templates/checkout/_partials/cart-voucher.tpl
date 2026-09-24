@@ -30,7 +30,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <p class="mb-0 collapse-toggle" data-bs-toggle="collapse" href="#promoCollapse" role="button"
                        aria-expanded="false" aria-controls="promoCollapse">
-                        Un code promo ?
+                        {l s='Un code promo ?' d='Shop.Theme.Customcheckout'}
                     </p>
                     <span class="chevron-toggle" data-bs-toggle="collapse" href="#promoCollapse" role="button"
                           aria-expanded="false" aria-controls="promoCollapse"

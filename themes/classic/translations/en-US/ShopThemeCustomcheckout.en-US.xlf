@@ -278,6 +278,30 @@
         <source>Erreur de lecture des horaires</source>
         <target>Unable to read opening hours</target>
       </trans-unit>
+      <trans-unit id="69" resname="Un code promo ?">
+        <source>Un code promo ?</source>
+        <target>Have a promo code?</target>
+      </trans-unit>
+      <trans-unit id="70" resname="Vos informations">
+        <source>Vos informations</source>
+        <target>Information</target>
+      </trans-unit>
+      <trans-unit id="71" resname="Vos adresses">
+        <source>Vos adresses</source>
+        <target>Addresses</target>
+      </trans-unit>
+      <trans-unit id="72" resname="Votre livraison">
+        <source>Votre livraison</source>
+        <target>Delivery</target>
+      </trans-unit>
+      <trans-unit id="73" resname="Votre paiement">
+        <source>Votre paiement</source>
+        <target>Payment</target>
+      </trans-unit>
+      <trans-unit id="74" resname="Choisir mon adresse">
+        <source>Choisir mon adresse</source>
+        <target>Choose my address</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

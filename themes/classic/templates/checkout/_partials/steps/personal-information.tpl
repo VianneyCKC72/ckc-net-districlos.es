@@ -37,24 +37,14 @@
 
       <form class="personal-info-logged__action" method="GET" action="{$urls.pages.order}">
         <button class="continue btn btn-primary" name="controller" type="submit" value="order">
-          Choisir mon adresse
+          {l s='Choisir mon adresse' d='Shop.Theme.Customcheckout'}
         </button>
       </form>
     </div>
 
   {else}
-    <script>
-      window.CKC_CHECKOUT_I18N = {
-        loginTitle: '{l s='Connexion' d='Shop.Theme.Customcheckout' js=1}',
-        registerTitle: '{l s='Créer un compte' d='Shop.Theme.Customcheckout' js=1}',
-        alreadyAccount: '{l s='Vous avez déjà un compte ?' d='Shop.Theme.Customcheckout' js=1}',
-        noAccount: '{l s='Pas encore de compte ?' d='Shop.Theme.Customcheckout' js=1}',
-        logIn: '{l s='Connectez-vous' d='Shop.Theme.Customcheckout' js=1}',
-        createAccount: '{l s='Créez un compte' d='Shop.Theme.Customcheckout' js=1}'
-      };
-    </script>
     <div class="account-switch texte-left">
-      {if $show_login_form}
+      <div class="js-account-switch-login"{if !$show_login_form} hidden{/if}>
         <h2 class="sous-titre">{l s='Connexion' d='Shop.Theme.Customcheckout'}</h2>
         <p>
           {l s='Pas encore de compte ?' d='Shop.Theme.Customcheckout'}
@@ -62,7 +52,8 @@
             {l s='Créez un compte' d='Shop.Theme.Customcheckout'} →
           </a>
         </p>
-      {else}
+      </div>
+      <div class="js-account-switch-register"{if $show_login_form} hidden{/if}>
         <h2 class="sous-titre">{l s='Créer un compte' d='Shop.Theme.Customcheckout'}</h2>
         <p>
           {l s='Vous avez déjà un compte ?' d='Shop.Theme.Customcheckout'}
@@ -70,7 +61,7 @@
             {l s='Connectez-vous' d='Shop.Theme.Customcheckout'} →
           </a>
         </p>
-      {/if}
+      </div>
     </div>
 
     <div class="tab-content">

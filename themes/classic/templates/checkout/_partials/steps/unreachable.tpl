@@ -24,8 +24,19 @@
  *}
 {block name='step'}
   <section class="checkout-step -unreachable" id="{$identifier}">
+    {if $identifier == 'checkout-personal-information-step'}
+      {assign var='step_label' value={l s='Vos informations' d='Shop.Theme.Customcheckout'}}
+    {elseif $identifier == 'checkout-addresses-step'}
+      {assign var='step_label' value={l s='Vos adresses' d='Shop.Theme.Customcheckout'}}
+    {elseif $identifier == 'checkout-delivery-step'}
+      {assign var='step_label' value={l s='Votre livraison' d='Shop.Theme.Customcheckout'}}
+    {elseif $identifier == 'checkout-payment-step'}
+      {assign var='step_label' value={l s='Votre paiement' d='Shop.Theme.Customcheckout'}}
+    {else}
+      {assign var='step_label' value=$title}
+    {/if}
     <h1 class="step-title js-step-title h3 mb-0">
-      {$title}
+      {$step_label}
     </h1>
   </section>
 {/block}

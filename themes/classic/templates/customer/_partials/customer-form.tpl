@@ -28,7 +28,7 @@
   {/block}
 
   <form action="{block name='customer_form_actionurl'}{$action}{/block}" id="customer-form" class="js-customer-form"
-    method="post"{if Context::getContext()->shop->id == 2} enctype="multipart/form-data"{/if}>
+    method="post" data-ou-bien="{l s='Ou bien...' d='Shop.Theme.Customcustomer'}"{if Context::getContext()->shop->id == 2} enctype="multipart/form-data"{/if}>
       {block name='page_title'}
         {assign var="currentUrl" value="https://"|cat:$smarty.server.HTTP_HOST|cat:$smarty.server.REQUEST_URI}
       {/block}
