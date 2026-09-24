@@ -42,7 +42,7 @@
             {if $pro.env == 0}
                 <div class="actions-container-login">
                     <button type="submit" class="btn btn-primary">
-                        {l s='Se connecter' d='Shop.Theme.Actions'}
+                        {l s='Se connecter' d='Shop.Theme.Customcustomer'}
                     </button>
                     <div class="forgot-password">
                         <a href="{$urls.pages.password}" rel="nofollow">

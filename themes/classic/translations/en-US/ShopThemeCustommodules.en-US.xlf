@@ -178,6 +178,15 @@
       <trans-unit id="174"><source>Possibilité de payer un acompte de</source><target>Option to pay a deposit of</target></trans-unit>
       <trans-unit id="175"><source>et le reste avant la livraison</source><target>and the rest before delivery</target></trans-unit>
       <trans-unit id="176"><source>Vous pouvez payer en utilisant le paiement anticipé. Total dû est :</source><target>You can pay using a deposit. Amount due:</target></trans-unit>
+      <trans-unit id="177"><source>Renseignez votre longueur</source><target>Enter your length</target></trans-unit>
+      <trans-unit id="178"><source>Prix dégressifs</source><target>Volume discounts</target></trans-unit>
+      <trans-unit id="179"><source>[1]Prix[/1][2]dégressifs ![/2]</source><target>[1]Volume[/1][2]discounts![/2]</target></trans-unit>
+      <trans-unit id="180"><source>Nombre de mL</source><target>Number of lm</target></trans-unit>
+      <trans-unit id="181"><source>% de remise</source><target>% discount</target></trans-unit>
+      <trans-unit id="182"><source>%from% à %to% mL</source><target>%from% to %to% lm</target></trans-unit>
+      <trans-unit id="183"><source>+%from% mL</source><target>+%from% lm</target></trans-unit>
+      <trans-unit id="184"><source>Sélectionnez la hauteur</source><target>Select the height</target></trans-unit>
+      <trans-unit id="185"><source>Veuillez sélectionner une hauteur</source><target>Please select a height</target></trans-unit>
     </body>
   </file>
 </xliff>

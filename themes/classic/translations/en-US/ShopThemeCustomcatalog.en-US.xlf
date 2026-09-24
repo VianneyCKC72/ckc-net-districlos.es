@@ -40,6 +40,10 @@
       <trans-unit id="36"><source>Prix total</source><target>Total price</target></trans-unit>
       <trans-unit id="37"><source>Prix au mL</source><target>Price per lin. m</target></trans-unit>
       <trans-unit id="38" resname="Filtres"><source>Filtres</source><target>Filters</target></trans-unit>
+      <trans-unit id="39"><source>TTC/Prix total</source><target>incl. tax / Total price</target></trans-unit>
+      <trans-unit id="40"><source>TTC/Prix au mL</source><target>incl. tax / Price per lm</target></trans-unit>
+      <trans-unit id="41"><source>HT/Prix total</source><target>excl. tax / Total price</target></trans-unit>
+      <trans-unit id="42"><source>HT/Prix au mL</source><target>excl. tax / Price per lm</target></trans-unit>
     </body>
   </file>
 </xliff>
