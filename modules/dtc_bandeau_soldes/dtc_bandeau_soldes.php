@@ -17,7 +17,7 @@ class dtc_bandeau_soldes extends Module
     {
         $this->name = 'dtc_bandeau_soldes';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.1';
+        $this->version = '1.0.2';
         $this->author = 'Districlos';
         $this->bootstrap = true;
 
@@ -100,7 +100,7 @@ class dtc_bandeau_soldes extends Module
         $this->context->smarty->assign('dtc_bandeau', [
             'badge' => $this->trans($this->cfg('DTC_BANDEAU_SOLDES_BADGE'), [], 'Shop.Theme.Customdtc'),
             'text' => $this->trans($this->cfg('DTC_BANDEAU_SOLDES_TEXT'), [], 'Shop.Theme.Customdtc'),
-            'link' => $this->cfg('DTC_BANDEAU_SOLDES_LINK'),
+            'link' => $this->localizeStorefrontLink((string) $this->cfg('DTC_BANDEAU_SOLDES_LINK')),
         ]);
 
         return $this->display(__FILE__, 'views/templates/hook/bandeau.tpl');
@@ -111,5 +111,35 @@ class dtc_bandeau_soldes extends Module
         $value = Configuration::get($key);
 
         return ($value === false || $value === '') ? self::DEFAULTS[$key] : $value;
+    }
+
+    /**
+     * Réécrit un chemin FR figé (/400-bons-plans, /content/21-…) dans la langue courante.
+     */
+    private function localizeStorefrontLink(string $link): string
+    {
+        $link = trim($link);
+        if ($link === '') {
+            return $link;
+        }
+
+        $path = (string) parse_url($link, PHP_URL_PATH);
+        if ($path === '') {
+            $path = $link;
+        }
+
+        if (preg_match('#/content/(\d+)#', $path, $matches)) {
+            return $this->context->link->getCMSLink((int) $matches[1]);
+        }
+
+        if (preg_match('#/(\d+)-#', $path, $matches)) {
+            return $this->context->link->getCategoryLink((int) $matches[1]);
+        }
+
+        if (preg_match('#/module/([^/]+)/([^/?]+)#', $path, $matches)) {
+            return $this->context->link->getModuleLink($matches[1], $matches[2]);
+        }
+
+        return $link;
     }
 }

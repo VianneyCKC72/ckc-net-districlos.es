@@ -46,7 +46,7 @@
     </a>
 
 {* GRPD *}
-<a class="pro-items-links" id="returns-link" href="/module/psgdpr/gdpr">
+<a class="pro-items-links" id="returns-link" href="{$link->getModuleLink('psgdpr', 'gdpr')|escape:'html':'UTF-8'}">
     {l s='Mes données personnelles' d='Shop.Theme.Customcustomer'}
 </a>
 {* // mes notifications *}

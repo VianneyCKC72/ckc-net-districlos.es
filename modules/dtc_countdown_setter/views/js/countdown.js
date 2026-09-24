@@ -89,14 +89,23 @@ function createCountdownWidget({
         const end = new Date(end_date).getTime();
         const start = new Date(start_date).getTime();
 
+        const i18n = (typeof countdownI18n !== "undefined") ? countdownI18n : {
+            upcoming: "À venir",
+            ended: "Terminé",
+            days: "j",
+            hours: "h",
+            minutes: "m",
+            seconds: "s"
+        };
+
         if (now < start) {
-            timerElement.textContent = "À venir";
+            timerElement.textContent = i18n.upcoming;
             return;
         }
 
         const distance = end - now;
         if (distance < 0) {
-            timerElement.textContent = "Terminé";
+            timerElement.textContent = i18n.ended;
             return;
         }
 
@@ -105,7 +114,7 @@ function createCountdownWidget({
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        timerElement.textContent = `${days}j ${hours}h ${minutes}m ${seconds}s`;
+        timerElement.textContent = days + i18n.days + " " + hours + i18n.hours + " " + minutes + i18n.minutes + " " + seconds + i18n.seconds;
     }
 
     updateCountdown();
