@@ -59,9 +59,14 @@ function createCountdownWidget({
     countdownElement.style.marginTop = "0";
     countdownElement.style.borderRadius = "5px";
     countdownElement.style.textAlign = "center";
+    countdownElement.style.display = "flex";
+    countdownElement.style.alignItems = "center";
+    countdownElement.style.justifyContent = "center";
+    countdownElement.style.columnGap = "0";
 
     const labelElement = document.createElement("div");
     labelElement.textContent = label;
+    labelElement.style.marginRight = "0.4em";
     countdownElement.appendChild(labelElement);
 
     const timerElement = document.createElement("div");

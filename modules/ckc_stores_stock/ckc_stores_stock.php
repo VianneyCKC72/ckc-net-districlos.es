@@ -15,7 +15,7 @@ class Ckc_Stores_Stock extends Module
     {
         $this->name = 'ckc_stores_stock';
         $this->tab = 'administration';
-        $this->version = '1.0.6';
+        $this->version = '1.0.8';
         $this->author = 'CKC-Net';
         $this->need_instance = 0;
 
@@ -57,6 +57,11 @@ class Ckc_Stores_Stock extends Module
 
     public function hookDisplayHeader()
     {
+        Media::addJsDef([
+            'ckcStoresStockAjax' => $this->context->link->getModuleLink('ckc_stores_stock', 'getStock'),
+            'ckcStoresStockCheckoutAjax' => $this->context->link->getModuleLink('ckc_stores_stock', 'getStockCheckout'),
+            'ckcStoresStockIdLang' => (int) $this->context->language->id,
+        ]);
         $this->context->controller->addJS($this->_path . 'assets/js/stores_stock.js');
         $this->context->controller->addCSS($this->_path . 'assets/css/stores_stock.css');
     }

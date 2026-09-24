@@ -26,6 +26,8 @@ class StockManager extends Module
 
     public function getStockData($id_product, $id_product_attribute, $id_store, $packList = [])
     {
+        self::applyRequestLanguage();
+
         // Charger le mapping de références pour les produits fin de vie
         if (self::$referenceMappingCache === null) {
             $mappingFile = _PS_MODULE_DIR_ . 'dtc_productendoflife/reference_mapping.json';
@@ -435,6 +437,8 @@ class StockManager extends Module
 
     public function getDelivery($carrier_id, $id_store = null)
     {
+        self::applyRequestLanguage();
+
         $stock             = null;
         $store_name        = null;
         $stock_ok          = true;
@@ -648,18 +652,23 @@ class StockManager extends Module
     protected function transUi($string, array $params = [])
     {
         $string = (string) $string;
-        $translated = Translate::getModuleTranslation(
-            'ckc_stores_stock',
-            $string,
-            'stockmanager',
-            null,
-            false,
-            null,
-            false,
-            false
-        );
+        // Même catalogue que le bouton « Voir les stocks par magasin » (Shop.Theme.Customckc).
+        $translated = Context::getContext()->getTranslator()->trans($string, [], 'Shop.Theme.Customckc');
 
-        if ($this->isEnglishUi() && $translated === $string) {
+        if ($translated === $string) {
+            $translated = Translate::getModuleTranslation(
+                'ckc_stores_stock',
+                $string,
+                'stockmanager',
+                null,
+                false,
+                null,
+                false,
+                false
+            );
+        }
+
+        if ($translated === $string && $this->isEnglishUi()) {
             $en = [
                 'Stock en magasin' => 'In-store stock',
                 'Fin de série !' => 'End of line!',
@@ -685,14 +694,44 @@ class StockManager extends Module
 
     protected function isEnglishUi(): bool
     {
-        $language = Context::getContext()->language;
-        if (!$language) {
-            return false;
+        $context = Context::getContext();
+        $language = $context->language;
+        $iso = $language ? strtolower((string) $language->iso_code) : '';
+        $locale = $language ? strtolower((string) $language->locale) : '';
+        $translatorLocale = strtolower((string) $context->getTranslator()->getLocale());
+
+        return in_array($iso, ['en', 'gb', 'us'], true)
+            || strpos($locale, 'en') === 0
+            || strpos($translatorLocale, 'en') === 0;
+    }
+
+    /**
+     * CKC Vianney — ajax.php n'a pas l'URL /en/ : on force la langue du FO.
+     */
+    public static function applyRequestLanguage()
+    {
+        $idLang = (int) Tools::getValue('id_lang');
+        if ($idLang <= 0 && !empty($_SERVER['HTTP_REFERER'])
+            && preg_match('#/(en|gb|us)(/|$)#i', (string) $_SERVER['HTTP_REFERER'])) {
+            $idLang = (int) Language::getIdByIso('en');
+        }
+        if ($idLang <= 0) {
+            return;
         }
 
-        $iso = strtolower((string) $language->iso_code);
-        $locale = strtolower((string) $language->locale);
+        $context = Context::getContext();
+        if ($context->language && (int) $context->language->id === $idLang) {
+            return;
+        }
 
-        return in_array($iso, ['en', 'gb', 'us'], true) || strpos($locale, 'en') === 0;
+        $language = new Language($idLang);
+        if (!Validate::isLoadedObject($language) || !$language->active) {
+            return;
+        }
+
+        $context->language = $language;
+        if ($context->cookie) {
+            $context->cookie->id_lang = $idLang;
+        }
     }
 }
