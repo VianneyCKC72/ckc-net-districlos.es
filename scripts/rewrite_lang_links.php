@@ -11,10 +11,17 @@
  * Options :
  *   --iso=en              langue cible (défaut en)
  *   --shops=1,2           boutiques (défaut : toutes les boutiques actives)
- *   --sources=cms,product cms = cms_lang.content, product = product_lang.description
+ *   --sources=cms,product,product_short,category,ce
+ *                         cms = cms_lang.content
+ *                         product = product_lang.description
+ *                         product_short = product_lang.description_short
+ *                         category = category_lang.description + additional_description
+ *                         ce = ce_content_lang.content (JSON : href et champs url)
  *   --cms=12,34           limiter à ces pages CMS
  *   --product=56          limiter à ces produits
+ *   --category=3,12       limiter à ces catégories
  *   --limit=20            nombre max de fiches lues (test)
+ *   --debug               aucune écriture : affiche chaque lien et son code HTTP (curl)
  *
  * Rapport CSV : var/logs/rewrite_lang_links_*.csv
  * Avec --apply, un JSONL de rollback est écrit à côté (contenu avant modification).
@@ -79,6 +86,9 @@ final class CkcRewriteLangLinks
     /** @var array<string, string> */
     private array $urlCache = [];
 
+    /** @var array<string, bool> */
+    private array $productActive = [];
+
     /** @var array<string, int> */
     private array $stats = [];
 
@@ -94,6 +104,11 @@ final class CkcRewriteLangLinks
 
     private bool $apply = false;
 
+    private bool $debug = false;
+
+    /** @var array<int, string> */
+    private array $shopBase = [];
+
     /** @var array<string, mixed> */
     private $options = [];
 
@@ -103,7 +118,8 @@ final class CkcRewriteLangLinks
     public function __construct(array $options)
     {
         $this->options = $options;
-        $this->apply = !empty($options['apply']);
+        $this->debug = !empty($options['debug']);
+        $this->apply = !empty($options['apply']) && !$this->debug;
         $this->link = Context::getContext()->link;
         $this->dispatcher = Dispatcher::getInstance();
         $this->defaultLangId = (int) Configuration::get('PS_LANG_DEFAULT');
@@ -142,7 +158,14 @@ final class CkcRewriteLangLinks
     {
         $this->openReport();
         $sources = $this->options['sources'];
-        echo ($this->apply ? 'MODE ÉCRITURE' : 'DRY-RUN (aucune écriture)') . "\n";
+        if ($this->debug) {
+            echo "MODE DEBUG (aucune écriture, contrôle HTTP)\n";
+            if (!empty($this->options['apply'])) {
+                echo "--apply ignoré tant que --debug est présent.\n";
+            }
+        } else {
+            echo ($this->apply ? 'MODE ÉCRITURE' : 'DRY-RUN (aucune écriture)') . "\n";
+        }
         echo 'Langue cible : ' . $this->langToIso[$this->targetLangId] . ' (id ' . $this->targetLangId . ")\n";
         echo 'Rapport : ' . $this->csvPath . "\n";
 
@@ -166,6 +189,45 @@ final class CkcRewriteLangLinks
                     'description',
                     $idShop,
                     $this->options['product_ids']
+                );
+            }
+            if (in_array('product_short', $sources, true)) {
+                $this->processTable(
+                    'product_short',
+                    'product_lang',
+                    'id_product',
+                    'description_short',
+                    $idShop,
+                    $this->options['product_ids']
+                );
+            }
+            if (in_array('category', $sources, true)) {
+                $this->processTable(
+                    'category',
+                    'category_lang',
+                    'id_category',
+                    'description',
+                    $idShop,
+                    $this->options['category_ids']
+                );
+                $this->processTable(
+                    'category_add',
+                    'category_lang',
+                    'id_category',
+                    'additional_description',
+                    $idShop,
+                    $this->options['category_ids']
+                );
+            }
+            if (in_array('ce', $sources, true)) {
+                $this->processTable(
+                    'ce',
+                    'ce_content_lang',
+                    'id_ce_content',
+                    'content',
+                    $idShop,
+                    $this->options['ce_ids'],
+                    'ce'
                 );
             }
         }
@@ -297,7 +359,8 @@ final class CkcRewriteLangLinks
         string $idColumn,
         string $htmlColumn,
         int $idShop,
-        array $onlyIds
+        array $onlyIds,
+        string $kind = 'html'
     ): void {
         $offset = 0;
         $read = 0;
@@ -313,9 +376,20 @@ final class CkcRewriteLangLinks
                 $batch = min($batch, $limit - $read);
             }
 
+            if ($kind === 'ce' && !$this->tableExists($table)) {
+                echo '  ' . $source . ' : table absente, ignorée' . "\n";
+
+                return;
+            }
+
+            $column = '`' . bqSQL($htmlColumn) . '`';
             $where = 'id_lang = ' . (int) $this->targetLangId
-                . ' AND id_shop = ' . (int) $idShop
-                . ' AND `' . bqSQL($htmlColumn) . '` LIKE \'%href=%\'';
+                . ' AND id_shop = ' . (int) $idShop;
+            if ($kind === 'ce') {
+                $where .= ' AND (' . $column . ' LIKE \'%href=%\' OR ' . $column . ' LIKE \'%"url"%\')';
+            } else {
+                $where .= ' AND ' . $column . ' LIKE \'%href=%\'';
+            }
             if ($onlyIds) {
                 $where .= ' AND `' . bqSQL($idColumn) . '` IN (' . implode(',', array_map('intval', $onlyIds)) . ')';
             }
@@ -335,7 +409,9 @@ final class CkcRewriteLangLinks
             foreach ($rows as $row) {
                 $id = (int) $row['id'];
                 $html = (string) $row['html'];
-                $changed = $this->rewriteHtml($source, $id, $idShop, $html);
+                $changed = $kind === 'ce'
+                    ? $this->rewriteCeContent($source, $id, $idShop, $html)
+                    : $this->rewriteHtml($source, $id, $idShop, $html);
                 if ($changed !== $html) {
                     $this->bump('fiches_modifiees');
                     if ($this->apply) {
@@ -369,6 +445,9 @@ final class CkcRewriteLangLinks
                 $raw = html_entity_decode($match[3], ENT_QUOTES | ENT_HTML5, 'UTF-8');
                 $result = $this->rewriteHref($raw, $idShop);
                 $this->bump($result['status']);
+                if ($this->debug) {
+                    $this->debugHref($source, $id, $idShop, $raw, $result);
+                }
                 if ($result['status'] === 'rewritten') {
                     $this->csvRow([
                         $result['status'],
@@ -403,6 +482,80 @@ final class CkcRewriteLangLinks
         );
 
         return is_string($replaced) ? $replaced : $html;
+    }
+
+    private function rewriteCeContent(string $source, int $id, int $idShop, string $raw): string
+    {
+        $decoded = json_decode($raw, true);
+        if (!is_array($decoded)) {
+            return $this->rewriteHtml($source, $id, $idShop, $raw);
+        }
+        $changed = $this->rewriteCeNode($source, $id, $idShop, $decoded);
+        if ($changed === $decoded) {
+            return $raw;
+        }
+        $flags = JSON_UNESCAPED_UNICODE;
+        if (strpos($raw, '\\/') === false) {
+            $flags |= JSON_UNESCAPED_SLASHES;
+        }
+        $encoded = json_encode($changed, $flags);
+
+        return is_string($encoded) ? $encoded : $raw;
+    }
+
+    /**
+     * @param mixed $node
+     *
+     * @return mixed
+     */
+    private function rewriteCeNode(string $source, int $id, int $idShop, $node)
+    {
+        if (is_string($node)) {
+            if (stripos($node, 'href=') === false) {
+                return $node;
+            }
+
+            return $this->rewriteHtml($source, $id, $idShop, $node);
+        }
+        if (!is_array($node)) {
+            return $node;
+        }
+        foreach ($node as $key => $value) {
+            if ($key === 'url' && is_string($value) && $value !== '') {
+                $node[$key] = $this->rewriteCeUrl($source, $id, $idShop, $value);
+                continue;
+            }
+            $node[$key] = $this->rewriteCeNode($source, $id, $idShop, $value);
+        }
+
+        return $node;
+    }
+
+    private function rewriteCeUrl(string $source, int $id, int $idShop, string $url): string
+    {
+        $wrapped = '<a href="' . htmlspecialchars($url, ENT_QUOTES | ENT_HTML5, 'UTF-8') . '"></a>';
+        $rewritten = $this->rewriteHtml($source, $id, $idShop, $wrapped);
+        if (!preg_match('/href="([^"]*)"/', $rewritten, $match)) {
+            return $url;
+        }
+
+        return html_entity_decode($match[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
+    private function tableExists(string $table): bool
+    {
+        static $cache = [];
+        if (array_key_exists($table, $cache)) {
+            return $cache[$table];
+        }
+        $name = _DB_PREFIX_ . $table;
+        $found = Db::getInstance()->getValue(
+            'SELECT TABLE_NAME FROM information_schema.TABLES
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = \'' . pSQL($name) . '\''
+        );
+        $cache[$table] = (bool) $found;
+
+        return $cache[$table];
     }
 
     /**
@@ -471,9 +624,16 @@ final class CkcRewriteLangLinks
         $protoRelative = strpos($href, '//') === 0;
         $rootRelative = strpos($href, '/') === 0;
         $legacy = (bool) preg_match('#(^|/)index\.php(\?|$)#i', $href);
+        $relative = !$absolute && !$protoRelative && !$rootRelative && !$legacy
+            && !preg_match('#^[a-z][a-z0-9+.-]*:#i', $href);
 
-        if (!$absolute && !$protoRelative && !$rootRelative && !$legacy) {
+        if (!$absolute && !$protoRelative && !$rootRelative && !$legacy && !$relative) {
             return null;
+        }
+
+        if ($relative) {
+            $href = $this->resolveRelativePath($href);
+            $rootRelative = true;
         }
 
         $toParse = $href;
@@ -528,6 +688,39 @@ final class CkcRewriteLangLinks
             'fragment' => (string) ($parsed['fragment'] ?? ''),
             'id_shop' => $idShop,
         ];
+    }
+
+    /**
+     * ../59-fiche ou ./page → /59-fiche, /page. Le .. ne remonte pas au-dessus de la racine.
+     */
+    private function resolveRelativePath(string $href): string
+    {
+        $fragment = '';
+        $query = '';
+        $hashPos = strpos($href, '#');
+        if ($hashPos !== false) {
+            $fragment = substr($href, $hashPos);
+            $href = substr($href, 0, $hashPos);
+        }
+        $queryPos = strpos($href, '?');
+        if ($queryPos !== false) {
+            $query = substr($href, $queryPos);
+            $href = substr($href, 0, $queryPos);
+        }
+
+        $segments = [];
+        foreach (explode('/', $href) as $segment) {
+            if ($segment === '' || $segment === '.') {
+                continue;
+            }
+            if ($segment === '..') {
+                array_pop($segments);
+                continue;
+            }
+            $segments[] = $segment;
+        }
+
+        return '/' . implode('/', $segments) . $query . $fragment;
     }
 
     /**
@@ -798,6 +991,17 @@ final class CkcRewriteLangLinks
         ][$type];
 
         $id = (int) ($match[$idKey] ?? 0);
+        if ($type === 'product' && $id > 0 && !empty($match['rewrite'])) {
+            $rewrite = (string) $match['rewrite'];
+            $owns = $this->productOwnsRewrite($idShop, $id, $rewrite);
+            $active = $this->isProductActive($idShop, $id);
+            if (!$owns || !$active) {
+                $replacement = $this->activeProductByRewrite($idShop, $rewrite, $id);
+                if ($replacement > 0) {
+                    $id = $replacement;
+                }
+            }
+        }
         if ($id <= 0 && !empty($match['rewrite'])) {
             if ($type === 'category') {
                 $found = $this->findCategory($idShop, (string) $match['rewrite'], (string) ($match['parent_rewrite'] ?? ''), $preferLangs);
@@ -952,8 +1156,9 @@ final class CkcRewriteLangLinks
         }
         $row = Db::getInstance()->getRow(
             'SELECT target FROM `' . bqSQL($table) . '`
-            WHERE active = 1 AND id_shop = ' . (int) $idShop . '
-            AND url LIKE \'%/' . pSQL($match[1]) . '\'
+            WHERE active = 1
+            AND (id_shop = ' . (int) $idShop . ' OR id_shop = 0)
+            AND url LIKE \'%' . pSQL($match[1]) . '\'
             ORDER BY id_ets_awu_redirect DESC'
         );
         if (!is_array($row) || empty($row['target'])) {
@@ -981,6 +1186,50 @@ final class CkcRewriteLangLinks
         $table = $found ? $name : '';
 
         return $table;
+    }
+
+    private function productOwnsRewrite(int $idShop, int $idProduct, string $rewrite): bool
+    {
+        $rewrite = strtolower($rewrite);
+        foreach ($this->slugIndex[$idShop]['product'] ?? [] as $map) {
+            if (isset($map[$rewrite][$idProduct])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function activeProductByRewrite(int $idShop, string $rewrite, int $except): int
+    {
+        $rewrite = strtolower($rewrite);
+        $ids = [];
+        foreach ($this->slugIndex[$idShop]['product'] ?? [] as $map) {
+            foreach ($map[$rewrite] ?? [] as $id) {
+                $ids[(int) $id] = (int) $id;
+            }
+        }
+        foreach ($ids as $id) {
+            if ($id !== $except && $this->isProductActive($idShop, $id)) {
+                return $id;
+            }
+        }
+
+        return 0;
+    }
+
+    private function isProductActive(int $idShop, int $idProduct): bool
+    {
+        $key = $idShop . ':' . $idProduct;
+        if (!array_key_exists($key, $this->productActive)) {
+            $active = Db::getInstance()->getValue(
+                'SELECT active FROM `' . _DB_PREFIX_ . 'product_shop`
+                WHERE id_product = ' . (int) $idProduct . ' AND id_shop = ' . (int) $idShop
+            );
+            $this->productActive[$key] = (int) $active === 1;
+        }
+
+        return $this->productActive[$key];
     }
 
     /**
@@ -1243,13 +1492,130 @@ final class CkcRewriteLangLinks
         }
     }
 
+    /**
+     * @param array{status: string, href: string, type: string, entity_id: string} $result
+     */
+    private function debugHref(string $source, int $id, int $idShop, string $oldHref, array $result): void
+    {
+        $kept = $result['status'] === 'rewritten' ? $result['href'] : $oldHref;
+        $probe = in_array($result['status'], ['rewritten', 'unchanged'], true)
+            ? $this->httpStatus($this->toAbsolute($kept, $idShop))
+            : '-';
+        $entity = trim($result['type'] . ' ' . $result['entity_id']);
+
+        echo "\n[" . $source . ' ' . $id . ' boutique ' . $idShop . '] ' . $result['status'];
+        if ($entity !== '') {
+            echo '  ' . $entity;
+        }
+        echo "\n";
+        echo '  actuel : ' . $oldHref . "\n";
+        if ($result['status'] === 'rewritten') {
+            echo '  généré : ' . $result['href'] . "\n";
+        }
+        echo '  HTTP   : ' . $probe . "\n";
+    }
+
+    private function toAbsolute(string $href, int $idShop): string
+    {
+        if (preg_match('#^https?://#i', $href)) {
+            return $href;
+        }
+        if (strpos($href, '//') === 0) {
+            return 'https:' . $href;
+        }
+        if (!isset($this->shopBase[$idShop])) {
+            $shop = new Shop($idShop);
+            $this->shopBase[$idShop] = rtrim($shop->getBaseURL(true), '/');
+        }
+
+        return $this->shopBase[$idShop] . '/' . ltrim($href, '/');
+    }
+
+    private function httpStatus(string $url): string
+    {
+        if (!function_exists('curl_init')) {
+            return 'extension curl absente';
+        }
+        $head = $this->curlHeaders($url, true);
+        if ($head['code'] === 405 || $head['code'] === 0) {
+            $head = $this->curlHeaders($url, false);
+        }
+        if ($head['code'] === 0) {
+            return 'échec ' . $head['error'];
+        }
+        $https = $this->httpsUpgrade($url, $head['code'], $head['location']);
+        if ($https !== '') {
+            $head = $this->curlHeaders($https, true);
+            if ($head['code'] === 405 || $head['code'] === 0) {
+                $head = $this->curlHeaders($https, false);
+            }
+            $url = $https;
+        }
+        if ($head['code'] === 0) {
+            return 'échec ' . $head['error'];
+        }
+        $line = (string) $head['code'] . '  ' . $url;
+        if ($head['location'] !== '') {
+            $line .= "\n           -> " . $head['location'];
+        }
+
+        return $line;
+    }
+
+    private function httpsUpgrade(string $url, int $code, string $location): string
+    {
+        if (!in_array($code, [301, 302], true) || stripos($url, 'http://') !== 0) {
+            return '';
+        }
+        $secure = 'https://' . substr($url, 7);
+        if ($location === $secure || $location === '') {
+            return $secure;
+        }
+        $locationPath = preg_replace('#^https?://[^/]+#i', '', $location);
+        $urlPath = preg_replace('#^https?://[^/]+#i', '', $url);
+
+        return ($locationPath === $urlPath && stripos($location, 'https://') === 0) ? $location : '';
+    }
+
+    /**
+     * @return array{code: int, location: string, error: string}
+     */
+    private function curlHeaders(string $url, bool $headOnly): array
+    {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_NOBODY => $headOnly,
+            CURLOPT_HEADER => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_TIMEOUT => 20,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_USERAGENT => 'CkcRewriteLangLinks-debug',
+        ]);
+        if (!$headOnly) {
+            curl_setopt($ch, CURLOPT_RANGE, '0-0');
+        }
+        $raw = curl_exec($ch);
+        $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = (string) curl_error($ch);
+        curl_close($ch);
+        $location = '';
+        if (is_string($raw) && preg_match('/^location:\s*(\S+)/im', $raw, $match)) {
+            $location = $match[1];
+        }
+
+        return ['code' => $code, 'location' => $location, 'error' => $error];
+    }
+
     private function printStats(): void
     {
         echo "\nRésumé\n";
         foreach (['rewritten', 'unchanged', 'unresolved', 'ambiguous', 'external', 'skipped', 'fiches_modifiees'] as $key) {
             echo '  ' . $key . ' : ' . ($this->stats[$key] ?? 0) . "\n";
         }
-        if (!$this->apply) {
+        if ($this->debug) {
+            echo "\nAucune base modifiée. Les codes HTTP portent sur l’URL qui serait enregistrée.\n";
+        } elseif (!$this->apply) {
             echo "\nAucune base modifiée. Relancer avec --apply après contrôle du CSV.\n";
         } else {
             echo "\nBase mise à jour. Vider le cache Smarty (var/cache/).\n";
@@ -1259,11 +1625,14 @@ final class CkcRewriteLangLinks
 
 $options = [
     'apply' => in_array('--apply', $argv, true),
+    'debug' => in_array('--debug', $argv, true),
     'iso' => 'en',
     'shops' => [],
     'sources' => ['cms', 'product'],
     'cms_ids' => [],
     'product_ids' => [],
+    'category_ids' => [],
+    'ce_ids' => [],
     'limit' => null,
 ];
 
@@ -1274,13 +1643,17 @@ foreach ($argv as $arg) {
         $options['shops'] = array_values(array_filter(array_map('intval', explode(',', $match[1]))));
     } elseif (preg_match('/^--sources=([a-z,]+)$/', $arg, $match)) {
         $options['sources'] = array_values(array_intersect(
-            ['cms', 'product'],
+            ['cms', 'product', 'product_short', 'category', 'ce'],
             explode(',', strtolower($match[1]))
         ));
     } elseif (preg_match('/^--cms=([0-9,]+)$/', $arg, $match)) {
         $options['cms_ids'] = array_values(array_filter(array_map('intval', explode(',', $match[1]))));
     } elseif (preg_match('/^--product=([0-9,]+)$/', $arg, $match)) {
         $options['product_ids'] = array_values(array_filter(array_map('intval', explode(',', $match[1]))));
+    } elseif (preg_match('/^--category=([0-9,]+)$/', $arg, $match)) {
+        $options['category_ids'] = array_values(array_filter(array_map('intval', explode(',', $match[1]))));
+    } elseif (preg_match('/^--ce=([0-9,]+)$/', $arg, $match)) {
+        $options['ce_ids'] = array_values(array_filter(array_map('intval', explode(',', $match[1]))));
     } elseif (preg_match('/^--limit=([0-9]+)$/', $arg, $match)) {
         $options['limit'] = (int) $match[1];
     }
@@ -1290,7 +1663,7 @@ if (!$options['shops']) {
     $options['shops'] = array_map('intval', array_column(Shop::getShops(true), 'id_shop'));
 }
 if (!$options['sources']) {
-    fwrite(STDERR, "Aucune source. Utiliser --sources=cms,product\n");
+    fwrite(STDERR, "Aucune source. Utiliser --sources=cms,product,product_short,category,ce\n");
     exit(1);
 }
 
