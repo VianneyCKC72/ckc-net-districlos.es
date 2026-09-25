@@ -16,7 +16,7 @@ class CkcProductReviews extends Module implements WidgetInterface
     {
         $this->name = 'ckcproductreviews';
         $this->author = 'Vianney - CKC NET';
-        $this->version = '1.2.1';
+        $this->version = '1.2.2';
         $this->bootstrap = true;
         $this->tab = 'front_office_features';
         $this->need_instance = true;

@@ -184,6 +184,8 @@
     }
     .block-reviews {
         background: white;
+        padding-top: 16px;
+        padding-bottom: 16px;
     }
     .btn-review {
         display: none !important;

@@ -26,9 +26,13 @@
                     <meta itemprop="bestRating" content="5" />
 
                     <div class="review-logo">
+                        {assign var='av_logo_suffix' value=''}
+                        {if isset($language.iso_code) && $language.iso_code == 'en'}
+                            {assign var='av_logo_suffix' value='-en'}
+                        {/if}
                         <picture>
-                            <source srcset="{$module_dir}views/img/avis-verifies-logo-new.webp" type="image/webp">
-                            <img src="{$module_dir}views/img/avis-verifies-logo-new.png" alt="Avis Vérifiés" class="img-fluid" loading="lazy">
+                            <source srcset="{$module_dir}views/img/avis-verifies-logo-new{$av_logo_suffix}.webp" type="image/webp">
+                            <img src="{$module_dir}views/img/avis-verifies-logo-new{$av_logo_suffix}.png" alt="{if $av_logo_suffix == '-en'}Verified Reviews{else}Avis Vérifiés{/if}" class="img-fluid" loading="lazy">
                         </picture>
                     </div>
 
