@@ -1,4 +1,7 @@
 {block name='header_top'}
+
+    {hook h='displayBandeauSoldes'}
+
     <div class="header-top">
         <div class="row-header d-flex align-items-center">
 

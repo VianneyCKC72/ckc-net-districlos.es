@@ -53,9 +53,13 @@ class Ckc_Favorite_Stores extends Module
 
     public function hookDisplayHeader()
     {
+        Media::addJsDef([
+            'ckcFavoriteStoreUrl' => $this->context->link->getModuleLink($this->name, 'favoritestore'),
+        ]);
+
         $this->context->controller->registerJavascript(
             'module-ckc-favorite-store',
-            $this->_path . 'js/favorite_store.js',
+            'modules/' . $this->name . '/js/favorite_store.js',
             ['position' => 'bottom', 'priority' => 150]
         );
     }

@@ -21,7 +21,7 @@
  <input type="text" name="city" placeholder="{l s='Ville' d='Shop.Theme.Customdtc'}" value="{if isset($smarty.get.city)}{$smarty.get.city|escape:'html':'UTF-8'}{/if}">
  <input type="text" name="job" placeholder="{l s='Intitulé du poste' d='Shop.Theme.Customdtc'}" value="{if isset($smarty.get.job)}{$smarty.get.job|escape:'html':'UTF-8'}{/if}">
   <button type="submit" title="{l s='Rechercher' d='Shop.Theme.Customdtc'}">
-    <i class="fas fa-search"></i>
+    <i class="fa fa-search" aria-hidden="true"></i>
   </button>
  <button type="reset" id="reset-search">{l s='Réinitialiser' d='Shop.Theme.Customdtc'}</button>
  </form>
