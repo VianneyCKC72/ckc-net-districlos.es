@@ -43,7 +43,7 @@ class Ckcadcampaignconfigurator extends Module
     {
         $this->name = 'ckcadcampaignconfigurator';
         $this->tab = 'administration';
-        $this->version = '1.0.2';
+        $this->version = '1.0.3';
         $this->author = 'ckc-net';
         $this->need_instance = 0;
         $this->ps_version  = (bool)version_compare(_PS_VERSION_, '1.7', '>=');
@@ -2042,12 +2042,20 @@ class Ckcadcampaignconfigurator extends Module
         $locale = $this->context->language->locale;
         $translator = $this->context->getTranslator();
         $domain = 'Shop.Theme.Custommodules';
+        $checkoutDomain = 'Shop.Theme.Customcheckout';
 
         $map = [
             'BON PLAN' => $translator->trans('BON PLAN', [], $domain, $locale),
             'BONS PLANS' => $translator->trans('BONS PLANS', [], 'Shop.Theme.Customglobal', $locale),
             'Livraison offerte dès' => $translator->trans('Livraison offerte dès', [], $domain, $locale),
             'Livraison offerte' => $translator->trans('Livraison offerte', [], 'Shop.Theme.Customcustomer', $locale),
+            // CKC Vianney — seuils promo panier (textes campagne en FR)
+            'Plus que' => $translator->trans('Plus que', [], $checkoutDomain, $locale),
+            'pour bénéficier de la' => $translator->trans('pour bénéficier de la', [], $checkoutDomain, $locale),
+            'pour bénéficier de' => $translator->trans('pour bénéficier de', [], $checkoutDomain, $locale),
+            'livraison offerte' => $translator->trans('livraison offerte', [], $checkoutDomain, $locale),
+            '&nbsp;offerts' => $translator->trans('&nbsp;offerts', [], $checkoutDomain, $locale),
+            ' offerts' => $translator->trans(' offerts', [], $checkoutDomain, $locale),
         ];
 
         // Longer keys first to avoid partial double-replacements
