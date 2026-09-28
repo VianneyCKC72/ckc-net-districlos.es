@@ -653,8 +653,13 @@ PROMPT;
         $metaTitleMax = (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX);
         $metaDescriptionMax = (int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX);
         $slugMax = (int) Configuration::get(CkcTranslate::CONF_SEO_SLUG_MAX);
-
         $jobPrompt = $this->getJobSpecificPrompt($jobCode);
+
+        // CKC Vianney — pages système : limites Meta PS (128/255), pas le plafond produit.
+        if ($jobCode === 'system_pages') {
+            $metaTitleMax = 128;
+            $metaDescriptionMax = 255;
+        }
 
         return trim(
             $basePrompt
@@ -1499,15 +1504,27 @@ PROMPT;
                 }
 
                 if ($onlyMissing) {
+                    // CKC Vianney — ignore les traductions trop courtes / coupées (ex. "Fencing &").
                     $sql .= ' AND NOT EXISTS (
                         SELECT 1 FROM `' . _DB_PREFIX_ . 'meta_lang` tgt
                         WHERE tgt.id_meta = m.id_meta
                           AND tgt.id_lang = ' . (int) $this->targetLangId . '
                           AND tgt.id_shop = ' . (int) $shopId . '
                           AND (
-                            (TRIM(IFNULL(src.title, \'\')) = \'\' OR (TRIM(IFNULL(tgt.title, \'\')) != \'\' AND tgt.title != src.title))
-                            AND
-                            (TRIM(IFNULL(src.description, \'\')) = \'\' OR (TRIM(IFNULL(tgt.description, \'\')) != \'\' AND tgt.description != src.description))
+                            TRIM(IFNULL(src.title, \'\')) = \'\'
+                            OR (
+                              TRIM(IFNULL(tgt.title, \'\')) != \'\'
+                              AND tgt.title != src.title
+                              AND CHAR_LENGTH(TRIM(tgt.title)) >= GREATEST(12, FLOOR(CHAR_LENGTH(TRIM(src.title)) * 0.45))
+                            )
+                          )
+                          AND (
+                            TRIM(IFNULL(src.description, \'\')) = \'\'
+                            OR (
+                              TRIM(IFNULL(tgt.description, \'\')) != \'\'
+                              AND tgt.description != src.description
+                              AND CHAR_LENGTH(TRIM(tgt.description)) >= GREATEST(20, FLOOR(CHAR_LENGTH(TRIM(src.description)) * 0.45))
+                            )
                           )
                     )';
                 }
@@ -3639,8 +3656,8 @@ PROMPT;
         if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS) && is_array($target)) {
             $targetTitle = trim((string) $target['title']);
             $targetDescription = trim((string) $target['description']);
-            $titleDone = ($sourceTitle === '' || ($targetTitle !== '' && $targetTitle !== $sourceTitle));
-            $descDone = ($sourceDescription === '' || ($targetDescription !== '' && $targetDescription !== $sourceDescription));
+            $titleDone = ($sourceTitle === '' || !$this->isIncompleteSystemPageSeo($targetTitle, $sourceTitle));
+            $descDone = ($sourceDescription === '' || !$this->isIncompleteSystemPageSeo($targetDescription, $sourceDescription, 20));
 
             if ($titleDone && $descDone) {
                 $this->logHistory('system_pages', 'meta', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
@@ -3653,7 +3670,7 @@ PROMPT;
         }
 
         $systemPrompt = $this->buildSystemPrompt(
-            'You translate PrestaShop system page SEO (browser tab title and meta description). Keep brand names unchanged. Do not invent promotions. Leave empty source fields empty.',
+            'You translate PrestaShop system page SEO (browser tab title and meta description). Keep brand names such as Districlos unchanged, usually at the start of the homepage title. Return COMPLETE texts close in length to the source. Never cut mid-phrase. Never end with &, and, of, the, or a dangling comma. Do not invent promotions. Leave empty source fields empty.',
             'system_pages'
         );
 
@@ -3663,6 +3680,11 @@ Return ONLY valid JSON:
   "title": "",
   "description": ""
 }
+
+Rules:
+- Keep brand names (e.g. Districlos) unchanged.
+- Title and description must be complete sentences/phrases, similar in length to the source.
+- Do not truncate. Do not end with "&" or a hanging word.
 
 Page code: {$pageCode}
 
@@ -3684,13 +3706,11 @@ PROMPT;
             ));
         }
 
+        // Limites ObjectModel Meta (title 128 / description 255), pas le plafond SEO produit (60).
         $translatedTitle = '';
         if ($sourceTitle !== '') {
-            $translatedTitle = $this->normalizeSeoText(
-                $data['title'],
-                min((int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX), 128)
-            );
-            if ($translatedTitle === '') {
+            $translatedTitle = $this->normalizeSystemPageSeoText($data['title'], 128);
+            if ($this->isIncompleteSystemPageSeo($translatedTitle, $sourceTitle)) {
                 $this->logHistory('system_pages', 'meta', (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
 
                 return $this->nextResult(sprintf(
@@ -3702,11 +3722,8 @@ PROMPT;
 
         $translatedDescription = '';
         if ($sourceDescription !== '') {
-            $translatedDescription = $this->normalizeSeoText(
-                $data['description'],
-                min((int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX), 255)
-            );
-            if ($translatedDescription === '') {
+            $translatedDescription = $this->normalizeSystemPageSeoText($data['description'], 255);
+            if ($this->isIncompleteSystemPageSeo($translatedDescription, $sourceDescription, 20)) {
                 $this->logHistory('system_pages', 'meta', (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
 
                 return $this->nextResult(sprintf(
@@ -5635,6 +5652,63 @@ PROMPT;
         }
 
         return $value;
+    }
+
+    /**
+     * CKC Vianney — SEO pages système : coupe au mot, jamais de "&" / connecteur orphelin.
+     */
+    protected function normalizeSystemPageSeoText($value, $maxLength)
+    {
+        $value = html_entity_decode(trim(strip_tags((string) $value)), ENT_QUOTES, 'UTF-8');
+        $value = preg_replace('/\s+/u', ' ', $value);
+        $value = trim((string) $value);
+
+        if ($maxLength > 0 && Tools::strlen($value) > $maxLength) {
+            $value = Tools::substr($value, 0, $maxLength);
+            if (preg_match('/^(.*)\s+\S*$/u', $value, $matches) && trim($matches[1]) !== '') {
+                $value = trim($matches[1]);
+            }
+            $value = rtrim($value, " \t\n\r\0\x0B-,:;.&");
+        }
+
+        return $value;
+    }
+
+    /**
+     * Détecte une meta coupée / trop courte par rapport à la source.
+     *
+     * @param string $target
+     * @param string $source
+     * @param int    $minAbsolute
+     *
+     * @return bool true = incomplet (à retraduire)
+     */
+    protected function isIncompleteSystemPageSeo($target, $source, $minAbsolute = 12)
+    {
+        $target = trim((string) $target);
+        $source = trim((string) $source);
+
+        if ($source === '') {
+            return false;
+        }
+
+        if ($target === '' || $target === $source) {
+            return true;
+        }
+
+        $sourceLen = Tools::strlen($source);
+        $targetLen = Tools::strlen($target);
+        $minLen = max((int) $minAbsolute, (int) floor($sourceLen * 0.45));
+
+        if ($targetLen < $minLen) {
+            return true;
+        }
+
+        if (preg_match('/(?:\s|&|&amp;|\band\b|\bof\b|\bthe\b|\bfor\b|\bwith\b|\bto\b|,|-)$/iu', $target)) {
+            return true;
+        }
+
+        return false;
     }
 
     protected function normalizeSlug($value)
