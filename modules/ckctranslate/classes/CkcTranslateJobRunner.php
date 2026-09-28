@@ -653,6 +653,9 @@ PROMPT;
         $metaTitleMax = (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX);
         $metaDescriptionMax = (int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX);
         $slugMax = (int) Configuration::get(CkcTranslate::CONF_SEO_SLUG_MAX);
+        if ($slugMax < 32) {
+            $slugMax = 80;
+        }
         $jobPrompt = $this->getJobSpecificPrompt($jobCode);
 
         // CKC Vianney — pages système : limites Meta PS (128/255), pas le plafond produit.
@@ -5715,9 +5718,17 @@ PROMPT;
     {
         $slug = Tools::link_rewrite((string) $value);
         $maxLength = (int) Configuration::get(CkcTranslate::CONF_SEO_SLUG_MAX);
+        // CKC Vianney — garde-fou : une config à 10 coupait tous les slugs (ex. rigid-fenc).
+        if ($maxLength < 32) {
+            $maxLength = 80;
+        }
 
-        if ($maxLength > 0 && Tools::strlen($slug) > $maxLength) {
+        if (Tools::strlen($slug) > $maxLength) {
             $slug = Tools::substr($slug, 0, $maxLength);
+            $cut = strrpos($slug, '-');
+            if ($cut !== false && $cut >= (int) floor($maxLength * 0.6)) {
+                $slug = Tools::substr($slug, 0, $cut);
+            }
             $slug = trim($slug, '-');
         }
 

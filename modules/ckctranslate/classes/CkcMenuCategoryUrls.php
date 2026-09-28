@@ -130,7 +130,7 @@ class CkcMenuCategoryUrls
     }
 
     /**
-     * @param array<int,string> $pathsById chemin canonique, ex. /en/107-welded-wir
+     * @param array<int,string> $pathsById chemin canonique, ex. /en/107-welded-wire-mesh
      */
     public static function rewriteHref($url, array $pathsById)
     {
