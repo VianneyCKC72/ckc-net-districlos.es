@@ -2,7 +2,7 @@
 <module>
     <name>ckctranslate</name>
     <displayName><![CDATA[CKC Translate]]></displayName>
-    <version><![CDATA[2.17.1]]></version>
+    <version><![CDATA[2.17.2]]></version>
     <description><![CDATA[AI translation assistant for products, categories and CMS.]]></description>
     <author><![CDATA[CKC]]></author>
     <tab><![CDATA[administration]]></tab>

@@ -36,7 +36,7 @@ class DTC_countdown_setter extends Module
     {
         $this->name = 'dtc_countdown_setter';
         $this->tab = 'front_office_features';
-        $this->version = '1.1.1';
+        $this->version = '1.1.2';
         $this->author = 'Districlos';
         $this->need_instance = 1;
 

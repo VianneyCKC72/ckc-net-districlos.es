@@ -2,7 +2,7 @@
 <module>
 	<name>dtc_countdown_setter</name>
 	<displayName><![CDATA[Countdown setter (Districlos)]]></displayName>
-	<version><![CDATA[1.1.1]]></version>
+	<version><![CDATA[1.1.2]]></version>
 	<description><![CDATA[Module utiliser pour programmer des comptes à rebours type soldes]]></description>
 	<author><![CDATA[Districlos]]></author>
 	<tab><![CDATA[front_office_features]]></tab>

@@ -328,7 +328,7 @@
                 </a>
             {else}
                 <a href="{$link->getModuleLink('ckcconfigurateurdistriclos', 'configurator')|escape:'htmlall':'UTF-8'}" class="btn-configurateur-mobile">
-                <img width="45px" height="45px" alt="{l s='Configurez votre clôture' d='Shop.Theme.Customglobal'}" src="themes/classic/assets/img/configurer-icon.svg">
+                <img width="45px" height="45px" alt="{l s='Configurez votre clôture' d='Shop.Theme.Customglobal'}" src="/themes/classic/assets/img/configurer-icon.svg">
                 <div class="text-btn">
                     <span class="medium-text">{l s='Configurez votre clôture' d='Shop.Theme.Customglobal'}</span>
                 </div>
@@ -364,7 +364,7 @@
                         <p>{l s='Magasins' d='Shop.Theme.Custommodules'}</p>
                     </a>
                     <a class="menu-mobile-useful-link" href="{$link->getCMSLink(657)|escape:'html':'UTF-8'}">
-                        <img src="themes/classic/assets/img/service-de-pose.svg" alt="{l s='Service de pose' d='Shop.Theme.Customglobal'}" width="19px" height="19px">
+                        <img src="/themes/classic/assets/img/service-de-pose.svg" alt="{l s='Service de pose' d='Shop.Theme.Customglobal'}" width="19px" height="19px">
                         <p style="color: #026473;">{l s='Service de pose' d='Shop.Theme.Customglobal'}</p>
                     </a>
                     <a class="menu-mobile-useful-link" href="{$urls.pages.authentication}" onclick="window.location.href='{$urls.pages.authentication}?back={$urls.current_url|urlencode}'">
