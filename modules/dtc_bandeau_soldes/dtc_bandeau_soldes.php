@@ -9,7 +9,7 @@ class dtc_bandeau_soldes extends Module
     private const DEFAULTS = [
         'DTC_BANDEAU_SOLDES_ENABLED' => 1,
         'DTC_BANDEAU_SOLDES_BADGE' => 'BONS PLANS',
-        'DTC_BANDEAU_SOLDES_TEXT' => 'Jusqu\'à <strong>-12%</strong> offerts dès 2000€ d\'achat !',
+        'DTC_BANDEAU_SOLDES_TEXT' => '<strong>PROJET EN FÊTE</strong> - <strong>75€</strong> tous les <strong>500€</strong> d\'achat',
         'DTC_BANDEAU_SOLDES_LINK' => '/400-bons-plans',
     ];
 
@@ -132,7 +132,11 @@ class dtc_bandeau_soldes extends Module
 
         $this->context->smarty->assign('dtc_bandeau', [
             'badge' => $this->trans($this->cfg('DTC_BANDEAU_SOLDES_BADGE'), [], 'Shop.Theme.Customdtc'),
-            'text' => $this->trans($this->cfg('DTC_BANDEAU_SOLDES_TEXT'), [], 'Shop.Theme.Customdtc'),
+            // HTML (<strong>) autorisé : trans() échappe, on décode pour le FO
+            'text' => htmlspecialchars_decode(
+                $this->trans($this->cfg('DTC_BANDEAU_SOLDES_TEXT'), [], 'Shop.Theme.Customdtc'),
+                ENT_QUOTES
+            ),
             'link' => $this->localizeStorefrontLink((string) $this->cfg('DTC_BANDEAU_SOLDES_LINK')),
         ]);
 
