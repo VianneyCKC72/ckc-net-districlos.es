@@ -60,7 +60,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.17.0';
+        $this->version = '2.17.1';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -174,7 +174,7 @@ class CkcTranslate extends Module
             && Configuration::updateValue(self::CONF_PROMPT_RESPONSIVEGALLERY, 'Translate Responsive Gallery page title, descriptions and gallery titles (product family names like Grillage rigide). Keep labels short, catalog-like and consistent with existing fence vocabulary. Preserve HTML in descriptions. Do not invent product lines.')
             && Configuration::updateValue(self::CONF_PROMPT_PRODUCT_FAQ, 'Translate product FAQ questions and answers for a fencing e-commerce catalog. Preserve all HTML tags, attributes and lists. Keep a clear, helpful customer-support tone. Do not invent technical specs, dimensions, warranties or certifications. Keep brand names and product terms consistent.')
             && Configuration::updateValue(self::CONF_PROMPT_PRODUCT_GUIDE, 'Translate the product measuring guide HTML (how to measure a fence, posts, panels). Preserve all HTML tags, attributes, images, lists and layout. Keep a clear instructional tone. Do not invent dimensions, tools or steps. Keep brand and product names.')
-            && Configuration::updateValue(self::CONF_PROMPT_SYSTEM_PAGES, 'Translate PrestaShop system page SEO fields (meta title and meta description: homepage, cart, login, contact, sitemap, etc.). Keep brand names such as Districlos unchanged. Keep a natural, concise SEO tone. Do not invent promotions or claims. Leave empty source fields empty.')
+            && Configuration::updateValue(self::CONF_PROMPT_SYSTEM_PAGES, 'Translate PrestaShop system page SEO fields (meta title and meta description: homepage, cart, login, contact, sitemap, etc.). Always keep brand names such as Districlos unchanged and place them naturally (usually at the start for the homepage title). Return a COMPLETE title and description, close in length to the source (do not shorten aggressively, do not cut mid-phrase, never end with &, and, of, the, or a dangling comma). Keep a natural, concise SEO tone. Do not invent promotions or claims. Leave empty source fields empty.')
             && Configuration::updateValue(self::CONF_FILTER_TYPE, 'all')
             && Configuration::updateValue(self::CONF_FILTER_IDS, '')
             && Configuration::updateValue(self::CONF_FILTER_CATEGORY_ID, 0);
