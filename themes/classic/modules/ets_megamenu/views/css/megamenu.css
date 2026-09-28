@@ -3104,6 +3104,12 @@ body.hover_menu .ets_mm_megamenu::before, body.hover_menu #footer::before {
     }
 }
 
+/* Badge "Nouveau" centré avec le titre (mobile / menu ouvert) */
+.changestatus .mm_tab_title_wrapper .mm_bubble_text {
+    top: 0;
+    border-radius: 5px;
+}
+
 @media (min-width: 991px) {
     .changestatus.ets_mm_megamenu.hook-custom {
         border-top: 1px solid #ddd;
@@ -3281,6 +3287,117 @@ li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name.active,
     width: 390px;
     margin-left: -30px;
     margin-top:30px;
+}
+
+.mm_menus_ul .info_menu_mobile.menu-mobile-promo-banner-li,
+.hook-default.layout_layout1 .mm_menus_ul .menu-mobile-promo-banner-li,
+.changestatus .mm_menus_ul .menu-mobile-promo-banner-li {
+    margin-left: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.menu-mobile-promo-banner {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* Desktop : le panneau s'élargit à 780px quand un sous-menu s'ouvre —
+   le bandeau doit rester calé sur la colonne gauche (390px), comme l'ancienne image */
+@media (min-width: 769px) {
+    .mm_menus_ul .menu-mobile-promo-banner-li,
+    .changestatus .mm_menus_ul .menu-mobile-promo-banner-li,
+    .hook-default.layout_layout1 .mm_menus_ul .menu-mobile-promo-banner-li {
+        width: 390px !important;
+        max-width: 390px !important;
+    }
+
+    .menu-mobile-promo-banner {
+        width: 390px;
+        max-width: 390px;
+    }
+}
+
+.menu-mobile-promo-banner__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 20px 15px;
+    background-color: #79C046;
+    text-decoration: none;
+    color: #fff;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.menu-mobile-promo-banner__link:hover,
+.menu-mobile-promo-banner__link:focus {
+    text-decoration: none;
+    color: #fff;
+    opacity: 0.95;
+}
+
+.menu-mobile-promo-banner__text {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.menu-mobile-promo-banner__title {
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 1.1;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.menu-mobile-promo-banner__subtitle {
+    font-weight: 300;
+    font-size: 13px;
+    line-height: 1.2;
+    color: #fff;
+}
+
+.menu-mobile-promo-banner__cta {
+    flex-shrink: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 15px;
+    background-color: #026473;
+    border-radius: 999px;
+    color: #fff;
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+@media (max-width: 390px) {
+    .menu-mobile-promo-banner__link {
+        padding: 12px 12px;
+        gap: 8px;
+    }
+
+    .menu-mobile-promo-banner__title {
+        font-size: 14px;
+    }
+
+    .menu-mobile-promo-banner__subtitle {
+        font-size: 12px;
+    }
+
+    .menu-mobile-promo-banner__cta {
+        padding: 7px 11px;
+        font-size: 12px;
+    }
 }
 
 .mm_tabs_li  .mm_tab_toggle_title {
@@ -3627,6 +3744,70 @@ p.menu-mobile-note-text span{
         padding-left: 15px;
         margin-left: 15px;
     }
+}
+
+/* Bandeau promo : pleine largeur du panneau gauche, sans débordement sous le sous-menu */
+.changestatus .mm_menus_ul .menu-mobile-promo-banner-li,
+.hook-default.layout_layout1 .mm_menus_ul .menu-mobile-promo-banner-li,
+.mm_menus_ul .info_menu_mobile.menu-mobile-promo-banner-li {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+@media (min-width: 769px) {
+    .changestatus .mm_menus_ul .menu-mobile-promo-banner-li,
+    .hook-default.layout_layout1 .mm_menus_ul .menu-mobile-promo-banner-li,
+    .mm_menus_ul .info_menu_mobile.menu-mobile-promo-banner-li {
+        width: 390px !important;
+        max-width: 390px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .changestatus .mm_menus_ul .menu-mobile-promo-banner-li,
+    .hook-default.layout_layout1 .mm_menus_ul .menu-mobile-promo-banner-li,
+    .mm_menus_ul .info_menu_mobile.menu-mobile-promo-banner-li {
+        width: 100% !important;
+        max-width: 100%;
+    }
+
+    /* Desktop banner masqué en mobile (doublon) — la version mobile remplace "Bons plans" */
+    .menu-mobile-promo-banner-li--desktop {
+        display: none !important;
+    }
+
+    .info-menu-mobile-only.menu-mobile-promo-banner-li {
+        display: list-item !important;
+        margin: 10px 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        list-style: none;
+    }
+
+    .info-menu-mobile-only.menu-mobile-promo-banner-li .menu-mobile-promo-banner {
+        margin-top: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* Annule le rouge de .info-menu-mobile-only span (héritage "Bons plans") */
+    .info-menu-mobile-only.menu-mobile-promo-banner-li span {
+        color: #fff !important;
+        font-size: 14px;
+    }
+}
+
+/* Pas d'arrondis / fond beige au hover (règle générale des items menu) */
+.changestatus .mm_menus_li.menu-mobile-promo-banner-li:hover > div,
+.changestatus .mm_menus_li.menu-mobile-promo-banner-li.active > div,
+.changestatus .mm_menus_li.menu-mobile-promo-banner-li:hover > .menu-mobile-promo-banner,
+.changestatus .mm_menus_li.menu-mobile-promo-banner-li.active > .menu-mobile-promo-banner {
+    background: transparent !important;
+    border-radius: 0 !important;
 }
 
 span.mm_menu_content_title > div:nth-child(2){

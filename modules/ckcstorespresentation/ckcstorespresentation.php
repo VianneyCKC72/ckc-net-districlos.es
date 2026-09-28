@@ -853,7 +853,13 @@ class Ckcstorespresentation extends Module implements WidgetInterface
 
     public function hookDisplayHeader()
     {
-        if ($this->getCmsStoreForPage()) {
+        $cmsStore = $this->getCmsStoreForPage();
+        if ($cmsStore) {
+            // Expose l'id boutique pour le cœur favori des pages détail CMS (Elementor).
+            Media::addJsDef([
+                'ckcFavoriteStoreId' => (int) $cmsStore['id_multiboutique'],
+            ]);
+
             return;
         }
         $idCms = ($this->context->controller instanceof CmsController && isset($this->context->controller->cms->id))

@@ -26,82 +26,66 @@
 {capture assign="productClasses"}{if !empty($productClass)}{$productClass}{else}col-xs-12 col-sm-6 col-lg-3 col-xl-3{/if}{/capture}
 
 {* ─────────────────────────────────────────────────────────────────────────────
-   Bannière listing catégorie
-   • Avant le 24/06/2025 00h01 : comportement existant (jours fous / promo générique)
-   • À partir du 24/06/2025 00h01 : visuels soldes par famille de catégories
+   Bannière listing catégorie — campagne Projet en fête (toutes catégories)
+   Mapping soldes par famille conservé en commentaire ci-dessous pour réactivation.
    ───────────────────────────────────────────────────────────────────────────── *}
+{assign var=category_listing_banner_file value='category_projets_fete.webp'}
+{*
 {if $page.page_name == 'category'}
-
     {assign var=_cat_id   value=Context::getContext()->controller->getCategory()->id}
     {assign var=_now_ts   value=$smarty.now}
-    {assign var=_soldes_ts value=1750719660}{* timestamp UTC de 2025-06-19 00:01:00 (Europe/Paris = UTC+2, donc UTC 22h01 le 23/06) *}
+    {assign var=_soldes_ts value=1750719660}
 
     {if $_now_ts >= $_soldes_ts}
-
-        {* ── SOLDES : visuels par famille de catégories ── *}
         {if in_array($_cat_id, [215, 356, 216])}
             {assign var=category_listing_banner_file value='promo_category_cloture_alu.png'}
-
         {elseif in_array($_cat_id, [438, 439, 441])}
             {assign var=category_listing_banner_file value='promo_category_cloture_composite.png'}
-
         {elseif in_array($_cat_id, [34, 133, 6])}
             {assign var=category_listing_banner_file value='promo_category_lattes_pvc.png'}
-
         {elseif in_array($_cat_id, [241, 243, 279, 293])}
             {assign var=category_listing_banner_file value='promo_category_portails_alu.png'}
-
         {elseif in_array($_cat_id, [245, 368, 367, 4])}
             {assign var=category_listing_banner_file value='promo_category_moteurs.png'}
-
         {elseif in_array($_cat_id, [337, 323, 130, 169, 171, 280, 294])}
             {assign var=category_listing_banner_file value='promo_category_pack_portailportillon_alu.png'}
-
         {elseif in_array($_cat_id, [3, 93, 94, 96, 95, 97, 153, 92, 324])}
             {assign var=category_listing_banner_file value='promo_category_rigide.jpg'}
-
         {else}
-            {* Catégorie sans visuel soldes spécifique → fallback générique *}
             {assign var=category_listing_banner_file value='category-listing-promo.jpg'}
         {/if}
-
     {else}
-
-        {* ── AVANT SOLDES : comportement d'origine inchangé ── *}
         {if in_array($_cat_id, [169, 240, 243, 339, 337, 323, 171, 239, 241, 366, 4])}
             {assign var=category_listing_banner_file value='category-joursfous.jpg'}
         {else}
             {assign var=category_listing_banner_file value='category-listing-promo.jpg'}
         {/if}
-
     {/if}
-
 {else}
     {assign var=category_listing_banner_file value='category-listing-promo.jpg'}
 {/if}
+*}
 {* ───────────────────────────────────────────────────────────────────────────── *}
 
 <div class="products{if !empty($cssClass)} {$cssClass}{/if} {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')} list_view {/if}">
     {foreach from=$products item="product" key="position" name=productsList}
         {include file="catalog/_partials/miniatures/product.tpl" product=$product position=$position productClasses=$productClasses}
 
-        {* Bannière catégorie désactivée
         {if !$pro.env && $page.page_name == 'category' && isset($listing.pagination.items_shown_from) && $listing.pagination.items_shown_from == 1 && !isset($smarty.cookies.show_list)}
             {if $smarty.foreach.productsList.iteration == 1}
                 <div class="category-listing-banner category-listing-banner--mobile col-6 col-sm-6 d-md-none">
                     <div class="category-listing-banner__inner">
-                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/{$category_listing_banner_file}" alt="" loading="lazy" width="400" height="711">
+                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/{$category_listing_banner_file}" alt="{l s='PROJET EN FÊTE' d='Shop.Theme.Custommodules'}" loading="lazy" width="400" height="711">
                     </div>
                 </div>
             {/if}
             {if $smarty.foreach.productsList.iteration == 3}
                 <div class="category-listing-banner category-listing-banner--desktop d-none d-lg-block col-lg-3 col-xl-3">
                     <div class="category-listing-banner__inner">
-                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/{$category_listing_banner_file}" alt="" loading="lazy" width="400" height="711">
+                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/{$category_listing_banner_file}" alt="{l s='PROJET EN FÊTE' d='Shop.Theme.Custommodules'}" loading="lazy" width="400" height="711">
                     </div>
                 </div>
             {/if}
         {/if}
-        *}
     {/foreach}
 </div>
