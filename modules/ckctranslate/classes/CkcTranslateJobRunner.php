@@ -801,9 +801,8 @@ PROMPT;
                     return 0;
                 }
 
-                $rows = Db::getInstance()->executeS($filtered['sql']);
-
-                return is_array($rows) ? count($rows) : 0;
+                // Paginé : certains hôtes / caches SQL tronquent executeS (ex. 10 lignes).
+                return count($this->fetchAllSqlColumnValues($filtered['sql'], $filtered['column']));
         }
     }
 
@@ -5834,6 +5833,7 @@ PROMPT;
 
     protected function getNextId($cookieKey, $indexKey, $sql, $column)
     {
+        unset($indexKey);
         if (empty($sql) || empty($column)) {
             return 0;
         }
@@ -5842,17 +5842,7 @@ PROMPT;
         $paths = self::getQueueFilePaths($queueName);
 
         if (!file_exists($paths['items'])) {
-            $rows = Db::getInstance()->executeS($sql);
-            $ids = array();
-
-            if (is_array($rows)) {
-                foreach ($rows as $row) {
-                    if (isset($row[$column])) {
-                        $ids[] = (int) $row[$column];
-                    }
-                }
-            }
-
+            $ids = $this->fetchAllSqlColumnValues($sql, $column);
             @file_put_contents($paths['items'], json_encode($ids));
             @file_put_contents($paths['index'], '0');
         }
@@ -5871,6 +5861,97 @@ PROMPT;
         @file_put_contents($paths['index'], (string) ($index + 1));
 
         return $currentId;
+    }
+
+    /**
+     * Charge toutes les valeurs d’une colonne SQL, page par page.
+     * Contourne les plafonds silencieux (ex. Softizy / caches qui ne renvoient que 10 lignes).
+     *
+     * @param string $sql
+     * @param string $column
+     *
+     * @return array<int,int|string>
+     */
+    protected function fetchAllSqlColumnValues($sql, $column)
+    {
+        $values = array();
+        $seen = array();
+        $baseSql = preg_replace('/\s+LIMIT\s+\d+(\s*,\s*\d+)?(\s+OFFSET\s+\d+)?\s*$/i', '', trim((string) $sql));
+        if ($baseSql === '' || $column === '') {
+            return $values;
+        }
+
+        $pageSize = 500;
+        $offset = 0;
+        $guard = 0;
+        $db = Db::getInstance();
+        $col = bqSQL($column);
+        $useKeyset = false;
+        $lastId = 0;
+
+        while ($guard < 10000) {
+            ++$guard;
+
+            if ($useKeyset) {
+                $pageSql = 'SELECT `' . $col . '` FROM (' . $baseSql . ') ckct_q'
+                    . ' WHERE `' . $col . '` > ' . (int) $lastId
+                    . ' ORDER BY `' . $col . '` ASC'
+                    . ' LIMIT ' . (int) $pageSize;
+            } else {
+                $pageSql = $baseSql . ' LIMIT ' . (int) $pageSize . ' OFFSET ' . (int) $offset;
+            }
+
+            $rows = $db->executeS($pageSql, true, false);
+            if (!is_array($rows) || !$rows) {
+                break;
+            }
+
+            $newInPage = 0;
+            foreach ($rows as $row) {
+                if (!isset($row[$column])) {
+                    continue;
+                }
+                $val = $row[$column];
+                $key = is_scalar($val) ? (string) $val : md5(json_encode($val));
+                if (isset($seen[$key])) {
+                    continue;
+                }
+                $seen[$key] = true;
+                $intVal = (int) $val;
+                $values[] = $intVal;
+                $lastId = max($lastId, $intVal);
+                ++$newInPage;
+            }
+
+            $rowCount = count($rows);
+
+            if ($newInPage === 0) {
+                // OFFSET ignoré → bascule en pagination par id
+                if (!$useKeyset && !empty($values)) {
+                    $useKeyset = true;
+                    $pageSize = 10;
+                    continue;
+                }
+                break;
+            }
+
+            if ($rowCount < $pageSize) {
+                if ($rowCount === 10 && $pageSize > 10) {
+                    $pageSize = 10;
+                    if (!$useKeyset) {
+                        $offset += $rowCount;
+                    }
+                    continue;
+                }
+                break;
+            }
+
+            if (!$useKeyset) {
+                $offset += $rowCount;
+            }
+        }
+
+        return $values;
     }
 
     protected function isValidFields($data, array $fields)

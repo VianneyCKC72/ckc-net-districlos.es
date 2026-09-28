@@ -43,7 +43,7 @@ class Ckcadcampaignconfigurator extends Module
     {
         $this->name = 'ckcadcampaignconfigurator';
         $this->tab = 'administration';
-        $this->version = '1.0.3';
+        $this->version = '1.0.4';
         $this->author = 'ckc-net';
         $this->need_instance = 0;
         $this->ps_version  = (bool)version_compare(_PS_VERSION_, '1.7', '>=');
@@ -2033,30 +2033,52 @@ class Ckcadcampaignconfigurator extends Module
             return $html;
         }
 
-        $idLang = (int) $this->context->language->id;
-        $idDefault = (int) Configuration::get('PS_LANG_DEFAULT');
-        if ($idLang === $idDefault) {
+        $iso = Tools::strtolower((string) $this->context->language->iso_code);
+        if ($iso === 'fr') {
             return $html;
         }
+
+        // Textes campagne souvent stockés avec entités (b&eacute;n&eacute;ficier…)
+        $html = html_entity_decode($html, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $html = str_replace("\xc2\xa0", ' ', $html);
 
         $locale = $this->context->language->locale;
         $translator = $this->context->getTranslator();
         $domain = 'Shop.Theme.Custommodules';
         $checkoutDomain = 'Shop.Theme.Customcheckout';
 
-        $map = [
+        // EN : map fiable (catalogue XLF parfois non recompilé) — CKC Vianney
+        $enMap = array(
+            'Plus que' => 'Only',
+            'pour bénéficier de la' => 'more to get',
+            'pour bénéficier de' => 'more to get',
+            'livraison offerte' => 'free shipping',
+            '&nbsp;offerts' => '&nbsp;off',
+            ' offerts' => ' off',
+            'BON PLAN' => 'GOOD DEAL',
+            'BONS PLANS' => 'GOOD DEALS',
+            'Livraison offerte dès' => 'Free shipping from',
+            'Livraison offerte' => 'Free shipping',
+        );
+
+        $map = array(
             'BON PLAN' => $translator->trans('BON PLAN', [], $domain, $locale),
             'BONS PLANS' => $translator->trans('BONS PLANS', [], 'Shop.Theme.Customglobal', $locale),
             'Livraison offerte dès' => $translator->trans('Livraison offerte dès', [], $domain, $locale),
             'Livraison offerte' => $translator->trans('Livraison offerte', [], 'Shop.Theme.Customcustomer', $locale),
-            // CKC Vianney — seuils promo panier (textes campagne en FR)
             'Plus que' => $translator->trans('Plus que', [], $checkoutDomain, $locale),
             'pour bénéficier de la' => $translator->trans('pour bénéficier de la', [], $checkoutDomain, $locale),
             'pour bénéficier de' => $translator->trans('pour bénéficier de', [], $checkoutDomain, $locale),
             'livraison offerte' => $translator->trans('livraison offerte', [], $checkoutDomain, $locale),
             '&nbsp;offerts' => $translator->trans('&nbsp;offerts', [], $checkoutDomain, $locale),
             ' offerts' => $translator->trans(' offerts', [], $checkoutDomain, $locale),
-        ];
+        );
+
+        if ($iso === 'en') {
+            foreach ($enMap as $source => $target) {
+                $map[$source] = $target;
+            }
+        }
 
         // Longer keys first to avoid partial double-replacements
         uksort($map, function ($a, $b) {

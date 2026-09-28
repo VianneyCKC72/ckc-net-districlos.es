@@ -131,6 +131,10 @@ class AdminCkcTranslateController extends ModuleAdminController
             if (Tools::getValue('fresh_queue')) {
                 $this->resetJobQueue($jobCode);
                 // Rebuild queue against missing translations (new entities / source copies).
+                Configuration::updateValue(CkcTranslate::CONF_ONLY_MISSING_FIELDS, 1);
+                Configuration::set(CkcTranslate::CONF_ONLY_MISSING_FIELDS, 1);
+            }
+            if (Tools::getValue('keep_only_missing')) {
                 Configuration::set(CkcTranslate::CONF_ONLY_MISSING_FIELDS, 1);
             }
             $this->runJob($jobCode);
@@ -771,7 +775,7 @@ class AdminCkcTranslateController extends ModuleAdminController
             );
         }
 
-        $autoReloadUrl = self::$currentIndex . '&token=' . $this->token . '&run_job=' . urlencode($job);
+        $autoReloadUrl = self::$currentIndex . '&token=' . $this->token . '&run_job=' . urlencode($job) . ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS) ? '&keep_only_missing=1' : '');
 
         $this->context->smarty->assign(array(
             'result' => $result,

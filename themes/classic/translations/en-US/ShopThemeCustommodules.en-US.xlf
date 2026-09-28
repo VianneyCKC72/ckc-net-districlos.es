@@ -67,6 +67,7 @@
       <trans-unit id="63"><source>Page de de demande de Devis</source><target>Quote request page</target></trans-unit>
       <trans-unit id="64"><source>Paiement 100% sécurisé </source><target>100% secure payment </target></trans-unit>
       <trans-unit id="65"><source>Paiement en plusieurs fois gratuit</source><target>Free installment payment</target></trans-unit>
+      <trans-unit id="65b"><source>Paiement en plusieurs fois</source><target>Pay in installments</target></trans-unit>
       <trans-unit id="66"><source>Particuliers</source><target>Individuals</target></trans-unit>
       <trans-unit id="67"><source>Payez en plusieurs fois</source><target>Pay in installments</target></trans-unit>
       <trans-unit id="68"><source>Pensez à vérifiez votre dossier courrier indésirable.</source><target>Remember to check your spam folder.</target></trans-unit>
@@ -190,6 +191,7 @@
       <trans-unit id="186"><source>PROJET EN FÊTE</source><target>CELEBRATE YOUR PROJECT</target></trans-unit>
       <trans-unit id="187"><source>sur une sélection de produits</source><target>on a selection of products</target></trans-unit>
       <trans-unit id="188"><source>Voir nos bons plans</source><target>See our deals</target></trans-unit>
+      <trans-unit id="189"><source>Prix unitaire TTC</source><target>Unit price incl. tax</target></trans-unit>
     </body>
   </file>
 </xliff>

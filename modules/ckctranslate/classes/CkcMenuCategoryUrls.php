@@ -1,6 +1,7 @@
 <?php
 /**
- * CKC Vianney — aligne les liens catégories EN (menu, home CE, contenus) sur l’URL 200.
+ * CKC Vianney — remplace les slugs FR encore présents dans les contenus EN (home CE, menus).
+ * Whitelist exacte uniquement (jamais de réécriture générique id→catégorie : casse les URLs produit).
  */
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -11,7 +12,7 @@ class CkcMenuCategoryUrls
     public const FLAG = 'CKC_EN_MENU_CATEGORY_URLS_OK';
 
     /**
-     * Slugs EN canoniques (audit home 2026-09-28 — liens FR en 302).
+     * Slugs EN canoniques (category_lang) — audit home 2026-09-28.
      *
      * @var array<int,string>
      */
@@ -22,6 +23,21 @@ class CkcMenuCategoryUrls
         6 => 'privacy-screening',
         130 => 'garden-gates',
         215 => 'aluminum-fencing',
+    );
+
+    /**
+     * Chemins FR (302) → EN (200). Remplacement exact dans les contenus.
+     *
+     * @var array<string,string>
+     */
+    public static $exactPathMap = array(
+        '/en/3-cloture-rigide' => '/en/3-rigid-fence-panels',
+        '/en/2-grillage-souple' => '/en/2-flexible-mesh-fencing',
+        '/en/4-portail-et-portillon' => '/en/4-gates-garden-gates',
+        '/en/4-portillon-portail' => '/en/4-gates-garden-gates',
+        '/en/6-brise-vue' => '/en/6-privacy-screening',
+        '/en/215-cloture-aluminium' => '/en/215-aluminum-fencing',
+        '/en/130-portillons' => '/en/130-garden-gates',
     );
 
     /**
@@ -50,11 +66,6 @@ class CkcMenuCategoryUrls
 
         $result['slugs'] = self::applyForcedSlugs($idLang, $idShop, $dryRun);
 
-        $paths = self::canonicalPaths($idLang, $idShop);
-        if (!$paths) {
-            return $result;
-        }
-
         $targets = array(
             array('table' => 'ets_mm_block_lang', 'id' => 'id_block', 'fields' => array('content', 'title_link', 'image_link'), 'lang' => true),
             array('table' => 'ets_mm_menu_lang', 'id' => 'id_menu', 'fields' => array('link'), 'lang' => true),
@@ -63,21 +74,19 @@ class CkcMenuCategoryUrls
         );
 
         foreach ($targets as $target) {
-            self::rewriteTable($target, $idLang, $idShop, $paths, $result, $dryRun);
+            self::rewriteTable($target, $idLang, $idShop, $result, $dryRun);
         }
 
-        // Creative Elements : JSON Elementor (home EN, footer CE, etc.)
-        self::rewriteCeMeta($paths, $result, $dryRun);
-
-        // Linklist custom URLs (si table présente)
-        self::rewriteLinkList($idLang, $idShop, $paths, $result, $dryRun);
+        // CE : toutes les rows contenant un chemin /en/… FR (préfixe /en/ = URL EN, pas de filtre UID)
+        self::rewriteCeMeta($result, $dryRun);
+        self::rewriteLinkList($idLang, $idShop, $result, $dryRun);
 
         if (!$dryRun && ($result['replacements'] > 0 || $result['slugs'] > 0)) {
             self::clearMenuCache();
             self::clearCeElementCache();
             PrestaShopLogger::addLog(
-                'CKC Vianney — liens EN : ' . (int) $result['replacements']
-                . ' remplacements, ' . (int) $result['slugs'] . ' slugs catégories forcés.',
+                'CKC Vianney — liens EN whitelist : ' . (int) $result['replacements']
+                . ' remplacements, ' . (int) $result['slugs'] . ' slugs catégories.',
                 1
             );
         }
@@ -118,10 +127,9 @@ class CkcMenuCategoryUrls
 
     /**
      * @param array{table:string,id:string,fields:array<int,string>,lang?:bool,shop?:bool} $target
-     * @param array<int,string> $paths
      * @param array{replacements:int,rows:int,slugs:int,samples:array} $result
      */
-    protected static function rewriteTable(array $target, $idLang, $idShop, array $paths, array &$result, $dryRun)
+    protected static function rewriteTable(array $target, $idLang, $idShop, array &$result, $dryRun)
     {
         if (!self::tableExists($target['table'])) {
             return;
@@ -147,7 +155,7 @@ class CkcMenuCategoryUrls
                 if (!array_key_exists($field, $row) || $row[$field] === null || $row[$field] === '') {
                     continue;
                 }
-                $rewritten = self::rewriteField((string) $row[$field], $paths, $result['samples']);
+                $rewritten = self::rewriteField((string) $row[$field], $result['samples']);
                 if ($rewritten['count'] > 0 && $rewritten['value'] !== $row[$field]) {
                     $update[$field] = pSQL($rewritten['value'], true);
                     $result['replacements'] += $rewritten['count'];
@@ -172,45 +180,31 @@ class CkcMenuCategoryUrls
     }
 
     /**
-     * @param array<int,string> $paths
      * @param array{replacements:int,rows:int,slugs:int,samples:array} $result
      */
-    protected static function rewriteCeMeta(array $paths, array &$result, $dryRun)
+    protected static function rewriteCeMeta(array &$result, $dryRun)
     {
         if (!self::tableExists('ce_meta')) {
             return;
         }
 
-        $idLang = (int) Language::getIdByIso('en');
-        if ($idLang <= 0) {
-            return;
+        $likes = array();
+        foreach (array_keys(self::$exactPathMap) as $from) {
+            $likes[] = '`value` LIKE \'%' . pSQL($from) . '%\'';
+            $likes[] = '`value` LIKE \'%' . pSQL(str_replace('/', '\\/', $from)) . '%\'';
         }
 
         $rows = Db::getInstance()->executeS(
             'SELECT `id`, `name`, `value` FROM `' . _DB_PREFIX_ . 'ce_meta`
-            WHERE `value` LIKE \'%/en/%\'
-               OR `value` LIKE \'%\\\\/en\\\\/%\'
-               OR `value` LIKE \'%cloture%\'
-               OR `value` LIKE \'%grillage%\'
-               OR `value` LIKE \'%portail%\'
-               OR `value` LIKE \'%portillon%\'
-               OR `value` LIKE \'%brise-vue%\''
+            WHERE (' . implode(' OR ', $likes) . ')
+              AND `name` NOT IN (\'_ce_element_cache\', \'_elementor_css\')'
         );
         if (!$rows) {
             return;
         }
 
         foreach ($rows as $row) {
-            // UID CE : …{type:2}{lang:2}{shop:2} — ne toucher que la langue EN
-            $uid = (string) $row['id'];
-            if (Tools::strlen($uid) > 6) {
-                $uidLang = (int) Tools::substr($uid, -4, 2);
-                if ($uidLang !== $idLang) {
-                    continue;
-                }
-            }
-
-            $rewritten = self::rewriteField((string) $row['value'], $paths, $result['samples']);
+            $rewritten = self::rewriteField((string) $row['value'], $result['samples']);
             if ($rewritten['count'] <= 0 || $rewritten['value'] === $row['value']) {
                 continue;
             }
@@ -228,12 +222,10 @@ class CkcMenuCategoryUrls
     }
 
     /**
-     * @param array<int,string> $paths
      * @param array{replacements:int,rows:int,slugs:int,samples:array} $result
      */
-    protected static function rewriteLinkList($idLang, $idShop, array $paths, array &$result, $dryRun)
+    protected static function rewriteLinkList($idLang, $idShop, array &$result, $dryRun)
     {
-        // PS 8 linklist : URLs custom parfois en JSON dans link_block
         $candidates = array(
             array('table' => 'link_block', 'id' => 'id_link_block', 'fields' => array('content'), 'lang' => false),
             array('table' => 'link_block_lang', 'id' => 'id_link_block', 'fields' => array('title', 'custom_url'), 'lang' => true),
@@ -242,7 +234,6 @@ class CkcMenuCategoryUrls
             if (!self::tableExists($target['table'])) {
                 continue;
             }
-            // Vérifier que les colonnes existent avant SELECT *
             $cols = Db::getInstance()->executeS('SHOW COLUMNS FROM `' . _DB_PREFIX_ . bqSQL($target['table']) . '`');
             $colNames = array();
             foreach ($cols ?: array() as $col) {
@@ -253,72 +244,34 @@ class CkcMenuCategoryUrls
                 continue;
             }
             $target['fields'] = $fields;
-            self::rewriteTable($target, $idLang, $idShop, $paths, $result, $dryRun);
+            self::rewriteTable($target, $idLang, $idShop, $result, $dryRun);
         }
     }
 
     /**
-     * @param array<int,string> $pathsById
+     * Remplacement exact whitelist (forme /en/… et \/en\/…).
+     *
      * @param array<int,array{from:string,to:string}> $samples
      *
      * @return array{value:string,count:int}
      */
-    public static function rewriteField($value, array $pathsById, array &$samples = array())
+    public static function rewriteField($value, array &$samples = array())
     {
         $count = 0;
-
-        // HTML href="..."
-        if (stripos($value, 'href') !== false) {
-            $html = preg_replace_callback(
-                '#\bhref\s*=\s*(["\'])([^"\']*)\1#i',
-                function (array $match) use ($pathsById, &$count, &$samples) {
-                    $next = self::rewriteHref($match[2], $pathsById);
-                    if ($next !== $match[2]) {
-                        $count++;
-                        self::pushSample($samples, $match[2], $next);
-                    }
-
-                    return 'href=' . $match[1] . $next . $match[1];
-                },
-                $value
-            );
-            if (is_string($html)) {
-                $value = $html;
+        foreach (self::$exactPathMap as $from => $to) {
+            $n = substr_count($value, $from);
+            if ($n > 0) {
+                $value = str_replace($from, $to, $value);
+                $count += $n;
+                self::pushSample($samples, $from, $to);
             }
-        }
-
-        // Chemins catégorie partout (texte, JSON CE avec \/ échappé)
-        $json = preg_replace_callback(
-            '#(?P<pre>https?://[^/\\\\\"\'\s]*)?(?P<path>(?:\\\\?/)+(?:[a-z]{2}(?:\\\\?/))?(?P<id>\d+)-(?P<slug>[A-Za-z0-9\-]+))#',
-            function (array $match) use ($pathsById, &$count, &$samples) {
-                $escaped = strpos($match['path'], '\\/') !== false;
-                $path = str_replace('\\/', '/', $match['path']);
-                $path = '/' . ltrim($path, '/');
-                $next = self::rewriteHref($path, $pathsById);
-                if ($next === $path) {
-                    return $match[0];
-                }
-                $count++;
-                self::pushSample($samples, $path, $next);
-                if ($escaped) {
-                    $next = str_replace('/', '\\/', $next);
-                }
-
-                return (isset($match['pre']) ? $match['pre'] : '') . $next;
-            },
-            $value
-        );
-        if (is_string($json)) {
-            $value = $json;
-        }
-
-        // Valeur = URL seule
-        if ($count === 0 && preg_match('#^https?://|^/#', trim($value))) {
-            $next = self::rewriteHref(trim($value), $pathsById);
-            if ($next !== trim($value)) {
-                self::pushSample($samples, trim($value), $next);
-
-                return array('value' => $next, 'count' => 1);
+            $fromEsc = str_replace('/', '\\/', $from);
+            $toEsc = str_replace('/', '\\/', $to);
+            $nEsc = substr_count($value, $fromEsc);
+            if ($nEsc > 0) {
+                $value = str_replace($fromEsc, $toEsc, $value);
+                $count += $nEsc;
+                self::pushSample($samples, $from, $to);
             }
         }
 
@@ -326,92 +279,27 @@ class CkcMenuCategoryUrls
     }
 
     /**
-     * @param array<int,string> $pathsById chemin canonique, ex. /en/3-rigid-fence-panels
+     * Whitelist only (script de verif).
+     *
+     * @param array<int,string> $pathsById ignore
      */
-    public static function rewriteHref($url, array $pathsById)
+    public static function rewriteHref($url, array $pathsById = array())
     {
+        unset($pathsById);
         $url = trim((string) $url);
-        if ($url === '' || $url[0] === '#') {
+        if ($url === '') {
             return $url;
         }
-
         if (!preg_match('~^(?P<pre>https?://[^/]+)?(?P<path>/[^?#]*)(?P<tail>[?#].*)?$~i', $url, $parts)) {
             return $url;
         }
-
-        if (!preg_match('#^/(?:[a-z]{2}/)?(\d+)-([^/]+)$#i', $parts['path'], $cat)) {
-            return $url;
-        }
-
-        if (strpos($cat[2], '.') !== false) {
-            return $url;
-        }
-
-        $id = (int) $cat[1];
-        if ($id <= 0 || !isset($pathsById[$id])) {
-            return $url;
-        }
-
-        $newPath = $pathsById[$id];
-        if ($newPath === $parts['path']) {
-            return $url;
-        }
-
-        return (isset($parts['pre']) ? $parts['pre'] : '') . $newPath . (isset($parts['tail']) ? $parts['tail'] : '');
-    }
-
-    /**
-     * @return array<int,string>
-     */
-    protected static function canonicalPaths($idLang, $idShop)
-    {
-        $rows = Db::getInstance()->executeS(
-            'SELECT cl.id_category, cl.link_rewrite
-            FROM `' . _DB_PREFIX_ . 'category_lang` cl
-            INNER JOIN `' . _DB_PREFIX_ . 'category` c ON c.id_category = cl.id_category
-            WHERE cl.id_lang = ' . (int) $idLang . ' AND cl.id_shop = ' . (int) $idShop
-        );
-        if (!$rows) {
-            return array();
-        }
-
-        $context = Context::getContext();
-        if (!$context->link) {
-            $context->link = new Link();
-        }
-
-        $paths = array();
-        foreach ($rows as $row) {
-            $idCategory = (int) $row['id_category'];
-            // Priorité aux slugs EN forcés (audit home), même en dry-run
-            $rewrite = isset(self::$forcedEnSlugs[$idCategory])
-                ? self::$forcedEnSlugs[$idCategory]
-                : (string) $row['link_rewrite'];
-            if ($rewrite === '') {
-                continue;
-            }
-            $full = $context->link->getCategoryLink(
-                $idCategory,
-                $rewrite,
-                $idLang,
-                null,
-                $idShop
-            );
-            $path = parse_url((string) $full, PHP_URL_PATH);
-            if (is_string($path) && $path !== '') {
-                $paths[$idCategory] = $path;
+        foreach (self::$exactPathMap as $from => $to) {
+            if ($parts['path'] === $from) {
+                return (isset($parts['pre']) ? $parts['pre'] : '') . $to . (isset($parts['tail']) ? $parts['tail'] : '');
             }
         }
 
-        // Garantir les IDs audit même absents de category_lang
-        $iso = (string) Language::getIsoById($idLang);
-        foreach (self::$forcedEnSlugs as $idCategory => $slug) {
-            if (!isset($paths[$idCategory]) && $iso !== '') {
-                $paths[(int) $idCategory] = '/' . $iso . '/' . (int) $idCategory . '-' . $slug;
-            }
-        }
-
-        return $paths;
+        return $url;
     }
 
     protected static function resolveShopId($idLang)
@@ -477,8 +365,13 @@ class CkcMenuCategoryUrls
      */
     protected static function pushSample(array &$samples, $from, $to)
     {
-        if (count($samples) >= 30) {
+        if (count($samples) >= 40) {
             return;
+        }
+        foreach ($samples as $s) {
+            if ($s['from'] === $from && $s['to'] === $to) {
+                return;
+            }
         }
         $samples[] = array('from' => $from, 'to' => $to);
     }
