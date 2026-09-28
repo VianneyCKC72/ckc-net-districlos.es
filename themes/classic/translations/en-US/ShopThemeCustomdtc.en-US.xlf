@@ -34,6 +34,7 @@
       <trans-unit id="30"><source>BONS PLANS</source><target>GREAT DEALS</target></trans-unit>
       <trans-unit id="31"><source>Jusqu'à &lt;strong&gt;-12%&lt;/strong&gt; offerts dès 2000€ d'achat !</source><target>Up to &lt;strong&gt;-12%&lt;/strong&gt; off from €2,000 spent!</target></trans-unit>
       <trans-unit id="31b"><source>Jusqu'à -17% sur nos kits !</source><target>Up to -17% on our kits!</target></trans-unit>
+      <trans-unit id="31c"><source>&lt;strong&gt;PROJET EN FÊTE&lt;/strong&gt; - &lt;strong&gt;75€&lt;/strong&gt; tous les &lt;strong&gt;500€&lt;/strong&gt; d'achat</source><target>&lt;strong&gt;CELEBRATE YOUR PROJECT&lt;/strong&gt; - &lt;strong&gt;€75&lt;/strong&gt; for every &lt;strong&gt;€500&lt;/strong&gt; spent</target></trans-unit>
       <trans-unit id="32"><source>Méthode non autorisée</source><target>Method not allowed</target></trans-unit>
       <trans-unit id="33"><source>Token invalide</source><target>Invalid token</target></trans-unit>
       <trans-unit id="34"><source>Nom requis</source><target>Last name required</target></trans-unit>
