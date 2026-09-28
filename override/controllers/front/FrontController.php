@@ -94,28 +94,6 @@ class FrontController extends FrontControllerCore
 
         return parent::initHeader();
     }
-    public function getTemplateVarUrls()
-    {
-        $urls = parent::getTemplateVarUrls();
-        if (!empty($urls['alternative_langs']) && is_array($urls['alternative_langs'])) {
-            foreach (array_keys($urls['alternative_langs']) as $code) {
-                if ($this->isEnglishLangCode((string) $code)) {
-                    unset($urls['alternative_langs'][$code]);
-                }
-            }
-        }
-        return $urls;
-    }
-    public function getTemplateVarPage()
-    {
-        $page = parent::getTemplateVarPage();
-        $iso = strtolower((string) $this->context->language->iso_code);
-        if ($this->isEnglishLangCode($iso)) {
-            $page['meta']['robots'] = 'noindex, nofollow';
-        }
-        return $page;
-    }
-
     public function getShopLogo(): array
     {
         $langLogo = $this->getLanguageShopLogo();

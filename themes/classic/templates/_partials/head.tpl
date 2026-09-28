@@ -73,12 +73,16 @@
     <link rel="canonical" href="{$page.canonical}">
   {/if}
   {block name='head_hreflang'}
-    {* Pas de hreflang EN pour l'instant (traductions en cours) *}
+    {assign var='ckc_hreflang_default' value=''}
     {foreach from=$urls.alternative_langs item=pageUrl key=code}
-      {if $code|substr:0:2 != 'en'}
-        <link rel="alternate" href="{$pageUrl}" hreflang="{$code}">
+      <link rel="alternate" href="{$pageUrl}" hreflang="{$code}">
+      {if !$ckc_hreflang_default && ($code|lower|substr:0:2) == 'fr'}
+        {assign var='ckc_hreflang_default' value=$pageUrl}
       {/if}
     {/foreach}
+    {if $ckc_hreflang_default}
+      <link rel="alternate" href="{$ckc_hreflang_default}" hreflang="x-default">
+    {/if}
   {/block}
 
   {block name='head_microdata'}
@@ -156,10 +160,6 @@
 
 {block name='hook_header'}
   {$HOOK_HEADER nofilter}
-  {* CKC Vianney — Motive n'injecte le layer qu'en FR ; fallback EN si ckc_motive_i18n pas encore installé *}
-  {if $language.iso_code == 'en' && !Module::isEnabled('ckc_motive_i18n')}
-    {include file='_partials/motive-en.tpl'}
-  {/if}
 {/block}
 
 {block name='hook_extra'}{/block}
