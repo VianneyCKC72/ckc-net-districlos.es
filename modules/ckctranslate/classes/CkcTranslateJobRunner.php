@@ -885,7 +885,10 @@ PROMPT;
                               AND tgt.id_lang = ' . (int) $this->targetLangId . '
                               AND tgt.name IS NOT NULL
                               AND TRIM(tgt.name) != \'\'
-                              AND tgt.name != src.name
+                              AND (
+                                tgt.name != src.name
+                                OR ' . $this->sqlAiSuccessExists('features', 'feature', 'f.id_feature') . '
+                              )
                          )';
 
         if ($filterType === 'ids' && !empty($filterIds)) {
@@ -905,7 +908,10 @@ PROMPT;
                             AND tgt.id_lang = ' . (int) $this->targetLangId . '
                             AND tgt.value IS NOT NULL
                             AND TRIM(tgt.value) != \'\'
-                            AND tgt.value != src.value
+                            AND (
+                              tgt.value != src.value
+                              OR ' . $this->sqlAiSuccessExists('features', 'feature_value', 'fv.id_feature_value') . '
+                            )
                        )';
 
         if ($filterType === 'ids' && !empty($filterIds)) {
@@ -938,8 +944,12 @@ PROMPT;
                         SELECT 1 FROM `' . _DB_PREFIX_ . 'attribute_group_lang` tgt
                         WHERE tgt.id_attribute_group = ag.id_attribute_group
                           AND tgt.id_lang = ' . (int) $this->targetLangId . '
-                          AND tgt.name IS NOT NULL AND TRIM(tgt.name) != \'\' AND tgt.name != src.name
-                          AND tgt.public_name IS NOT NULL AND TRIM(tgt.public_name) != \'\' AND tgt.public_name != src.public_name
+                          AND tgt.name IS NOT NULL AND TRIM(tgt.name) != \'\'
+                          AND tgt.public_name IS NOT NULL AND TRIM(tgt.public_name) != \'\'
+                          AND (
+                            (tgt.name != src.name OR tgt.public_name != src.public_name)
+                            OR ' . $this->sqlAiSuccessExists('attributes', 'attribute_group', 'ag.id_attribute_group') . '
+                          )
                      )';
 
         if ($filterType === 'ids' && !empty($filterIds)) {
@@ -959,7 +969,10 @@ PROMPT;
                           AND tgt.id_lang = ' . (int) $this->targetLangId . '
                           AND tgt.name IS NOT NULL
                           AND TRIM(tgt.name) != \'\'
-                          AND tgt.name != src.name
+                          AND (
+                            tgt.name != src.name
+                            OR ' . $this->sqlAiSuccessExists('attributes', 'attribute', 'a.id_attribute') . '
+                          )
                       )';
 
         if ($filterType === 'ids' && !empty($filterIds)) {
@@ -1289,6 +1302,7 @@ PROMPT;
                 }
 
                 if ($onlyMissing) {
+                    // CKC Vianney — texte cible = source (ex. "48h") reste "OK" si l’IA a déjà validé (history success).
                     $sql .= ' AND NOT EXISTS (
                         SELECT 1 FROM `' . _DB_PREFIX_ . 'carrier_lang` tgt
                         WHERE tgt.id_carrier = c.id_carrier
@@ -1296,7 +1310,10 @@ PROMPT;
                           AND tgt.id_shop = ' . (int) $shopId . '
                           AND tgt.delay IS NOT NULL
                           AND TRIM(tgt.delay) != \'\'
-                          AND tgt.delay != cl.delay
+                          AND (
+                            tgt.delay != cl.delay
+                            OR ' . $this->sqlAiSuccessExists('carrier_delays', 'carrier', 'c.id_carrier') . '
+                          )
                     )';
                 }
 
@@ -2315,17 +2332,18 @@ PROMPT;
                   AND tgt.id_lang = ' . (int) $this->targetLangId . '
                   AND tgt.name IS NOT NULL
                   AND TRIM(tgt.name) != \'\'
-                  AND tgt.name != fl.name
+                  AND (
+                    tgt.name != fl.name
+                    OR ' . $this->sqlAiSuccessExists('features', 'feature', 'f.id_feature') . '
+                  )
             )';
         }
 
         $featureSql .= ' ORDER BY f.id_feature ASC';
 
-        $featureRows = Db::getInstance()->executeS($featureSql);
-        if (is_array($featureRows)) {
-            foreach ($featureRows as $row) {
-                $items[] = array('type' => 'feature', 'id' => (int) $row['id_feature']);
-            }
+        // CKC Vianney — pagination (évite le plafond Softizy à 10 lignes sur executeS).
+        foreach ($this->fetchAllSqlColumnValues($featureSql, 'id_feature') as $featureId) {
+            $items[] = array('type' => 'feature', 'id' => (int) $featureId);
         }
 
         $valueSql = 'SELECT fv.id_feature_value
@@ -2347,17 +2365,17 @@ PROMPT;
                   AND tgt.id_lang = ' . (int) $this->targetLangId . '
                   AND tgt.value IS NOT NULL
                   AND TRIM(tgt.value) != \'\'
-                  AND tgt.value != fvl.value
+                  AND (
+                    tgt.value != fvl.value
+                    OR ' . $this->sqlAiSuccessExists('features', 'feature_value', 'fv.id_feature_value') . '
+                  )
             )';
         }
 
         $valueSql .= ' ORDER BY fv.id_feature_value ASC';
 
-        $valueRows = Db::getInstance()->executeS($valueSql);
-        if (is_array($valueRows)) {
-            foreach ($valueRows as $row) {
-                $items[] = array('type' => 'feature_value', 'id' => (int) $row['id_feature_value']);
-            }
+        foreach ($this->fetchAllSqlColumnValues($valueSql, 'id_feature_value') as $valueId) {
+            $items[] = array('type' => 'feature_value', 'id' => (int) $valueId);
         }
 
         return $items;
@@ -2388,18 +2406,19 @@ PROMPT;
                 SELECT 1 FROM `' . _DB_PREFIX_ . 'attribute_group_lang` tgt
                 WHERE tgt.id_attribute_group = ag.id_attribute_group
                   AND tgt.id_lang = ' . (int) $this->targetLangId . '
-                  AND tgt.name IS NOT NULL AND TRIM(tgt.name) != \'\' AND tgt.name != agl.name
-                  AND tgt.public_name IS NOT NULL AND TRIM(tgt.public_name) != \'\' AND tgt.public_name != agl.public_name
+                  AND tgt.name IS NOT NULL AND TRIM(tgt.name) != \'\'
+                  AND tgt.public_name IS NOT NULL AND TRIM(tgt.public_name) != \'\'
+                  AND (
+                    (tgt.name != agl.name OR tgt.public_name != agl.public_name)
+                    OR ' . $this->sqlAiSuccessExists('attributes', 'attribute_group', 'ag.id_attribute_group') . '
+                  )
             )';
         }
 
         $groupSql .= ' ORDER BY ag.id_attribute_group ASC';
 
-        $groupRows = Db::getInstance()->executeS($groupSql);
-        if (is_array($groupRows)) {
-            foreach ($groupRows as $row) {
-                $items[] = array('type' => 'attribute_group', 'id' => (int) $row['id_attribute_group']);
-            }
+        foreach ($this->fetchAllSqlColumnValues($groupSql, 'id_attribute_group') as $groupId) {
+            $items[] = array('type' => 'attribute_group', 'id' => (int) $groupId);
         }
 
         $attrSql = 'SELECT a.id_attribute
@@ -2407,8 +2426,8 @@ PROMPT;
                     INNER JOIN `' . _DB_PREFIX_ . 'attribute_lang` al
                       ON al.id_attribute = a.id_attribute
                      AND al.id_lang = ' . (int) $this->sourceLangId . '
-                    WHERE al.name IS NOT NULL
-                      AND TRIM(al.name) != \'\'';
+                     WHERE al.name IS NOT NULL
+                       AND TRIM(al.name) != \'\'';
 
         if ($filterType === 'ids' && !empty($filterIds)) {
             $attrSql .= ' AND a.id_attribute_group IN (' . implode(',', array_map('intval', $filterIds)) . ')';
@@ -2421,17 +2440,17 @@ PROMPT;
                   AND tgt.id_lang = ' . (int) $this->targetLangId . '
                   AND tgt.name IS NOT NULL
                   AND TRIM(tgt.name) != \'\'
-                  AND tgt.name != al.name
+                  AND (
+                    tgt.name != al.name
+                    OR ' . $this->sqlAiSuccessExists('attributes', 'attribute', 'a.id_attribute') . '
+                  )
             )';
         }
 
         $attrSql .= ' ORDER BY a.id_attribute ASC';
 
-        $attrRows = Db::getInstance()->executeS($attrSql);
-        if (is_array($attrRows)) {
-            foreach ($attrRows as $row) {
-                $items[] = array('type' => 'attribute', 'id' => (int) $row['id_attribute']);
-            }
+        foreach ($this->fetchAllSqlColumnValues($attrSql, 'id_attribute') as $attrId) {
+            $items[] = array('type' => 'attribute', 'id' => (int) $attrId);
         }
 
         return $items;
@@ -2655,7 +2674,7 @@ PROMPT;
         );
 
         if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
-            if ($targetValue !== '' && $targetValue !== $sourceValue) {
+            if ($targetValue !== '' && ($targetValue !== $sourceValue || $this->hasAiSuccess($jobCode, $entityType, (int) $id))) {
                 $this->logHistory($jobCode, $entityType, $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
                 return $this->nextResult(sprintf(
@@ -5407,7 +5426,8 @@ PROMPT;
         );
 
         if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
-            if ($targetDelay !== '' && $targetDelay !== $sourceDelay) {
+            // Différent de la source, ou déjà validé par l’IA (même texte volontairement inchangé).
+            if ($targetDelay !== '' && ($targetDelay !== $sourceDelay || $this->hasAiSuccess('carrier_delays', 'carrier', (int) $id))) {
                 $this->logHistory('carrier_delays', 'carrier', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
                 return $this->nextResult(sprintf(
@@ -5810,6 +5830,44 @@ PROMPT;
         }
 
         return true;
+    }
+
+    /**
+     * Fragment SQL : l’IA a déjà validé cette entité (y compris texte volontairement identique à la source).
+     *
+     * @param string $jobCode
+     * @param string $entityType
+     * @param string $entityIdSql Expression SQL (ex. c.id_carrier)
+     *
+     * @return string
+     */
+    protected function sqlAiSuccessExists($jobCode, $entityType, $entityIdSql)
+    {
+        return 'EXISTS (
+            SELECT 1 FROM `' . _DB_PREFIX_ . 'ckctranslate_history` h
+            WHERE h.job_code = \'' . pSQL($jobCode) . '\'
+              AND h.entity_type = \'' . pSQL($entityType) . '\'
+              AND h.entity_id = ' . $entityIdSql . '
+              AND h.status = \'success\'
+        )';
+    }
+
+    /**
+     * @param string $jobCode
+     * @param string $entityType
+     * @param int    $entityId
+     *
+     * @return bool
+     */
+    protected function hasAiSuccess($jobCode, $entityType, $entityId)
+    {
+        return (bool) Db::getInstance()->getValue(
+            'SELECT 1 FROM `' . _DB_PREFIX_ . 'ckctranslate_history`
+             WHERE job_code = \'' . pSQL($jobCode) . '\'
+               AND entity_type = \'' . pSQL($entityType) . '\'
+               AND entity_id = ' . (int) $entityId . '
+               AND status = \'success\''
+        );
     }
 
     protected function logHistory($jobCode, $entityType, $entityId, $status, $message)
