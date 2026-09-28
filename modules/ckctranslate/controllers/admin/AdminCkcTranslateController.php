@@ -248,12 +248,18 @@ class AdminCkcTranslateController extends ModuleAdminController
         Configuration::updateValue(CkcTranslate::CONF_ONLY_MISSING_FIELDS, $onlyMissingFields ? 1 : 0);
 
         Configuration::updateValue(CkcTranslate::CONF_GLOSSARY, $glossary);
-        Configuration::updateValue(CkcTranslate::CONF_SEO_META_TITLE_MAX, max($seoMetaTitleMax, 10));
-        Configuration::updateValue(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX, max($seoMetaDescriptionMax, 10));
-        // CKC Vianney � vide/0/trop bas => 80 (sinon max(0,10)=10 tronquait tous les slugs EN)
+        // CKC Vianney - empty/low SEO limits => defaults (max(0,10)=10 truncated EN titles/metas/slugs)
+        if ($seoMetaTitleMax < 30) {
+            $seoMetaTitleMax = 60;
+        }
+        if ($seoMetaDescriptionMax < 50) {
+            $seoMetaDescriptionMax = 155;
+        }
         if ($seoSlugMax < 32) {
             $seoSlugMax = 80;
         }
+        Configuration::updateValue(CkcTranslate::CONF_SEO_META_TITLE_MAX, $seoMetaTitleMax);
+        Configuration::updateValue(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX, $seoMetaDescriptionMax);
         Configuration::updateValue(CkcTranslate::CONF_SEO_SLUG_MAX, $seoSlugMax);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_PRODUCT_SEO, $promptProductSeo);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_PRODUCT_DESCRIPTION, $promptProductDescription);

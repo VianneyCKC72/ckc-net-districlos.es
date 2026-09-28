@@ -656,6 +656,12 @@ PROMPT;
         if ($slugMax < 32) {
             $slugMax = 80;
         }
+        if ($metaTitleMax < 30) {
+            $metaTitleMax = 60;
+        }
+        if ($metaDescriptionMax < 50) {
+            $metaDescriptionMax = 155;
+        }
         $jobPrompt = $this->getJobSpecificPrompt($jobCode);
 
         // CKC Vianney — pages système : limites Meta PS (128/255), pas le plafond produit.
@@ -5648,9 +5654,17 @@ PROMPT;
     protected function normalizeSeoText($value, $maxLength)
     {
         $value = trim((string) $value);
+        $maxLength = (int) $maxLength;
+        // CKC Vianney — garde-fou : un plafond à 10 coupait titres / metas (ex. Rigid Fenc).
+        if ($maxLength > 0 && $maxLength < 30) {
+            $maxLength = 60;
+        }
 
         if ($maxLength > 0 && Tools::strlen($value) > $maxLength) {
             $value = Tools::substr($value, 0, $maxLength);
+            if (preg_match('/^(.*)\s+\S*$/u', $value, $matches) && trim($matches[1]) !== '') {
+                $value = trim($matches[1]);
+            }
             $value = rtrim($value, " \t\n\r\0\x0B-,:;");
         }
 

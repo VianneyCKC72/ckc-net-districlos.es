@@ -357,6 +357,19 @@ body:has(.bandeau-soldes) {
       gap: 15px;
       text-transform: uppercase;
       padding-left: 100px;
+      // CKC Vianney — user puis langue (alignement avec le label EN / CLEAR)
+      #_desktop_user_info {
+        order: 1;
+      }
+      #_desktop_language_selector {
+        order: 2;
+      }
+      #_desktop_currency_selector {
+        order: 3;
+      }
+      #_desktop_cart {
+        order: 4;
+      }
       @media only screen and (max-width: 996px) {
         .btn-espace-pro, .btn-devis, .btn-magasin {
           display: none;
