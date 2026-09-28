@@ -562,6 +562,15 @@ class Cart extends CartCore
     ): float {
         $specificPriceOutput = null;
 
+        // CKC Vianney — getPriceStatic(id_cart=0) die si le Context (souvent un clone) n'a ni cart ni employee
+        if ($shopContext instanceof Context && !is_object($shopContext->cart)) {
+            $shopContext->cart = $this;
+        }
+        $globalContext = Context::getContext();
+        if (!is_object($globalContext->cart)) {
+            $globalContext->cart = $this;
+        }
+
         return (float) Product::getPriceStatic(
             (int) $row['id_product'],
             $withTax,
