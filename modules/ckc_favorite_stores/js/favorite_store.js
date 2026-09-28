@@ -1,88 +1,88 @@
 document.addEventListener("DOMContentLoaded", function () {
-    $(".setStore").click(function (e) {
-        e.preventDefault()
-        var id_store = null;
+    var endpoint =
+        typeof ckcFavoriteStoreUrl !== "undefined" && ckcFavoriteStoreUrl
+            ? ckcFavoriteStoreUrl
+            : "/module/ckc_favorite_stores/favoritestore";
 
-        var classList = $(this).attr("class").split(/\s+/);
-        $.each(classList, function (index, item) {
-            if (item.includes("shopId-")) {
-                id_store = item.replace("shopId-", "");
-            }
-        });
+    prepareDetailButton();
 
-        $(".setStore").each(function () {
-            var classList = $(this).attr("class").split(/\s+/);
-            $(this).removeClass("selected-1");
-            $(this).removeClass("selected-0");
-            $(this).addClass("selected-0");
-            if (!$('body').hasClass('cms-id-11')) {
-                $(this).show();
-                $(this).next().css("display", "none");
-            }
-        });
-        $(this).removeClass("selected-1");
-        $(this).removeClass("selected-0");
-        $(this).addClass("selected-1");
-        if (!$('body').hasClass('cms-id-11')) {
-            $(this).hide();
-            $(this).next().css("display", "block");
+    $(document).on("click", ".setStore", function (e) {
+        e.preventDefault();
+
+        var $btn = $(this);
+        var id_store = getShopId($btn);
+        if (!id_store) {
+            return;
         }
-        setStore(id_store, $(this));
+
+        if ($btn.hasClass("selected-1") || $btn.find("svg").hasClass("add-favori")) {
+            updateUi(null);
+            postFavorite("remove", id_store);
+            return;
+        }
+
+        updateUi(id_store);
+        postFavorite("add", id_store);
     });
 
-    function setStore(id_store, el) {
-        $.post(
-            "/module/ckc_favorite_stores/favoritestore",
-            {
-                action: "add",
-                id_store: id_store,
-            },
-            null,
-            "json"
-        ).then(function (resp) {
-            if (!$('body').hasClass('cms-id-11')) {
-                addSelectShopBtn();
-            }else{
-                displaySelectedStore(id_store)
-            }
-            
+    function prepareDetailButton() {
+        if (typeof ckcFavoriteStoreId === "undefined" || !ckcFavoriteStoreId) {
+            return;
+        }
+        $(".magasin-detail a.favoris").each(function () {
+            var $el = $(this);
+            $el.addClass("setStore selected-0 shopId-" + ckcFavoriteStoreId);
         });
     }
-    
-    function displaySelectedStore(id_store) {
+
+    function getShopId($btn) {
+        var id = null;
+        $.each(($btn.attr("class") || "").split(/\s+/), function (i, cls) {
+            if (cls.indexOf("shopId-") === 0) {
+                id = cls.replace("shopId-", "");
+            }
+        });
+        if (!id && typeof ckcFavoriteStoreId !== "undefined" && ckcFavoriteStoreId) {
+            id = String(ckcFavoriteStoreId);
+        }
+        return id;
+    }
+
+    function isListing() {
+        return $("body").hasClass("cms-id-11");
+    }
+
+    function isDetail() {
+        return $(".magasin-detail").length > 0;
+    }
+
+    function updateUi(id_store) {
         $(".setStore").each(function () {
-            if ($(this).hasClass('shopId-' + id_store)) {
-                $(this).removeClass("selected-0").addClass("selected-1");
+            var $el = $(this);
+            var selected = !!id_store && $el.hasClass("shopId-" + id_store);
+            $el.toggleClass("selected-1", selected).toggleClass("selected-0", !selected);
+            if (isDetail()) {
+                $el.find("svg").toggleClass("add-favori", selected);
             }
-        });
-    }
-    
-    function getStore() {
-        $.ajax({
-            url: "/module/ckc_favorite_stores/favoritestore",
-            type: "GET",
-            data: { action: "get" },
-            dataType: "json"
-        }).then(function (resp) {
-            if (resp.id_store) {
-                displaySelectedStore(resp.id_store)
+            if (isListing()) {
+                if (selected) {
+                    $el.hide().next().css("display", "block");
+                } else {
+                    $el.show().next().css("display", "none");
+                }
             }
         });
     }
 
-    function addSelectShopBtn() {
-        $(".setStore").each(function (index) {
-            if ($(this).hasClass("selected-1")) {
-                $(this).hide();
-                $(this).next().css("display", "block");
-            } else {
-                $(this).show();
-                $(this).next().css("display", "none");
+    function postFavorite(action, id_store) {
+        $.post(endpoint, { action: action, id_store: id_store }, null, "json");
+    }
+
+    if (isListing() || isDetail()) {
+        $.getJSON(endpoint, { action: "get" }).done(function (resp) {
+            if (resp && resp.id_store) {
+                updateUi(resp.id_store);
             }
         });
-    }
-    
-    if ($('body').hasClass('cms-id-11')) {
-        getStore()
     }
 });

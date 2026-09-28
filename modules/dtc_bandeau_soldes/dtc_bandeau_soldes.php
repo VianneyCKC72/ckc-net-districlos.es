@@ -17,7 +17,7 @@ class dtc_bandeau_soldes extends Module
     {
         $this->name = 'dtc_bandeau_soldes';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.2';
+        $this->version = '1.0.4';
         $this->author = 'Districlos';
         $this->bootstrap = true;
 
@@ -33,7 +33,40 @@ class dtc_bandeau_soldes extends Module
             Configuration::updateValue($key, $value);
         }
 
-        return parent::install() && $this->registerHook('displayBandeauSoldes');
+        return parent::install()
+            && $this->registerHook('displayBandeauSoldes')
+            && $this->repairModuleGroupRestrictions();
+    }
+
+    /**
+     * Avec PS_GROUP_FEATURE_ACTIVE, PrestaShop filtre les modules sur ps_module_group.
+     * Sans lignes pour ce module, Hook::exec n'exécute pas le module en FO.
+     */
+    public function repairModuleGroupRestrictions()
+    {
+        if (!class_exists('Group') || !Group::isFeatureActive()) {
+            return true;
+        }
+
+        $idModule = (int) $this->id;
+        if ($idModule <= 0) {
+            return false;
+        }
+
+        Group::truncateRestrictionsByModule($idModule);
+
+        $shops = Shop::getCompleteListOfShopsID();
+        if (empty($shops)) {
+            $shops = [(int) Configuration::get('PS_SHOP_DEFAULT')];
+        }
+
+        $ok = (bool) Group::addRestrictionsForModule($idModule, $shops);
+
+        if ($ok && class_exists('Hook')) {
+            Cache::clean(Hook::MODULE_LIST_BY_HOOK_KEY . '*');
+        }
+
+        return $ok;
     }
 
     public function uninstall()
