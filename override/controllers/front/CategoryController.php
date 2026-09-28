@@ -59,11 +59,9 @@ class CategoryController extends CategoryControllerCore
 
                     if ($url === '/configurateur' || preg_match('#/(en/)?configurateur/?$#', $url)) {
                         $class = 'bck-blue';
-                        $title = $this->trans(
-                            'Je configure[1]ma clôture',
-                            ['[1]' => '&nbsp;<br>'],
-                            'Shop.Theme.Customcatalog'
-                        );
+                        $title = $this->trans('Je configure', [], 'Shop.Theme.Customcatalog')
+                            . '&nbsp;<br>'
+                            . $this->trans('ma clôture', [], 'Shop.Theme.Customcatalog');
                         if (Module::isInstalled('ckcconfigurateurdistriclos') && Module::isEnabled('ckcconfigurateurdistriclos')) {
                             $url = $this->context->link->getModuleLink('ckcconfigurateurdistriclos', 'configurator');
                         }
