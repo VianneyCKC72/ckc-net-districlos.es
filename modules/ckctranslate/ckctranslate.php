@@ -6,6 +6,7 @@ if (!defined('_PS_VERSION_')) {
 require_once __DIR__ . '/classes/CkcTranslateAi.php';
 require_once __DIR__ . '/classes/CkcTranslateJobRunner.php';
 require_once __DIR__ . '/classes/CkcTranslateCfuI18n.php';
+require_once __DIR__ . '/classes/CkcMenuCategoryUrls.php';
 
 class CkcTranslate extends Module
 {
@@ -49,6 +50,7 @@ class CkcTranslate extends Module
     public const CONF_PROMPT_RESPONSIVEGALLERY = 'CKCTRANSLATE_PROMPT_RESPONSIVEGALLERY';
     public const CONF_PROMPT_PRODUCT_FAQ = 'CKCTRANSLATE_PROMPT_PRODUCT_FAQ';
     public const CONF_PROMPT_PRODUCT_GUIDE = 'CKCTRANSLATE_PROMPT_PRODUCT_GUIDE';
+    public const CONF_PROMPT_SYSTEM_PAGES = 'CKCTRANSLATE_PROMPT_SYSTEM_PAGES';
 
     public const CONF_FILTER_TYPE = 'CKCTRANSLATE_FILTER_TYPE';
     public const CONF_FILTER_IDS = 'CKCTRANSLATE_FILTER_IDS';
@@ -58,7 +60,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.16.3';
+        $this->version = '2.17.0';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -172,6 +174,7 @@ class CkcTranslate extends Module
             && Configuration::updateValue(self::CONF_PROMPT_RESPONSIVEGALLERY, 'Translate Responsive Gallery page title, descriptions and gallery titles (product family names like Grillage rigide). Keep labels short, catalog-like and consistent with existing fence vocabulary. Preserve HTML in descriptions. Do not invent product lines.')
             && Configuration::updateValue(self::CONF_PROMPT_PRODUCT_FAQ, 'Translate product FAQ questions and answers for a fencing e-commerce catalog. Preserve all HTML tags, attributes and lists. Keep a clear, helpful customer-support tone. Do not invent technical specs, dimensions, warranties or certifications. Keep brand names and product terms consistent.')
             && Configuration::updateValue(self::CONF_PROMPT_PRODUCT_GUIDE, 'Translate the product measuring guide HTML (how to measure a fence, posts, panels). Preserve all HTML tags, attributes, images, lists and layout. Keep a clear instructional tone. Do not invent dimensions, tools or steps. Keep brand and product names.')
+            && Configuration::updateValue(self::CONF_PROMPT_SYSTEM_PAGES, 'Translate PrestaShop system page SEO fields (meta title and meta description: homepage, cart, login, contact, sitemap, etc.). Keep brand names such as Districlos unchanged. Keep a natural, concise SEO tone. Do not invent promotions or claims. Leave empty source fields empty.')
             && Configuration::updateValue(self::CONF_FILTER_TYPE, 'all')
             && Configuration::updateValue(self::CONF_FILTER_IDS, '')
             && Configuration::updateValue(self::CONF_FILTER_CATEGORY_ID, 0);
@@ -217,6 +220,7 @@ class CkcTranslate extends Module
             && Configuration::deleteByName(self::CONF_PROMPT_RESPONSIVEGALLERY)
             && Configuration::deleteByName(self::CONF_PROMPT_PRODUCT_FAQ)
             && Configuration::deleteByName(self::CONF_PROMPT_PRODUCT_GUIDE)
+            && Configuration::deleteByName(self::CONF_PROMPT_SYSTEM_PAGES)
             && Configuration::deleteByName(self::CONF_FILTER_TYPE)
             && Configuration::deleteByName(self::CONF_FILTER_IDS)
             && Configuration::deleteByName(self::CONF_FILTER_CATEGORY_ID);
@@ -247,6 +251,38 @@ class CkcTranslate extends Module
     {
         if (isset($this->context->language) && is_object($this->context->language)) {
             $GLOBALS['language'] = $this->context->language;
+        }
+        $this->fixEnglishMenuCategoryUrlsOnce();
+    }
+
+    /**
+     * CKC Vianney — une fois : liens catégories du menu EN vers l’URL qui répond 200.
+     */
+    protected function fixEnglishMenuCategoryUrlsOnce()
+    {
+        if (Configuration::getGlobalValue(CkcMenuCategoryUrls::FLAG)) {
+            return;
+        }
+
+        try {
+            $result = CkcMenuCategoryUrls::apply(false);
+            Configuration::updateGlobalValue(CkcMenuCategoryUrls::FLAG, '1');
+            if (!empty($result['replacements']) && Module::isEnabled('pagecache')) {
+                register_shutdown_function(static function () {
+                    $pageCacheFile = _PS_MODULE_DIR_ . 'pagecache/pagecache.php';
+                    if (!class_exists('PageCache', false) && is_file($pageCacheFile)) {
+                        require_once $pageCacheFile;
+                    }
+                    if (class_exists('PageCache', false) && method_exists('PageCache', 'clearCache')) {
+                        PageCache::clearCache('ckc-en-menu-category-urls');
+                    }
+                });
+            }
+        } catch (Exception $e) {
+            PrestaShopLogger::addLog(
+                'CKC Vianney — correction des URLs du menu EN impossible : ' . $e->getMessage(),
+                3
+            );
         }
     }
 

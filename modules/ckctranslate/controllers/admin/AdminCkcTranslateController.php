@@ -104,6 +104,12 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'Translate the product measuring guide HTML (how to measure a fence, posts, panels). Preserve all HTML tags, attributes, images, lists and layout. Keep a clear instructional tone. Do not invent dimensions, tools or steps. Keep brand and product names.'
             );
         }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_SYSTEM_PAGES)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_SYSTEM_PAGES,
+                'Translate PrestaShop system page SEO fields (meta title and meta description: homepage, cart, login, contact, sitemap, etc.). Keep brand names such as Districlos unchanged. Keep a natural, concise SEO tone. Do not invent promotions or claims. Leave empty source fields empty.'
+            );
+        }
         if (Tools::isSubmit('submitCkcTranslateConfig')) {
             $this->postProcessConfig();
         }
@@ -192,6 +198,7 @@ class AdminCkcTranslateController extends ModuleAdminController
         $promptResponsiveGallery = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY));
         $promptProductFaq = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_PRODUCT_FAQ));
         $promptProductGuide = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE));
+        $promptSystemPages = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_SYSTEM_PAGES));
         $filterType = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_TYPE));
         $filterIds = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_IDS));
         $filterCategoryId = (int) Tools::getValue(CkcTranslate::CONF_FILTER_CATEGORY_ID);
@@ -264,6 +271,7 @@ class AdminCkcTranslateController extends ModuleAdminController
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY, $promptResponsiveGallery);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_PRODUCT_FAQ, $promptProductFaq);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE, $promptProductGuide);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_SYSTEM_PAGES, $promptSystemPages);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_TYPE, $filterType);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_IDS, $filterIds);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_CATEGORY_ID, $filterCategoryId);
@@ -566,6 +574,14 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'desc' => $this->module->l('For product measuring guide HTML (Guide de mesure).'),
                     ),
                     array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - System pages SEO'),
+                        'name' => CkcTranslate::CONF_PROMPT_SYSTEM_PAGES,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For PrestaShop system pages meta title and meta description (homepage, cart, login…).'),
+                    ),
+                    array(
                         'type' => 'select',
                         'label' => $this->module->l('Filter type'),
                         'name' => CkcTranslate::CONF_FILTER_TYPE,
@@ -692,6 +708,7 @@ class AdminCkcTranslateController extends ModuleAdminController
             CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY => Configuration::get(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY),
             CkcTranslate::CONF_PROMPT_PRODUCT_FAQ => Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_FAQ),
             CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE => Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE),
+            CkcTranslate::CONF_PROMPT_SYSTEM_PAGES => Configuration::get(CkcTranslate::CONF_PROMPT_SYSTEM_PAGES),
             CkcTranslate::CONF_FILTER_TYPE => Configuration::get(CkcTranslate::CONF_FILTER_TYPE),
             CkcTranslate::CONF_FILTER_IDS => Configuration::get(CkcTranslate::CONF_FILTER_IDS),
             CkcTranslate::CONF_FILTER_CATEGORY_ID => (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID),
@@ -863,6 +880,11 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'code' => 'product_guide',
                 'label' => $this->module->l('Translate product measuring guide'),
                 'advice' => $this->module->l('Translates product page measuring guide HTML. Filter by IDs = id_product. Requires productguide.'),
+            ),
+            array(
+                'code' => 'system_pages',
+                'label' => $this->module->l('Translate system pages SEO'),
+                'advice' => $this->module->l('Translates meta title and meta description of PrestaShop system pages (homepage, cart, login, contact…). Filter by IDs = id_meta.'),
             ),
         );
     }
@@ -1170,6 +1192,25 @@ class AdminCkcTranslateController extends ModuleAdminController
                 }
                 break;
 
+            case 'system_pages':
+                $shopId = (int) $this->context->shop->id;
+                $sourceLangId = (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
+                $sql = 'SELECT COUNT(*)
+                        FROM `' . _DB_PREFIX_ . 'meta` m
+                        INNER JOIN `' . _DB_PREFIX_ . 'meta_lang` src
+                          ON src.id_meta = m.id_meta
+                         AND src.id_lang = ' . (int) $sourceLangId . '
+                         AND src.id_shop = ' . (int) $shopId . '
+                        WHERE (
+                            TRIM(IFNULL(src.title, \'\')) != \'\'
+                            OR TRIM(IFNULL(src.description, \'\')) != \'\'
+                        )';
+                if ($filterType === 'ids' && !empty($filterIds)) {
+                    $sql .= ' AND m.id_meta IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                }
+                $total = (int) Db::getInstance()->getValue($sql);
+                break;
+
             default:
                 return array(
                     'total' => 0,
@@ -1436,6 +1477,8 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_product_faq_index',
             'ckctranslate_product_guide_ids',
             'ckctranslate_product_guide_index',
+            'ckctranslate_system_pages_ids',
+            'ckctranslate_system_pages_index',
         );
 
         foreach ($keys as $key) {
@@ -1496,6 +1539,8 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_product_faq_index',
             'ckctranslate_product_guide_ids',
             'ckctranslate_product_guide_index',
+            'ckctranslate_system_pages_ids',
+            'ckctranslate_system_pages_index',
         );
 
         foreach ($keys as $key) {

@@ -302,6 +302,34 @@
         <source>Choisir mon adresse</source>
         <target>Choose my address</target>
       </trans-unit>
+      <trans-unit id="75" resname="Plus que">
+        <source>Plus que</source>
+        <target>Only</target>
+      </trans-unit>
+      <trans-unit id="76" resname="pour bénéficier de la">
+        <source>pour bénéficier de la</source>
+        <target>more to get</target>
+      </trans-unit>
+      <trans-unit id="77" resname="pour bénéficier de">
+        <source>pour bénéficier de</source>
+        <target>more to get</target>
+      </trans-unit>
+      <trans-unit id="78" resname="livraison offerte">
+        <source>livraison offerte</source>
+        <target>free shipping</target>
+      </trans-unit>
+      <trans-unit id="79" resname="&amp;nbsp;offerts">
+        <source>&amp;nbsp;offerts</source>
+        <target>&amp;nbsp;off</target>
+      </trans-unit>
+      <trans-unit id="80" resname=" offerts">
+        <source> offerts</source>
+        <target> off</target>
+      </trans-unit>
+      <trans-unit id="81" resname="Étiquette soldes">
+        <source>Étiquette soldes</source>
+        <target>Sale tag</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

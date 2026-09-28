@@ -127,6 +127,10 @@ class CkcTranslateJobRunner
                     $result = $this->runProductGuide();
                     break;
 
+                case 'system_pages':
+                    $result = $this->runSystemPages();
+                    break;
+
                 default:
                     return array(
                         'success' => false,
@@ -730,6 +734,9 @@ PROMPT;
 
             case 'product_guide':
                 return (string) Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE);
+
+            case 'system_pages':
+                return (string) Configuration::get(CkcTranslate::CONF_PROMPT_SYSTEM_PAGES);
 
             default:
                 return '';
@@ -1472,6 +1479,44 @@ PROMPT;
                 return array(
                     'sql' => $sql,
                     'column' => 'id_product',
+                );
+
+            case 'system_pages':
+                // CKC Vianney — pages système PS (meta / meta_lang) : title + description.
+                $sql = 'SELECT m.id_meta
+                        FROM `' . _DB_PREFIX_ . 'meta` m
+                        INNER JOIN `' . _DB_PREFIX_ . 'meta_lang` src
+                          ON src.id_meta = m.id_meta
+                         AND src.id_lang = ' . (int) $this->sourceLangId . '
+                         AND src.id_shop = ' . (int) $shopId . '
+                        WHERE (
+                            TRIM(IFNULL(src.title, \'\')) != \'\'
+                            OR TRIM(IFNULL(src.description, \'\')) != \'\'
+                        )';
+
+                if ($filterType === 'ids' && !empty($filterIds)) {
+                    $sql .= ' AND m.id_meta IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                }
+
+                if ($onlyMissing) {
+                    $sql .= ' AND NOT EXISTS (
+                        SELECT 1 FROM `' . _DB_PREFIX_ . 'meta_lang` tgt
+                        WHERE tgt.id_meta = m.id_meta
+                          AND tgt.id_lang = ' . (int) $this->targetLangId . '
+                          AND tgt.id_shop = ' . (int) $shopId . '
+                          AND (
+                            (TRIM(IFNULL(src.title, \'\')) = \'\' OR (TRIM(IFNULL(tgt.title, \'\')) != \'\' AND tgt.title != src.title))
+                            AND
+                            (TRIM(IFNULL(src.description, \'\')) = \'\' OR (TRIM(IFNULL(tgt.description, \'\')) != \'\' AND tgt.description != src.description))
+                          )
+                    )';
+                }
+
+                $sql .= ' ORDER BY m.id_meta ASC';
+
+                return array(
+                    'sql' => $sql,
+                    'column' => 'id_meta',
                 );
 
             default:
@@ -2458,6 +2503,7 @@ PROMPT;
             'responsivegallery',
             'product_faq',
             'product_guide',
+            'system_pages',
         );
     }
 
@@ -2492,6 +2538,7 @@ PROMPT;
             'responsivegallery' => 'responsivegallery',
             'product_faq' => 'product_faq',
             'product_guide' => 'product_guide',
+            'system_pages' => 'system_pages',
         );
 
         return isset($map[$jobCode]) ? $map[$jobCode] : self::normalizeQueueName($jobCode);
@@ -3526,6 +3573,190 @@ PROMPT;
         return $this->nextResult(sprintf(
             $this->module->l('Product guide #%d translated.', 'CkcTranslateJobRunner'),
             (int) $id
+        ));
+    }
+
+    /**
+     * CKC Vianney — meta title / description des pages système (index, panier, login…).
+     */
+    protected function runSystemPages()
+    {
+        $shopId = (int) Context::getContext()->shop->id;
+        $filtered = $this->getFilteredSql('system_pages');
+
+        $id = $this->getNextId(
+            'ckctranslate_system_pages_ids',
+            'ckctranslate_system_pages_index',
+            $filtered['sql'],
+            $filtered['column']
+        );
+
+        if (!$id) {
+            return $this->finishedResult($this->module->l('System pages SEO translation finished.', 'CkcTranslateJobRunner'));
+        }
+
+        $source = Db::getInstance()->getRow(
+            'SELECT m.page, ml.title, ml.description, ml.url_rewrite
+             FROM `' . _DB_PREFIX_ . 'meta` m
+             INNER JOIN `' . _DB_PREFIX_ . 'meta_lang` ml
+               ON ml.id_meta = m.id_meta
+              AND ml.id_lang = ' . (int) $this->sourceLangId . '
+              AND ml.id_shop = ' . (int) $shopId . '
+             WHERE m.id_meta = ' . (int) $id
+        );
+
+        if (!$source) {
+            $this->logHistory('system_pages', 'meta', (int) $id, 'skipped', $this->module->l('No source content.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('System page #%d has no source content, skipped.', 'CkcTranslateJobRunner'),
+                (int) $id
+            ));
+        }
+
+        $sourceTitle = trim((string) $source['title']);
+        $sourceDescription = trim((string) $source['description']);
+        $pageCode = (string) $source['page'];
+        $label = $pageCode !== '' ? $pageCode : ('#' . (int) $id);
+
+        if ($sourceTitle === '' && $sourceDescription === '') {
+            $this->logHistory('system_pages', 'meta', (int) $id, 'skipped', $this->module->l('No source content.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('System page %s has no source SEO, skipped.', 'CkcTranslateJobRunner'),
+                $label
+            ));
+        }
+
+        $target = Db::getInstance()->getRow(
+            'SELECT title, description, url_rewrite
+             FROM `' . _DB_PREFIX_ . 'meta_lang`
+             WHERE id_meta = ' . (int) $id . '
+               AND id_lang = ' . (int) $this->targetLangId . '
+               AND id_shop = ' . (int) $shopId
+        );
+
+        if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS) && is_array($target)) {
+            $targetTitle = trim((string) $target['title']);
+            $targetDescription = trim((string) $target['description']);
+            $titleDone = ($sourceTitle === '' || ($targetTitle !== '' && $targetTitle !== $sourceTitle));
+            $descDone = ($sourceDescription === '' || ($targetDescription !== '' && $targetDescription !== $sourceDescription));
+
+            if ($titleDone && $descDone) {
+                $this->logHistory('system_pages', 'meta', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
+
+                return $this->nextResult(sprintf(
+                    $this->module->l('System page %s already translated, skipped.', 'CkcTranslateJobRunner'),
+                    $label
+                ));
+            }
+        }
+
+        $systemPrompt = $this->buildSystemPrompt(
+            'You translate PrestaShop system page SEO (browser tab title and meta description). Keep brand names unchanged. Do not invent promotions. Leave empty source fields empty.',
+            'system_pages'
+        );
+
+        $prompt = <<<PROMPT
+Return ONLY valid JSON:
+{
+  "title": "",
+  "description": ""
+}
+
+Page code: {$pageCode}
+
+Source meta title:
+{$sourceTitle}
+
+Source meta description:
+{$sourceDescription}
+PROMPT;
+
+        $data = $this->ai->requestJson($systemPrompt, $prompt);
+
+        if (!is_array($data) || !array_key_exists('title', $data) || !array_key_exists('description', $data)) {
+            $this->logHistory('system_pages', 'meta', (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+            return $this->nextResult(sprintf(
+                $this->module->l('Invalid AI response for system page %s.', 'CkcTranslateJobRunner'),
+                $label
+            ));
+        }
+
+        $translatedTitle = '';
+        if ($sourceTitle !== '') {
+            $translatedTitle = $this->normalizeSeoText(
+                $data['title'],
+                min((int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX), 128)
+            );
+            if ($translatedTitle === '') {
+                $this->logHistory('system_pages', 'meta', (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+                return $this->nextResult(sprintf(
+                    $this->module->l('Invalid AI response for system page %s.', 'CkcTranslateJobRunner'),
+                    $label
+                ));
+            }
+        }
+
+        $translatedDescription = '';
+        if ($sourceDescription !== '') {
+            $translatedDescription = $this->normalizeSeoText(
+                $data['description'],
+                min((int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX), 255)
+            );
+            if ($translatedDescription === '') {
+                $this->logHistory('system_pages', 'meta', (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
+
+                return $this->nextResult(sprintf(
+                    $this->module->l('Invalid AI response for system page %s.', 'CkcTranslateJobRunner'),
+                    $label
+                ));
+            }
+        }
+
+        $urlRewrite = is_array($target) && isset($target['url_rewrite'])
+            ? (string) $target['url_rewrite']
+            : (string) $source['url_rewrite'];
+
+        if (is_array($target)) {
+            Db::getInstance()->update(
+                'meta_lang',
+                array(
+                    'title' => pSQL($translatedTitle),
+                    'description' => pSQL($translatedDescription),
+                ),
+                'id_meta = ' . (int) $id
+                . ' AND id_lang = ' . (int) $this->targetLangId
+                . ' AND id_shop = ' . (int) $shopId
+            );
+        } else {
+            $insert = array(
+                'id_meta' => (int) $id,
+                'id_shop' => (int) $shopId,
+                'id_lang' => (int) $this->targetLangId,
+                'title' => pSQL($translatedTitle),
+                'description' => pSQL($translatedDescription),
+                'url_rewrite' => pSQL($urlRewrite),
+            );
+
+            // CKC Vianney — certaines boutiques ont encore keywords dans meta_lang.
+            $hasKeywords = (bool) Db::getInstance()->executeS(
+                'SHOW COLUMNS FROM `' . _DB_PREFIX_ . 'meta_lang` LIKE \'keywords\''
+            );
+            if ($hasKeywords) {
+                $insert['keywords'] = '';
+            }
+
+            Db::getInstance()->insert('meta_lang', $insert);
+        }
+
+        $this->logHistory('system_pages', 'meta', (int) $id, 'success', $this->module->l('Translated successfully.', 'CkcTranslateJobRunner'));
+
+        return $this->nextResult(sprintf(
+            $this->module->l('System page %s translated.', 'CkcTranslateJobRunner'),
+            $label
         ));
     }
 

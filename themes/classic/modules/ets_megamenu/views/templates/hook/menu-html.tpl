@@ -33,7 +33,7 @@
         <li class="mm-menu-section-top">
             <ul class="mm-menu-inner">
         <li class="close_menu">
-            <a class="pull-left" href="{$urls.base_url}">
+            <a class="pull-left" href="{$urls.pages.index}">
                 {if Context::getContext()->shop->id == 2}
                     <img class="logo img-fluid" src="/img/logo-mobile-pro.svg" alt="Districlos" width="40" height="40" loading="lazy">
                 {else}
@@ -103,7 +103,7 @@
                             style="width:{$menu.sub_menu_max_width|escape:'html':'UTF-8'};{if Configuration::get('ETS_MM_TEXT_FONT_SIZE')} font-size:{Configuration::get('ETS_MM_TEXT_FONT_SIZE')|intval}px;{/if}">
                             <li class="close_menu close-menu-sub">
                                 <div class="pull-left">
-                                    <a href="{$urls.base_url}" class="logo-link-menu">
+                                    <a href="{$urls.pages.index}" class="logo-link-menu">
                                         {if Context::getContext()->shop->id == 2}
                                             <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
                                         {else}
@@ -173,7 +173,7 @@
                                             <ul class="mm_columns_contents_ul ">
                                                 <li class="close_menu close-menu-sub">
                                                     <div class="pull-left">
-                                                        <a href="{$urls.base_url}" class="logo-link-menu">
+                                                        <a href="{$urls.pages.index}" class="logo-link-menu">
                                                             {if Context::getContext()->shop->id == 2}
                                                                 <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
                                                             {else}
@@ -216,7 +216,7 @@
                                                         </li>
                                                     {/if}
                                                 {/foreach}
-                                                <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.base_url}">
+                                                <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.pages.index}">
                                                     {if Context::getContext()->shop->id == 2}
                                                         <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo_mobile.png" alt="Districlos" width="178" height="48" loading="lazy">>
                                                     {else}
@@ -230,7 +230,7 @@
 
                                 </li>
                             {/foreach}
-                            <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.base_url}">
+                            <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.pages.index}">
                                 {if Context::getContext()->shop->id == 2}
                                     <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
                                 {else}
