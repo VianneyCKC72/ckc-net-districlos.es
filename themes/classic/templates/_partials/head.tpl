@@ -65,7 +65,6 @@
   <link rel="preconnect" href="https://www.googletagmanager.com">
   <link rel="preconnect" href="https://assets.motive.co">
   <link rel="preload" href="https://nouveau.cloture-discount.fr/img/cms/MOBILE%20MAI.webp" as="image">
-  {* noindex EN tant que les traductions ne sont pas prêtes *}
   {if isset($page.meta.robots) && $page.meta.robots && $page.meta.robots != 'index'}
     <meta name="robots" content="{$page.meta.robots|escape:'html':'UTF-8'}">
   {/if}

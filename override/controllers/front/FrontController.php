@@ -82,10 +82,6 @@ class FrontController extends FrontControllerCore
         $this->context->smarty->assign('show_emptycart', $show_emptycart);
         $this->context->smarty->assign('IS_EMPLOYEE_BO', $show_emptycart);
         Media::addJsDef(['IS_EMPLOYEE_BO' => (bool)$show_emptycart]);
-        $this->context->smarty->assign(
-            'ckc_lang_preview',
-            (string) Tools::getValue('ckc') === '1'
-        );
         $langLogo = $this->getLanguageShopLogo();
         $this->context->smarty->assign([
             'ckc_is_english' => $this->isCurrentLanguageEnglish(),
