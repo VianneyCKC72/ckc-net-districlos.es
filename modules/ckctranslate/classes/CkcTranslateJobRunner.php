@@ -236,11 +236,16 @@ PROMPT;
         $metaTitle = $this->normalizeSeoText($data['meta_title'], (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX));
         $metaDescription = $this->normalizeSeoText($data['meta_description'], (int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX));
         $slug = $this->normalizeSlug($data['slug']);
+        $name = trim((string) $data['name']);
+        if ($name !== '' && (Tools::strlen($name) > Tools::strlen($metaTitle) + 2 || $metaTitle === '')) {
+            $metaTitle = $this->normalizeSeoText($name, (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX));
+        }
+        $metaDescription = $this->finalizeMetaDescription($metaDescription);
 
         Db::getInstance()->update(
             'product_lang',
             array(
-                'name' => pSQL($data['name']),
+                'name' => pSQL($name),
                 'meta_title' => pSQL($metaTitle),
                 'meta_description' => pSQL($metaDescription),
                 'meta_keywords' => pSQL($data['meta_keywords']),
@@ -429,11 +434,17 @@ PROMPT;
         $metaTitle = $this->normalizeSeoText($data['meta_title'], (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX));
         $metaDescription = $this->normalizeSeoText($data['meta_description'], (int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX));
         $slug = $this->normalizeSlug($data['slug']);
+        $name = trim((string) $data['name']);
+        // CKC Vianney — title onglet = H1 si plus fiable
+        if ($name !== '' && (Tools::strlen($name) > Tools::strlen($metaTitle) + 2 || $metaTitle === '')) {
+            $metaTitle = $this->normalizeSeoText($name, (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX));
+        }
+        $metaDescription = $this->finalizeMetaDescription($metaDescription);
 
         Db::getInstance()->update(
             'category_lang',
             array(
-                'name' => pSQL($data['name']),
+                'name' => pSQL($name),
                 'meta_title' => pSQL($metaTitle),
                 'meta_description' => pSQL($metaDescription),
                 'link_rewrite' => pSQL($slug),
@@ -622,6 +633,7 @@ PROMPT;
         $metaTitle = $this->normalizeSeoText($data['meta_title'], (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX));
         $metaDescription = $this->normalizeSeoText($data['meta_description'], (int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX));
         $slug = $this->normalizeSlug($data['slug']);
+        $metaDescription = $this->finalizeMetaDescription($metaDescription);
 
         Db::getInstance()->update(
             'cms_lang',
@@ -5666,6 +5678,28 @@ PROMPT;
                 $value = trim($matches[1]);
             }
             $value = rtrim($value, " \t\n\r\0\x0B-,:;");
+        }
+
+        return $value;
+    }
+
+    /**
+     * Meta description dédiée : marque Districlos, espaces, ~150 car.
+     */
+    protected function finalizeMetaDescription($value)
+    {
+        if (!class_exists('CkcTranslateSlugRepair', false)) {
+            require_once dirname(__FILE__) . '/CkcTranslateSlugRepair.php';
+        }
+
+        $value = CkcTranslateSlugRepair::polishMetaDescription($value);
+        $max = (int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX);
+        if ($max < 50 || $max > 170) {
+            $max = CkcTranslateSlugRepair::META_DESC_TARGET;
+        }
+        if (Tools::strlen($value) > $max) {
+            $value = $this->normalizeSeoText($value, $max);
+            $value = CkcTranslateSlugRepair::polishMetaDescription($value);
         }
 
         return $value;
