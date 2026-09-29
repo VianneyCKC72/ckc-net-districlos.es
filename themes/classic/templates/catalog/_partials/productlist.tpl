@@ -29,7 +29,11 @@
    Bannière listing catégorie — campagne Projet en fête (toutes catégories)
    Mapping soldes par famille conservé en commentaire ci-dessous pour réactivation.
    ───────────────────────────────────────────────────────────────────────────── *}
-{assign var=category_listing_banner_file value='category_projets_fete.webp'}
+{if isset($language.iso_code) && $language.iso_code == 'en'}
+    {assign var=category_listing_banner_file value='categorie_projets_fete_english.webp'}
+{else}
+    {assign var=category_listing_banner_file value='category_projets_fete.webp'}
+{/if}
 {*
 {if $page.page_name == 'category'}
     {assign var=_cat_id   value=Context::getContext()->controller->getCategory()->id}
