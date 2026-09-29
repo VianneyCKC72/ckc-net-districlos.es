@@ -60,7 +60,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.17.2';
+        $this->version = '2.17.8';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -154,9 +154,9 @@ class CkcTranslate extends Module
             && Configuration::updateValue(self::CONF_SEO_META_TITLE_MAX, 60)
             && Configuration::updateValue(self::CONF_SEO_META_DESCRIPTION_MAX, 155)
             && Configuration::updateValue(self::CONF_SEO_SLUG_MAX, 80)
-            && Configuration::updateValue(self::CONF_PROMPT_PRODUCT_SEO, 'Translate product SEO fields with premium e-commerce tone. Keep result concise, natural and conversion-friendly.')
+            && Configuration::updateValue(self::CONF_PROMPT_PRODUCT_SEO, 'Translate product SEO fields for Districlos. name = complete product title (never truncate). meta_title = same as name or a close complete variant (max ~60 chars). meta_description = a DEDICATED SEO snippet ~150 characters (not the full product description), natural, brand Districlos only (never "Clôture Discount"). Always put a space after periods. slug = full kebab-case URL.')
             && Configuration::updateValue(self::CONF_PROMPT_PRODUCT_DESCRIPTION, 'Translate product descriptions with elegant and persuasive tone. Preserve HTML and factual accuracy.')
-            && Configuration::updateValue(self::CONF_PROMPT_CATEGORY_SEO, 'Translate category SEO fields naturally and clearly for search visibility.')
+            && Configuration::updateValue(self::CONF_PROMPT_CATEGORY_SEO, 'Translate category SEO fields for Districlos. name = complete category title (never truncate mid-word). meta_title = same as name or a close complete variant (max ~60 chars). meta_description = a DEDICATED SEO snippet ~150 characters (not the full category description), natural, one or two short sentences, brand Districlos only (never "Clôture Discount"). Always put a space after periods. slug = full kebab-case URL.')
             && Configuration::updateValue(self::CONF_PROMPT_CATEGORY_DESCRIPTION, 'Translate category content with SEO-friendly, readable and premium wording.')
             && Configuration::updateValue(self::CONF_PROMPT_CMS, 'Translate CMS content with editorial quality, natural language and SEO clarity.')
             && Configuration::updateValue(self::CONF_PROMPT_CE, 'Translate page builder text content. Preserve all HTML tags and attributes exactly. Keep each translated value similar in length to the source to avoid breaking the layout.')

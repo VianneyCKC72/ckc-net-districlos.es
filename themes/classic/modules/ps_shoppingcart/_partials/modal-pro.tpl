@@ -33,11 +33,21 @@
 
         <div class="cart-pro-table">
 
-            {* Prix unitaire HT *}
+            {* Prix unitaire HT / TTC selon espace *}
             <div class="cart-pro-row">
-                <div class="cart-pro-label">{l s='Prix unitaire HT' d='Shop.Theme.Custommodules'}</div>
+                <div class="cart-pro-label">
+                    {if isset($pro) && $pro.env == 1}
+                        {l s='Prix unitaire HT' d='Shop.Theme.Custommodules'}
+                    {else}
+                        {l s='Prix unitaire TTC' d='Shop.Theme.Custommodules'}
+                    {/if}
+                </div>
                 <div class="cart-pro-value">
-                    {if isset($product.price_tax_exc)}{$product.price_tax_exc} €{/if}
+                    {if isset($pro) && $pro.env == 1}
+                        {if isset($product.price_tax_exc)}{$product.price_tax_exc} €{/if}
+                    {else}
+                        {if isset($product.price)}{$product.price}{/if}
+                    {/if}
                 </div>
             </div>
 

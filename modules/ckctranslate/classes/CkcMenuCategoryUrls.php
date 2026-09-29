@@ -1,6 +1,7 @@
 <?php
 /**
- * CKC Vianney — aligne les liens catégories du menu EN sur l’URL canonique (200).
+ * CKC Vianney — remplace les slugs FR encore présents dans les contenus EN (home CE, menus).
+ * Whitelist exacte uniquement (jamais de réécriture générique id→catégorie : casse les URLs produit).
  */
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -11,20 +12,50 @@ class CkcMenuCategoryUrls
     public const FLAG = 'CKC_EN_MENU_CATEGORY_URLS_OK';
 
     /**
+     * Slugs EN canoniques (category_lang) — audit home 2026-09-28.
+     *
+     * @var array<int,string>
+     */
+    public static $forcedEnSlugs = array(
+        2 => 'flexible-mesh-fencing',
+        3 => 'rigid-fence-panels',
+        4 => 'gates-garden-gates',
+        6 => 'privacy-screening',
+        130 => 'garden-gates',
+        215 => 'aluminum-fencing',
+    );
+
+    /**
+     * Chemins FR (302) → EN (200). Remplacement exact dans les contenus.
+     *
+     * @var array<string,string>
+     */
+    public static $exactPathMap = array(
+        '/en/3-cloture-rigide' => '/en/3-rigid-fence-panels',
+        '/en/2-grillage-souple' => '/en/2-flexible-mesh-fencing',
+        '/en/4-portail-et-portillon' => '/en/4-gates-garden-gates',
+        '/en/4-portillon-portail' => '/en/4-gates-garden-gates',
+        '/en/6-brise-vue' => '/en/6-privacy-screening',
+        '/en/215-cloture-aluminium' => '/en/215-aluminum-fencing',
+        '/en/130-portillons' => '/en/130-garden-gates',
+    );
+
+    /**
      * @param bool $dryRun
      *
-     * @return array{replacements:int,rows:int,samples:array<int,array{from:string,to:string}>}
+     * @return array{replacements:int,rows:int,slugs:int,samples:array<int,array{from:string,to:string}>}
      */
     public static function apply($dryRun = false)
     {
         $result = array(
             'replacements' => 0,
             'rows' => 0,
+            'slugs' => 0,
             'samples' => array(),
         );
 
         $idLang = (int) Language::getIdByIso('en');
-        if ($idLang <= 0 || !self::tableExists('ets_mm_block_lang')) {
+        if ($idLang <= 0) {
             return $result;
         }
 
@@ -33,58 +64,29 @@ class CkcMenuCategoryUrls
             return $result;
         }
 
-        $paths = self::canonicalPaths($idLang, $idShop);
-        if (!$paths) {
-            return $result;
-        }
+        $result['slugs'] = self::applyForcedSlugs($idLang, $idShop, $dryRun);
 
         $targets = array(
-            array('table' => 'ets_mm_block_lang', 'id' => 'id_block', 'fields' => array('content', 'title_link', 'image_link')),
-            array('table' => 'ets_mm_menu_lang', 'id' => 'id_menu', 'fields' => array('link')),
-            array('table' => 'ets_mm_tab_lang', 'id' => 'id_tab', 'fields' => array('url')),
+            array('table' => 'ets_mm_block_lang', 'id' => 'id_block', 'fields' => array('content', 'title_link', 'image_link'), 'lang' => true),
+            array('table' => 'ets_mm_menu_lang', 'id' => 'id_menu', 'fields' => array('link'), 'lang' => true),
+            array('table' => 'ets_mm_tab_lang', 'id' => 'id_tab', 'fields' => array('url'), 'lang' => true),
+            array('table' => 'cms_lang', 'id' => 'id_cms', 'fields' => array('content'), 'lang' => true, 'shop' => true),
         );
 
         foreach ($targets as $target) {
-            if (!self::tableExists($target['table'])) {
-                continue;
-            }
-            $idCol = $target['id'];
-            $rows = Db::getInstance()->executeS(
-                'SELECT * FROM `' . _DB_PREFIX_ . bqSQL($target['table']) . '` WHERE id_lang = ' . $idLang
-            );
-            if (!$rows) {
-                continue;
-            }
-            foreach ($rows as $row) {
-                $update = array();
-                foreach ($target['fields'] as $field) {
-                    if (!array_key_exists($field, $row) || $row[$field] === null || $row[$field] === '') {
-                        continue;
-                    }
-                    $rewritten = self::rewriteField((string) $row[$field], $paths, $result['samples']);
-                    if ($rewritten['count'] > 0 && $rewritten['value'] !== $row[$field]) {
-                        $update[$field] = pSQL($rewritten['value'], true);
-                        $result['replacements'] += $rewritten['count'];
-                    }
-                }
-                if (!$update) {
-                    continue;
-                }
-                $result['rows']++;
-                if (!$dryRun) {
-                    Db::getInstance()->update(
-                        $target['table'],
-                        $update,
-                        '`' . bqSQL($idCol) . '` = ' . (int) $row[$idCol] . ' AND id_lang = ' . $idLang
-                    );
-                }
-            }
+            self::rewriteTable($target, $idLang, $idShop, $result, $dryRun);
         }
 
-        if (!$dryRun && $result['replacements'] > 0) {
+        // CE : toutes les rows contenant un chemin /en/… FR (préfixe /en/ = URL EN, pas de filtre UID)
+        self::rewriteCeMeta($result, $dryRun);
+        self::rewriteLinkList($idLang, $idShop, $result, $dryRun);
+
+        if (!$dryRun && ($result['replacements'] > 0 || $result['slugs'] > 0)) {
             self::clearMenuCache();
+            self::clearCeElementCache();
             PrestaShopLogger::addLog(
-                'CKC Vianney — menu EN : ' . (int) $result['replacements'] . ' liens catégories alignés sur l’URL canonique.',
+                'CKC Vianney — liens EN whitelist : ' . (int) $result['replacements']
+                . ' remplacements, ' . (int) $result['slugs'] . ' slugs catégories.',
                 1
             );
         }
@@ -93,117 +95,211 @@ class CkcMenuCategoryUrls
     }
 
     /**
-     * @param array<int,string> $pathsById
+     * @return int
+     */
+    protected static function applyForcedSlugs($idLang, $idShop, $dryRun)
+    {
+        $updated = 0;
+        foreach (self::$forcedEnSlugs as $idCategory => $slug) {
+            $current = (string) Db::getInstance()->getValue(
+                'SELECT link_rewrite FROM `' . _DB_PREFIX_ . 'category_lang`
+                WHERE id_category = ' . (int) $idCategory . '
+                  AND id_lang = ' . (int) $idLang . '
+                  AND id_shop = ' . (int) $idShop
+            );
+            if ($current === $slug) {
+                continue;
+            }
+            $updated++;
+            if (!$dryRun) {
+                Db::getInstance()->update(
+                    'category_lang',
+                    array('link_rewrite' => pSQL($slug)),
+                    'id_category = ' . (int) $idCategory
+                    . ' AND id_lang = ' . (int) $idLang
+                    . ' AND id_shop = ' . (int) $idShop
+                );
+            }
+        }
+
+        return $updated;
+    }
+
+    /**
+     * @param array{table:string,id:string,fields:array<int,string>,lang?:bool,shop?:bool} $target
+     * @param array{replacements:int,rows:int,slugs:int,samples:array} $result
+     */
+    protected static function rewriteTable(array $target, $idLang, $idShop, array &$result, $dryRun)
+    {
+        if (!self::tableExists($target['table'])) {
+            return;
+        }
+
+        $idCol = $target['id'];
+        $sql = 'SELECT * FROM `' . _DB_PREFIX_ . bqSQL($target['table']) . '` WHERE 1';
+        if (!empty($target['lang'])) {
+            $sql .= ' AND id_lang = ' . (int) $idLang;
+        }
+        if (!empty($target['shop'])) {
+            $sql .= ' AND id_shop = ' . (int) $idShop;
+        }
+
+        $rows = Db::getInstance()->executeS($sql);
+        if (!$rows) {
+            return;
+        }
+
+        foreach ($rows as $row) {
+            $update = array();
+            foreach ($target['fields'] as $field) {
+                if (!array_key_exists($field, $row) || $row[$field] === null || $row[$field] === '') {
+                    continue;
+                }
+                $rewritten = self::rewriteField((string) $row[$field], $result['samples']);
+                if ($rewritten['count'] > 0 && $rewritten['value'] !== $row[$field]) {
+                    $update[$field] = pSQL($rewritten['value'], true);
+                    $result['replacements'] += $rewritten['count'];
+                }
+            }
+            if (!$update) {
+                continue;
+            }
+            $result['rows']++;
+            if ($dryRun) {
+                continue;
+            }
+            $where = '`' . bqSQL($idCol) . '` = ' . (int) $row[$idCol];
+            if (!empty($target['lang'])) {
+                $where .= ' AND id_lang = ' . (int) $idLang;
+            }
+            if (!empty($target['shop']) && isset($row['id_shop'])) {
+                $where .= ' AND id_shop = ' . (int) $row['id_shop'];
+            }
+            Db::getInstance()->update($target['table'], $update, $where);
+        }
+    }
+
+    /**
+     * @param array{replacements:int,rows:int,slugs:int,samples:array} $result
+     */
+    protected static function rewriteCeMeta(array &$result, $dryRun)
+    {
+        if (!self::tableExists('ce_meta')) {
+            return;
+        }
+
+        $likes = array();
+        foreach (array_keys(self::$exactPathMap) as $from) {
+            $likes[] = '`value` LIKE \'%' . pSQL($from) . '%\'';
+            $likes[] = '`value` LIKE \'%' . pSQL(str_replace('/', '\\/', $from)) . '%\'';
+        }
+
+        $rows = Db::getInstance()->executeS(
+            'SELECT `id`, `name`, `value` FROM `' . _DB_PREFIX_ . 'ce_meta`
+            WHERE (' . implode(' OR ', $likes) . ')
+              AND `name` NOT IN (\'_ce_element_cache\', \'_elementor_css\')'
+        );
+        if (!$rows) {
+            return;
+        }
+
+        foreach ($rows as $row) {
+            $rewritten = self::rewriteField((string) $row['value'], $result['samples']);
+            if ($rewritten['count'] <= 0 || $rewritten['value'] === $row['value']) {
+                continue;
+            }
+            $result['replacements'] += $rewritten['count'];
+            $result['rows']++;
+            if ($dryRun) {
+                continue;
+            }
+            Db::getInstance()->update(
+                'ce_meta',
+                array('value' => pSQL($rewritten['value'], true)),
+                '`id` = \'' . pSQL((string) $row['id']) . '\' AND `name` = \'' . pSQL($row['name']) . '\''
+            );
+        }
+    }
+
+    /**
+     * @param array{replacements:int,rows:int,slugs:int,samples:array} $result
+     */
+    protected static function rewriteLinkList($idLang, $idShop, array &$result, $dryRun)
+    {
+        $candidates = array(
+            array('table' => 'link_block', 'id' => 'id_link_block', 'fields' => array('content'), 'lang' => false),
+            array('table' => 'link_block_lang', 'id' => 'id_link_block', 'fields' => array('title', 'custom_url'), 'lang' => true),
+        );
+        foreach ($candidates as $target) {
+            if (!self::tableExists($target['table'])) {
+                continue;
+            }
+            $cols = Db::getInstance()->executeS('SHOW COLUMNS FROM `' . _DB_PREFIX_ . bqSQL($target['table']) . '`');
+            $colNames = array();
+            foreach ($cols ?: array() as $col) {
+                $colNames[] = $col['Field'];
+            }
+            $fields = array_values(array_intersect($target['fields'], $colNames));
+            if (!$fields) {
+                continue;
+            }
+            $target['fields'] = $fields;
+            self::rewriteTable($target, $idLang, $idShop, $result, $dryRun);
+        }
+    }
+
+    /**
+     * Remplacement exact whitelist (forme /en/… et \/en\/…).
+     *
      * @param array<int,array{from:string,to:string}> $samples
      *
      * @return array{value:string,count:int}
      */
-    public static function rewriteField($value, array $pathsById, array &$samples = array())
+    public static function rewriteField($value, array &$samples = array())
     {
-        if (strpos($value, '<') !== false) {
-            $count = 0;
-            $html = preg_replace_callback(
-                '#\bhref\s*=\s*(["\'])([^"\']*)\1#i',
-                function (array $match) use ($pathsById, &$count, &$samples) {
-                    $next = self::rewriteHref($match[2], $pathsById);
-                    if ($next !== $match[2]) {
-                        $count++;
-                        self::pushSample($samples, $match[2], $next);
-                    }
-
-                    return 'href=' . $match[1] . $next . $match[1];
-                },
-                $value
-            );
-
-            return array('value' => $html === null ? $value : $html, 'count' => $count);
+        $count = 0;
+        foreach (self::$exactPathMap as $from => $to) {
+            $n = substr_count($value, $from);
+            if ($n > 0) {
+                $value = str_replace($from, $to, $value);
+                $count += $n;
+                self::pushSample($samples, $from, $to);
+            }
+            $fromEsc = str_replace('/', '\\/', $from);
+            $toEsc = str_replace('/', '\\/', $to);
+            $nEsc = substr_count($value, $fromEsc);
+            if ($nEsc > 0) {
+                $value = str_replace($fromEsc, $toEsc, $value);
+                $count += $nEsc;
+                self::pushSample($samples, $from, $to);
+            }
         }
 
-        $next = self::rewriteHref($value, $pathsById);
-        if ($next !== $value) {
-            self::pushSample($samples, $value, $next);
-
-            return array('value' => $next, 'count' => 1);
-        }
-
-        return array('value' => $value, 'count' => 0);
+        return array('value' => $value, 'count' => $count);
     }
 
     /**
-     * @param array<int,string> $pathsById chemin canonique, ex. /en/107-welded-wire-mesh
+     * Whitelist only (script de verif).
+     *
+     * @param array<int,string> $pathsById ignore
      */
-    public static function rewriteHref($url, array $pathsById)
+    public static function rewriteHref($url, array $pathsById = array())
     {
+        unset($pathsById);
         $url = trim((string) $url);
-        if ($url === '' || $url[0] === '#') {
+        if ($url === '') {
             return $url;
         }
-
         if (!preg_match('~^(?P<pre>https?://[^/]+)?(?P<path>/[^?#]*)(?P<tail>[?#].*)?$~i', $url, $parts)) {
             return $url;
         }
-
-        if (!preg_match('#^/(?:[a-z]{2}/)?(\d+)-([^/]+)$#i', $parts['path'], $cat)) {
-            return $url;
-        }
-
-        if (strpos($cat[2], '.') !== false) {
-            return $url;
-        }
-
-        $id = (int) $cat[1];
-        if ($id <= 0 || !isset($pathsById[$id])) {
-            return $url;
-        }
-
-        $newPath = $pathsById[$id];
-        if ($newPath === $parts['path']) {
-            return $url;
-        }
-
-        return (isset($parts['pre']) ? $parts['pre'] : '') . $newPath . (isset($parts['tail']) ? $parts['tail'] : '');
-    }
-
-    /**
-     * @return array<int,string>
-     */
-    protected static function canonicalPaths($idLang, $idShop)
-    {
-        $rows = Db::getInstance()->executeS(
-            'SELECT cl.id_category, cl.link_rewrite
-            FROM `' . _DB_PREFIX_ . 'category_lang` cl
-            INNER JOIN `' . _DB_PREFIX_ . 'category` c ON c.id_category = cl.id_category
-            WHERE cl.id_lang = ' . (int) $idLang . ' AND cl.id_shop = ' . (int) $idShop
-        );
-        if (!$rows) {
-            return array();
-        }
-
-        $context = Context::getContext();
-        if (!$context->link) {
-            $context->link = new Link();
-        }
-
-        $paths = array();
-        foreach ($rows as $row) {
-            $rewrite = (string) $row['link_rewrite'];
-            if ($rewrite === '') {
-                continue;
-            }
-            $full = $context->link->getCategoryLink(
-                (int) $row['id_category'],
-                $rewrite,
-                $idLang,
-                null,
-                $idShop
-            );
-            $path = parse_url((string) $full, PHP_URL_PATH);
-            if (is_string($path) && $path !== '') {
-                $paths[(int) $row['id_category']] = $path;
+        foreach (self::$exactPathMap as $from => $to) {
+            if ($parts['path'] === $from) {
+                return (isset($parts['pre']) ? $parts['pre'] : '') . $to . (isset($parts['tail']) ? $parts['tail'] : '');
             }
         }
 
-        return $paths;
+        return $url;
     }
 
     protected static function resolveShopId($idLang)
@@ -256,13 +352,26 @@ class CkcMenuCategoryUrls
         }
     }
 
+    protected static function clearCeElementCache()
+    {
+        if (!self::tableExists('ce_meta')) {
+            return;
+        }
+        Db::getInstance()->delete('ce_meta', '`name` = \'_ce_element_cache\'');
+    }
+
     /**
      * @param array<int,array{from:string,to:string}> $samples
      */
     protected static function pushSample(array &$samples, $from, $to)
     {
-        if (count($samples) >= 20) {
+        if (count($samples) >= 40) {
             return;
+        }
+        foreach ($samples as $s) {
+            if ($s['from'] === $from && $s['to'] === $to) {
+                return;
+            }
         }
         $samples[] = array('from' => $from, 'to' => $to);
     }

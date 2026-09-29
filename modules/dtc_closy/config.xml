@@ -2,7 +2,7 @@
 <module>
     <name>dtc_closy</name>
     <displayName><![CDATA[Districlos - Closy]]></displayName>
-    <version><![CDATA[1.1.1]]></version>
+    <version><![CDATA[1.1.2]]></version>
     <description><![CDATA[Assistant Closy : questions IA sur fiche produit et panneau YourGPT avec carrousel produits.]]></description>
     <author><![CDATA[Districlos]]></author>
     <tab><![CDATA[front_office_features]]></tab>

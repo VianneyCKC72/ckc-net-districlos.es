@@ -5,7 +5,7 @@
         id="dtc-closy-launcher"
         class="dtc-closy-launcher"
         data-dtc-closy-open
-        aria-label="{l s='Ouvrir l’assistant' mod='dtc_closy'}">
+        aria-label="{l s='Ouvrir l’assistant Closy' mod='dtc_closy'}">
     <img src="{$dtc_closy_launcher_icon_url|escape:'html':'UTF-8'}"
          alt=""
          width="96"

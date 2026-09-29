@@ -35,7 +35,7 @@ class Dtc_closy extends Module
     {
         $this->name = 'dtc_closy';
         $this->tab = 'front_office_features';
-        $this->version = '1.1.1';
+        $this->version = '1.1.2';
         $this->author = 'Districlos';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -191,13 +191,13 @@ class Dtc_closy extends Module
                 'widgetUid' => (new DtcClosyPanelService())->resolveWidgetUid(),
                 'socketUrl' => 'https://wss.yourgpt.ai/chatbot',
                 'welcome' => $this->resolvePanelWelcomeMessage($isProductPage),
-                'typingLabel' => $this->l('Réflexion en cours…'),
-                'likeLabel' => $this->l('Utile'),
-                'dislikeLabel' => $this->l('Pas utile'),
-                'feedbackThanksLabel' => $this->l('Merci pour votre avis'),
-                'feedbackGroupLabel' => $this->l('Évaluez cette réponse'),
-                'viewProductLabel' => $this->l('Voir le produit'),
-                'launcherLabel' => $this->l('Ouvrir l’assistant Closy'),
+                'typingLabel' => $this->trans('Réflexion en cours…', [], 'Shop.Theme.Customdtc'),
+                'likeLabel' => $this->trans('Utile', [], 'Shop.Theme.Customdtc'),
+                'dislikeLabel' => $this->trans('Pas utile', [], 'Shop.Theme.Customdtc'),
+                'feedbackThanksLabel' => $this->trans('Merci pour votre avis', [], 'Shop.Theme.Customdtc'),
+                'feedbackGroupLabel' => $this->trans('Évaluez cette réponse', [], 'Shop.Theme.Customdtc'),
+                'viewProductLabel' => $this->trans('Voir le produit', [], 'Shop.Theme.Customdtc'),
+                'launcherLabel' => $this->trans('Ouvrir l’assistant Closy', [], 'Shop.Theme.Customdtc'),
                 'botAvatarUrl' => $this->context->link->getMediaLink(
                     _MODULE_DIR_ . $this->name . '/views/img/icon_bulle_closy.webp'
                 ),
