@@ -236,11 +236,16 @@ PROMPT;
         $metaTitle = $this->normalizeSeoText($data['meta_title'], (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX));
         $metaDescription = $this->normalizeSeoText($data['meta_description'], (int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX));
         $slug = $this->normalizeSlug($data['slug']);
+        $name = trim((string) $data['name']);
+        if ($name !== '' && (Tools::strlen($name) > Tools::strlen($metaTitle) + 2 || $metaTitle === '')) {
+            $metaTitle = $this->normalizeSeoText($name, (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX));
+        }
+        $metaDescription = $this->finalizeMetaDescription($metaDescription);
 
         Db::getInstance()->update(
             'product_lang',
             array(
-                'name' => pSQL($data['name']),
+                'name' => pSQL($name),
                 'meta_title' => pSQL($metaTitle),
                 'meta_description' => pSQL($metaDescription),
                 'meta_keywords' => pSQL($data['meta_keywords']),
@@ -429,11 +434,17 @@ PROMPT;
         $metaTitle = $this->normalizeSeoText($data['meta_title'], (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX));
         $metaDescription = $this->normalizeSeoText($data['meta_description'], (int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX));
         $slug = $this->normalizeSlug($data['slug']);
+        $name = trim((string) $data['name']);
+        // CKC Vianney — title onglet = H1 si plus fiable
+        if ($name !== '' && (Tools::strlen($name) > Tools::strlen($metaTitle) + 2 || $metaTitle === '')) {
+            $metaTitle = $this->normalizeSeoText($name, (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX));
+        }
+        $metaDescription = $this->finalizeMetaDescription($metaDescription);
 
         Db::getInstance()->update(
             'category_lang',
             array(
-                'name' => pSQL($data['name']),
+                'name' => pSQL($name),
                 'meta_title' => pSQL($metaTitle),
                 'meta_description' => pSQL($metaDescription),
                 'link_rewrite' => pSQL($slug),
@@ -622,6 +633,7 @@ PROMPT;
         $metaTitle = $this->normalizeSeoText($data['meta_title'], (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX));
         $metaDescription = $this->normalizeSeoText($data['meta_description'], (int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX));
         $slug = $this->normalizeSlug($data['slug']);
+        $metaDescription = $this->finalizeMetaDescription($metaDescription);
 
         Db::getInstance()->update(
             'cms_lang',
@@ -653,8 +665,22 @@ PROMPT;
         $metaTitleMax = (int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX);
         $metaDescriptionMax = (int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX);
         $slugMax = (int) Configuration::get(CkcTranslate::CONF_SEO_SLUG_MAX);
-
+        if ($slugMax < 32) {
+            $slugMax = 80;
+        }
+        if ($metaTitleMax < 30) {
+            $metaTitleMax = 60;
+        }
+        if ($metaDescriptionMax < 50) {
+            $metaDescriptionMax = 155;
+        }
         $jobPrompt = $this->getJobSpecificPrompt($jobCode);
+
+        // CKC Vianney — pages système : limites Meta PS (128/255), pas le plafond produit.
+        if ($jobCode === 'system_pages') {
+            $metaTitleMax = 128;
+            $metaDescriptionMax = 255;
+        }
 
         return trim(
             $basePrompt
@@ -775,9 +801,8 @@ PROMPT;
                     return 0;
                 }
 
-                $rows = Db::getInstance()->executeS($filtered['sql']);
-
-                return is_array($rows) ? count($rows) : 0;
+                // Paginé : certains hôtes / caches SQL tronquent executeS (ex. 10 lignes).
+                return count($this->fetchAllSqlColumnValues($filtered['sql'], $filtered['column']));
         }
     }
 
@@ -860,7 +885,10 @@ PROMPT;
                               AND tgt.id_lang = ' . (int) $this->targetLangId . '
                               AND tgt.name IS NOT NULL
                               AND TRIM(tgt.name) != \'\'
-                              AND tgt.name != src.name
+                              AND (
+                                tgt.name != src.name
+                                OR ' . $this->sqlAiSuccessExists('features', 'feature', 'f.id_feature') . '
+                              )
                          )';
 
         if ($filterType === 'ids' && !empty($filterIds)) {
@@ -880,7 +908,10 @@ PROMPT;
                             AND tgt.id_lang = ' . (int) $this->targetLangId . '
                             AND tgt.value IS NOT NULL
                             AND TRIM(tgt.value) != \'\'
-                            AND tgt.value != src.value
+                            AND (
+                              tgt.value != src.value
+                              OR ' . $this->sqlAiSuccessExists('features', 'feature_value', 'fv.id_feature_value') . '
+                            )
                        )';
 
         if ($filterType === 'ids' && !empty($filterIds)) {
@@ -913,8 +944,12 @@ PROMPT;
                         SELECT 1 FROM `' . _DB_PREFIX_ . 'attribute_group_lang` tgt
                         WHERE tgt.id_attribute_group = ag.id_attribute_group
                           AND tgt.id_lang = ' . (int) $this->targetLangId . '
-                          AND tgt.name IS NOT NULL AND TRIM(tgt.name) != \'\' AND tgt.name != src.name
-                          AND tgt.public_name IS NOT NULL AND TRIM(tgt.public_name) != \'\' AND tgt.public_name != src.public_name
+                          AND tgt.name IS NOT NULL AND TRIM(tgt.name) != \'\'
+                          AND tgt.public_name IS NOT NULL AND TRIM(tgt.public_name) != \'\'
+                          AND (
+                            (tgt.name != src.name OR tgt.public_name != src.public_name)
+                            OR ' . $this->sqlAiSuccessExists('attributes', 'attribute_group', 'ag.id_attribute_group') . '
+                          )
                      )';
 
         if ($filterType === 'ids' && !empty($filterIds)) {
@@ -934,7 +969,10 @@ PROMPT;
                           AND tgt.id_lang = ' . (int) $this->targetLangId . '
                           AND tgt.name IS NOT NULL
                           AND TRIM(tgt.name) != \'\'
-                          AND tgt.name != src.name
+                          AND (
+                            tgt.name != src.name
+                            OR ' . $this->sqlAiSuccessExists('attributes', 'attribute', 'a.id_attribute') . '
+                          )
                       )';
 
         if ($filterType === 'ids' && !empty($filterIds)) {
@@ -1264,6 +1302,7 @@ PROMPT;
                 }
 
                 if ($onlyMissing) {
+                    // CKC Vianney — texte cible = source (ex. "48h") reste "OK" si l’IA a déjà validé (history success).
                     $sql .= ' AND NOT EXISTS (
                         SELECT 1 FROM `' . _DB_PREFIX_ . 'carrier_lang` tgt
                         WHERE tgt.id_carrier = c.id_carrier
@@ -1271,7 +1310,10 @@ PROMPT;
                           AND tgt.id_shop = ' . (int) $shopId . '
                           AND tgt.delay IS NOT NULL
                           AND TRIM(tgt.delay) != \'\'
-                          AND tgt.delay != cl.delay
+                          AND (
+                            tgt.delay != cl.delay
+                            OR ' . $this->sqlAiSuccessExists('carrier_delays', 'carrier', 'c.id_carrier') . '
+                          )
                     )';
                 }
 
@@ -1499,15 +1541,27 @@ PROMPT;
                 }
 
                 if ($onlyMissing) {
+                    // CKC Vianney — ignore les traductions trop courtes / coupées (ex. "Fencing &").
                     $sql .= ' AND NOT EXISTS (
                         SELECT 1 FROM `' . _DB_PREFIX_ . 'meta_lang` tgt
                         WHERE tgt.id_meta = m.id_meta
                           AND tgt.id_lang = ' . (int) $this->targetLangId . '
                           AND tgt.id_shop = ' . (int) $shopId . '
                           AND (
-                            (TRIM(IFNULL(src.title, \'\')) = \'\' OR (TRIM(IFNULL(tgt.title, \'\')) != \'\' AND tgt.title != src.title))
-                            AND
-                            (TRIM(IFNULL(src.description, \'\')) = \'\' OR (TRIM(IFNULL(tgt.description, \'\')) != \'\' AND tgt.description != src.description))
+                            TRIM(IFNULL(src.title, \'\')) = \'\'
+                            OR (
+                              TRIM(IFNULL(tgt.title, \'\')) != \'\'
+                              AND tgt.title != src.title
+                              AND CHAR_LENGTH(TRIM(tgt.title)) >= GREATEST(12, FLOOR(CHAR_LENGTH(TRIM(src.title)) * 0.45))
+                            )
+                          )
+                          AND (
+                            TRIM(IFNULL(src.description, \'\')) = \'\'
+                            OR (
+                              TRIM(IFNULL(tgt.description, \'\')) != \'\'
+                              AND tgt.description != src.description
+                              AND CHAR_LENGTH(TRIM(tgt.description)) >= GREATEST(20, FLOOR(CHAR_LENGTH(TRIM(src.description)) * 0.45))
+                            )
                           )
                     )';
                 }
@@ -2278,17 +2332,18 @@ PROMPT;
                   AND tgt.id_lang = ' . (int) $this->targetLangId . '
                   AND tgt.name IS NOT NULL
                   AND TRIM(tgt.name) != \'\'
-                  AND tgt.name != fl.name
+                  AND (
+                    tgt.name != fl.name
+                    OR ' . $this->sqlAiSuccessExists('features', 'feature', 'f.id_feature') . '
+                  )
             )';
         }
 
         $featureSql .= ' ORDER BY f.id_feature ASC';
 
-        $featureRows = Db::getInstance()->executeS($featureSql);
-        if (is_array($featureRows)) {
-            foreach ($featureRows as $row) {
-                $items[] = array('type' => 'feature', 'id' => (int) $row['id_feature']);
-            }
+        // CKC Vianney — pagination (évite le plafond Softizy à 10 lignes sur executeS).
+        foreach ($this->fetchAllSqlColumnValues($featureSql, 'id_feature') as $featureId) {
+            $items[] = array('type' => 'feature', 'id' => (int) $featureId);
         }
 
         $valueSql = 'SELECT fv.id_feature_value
@@ -2310,17 +2365,17 @@ PROMPT;
                   AND tgt.id_lang = ' . (int) $this->targetLangId . '
                   AND tgt.value IS NOT NULL
                   AND TRIM(tgt.value) != \'\'
-                  AND tgt.value != fvl.value
+                  AND (
+                    tgt.value != fvl.value
+                    OR ' . $this->sqlAiSuccessExists('features', 'feature_value', 'fv.id_feature_value') . '
+                  )
             )';
         }
 
         $valueSql .= ' ORDER BY fv.id_feature_value ASC';
 
-        $valueRows = Db::getInstance()->executeS($valueSql);
-        if (is_array($valueRows)) {
-            foreach ($valueRows as $row) {
-                $items[] = array('type' => 'feature_value', 'id' => (int) $row['id_feature_value']);
-            }
+        foreach ($this->fetchAllSqlColumnValues($valueSql, 'id_feature_value') as $valueId) {
+            $items[] = array('type' => 'feature_value', 'id' => (int) $valueId);
         }
 
         return $items;
@@ -2351,18 +2406,19 @@ PROMPT;
                 SELECT 1 FROM `' . _DB_PREFIX_ . 'attribute_group_lang` tgt
                 WHERE tgt.id_attribute_group = ag.id_attribute_group
                   AND tgt.id_lang = ' . (int) $this->targetLangId . '
-                  AND tgt.name IS NOT NULL AND TRIM(tgt.name) != \'\' AND tgt.name != agl.name
-                  AND tgt.public_name IS NOT NULL AND TRIM(tgt.public_name) != \'\' AND tgt.public_name != agl.public_name
+                  AND tgt.name IS NOT NULL AND TRIM(tgt.name) != \'\'
+                  AND tgt.public_name IS NOT NULL AND TRIM(tgt.public_name) != \'\'
+                  AND (
+                    (tgt.name != agl.name OR tgt.public_name != agl.public_name)
+                    OR ' . $this->sqlAiSuccessExists('attributes', 'attribute_group', 'ag.id_attribute_group') . '
+                  )
             )';
         }
 
         $groupSql .= ' ORDER BY ag.id_attribute_group ASC';
 
-        $groupRows = Db::getInstance()->executeS($groupSql);
-        if (is_array($groupRows)) {
-            foreach ($groupRows as $row) {
-                $items[] = array('type' => 'attribute_group', 'id' => (int) $row['id_attribute_group']);
-            }
+        foreach ($this->fetchAllSqlColumnValues($groupSql, 'id_attribute_group') as $groupId) {
+            $items[] = array('type' => 'attribute_group', 'id' => (int) $groupId);
         }
 
         $attrSql = 'SELECT a.id_attribute
@@ -2370,8 +2426,8 @@ PROMPT;
                     INNER JOIN `' . _DB_PREFIX_ . 'attribute_lang` al
                       ON al.id_attribute = a.id_attribute
                      AND al.id_lang = ' . (int) $this->sourceLangId . '
-                    WHERE al.name IS NOT NULL
-                      AND TRIM(al.name) != \'\'';
+                     WHERE al.name IS NOT NULL
+                       AND TRIM(al.name) != \'\'';
 
         if ($filterType === 'ids' && !empty($filterIds)) {
             $attrSql .= ' AND a.id_attribute_group IN (' . implode(',', array_map('intval', $filterIds)) . ')';
@@ -2384,17 +2440,17 @@ PROMPT;
                   AND tgt.id_lang = ' . (int) $this->targetLangId . '
                   AND tgt.name IS NOT NULL
                   AND TRIM(tgt.name) != \'\'
-                  AND tgt.name != al.name
+                  AND (
+                    tgt.name != al.name
+                    OR ' . $this->sqlAiSuccessExists('attributes', 'attribute', 'a.id_attribute') . '
+                  )
             )';
         }
 
         $attrSql .= ' ORDER BY a.id_attribute ASC';
 
-        $attrRows = Db::getInstance()->executeS($attrSql);
-        if (is_array($attrRows)) {
-            foreach ($attrRows as $row) {
-                $items[] = array('type' => 'attribute', 'id' => (int) $row['id_attribute']);
-            }
+        foreach ($this->fetchAllSqlColumnValues($attrSql, 'id_attribute') as $attrId) {
+            $items[] = array('type' => 'attribute', 'id' => (int) $attrId);
         }
 
         return $items;
@@ -2618,7 +2674,7 @@ PROMPT;
         );
 
         if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
-            if ($targetValue !== '' && $targetValue !== $sourceValue) {
+            if ($targetValue !== '' && ($targetValue !== $sourceValue || $this->hasAiSuccess($jobCode, $entityType, (int) $id))) {
                 $this->logHistory($jobCode, $entityType, $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
                 return $this->nextResult(sprintf(
@@ -3639,8 +3695,8 @@ PROMPT;
         if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS) && is_array($target)) {
             $targetTitle = trim((string) $target['title']);
             $targetDescription = trim((string) $target['description']);
-            $titleDone = ($sourceTitle === '' || ($targetTitle !== '' && $targetTitle !== $sourceTitle));
-            $descDone = ($sourceDescription === '' || ($targetDescription !== '' && $targetDescription !== $sourceDescription));
+            $titleDone = ($sourceTitle === '' || !$this->isIncompleteSystemPageSeo($targetTitle, $sourceTitle));
+            $descDone = ($sourceDescription === '' || !$this->isIncompleteSystemPageSeo($targetDescription, $sourceDescription, 20));
 
             if ($titleDone && $descDone) {
                 $this->logHistory('system_pages', 'meta', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
@@ -3653,7 +3709,7 @@ PROMPT;
         }
 
         $systemPrompt = $this->buildSystemPrompt(
-            'You translate PrestaShop system page SEO (browser tab title and meta description). Keep brand names unchanged. Do not invent promotions. Leave empty source fields empty.',
+            'You translate PrestaShop system page SEO (browser tab title and meta description). Keep brand names such as Districlos unchanged, usually at the start of the homepage title. Return COMPLETE texts close in length to the source. Never cut mid-phrase. Never end with &, and, of, the, or a dangling comma. Do not invent promotions. Leave empty source fields empty.',
             'system_pages'
         );
 
@@ -3663,6 +3719,11 @@ Return ONLY valid JSON:
   "title": "",
   "description": ""
 }
+
+Rules:
+- Keep brand names (e.g. Districlos) unchanged.
+- Title and description must be complete sentences/phrases, similar in length to the source.
+- Do not truncate. Do not end with "&" or a hanging word.
 
 Page code: {$pageCode}
 
@@ -3684,13 +3745,11 @@ PROMPT;
             ));
         }
 
+        // Limites ObjectModel Meta (title 128 / description 255), pas le plafond SEO produit (60).
         $translatedTitle = '';
         if ($sourceTitle !== '') {
-            $translatedTitle = $this->normalizeSeoText(
-                $data['title'],
-                min((int) Configuration::get(CkcTranslate::CONF_SEO_META_TITLE_MAX), 128)
-            );
-            if ($translatedTitle === '') {
+            $translatedTitle = $this->normalizeSystemPageSeoText($data['title'], 128);
+            if ($this->isIncompleteSystemPageSeo($translatedTitle, $sourceTitle)) {
                 $this->logHistory('system_pages', 'meta', (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
 
                 return $this->nextResult(sprintf(
@@ -3702,11 +3761,8 @@ PROMPT;
 
         $translatedDescription = '';
         if ($sourceDescription !== '') {
-            $translatedDescription = $this->normalizeSeoText(
-                $data['description'],
-                min((int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX), 255)
-            );
-            if ($translatedDescription === '') {
+            $translatedDescription = $this->normalizeSystemPageSeoText($data['description'], 255);
+            if ($this->isIncompleteSystemPageSeo($translatedDescription, $sourceDescription, 20)) {
                 $this->logHistory('system_pages', 'meta', (int) $id, 'error', $this->module->l('Invalid AI response.', 'CkcTranslateJobRunner'));
 
                 return $this->nextResult(sprintf(
@@ -5370,7 +5426,8 @@ PROMPT;
         );
 
         if ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS)) {
-            if ($targetDelay !== '' && $targetDelay !== $sourceDelay) {
+            // Différent de la source, ou déjà validé par l’IA (même texte volontairement inchangé).
+            if ($targetDelay !== '' && ($targetDelay !== $sourceDelay || $this->hasAiSuccess('carrier_delays', 'carrier', (int) $id))) {
                 $this->logHistory('carrier_delays', 'carrier', (int) $id, 'skipped', $this->module->l('Already translated.', 'CkcTranslateJobRunner'));
 
                 return $this->nextResult(sprintf(
@@ -5628,22 +5685,117 @@ PROMPT;
     protected function normalizeSeoText($value, $maxLength)
     {
         $value = trim((string) $value);
+        $maxLength = (int) $maxLength;
+        // CKC Vianney — garde-fou : un plafond à 10 coupait titres / metas (ex. Rigid Fenc).
+        if ($maxLength > 0 && $maxLength < 30) {
+            $maxLength = 60;
+        }
 
         if ($maxLength > 0 && Tools::strlen($value) > $maxLength) {
             $value = Tools::substr($value, 0, $maxLength);
+            if (preg_match('/^(.*)\s+\S*$/u', $value, $matches) && trim($matches[1]) !== '') {
+                $value = trim($matches[1]);
+            }
             $value = rtrim($value, " \t\n\r\0\x0B-,:;");
         }
 
         return $value;
     }
 
+    /**
+     * Meta description dédiée : marque Districlos, espaces, ~150 car.
+     */
+    protected function finalizeMetaDescription($value)
+    {
+        if (!class_exists('CkcTranslateSlugRepair', false)) {
+            require_once dirname(__FILE__) . '/CkcTranslateSlugRepair.php';
+        }
+
+        $value = CkcTranslateSlugRepair::polishMetaDescription($value);
+        $max = (int) Configuration::get(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX);
+        if ($max < 50 || $max > 170) {
+            $max = CkcTranslateSlugRepair::META_DESC_TARGET;
+        }
+        if (Tools::strlen($value) > $max) {
+            $value = $this->normalizeSeoText($value, $max);
+            $value = CkcTranslateSlugRepair::polishMetaDescription($value);
+        }
+
+        return $value;
+    }
+
+    /**
+     * CKC Vianney — SEO pages système : coupe au mot, jamais de "&" / connecteur orphelin.
+     */
+    protected function normalizeSystemPageSeoText($value, $maxLength)
+    {
+        $value = html_entity_decode(trim(strip_tags((string) $value)), ENT_QUOTES, 'UTF-8');
+        $value = preg_replace('/\s+/u', ' ', $value);
+        $value = trim((string) $value);
+
+        if ($maxLength > 0 && Tools::strlen($value) > $maxLength) {
+            $value = Tools::substr($value, 0, $maxLength);
+            if (preg_match('/^(.*)\s+\S*$/u', $value, $matches) && trim($matches[1]) !== '') {
+                $value = trim($matches[1]);
+            }
+            $value = rtrim($value, " \t\n\r\0\x0B-,:;.&");
+        }
+
+        return $value;
+    }
+
+    /**
+     * Détecte une meta coupée / trop courte par rapport à la source.
+     *
+     * @param string $target
+     * @param string $source
+     * @param int    $minAbsolute
+     *
+     * @return bool true = incomplet (à retraduire)
+     */
+    protected function isIncompleteSystemPageSeo($target, $source, $minAbsolute = 12)
+    {
+        $target = trim((string) $target);
+        $source = trim((string) $source);
+
+        if ($source === '') {
+            return false;
+        }
+
+        if ($target === '' || $target === $source) {
+            return true;
+        }
+
+        $sourceLen = Tools::strlen($source);
+        $targetLen = Tools::strlen($target);
+        $minLen = max((int) $minAbsolute, (int) floor($sourceLen * 0.45));
+
+        if ($targetLen < $minLen) {
+            return true;
+        }
+
+        if (preg_match('/(?:\s|&|&amp;|\band\b|\bof\b|\bthe\b|\bfor\b|\bwith\b|\bto\b|,|-)$/iu', $target)) {
+            return true;
+        }
+
+        return false;
+    }
+
     protected function normalizeSlug($value)
     {
         $slug = Tools::link_rewrite((string) $value);
         $maxLength = (int) Configuration::get(CkcTranslate::CONF_SEO_SLUG_MAX);
+        // CKC Vianney — garde-fou : une config à 10 coupait tous les slugs (ex. rigid-fenc).
+        if ($maxLength < 32) {
+            $maxLength = 80;
+        }
 
-        if ($maxLength > 0 && Tools::strlen($slug) > $maxLength) {
+        if (Tools::strlen($slug) > $maxLength) {
             $slug = Tools::substr($slug, 0, $maxLength);
+            $cut = strrpos($slug, '-');
+            if ($cut !== false && $cut >= (int) floor($maxLength * 0.6)) {
+                $slug = Tools::substr($slug, 0, $cut);
+            }
             $slug = trim($slug, '-');
         }
 
@@ -5680,6 +5832,44 @@ PROMPT;
         return true;
     }
 
+    /**
+     * Fragment SQL : l’IA a déjà validé cette entité (y compris texte volontairement identique à la source).
+     *
+     * @param string $jobCode
+     * @param string $entityType
+     * @param string $entityIdSql Expression SQL (ex. c.id_carrier)
+     *
+     * @return string
+     */
+    protected function sqlAiSuccessExists($jobCode, $entityType, $entityIdSql)
+    {
+        return 'EXISTS (
+            SELECT 1 FROM `' . _DB_PREFIX_ . 'ckctranslate_history` h
+            WHERE h.job_code = \'' . pSQL($jobCode) . '\'
+              AND h.entity_type = \'' . pSQL($entityType) . '\'
+              AND h.entity_id = ' . $entityIdSql . '
+              AND h.status = \'success\'
+        )';
+    }
+
+    /**
+     * @param string $jobCode
+     * @param string $entityType
+     * @param int    $entityId
+     *
+     * @return bool
+     */
+    protected function hasAiSuccess($jobCode, $entityType, $entityId)
+    {
+        return (bool) Db::getInstance()->getValue(
+            'SELECT 1 FROM `' . _DB_PREFIX_ . 'ckctranslate_history`
+             WHERE job_code = \'' . pSQL($jobCode) . '\'
+               AND entity_type = \'' . pSQL($entityType) . '\'
+               AND entity_id = ' . (int) $entityId . '
+               AND status = \'success\''
+        );
+    }
+
     protected function logHistory($jobCode, $entityType, $entityId, $status, $message)
     {
         $estimatedCost = (float) Configuration::get(CkcTranslate::CONF_ESTIMATED_CREDIT);
@@ -5701,6 +5891,7 @@ PROMPT;
 
     protected function getNextId($cookieKey, $indexKey, $sql, $column)
     {
+        unset($indexKey);
         if (empty($sql) || empty($column)) {
             return 0;
         }
@@ -5709,17 +5900,7 @@ PROMPT;
         $paths = self::getQueueFilePaths($queueName);
 
         if (!file_exists($paths['items'])) {
-            $rows = Db::getInstance()->executeS($sql);
-            $ids = array();
-
-            if (is_array($rows)) {
-                foreach ($rows as $row) {
-                    if (isset($row[$column])) {
-                        $ids[] = (int) $row[$column];
-                    }
-                }
-            }
-
+            $ids = $this->fetchAllSqlColumnValues($sql, $column);
             @file_put_contents($paths['items'], json_encode($ids));
             @file_put_contents($paths['index'], '0');
         }
@@ -5738,6 +5919,97 @@ PROMPT;
         @file_put_contents($paths['index'], (string) ($index + 1));
 
         return $currentId;
+    }
+
+    /**
+     * Charge toutes les valeurs d’une colonne SQL, page par page.
+     * Contourne les plafonds silencieux (ex. Softizy / caches qui ne renvoient que 10 lignes).
+     *
+     * @param string $sql
+     * @param string $column
+     *
+     * @return array<int,int|string>
+     */
+    protected function fetchAllSqlColumnValues($sql, $column)
+    {
+        $values = array();
+        $seen = array();
+        $baseSql = preg_replace('/\s+LIMIT\s+\d+(\s*,\s*\d+)?(\s+OFFSET\s+\d+)?\s*$/i', '', trim((string) $sql));
+        if ($baseSql === '' || $column === '') {
+            return $values;
+        }
+
+        $pageSize = 500;
+        $offset = 0;
+        $guard = 0;
+        $db = Db::getInstance();
+        $col = bqSQL($column);
+        $useKeyset = false;
+        $lastId = 0;
+
+        while ($guard < 10000) {
+            ++$guard;
+
+            if ($useKeyset) {
+                $pageSql = 'SELECT `' . $col . '` FROM (' . $baseSql . ') ckct_q'
+                    . ' WHERE `' . $col . '` > ' . (int) $lastId
+                    . ' ORDER BY `' . $col . '` ASC'
+                    . ' LIMIT ' . (int) $pageSize;
+            } else {
+                $pageSql = $baseSql . ' LIMIT ' . (int) $pageSize . ' OFFSET ' . (int) $offset;
+            }
+
+            $rows = $db->executeS($pageSql, true, false);
+            if (!is_array($rows) || !$rows) {
+                break;
+            }
+
+            $newInPage = 0;
+            foreach ($rows as $row) {
+                if (!isset($row[$column])) {
+                    continue;
+                }
+                $val = $row[$column];
+                $key = is_scalar($val) ? (string) $val : md5(json_encode($val));
+                if (isset($seen[$key])) {
+                    continue;
+                }
+                $seen[$key] = true;
+                $intVal = (int) $val;
+                $values[] = $intVal;
+                $lastId = max($lastId, $intVal);
+                ++$newInPage;
+            }
+
+            $rowCount = count($rows);
+
+            if ($newInPage === 0) {
+                // OFFSET ignoré → bascule en pagination par id
+                if (!$useKeyset && !empty($values)) {
+                    $useKeyset = true;
+                    $pageSize = 10;
+                    continue;
+                }
+                break;
+            }
+
+            if ($rowCount < $pageSize) {
+                if ($rowCount === 10 && $pageSize > 10) {
+                    $pageSize = 10;
+                    if (!$useKeyset) {
+                        $offset += $rowCount;
+                    }
+                    continue;
+                }
+                break;
+            }
+
+            if (!$useKeyset) {
+                $offset += $rowCount;
+            }
+        }
+
+        return $values;
     }
 
     protected function isValidFields($data, array $fields)

@@ -563,8 +563,9 @@ class Cart extends CartCore
         $specificPriceOutput = null;
 
         // CKC Vianney — getPriceStatic(id_cart=0) die si le Context (souvent un clone) n'a ni cart ni employee
-        if ($shopContext instanceof Context && !is_object($shopContext->cart)) {
-            $shopContext->cart = $this;
+        $priceContext = ($shopContext instanceof Context) ? $shopContext : Context::getContext();
+        if (!is_object($priceContext->cart)) {
+            $priceContext->cart = $this;
         }
         $globalContext = Context::getContext();
         if (!is_object($globalContext->cart)) {
@@ -587,7 +588,7 @@ class Cart extends CartCore
             $specificPriceOutput,
             true,
             $useReduc,
-            $shopContext,
+            $priceContext,
             true,
             (int) $row['id_customization']
         );

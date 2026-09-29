@@ -300,6 +300,13 @@
                 }
                 setFeedbackSelection(row, rating);
                 emitMessageFeedback(messageId, rating);
+                if (!row.querySelector('.dtc-pq-panel__feedback-thanks')) {
+                    var thanks = document.createElement('p');
+                    thanks.className = 'dtc-pq-panel__feedback-thanks';
+                    thanks.textContent =
+                        config.feedbackThanksLabel || 'Merci pour votre avis';
+                    row.appendChild(thanks);
+                }
             });
         });
     }
@@ -1011,6 +1018,10 @@
         var launcher = document.getElementById('dtc-closy-launcher');
         if (!launcher) {
             return;
+        }
+        if (config.launcherLabel) {
+            launcher.setAttribute('aria-label', config.launcherLabel);
+            launcher.setAttribute('title', config.launcherLabel);
         }
         launcher.addEventListener('click', function (e) {
             e.preventDefault();

@@ -22,14 +22,12 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  *}
-{* Visible uniquement en preview (?ckc=1). Pas de liens EN exposés hors preview. *}
-{if isset($ckc_lang_preview) && $ckc_lang_preview}
-{* Sélecteur de langue – même disposition que les .ico du header (icône au-dessus, label en dessous). *}
+{* Sélecteur de langue – même disposition que les .ico du header (icône au-dessus, label en dessous). Visible desktop + mobile. *}
 <div id="_desktop_language_selector" class="ckc-lang ico">
   <div class="language-selector-wrapper">
     <span id="language-selector-label" class="ckc-lang__label sr-only">{l s='Language:' d='Shop.Theme.Global'}</span>
     <div class="language-selector dropdown js-dropdown">
-      <button data-toggle="dropdown" class="ckc-lang__toggle btn-unstyle hidden-sm-down" aria-haspopup="true" aria-expanded="false" aria-label="{l s='Language dropdown' d='Shop.Theme.Global'}">
+      <button data-toggle="dropdown" class="ckc-lang__toggle btn-unstyle" aria-haspopup="true" aria-expanded="false" aria-label="{l s='Language dropdown' d='Shop.Theme.Global'}">
         <span class="ckc-lang__icon" aria-hidden="true">
           <svg class="ckc-lang__globe" xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
         </span>
@@ -38,22 +36,13 @@
           <svg class="ckc-lang__chevron" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
         </span>
       </button>
-      <ul class="dropdown-menu ckc-lang__menu hidden-sm-down" aria-labelledby="language-selector-label">
+      <ul class="dropdown-menu ckc-lang__menu" aria-labelledby="language-selector-label">
         {foreach from=$languages item=language}
-          {capture assign=lang_href}{url entity='language' id=$language.id_lang}{/capture}
           <li {if $language.id_lang == $current_language.id_lang}class="current"{/if}>
-            <a href="{$lang_href}{if $lang_href|strstr:'?'}&{else}?{/if}ckc=1" class="dropdown-item ckc-lang__item" data-iso-code="{$language.iso_code}" rel="nofollow">{$language.iso_code|upper}</a>
+            <a href="{url entity='language' id=$language.id_lang}" class="dropdown-item ckc-lang__item" data-iso-code="{$language.iso_code}">{$language.iso_code|upper}</a>
           </li>
         {/foreach}
       </ul>
-      <select class="link ckc-lang__select hidden-md-up" aria-labelledby="language-selector-label">
-        {foreach from=$languages item=language}
-          {capture assign=lang_href}{url entity='language' id=$language.id_lang}{/capture}
-          <option value="{$lang_href}{if $lang_href|strstr:'?'}&{else}?{/if}ckc=1"{if $language.id_lang == $current_language.id_lang} selected="selected"{/if} data-iso-code="{$language.iso_code}">
-            {$language.iso_code|upper}
-          </option>
-        {/foreach}
-      </select>
     </div>
   </div>
 </div>
@@ -168,17 +157,6 @@
     background-color: rgba(21, 97, 109, .08);
   }
 
-  .ckc-lang__select {
-    padding: 6px 10px;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    background: #fff;
-    color: #1a1a1a;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-
   .ckc-lang__label.sr-only {
     position: absolute;
     width: 1px;
@@ -198,4 +176,3 @@
     .ckc-lang__toggle { font-size: 8px; }
   }
 </style>
-{/if}

@@ -77,7 +77,7 @@
             {/foreach}
 
             <div class="product-line-info prix-unitaire">
-                <span class="label">{l s='Prix unitaire' d='Shop.Theme.Customdealt'} {if $pro.env == 1}{l s='HT' d='Shop.Theme.Customcustomer'}{else}TTC{/if} </span>
+                <span class="label">{l s='Prix unitaire' d='Shop.Theme.Customdealt'} {if isset($pro) && $pro.env == 1}{l s='HT' d='Shop.Theme.Custommodules'}{else}{l s='TTC' d='Shop.Theme.Custommodules'}{/if}</span>
                 <span class="value">{$product.price}</span>
             </div>
             {if is_array($product.customizations) && $product.customizations|count}

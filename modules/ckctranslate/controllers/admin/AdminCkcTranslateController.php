@@ -107,7 +107,7 @@ class AdminCkcTranslateController extends ModuleAdminController
         if (!Configuration::get(CkcTranslate::CONF_PROMPT_SYSTEM_PAGES)) {
             Configuration::updateValue(
                 CkcTranslate::CONF_PROMPT_SYSTEM_PAGES,
-                'Translate PrestaShop system page SEO fields (meta title and meta description: homepage, cart, login, contact, sitemap, etc.). Keep brand names such as Districlos unchanged. Keep a natural, concise SEO tone. Do not invent promotions or claims. Leave empty source fields empty.'
+                'Translate PrestaShop system page SEO fields (meta title and meta description: homepage, cart, login, contact, sitemap, etc.). Always keep brand names such as Districlos unchanged and place them naturally (usually at the start for the homepage title). Return a COMPLETE title and description, close in length to the source (do not shorten aggressively, do not cut mid-phrase, never end with &, and, of, the, or a dangling comma). Keep a natural, concise SEO tone. Do not invent promotions or claims. Leave empty source fields empty.'
             );
         }
         if (Tools::isSubmit('submitCkcTranslateConfig')) {
@@ -131,6 +131,10 @@ class AdminCkcTranslateController extends ModuleAdminController
             if (Tools::getValue('fresh_queue')) {
                 $this->resetJobQueue($jobCode);
                 // Rebuild queue against missing translations (new entities / source copies).
+                Configuration::updateValue(CkcTranslate::CONF_ONLY_MISSING_FIELDS, 1);
+                Configuration::set(CkcTranslate::CONF_ONLY_MISSING_FIELDS, 1);
+            }
+            if (Tools::getValue('keep_only_missing')) {
                 Configuration::set(CkcTranslate::CONF_ONLY_MISSING_FIELDS, 1);
             }
             $this->runJob($jobCode);
@@ -248,9 +252,19 @@ class AdminCkcTranslateController extends ModuleAdminController
         Configuration::updateValue(CkcTranslate::CONF_ONLY_MISSING_FIELDS, $onlyMissingFields ? 1 : 0);
 
         Configuration::updateValue(CkcTranslate::CONF_GLOSSARY, $glossary);
-        Configuration::updateValue(CkcTranslate::CONF_SEO_META_TITLE_MAX, max($seoMetaTitleMax, 10));
-        Configuration::updateValue(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX, max($seoMetaDescriptionMax, 10));
-        Configuration::updateValue(CkcTranslate::CONF_SEO_SLUG_MAX, max($seoSlugMax, 10));
+        // CKC Vianney - empty/low SEO limits => defaults (max(0,10)=10 truncated EN titles/metas/slugs)
+        if ($seoMetaTitleMax < 30) {
+            $seoMetaTitleMax = 60;
+        }
+        if ($seoMetaDescriptionMax < 50) {
+            $seoMetaDescriptionMax = 155;
+        }
+        if ($seoSlugMax < 32) {
+            $seoSlugMax = 80;
+        }
+        Configuration::updateValue(CkcTranslate::CONF_SEO_META_TITLE_MAX, $seoMetaTitleMax);
+        Configuration::updateValue(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX, $seoMetaDescriptionMax);
+        Configuration::updateValue(CkcTranslate::CONF_SEO_SLUG_MAX, $seoSlugMax);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_PRODUCT_SEO, $promptProductSeo);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_PRODUCT_DESCRIPTION, $promptProductDescription);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_CATEGORY_SEO, $promptCategorySeo);
@@ -761,7 +775,7 @@ class AdminCkcTranslateController extends ModuleAdminController
             );
         }
 
-        $autoReloadUrl = self::$currentIndex . '&token=' . $this->token . '&run_job=' . urlencode($job);
+        $autoReloadUrl = self::$currentIndex . '&token=' . $this->token . '&run_job=' . urlencode($job) . ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS) ? '&keep_only_missing=1' : '');
 
         $this->context->smarty->assign(array(
             'result' => $result,

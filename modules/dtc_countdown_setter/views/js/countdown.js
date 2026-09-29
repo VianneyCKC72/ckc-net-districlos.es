@@ -1,19 +1,13 @@
-
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("Countdown script loaded.");
-
     if (typeof countdownData === "undefined") {
-        console.warn("Aucune donnée de compte à rebours fournie.");
         return;
     }
-
-    console.log("Données de compte à rebours :", countdownData);
 
     countdownData.forEach((countdown, index) => {
         const selector = countdown.selector;
         const target = document.querySelector(selector);
+        // Sélecteur absent sur certaines pages (ex. panier) : normal, on ignore.
         if (!target) {
-            console.error(`Aucun élément trouvé pour le sélecteur ${selector}.`);
             return;
         }
 
