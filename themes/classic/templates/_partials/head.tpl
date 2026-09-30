@@ -64,7 +64,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://www.googletagmanager.com">
   <link rel="preconnect" href="https://assets.motive.co">
-  {if isset($page.meta.robots) && $page.meta.robots && $page.meta.robots != 'index'}
+  {* Produits service/pose Dealt (/service/...) : noindex en attendant la V2 (duplicate content) *}
+  {if isset($smarty.server.REQUEST_URI) && $smarty.server.REQUEST_URI|strstr:'/service/'}
+    <meta name="robots" content="noindex, follow">
+  {elseif isset($page.meta.robots) && $page.meta.robots && $page.meta.robots != 'index'}
     <meta name="robots" content="{$page.meta.robots|escape:'html':'UTF-8'}">
   {/if}
   {if $page.canonical}
