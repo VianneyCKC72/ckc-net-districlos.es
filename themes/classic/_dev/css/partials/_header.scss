@@ -1,5 +1,6 @@
 /* START BANDEAU BONS PLANS */
 .bandeau-soldes {
+  /* Couleurs surchargées en inline par le module (config BO) */
   background-color: #E7FBD8;
   padding: 4px 15px;
   text-align: center;
@@ -21,7 +22,6 @@
 
     &:hover {
       text-decoration: none;
-      color: #026473;
       opacity: 0.9;
     }
   }
