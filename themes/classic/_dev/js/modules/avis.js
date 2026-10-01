@@ -13,7 +13,17 @@ $(document).ready(function () {
         return;
     }
 
-    var skeepers = $('.skeepers_product__stars');
+    var productId =
+        $('input[name="id_product"]').val() ||
+        $('#product_page_product_id').val() ||
+        '';
+
+    if (!productId) {
+        return;
+    }
+    // Apparaît uniquement si un produit a des avis.
+    var skeepers = $('.skeepers_product__stars[data-product-id="' + productId + '"]');
+
     if (!skeepers.length) {
         return;
     }
@@ -102,12 +112,10 @@ $(document).ready(function () {
         }
     });
 
-    // Observer tous les widgets stars (header + sticky prix), pas seulement le premier.
     skeepers.each(function () {
         observer.observe(this, { childList: true, subtree: true });
     });
 
-    // Filet de sécurité si le widget injecte l'onglet ailleurs / en retard.
     setTimeout(dedupeAvisTabs, 2000);
     setTimeout(dedupeAvisTabs, 5000);
 });
