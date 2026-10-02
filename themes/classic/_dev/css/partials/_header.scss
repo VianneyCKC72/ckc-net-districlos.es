@@ -405,6 +405,16 @@ body:has(.bandeau-soldes) {
     display: none;
   }
 }
+body.espace_pro.-pro{
+  #header{
+    /* Rapprocher "Nos produits" du logo : plus la valeur est négative, plus le bouton est à gauche */
+    @media only screen and (min-width: 1440px) {
+      .row-header > .menu-button.d-none.d-md-block {
+        margin-left: -60px;
+      }
+    }
+  }
+}
 .logos_container {
   max-width: 160px;
   width: 160px;
