@@ -156,7 +156,7 @@ window.CKC_CFG_I18N = {
       </header>
 
       {* ---- Zone de contenu ---- *}
-      <div class="ckc-layout" :class="{ 'ckc-layout--full': $store.configurator.currentStep === 1 }">
+      <div class="ckc-layout" :class="{ 'ckc-layout--full': $store.configurator.currentStep === 1, 'ckc-layout--wide': $store.configurator.currentStep === 4 || $store.configurator.currentStep === $store.configurator.stepOptions }">
       <main class="ckc-content">
 
         {* ==================================================
@@ -387,7 +387,7 @@ window.CKC_CFG_I18N = {
             {* Type de pose *}
             <div class="ckc-field-group" x-show="$store.configurator.installTypes.length > 0">
               <span class="ckc-field-label ckc-etape-selection-title">{l s='Type de pose' d='Shop.Theme.Customconfigurator'}</span>
-              <div class="ckc-grid ckc-grid--2">
+              <div class="ckc-grid">
                 <template x-for="item in $store.configurator.installTypes" :key="item.id">
                   <div
                           class="ckc-card"
@@ -1620,7 +1620,7 @@ window.CKC_CFG_I18N = {
                         <div class="ckc-troncon-item__number"><span x-text="t.index"></span></div>
 
                         <div class="ckc-troncon-item__meta">
-                          <div class="ckc-troncon-item__title">{l s='Section' d='Shop.Theme.Customconfigurator'} <span x-text="t.index"></span></div>
+                          <div class="ckc-troncon-item__title">{l s='Tronçon' d='Shop.Theme.Customconfigurator'} <span x-text="t.index"></span></div>
                         </div>
                       </div>
                       <div class="ckc-troncon-item__actions">
@@ -2027,7 +2027,7 @@ window.CKC_CFG_I18N = {
               </div>
             </div>
           </template>
-          <div>
+          <div class="ckc-footer__etape-wrap">
             <span class="ckc-footer__etape"
                   x-text="$store.configurator.footerStepLabel"></span>
           </div>
@@ -2375,8 +2375,8 @@ document.addEventListener('alpine:init', () => {
         this.fenceTypes = this._localizeEntity(data.fence_types || []);
 
         const tunnel = data.tunnel || {};
-        // hasSoubassementStep is now set per fence_type in selectFenceType()
-        this.hasSoubassementStep = false;
+        // Afficher l'étape soubassement dans le chemin dès le départ si le tunnel l'active
+        this.hasSoubassementStep = !!(tunnel.has_soubassement_step);
         this.stepAdvice = this._localizeAdvice(data.step_advice || {});
         // info_items are now per-entity (in each fence_type, install_type, range object)
 
