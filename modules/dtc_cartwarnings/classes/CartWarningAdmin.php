@@ -186,8 +186,7 @@ class CartWarningAdmin
         $helper->show_toolbar = false;
         $helper->table = 'dtc_cart_warning_rule';
         $helper->module = $this->module;
-        $helper->default_form_language = (int) Context::getContext()->language->id;
-        $helper->allow_employee_form_lang = (int) Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG');
+        $this->configureHelperFormLanguages($helper);
         $helper->identifier = 'id_rule';
         $helper->submit_action = 'submitDtcCartWarningRule';
         $helper->currentIndex = Context::getContext()->link->getAdminLink('AdminModules', false)
@@ -204,6 +203,23 @@ class CartWarningAdmin
         }
 
         return $helper->generateForm([$fieldsForm]);
+    }
+
+    private function configureHelperFormLanguages(HelperForm $helper)
+    {
+        $languages = [];
+        foreach (Language::getLanguages(false) as $lang) {
+            $languages[] = [
+                'id_lang' => (int) $lang['id_lang'],
+                'iso_code' => $lang['iso_code'],
+                'name' => $lang['name'],
+                'is_default' => ((int) $lang['id_lang'] === (int) Configuration::get('PS_LANG_DEFAULT')),
+            ];
+        }
+
+        $helper->languages = $languages;
+        $helper->default_form_language = (int) Configuration::get('PS_LANG_DEFAULT');
+        $helper->allow_employee_form_lang = (int) Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG');
     }
 
     private function getRuleFormInputs($ruleType)
@@ -287,7 +303,7 @@ class CartWarningAdmin
                     'type' => 'text',
                     'label' => $this->module->l('Produit manquant'),
                     'name' => 'missing_product_id',
-                    'class' => 'fixed-width-xs',
+                    'class' => 'fixed-width-md',
                     'required' => true,
                 ],
                 [
@@ -539,7 +555,7 @@ class CartWarningAdmin
                         'type' => 'text',
                         'label' => $this->module->l('Produit manquant'),
                         'name' => 'child_missing_product_id',
-                        'class' => 'fixed-width-xs',
+                        'class' => 'fixed-width-md',
                         'required' => true,
                     ],
                     [
@@ -583,8 +599,7 @@ class CartWarningAdmin
         $helper->show_toolbar = false;
         $helper->table = 'dtc_cart_warning_child';
         $helper->module = $this->module;
-        $helper->default_form_language = (int) Context::getContext()->language->id;
-        $helper->allow_employee_form_lang = (int) Configuration::get('PS_BO_ALLOW_EMPLOYEE_FORM_LANG');
+        $this->configureHelperFormLanguages($helper);
         $helper->submit_action = 'submitDtcCartWarningChild';
         $helper->currentIndex = Context::getContext()->link->getAdminLink('AdminModules', false)
             . '&configure=' . $this->module->name
