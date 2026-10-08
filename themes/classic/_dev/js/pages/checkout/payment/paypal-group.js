@@ -171,14 +171,55 @@ export function initPayPalPaymentGroup() {
     /**
      * UX Districlos : le bouton SDK PayPal est superposé invisiblement
      * sur « PASSER COMMANDE » (clic réel = PayPal, pas de clic programmatique iframe).
+     * Un seul bouton SDK → on le repositionne sur le CTA survolé (bas OU récap).
      */
-    function getPassOrderSubmit() {
-        // Préférer le clone résumé s'il est affiché (layout desktop)
+    var overlayTargetEl = null;
+
+    function getBottomPassOrderSubmit() {
+        return $('#payment-confirmation .payment-confirmation__submit').first();
+    }
+
+    function getClonePassOrderSubmit() {
         var $clone = $('.js-payment-checkout-actions-clone .payment-confirmation__submit');
         if ($clone.length && $clone.closest('.js-cart-summary-payment-actions').hasClass('is-visible')) {
             return $clone.first();
         }
-        return $('#payment-confirmation .payment-confirmation__submit').first();
+        return $();
+    }
+
+    function getPassOrderSubmit() {
+        if (overlayTargetEl && document.body.contains(overlayTargetEl)) {
+            var $preferred = $(overlayTargetEl);
+            if ($preferred.is(':visible')) {
+                return $preferred;
+            }
+        }
+        // Par défaut : CTA bas (zone paiement), sinon clone récap
+        var $bottom = getBottomPassOrderSubmit();
+        if ($bottom.length && $bottom.is(':visible')) {
+            return $bottom;
+        }
+        return getClonePassOrderSubmit();
+    }
+
+    function parkSdkButton($el) {
+        if (!$el || !$el.length) {
+            return;
+        }
+        $el.css({
+            position: 'absolute',
+            top: '0',
+            left: '-9999px',
+            width: '200px',
+            height: '40px',
+            opacity: '0',
+            zIndex: '0',
+            display: 'block',
+            overflow: 'hidden',
+            margin: '0',
+            padding: '0',
+            pointerEvents: 'none'
+        });
     }
 
     function clearPayPalOverlayStyles($el) {
@@ -221,27 +262,23 @@ export function initPayPalPaymentGroup() {
         var paypalActive = $cashInput.is(':checked') || $bnplInput.is(':checked');
         var $cashBtn = $('[paypal-button-container]');
         var $bnplBtn = $('[paypal-bnpl-button-container]');
-        var $submit = getPassOrderSubmit();
 
         $('[paypal-wrong-button-message], [paypal-ec-wrong-button-message]').hide();
-
-        // Afficher les conteneurs SDK si l'option est cochée (sans rappeler
-        // hideElementTillChecked, qui re-masque PASSER COMMANDE).
-        if (window.PaypalTools && typeof PaypalTools.showElementsIfChecked === 'function') {
-            PaypalTools.showElementsIfChecked();
-        }
-
         forcePassOrderVisible(paypalActive);
 
-        if (!paypalActive || !$submit.length) {
-            clearPayPalOverlayStyles($cashBtn);
-            clearPayPalOverlayStyles($bnplBtn);
+        if (!paypalActive) {
+            parkSdkButton($cashBtn);
+            parkSdkButton($bnplBtn);
             return;
         }
 
-        // Re-mesurer après force visible (getBoundingClientRect plus fiable)
-        $submit = getPassOrderSubmit();
+        // Ne pas appeler showElementsIfChecked ici : ça affiche le bouton
+        // Pay Later en clair dans le groupe avant le repositionnement.
+
+        var $submit = getPassOrderSubmit();
         if (!$submit.length) {
+            parkSdkButton($cashBtn);
+            parkSdkButton($bnplBtn);
             return;
         }
 
@@ -253,27 +290,26 @@ export function initPayPalPaymentGroup() {
             left: rect.left + 'px',
             width: Math.max(rect.width, 150) + 'px',
             height: Math.max(rect.height, 35) + 'px',
-            opacity: 0.02,
+            opacity: 0.01,
             zIndex: 10050,
             overflow: 'hidden',
             margin: 0,
             padding: 0,
-            pointerEvents: disabled ? 'none' : 'auto'
+            pointerEvents: disabled ? 'none' : 'auto',
+            display: 'block'
         };
 
         if ($bnplInput.is(':checked')) {
-            clearPayPalOverlayStyles($cashBtn);
-            $cashBtn.css('display', 'none');
-            $bnplBtn.css($.extend({}, overlayCss, { display: 'block' }));
+            parkSdkButton($cashBtn);
+            $bnplBtn.css(overlayCss);
             $bnplBtn.find('iframe, .paypal-buttons, .paypal-button-row').css({
                 width: '100%',
                 height: '100%',
                 maxWidth: 'none'
             });
         } else {
-            clearPayPalOverlayStyles($bnplBtn);
-            $bnplBtn.css('display', 'none');
-            $cashBtn.css($.extend({}, overlayCss, { display: 'block' }));
+            parkSdkButton($bnplBtn);
+            $cashBtn.css(overlayCss);
             $cashBtn.find('iframe, .paypal-buttons, .paypal-button-row').css({
                 width: '100%',
                 height: '100%',
@@ -356,6 +392,19 @@ export function initPayPalPaymentGroup() {
         setTimeout(syncPayPalModuleUi, 300);
     });
 
+    // Repositionne l'overlay sur le CTA survolé (bas OU récap à droite)
+    $(document).on(
+        'mouseenter.paypalOverlay focusin.paypalOverlay',
+        '#payment-confirmation .payment-confirmation__submit, .js-payment-checkout-actions-clone .payment-confirmation__submit',
+        function () {
+            if (!$cashInput.is(':checked') && !$bnplInput.is(':checked')) {
+                return;
+            }
+            overlayTargetEl = this;
+            placePayPalOverlay();
+        }
+    );
+
     $(window).on('scroll.paypalOverlay resize.paypalOverlay', function () {
         if ($cashInput.is(':checked') || $bnplInput.is(':checked')) {
             placePayPalOverlay();
@@ -364,7 +413,7 @@ export function initPayPalPaymentGroup() {
 
     $(document).on(
         'change.paypalOverlay',
-        '#conditions-to-approve input[type="checkbox"], input[name="payment-option"]',
+        '#conditions-to-approve input[type="checkbox"], .js-conditions-to-approve-summary input[type="checkbox"], input[name="payment-option"]',
         function () {
             setTimeout(syncPayPalModuleUi, 50);
         }
