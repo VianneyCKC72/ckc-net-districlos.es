@@ -98,6 +98,76 @@ export function initPayPalPaymentGroup() {
     $group.insertBefore($cashCard);
     $group.find('.paypal-group__sources').append($cashCard).append($bnplCard);
 
+    // Comme Oney : sortir les infos additionnelles du ps-hidden.
+    // Sinon le SDK Pay Later (PAYLATER) initialise dans un conteneur display:none,
+    // isEligible() échoue, le bouton 4x n'est jamais rendu → overlay vide.
+    $group.find('.--paypal-source .js-additional-information').removeClass('ps-hidden').show();
+
+    var $sdkHost = $('<div class="paypal-group__sdk-host" aria-hidden="true"></div>');
+    $group.append($sdkHost);
+    var $cashBtnHost = $cashCard.find('[paypal-button-container]').first();
+    var $bnplBtnHost = $bnplCard.find('[paypal-bnpl-button-container]').first();
+    if ($cashBtnHost.length) {
+        $sdkHost.append($cashBtnHost);
+    }
+    if ($bnplBtnHost.length) {
+        $sdkHost.append($bnplBtnHost);
+    }
+
+    function bnplButtonIsReady() {
+        var $btn = $('[paypal-bnpl-button-container]').first();
+        return $btn.length > 0 && $btn.find('iframe, .paypal-buttons, .paypal-button-row').length > 0;
+    }
+
+    function ensureBnplButtonRendered() {
+        if (bnplButtonIsReady()) {
+            return true;
+        }
+        if (typeof window.BNPL === 'undefined' || typeof window.totPaypalBnplSdkButtons === 'undefined') {
+            return false;
+        }
+        var $btn = $('[paypal-bnpl-button-container]').first();
+        if (!$btn.length) {
+            return false;
+        }
+        try {
+            $btn.empty();
+            // Réaffiche l'option si le 1er init l'avait masquée (not eligible)
+            $bnplInput.closest('.payment-option').css('display', '');
+            if (typeof BNPL.init === 'function') {
+                BNPL.init();
+            }
+            if (typeof BNPL.initButton === 'function') {
+                BNPL.initButton();
+            }
+        } catch (e) {
+            // eslint-disable-next-line no-console
+            console.warn('[paypal-group] BNPL re-init failed', e);
+            return false;
+        }
+        return bnplButtonIsReady();
+    }
+
+    function syncBnplAvailability() {
+        var ready = bnplButtonIsReady();
+        var $bnplSub = $group.find('.paypal-group__sub--bnpl');
+        if (ready) {
+            $bnplSub.removeClass('is-unavailable').show();
+            $group.find('.paypal-group__parent-label .payment-option__desc')
+                .text('Au comptant ou quatre fois sans frais');
+            return;
+        }
+        // Après tentatives : masquer le 4x plutôt que laisser un clic mort
+        if ($group.data('bnpl-retry-done')) {
+            $bnplSub.addClass('is-unavailable').hide();
+            if ($bnplInput.is(':checked')) {
+                selectPayPalSub('cash');
+            }
+            $group.find('.paypal-group__parent-label .payment-option__desc')
+                .text('Paiement sécurisé via PayPal');
+        }
+    }
+
     /**
      * UX Districlos : le bouton SDK PayPal est superposé invisiblement
      * sur « PASSER COMMANDE » (clic réel = PayPal, pas de clic programmatique iframe).
@@ -217,6 +287,12 @@ export function initPayPalPaymentGroup() {
     }
 
     function selectPayPalSub(sub) {
+        if (sub === 'bnpl') {
+            ensureBnplButtonRendered();
+            if (!bnplButtonIsReady() && $group.data('bnpl-retry-done')) {
+                sub = 'cash';
+            }
+        }
         var $target = sub === 'bnpl' ? $bnplInput : $cashInput;
         if (!$target.is(':checked')) {
             $target.prop('checked', true).trigger('change');
@@ -275,6 +351,7 @@ export function initPayPalPaymentGroup() {
     }, true);
 
     $(document).on('paypal-after-init-shortcut-button paypal-after-init-bnpl-button', function () {
+        syncBnplAvailability();
         setTimeout(syncPayPalModuleUi, 50);
         setTimeout(syncPayPalModuleUi, 300);
     });
@@ -307,6 +384,15 @@ export function initPayPalPaymentGroup() {
     });
 
     setTimeout(syncPayPalModuleUi, 100);
-    setTimeout(syncPayPalModuleUi, 500);
-    setTimeout(syncPayPalModuleUi, 1200);
+    setTimeout(function () {
+        ensureBnplButtonRendered();
+        syncBnplAvailability();
+        syncPayPalModuleUi();
+    }, 500);
+    setTimeout(function () {
+        ensureBnplButtonRendered();
+        $group.data('bnpl-retry-done', true);
+        syncBnplAvailability();
+        syncPayPalModuleUi();
+    }, 1500);
 }
