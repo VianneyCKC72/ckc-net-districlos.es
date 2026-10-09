@@ -259,6 +259,7 @@ app/config/config.php
 /modules.bak.*/
 
 modules/*
+!modules/abclos/
 !modules/ckc*/
 !modules/productfaq/
 !modules/productguide/
