@@ -249,7 +249,7 @@ class ckc_label extends Module
                         'required' => true,
                         'rows' => 3,
                         'cols' => 40,
-                        'desc' => $this->l('Autorisé : <strong>, <br>, ↓. Un onglet par langue. Ex. : ↓ <strong>PRIX<br>DÉGRESSIF</strong>'),
+                        'desc' => $this->l('Autorisé : <strong>, <em>, <br>, ↓. Un onglet par langue. Ex. : ↓ <strong><em>PRIX<br>DÉGRESSIF</em></strong>'),
                     ],
                     [
                         'type' => 'html',
@@ -503,10 +503,10 @@ class ckc_label extends Module
         return $errors;
     }
 
-    /** HTML limité : strong/b/br + flèche ↓ en tête agrandie. */
+    /** HTML limité : strong/b/em/i/br + flèche ↓ en tête agrandie. */
     private function sanitizeLabelText($text)
     {
-        $text = strip_tags(preg_replace('/\r\n|\r|\n/', '<br>', (string) $text), '<strong><b><br>');
+        $text = strip_tags(preg_replace('/\r\n|\r|\n/', '<br>', (string) $text), '<strong><b><em><i><br>');
         $text = trim($text);
 
         return preg_replace('/^↓\s*/u', '<b class="ckc-label-arrow">↓</b>', $text);
@@ -979,7 +979,7 @@ class ckc_label extends Module
         );
         $jobPrompt = (string) Configuration::get(CkcTranslate::CONF_PROMPT_CKC_LABELS);
         $system = 'You translate short PrestaShop product badge labels from French to English. '
-            . 'Preserve HTML tags (<strong>, <b>, <br>), CSS classes and the ↓ character. '
+            . 'Preserve HTML tags (<strong>, <b>, <em>, <i>, <br>), CSS classes and the ↓ character. '
             . 'Keep similar length. Do not invent promotions.'
             . ($jobPrompt !== '' ? "\n" . $jobPrompt : '');
         $prompt = "Return ONLY valid JSON:\n{\n  \"text\": \"\"\n}\n\nSource label HTML:\n" . $source;
