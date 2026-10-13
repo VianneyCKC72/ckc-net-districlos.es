@@ -390,19 +390,14 @@
     <!-- /MESSAGE -->
 
     <!-- CTA QR -->
-    {if !empty($qr_espace_client) && !empty($qr_tuto_pose)}
+    {if !empty($qr_espace_client)}
         <br />
         <table cellpadding="3" style="width:100%;">
             <tr>
-                <td width="50%" style="text-align:center;">
+                <td style="text-align:center;">
                     <img src="{$qr_espace_client|escape:'html':'UTF-8'}" width="80" />
                     <br />
                     {l s='Votre espace client' d='Shop.Theme.Custommodules'}
-                </td>
-                <td width="50%" style="text-align:center;">
-                    <img src="{$qr_tuto_pose|escape:'html':'UTF-8'}" width="80" />
-                    <br />
-                    {l s='Tutoriels de pose' d='Shop.Theme.Custommodules'}
                 </td>
             </tr>
         </table>
