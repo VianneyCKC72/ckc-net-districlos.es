@@ -9,7 +9,7 @@ class Dtc_ProductEndOfLife extends Module
     {
         $this->name = 'dtc_productendoflife';
         $this->tab = 'administration';
-        $this->version = '1.0.0';
+        $this->version = '1.0.1';
         $this->author = 'DTC';
         
         $this->need_instance = 0;
@@ -18,7 +18,7 @@ class Dtc_ProductEndOfLife extends Module
         parent::__construct();
 
         $this->displayName = $this->l('Gestion fin de vie des déclinaisons');
-        $this->description = $this->l('Permet de marquer des déclinaisons de produits comme "fin de vie" et d\'afficher un message spécial dans le displayStock.');
+        $this->description = $this->l('Permet de marquer des déclinaisons de produits comme "fin de vie" / "fin de vie national" et d\'afficher un message spécial dans le displayStock.');
         $this->confirmUninstall = $this->l('Êtes-vous sûr de vouloir désinstaller ce module ?');
     }
 
@@ -42,6 +42,7 @@ class Dtc_ProductEndOfLife extends Module
     {
         return parent::install()
             && $this->createTable()
+            && $this->ensureNationalColumn()
             && $this->registerHook('displayAdminProductsExtra');
     }
 
@@ -56,6 +57,7 @@ class Dtc_ProductEndOfLife extends Module
         $sql = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'product_attribute_end_of_life` (
             `id_product_attribute` int(11) NOT NULL,
             `end_of_life` tinyint(1) NOT NULL DEFAULT 0,
+            `end_of_life_national` tinyint(1) NOT NULL DEFAULT 0,
             `stock_threshold` int(10) UNSIGNED DEFAULT 1,
             `date_add` datetime NOT NULL,
             `date_upd` datetime NOT NULL,
@@ -63,6 +65,25 @@ class Dtc_ProductEndOfLife extends Module
         ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
         return Db::getInstance()->execute($sql);
+    }
+
+    /**
+     * Ajoute la colonne end_of_life_national si absente (install / modules déjà déployés).
+     *
+     * @return bool
+     */
+    public function ensureNationalColumn()
+    {
+        $table = _DB_PREFIX_ . 'product_attribute_end_of_life';
+        $columns = Db::getInstance()->executeS('SHOW COLUMNS FROM `' . bqSQL($table) . '` LIKE "end_of_life_national"');
+        if (!empty($columns)) {
+            return true;
+        }
+
+        return Db::getInstance()->execute(
+            'ALTER TABLE `' . bqSQL($table) . '`
+            ADD `end_of_life_national` tinyint(1) NOT NULL DEFAULT 0 AFTER `end_of_life`'
+        );
     }
 
     private function dropTable()
@@ -74,6 +95,8 @@ class Dtc_ProductEndOfLife extends Module
 
     public function hookDisplayAdminProductsExtra($params)
     {
+        $this->ensureNationalColumn();
+
         $id_product = (int)$params['id_product'];
         
         // Vérifier que le produit existe
@@ -112,14 +135,15 @@ class Dtc_ProductEndOfLife extends Module
         }
         
         // Récupérer les statuts fin de vie existants
-        $endOfLifeStatus = $this->getEndOfLifeStatus($id_product);
+        $statuses = $this->getEndOfLifeStatus($id_product);
         
         // Pas de traitement de formulaire ici, on utilise AJAX
         
         $this->context->smarty->assign([
             'id_product' => $id_product,
             'combinations' => $formattedCombinations,
-            'end_of_life_status' => $endOfLifeStatus,
+            'end_of_life_status' => $statuses['end_of_life'],
+            'end_of_life_national_status' => $statuses['end_of_life_national'],
             'module_dir' => $this->_path,
         ]);
 
@@ -130,16 +154,21 @@ class Dtc_ProductEndOfLife extends Module
 
     private function getEndOfLifeStatus($id_product)
     {
-        $sql = 'SELECT pa.id_product_attribute, eol.end_of_life
+        $sql = 'SELECT pa.id_product_attribute, eol.end_of_life, eol.end_of_life_national
                 FROM ' . _DB_PREFIX_ . 'product_attribute pa
                 LEFT JOIN ' . _DB_PREFIX_ . 'product_attribute_end_of_life eol ON pa.id_product_attribute = eol.id_product_attribute
                 WHERE pa.id_product = ' . (int)$id_product;
 
         $results = Db::getInstance()->executeS($sql);
-        $status = [];
+        $status = [
+            'end_of_life' => [],
+            'end_of_life_national' => [],
+        ];
         
         foreach ($results as $result) {
-            $status[$result['id_product_attribute']] = (bool)$result['end_of_life'];
+            $idPa = (int) $result['id_product_attribute'];
+            $status['end_of_life'][$idPa] = !empty($result['end_of_life']);
+            $status['end_of_life_national'][$idPa] = !empty($result['end_of_life_national']);
         }
 
         return $status;
@@ -174,7 +203,7 @@ class Dtc_ProductEndOfLife extends Module
                 FROM ' . _DB_PREFIX_ . 'product_attribute_end_of_life eol
                 LEFT JOIN ' . _DB_PREFIX_ . 'product_attribute pa ON eol.id_product_attribute = pa.id_product_attribute
                 LEFT JOIN ' . _DB_PREFIX_ . 'product_lang pl ON pa.id_product = pl.id_product AND pl.id_lang = ' . (int)$this->context->language->id . '
-                WHERE eol.end_of_life = 1
+                WHERE eol.end_of_life = 1 OR eol.end_of_life_national = 1
                 GROUP BY eol.id_product_attribute
                 ORDER BY MAX(eol.date_upd) DESC';
         
