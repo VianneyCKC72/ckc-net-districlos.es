@@ -26,15 +26,14 @@
 {capture assign="productClasses"}{if !empty($productClass)}{$productClass}{else}col-xs-12 col-sm-6 col-lg-3 col-xl-3{/if}{/capture}
 
 {* ─────────────────────────────────────────────────────────────────────────────
-   Bannière listing catégorie — campagne Projet en fête (toutes catégories)
-   Mapping soldes par famille conservé en commentaire ci-dessous pour réactivation.
-   ───────────────────────────────────────────────────────────────────────────── *}
+   Bannière listing catégorie — campagne Projet en fête terminée (commentée).
+   Mapping soldes par famille conservé ci-dessous pour réactivation.
+   ─────────────────────────────────────────────────────────────────────────────
 {if isset($language.iso_code) && $language.iso_code == 'en'}
     {assign var=category_listing_banner_file value='categorie_projets_fete_english.webp'}
 {else}
     {assign var=category_listing_banner_file value='category_projets_fete.webp'}
 {/if}
-{*
 {if $page.page_name == 'category'}
     {assign var=_cat_id   value=Context::getContext()->controller->getCategory()->id}
     {assign var=_now_ts   value=$smarty.now}
@@ -68,13 +67,13 @@
 {else}
     {assign var=category_listing_banner_file value='category-listing-promo.jpg'}
 {/if}
-*}
-{* ───────────────────────────────────────────────────────────────────────────── *}
+───────────────────────────────────────────────────────────────────────────── *}
 
 <div class="products{if !empty($cssClass)} {$cssClass}{/if} {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')} list_view {/if}">
     {foreach from=$products item="product" key="position" name=productsList}
         {include file="catalog/_partials/miniatures/product.tpl" product=$product position=$position productClasses=$productClasses}
 
+        {* Bannière Projet en fête (mobile + desktop) — campagne terminée
         {if !$pro.env && $page.page_name == 'category' && isset($listing.pagination.items_shown_from) && $listing.pagination.items_shown_from == 1 && !isset($smarty.cookies.show_list)}
             {if $smarty.foreach.productsList.iteration == 1}
                 <div class="category-listing-banner category-listing-banner--mobile col-6 col-sm-6 d-md-none">
@@ -91,5 +90,6 @@
                 </div>
             {/if}
         {/if}
+        *}
     {/foreach}
 </div>

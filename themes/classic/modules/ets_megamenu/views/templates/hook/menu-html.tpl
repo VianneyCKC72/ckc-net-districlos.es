@@ -296,7 +296,7 @@
             </li>
         {/foreach}
         {if $pro.env != 1}
-            {* Campagne : remplace "Bons plans" en mobile *}
+            {* Campagne Projet en fête — terminée
             <li class="info-menu-mobile-only mm_menus_li distri_megamenu mm_sub_align_full menu-mobile-promo-banner-li">
                 <div class="menu-mobile-promo-banner">
                     <a href="{$link->getCMSLink(676)|escape:'html':'UTF-8'}" class="menu-mobile-promo-banner__link">
@@ -308,11 +308,10 @@
                     </a>
                 </div>
             </li>
-            {* Ancien lien "Bons plans" mobile — à réactiver après la campagne
+            *}
             <li class="info-menu-mobile-only mm_menus_li distri_megamenu mm_sub_align_full"><a href="{$link->getCategoryLink(400)|escape:'html':'UTF-8'}">
                     <span class="mm_menu_content_title"><svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" viewBox="0 0 576 512"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/></svg>{l s='Bons plans' d='Shop.Theme.Customglobal'}</span>
                 </a></li>
-            *}
         {else}
             <li class="info-menu-mobile-only mm_menus_li distri_megamenu mm_sub_align_full"><a href="{$link->getCMSLink(660)|escape:'html':'UTF-8'}">
                     <span class="mm_menu_content_title">{*<svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" viewBox="0 0 576 512"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/></svg>*}{l s='Les offres au volume' d='Shop.Theme.Customglobal'}</span>
@@ -391,6 +390,7 @@
                 </a></li>
         {/if}
         *}
+        {* Campagne Projet en fête — terminée
         <li class="mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile menu-mobile-promo-banner-li menu-mobile-promo-banner-li--desktop">
             <div class="menu-mobile-promo-banner">
                 <a href="{$link->getCMSLink(676)|escape:'html':'UTF-8'}" class="menu-mobile-promo-banner__link">
@@ -402,13 +402,12 @@
                 </a>
             </div>
         </li>
-        {* Image promo campagne (hook displayPromoMenuImage) — à réactiver après la campagne
+        *}
         <li class="mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
             <div class="hide_pro image-fw-mm">
                 {hook h='displayPromoMenuImage'}
             </div>
         </li>
-        *}
             </ul>
         </li>
     </ul>
