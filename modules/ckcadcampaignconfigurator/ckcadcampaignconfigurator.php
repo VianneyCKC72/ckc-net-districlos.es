@@ -43,7 +43,7 @@ class Ckcadcampaignconfigurator extends Module
     {
         $this->name = 'ckcadcampaignconfigurator';
         $this->tab = 'administration';
-        $this->version = '1.0.4';
+        $this->version = '1.0.5';
         $this->author = 'ckc-net';
         $this->need_instance = 0;
         $this->ps_version  = (bool)version_compare(_PS_VERSION_, '1.7', '>=');
@@ -117,6 +117,30 @@ class Ckcadcampaignconfigurator extends Module
             Db::getInstance()->execute('
                 ALTER TABLE `' . _DB_PREFIX_ . 'ckccampaign_config_content_product`
                 ADD `reduction_percent` decimal(5,2) NULL DEFAULT NULL');
+        }
+
+        $showCountdownColumnExists = Db::getInstance()->getValue('
+            SELECT COUNT(*) FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = "' . _DB_NAME_ . '"
+            AND TABLE_NAME = "' . _DB_PREFIX_ . 'ckccampaign_config_content_product"
+            AND COLUMN_NAME = "show_countdown"');
+
+        if (!$showCountdownColumnExists) {
+            Db::getInstance()->execute('
+                ALTER TABLE `' . _DB_PREFIX_ . 'ckccampaign_config_content_product`
+                ADD `show_countdown` tinyint NOT NULL DEFAULT 0 AFTER `show_above_price`');
+        }
+
+        $countdownEndColumnExists = Db::getInstance()->getValue('
+            SELECT COUNT(*) FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = "' . _DB_NAME_ . '"
+            AND TABLE_NAME = "' . _DB_PREFIX_ . 'ckccampaign_config_content_product"
+            AND COLUMN_NAME = "countdown_end"');
+
+        if (!$countdownEndColumnExists) {
+            Db::getInstance()->execute('
+                ALTER TABLE `' . _DB_PREFIX_ . 'ckccampaign_config_content_product`
+                ADD `countdown_end` datetime NULL DEFAULT NULL AFTER `show_countdown`');
         }
     }
 
@@ -574,6 +598,18 @@ class Ckcadcampaignconfigurator extends Module
                     'Modules.ckcadcampaignconfigurator.Admin'
                 );
             }
+
+            $showCountdown = (bool)(int)Tools::getValue('PRODUCT_SHOW_ABOVE_PRICE', 0)
+                && (bool)(int)Tools::getValue('PRODUCT_SHOW_COUNTDOWN', 0);
+            $countdownEnd = trim((string)Tools::getValue('PRODUCT_COUNTDOWN_END', ''));
+
+            if ($showCountdown && ($countdownEnd === '' || !Validate::isDate($countdownEnd))) {
+                $this->_postErrors[] = $this->trans(
+                    'La date de fin du compte à rebours est obligatoire et doit être valide.',
+                    [],
+                    'Modules.Ckcadcampaignconfigurator.Admin'
+                );
+            }
         }
 
         if (Tools::isSubmit('saveNewCampaignCategory')) {
@@ -631,7 +667,11 @@ class Ckcadcampaignconfigurator extends Module
         $PRODUCT_ID = Tools::getValue('PRODUCT_ID') == "" ? null : Tools::getValue('PRODUCT_ID');
         $PRODUCT_ACTIVE = Tools::getValue('PRODUCT_ACTIVE') == "" ? 0 : 1;
         $PRODUCT_SHOW_ALL = Tools::getValue('PRODUCT_SHOW_ALL') == "" ? 0 : 1;
-        $PRODUCT_SHOW_ABOVE_PRICE = Tools::getValue('PRODUCT_SHOW_ABOVE_PRICE') == "" ? 0 : 1;
+        $PRODUCT_SHOW_ABOVE_PRICE = (int)(bool)(int)Tools::getValue('PRODUCT_SHOW_ABOVE_PRICE', 0);
+        $PRODUCT_SHOW_COUNTDOWN = $PRODUCT_SHOW_ABOVE_PRICE
+            ? (int)(bool)(int)Tools::getValue('PRODUCT_SHOW_COUNTDOWN', 0)
+            : 0;
+        $PRODUCT_COUNTDOWN_END = trim((string)Tools::getValue('PRODUCT_COUNTDOWN_END', ''));
         $PRODUCT_REDUCTION_PERCENT = (float) str_replace(',', '.', Tools::getValue('PRODUCT_REDUCTION_PERCENT', 0));
         $PRODUCT_REDUCTION_PERCENT = max(0, min(100, $PRODUCT_REDUCTION_PERCENT));
 
@@ -641,6 +681,8 @@ class Ckcadcampaignconfigurator extends Module
             'PRODUCT_ACTIVE' => $PRODUCT_ACTIVE,
             'PRODUCT_SHOW_ALL' => $PRODUCT_SHOW_ALL,
             'PRODUCT_SHOW_ABOVE_PRICE' => $PRODUCT_SHOW_ABOVE_PRICE,
+            'PRODUCT_SHOW_COUNTDOWN' => $PRODUCT_SHOW_COUNTDOWN,
+            'PRODUCT_COUNTDOWN_END' => $PRODUCT_COUNTDOWN_END,
             'PRODUCT_REDUCTION_PERCENT' => $PRODUCT_REDUCTION_PERCENT,
             'PRODUCT_TEXT' => htmlentities(str_replace("'", "\'", Tools::getValue('PRODUCT_TEXT'))),
             'PRODUCT_SELECTION' => Tools::getValue('PRODUCT_SELECTION')
@@ -1331,6 +1373,31 @@ class Ckcadcampaignconfigurator extends Module
                         ),
                     ),
                     array(
+                        'type' => 'switch',
+                        'label' => $this->trans('Afficher un compte à rebours', [], 'Modules.Ckcadcampaignconfigurator.Admin'),
+                        'name' => 'PRODUCT_SHOW_COUNTDOWN',
+                        'is_bool' => true,
+                        'desc' => $this->trans('Affiche le compte à rebours sous le texte promotionnel au-dessus du prix.', [], 'Modules.Ckcadcampaignconfigurator.Admin'),
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => true,
+                                'label' => $this->trans('Oui', [], 'Modules.Ckcadcampaignconfigurator.Admin')
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => false,
+                                'label' => $this->trans('Non', [], 'Modules.Ckcadcampaignconfigurator.Admin')
+                            )
+                        ),
+                    ),
+                    array(
+                        'type' => 'datetime',
+                        'label' => $this->trans('Date de fin du compte à rebours', [], 'Modules.Ckcadcampaignconfigurator.Admin'),
+                        'name' => 'PRODUCT_COUNTDOWN_END',
+                        'desc' => $this->trans('Le compte à rebours disparaît lorsque cette date est atteinte.', [], 'Modules.Ckcadcampaignconfigurator.Admin'),
+                    ),
+                    array(
                         'type' => 'text',
                         'label' => $this->l('Pourcentage de reduction panier'),
                         'name' => 'PRODUCT_REDUCTION_PERCENT',
@@ -1541,6 +1608,8 @@ class Ckcadcampaignconfigurator extends Module
                 'PRODUCT_TEXT' => '',
                 'PRODUCT_SHOW_ALL' => '',
                 'PRODUCT_SHOW_ABOVE_PRICE' => '',
+                'PRODUCT_SHOW_COUNTDOWN' => '',
+                'PRODUCT_COUNTDOWN_END' => '',
                 'PRODUCT_REDUCTION_PERCENT' => '',
                 'PRODUCT_SELECTION' => ''
             );
@@ -1556,6 +1625,8 @@ class Ckcadcampaignconfigurator extends Module
                 'PRODUCT_TEXT' => html_entity_decode($campaignPromoInfo['text']),
                 'PRODUCT_SHOW_ALL' => $campaignPromoInfo['show_all'],
                 'PRODUCT_SHOW_ABOVE_PRICE' => isset($campaignPromoInfo['show_above_price']) ? $campaignPromoInfo['show_above_price'] : 0,
+                'PRODUCT_SHOW_COUNTDOWN' => isset($campaignPromoInfo['show_countdown']) ? $campaignPromoInfo['show_countdown'] : 0,
+                'PRODUCT_COUNTDOWN_END' => isset($campaignPromoInfo['countdown_end']) ? $campaignPromoInfo['countdown_end'] : '',
                 'PRODUCT_REDUCTION_PERCENT' => isset($campaignPromoInfo['reduction_percent']) ? (float)$campaignPromoInfo['reduction_percent'] : '',
                 'PRODUCT_SELECTION' => ''
             );
@@ -1690,8 +1761,8 @@ class Ckcadcampaignconfigurator extends Module
         foreach ($CampaignProductInfos as $productCampaign){
             $createProductPromo = Db::getInstance()->execute(
                 'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_product`
-                                    (`id`, `id_campaign`, `text`,`active`, `show_all`, `show_above_price`, `reduction_percent`, `date_add`)
-                            VALUES (NULL, '.$newId.',\''.$productCampaign['text'].'\', '.$productCampaign['active'].','.$productCampaign['show_all'].','.(isset($productCampaign['show_above_price']) ? (int)$productCampaign['show_above_price'] : 0).',NULLIF(' . (isset($productCampaign['reduction_percent']) ? (float)$productCampaign['reduction_percent'] : 0) . ', 0),CURRENT_TIMESTAMP())'
+                                    (`id`, `id_campaign`, `text`,`active`, `show_all`, `show_above_price`, `show_countdown`, `countdown_end`, `reduction_percent`, `date_add`)
+                            VALUES (NULL, '.$newId.',\''.$productCampaign['text'].'\', '.$productCampaign['active'].','.$productCampaign['show_all'].','.(isset($productCampaign['show_above_price']) ? (int)$productCampaign['show_above_price'] : 0).','.(isset($productCampaign['show_countdown']) ? (int)$productCampaign['show_countdown'] : 0).',NULLIF("' . pSQL(isset($productCampaign['countdown_end']) ? $productCampaign['countdown_end'] : '') . '", ""),NULLIF(' . (isset($productCampaign['reduction_percent']) ? (float)$productCampaign['reduction_percent'] : 0) . ', 0),CURRENT_TIMESTAMP())'
             );
             $selectPromoId = Db::getInstance()->executeS('SELECT id FROM `' . _DB_PREFIX_ . 'ckccampaign_config_content_product` WHERE `id_campaign` = '.$newId.' AND `text` LIKE \'' .$productCampaign['text'].'\'');
 
@@ -1746,8 +1817,8 @@ class Ckcadcampaignconfigurator extends Module
     {
         if (Tools::getValue('configure') == $this->name) {
             $this->context->controller->addJS($this->_path.'views/js/back.js');
+            $this->context->controller->addJS($this->_path.'views/js/vue.js');
             $this->context->controller->addJS($this->_path.'views/js/menu.js');
-            $this->context->controller->addJS($this->_path.'views/js/vue.min.js');
             $this->context->controller->addCSS($this->_path.'views/css/back.css');
         }
     }
@@ -2212,9 +2283,20 @@ class Ckcadcampaignconfigurator extends Module
             });
         }
 
+        foreach ($productPromos as &$productPromo) {
+            $countdownEndTimestamp = !empty($productPromo['countdown_end'])
+                ? strtotime($productPromo['countdown_end'])
+                : false;
+            $productPromo['countdown_end_timestamp'] = $countdownEndTimestamp && $countdownEndTimestamp > time()
+                ? $countdownEndTimestamp * 1000
+                : 0;
+        }
+        unset($productPromo);
+
         $this->context->smarty->assign(array(
             'productId' => $product['id_product'],
             'productPromos' => $productPromos,
+            'showProductCountdowns' => !empty($params['above_price']),
         ));
         // Retourner le template avec le lien à afficher
         return $this->display(__FILE__, 'views/templates/front/hook/promo_content_product.tpl');
@@ -2384,6 +2466,7 @@ class Ckcadcampaignconfigurator extends Module
         $this->ensureStorePromoFrancoHook();
 
         $this->context->controller->addCSS($this->_path.'/views/css/front.css');
+        $this->context->controller->addJS($this->_path.'/views/js/product-countdown.js');
 
         $customerGroupId = Context::getContext()->customer->id_default_group;
 

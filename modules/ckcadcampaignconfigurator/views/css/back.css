@@ -26,11 +26,8 @@
 * to avoid any conflicts with others containers.
 */
 
-.addons-hide {
+[v-cloak] {
     display: none;
-}
-div#ckcadcampaignconfigurator-menu{
-    min-height: 75px;
 }
 h3.ckch3{
     border-bottom: none;
@@ -43,32 +40,50 @@ h3.h3-ckctitle{
     background-color: #fff !important;
 }
 
-a.list-group-item{
-    display: flex !important;
-    flex-direction: row;
+.ckc-campaign-tabs{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.ckc-campaign-tab{
+    display: flex;
     align-items: center;
-    font-weight: 600 !important;
+    justify-content: center;
+    min-height: 48px;
+    padding: 8px 12px;
+    color: #363a41;
+    background-color: #f4f6f8;
+    border: 1px solid #dbe1e8;
+    border-radius: 5px;
+    font-family: inherit;
     font-size: 14px;
-    color: #000 !important;
-    background-color: #F7F7F7 !important;
-    border: none !important;
-    width: 170px !important;
-    height: 50px !important;
-    border-radius: 5px !important;
-    margin-right: 20px !important;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease, color .15s ease;
 }
-a.list-group-item:hover{
-    background-color: #d5d5d5 !important;
+.ckc-campaign-tab:hover{
+    color: #363a41;
+    background-color: #e9edf2;
+    border-color: #c7d0da;
 }
-
-a.list-group-item.active{
-    background-color: #FF375C !important;
-    color: #fff !important;
+.ckc-campaign-tab.active,
+.ckc-campaign-tab.active:hover{
+    color: #fff;
+    background-color: #ff375c;
+    border-color: #ff375c;
 }
-
-.list-group-item i.material-icons{
+.ckc-campaign-tab:focus-visible{
+    outline: 2px solid #25b9d7;
+    outline-offset: 2px;
+}
+.ckc-campaign-tab i.material-icons{
+    margin-right: 5px;
     font-size: 14px;
-    margin-right: 3px;
+}
+.ckc-campaign-tab-panel{
+    margin-top: 8px;
 }
 .links-ckc-action{
     display: flex;
@@ -162,12 +177,4 @@ li.ui-menu-item .ui-menu-item-wrapper{
 .btn-delete-img-campaign{
     margin-top: 15px;
     margin-left: 10px;
-}
-@media (max-width: 1633px) {
-    div#ckcadcampaignconfigurator-menu{
-        min-height: 150px;
-    }
-    .bootstrap a.list-group-item {
-        margin-bottom: 20px;
-    }
 }
