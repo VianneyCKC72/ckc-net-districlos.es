@@ -2466,7 +2466,16 @@ class Ckcadcampaignconfigurator extends Module
         $this->ensureStorePromoFrancoHook();
 
         $this->context->controller->addCSS($this->_path.'/views/css/front.css');
-        $this->context->controller->addJS($this->_path.'/views/js/product-countdown.js');
+        $countdownScript = 'modules/' . $this->name . '/views/js/product-countdown.js';
+        $this->context->controller->registerJavascript(
+            'module-' . $this->name . '-product-countdown',
+            $countdownScript,
+            [
+                'position' => 'bottom',
+                'priority' => 80,
+                'version' => (string) @filemtime(_PS_MODULE_DIR_ . $this->name . '/views/js/product-countdown.js'),
+            ]
+        );
 
         $customerGroupId = Context::getContext()->customer->id_default_group;
 

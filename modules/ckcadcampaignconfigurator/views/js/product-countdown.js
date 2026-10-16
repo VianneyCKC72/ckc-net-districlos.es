@@ -37,8 +37,18 @@
         element.querySelector("[data-countdown-seconds]").textContent = pad(seconds);
     }
 
-    function initCountdowns() {
-        document.querySelectorAll("[data-ckc-countdown-end]").forEach(function (element) {
+    function initCountdowns(root) {
+        const scope = root && root.querySelectorAll ? root : document;
+        const elements = [];
+
+        if (scope.nodeType === 1 && scope.matches("[data-ckc-countdown-end]")) {
+            elements.push(scope);
+        }
+        scope.querySelectorAll("[data-ckc-countdown-end]").forEach(function (element) {
+            elements.push(element);
+        });
+
+        elements.forEach(function (element) {
             if (element.ckcCountdownInterval) {
                 return;
             }
@@ -57,13 +67,43 @@
         });
     }
 
+    function observeCountdownReplacements() {
+        if (!document.body || typeof MutationObserver === "undefined") {
+            return;
+        }
+
+        const observer = new MutationObserver(function (mutations) {
+            mutations.forEach(function (mutation) {
+                mutation.addedNodes.forEach(function (node) {
+                    if (node.nodeType === 1) {
+                        initCountdowns(node);
+                    }
+                });
+            });
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
+    }
+
+    function start() {
+        initCountdowns(document);
+        observeCountdownReplacements();
+    }
+
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initCountdowns);
+        document.addEventListener("DOMContentLoaded", start);
     } else {
-        initCountdowns();
+        start();
     }
 
     if (typeof prestashop !== "undefined" && prestashop.on) {
-        prestashop.on("updatedProduct", initCountdowns);
+        prestashop.on("updatedProduct", function () {
+            window.setTimeout(function () {
+                initCountdowns(document);
+            }, 0);
+        });
     }
 }());
