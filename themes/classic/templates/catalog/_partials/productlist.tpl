@@ -25,20 +25,17 @@
 
 {capture assign="productClasses"}{if !empty($productClass)}{$productClass}{else}col-xs-12 col-sm-6 col-lg-3 col-xl-3{/if}{/capture}
 
-{* ─────────────────────────────────────────────────────────────────────────────
-   Bannière listing catégorie — campagne Projet en fête terminée (commentée).
-   Mapping soldes par famille conservé ci-dessous pour réactivation.
-   ─────────────────────────────────────────────────────────────────────────────
+{* Bannière listing catégorie — campagne Destockage *}
 {if isset($language.iso_code) && $language.iso_code == 'en'}
-    {assign var=category_listing_banner_file value='categorie_projets_fete_english.webp'}
+    {assign var=category_listing_banner_file value='destockage-categorie-en.webp'}
 {else}
-    {assign var=category_listing_banner_file value='category_projets_fete.webp'}
+    {assign var=category_listing_banner_file value='destockage-categorie.webp'}
 {/if}
+{* Mapping soldes / Projet en fête par famille — conservé pour réactivation :
 {if $page.page_name == 'category'}
     {assign var=_cat_id   value=Context::getContext()->controller->getCategory()->id}
     {assign var=_now_ts   value=$smarty.now}
     {assign var=_soldes_ts value=1750719660}
-
     {if $_now_ts >= $_soldes_ts}
         {if in_array($_cat_id, [215, 356, 216])}
             {assign var=category_listing_banner_file value='promo_category_cloture_alu.png'}
@@ -67,29 +64,28 @@
 {else}
     {assign var=category_listing_banner_file value='category-listing-promo.jpg'}
 {/if}
-───────────────────────────────────────────────────────────────────────────── *}
+*}
 
 <div class="products{if !empty($cssClass)} {$cssClass}{/if} {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')} list_view {/if}">
     {foreach from=$products item="product" key="position" name=productsList}
         {include file="catalog/_partials/miniatures/product.tpl" product=$product position=$position productClasses=$productClasses}
 
-        {* Bannière Projet en fête (mobile + desktop) — campagne terminée
+        {* Bannière Destockage (mobile + desktop) *}
         {if !$pro.env && $page.page_name == 'category' && isset($listing.pagination.items_shown_from) && $listing.pagination.items_shown_from == 1 && !isset($smarty.cookies.show_list)}
             {if $smarty.foreach.productsList.iteration == 1}
                 <div class="category-listing-banner category-listing-banner--mobile col-6 col-sm-6 d-md-none">
                     <div class="category-listing-banner__inner">
-                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/{$category_listing_banner_file}" alt="{l s='PROJET EN FÊTE' d='Shop.Theme.Custommodules'}" loading="lazy" width="400" height="711">
+                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/{$category_listing_banner_file}" alt="{l s='Destockage' d='Shop.Theme.Custommodules'}" loading="lazy" width="400" height="711">
                     </div>
                 </div>
             {/if}
             {if $smarty.foreach.productsList.iteration == 3}
                 <div class="category-listing-banner category-listing-banner--desktop d-none d-lg-block col-lg-3 col-xl-3">
                     <div class="category-listing-banner__inner">
-                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/{$category_listing_banner_file}" alt="{l s='PROJET EN FÊTE' d='Shop.Theme.Custommodules'}" loading="lazy" width="400" height="711">
+                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/{$category_listing_banner_file}" alt="{l s='Destockage' d='Shop.Theme.Custommodules'}" loading="lazy" width="400" height="711">
                     </div>
                 </div>
             {/if}
         {/if}
-        *}
     {/foreach}
 </div>

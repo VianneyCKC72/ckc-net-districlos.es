@@ -192,6 +192,9 @@
       <trans-unit id="187"><source>sur une sélection de produits</source><target>on a selection of products</target></trans-unit>
       <trans-unit id="188"><source>Voir nos bons plans</source><target>See our deals</target></trans-unit>
       <trans-unit id="189"><source>Prix unitaire TTC</source><target>Unit price incl. tax</target></trans-unit>
+      <trans-unit id="190"><source>Destockage</source><target>Clearance</target></trans-unit>
+      <trans-unit id="191"><source>Jusqu'à [1]-40%[/1] de réduction !</source><target>Up to [1]40% off[/1]!</target></trans-unit>
+      <trans-unit id="192"><source>Voir nos offres !</source><target>See our offers!</target></trans-unit>
     </body>
   </file>
 </xliff>

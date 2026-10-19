@@ -24,18 +24,16 @@
 </div>
 <div class="panel">
     <h3 style="margin-top: 1px !important; border: none; margin-bottom: 5px; margin-left: -7px;" class="h3-ckctitle ckch3"><i class="icon icon-link"></i> {l s='CAMPAIGN CONTENT CONFIGURATION' mod='ckcadcampaignconfigurator'}</h3>
-    <div id="modulecontent" class="clearfix">
+    <div id="modulecontent" class="clearfix" v-cloak>
         <div id="ckcadcampaignconfigurator-menu">
-            <div class="col-lg-12">
-                <div class="list-group" v-on:click.prevent>
-                    <a href="#" class="list-group-item col-lg-2" v-bind:class="{ 'active': isActive('menuContent') }" v-on:click="makeActive('menuContent')"><i class="material-icons">collections_bookmark</i> {l s='Menu Content' mod='ckcadcampaignconfigurator'}</a>
-                    <a href="#" class="list-group-item col-lg-2" v-bind:class="{ 'active': isActive('headerContent') }" v-on:click="makeActive('headerContent')"><i class="material-icons">folder_open</i> {l s='Header Content' mod='ckcadcampaignconfigurator'}</a>
-                    <a href="#" class="list-group-item col-lg-2" v-bind:class="{ 'active': isActive('cartContent') }" v-on:click="makeActive('cartContent')"><i class="material-icons">insert_drive_file</i> {l s='Cart Content' mod='ckcadcampaignconfigurator'}</a>
-                    <a href="#" class="list-group-item col-lg-2" v-bind:class="{ 'active': isActive('categoryContent') }" v-on:click="makeActive('categoryContent')"><i class="material-icons">folder_open</i> {l s='Category Content' mod='ckcadcampaignconfigurator'}</a>
-                    <a href="#" class="list-group-item col-lg-2" v-bind:class="{ 'active': isActive('productContent') }" v-on:click="makeActive('productContent')"><i class="material-icons">folder_open</i> {l s='Product Content' mod='ckcadcampaignconfigurator'}</a>
-                    <a href="#" class="list-group-item col-lg-2" v-bind:class="{ 'active': isActive('devisContent') }" v-on:click="makeActive('devisContent')"><i class="material-icons">folder_open</i> {l s='Devis Content' mod='ckcadcampaignconfigurator'}</a>
-                    <a href="#" class="list-group-item col-lg-2" v-bind:class="{ 'active': isActive('promoPageContent') }" v-on:click="makeActive('promoPageContent')"><i class="material-icons">folder_open</i> {l s='Promo Page Content' mod='ckcadcampaignconfigurator'}</a>
-                </div>
+            <div class="ckc-campaign-tabs" role="tablist">
+                <button type="button" id="tab-menuContent" class="ckc-campaign-tab" v-bind:class="{ 'active': isActive('menuContent') }" v-bind:aria-selected="isActive('menuContent') ? 'true' : 'false'" aria-controls="menuContent" role="tab" v-on:click="makeActive('menuContent')"><i class="material-icons" aria-hidden="true">collections_bookmark</i> {l s='Menu Content' mod='ckcadcampaignconfigurator'}</button>
+                <button type="button" id="tab-headerContent" class="ckc-campaign-tab" v-bind:class="{ 'active': isActive('headerContent') }" v-bind:aria-selected="isActive('headerContent') ? 'true' : 'false'" aria-controls="headerContent" role="tab" v-on:click="makeActive('headerContent')"><i class="material-icons" aria-hidden="true">folder_open</i> {l s='Header Content' mod='ckcadcampaignconfigurator'}</button>
+                <button type="button" id="tab-cartContent" class="ckc-campaign-tab" v-bind:class="{ 'active': isActive('cartContent') }" v-bind:aria-selected="isActive('cartContent') ? 'true' : 'false'" aria-controls="cartContent" role="tab" v-on:click="makeActive('cartContent')"><i class="material-icons" aria-hidden="true">insert_drive_file</i> {l s='Cart Content' mod='ckcadcampaignconfigurator'}</button>
+                <button type="button" id="tab-categoryContent" class="ckc-campaign-tab" v-bind:class="{ 'active': isActive('categoryContent') }" v-bind:aria-selected="isActive('categoryContent') ? 'true' : 'false'" aria-controls="categoryContent" role="tab" v-on:click="makeActive('categoryContent')"><i class="material-icons" aria-hidden="true">folder_open</i> {l s='Category Content' mod='ckcadcampaignconfigurator'}</button>
+                <button type="button" id="tab-productContent" class="ckc-campaign-tab" v-bind:class="{ 'active': isActive('productContent') }" v-bind:aria-selected="isActive('productContent') ? 'true' : 'false'" aria-controls="productContent" role="tab" v-on:click="makeActive('productContent')"><i class="material-icons" aria-hidden="true">folder_open</i> {l s='Product Content' mod='ckcadcampaignconfigurator'}</button>
+                <button type="button" id="tab-devisContent" class="ckc-campaign-tab" v-bind:class="{ 'active': isActive('devisContent') }" v-bind:aria-selected="isActive('devisContent') ? 'true' : 'false'" aria-controls="devisContent" role="tab" v-on:click="makeActive('devisContent')"><i class="material-icons" aria-hidden="true">folder_open</i> {l s='Devis Content' mod='ckcadcampaignconfigurator'}</button>
+                <button type="button" id="tab-promoPageContent" class="ckc-campaign-tab" v-bind:class="{ 'active': isActive('promoPageContent') }" v-bind:aria-selected="isActive('promoPageContent') ? 'true' : 'false'" aria-controls="promoPageContent" role="tab" v-on:click="makeActive('promoPageContent')"><i class="material-icons" aria-hidden="true">folder_open</i> {l s='Promo Page Content' mod='ckcadcampaignconfigurator'}</button>
             </div>
         </div>
 
@@ -44,11 +42,11 @@
 
 
         {* list your admin tpl *}
-        <div id="menuContent" class="ckcadcampaignconfigurator_menu addons-hide">
+        <div id="menuContent" class="ckcadcampaignconfigurator_menu ckc-campaign-tab-panel" role="tabpanel" aria-labelledby="tab-menuContent" v-show="isActive('menuContent')">
             {$formMenu}
         </div>
 
-        <div id="headerContent" class="ckcadcampaignconfigurator_menu addons-hide">
+        <div id="headerContent" class="ckcadcampaignconfigurator_menu ckc-campaign-tab-panel" role="tabpanel" aria-labelledby="tab-headerContent" v-show="isActive('headerContent')">
             <div style="display: none">{$formHeader}</div>
             <br>
             Vous pouvez configurer les textes promo pour Header dans le module <strong>CKC Bannière promotionnelle</strong> :
@@ -57,7 +55,7 @@
             Lien du module : <strong><a href="{Context::getContext()->link->getAdminLink('AdminModules', true, [], ['configure' => 'ckcpromotionbanner'])}" target="_blank">{Context::getContext()->link->getAdminLink('AdminModules', true, [], ['configure' => 'ckcpromotionbanner'])}</a></strong>
         </div>
 
-        <div id="cartContent" class="ckcadcampaignconfigurator_menu addons-hide">
+        <div id="cartContent" class="ckcadcampaignconfigurator_menu ckc-campaign-tab-panel" role="tabpanel" aria-labelledby="tab-cartContent" v-show="isActive('cartContent')">
             <table class="table">
                 <thead>
                 <tr>
@@ -129,7 +127,7 @@
             {/if}
         </div>
 
-        <div id="categoryContent" class="ckcadcampaignconfigurator_menu addons-hide">
+        <div id="categoryContent" class="ckcadcampaignconfigurator_menu ckc-campaign-tab-panel" role="tabpanel" aria-labelledby="tab-categoryContent" v-show="isActive('categoryContent')">
             {*                {$formCategory}
                             <input type="hidden" value="" id="categoryFieldContent" name="categoryFieldContent">
                             <div class="col-sm category-selection-container">
@@ -203,7 +201,7 @@
             {/if}
         </div>
 
-        <div id="productContent" class="ckcadcampaignconfigurator_menu addons-hide">
+        <div id="productContent" class="ckcadcampaignconfigurator_menu ckc-campaign-tab-panel" role="tabpanel" aria-labelledby="tab-productContent" v-show="isActive('productContent')">
             <table class="table">
                 <thead>
                 <tr>
@@ -261,11 +259,11 @@
             {/if}
         </div>
 
-        <div id="devisContent" class="ckcadcampaignconfigurator_menu addons-hide">
+        <div id="devisContent" class="ckcadcampaignconfigurator_menu ckc-campaign-tab-panel" role="tabpanel" aria-labelledby="tab-devisContent" v-show="isActive('devisContent')">
             {$formDevis}
         </div>
 
-        <div id="promoPageContent" class="ckcadcampaignconfigurator_menu addons-hide">
+        <div id="promoPageContent" class="ckcadcampaignconfigurator_menu ckc-campaign-tab-panel" role="tabpanel" aria-labelledby="tab-promoPageContent" v-show="isActive('promoPageContent')">
             {$formPromoPage}
         </div>
     </div>
