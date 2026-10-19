@@ -22,6 +22,16 @@ export default function initCheckoutNav() {
         // Supprimer le doublon des boutons sociaux
         $('#checkout-guest-form .ets_solo_social_wrapper:not(:first)').remove();
 
+        $(document).on('mousedown', '.account-switch [data-toggle="tab"]', function () {
+            $(this).removeClass('active');
+        });
+        $(document).on('shown.bs.tab', '.account-switch [data-toggle="tab"]', function (e) {
+            var target = $(e.target).attr('href');
+            $('.account-switch')
+                .toggleClass('-login', target === '#checkout-login-form')
+                .toggleClass('-register', target === '#checkout-guest-form');
+        });
+
         // Déplacer "Recevoir les bons plans et promotions par SMS" après la checkbox newsletter
         if ($('input[name="sms_optin"]').length && $('input[name="newsletter"]').length) {
             $('input[name="sms_optin"]').closest('.form-group.row')
