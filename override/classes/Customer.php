@@ -1,6 +1,6 @@
 <?php
 /**
- * Extension webservice Customer : KBIS (fileUpload) + RIB (rib).
+ * Extension webservice Customer : KBIS (fileUpload), RIB (rib), Code NAF (naf).
  *
  * @author    DISTRICLOS
  * @copyright DISTRICLOS
@@ -19,22 +19,37 @@ class Customer extends CustomerCore
     /** @var string|null Nom fichier RIB */
     public $rib;
 
+    /** @var string|null Code NAF (espace pro) */
+    public $naf;
+
     /**
      * @param int|null $id
      */
     public function __construct($id = null)
     {
-        if (self::dtcOdooHasProDocColumns()) {
+        $columns = self::dtcOdooGetCustomerColumns();
+
+        if (in_array('fileUpload', $columns, true)) {
             self::$definition['fields']['fileUpload'] = [
                 'type' => self::TYPE_STRING,
                 'required' => false,
                 'size' => 255,
                 'allow_null' => true,
             ];
+        }
+        if (in_array('rib', $columns, true)) {
             self::$definition['fields']['rib'] = [
                 'type' => self::TYPE_STRING,
                 'required' => false,
                 'size' => 255,
+                'allow_null' => true,
+            ];
+        }
+        if (in_array('naf', $columns, true)) {
+            self::$definition['fields']['naf'] = [
+                'type' => self::TYPE_STRING,
+                'required' => false,
+                'size' => 16,
                 'allow_null' => true,
             ];
         }
@@ -43,31 +58,25 @@ class Customer extends CustomerCore
     }
 
     /**
-     * @return bool
+     * @return string[]
      */
-    protected static function dtcOdooHasProDocColumns()
+    protected static function dtcOdooGetCustomerColumns()
     {
-        static $exists = null;
-        if ($exists !== null) {
-            return $exists;
+        static $names = null;
+        if ($names !== null) {
+            return $names;
         }
 
         $columns = Db::getInstance()->executeS('SHOW COLUMNS FROM `' . _DB_PREFIX_ . 'customer`');
-        if (!$columns) {
-            $exists = false;
-
-            return false;
-        }
-
         $names = [];
-        foreach ($columns as $column) {
-            if (isset($column['Field'])) {
-                $names[] = $column['Field'];
+        if ($columns) {
+            foreach ($columns as $column) {
+                if (isset($column['Field'])) {
+                    $names[] = $column['Field'];
+                }
             }
         }
 
-        $exists = in_array('fileUpload', $names, true) && in_array('rib', $names, true);
-
-        return $exists;
+        return $names;
     }
 }
