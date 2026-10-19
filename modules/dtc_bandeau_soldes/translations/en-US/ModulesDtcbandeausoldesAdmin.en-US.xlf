@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="modules/dtc_bandeau_soldes" source-language="fr-FR" target-language="en-US" datatype="plaintext">
+    <body>
+      <trans-unit id="dtc_banner_badge_bg_color">
+        <source>Couleur de fond du badge</source>
+        <target>Badge background color</target>
+      </trans-unit>
+      <trans-unit id="dtc_banner_badge_text_color">
+        <source>Couleur du texte du badge</source>
+        <target>Badge text color</target>
+      </trans-unit>
+      <trans-unit id="dtc_banner_next_badge_bg_color">
+        <source>Nouvelle couleur de fond du badge</source>
+        <target>New badge background color</target>
+      </trans-unit>
+      <trans-unit id="dtc_banner_next_badge_text_color">
+        <source>Nouvelle couleur du texte du badge</source>
+        <target>New badge text color</target>
+      </trans-unit>
+      <trans-unit id="dtc_banner_keep_current_color">
+        <source>Vide = conserver la couleur actuelle.</source>
+        <target>Empty = keep the current color.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file original="modules/ckcadcampaignconfigurator" source-language="fr-FR" target-language="en-US" datatype="plaintext">
+    <body>
+      <trans-unit id="ckc_product_countdown_show">
+        <source>Afficher un compte à rebours</source>
+        <target>Display a countdown</target>
+      </trans-unit>
+      <trans-unit id="ckc_product_countdown_show_desc">
+        <source>Affiche le compte à rebours sous le texte promotionnel au-dessus du prix.</source>
+        <target>Displays the countdown below the promotional text above the price.</target>
+      </trans-unit>
+      <trans-unit id="ckc_product_countdown_end">
+        <source>Date de fin du compte à rebours</source>
+        <target>Countdown end date</target>
+      </trans-unit>
+      <trans-unit id="ckc_product_countdown_end_desc">
+        <source>Le compte à rebours disparaît lorsque cette date est atteinte.</source>
+        <target>The countdown disappears when this date is reached.</target>
+      </trans-unit>
+      <trans-unit id="ckc_product_countdown_end_invalid">
+        <source>La date de fin du compte à rebours est obligatoire et doit être valide.</source>
+        <target>The countdown end date is required and must be valid.</target>
+      </trans-unit>
+      <trans-unit id="ckc_yes">
+        <source>Oui</source>
+        <target>Yes</target>
+      </trans-unit>
+      <trans-unit id="ckc_no">
+        <source>Non</source>
+        <target>No</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

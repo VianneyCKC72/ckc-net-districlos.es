@@ -3327,7 +3327,7 @@ li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name.active,
     justify-content: space-between;
     gap: 8px;
     padding: 20px 15px;
-    background-color: #79C046;
+    background-color: #FF144E;
     text-decoration: none;
     color: #fff;
     min-width: 0;
@@ -3351,17 +3351,22 @@ li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name.active,
 
 .menu-mobile-promo-banner__title {
     font-weight: 700;
-    font-size: 17px;
+    font-size: 23px;
+    font-style: italic;
+    letter-spacing: 1px;
     line-height: 1.1;
     text-transform: uppercase;
-    color: #fff;
+    color: #FEDF0A;
 }
 
 .menu-mobile-promo-banner__subtitle {
     font-weight: 300;
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.2;
     color: #fff;
+}
+.menu-mobile-promo-banner__subtitle strong {
+    font-weight: 700;
 }
 
 .menu-mobile-promo-banner__cta {
@@ -3370,10 +3375,10 @@ li.mm_tabs_liver_alway_hide .mm_tab_li_content .mm_tab_name.active,
     align-items: center;
     justify-content: center;
     padding: 8px 15px;
-    background-color: #026473;
+    background-color: #FEDF0A;
     border-radius: 999px;
-    color: #fff;
-    font-weight: 300;
+    color: #232323;
+    font-weight: 700;
     font-size: 12px;
     line-height: 1.2;
     white-space: nowrap;
@@ -3798,6 +3803,14 @@ p.menu-mobile-note-text span{
     .info-menu-mobile-only.menu-mobile-promo-banner-li span {
         color: #fff !important;
         font-size: 14px;
+    }
+
+    .info-menu-mobile-only.menu-mobile-promo-banner-li .menu-mobile-promo-banner__cta {
+        color: #232323 !important;
+    }
+
+    .info-menu-mobile-only.menu-mobile-promo-banner-li .menu-mobile-promo-banner__title {
+        color: #FEDF0A !important;
     }
 }
 

@@ -204,6 +204,8 @@ class CampaignModel extends ObjectModel
                 `active` = ' . $data['PRODUCT_ACTIVE'] . ',
                 `show_all` = ' . $data['PRODUCT_SHOW_ALL'] . ',
                 `show_above_price` = ' . (int)$data['PRODUCT_SHOW_ABOVE_PRICE'] . ',
+                `show_countdown` = ' . (int)$data['PRODUCT_SHOW_COUNTDOWN'] . ',
+                `countdown_end` = NULLIF("' . pSQL($data['PRODUCT_COUNTDOWN_END']) . '", ""),
                 `reduction_percent` = NULLIF(' . (float)$data['PRODUCT_REDUCTION_PERCENT'] . ', 0)
                 WHERE `id` = '.$data["PRODUCT_ID"].' AND `id_campaign` = ' .$data["ID"]);
             if(isset($data['PRODUCT_SELECTION'])){
@@ -225,8 +227,8 @@ class CampaignModel extends ObjectModel
         } elseif (isset($data["ID"])) {
             $createProductPromo = Db::getInstance()->execute(
                 'INSERT INTO `' . _DB_PREFIX_ . 'ckccampaign_config_content_product` 
-                                    (`id`, `id_campaign`, `text`,`active`, `show_all`, `show_above_price`, `reduction_percent`, `date_add`)
-                            VALUES (NULL, '.$data['ID'].',\''.$data['PRODUCT_TEXT'].'\', '.$data['PRODUCT_ACTIVE'].','.$data['PRODUCT_SHOW_ALL'].','.(int)$data['PRODUCT_SHOW_ABOVE_PRICE'].',NULLIF(' . (float)$data['PRODUCT_REDUCTION_PERCENT'] . ', 0),CURRENT_TIMESTAMP())'
+                                    (`id`, `id_campaign`, `text`,`active`, `show_all`, `show_above_price`, `show_countdown`, `countdown_end`, `reduction_percent`, `date_add`)
+                            VALUES (NULL, '.$data['ID'].',\''.$data['PRODUCT_TEXT'].'\', '.$data['PRODUCT_ACTIVE'].','.$data['PRODUCT_SHOW_ALL'].','.(int)$data['PRODUCT_SHOW_ABOVE_PRICE'].','.(int)$data['PRODUCT_SHOW_COUNTDOWN'].',NULLIF("' . pSQL($data['PRODUCT_COUNTDOWN_END']) . '", ""),NULLIF(' . (float)$data['PRODUCT_REDUCTION_PERCENT'] . ', 0),CURRENT_TIMESTAMP())'
             );
             if(isset($data['PRODUCT_SELECTION']) && "" !== $data['PRODUCT_SELECTION']){
                 $productsArr = explode(",", $data['PRODUCT_SELECTION']);

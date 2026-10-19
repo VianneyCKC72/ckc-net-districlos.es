@@ -135,6 +135,7 @@
       <trans-unit id="124"><source>Quel conditionnement désirez-vous ?</source><target>Which packaging would you like?</target></trans-unit>
       <trans-unit id="125"><source>Produits au détail</source><target>Individual products</target></trans-unit>
       <trans-unit id="126"><source>En kit</source><target>As a kit</target></trans-unit>
+      <trans-unit id="127"><source>Fin dans</source><target>Ends in</target></trans-unit>
     </body>
   </file>
 </xliff>
