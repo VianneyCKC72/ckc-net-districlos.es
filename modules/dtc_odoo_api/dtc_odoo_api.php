@@ -36,7 +36,7 @@ class Dtc_Odoo_Api extends Module
     {
         $this->name = 'dtc_odoo_api';
         $this->tab = 'administration';
-        $this->version = '1.14.4';
+        $this->version = '1.14.5';
         $this->author = 'DISTRICLOS';
         $this->need_instance = 0;
         $this->bootstrap = false;
@@ -145,7 +145,7 @@ class Dtc_Odoo_Api extends Module
                 'forbidden_method' => ['PATCH'],
             ],
             'quotation_cart_prices' => [
-                'description' => 'Negotiated HT prices on quotation cart lines (SpecificPrice)',
+                'description' => 'Quotation cart lines: SpecificPrice HT + Presta HT/TTC amounts',
                 'specific_management' => true,
                 'forbidden_method' => ['PATCH', 'DELETE'],
             ],
