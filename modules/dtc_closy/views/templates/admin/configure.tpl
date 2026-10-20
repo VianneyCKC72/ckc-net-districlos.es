@@ -1,4 +1,4 @@
-﻿{*
+{*
 * Configuration BO — dtc_closy
 *}
 <div class="panel">
@@ -60,28 +60,15 @@
 
     <div class="panel">
         <h3><i class="icon icon-comment"></i> {l s='Bulles sous la galerie produit' mod='dtc_closy'}</h3>
+        <p class="help-block">{l s='Un texte par langue (sélecteur FR / EN).' mod='dtc_closy'}</p>
 
-        <div class="form-group">
-            <label class="control-label col-lg-3">{l s='Titre du bloc' mod='dtc_closy'}</label>
-            <div class="col-lg-6">
-                <input type="text" name="DTC_CLOSY_HEADER_LABEL" value="{$dtc_closy_header_label|escape:'html':'UTF-8'}" class="form-control">
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-lg-3">{l s='Question livraison (fixe)' mod='dtc_closy'}</label>
-            <div class="col-lg-6">
-                <input type="text" name="DTC_CLOSY_STATIC_TRANSPORT" value="{$dtc_closy_static_transport|escape:'html':'UTF-8'}" class="form-control">
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-lg-3">{l s='Libellé CTA' mod='dtc_closy'}</label>
-            <div class="col-lg-6">
-                <input type="text" name="DTC_CLOSY_CTA_LABEL" value="{$dtc_closy_cta_label|escape:'html':'UTF-8'}" class="form-control">
-                <p class="help-block">{l s='Bouton vert « Posez votre question » (ouvre le chat).' mod='dtc_closy'}</p>
-            </div>
-        </div>
+                {capture name='closy_lbl_header'}{l s='Titre du bloc' mod='dtc_closy'}{/capture}
+        {include file='module:dtc_closy/views/templates/admin/_partials/lang_field.tpl' dtc_lang_label=$smarty.capture.closy_lbl_header dtc_lang_name='DTC_CLOSY_HEADER_LABEL' dtc_lang_values=$dtc_closy_header_label dtc_lang_type='text'}
+                {capture name='closy_lbl_transport'}{l s='Question livraison (fixe)' mod='dtc_closy'}{/capture}
+        {include file='module:dtc_closy/views/templates/admin/_partials/lang_field.tpl' dtc_lang_label=$smarty.capture.closy_lbl_transport dtc_lang_name='DTC_CLOSY_STATIC_TRANSPORT' dtc_lang_values=$dtc_closy_static_transport dtc_lang_type='text'}
+                {capture name='closy_lbl_cta'}{l s='Libellé CTA' mod='dtc_closy'}{/capture}
+        {capture name='closy_help_cta'}{l s='Bouton vert « Posez votre question » (ouvre le chat).' mod='dtc_closy'}{/capture}
+        {include file='module:dtc_closy/views/templates/admin/_partials/lang_field.tpl' dtc_lang_label=$smarty.capture.closy_lbl_cta dtc_lang_name='DTC_CLOSY_CTA_LABEL' dtc_lang_values=$dtc_closy_cta_label dtc_lang_type='text' dtc_lang_help=$smarty.capture.closy_help_cta}
         <div class="panel-footer">
             <button type="submit" name="submitDtcClosy" value="1" class="btn btn-primary pull-right">
                 <i class="process-icon-save"></i> {l s='Enregistrer' mod='dtc_closy'}
@@ -144,24 +131,12 @@
                 <input type="text" name="DTC_CLOSY_YOURGPT_WIDGET_UID" value="{$dtc_closy_yourgpt_widget_uid|escape:'html':'UTF-8'}" class="form-control">
             </div>
         </div>
-        <div class="form-group">
-            <label class="control-label col-lg-3">{l s='Titre du panneau' mod='dtc_closy'}</label>
-            <div class="col-lg-6">
-                <input type="text" name="DTC_CLOSY_PANEL_TITLE" value="{$dtc_closy_panel_title|escape:'html':'UTF-8'}" class="form-control">
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label col-lg-3">{l s="Message d'accueil (fiche produit)" mod='dtc_closy'}</label>
-            <div class="col-lg-8">
-                <textarea name="DTC_CLOSY_PANEL_WELCOME" class="form-control" rows="3">{$dtc_closy_panel_welcome|escape:'html':'UTF-8'}</textarea>
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label col-lg-3">{l s="Message d'accueil (site global)" mod='dtc_closy'}</label>
-            <div class="col-lg-8">
-                <textarea name="DTC_CLOSY_PANEL_WELCOME_GLOBAL" class="form-control" rows="3">{$dtc_closy_panel_welcome_global|escape:'html':'UTF-8'}</textarea>
-            </div>
-        </div>
+                {capture name='closy_lbl_ptitle'}{l s='Titre du panneau' mod='dtc_closy'}{/capture}
+        {include file='module:dtc_closy/views/templates/admin/_partials/lang_field.tpl' dtc_lang_label=$smarty.capture.closy_lbl_ptitle dtc_lang_name='DTC_CLOSY_PANEL_TITLE' dtc_lang_values=$dtc_closy_panel_title dtc_lang_type='text'}
+                {capture name='closy_lbl_welcome'}{l s="Message d'accueil (fiche produit)" mod='dtc_closy'}{/capture}
+        {include file='module:dtc_closy/views/templates/admin/_partials/lang_field.tpl' dtc_lang_label=$smarty.capture.closy_lbl_welcome dtc_lang_name='DTC_CLOSY_PANEL_WELCOME' dtc_lang_values=$dtc_closy_panel_welcome dtc_lang_type='textarea'}
+                {capture name='closy_lbl_welcome_g'}{l s="Message d'accueil (site global)" mod='dtc_closy'}{/capture}
+        {include file='module:dtc_closy/views/templates/admin/_partials/lang_field.tpl' dtc_lang_label=$smarty.capture.closy_lbl_welcome_g dtc_lang_name='DTC_CLOSY_PANEL_WELCOME_GLOBAL' dtc_lang_values=$dtc_closy_panel_welcome_global dtc_lang_type='textarea'}
         <div class="panel-footer">
             <button type="submit" name="submitDtcClosy" value="1" class="btn btn-primary pull-right">
                 <i class="process-icon-save"></i> {l s='Enregistrer' mod='dtc_closy'}

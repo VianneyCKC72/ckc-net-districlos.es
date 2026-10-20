@@ -36,7 +36,7 @@ class DTC_countdown_setter extends Module
     {
         $this->name = 'dtc_countdown_setter';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.1';
+        $this->version = '1.1.2';
         $this->author = 'Districlos';
         $this->need_instance = 1;
 
@@ -452,11 +452,11 @@ class DTC_countdown_setter extends Module
                     'selector' => trim($selector),
                     'start_date' => $countdown['start_date'],
                     'end_date' => $countdown['end_date'],
-                    'label' => $countdown['label'],
+                    'label' => $this->translateCountdownText($countdown['label']),
                     'bg_color' => $countdown['bg_color'],
                     'txt_color' => $countdown['txt_color'],
                     'cta' => $countdown['cta'],
-                    'cta_label' => $countdown['cta_label'],
+                    'cta_label' => $this->translateCountdownText($countdown['cta_label']),
                     'cta_link' => $countdown['cta_link'],
                     'cta_bg_color' => $countdown['cta_bg_color'],
                     'cta_txt_color' => $countdown['cta_txt_color'],
@@ -464,8 +464,45 @@ class DTC_countdown_setter extends Module
             }
         }
 
-        // Passer les données au fichier JS
-        Media::addJsDef(array('countdownData' => $data));
+        Media::addJsDef(array(
+            'countdownData' => $data,
+            'countdownI18n' => array(
+                'upcoming' => $this->trans('À venir', [], 'Shop.Theme.Customdtc'),
+                'ended' => $this->trans('Terminé', [], 'Shop.Theme.Customdtc'),
+                'days' => $this->trans('j', [], 'Shop.Theme.Customdtc'),
+                'hours' => $this->trans('h', [], 'Shop.Theme.Customdtc'),
+                'minutes' => $this->trans('m', [], 'Shop.Theme.Customdtc'),
+                'seconds' => $this->trans('s', [], 'Shop.Theme.Customdtc'),
+            ),
+        ));
+    }
+
+    /**
+     * Libellé BO (une langue) → catalogue thème, sans HTML.
+     */
+    protected function translateCountdownText($text)
+    {
+        $plain = trim(html_entity_decode(strip_tags((string) $text), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        $plain = preg_replace('/\x{00A0}/u', ' ', $plain);
+        $plain = trim(preg_replace('/\s+/u', ' ', $plain));
+        if ($plain === '') {
+            return $text;
+        }
+
+        $translated = $this->trans($plain, [], 'Shop.Theme.Customdtc');
+        if ($translated !== $plain) {
+            return $translated;
+        }
+
+        $withoutColon = rtrim($plain, " \t:");
+        if ($withoutColon !== $plain) {
+            $alt = $this->trans($withoutColon, [], 'Shop.Theme.Customdtc');
+            if ($alt !== $withoutColon) {
+                return $alt . ':';
+            }
+        }
+
+        return $plain;
     }
 
      public function hookDisplayHeader() {

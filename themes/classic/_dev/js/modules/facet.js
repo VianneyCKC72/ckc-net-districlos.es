@@ -53,7 +53,9 @@ $(document).ready(function () {
     if ($(window).width() < 768 && $("body:not(.espace_pro)").length) {
         // Vérifier que le toggle n'existe pas déjà (éviter les doublons)
         if ($('.filter-toggle').length === 0) {
-            let filterTitle = $('<div class="filter-toggle"><span>Filtres</span> <span class="chevron"></span></div>');
+            const filtersLabel = $('body').attr('data-filters-label') || 'Filtres';
+            let filterTitle = $('<div class="filter-toggle"><span></span> <span class="chevron"></span></div>');
+            filterTitle.find('span').first().text(filtersLabel);
 
             // Insérer le titre avant la card-header
             $('.PM_ASBlockOutput .card .card-header').before(filterTitle);

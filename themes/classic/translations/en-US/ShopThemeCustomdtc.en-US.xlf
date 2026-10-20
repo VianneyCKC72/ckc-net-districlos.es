@@ -34,6 +34,9 @@
       <trans-unit id="30"><source>BONS PLANS</source><target>GREAT DEALS</target></trans-unit>
       <trans-unit id="31"><source>Jusqu'à &lt;strong&gt;-12%&lt;/strong&gt; offerts dès 2000€ d'achat !</source><target>Up to &lt;strong&gt;-12%&lt;/strong&gt; off from €2,000 spent!</target></trans-unit>
       <trans-unit id="31b"><source>Jusqu'à -17% sur nos kits !</source><target>Up to -17% on our kits!</target></trans-unit>
+      <trans-unit id="31c"><source>&lt;strong&gt;PROJET EN FÊTE&lt;/strong&gt; - &lt;strong&gt;75€&lt;/strong&gt; tous les &lt;strong&gt;500€&lt;/strong&gt; d'achat</source><target>&lt;strong&gt;PROJECT SALE&lt;/strong&gt; - &lt;strong&gt;€75&lt;/strong&gt; for every &lt;strong&gt;€500&lt;/strong&gt; spent</target></trans-unit>
+      <trans-unit id="31d"><source>PROJET EN FÊTE</source><target>PROJECT SALE</target></trans-unit>
+      <trans-unit id="31e"><source>75€ offert tous les 500€ d'achat !</source><target>€75 free for every €500 spent!</target></trans-unit>
       <trans-unit id="32"><source>Méthode non autorisée</source><target>Method not allowed</target></trans-unit>
       <trans-unit id="33"><source>Token invalide</source><target>Invalid token</target></trans-unit>
       <trans-unit id="34"><source>Nom requis</source><target>Last name required</target></trans-unit>
@@ -110,6 +113,29 @@
       <trans-unit id="102"><source>Votre commande %s a été enregistrée.</source><target>Your order %s has been recorded.</target></trans-unit>
       <trans-unit id="103"><source>Votre commande a été enregistrée.</source><target>Your order has been recorded.</target></trans-unit>
       <trans-unit id="104"><source>Commande Marketplace (réservé aux employés connectés au Back-Office).</source><target>Marketplace order (reserved for employees logged into the Back Office).</target></trans-unit>
+      <trans-unit id="105"><source>Fin des PROMOS:</source><target>Sale ends:</target></trans-unit>
+      <trans-unit id="106"><source>Fin des PROMOS</source><target>Sale ends</target></trans-unit>
+      <trans-unit id="107"><source>À venir</source><target>Coming soon</target></trans-unit>
+      <trans-unit id="108"><source>Terminé</source><target>Ended</target></trans-unit>
+      <trans-unit id="109"><source>j</source><target>d</target></trans-unit>
+      <trans-unit id="110"><source>h</source><target>h</target></trans-unit>
+      <trans-unit id="111"><source>m</source><target>m</target></trans-unit>
+      <trans-unit id="112"><source>s</source><target>s</target></trans-unit>
+      <trans-unit id="113"><source>Réinitialiser tous les filtres</source><target>Reset all filters</target></trans-unit>
+      <trans-unit id="114"><source>Retour</source><target>Back</target></trans-unit>
+      <trans-unit id="115"><source>Voir les produits</source><target>See products</target></trans-unit>
+      <trans-unit id="116"><source>Aucune option disponible.</source><target>No option available.</target></trans-unit>
+      <trans-unit id="117"><source>Souhaitez-vous des lames décoratives ?</source><target>Would you like decorative slats?</target></trans-unit>
+      <trans-unit id="118"><source>Oui</source><target>Yes</target></trans-unit>
+      <trans-unit id="119"><source>Non</source><target>No</target></trans-unit>
+      <trans-unit id="120"><source>Quelle pose de clôture vous convient ?</source><target>Which fence installation suits you?</target></trans-unit>
+      <trans-unit id="121"><source>A sceller sur muret</source><target>To embed on a low wall</target></trans-unit>
+      <trans-unit id="122"><source>A sceller pleine terre</source><target>To embed in the ground</target></trans-unit>
+      <trans-unit id="123"><source>Sur platines</source><target>On base plates</target></trans-unit>
+      <trans-unit id="124"><source>Quel conditionnement désirez-vous ?</source><target>Which packaging would you like?</target></trans-unit>
+      <trans-unit id="125"><source>Produits au détail</source><target>Individual products</target></trans-unit>
+      <trans-unit id="126"><source>En kit</source><target>As a kit</target></trans-unit>
+      <trans-unit id="127"><source>Fin dans</source><target>Ends in</target></trans-unit>
     </body>
   </file>
 </xliff>

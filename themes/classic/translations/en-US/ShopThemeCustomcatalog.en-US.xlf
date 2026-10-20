@@ -35,6 +35,16 @@
       <trans-unit id="31"><source>Guide de mesure</source><target>Measuring guide</target></trans-unit>
       <trans-unit id="32"><source>Outils</source><target>Tools</target></trans-unit>
       <trans-unit id="33"><source>Fermer</source><target>Close</target></trans-unit>
+      <trans-unit id="34"><source>Je configure</source><target>Configure</target></trans-unit>
+      <trans-unit id="34b"><source>ma clôture</source><target>my fence</target></trans-unit>
+      <trans-unit id="35"><source>TTC</source><target>incl. tax</target></trans-unit>
+      <trans-unit id="36"><source>Prix total</source><target>Total price</target></trans-unit>
+      <trans-unit id="37"><source>Prix au mL</source><target>Price per lin. m</target></trans-unit>
+      <trans-unit id="38" resname="Filtres"><source>Filtres</source><target>Filters</target></trans-unit>
+      <trans-unit id="39"><source>TTC/Prix total</source><target>incl. tax / Total price</target></trans-unit>
+      <trans-unit id="40"><source>TTC/Prix au mL</source><target>incl. tax / Price per lm</target></trans-unit>
+      <trans-unit id="41"><source>HT/Prix total</source><target>excl. tax / Total price</target></trans-unit>
+      <trans-unit id="42"><source>HT/Prix au mL</source><target>excl. tax / Price per lm</target></trans-unit>
     </body>
   </file>
 </xliff>

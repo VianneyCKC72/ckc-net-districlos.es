@@ -189,3 +189,40 @@ body#checkout .payment-options .payment-option-card--quote .custom-radio {
     }
 }
 
+/* CKC Vianney — avis home : moins de padding vertical mobile */
+@media (max-width: 996px) {
+    .block-reviews {
+        padding-top: 16px;
+        padding-bottom: 16px;
+    }
+}
+
+/* CKC Vianney — checkout auth : textes dans le HTML, affichage CSS */
+.account-switch .js-account-switch-login {
+    display: none;
+}
+.account-switch.-login .js-account-switch-login,
+.account-switch:has(+ .tab-content #checkout-login-form.active) .js-account-switch-login {
+    display: block;
+}
+.account-switch.-login .js-account-switch-register,
+.account-switch:has(+ .tab-content #checkout-login-form.active) .js-account-switch-register {
+    display: none;
+}
+
+/* CKC Vianney — slider produits associés : titres EN longs / Skeepers */
+.wrapper__swiper__featured-products .swiper__featured-products {
+    overflow: hidden;
+}
+.wrapper__swiper__featured-products .swiper-slide {
+    min-width: 0;
+    height: auto;
+}
+.wrapper__swiper__featured-products .product-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 44px;
+}
+

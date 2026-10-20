@@ -26,6 +26,8 @@ class StockManager extends Module
 
     public function getStockData($id_product, $id_product_attribute, $id_store, $packList = [])
     {
+        self::applyRequestLanguage();
+
         // Charger le mapping de références pour les produits fin de vie
         if (self::$referenceMappingCache === null) {
             $mappingFile = _PS_MODULE_DIR_ . 'dtc_productendoflife/reference_mapping.json';
@@ -240,21 +242,19 @@ class StockManager extends Module
             }
         }
 
-        // i18n: centraliser les textes renvoyés au front (évite duplications PHP/JS)
-        $ctx = $this->context ?? Context::getContext();
-        $en = ($ctx && isset($ctx->language) && $ctx->language) ? ($ctx->language->iso_code === 'en') : false;
+        // i18n : fichiers translations/{iso}.php du module (en + gb)
         $i18n = [
-            'stock_in_store' => $en ? 'In-store stock' : $this->l('Stock en magasin'),
-            'fin_de_serie' => $en ? 'End of line!' : $this->l('Fin de série !'),
-            'order_fast_low_stock' => $en ? 'Order soon, low stock!' : $this->l('Commandez vite, stock bas !'),
-            'victime_succes' => $en ? 'High demand' : $this->l('Victime de son succès'),
-            'not_available' => $en ? 'This product is no longer available' : $this->l('Ce produit n\'est plus disponible'),
-            'sold_out' => $en ? 'Out of stock' : $this->l('Produit épuisé'),
-            'in_stock' => $en ? 'In stock' : $this->l('En stock'),
-            'arrival' => $en ? 'Incoming shipment' : $this->l('Arrivage en cours'),
-            'available_10_days' => $en ? 'Available within 10 days' : $this->l('Disponible sous 10 jours'),
-            'change_store' => $en ? 'Change store' : $this->l('Changer de magasin'),
-            'product_in_stock' => $en ? 'product(s) in stock' : $this->l('produit(s) en stock'),
+            'stock_in_store' => $this->transUi('Stock en magasin'),
+            'fin_de_serie' => $this->transUi('Fin de série !'),
+            'order_fast_low_stock' => $this->transUi('Commandez vite, stock bas !'),
+            'victime_succes' => $this->transUi('Victime de son succès'),
+            'not_available' => $this->transUi('Ce produit n\'est plus disponible'),
+            'sold_out' => $this->transUi('Produit épuisé'),
+            'in_stock' => $this->transUi('En stock'),
+            'arrival' => $this->transUi('Arrivage en cours'),
+            'available_10_days' => $this->transUi('Disponible sous 10 jours'),
+            'change_store' => $this->transUi('Changer de magasin'),
+            'product_in_stock' => $this->transUi('produit(s) en stock'),
         ];
 
         // UI "source de vérité" (sans casser la logique existante côté JS)
@@ -273,7 +273,7 @@ class StockManager extends Module
 
         $uiTitle = $i18n['stock_in_store'];
         $uiSubtitle = '';
-        $uiStock = $response['total_quantity'] . ($en ? ' in stock nationwide' : ' en stock national');
+        $uiStock = $this->transUi('%qty% en stock national', ['%qty%' => (int) $response['total_quantity']]);
         $uiColor = null;
         $uiImage = 'delivery.png';
         $uiShowStoreButton = true;
@@ -302,7 +302,7 @@ class StockManager extends Module
             if ($isPackRequest) {
                 $uiStock = $packIsInStockNational ? $i18n['in_stock'] : $i18n['arrival'];
             } else {
-                $uiStock = ((int)($response['platform_stock'] ?? 0)) . ($en ? ' products in stock' : ' produits en stock');
+                $uiStock = $this->transUi('%qty% produits en stock', ['%qty%' => (int) ($response['platform_stock'] ?? 0)]);
             }
         } elseif ($uiState === 'fin_de_vie_national') {
             $uiTitle = $i18n['fin_de_serie'];
@@ -315,7 +315,7 @@ class StockManager extends Module
             if ($isPackRequest) {
                 $uiStock = $packIsInStockNational ? $i18n['in_stock'] : $i18n['arrival'];
             } else {
-                $uiStock = ((int)($response['total_quantity'] ?? 0)) . ($en ? ' products in stock' : ' produits en stock');
+                $uiStock = $this->transUi('%qty% produits en stock', ['%qty%' => (int) ($response['total_quantity'] ?? 0)]);
             }
         } else {
             // normal
@@ -323,7 +323,7 @@ class StockManager extends Module
                 $uiStock = $packIsInStockNational ? $i18n['in_stock'] : $i18n['arrival'];
             } else {
                 $uiStock = ((int)($response['total_quantity'] ?? 0) > 0 && !empty($response['seuil']))
-                    ? ((int)$response['total_quantity']) . ($en ? ' in stock nationwide' : ' en stock national')
+                    ? $this->transUi('%qty% en stock national', ['%qty%' => (int) $response['total_quantity']])
                     : $i18n['arrival'];
             }
         }
@@ -437,6 +437,8 @@ class StockManager extends Module
 
     public function getDelivery($carrier_id, $id_store = null)
     {
+        self::applyRequestLanguage();
+
         $stock             = null;
         $store_name        = null;
         $stock_ok          = true;
@@ -639,5 +641,97 @@ class StockManager extends Module
         $lines = $this->getCartVictimeSuccesLines($cart);
 
         return $lines ? (string) reset($lines) : null;
+    }
+
+    /**
+     * CKC Vianney — traductions FO du module (en.php / gb.php).
+     * Le catalogue thème ne s'applique pas ici : StockManager n'est pas le module nommé.
+     *
+     * @param array<string, string|int> $params
+     */
+    protected function transUi($string, array $params = [])
+    {
+        $string = (string) $string;
+        // Même catalogue que le bouton « Voir les stocks par magasin » (Shop.Theme.Customckc).
+        $translated = Context::getContext()->getTranslator()->trans($string, [], 'Shop.Theme.Customckc');
+
+        if ($translated === $string) {
+            $translated = Translate::getModuleTranslation(
+                'ckc_stores_stock',
+                $string,
+                'stockmanager',
+                null,
+                false,
+                null,
+                false,
+                false
+            );
+        }
+
+        if ($translated === $string && $this->isEnglishUi()) {
+            $en = [
+                'Stock en magasin' => 'In-store stock',
+                'Fin de série !' => 'End of line!',
+                'Commandez vite, stock bas !' => 'Order soon, low stock!',
+                'Victime de son succès' => 'High demand',
+                'Ce produit n\'est plus disponible' => 'This product is no longer available',
+                'Produit épuisé' => 'Out of stock',
+                'En stock' => 'In stock',
+                'Arrivage en cours' => 'Incoming shipment',
+                'Disponible sous 10 jours' => 'Available within 10 days',
+                'Changer de magasin' => 'Change store',
+                'produit(s) en stock' => 'product(s) in stock',
+                '%qty% en stock national' => '%qty% in stock nationwide',
+                '%qty% produits en stock' => '%qty% products in stock',
+            ];
+            if (isset($en[$string])) {
+                $translated = $en[$string];
+            }
+        }
+
+        return strtr($translated, $params);
+    }
+
+    protected function isEnglishUi(): bool
+    {
+        $context = Context::getContext();
+        $language = $context->language;
+        $iso = $language ? strtolower((string) $language->iso_code) : '';
+        $locale = $language ? strtolower((string) $language->locale) : '';
+        $translatorLocale = strtolower((string) $context->getTranslator()->getLocale());
+
+        return in_array($iso, ['en', 'gb', 'us'], true)
+            || strpos($locale, 'en') === 0
+            || strpos($translatorLocale, 'en') === 0;
+    }
+
+    /**
+     * CKC Vianney — ajax.php n'a pas l'URL /en/ : on force la langue du FO.
+     */
+    public static function applyRequestLanguage()
+    {
+        $idLang = (int) Tools::getValue('id_lang');
+        if ($idLang <= 0 && !empty($_SERVER['HTTP_REFERER'])
+            && preg_match('#/(en|gb|us)(/|$)#i', (string) $_SERVER['HTTP_REFERER'])) {
+            $idLang = (int) Language::getIdByIso('en');
+        }
+        if ($idLang <= 0) {
+            return;
+        }
+
+        $context = Context::getContext();
+        if ($context->language && (int) $context->language->id === $idLang) {
+            return;
+        }
+
+        $language = new Language($idLang);
+        if (!Validate::isLoadedObject($language) || !$language->active) {
+            return;
+        }
+
+        $context->language = $language;
+        if ($context->cookie) {
+            $context->cookie->id_lang = $idLang;
+        }
     }
 }

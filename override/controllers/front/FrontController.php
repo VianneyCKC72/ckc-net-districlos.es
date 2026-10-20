@@ -82,10 +82,6 @@ class FrontController extends FrontControllerCore
         $this->context->smarty->assign('show_emptycart', $show_emptycart);
         $this->context->smarty->assign('IS_EMPLOYEE_BO', $show_emptycart);
         Media::addJsDef(['IS_EMPLOYEE_BO' => (bool)$show_emptycart]);
-        $this->context->smarty->assign(
-            'ckc_lang_preview',
-            (string) Tools::getValue('ckc') === '1'
-        );
         $langLogo = $this->getLanguageShopLogo();
         $this->context->smarty->assign([
             'ckc_is_english' => $this->isCurrentLanguageEnglish(),
@@ -94,28 +90,6 @@ class FrontController extends FrontControllerCore
 
         return parent::initHeader();
     }
-    public function getTemplateVarUrls()
-    {
-        $urls = parent::getTemplateVarUrls();
-        if (!empty($urls['alternative_langs']) && is_array($urls['alternative_langs'])) {
-            foreach (array_keys($urls['alternative_langs']) as $code) {
-                if ($this->isEnglishLangCode((string) $code)) {
-                    unset($urls['alternative_langs'][$code]);
-                }
-            }
-        }
-        return $urls;
-    }
-    public function getTemplateVarPage()
-    {
-        $page = parent::getTemplateVarPage();
-        $iso = strtolower((string) $this->context->language->iso_code);
-        if ($this->isEnglishLangCode($iso)) {
-            $page['meta']['robots'] = 'noindex, nofollow';
-        }
-        return $page;
-    }
-
     public function getShopLogo(): array
     {
         $langLogo = $this->getLanguageShopLogo();

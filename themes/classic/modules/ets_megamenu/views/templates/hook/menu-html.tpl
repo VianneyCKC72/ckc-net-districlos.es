@@ -19,10 +19,10 @@
 *  International Registered Trademark & Property of ETS-Soft
 *}
 {if isset($menus) && $menus}
-{if (isset($ckc_is_english) && $ckc_is_english) || (isset($language.iso_code) && $language.iso_code == 'en')}
-    {assign var='ckc_mm_logo' value='/img/logo_multilingue.png'}
-    {assign var='ckc_mm_logo_text' value='/img/logo_multilingue.png'}
-    {assign var='ckc_mm_logo_white' value='/img/logo_multilingue.png'}
+{if isset($ckc_logo_src) && $ckc_logo_src}
+    {assign var='ckc_mm_logo' value=$ckc_logo_src}
+    {assign var='ckc_mm_logo_text' value=$ckc_logo_src}
+    {assign var='ckc_mm_logo_white' value=$ckc_logo_src}
 {else}
     {assign var='ckc_mm_logo' value='/img/logo-mobile.svg'}
     {assign var='ckc_mm_logo_text' value='/img/logo-1739869573.svg'}
@@ -33,7 +33,7 @@
         <li class="mm-menu-section-top">
             <ul class="mm-menu-inner">
         <li class="close_menu">
-            <a class="pull-left" href="{$urls.base_url}">
+            <a class="pull-left" href="{$urls.pages.index}">
                 {if Context::getContext()->shop->id == 2}
                     <img class="logo img-fluid" src="/img/logo-mobile-pro.svg" alt="Districlos" width="40" height="40" loading="lazy">
                 {else}
@@ -68,7 +68,7 @@
                     <span class="mm_menu_content_title">
                         <div>
                             {if $menu.menu_img_link}
-                                {if $menu.menu_link == "/4-portail-et-portillon"}
+                                {if $menu.menu_link|strstr:'/4-'}
                                     <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" class="img-menu-desktop-custom" style="padding: 5px;" title="" alt="" width="20" loading="lazy"/>
                                 {else}
                                     <img src="{$menu.menu_img_link|escape:'html':'UTF-8'}" class="img-menu-desktop-custom" title="" alt="" width="20" loading="lazy"/>
@@ -103,7 +103,7 @@
                             style="width:{$menu.sub_menu_max_width|escape:'html':'UTF-8'};{if Configuration::get('ETS_MM_TEXT_FONT_SIZE')} font-size:{Configuration::get('ETS_MM_TEXT_FONT_SIZE')|intval}px;{/if}">
                             <li class="close_menu close-menu-sub">
                                 <div class="pull-left">
-                                    <a href="{$urls.base_url}" class="logo-link-menu">
+                                    <a href="{$urls.pages.index}" class="logo-link-menu">
                                         {if Context::getContext()->shop->id == 2}
                                             <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
                                         {else}
@@ -150,7 +150,7 @@
                                                             {elseif $tab.tab_icon}
                                                             <i class="fa {$tab.tab_icon|escape:'html':'UTF-8'}"></i>
                                                         {/if}
-                                                        <div class="mm_tab_title_wrapper" style="display: flex;flex-direction: column-reverse;align-items: flex-start;">
+                                                        <div class="mm_tab_title_wrapper" style="display: flex;flex-direction: column-reverse;align-items: center;">
                                                             {$tab.title|escape:'html':'UTF-8'}
                                                             {if $tab.bubble_text}<span class="mm_bubble_text"style="background: {if $tab.bubble_background_color}{$tab.bubble_background_color|escape:'html':'UTF-8'}{else}#FC4444{/if}; color: {if $tab.bubble_text_color|escape:'html':'UTF-8'}{$tab.bubble_text_color|escape:'html':'UTF-8'}{else}#ffffff{/if};">{$tab.bubble_text|escape:'html':'UTF-8'}</span>{/if}
                                                         </div>
@@ -173,7 +173,7 @@
                                             <ul class="mm_columns_contents_ul ">
                                                 <li class="close_menu close-menu-sub">
                                                     <div class="pull-left">
-                                                        <a href="{$urls.base_url}" class="logo-link-menu">
+                                                        <a href="{$urls.pages.index}" class="logo-link-menu">
                                                             {if Context::getContext()->shop->id == 2}
                                                                 <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
                                                             {else}
@@ -216,7 +216,7 @@
                                                         </li>
                                                     {/if}
                                                 {/foreach}
-                                                <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.base_url}">
+                                                <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.pages.index}">
                                                     {if Context::getContext()->shop->id == 2}
                                                         <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo_mobile.png" alt="Districlos" width="178" height="48" loading="lazy">>
                                                     {else}
@@ -230,7 +230,7 @@
 
                                 </li>
                             {/foreach}
-                            <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.base_url}">
+                            <a class="pull-left logo-menu-mobile-sub-cat" href="{$urls.pages.index}">
                                 {if Context::getContext()->shop->id == 2}
                                     <img class="logo img-fluid" src="/img/DISTRICLOS_pro_logo.png" alt="Districlos" width="178" height="48" loading="lazy">
                                 {else}
@@ -296,25 +296,39 @@
             </li>
         {/foreach}
         {if $pro.env != 1}
-            <li class="info-menu-mobile-only mm_menus_li distri_megamenu mm_sub_align_full"><a href="/400-bons-plans">
+            {* Campagne Déstockage *}
+            <li class="info-menu-mobile-only mm_menus_li distri_megamenu mm_sub_align_full menu-mobile-promo-banner-li">
+                <div class="menu-mobile-promo-banner">
+                    <a href="{$link->getCategoryLink(358)|escape:'html':'UTF-8'}" class="menu-mobile-promo-banner__link">
+                        <span class="menu-mobile-promo-banner__text">
+                            <span class="menu-mobile-promo-banner__title">{l s='Destockage' d='Shop.Theme.Custommodules'}</span>
+                            <span class="menu-mobile-promo-banner__subtitle">{capture assign="menu_destockage_discount_mobile"}{l s='Jusqu\'à [1]-40%[/1] de réduction !' sprintf=['[1]' => '<strong>', '[/1]' => '</strong>'] d='Shop.Theme.Custommodules'}{/capture}{$menu_destockage_discount_mobile nofilter}</span>
+                        </span>
+                        <span class="menu-mobile-promo-banner__cta">{l s='Voir nos offres !' d='Shop.Theme.Custommodules'}</span>
+                    </a>
+                </div>
+            </li>
+            {* Lien "Bons plans" masqué : le bandeau Déstockage ci-dessus le remplace.
+            <li class="info-menu-mobile-only mm_menus_li distri_megamenu mm_sub_align_full"><a href="{$link->getCategoryLink(358)|escape:'html':'UTF-8'}">
                     <span class="mm_menu_content_title"><svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" viewBox="0 0 576 512"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/></svg>{l s='Bons plans' d='Shop.Theme.Customglobal'}</span>
                 </a></li>
+            *}
         {else}
-            <li class="info-menu-mobile-only mm_menus_li distri_megamenu mm_sub_align_full"><a href="/content/660-les-offres-au-volume">
+            <li class="info-menu-mobile-only mm_menus_li distri_megamenu mm_sub_align_full"><a href="{$link->getCMSLink(660)|escape:'html':'UTF-8'}">
                     <span class="mm_menu_content_title">{*<svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" viewBox="0 0 576 512"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/></svg>*}{l s='Les offres au volume' d='Shop.Theme.Customglobal'}</span>
                 </a></li>
         {/if}
         <li class="menu-mobile-custom-container-links mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
 
             {if Context::getContext()->shop->id == 2}
-                <a href="/avantages-pro" class="btn btn-primary btn-avantages-mobile">
+                <a href="{$link->getModuleLink('ckc_espacepro', 'benefitsespacepro')|escape:'html':'UTF-8'}" class="btn btn-primary btn-avantages-mobile">
                     <div class="text-btn">
                         <span class="medium-text">{l s='Mes avantages' d='Shop.Theme.Customglobal'}</span>
                     </div>
                 </a>
             {else}
                 <a href="{$link->getModuleLink('ckcconfigurateurdistriclos', 'configurator')|escape:'htmlall':'UTF-8'}" class="btn-configurateur-mobile">
-                <img width="45px" height="45px" alt="{l s='Configurez votre clôture' d='Shop.Theme.Customglobal'}" src="themes/classic/assets/img/configurer-icon.svg">
+                <img width="45px" height="45px" alt="{l s='Configurez votre clôture' d='Shop.Theme.Customglobal'}" src="/themes/classic/assets/img/configurer-icon.svg">
                 <div class="text-btn">
                     <span class="medium-text">{l s='Configurez votre clôture' d='Shop.Theme.Customglobal'}</span>
                 </div>
@@ -350,7 +364,7 @@
                         <p>{l s='Magasins' d='Shop.Theme.Custommodules'}</p>
                     </a>
                     <a class="menu-mobile-useful-link" href="{$link->getCMSLink(657)|escape:'html':'UTF-8'}">
-                        <img src="themes/classic/assets/img/service-de-pose.svg" alt="{l s='Service de pose' d='Shop.Theme.Customglobal'}" width="19px" height="19px">
+                        <img src="/themes/classic/assets/img/service-de-pose.svg" alt="{l s='Service de pose' d='Shop.Theme.Customglobal'}" width="19px" height="19px">
                         <p style="color: #026473;">{l s='Service de pose' d='Shop.Theme.Customglobal'}</p>
                     </a>
                     <a class="menu-mobile-useful-link" href="{$urls.pages.authentication}" onclick="window.location.href='{$urls.pages.authentication}?back={$urls.current_url|urlencode}'">
@@ -377,11 +391,25 @@
                 </a></li>
         {/if}
         *}
+        {* Campagne Déstockage *}
+        <li class="mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile menu-mobile-promo-banner-li menu-mobile-promo-banner-li--desktop">
+            <div class="menu-mobile-promo-banner">
+                <a href="{$link->getCategoryLink(358)|escape:'html':'UTF-8'}" class="menu-mobile-promo-banner__link">
+                    <span class="menu-mobile-promo-banner__text">
+                        <span class="menu-mobile-promo-banner__title">{l s='Destockage' d='Shop.Theme.Custommodules'}</span>
+                        <span class="menu-mobile-promo-banner__subtitle">{capture assign="menu_destockage_discount_desktop"}{l s='Jusqu\'à [1]-40%[/1] de réduction !' sprintf=['[1]' => '<strong>', '[/1]' => '</strong>'] d='Shop.Theme.Custommodules'}{/capture}{$menu_destockage_discount_desktop nofilter}</span>
+                    </span>
+                    <span class="menu-mobile-promo-banner__cta">{l s='Voir nos offres !' d='Shop.Theme.Custommodules'}</span>
+                </a>
+            </div>
+        </li>
+        {* Hook image désactivé pendant la campagne Déstockage
         <li class="mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
             <div class="hide_pro image-fw-mm">
                 {hook h='displayPromoMenuImage'}
             </div>
         </li>
+        *}
             </ul>
         </li>
     </ul>

@@ -441,6 +441,13 @@ body.dtc-pq-panel-active #yourgpt-chatbot {
   opacity: 0.7;
 }
 
+.dtc-pq-panel__feedback-thanks {
+  margin: 0;
+  flex: 1 1 100%;
+  font-size: 0.8rem;
+  color: #4b5563;
+}
+
 .dtc-pq-panel__msg--bot a {
   color: #026473;
   text-decoration: underline;

@@ -67,6 +67,7 @@
       <trans-unit id="63"><source>Page de de demande de Devis</source><target>Quote request page</target></trans-unit>
       <trans-unit id="64"><source>Paiement 100% sécurisé </source><target>100% secure payment </target></trans-unit>
       <trans-unit id="65"><source>Paiement en plusieurs fois gratuit</source><target>Free installment payment</target></trans-unit>
+      <trans-unit id="65b"><source>Paiement en plusieurs fois</source><target>Pay in installments</target></trans-unit>
       <trans-unit id="66"><source>Particuliers</source><target>Individuals</target></trans-unit>
       <trans-unit id="67"><source>Payez en plusieurs fois</source><target>Pay in installments</target></trans-unit>
       <trans-unit id="68"><source>Pensez à vérifiez votre dossier courrier indésirable.</source><target>Remember to check your spam folder.</target></trans-unit>
@@ -174,6 +175,26 @@
       <trans-unit id="170"><source>Fabrication__française</source><target>Made in__France</target></trans-unit>
       <trans-unit id="171"><source>Fabrication française</source><target>Made in France</target></trans-unit>
       <trans-unit id="172"><source>Payer en plusieurs fois</source><target>Pay in installments</target></trans-unit>
+      <trans-unit id="173"><source>acompte</source><target>deposit</target></trans-unit>
+      <trans-unit id="174"><source>Possibilité de payer un acompte de</source><target>Option to pay a deposit of</target></trans-unit>
+      <trans-unit id="175"><source>et le reste avant la livraison</source><target>and the rest before delivery</target></trans-unit>
+      <trans-unit id="176"><source>Vous pouvez payer en utilisant le paiement anticipé. Total dû est :</source><target>You can pay using a deposit. Amount due:</target></trans-unit>
+      <trans-unit id="177"><source>Renseignez votre longueur</source><target>Enter your length</target></trans-unit>
+      <trans-unit id="178"><source>Prix dégressifs</source><target>Volume discounts</target></trans-unit>
+      <trans-unit id="179"><source>[1]Prix[/1][2]dégressifs ![/2]</source><target>[1]Volume[/1][2]discounts![/2]</target></trans-unit>
+      <trans-unit id="180"><source>Nombre de mL</source><target>Number of lm</target></trans-unit>
+      <trans-unit id="181"><source>% de remise</source><target>% discount</target></trans-unit>
+      <trans-unit id="182"><source>%from% à %to% mL</source><target>%from% to %to% lm</target></trans-unit>
+      <trans-unit id="183"><source>+%from% mL</source><target>+%from% lm</target></trans-unit>
+      <trans-unit id="184"><source>Sélectionnez la hauteur</source><target>Select the height</target></trans-unit>
+      <trans-unit id="185"><source>Veuillez sélectionner une hauteur</source><target>Please select a height</target></trans-unit>
+      <trans-unit id="186"><source>PROJET EN FÊTE</source><target>PROJECT SALE</target></trans-unit>
+      <trans-unit id="187"><source>sur une sélection de produits</source><target>on a selection of products</target></trans-unit>
+      <trans-unit id="188"><source>Voir nos bons plans</source><target>See our deals</target></trans-unit>
+      <trans-unit id="189"><source>Prix unitaire TTC</source><target>Unit price incl. tax</target></trans-unit>
+      <trans-unit id="190"><source>Destockage</source><target>Clearance</target></trans-unit>
+      <trans-unit id="191"><source>Jusqu'à [1]-40%[/1] de réduction !</source><target>Up to [1]40% off[/1]!</target></trans-unit>
+      <trans-unit id="192"><source>Voir nos offres !</source><target>See our offers!</target></trans-unit>
     </body>
   </file>
 </xliff>

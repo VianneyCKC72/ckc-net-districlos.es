@@ -5,6 +5,8 @@ if (!defined('_PS_VERSION_')) {
 
 require_once __DIR__ . '/classes/CkcTranslateAi.php';
 require_once __DIR__ . '/classes/CkcTranslateJobRunner.php';
+require_once __DIR__ . '/classes/CkcTranslateCfuI18n.php';
+require_once __DIR__ . '/classes/CkcMenuCategoryUrls.php';
 
 class CkcTranslate extends Module
 {
@@ -42,6 +44,13 @@ class CkcTranslate extends Module
     public const CONF_PROMPT_ATTRIBUTES = 'CKCTRANSLATE_PROMPT_ATTRIBUTES';
     public const CONF_PROMPT_CARRIER_DELAYS = 'CKCTRANSLATE_PROMPT_CARRIER_DELAYS';
     public const CONF_PROMPT_CKC_LABELS = 'CKCTRANSLATE_PROMPT_CKC_LABELS';
+    public const CONF_PROMPT_HELLOWORK_JOBS = 'CKCTRANSLATE_PROMPT_HELLOWORK_JOBS';
+    public const CONF_PROMPT_ETS_CFU = 'CKCTRANSLATE_PROMPT_ETS_CFU';
+    public const CONF_PROMPT_CKC_REALISATION = 'CKCTRANSLATE_PROMPT_CKC_REALISATION';
+    public const CONF_PROMPT_RESPONSIVEGALLERY = 'CKCTRANSLATE_PROMPT_RESPONSIVEGALLERY';
+    public const CONF_PROMPT_PRODUCT_FAQ = 'CKCTRANSLATE_PROMPT_PRODUCT_FAQ';
+    public const CONF_PROMPT_PRODUCT_GUIDE = 'CKCTRANSLATE_PROMPT_PRODUCT_GUIDE';
+    public const CONF_PROMPT_SYSTEM_PAGES = 'CKCTRANSLATE_PROMPT_SYSTEM_PAGES';
 
     public const CONF_FILTER_TYPE = 'CKCTRANSLATE_FILTER_TYPE';
     public const CONF_FILTER_IDS = 'CKCTRANSLATE_FILTER_IDS';
@@ -51,7 +60,7 @@ class CkcTranslate extends Module
     {
         $this->name = 'ckctranslate';
         $this->tab = 'administration';
-        $this->version = '2.9.0';
+        $this->version = '2.17.8';
         $this->author = 'CKC';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -71,7 +80,11 @@ class CkcTranslate extends Module
         return parent::install()
             && $this->installTab()
             && $this->installConfiguration()
-            && $this->installSql();
+            && $this->installSql()
+            && $this->registerHook('actionOutputHTMLBefore')
+            && $this->registerHook('actionFrontControllerInitAfter')
+            && $this->registerHook('actionPresentProduct')
+            && $this->registerHook('actionPresentProductListing');
     }
 
     public function uninstall()
@@ -92,6 +105,10 @@ class CkcTranslate extends Module
         }
 
         $this->installSql();
+        $this->registerHook('actionOutputHTMLBefore');
+        $this->registerHook('actionFrontControllerInitAfter');
+        $this->registerHook('actionPresentProduct');
+        $this->registerHook('actionPresentProductListing');
 
         $html = '';
         $html .= '<div class="panel">';
@@ -137,9 +154,9 @@ class CkcTranslate extends Module
             && Configuration::updateValue(self::CONF_SEO_META_TITLE_MAX, 60)
             && Configuration::updateValue(self::CONF_SEO_META_DESCRIPTION_MAX, 155)
             && Configuration::updateValue(self::CONF_SEO_SLUG_MAX, 80)
-            && Configuration::updateValue(self::CONF_PROMPT_PRODUCT_SEO, 'Translate product SEO fields with premium e-commerce tone. Keep result concise, natural and conversion-friendly.')
+            && Configuration::updateValue(self::CONF_PROMPT_PRODUCT_SEO, 'Translate product SEO fields for Districlos. name = complete product title (never truncate). meta_title = same as name or a close complete variant (max ~60 chars). meta_description = a DEDICATED SEO snippet ~150 characters (not the full product description), natural, brand Districlos only (never "Clôture Discount"). Always put a space after periods. slug = full kebab-case URL.')
             && Configuration::updateValue(self::CONF_PROMPT_PRODUCT_DESCRIPTION, 'Translate product descriptions with elegant and persuasive tone. Preserve HTML and factual accuracy.')
-            && Configuration::updateValue(self::CONF_PROMPT_CATEGORY_SEO, 'Translate category SEO fields naturally and clearly for search visibility.')
+            && Configuration::updateValue(self::CONF_PROMPT_CATEGORY_SEO, 'Translate category SEO fields for Districlos. name = complete category title (never truncate mid-word). meta_title = same as name or a close complete variant (max ~60 chars). meta_description = a DEDICATED SEO snippet ~150 characters (not the full category description), natural, one or two short sentences, brand Districlos only (never "Clôture Discount"). Always put a space after periods. slug = full kebab-case URL.')
             && Configuration::updateValue(self::CONF_PROMPT_CATEGORY_DESCRIPTION, 'Translate category content with SEO-friendly, readable and premium wording.')
             && Configuration::updateValue(self::CONF_PROMPT_CMS, 'Translate CMS content with editorial quality, natural language and SEO clarity.')
             && Configuration::updateValue(self::CONF_PROMPT_CE, 'Translate page builder text content. Preserve all HTML tags and attributes exactly. Keep each translated value similar in length to the source to avoid breaking the layout.')
@@ -151,6 +168,13 @@ class CkcTranslate extends Module
             && Configuration::updateValue(self::CONF_PROMPT_ATTRIBUTES, 'Translate product attribute group names, public names and attribute values (color, size, etc.). Keep them short for product pages and filters. Preserve codes, measurements and brand-specific terms when needed.')
             && Configuration::updateValue(self::CONF_PROMPT_CARRIER_DELAYS, 'Translate carrier delivery delay texts for checkout and shipping estimators. Keep them short and clear. Preserve numbers, time units and carrier brand names. Do not invent delivery promises.')
             && Configuration::updateValue(self::CONF_PROMPT_CKC_LABELS, 'Translate short product badge labels. Preserve HTML tags (<strong>, <b>, <br>), CSS classes and the ↓ character. Keep the result short, similar in length, suitable for a product card flag. Do not invent promotions.')
+            && Configuration::updateValue(self::CONF_PROMPT_HELLOWORK_JOBS, 'Translate job offer titles and descriptions for a careers page. Keep a professional recruitment tone. Preserve HTML tags. Do not invent benefits, salaries or locations. Keep H/F and similar gender marks when present, adapted to English (M/F).')
+            && Configuration::updateValue(self::CONF_PROMPT_ETS_CFU, 'Translate Contact Form Ultimate (ets_cfu) texts: form titles, URL aliases, SEO, descriptions, field labels, placeholders, help texts, dropdown/radio options, submit buttons, thank-you pages and notification emails. Preserve HTML tags, attributes, links, emails, phone numbers and brand names. If a field is JSON, keep the JSON structure and translate string values only. Keep URL aliases slug-safe. Do not invent legal clauses.')
+            && Configuration::updateValue(self::CONF_PROMPT_CKC_REALISATION, 'Translate customer project photo titles and image alt texts (ckc_realisation). Keep them short, natural and descriptive. Do not invent product names, locations or materials. Leave empty fields empty.')
+            && Configuration::updateValue(self::CONF_PROMPT_RESPONSIVEGALLERY, 'Translate Responsive Gallery page title, descriptions and gallery titles (product family names like Grillage rigide). Keep labels short, catalog-like and consistent with existing fence vocabulary. Preserve HTML in descriptions. Do not invent product lines.')
+            && Configuration::updateValue(self::CONF_PROMPT_PRODUCT_FAQ, 'Translate product FAQ questions and answers for a fencing e-commerce catalog. Preserve all HTML tags, attributes and lists. Keep a clear, helpful customer-support tone. Do not invent technical specs, dimensions, warranties or certifications. Keep brand names and product terms consistent.')
+            && Configuration::updateValue(self::CONF_PROMPT_PRODUCT_GUIDE, 'Translate the product measuring guide HTML (how to measure a fence, posts, panels). Preserve all HTML tags, attributes, images, lists and layout. Keep a clear instructional tone. Do not invent dimensions, tools or steps. Keep brand and product names.')
+            && Configuration::updateValue(self::CONF_PROMPT_SYSTEM_PAGES, 'Translate PrestaShop system page SEO fields (meta title and meta description: homepage, cart, login, contact, sitemap, etc.). Always keep brand names such as Districlos unchanged and place them naturally (usually at the start for the homepage title). Return a COMPLETE title and description, close in length to the source (do not shorten aggressively, do not cut mid-phrase, never end with &, and, of, the, or a dangling comma). Keep a natural, concise SEO tone. Do not invent promotions or claims. Leave empty source fields empty.')
             && Configuration::updateValue(self::CONF_FILTER_TYPE, 'all')
             && Configuration::updateValue(self::CONF_FILTER_IDS, '')
             && Configuration::updateValue(self::CONF_FILTER_CATEGORY_ID, 0);
@@ -190,6 +214,13 @@ class CkcTranslate extends Module
             && Configuration::deleteByName(self::CONF_PROMPT_ATTRIBUTES)
             && Configuration::deleteByName(self::CONF_PROMPT_CARRIER_DELAYS)
             && Configuration::deleteByName(self::CONF_PROMPT_CKC_LABELS)
+            && Configuration::deleteByName(self::CONF_PROMPT_HELLOWORK_JOBS)
+            && Configuration::deleteByName(self::CONF_PROMPT_ETS_CFU)
+            && Configuration::deleteByName(self::CONF_PROMPT_CKC_REALISATION)
+            && Configuration::deleteByName(self::CONF_PROMPT_RESPONSIVEGALLERY)
+            && Configuration::deleteByName(self::CONF_PROMPT_PRODUCT_FAQ)
+            && Configuration::deleteByName(self::CONF_PROMPT_PRODUCT_GUIDE)
+            && Configuration::deleteByName(self::CONF_PROMPT_SYSTEM_PAGES)
             && Configuration::deleteByName(self::CONF_FILTER_TYPE)
             && Configuration::deleteByName(self::CONF_FILTER_IDS)
             && Configuration::deleteByName(self::CONF_FILTER_CATEGORY_ID);
@@ -210,7 +241,153 @@ class CkcTranslate extends Module
             PRIMARY KEY (`id_ckctranslate_history`)
         ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 
-        return (bool) Db::getInstance()->execute($sql);
+        return (bool) Db::getInstance()->execute($sql) && CkcTranslateCfuI18n::ensureTable();
+    }
+
+    /**
+     * CKC Vianney — CE carousel uses $GLOBALS['language'] for product URLs.
+     */
+    public function hookActionFrontControllerInitAfter($params)
+    {
+        if (isset($this->context->language) && is_object($this->context->language)) {
+            $GLOBALS['language'] = $this->context->language;
+        }
+        $this->fixEnglishMenuCategoryUrlsOnce();
+    }
+
+    /**
+     * CKC Vianney — une fois : liens catégories du menu EN vers l’URL qui répond 200.
+     */
+    protected function fixEnglishMenuCategoryUrlsOnce()
+    {
+        if (Configuration::getGlobalValue(CkcMenuCategoryUrls::FLAG)) {
+            return;
+        }
+
+        try {
+            $result = CkcMenuCategoryUrls::apply(false);
+            Configuration::updateGlobalValue(CkcMenuCategoryUrls::FLAG, '1');
+            if (!empty($result['replacements']) && Module::isEnabled('pagecache')) {
+                register_shutdown_function(static function () {
+                    $pageCacheFile = _PS_MODULE_DIR_ . 'pagecache/pagecache.php';
+                    if (!class_exists('PageCache', false) && is_file($pageCacheFile)) {
+                        require_once $pageCacheFile;
+                    }
+                    if (class_exists('PageCache', false) && method_exists('PageCache', 'clearCache')) {
+                        PageCache::clearCache('ckc-en-menu-category-urls');
+                    }
+                });
+            }
+        } catch (Exception $e) {
+            PrestaShopLogger::addLog(
+                'CKC Vianney — correction des URLs du menu EN impossible : ' . $e->getMessage(),
+                3
+            );
+        }
+    }
+
+    public function hookActionPresentProduct($params)
+    {
+        $this->fixPresentedProductUrls($params);
+    }
+
+    public function hookActionPresentProductListing($params)
+    {
+        $this->fixPresentedProductUrls($params);
+    }
+
+    /**
+     * CKC Vianney — keep miniature / variant links in the current FO language.
+     */
+    protected function fixPresentedProductUrls($params)
+    {
+        if (empty($params['presentedProduct']) || !is_object($params['presentedProduct'])) {
+            return;
+        }
+        $presented = $params['presentedProduct'];
+        if (!method_exists($presented, 'offsetSet')) {
+            return;
+        }
+
+        $idProduct = (int) $presented['id_product'];
+        if ($idProduct <= 0) {
+            return;
+        }
+
+        $idLang = (int) $this->context->language->id;
+        $idAttr = !empty($presented['id_product_attribute']) ? (int) $presented['id_product_attribute'] : 0;
+        $url = $this->context->link->getProductLink(
+            $idProduct,
+            null,
+            null,
+            null,
+            $idLang,
+            null,
+            $idAttr > 0 ? $idAttr : null
+        );
+
+        $presented->offsetSet('url', $url, true);
+        $presented->offsetSet(
+            'canonical_url',
+            $this->context->link->getProductLink($idProduct, null, null, null, $idLang),
+            true
+        );
+
+        if (empty($presented['main_variants']) || !is_array($presented['main_variants'])) {
+            return;
+        }
+
+        $variants = $presented['main_variants'];
+        foreach ($variants as &$variant) {
+            if (empty($variant['id_product_attribute'])) {
+                continue;
+            }
+            $variant['url'] = $this->context->link->getProductLink(
+                $idProduct,
+                null,
+                null,
+                null,
+                $idLang,
+                null,
+                (int) $variant['id_product_attribute']
+            );
+        }
+        unset($variant);
+        $presented->offsetSet('main_variants', $variants, true);
+    }
+
+    /**
+     * CKC Vianney — labels CFU rendus depuis la colonne form (non lang).
+     */
+    public function hookActionOutputHTMLBefore($params)
+    {
+        if (empty($params['html']) || strpos((string) $params['html'], 'ets-cfu-form') === false) {
+            return;
+        }
+        if (!Module::isInstalled('ets_cfultimate') || !Module::isEnabled('ets_cfultimate')) {
+            return;
+        }
+        $idLang = (int) $this->context->language->id;
+        $idShop = (int) $this->context->shop->id;
+        $params['html'] = CkcTranslateCfuI18n::replaceInHtml((string) $params['html'], $idLang, $idShop);
+    }
+
+    public static function getFrontProductFaqs($idProduct, $activeOnly = true)
+    {
+        if (!Module::isInstalled('productfaq') || !Module::isEnabled('productfaq')) {
+            return array();
+        }
+
+        return CkcTranslateJobRunner::getFrontProductFaqs((int) $idProduct, (bool) $activeOnly);
+    }
+
+    public static function getFrontProductGuideContent($idProduct)
+    {
+        if (!Module::isInstalled('productguide') || !Module::isEnabled('productguide')) {
+            return '';
+        }
+
+        return CkcTranslateJobRunner::getFrontProductGuideContent((int) $idProduct);
     }
 
     protected function uninstallSql()

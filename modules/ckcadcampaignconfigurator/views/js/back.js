@@ -177,4 +177,24 @@ $(window).ready(function() {
 
 
     }
+
+    const $showAbovePrice = $("input[name='PRODUCT_SHOW_ABOVE_PRICE']");
+    const $showCountdown = $("input[name='PRODUCT_SHOW_COUNTDOWN']");
+    const $countdownEnd = $("#PRODUCT_COUNTDOWN_END");
+
+    if ($showAbovePrice.length && $showCountdown.length && $countdownEnd.length) {
+        const $countdownSwitchGroup = $showCountdown.closest(".form-group");
+        const $countdownEndGroup = $countdownEnd.closest(".form-group");
+
+        function toggleProductCountdownFields() {
+            const showAbovePrice = $("#PRODUCT_SHOW_ABOVE_PRICE_on").is(":checked");
+            const showCountdown = $("#PRODUCT_SHOW_COUNTDOWN_on").is(":checked");
+
+            $countdownSwitchGroup.toggle(showAbovePrice);
+            $countdownEndGroup.toggle(showAbovePrice && showCountdown);
+        }
+
+        $showAbovePrice.add($showCountdown).on("change", toggleProductCountdownFields);
+        toggleProductCountdownFields();
+    }
 });

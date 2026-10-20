@@ -31,12 +31,23 @@
                         'js-current-step' => $step_is_current
                     ]|classnames}">
 
+    {if $identifier == 'checkout-personal-information-step'}
+      {assign var='step_label' value={l s='Vos informations' d='Shop.Theme.Customcheckout'}}
+    {elseif $identifier == 'checkout-addresses-step'}
+      {assign var='step_label' value={l s='Vos adresses' d='Shop.Theme.Customcheckout'}}
+    {elseif $identifier == 'checkout-delivery-step'}
+      {assign var='step_label' value={l s='Votre livraison' d='Shop.Theme.Customcheckout'}}
+    {elseif $identifier == 'checkout-payment-step'}
+      {assign var='step_label' value={l s='Votre paiement' d='Shop.Theme.Customcheckout'}}
+    {else}
+      {assign var='step_label' value=$title}
+    {/if}
     <h1 class="step-title js-step-title h3 mb-0">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check done">
         <path d="M20 6 9 17l-5-5" />
       </svg>
-      <span class="step-title__text">{$title}</span>
+      <span class="step-title__text">{$step_label}</span>
       <span class="step-edit">
         {l s='Edit' d='Shop.Theme.Actions'}</span>
     </h1>

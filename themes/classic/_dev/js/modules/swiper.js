@@ -69,24 +69,49 @@ document.addEventListener("click", (e) => {
   openProductImageLightbox(link.getAttribute("href"), img ? img.getAttribute("alt") : "");
 });
 
-document.querySelectorAll(".wrapper__swiper__featured-products").forEach((wrapper) => {
-  new Swiper(wrapper.querySelector(".swiper__featured-products"), {
-    loop: wrapper.closest("#cart") ? false : true,
-    spaceBetween: 3,
-    slidesPerView: 2,
-    breakpoints: {
-      768: { slidesPerView: 3, spaceBetween: 24 },
-      1024: { slidesPerView: 4, spaceBetween: 24 },
-    },
-    observer: true,
-    observeParents: true,
-    pagination: {
-      el: wrapper.querySelector(".swiper-pagination"),
-      clickable: true,
-    },
-    navigation: {
-      nextEl: wrapper.querySelector(".swiper-button-next"),
-      prevEl: wrapper.querySelector(".swiper-button-prev"),
-    },
+function initFeaturedProductSwipers() {
+  document.querySelectorAll(".wrapper__swiper__featured-products").forEach((wrapper) => {
+    const el = wrapper.querySelector(".swiper__featured-products");
+    if (!el || el.swiper) {
+      if (el && el.swiper) {
+        el.swiper.update();
+      }
+      return;
+    }
+
+    new Swiper(el, {
+      // CKC Vianney — loop cassé en EN (titres longs / Skeepers) : clones superposés
+      loop: false,
+      watchOverflow: true,
+      spaceBetween: 3,
+      slidesPerView: 2,
+      breakpoints: {
+        768: { slidesPerView: 3, spaceBetween: 24 },
+        1024: { slidesPerView: 4, spaceBetween: 24 },
+      },
+      observer: true,
+      observeParents: true,
+      pagination: {
+        el: wrapper.querySelector(".swiper-pagination"),
+        clickable: true,
+      },
+      navigation: {
+        nextEl: wrapper.querySelector(".swiper-button-next"),
+        prevEl: wrapper.querySelector(".swiper-button-prev"),
+      },
+    });
   });
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initFeaturedProductSwipers);
+} else {
+  initFeaturedProductSwipers();
+}
+
+window.addEventListener("load", initFeaturedProductSwipers);
+if (typeof prestashop !== "undefined") {
+  prestashop.on("updatedProduct", () => {
+    setTimeout(initFeaturedProductSwipers, 200);
+  });
+}

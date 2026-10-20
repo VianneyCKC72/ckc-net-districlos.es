@@ -8,7 +8,7 @@
                 <i class="icon-check"></i> {l s='Statuts fin de vie sauvegardés avec succès !' mod='dtc_productendoflife'}
             </div>
         {/if}
-        <p class="help-block">{l s='Cochez les déclinaisons qui sont en fin de vie. Ces déclinaisons afficheront un message spécial dans le displayStock.' mod='dtc_productendoflife'}</p>
+        <p class="help-block">{l s='Cochez les déclinaisons en fin de vie (plateforme) ou fin de vie national (stock tous magasins).' mod='dtc_productendoflife'}</p>
         
         <div id="end_of_life_form">
             <input type="hidden" name="id_product" value="{$id_product}">
@@ -26,6 +26,16 @@
                                 <small>
                                     <label style="font-weight: normal; margin: 0;">
                                         <input type="checkbox" id="select_all_end_of_life" style="margin-right: 5px;">
+                                        {l s='Tout sélectionner' mod='dtc_productendoflife'}
+                                    </label>
+                                </small>
+                            </th>
+                            <th class="text-center">
+                                {l s='Fin de vie national' mod='dtc_productendoflife'}
+                                <br>
+                                <small>
+                                    <label style="font-weight: normal; margin: 0;">
+                                        <input type="checkbox" id="select_all_end_of_life_national" style="margin-right: 5px;">
                                         {l s='Tout sélectionner' mod='dtc_productendoflife'}
                                     </label>
                                 </small>
@@ -66,11 +76,26 @@
                                             </span>
                                         </div>
                                     </td>
+                                    <td class="text-center">
+                                        <div class="form-group">
+                                            <span class="switch prestashop-switch fixed-width-lg">
+                                                <input type="checkbox"
+                                                       name="end_of_life_national[{$combination.id_product_attribute}]"
+                                                       id="end_of_life_national_{$combination.id_product_attribute}"
+                                                       value="1"
+                                                       {if isset($end_of_life_national_status[$combination.id_product_attribute]) && $end_of_life_national_status[$combination.id_product_attribute]}checked="checked"{/if}>
+                                                <label for="end_of_life_national_{$combination.id_product_attribute}">
+                                                    {l s='Oui' mod='dtc_productendoflife'}
+                                                </label>
+                                                <a class="slide-button btn"></a>
+                                            </span>
+                                        </div>
+                                    </td>
                                 </tr>
                             {/foreach}
                         {else}
                             <tr>
-                                <td colspan="4" class="text-center">
+                                <td colspan="5" class="text-center">
                                     <span class="text-muted">{l s='Aucune déclinaison trouvée pour ce produit.' mod='dtc_productendoflife'}</span>
                                 </td>
                             </tr>
@@ -106,7 +131,8 @@
     border-top: 1px solid #dee2e6;
     padding: 15px;
 }
-#select_all_end_of_life {
+#select_all_end_of_life,
+#select_all_end_of_life_national {
     transform: scale(1.2);
     margin-right: 8px !important;
 }
@@ -114,37 +140,46 @@
 
 <script>
 $(document).ready(function() {
+    $('#select_all_end_of_life').on('change', function() {
+        $('input[name^="end_of_life["]:not([name^="end_of_life_national["])').prop('checked', $(this).is(':checked'));
+    });
+
+    $('#select_all_end_of_life_national').on('change', function() {
+        $('input[name^="end_of_life_national["]').prop('checked', $(this).is(':checked'));
+    });
+
     $('#save_end_of_life').on('click', function(e) {
         e.preventDefault();
         var id_product = $('input[name="id_product"]').val();
         var end_of_life_data = {};
+        var end_of_life_national_data = {};
         
-        // Collecter les données de toutes les déclinaisons du formulaire (cochées et décochées)
-        $('input[name^="end_of_life["]').each(function() {
+        $('input[name^="end_of_life["]:not([name^="end_of_life_national["])').each(function() {
             var name = $(this).attr('name');
             var id = name.match(/\[(\d+)\]/)[1];
             end_of_life_data[id] = $(this).is(':checked') ? 1 : 0;
         });
+
+        $('input[name^="end_of_life_national["]').each(function() {
+            var name = $(this).attr('name');
+            var id = name.match(/\[(\d+)\]/)[1];
+            end_of_life_national_data[id] = $(this).is(':checked') ? 1 : 0;
+        });
         
-        
-        // Afficher un indicateur de chargement
         $(this).prop('disabled', true).html('<i class="process-icon-loading"></i> Sauvegarde...');
         
-        // Envoyer les données via AJAX
         $.ajax({
             url: '/modules/dtc_productendoflife/ajax_save.php',
             type: 'POST',
             data: {
                 id_product: id_product,
-                end_of_life: end_of_life_data
+                end_of_life: end_of_life_data,
+                end_of_life_national: end_of_life_national_data
             },
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    // Afficher un message de succès
                     $('.panel-body').prepend('<div class="alert alert-success"><i class="icon-check"></i> ' + response.message + '</div>');
-                    
-                    // Masquer le message après 3 secondes
                     setTimeout(function() {
                         $('.alert-success').fadeOut();
                     }, 3000);
@@ -156,11 +191,9 @@ $(document).ready(function() {
                 alert('Erreur lors de la sauvegarde: ' + error);
             },
             complete: function() {
-                // Réactiver le bouton
                 $('#save_end_of_life').prop('disabled', false).html('<i class="process-icon-save"></i> Sauvegarder fin de vie');
             }
         });
     });
 });
 </script>
-

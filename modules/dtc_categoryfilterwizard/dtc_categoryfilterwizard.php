@@ -32,7 +32,7 @@ class dtc_categoryfilterwizard extends Module
     {
         $this->name           = 'dtc_categoryfilterwizard';
         $this->tab            = 'front_office_features';
-        $this->version        = '1.0.0';
+        $this->version        = '1.1.0';
         $this->author         = 'DISTRICLOS';
         $this->need_instance  = 0;
         $this->bootstrap      = true;
@@ -936,7 +936,14 @@ class dtc_categoryfilterwizard extends Module
         self::$renderedOnceThisRequest = true;
 
         foreach ($steps as &$step) {
+            $step['label'] = $this->translateWizardText($step['label'] ?? '');
             $step['options'] = $this->getStepOptions($step);
+            foreach ($step['options'] as &$option) {
+                if (isset($option['label'])) {
+                    $option['label'] = $this->translateWizardText($option['label']);
+                }
+            }
+            unset($option);
         }
         unset($step);
 
@@ -1054,5 +1061,31 @@ class dtc_categoryfilterwizard extends Module
         }
 
         return $rows;
+    }
+
+    /**
+     * Libellés BO (une langue) → catalogue thème.
+     */
+    private function translateWizardText($text)
+    {
+        $plain = trim(preg_replace('/\s+/u', ' ', (string) $text));
+        if ($plain === '') {
+            return $text;
+        }
+
+        $translated = $this->trans($plain, [], 'Shop.Theme.Customdtc');
+        if ($translated !== $plain) {
+            return $translated;
+        }
+
+        $withoutQuestion = rtrim($plain, " \t?");
+        if ($withoutQuestion !== $plain) {
+            $alt = $this->trans($withoutQuestion . ' ?', [], 'Shop.Theme.Customdtc');
+            if ($alt !== $withoutQuestion . ' ?') {
+                return $alt;
+            }
+        }
+
+        return $plain;
     }
 }

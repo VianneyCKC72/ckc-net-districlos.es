@@ -385,18 +385,24 @@
                 <td>{$message|escape:'htmlall':'UTF-8'}</td>
             </tr>
             {/foreach}
-
-            <tr style="display:flex; justify-content:space-between; width:600px;">
-            <td width="15%"> <img src="/themes/auto_store/assets/img/devis/espace_clientqr.png" width="300px"/></td>
-            <td width="15%"> <img src="/themes/auto_store/assets/img/devis/tuto_clientqr.png" width="300px"/></td>
-            </tr>
-            <tr style="display:flex; justify-content:space-between; width:600px;">
-            <td width="15%"> {l s='Votre espace client' d='Shop.Theme.Custommodules'}</td>
-            <td width="15%"> {l s='Tutoriels de pose' d='Shop.Theme.Custommodules'}</td>
-            </tr>
         </table>
     {/if}
     <!-- /MESSAGE -->
+
+    <!-- CTA QR -->
+    {if !empty($qr_espace_client)}
+        <br />
+        <table cellpadding="3" style="width:100%;">
+            <tr>
+                <td style="text-align:center;">
+                    <img src="{$qr_espace_client|escape:'html':'UTF-8'}" width="80" />
+                    <br />
+                    {l s='Votre espace client' d='Shop.Theme.Custommodules'}
+                </td>
+            </tr>
+        </table>
+    {/if}
+    <!-- /CTA QR -->
 
     <!-- STATUS -->
     <table>

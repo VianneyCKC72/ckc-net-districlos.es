@@ -22,6 +22,16 @@ export default function initCheckoutNav() {
         // Supprimer le doublon des boutons sociaux
         $('#checkout-guest-form .ets_solo_social_wrapper:not(:first)').remove();
 
+        $(document).on('mousedown', '.account-switch [data-toggle="tab"]', function () {
+            $(this).removeClass('active');
+        });
+        $(document).on('shown.bs.tab', '.account-switch [data-toggle="tab"]', function (e) {
+            var target = $(e.target).attr('href');
+            $('.account-switch')
+                .toggleClass('-login', target === '#checkout-login-form')
+                .toggleClass('-register', target === '#checkout-guest-form');
+        });
+
         // Déplacer "Recevoir les bons plans et promotions par SMS" après la checkbox newsletter
         if ($('input[name="sms_optin"]').length && $('input[name="newsletter"]').length) {
             $('input[name="sms_optin"]').closest('.form-group.row')
@@ -46,44 +56,6 @@ export default function initCheckoutNav() {
                 $(this).hide();
             }
         });
-
-        // Mise à jour du texte "Connectez-vous" ou "Créez un compte"
-        function updateAccountSwitch() {
-            let activeTab = $(".tab-pane.active").attr("id");
-            let switchContainer = $(".account-switch");
-
-            if (activeTab === "checkout-login-form") {
-                switchContainer.html(`
-                <h2 class="sous-titre">Connexion</h2>
-                <p>
-                    Pas encore de compte ?
-                    <a href="#checkout-guest-form" data-toggle="tab" role="tab" aria-controls="checkout-guest-form">
-                        Créez un compte →
-                    </a>
-                </p>
-            `);
-            } else {
-                switchContainer.html(`
-                <h2 class="sous-titre">Créer un compte</h2>
-                <p>
-                    Vous avez déjà un compte ?
-                    <a href="#checkout-login-form" data-toggle="tab" role="tab" aria-controls="checkout-login-form">
-                        Connectez-vous →
-                    </a>
-                </p>
-            `);
-            }
-
-            $('a[data-toggle="tab"]').off("click").on("click", function () {
-                setTimeout(updateAccountSwitch, 300);
-            });
-        }
-
-        $('a[data-toggle="tab"]').on("shown.bs.tab", function () {
-            updateAccountSwitch();
-        });
-
-        updateAccountSwitch();
 
         if (typeof default_address_id != 'undefined') {
             $("article.address-item").each(function () {

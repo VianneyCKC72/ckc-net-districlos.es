@@ -72,55 +72,6 @@
                                 <div class="small">{l s='REF' d='Shop.Theme.Custommodules'} <span
                                             class="font-weight-bold" id="product_reference">{$product.reference_to_display}</span></div>
                             {/if}
-                            <script>
-                              window.CKC_AVIS_I18N = {
-                                verifiedReviews: '{l s='Avis vérifiés' d='Shop.Theme.Customckc' js=1}',
-                                reviews: '{l s='avis' d='Shop.Theme.Customckc' js=1}'
-                              };
-                              (function () {
-                                var i18n = window.CKC_AVIS_I18N || {};
-                                var labelReviews = i18n.reviews || 'avis';
-                                var labelVerified = i18n.verifiedReviews || 'Avis vérifiés';
-                                function apply() {
-                                  document.querySelectorAll('[data-lang="SKEEPERS_AVIS"]').forEach(function (el) {
-                                    el.textContent = labelReviews;
-                                  });
-                                  document.querySelectorAll('.avis-verifie-logo > span').forEach(function (el) {
-                                    if (/avis v[eé]rifi[eé]s/i.test(el.textContent || '')) {
-                                      el.textContent = labelVerified;
-                                    }
-                                  });
-                                  document.querySelectorAll('.avis_verifies_inserted, .rate-total').forEach(function (el) {
-                                    if (el.querySelector('[data-lang="SKEEPERS_AVIS"]')) return;
-                                    if (/\bavis\b/i.test(el.textContent || '')) {
-                                      el.innerHTML = el.innerHTML.replace(/\bavis\b/gi, labelReviews);
-                                    }
-                                  });
-                                  // Évite le double onglet « Avis vérifiés »
-                                  var avisLinks = document.querySelectorAll('.nav.nav-tabs[role="tablist"] a.avisVerfies');
-                                  for (var i = 1; i < avisLinks.length; i++) {
-                                    var li = avisLinks[i].closest('li.nav-item');
-                                    if (li) li.parentNode.removeChild(li);
-                                  }
-                                }
-                                document.addEventListener('DOMContentLoaded', function () {
-                                  apply();
-                                  var root = document.querySelector('.skeepers_product__stars') || document.body;
-                                  if (!root || typeof MutationObserver === 'undefined') return;
-                                  var busy = false;
-                                  var obs = new MutationObserver(function () {
-                                    if (busy) return;
-                                    busy = true;
-                                    obs.disconnect();
-                                    apply();
-                                    obs.observe(root, { childList: true, subtree: true });
-                                    busy = false;
-                                  });
-                                  obs.observe(root, { childList: true, subtree: true });
-                                  setTimeout(function () { obs.disconnect(); }, 15000);
-                                });
-                              })();
-                            </script>
                             <a href="javascript:av_widget_click()" id="AV_button">
                                 <div class="skeepers_product__stars" data-product-id="{$product.id}" data-locale="{$language.locale|replace:'-':'_'}"></div>
                             </a>
@@ -351,7 +302,8 @@
                                     <div class="select_wrap">
                                         <div class="clearfix dis_flex">
                                                     <span class="input-group-btn-vertical dis_flex w-100">
-                                                        <input type="number" id="quantity_ml" value="" class="form-control" min="1" step="1" placeholder="{l s='Renseignez votre longueur' d='Shop.Theme.Custommodules'}" required>
+                                                        {l s='Renseignez votre longueur' d='Shop.Theme.Custommodules' assign='quantityMlPlaceholder'}
+                                                        <input type="number" id="quantity_ml" value="" class="form-control" min="1" step="1" placeholder="{$quantityMlPlaceholder|escape:'html':'UTF-8'}" required>
                                                     </span>
                                         </div>
                                     </div>
@@ -383,7 +335,7 @@
                             {if isset($packHasMlDiscountTiers) && $packHasMlDiscountTiers && isset($packMlDiscountTiers) && $packMlDiscountTiers|@count > 0}
                             <div class="ap5-ml-degressive" role="region" aria-label="{l s='Prix dégressifs' d='Shop.Theme.Custommodules'}">
                                 <div class="ap5-ml-degressive__cta">
-                                    <strong><span class="ap5-ml-degressive__cta-line">{l s='Prix' d='Shop.Theme.Custommodules'}</span><span class="ap5-ml-degressive__cta-line">{l s='dégressifs !' d='Shop.Theme.Custommodules'}</span></strong>
+                                    <strong>{l s='[1]Prix[/1][2]dégressifs ![/2]' d='Shop.Theme.Custommodules' sprintf=['[1]' => '<span class="ap5-ml-degressive__cta-line">', '[/1]' => '</span>', '[2]' => '<span class="ap5-ml-degressive__cta-line">', '[/2]' => '</span>']}</strong>
                                 </div>
                                 <div class="ap5-ml-degressive__scroll">
                                     <table class="ap5-ml-degressive__table">
@@ -391,11 +343,13 @@
                                             <tr>
                                                 <th scope="row">{l s='Nombre de mL' d='Shop.Theme.Custommodules'}</th>
                                                 {foreach from=$packMlDiscountTiers item=tier}
+                                                    {capture assign='tier_from'}{$tier.from|string_format:"%g"}{/capture}
                                                     <td>
                                                         {if $tier.to === null || $tier.to === ''}
-                                                            +{$tier.from|string_format:"%g"} mL
+                                                            {l s='+%from% mL' d='Shop.Theme.Custommodules' sprintf=['%from%' => $tier_from]}
                                                         {else}
-                                                            {$tier.from|string_format:"%g"} {l s='à' d='Shop.Theme.Custommodules'} {$tier.to|string_format:"%g"} mL
+                                                            {capture assign='tier_to'}{$tier.to|string_format:"%g"}{/capture}
+                                                            {l s='%from% à %to% mL' d='Shop.Theme.Custommodules' sprintf=['%from%' => $tier_from, '%to%' => $tier_to]}
                                                         {/if}
                                                     </td>
                                                 {/foreach}

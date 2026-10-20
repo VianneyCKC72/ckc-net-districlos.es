@@ -1,19 +1,13 @@
-
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("Countdown script loaded.");
-
     if (typeof countdownData === "undefined") {
-        console.warn("Aucune donnée de compte à rebours fournie.");
         return;
     }
-
-    console.log("Données de compte à rebours :", countdownData);
 
     countdownData.forEach((countdown, index) => {
         const selector = countdown.selector;
         const target = document.querySelector(selector);
+        // Sélecteur absent sur certaines pages (ex. panier) : normal, on ignore.
         if (!target) {
-            console.error(`Aucun élément trouvé pour le sélecteur ${selector}.`);
             return;
         }
 
@@ -59,9 +53,14 @@ function createCountdownWidget({
     countdownElement.style.marginTop = "0";
     countdownElement.style.borderRadius = "5px";
     countdownElement.style.textAlign = "center";
+    countdownElement.style.display = "flex";
+    countdownElement.style.alignItems = "center";
+    countdownElement.style.justifyContent = "center";
+    countdownElement.style.columnGap = "0";
 
     const labelElement = document.createElement("div");
     labelElement.textContent = label;
+    labelElement.style.marginRight = "0.4em";
     countdownElement.appendChild(labelElement);
 
     const timerElement = document.createElement("div");
@@ -89,14 +88,23 @@ function createCountdownWidget({
         const end = new Date(end_date).getTime();
         const start = new Date(start_date).getTime();
 
+        const i18n = (typeof countdownI18n !== "undefined") ? countdownI18n : {
+            upcoming: "À venir",
+            ended: "Terminé",
+            days: "j",
+            hours: "h",
+            minutes: "m",
+            seconds: "s"
+        };
+
         if (now < start) {
-            timerElement.textContent = "À venir";
+            timerElement.textContent = i18n.upcoming;
             return;
         }
 
         const distance = end - now;
         if (distance < 0) {
-            timerElement.textContent = "Terminé";
+            timerElement.textContent = i18n.ended;
             return;
         }
 
@@ -105,7 +113,7 @@ function createCountdownWidget({
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        timerElement.textContent = `${days}j ${hours}h ${minutes}m ${seconds}s`;
+        timerElement.textContent = days + i18n.days + " " + hours + i18n.hours + " " + minutes + i18n.minutes + " " + seconds + i18n.seconds;
     }
 
     updateCountdown();

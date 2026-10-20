@@ -24,7 +24,9 @@ $(document).ready(function () {
             $form.append($registerButton);
 
             // Ajouter un texte avant les boutons sociaux
-            var $orConnectText = $('<p class="txt_ou_bien text-center mt-4"><strong>Ou bien...</strong></p>');
+            var orLabel = $form.attr('data-ou-bien') || 'Ou bien...';
+            var $orConnectText = $('<p class="txt_ou_bien text-center mt-4"><strong></strong></p>');
+            $orConnectText.find('strong').text(orLabel);
             $registerButton.after($orConnectText);
         }
 

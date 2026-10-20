@@ -145,6 +145,20 @@ body#checkout {
       letter-spacing: 0;
       vertical-align: middle;
 
+      .js-account-switch-login {
+        display: none;
+      }
+
+      &.-login .js-account-switch-login,
+      &:has(+ .tab-content #checkout-login-form.active) .js-account-switch-login {
+        display: block;
+      }
+
+      &.-login .js-account-switch-register,
+      &:has(+ .tab-content #checkout-login-form.active) .js-account-switch-register {
+        display: none;
+      }
+
       p {
         display: flex;
         justify-content: flex-start;
@@ -1971,6 +1985,17 @@ body#checkout {
 
         .paypal-group__sources {
           width: 100%;
+        }
+
+        // Parking des boutons SDK (rendus ici hors ps-hidden, puis overlay JS)
+        .paypal-group__sdk-host {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          overflow: hidden;
+          opacity: 0;
+          pointer-events: none;
+          clip: rect(0, 0, 0, 0);
         }
 
         // Conteneurs SDK : positionnés en JS par-dessus PASSER COMMANDE

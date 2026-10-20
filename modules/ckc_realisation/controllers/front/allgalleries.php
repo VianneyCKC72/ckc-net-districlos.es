@@ -63,10 +63,14 @@ class Ckc_realisationAllgalleriesModuleFrontController extends ModuleFrontContro
             $galleries[$id_category_default][0]['count_color'] = $count;
         }
 
+        $metaTitle = $this->context->language->iso_code === 'en'
+            ? $this->trans('Our PROs\' projects', [], 'Modules.Ckcrealisation.Shop')
+            : $this->trans('Les réalisations de nos PROs', [], 'Modules.Ckcrealisation.Shop');
+
         $this->context->smarty->assign([
             'galleries' => $galleries,
             'id_shop' => $id_shop,
-            'meta_title'=> 'Les réalisations de nos PROs'
+            'meta_title' => $metaTitle,
         ]);
 
   /*      dump($galleries);*/

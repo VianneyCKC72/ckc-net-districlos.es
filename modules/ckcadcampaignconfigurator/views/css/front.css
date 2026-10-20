@@ -71,6 +71,23 @@
     line-height: 1.2;
 }
 
+.ckc-product-promo--countdown{
+    align-items: flex-start !important;
+    flex-direction: column;
+}
+.ckc-product-countdown{
+    margin-top: 8px;
+    color: #232323;
+    font-size: 14px;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+.ckc-product-countdown strong{
+    margin-left: 4px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+}
+
 @media (max-width: 767px){
     .bloc_promo_devis{
         display: block;

@@ -9,19 +9,12 @@
   {assign var='d_discount' value=$product.has_discount}
   {assign var='d_percent' value=$ap5_pack_reduction_percent|default:0}
 {/if}
-{if isset($pro) && $pro.env == 1}
-  {assign var='tax_prefix' value='HT'}
-{else}
-  {assign var='tax_prefix' value='TTC'}
-{/if}
-
 <div class="d-flex product-prices ap5-price-dual">
   {include file='catalog/_partials/product-prices/price-ml-col.tpl'
     col_price=$d_price
     col_regular=$d_regular
     col_discount=$d_discount
     col_percent=$d_percent
-    col_label="{$tax_prefix}/Prix total"
     col_variant='total'
     col_itemprop=true
   }
@@ -31,7 +24,6 @@
     col_regular=$packMlUnitRegularPrice
     col_discount=$d_discount
     col_percent=$d_percent
-    col_label="{$tax_prefix}/Prix au mL"
     col_variant='unit'
     col_itemprop=false
   }

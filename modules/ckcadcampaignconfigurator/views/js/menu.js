@@ -17,29 +17,58 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License 3.0 (AFL-3.0)
  */
 $(window).ready(function() {
-    moduleAdminLink = moduleAdminLink.replace(/\amp;/g,'');
+    const tabs = [
+        "menuContent",
+        "headerContent",
+        "cartContent",
+        "categoryContent",
+        "productContent",
+        "devisContent",
+        "promoPageContent"
+    ];
+    const adminLink = moduleAdminLink.replace(/&amp;/g, "&");
+
+    function getTabFromUrl() {
+        const page = new URL(window.location.href).searchParams.get("page");
+        return tabs.indexOf(page) !== -1 ? page : null;
+    }
 
     window.vMenu = new Vue({
-        el: '#ckcadcampaignconfigurator-menu',
+        el: "#modulecontent",
         data: {
-            selectedTabName : currentPage,
+            selectedTabName: tabs.indexOf(currentPage) !== -1 ? currentPage : "menuContent",
+            popStateHandler: null
         },
         methods: {
             makeActive: function(item){
-                this.selectedTabName = item;
-                if (ps_version) { // if on 1.7
-                    window.history.pushState({} , '', moduleAdminLink+'&page='+item );
-                } else { // if on 1.6
-                    window.history.pushState({} , '', moduleAdminLink+'&configure='+moduleName+'&module_name='+moduleName+'&page='+item );
+                if (tabs.indexOf(item) === -1 || this.selectedTabName === item) {
+                    return;
                 }
+
+                this.selectedTabName = item;
+                const separator = adminLink.indexOf("?") === -1 ? "?" : "&";
+                window.history.pushState(
+                    { campaignTab: item },
+                    "",
+                    adminLink + separator + "page=" + encodeURIComponent(item)
+                );
             },
             isActive : function(item){
-                if (this.selectedTabName == item) {
-                    $('.ckcadcampaignconfigurator_menu').addClass('addons-hide');
-                    $('#'+item).removeClass('addons-hide');
-                    return true;
-                }
+                return this.selectedTabName === item;
             }
+        },
+        mounted: function() {
+            const vm = this;
+            this.popStateHandler = function() {
+                const page = getTabFromUrl();
+                if (page) {
+                    vm.selectedTabName = page;
+                }
+            };
+            window.addEventListener("popstate", this.popStateHandler);
+        },
+        beforeDestroy: function() {
+            window.removeEventListener("popstate", this.popStateHandler);
         }
     });
 });

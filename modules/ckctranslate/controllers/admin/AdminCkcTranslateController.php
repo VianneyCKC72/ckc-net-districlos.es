@@ -68,6 +68,48 @@ class AdminCkcTranslateController extends ModuleAdminController
             );
         }
 
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS,
+                'Translate job offer titles and descriptions for a careers page. Keep a professional recruitment tone. Preserve HTML tags. Do not invent benefits, salaries or locations. Keep H/F and similar gender marks when present, adapted to English (M/F).'
+            );
+        }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_ETS_CFU)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_ETS_CFU,
+                'Translate Contact Form Ultimate (ets_cfu) texts: form titles, URL aliases, SEO, descriptions, field labels, placeholders, help texts, dropdown/radio options, submit buttons, thank-you pages and notification emails. Preserve HTML tags, attributes, links, emails, phone numbers and brand names. If a field is JSON, keep the JSON structure and translate string values only. Keep URL aliases slug-safe. Do not invent legal clauses.'
+            );
+        }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_CKC_REALISATION)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_CKC_REALISATION,
+                'Translate customer project photo titles and image alt texts (ckc_realisation). Keep them short, natural and descriptive. Do not invent product names, locations or materials. Leave empty fields empty.'
+            );
+        }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY,
+                'Translate Responsive Gallery page title, descriptions and gallery titles (product family names like Grillage rigide). Keep labels short, catalog-like and consistent with existing fence vocabulary. Preserve HTML in descriptions. Do not invent product lines.'
+            );
+        }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_FAQ)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_PRODUCT_FAQ,
+                'Translate product FAQ questions and answers for a fencing e-commerce catalog. Preserve all HTML tags, attributes and lists. Keep a clear, helpful customer-support tone. Do not invent technical specs, dimensions, warranties or certifications. Keep brand names and product terms consistent.'
+            );
+        }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE,
+                'Translate the product measuring guide HTML (how to measure a fence, posts, panels). Preserve all HTML tags, attributes, images, lists and layout. Keep a clear instructional tone. Do not invent dimensions, tools or steps. Keep brand and product names.'
+            );
+        }
+        if (!Configuration::get(CkcTranslate::CONF_PROMPT_SYSTEM_PAGES)) {
+            Configuration::updateValue(
+                CkcTranslate::CONF_PROMPT_SYSTEM_PAGES,
+                'Translate PrestaShop system page SEO fields (meta title and meta description: homepage, cart, login, contact, sitemap, etc.). Always keep brand names such as Districlos unchanged and place them naturally (usually at the start for the homepage title). Return a COMPLETE title and description, close in length to the source (do not shorten aggressively, do not cut mid-phrase, never end with &, and, of, the, or a dangling comma). Keep a natural, concise SEO tone. Do not invent promotions or claims. Leave empty source fields empty.'
+            );
+        }
         if (Tools::isSubmit('submitCkcTranslateConfig')) {
             $this->postProcessConfig();
         }
@@ -89,6 +131,10 @@ class AdminCkcTranslateController extends ModuleAdminController
             if (Tools::getValue('fresh_queue')) {
                 $this->resetJobQueue($jobCode);
                 // Rebuild queue against missing translations (new entities / source copies).
+                Configuration::updateValue(CkcTranslate::CONF_ONLY_MISSING_FIELDS, 1);
+                Configuration::set(CkcTranslate::CONF_ONLY_MISSING_FIELDS, 1);
+            }
+            if (Tools::getValue('keep_only_missing')) {
                 Configuration::set(CkcTranslate::CONF_ONLY_MISSING_FIELDS, 1);
             }
             $this->runJob($jobCode);
@@ -150,6 +196,13 @@ class AdminCkcTranslateController extends ModuleAdminController
         $promptAttributes = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_ATTRIBUTES));
         $promptCarrierDelays = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CARRIER_DELAYS));
         $promptCkcLabels = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CKC_LABELS));
+        $promptHelloworkJobs = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS));
+        $promptEtsCfu = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_ETS_CFU));
+        $promptCkcRealisation = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_CKC_REALISATION));
+        $promptResponsiveGallery = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY));
+        $promptProductFaq = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_PRODUCT_FAQ));
+        $promptProductGuide = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE));
+        $promptSystemPages = trim((string) Tools::getValue(CkcTranslate::CONF_PROMPT_SYSTEM_PAGES));
         $filterType = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_TYPE));
         $filterIds = trim((string) Tools::getValue(CkcTranslate::CONF_FILTER_IDS));
         $filterCategoryId = (int) Tools::getValue(CkcTranslate::CONF_FILTER_CATEGORY_ID);
@@ -199,9 +252,19 @@ class AdminCkcTranslateController extends ModuleAdminController
         Configuration::updateValue(CkcTranslate::CONF_ONLY_MISSING_FIELDS, $onlyMissingFields ? 1 : 0);
 
         Configuration::updateValue(CkcTranslate::CONF_GLOSSARY, $glossary);
-        Configuration::updateValue(CkcTranslate::CONF_SEO_META_TITLE_MAX, max($seoMetaTitleMax, 10));
-        Configuration::updateValue(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX, max($seoMetaDescriptionMax, 10));
-        Configuration::updateValue(CkcTranslate::CONF_SEO_SLUG_MAX, max($seoSlugMax, 10));
+        // CKC Vianney - empty/low SEO limits => defaults (max(0,10)=10 truncated EN titles/metas/slugs)
+        if ($seoMetaTitleMax < 30) {
+            $seoMetaTitleMax = 60;
+        }
+        if ($seoMetaDescriptionMax < 50) {
+            $seoMetaDescriptionMax = 155;
+        }
+        if ($seoSlugMax < 32) {
+            $seoSlugMax = 80;
+        }
+        Configuration::updateValue(CkcTranslate::CONF_SEO_META_TITLE_MAX, $seoMetaTitleMax);
+        Configuration::updateValue(CkcTranslate::CONF_SEO_META_DESCRIPTION_MAX, $seoMetaDescriptionMax);
+        Configuration::updateValue(CkcTranslate::CONF_SEO_SLUG_MAX, $seoSlugMax);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_PRODUCT_SEO, $promptProductSeo);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_PRODUCT_DESCRIPTION, $promptProductDescription);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_CATEGORY_SEO, $promptCategorySeo);
@@ -216,6 +279,13 @@ class AdminCkcTranslateController extends ModuleAdminController
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_ATTRIBUTES, $promptAttributes);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_CARRIER_DELAYS, $promptCarrierDelays);
         Configuration::updateValue(CkcTranslate::CONF_PROMPT_CKC_LABELS, $promptCkcLabels);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS, $promptHelloworkJobs);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_ETS_CFU, $promptEtsCfu);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_CKC_REALISATION, $promptCkcRealisation);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY, $promptResponsiveGallery);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_PRODUCT_FAQ, $promptProductFaq);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE, $promptProductGuide);
+        Configuration::updateValue(CkcTranslate::CONF_PROMPT_SYSTEM_PAGES, $promptSystemPages);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_TYPE, $filterType);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_IDS, $filterIds);
         Configuration::updateValue(CkcTranslate::CONF_FILTER_CATEGORY_ID, $filterCategoryId);
@@ -470,6 +540,62 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'desc' => $this->module->l('For product card badge texts. Preserve HTML and the down-arrow.'),
                     ),
                     array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - HelloWork jobs'),
+                        'name' => CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For job offer titles and descriptions (dtc_feedhelloworkjob).'),
+                    ),
+                    array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Contact Form Ultimate (ets_cfu)'),
+                        'name' => CkcTranslate::CONF_PROMPT_ETS_CFU,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For all multilingual Contact Form Ultimate fields: forms, inputs, options, emails, thank-you pages.'),
+                    ),
+                    array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Project photos (ckc_realisation)'),
+                        'name' => CkcTranslate::CONF_PROMPT_CKC_REALISATION,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For realisation photo titles and image alt texts.'),
+                    ),
+                    array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Responsive Gallery'),
+                        'name' => CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For the /vos-realisations page title and gallery titles (Grillage rigide, etc.).'),
+                    ),
+                    array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Product FAQ'),
+                        'name' => CkcTranslate::CONF_PROMPT_PRODUCT_FAQ,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For product page FAQ questions and HTML answers.'),
+                    ),
+                    array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - Product guide'),
+                        'name' => CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For product measuring guide HTML (Guide de mesure).'),
+                    ),
+                    array(
+                        'type' => 'textarea',
+                        'label' => $this->module->l('Prompt - System pages SEO'),
+                        'name' => CkcTranslate::CONF_PROMPT_SYSTEM_PAGES,
+                        'rows' => 4,
+                        'cols' => 60,
+                        'desc' => $this->module->l('For PrestaShop system pages meta title and meta description (homepage, cart, login…).'),
+                    ),
+                    array(
                         'type' => 'select',
                         'label' => $this->module->l('Filter type'),
                         'name' => CkcTranslate::CONF_FILTER_TYPE,
@@ -590,6 +716,13 @@ class AdminCkcTranslateController extends ModuleAdminController
             CkcTranslate::CONF_PROMPT_CARRIER_DELAYS => Configuration::get(CkcTranslate::CONF_PROMPT_CARRIER_DELAYS),
             CkcTranslate::CONF_PROMPT_CKC_LABELS => Configuration::get(CkcTranslate::CONF_PROMPT_CKC_LABELS)
                 ?: 'Translate carrier delivery delay texts for checkout and shipping estimators. Keep them short and clear. Preserve numbers, time units and carrier brand names. Do not invent delivery promises.',
+            CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS => Configuration::get(CkcTranslate::CONF_PROMPT_HELLOWORK_JOBS),
+            CkcTranslate::CONF_PROMPT_ETS_CFU => Configuration::get(CkcTranslate::CONF_PROMPT_ETS_CFU),
+            CkcTranslate::CONF_PROMPT_CKC_REALISATION => Configuration::get(CkcTranslate::CONF_PROMPT_CKC_REALISATION),
+            CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY => Configuration::get(CkcTranslate::CONF_PROMPT_RESPONSIVEGALLERY),
+            CkcTranslate::CONF_PROMPT_PRODUCT_FAQ => Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_FAQ),
+            CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE => Configuration::get(CkcTranslate::CONF_PROMPT_PRODUCT_GUIDE),
+            CkcTranslate::CONF_PROMPT_SYSTEM_PAGES => Configuration::get(CkcTranslate::CONF_PROMPT_SYSTEM_PAGES),
             CkcTranslate::CONF_FILTER_TYPE => Configuration::get(CkcTranslate::CONF_FILTER_TYPE),
             CkcTranslate::CONF_FILTER_IDS => Configuration::get(CkcTranslate::CONF_FILTER_IDS),
             CkcTranslate::CONF_FILTER_CATEGORY_ID => (int) Configuration::get(CkcTranslate::CONF_FILTER_CATEGORY_ID),
@@ -642,7 +775,7 @@ class AdminCkcTranslateController extends ModuleAdminController
             );
         }
 
-        $autoReloadUrl = self::$currentIndex . '&token=' . $this->token . '&run_job=' . urlencode($job);
+        $autoReloadUrl = self::$currentIndex . '&token=' . $this->token . '&run_job=' . urlencode($job) . ((int) Configuration::get(CkcTranslate::CONF_ONLY_MISSING_FIELDS) ? '&keep_only_missing=1' : '');
 
         $this->context->smarty->assign(array(
             'result' => $result,
@@ -731,6 +864,41 @@ class AdminCkcTranslateController extends ModuleAdminController
                 'code' => 'ckc_labels',
                 'label' => $this->module->l('Translate product labels (ckc_label)'),
                 'advice' => $this->module->l('Translates badge texts (PRIX DEGRESSIF, etc.) into the target language. Requires ckc_label.'),
+            ),
+            array(
+                'code' => 'hellowork_jobs',
+                'label' => $this->module->l('Translate HelloWork job offers'),
+                'advice' => $this->module->l('Translates job titles and descriptions stored after HelloWork sync. Requires dtc_feedhelloworkjob.'),
+            ),
+            array(
+                'code' => 'ets_cfu',
+                'label' => $this->module->l('Translate Contact Form Ultimate (ets_cfu)'),
+                'advice' => $this->module->l('Translates SEO/emails AND the form builder texts (labels, dropdown options, submit). Filter by IDs = form ID. Requires ets_cfultimate. Relaunch after upgrade 2.12 with a fresh queue.'),
+            ),
+            array(
+                'code' => 'ckc_realisation',
+                'label' => $this->module->l('Translate project photos (ckc_realisation)'),
+                'advice' => $this->module->l('Translates title and alt of realisation photos for the current shop. Filter by IDs = id_realisation. Requires ckc_realisation.'),
+            ),
+            array(
+                'code' => 'responsivegallery',
+                'label' => $this->module->l('Translate Responsive Gallery (vos-realisations)'),
+                'advice' => $this->module->l('Translates the page H1/config texts and gallery titles (Grillage rigide, etc.). Filter by IDs = gallery ID. Requires responsivegallery.'),
+            ),
+            array(
+                'code' => 'product_faq',
+                'label' => $this->module->l('Translate product FAQ'),
+                'advice' => $this->module->l('Translates product page FAQ questions and answers. Filter by IDs = id_product. Requires productfaq.'),
+            ),
+            array(
+                'code' => 'product_guide',
+                'label' => $this->module->l('Translate product measuring guide'),
+                'advice' => $this->module->l('Translates product page measuring guide HTML. Filter by IDs = id_product. Requires productguide.'),
+            ),
+            array(
+                'code' => 'system_pages',
+                'label' => $this->module->l('Translate system pages SEO'),
+                'advice' => $this->module->l('Translates meta title and meta description of PrestaShop system pages (homepage, cart, login, contact…). Filter by IDs = id_meta.'),
             ),
         );
     }
@@ -981,6 +1149,80 @@ class AdminCkcTranslateController extends ModuleAdminController
                         'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'ckc_labels`'
                     );
                 }
+                break;
+
+            case 'hellowork_jobs':
+                $total = 0;
+                if (Module::isInstalled('dtc_feedhelloworkjob')) {
+                    $total = (int) Db::getInstance()->getValue(
+                        'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'ckc_hellowork_job`'
+                    );
+                }
+                break;
+
+            case 'ets_cfu':
+                $total = 0;
+                if ($runner instanceof CkcTranslateJobRunner) {
+                    $total = (int) $runner->countEtsCfuItems();
+                }
+                break;
+
+            case 'ckc_realisation':
+                $total = 0;
+                if (Module::isInstalled('ckc_realisation')) {
+                    $shopId = (int) $this->context->shop->id;
+                    $total = (int) Db::getInstance()->getValue(
+                        'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'ckc_realisation` WHERE id_shop = ' . (int) $shopId
+                    );
+                }
+                break;
+
+            case 'responsivegallery':
+                $total = 0;
+                if ($runner instanceof CkcTranslateJobRunner) {
+                    $total = (int) $runner->countResponsiveGalleryItems();
+                }
+                break;
+
+            case 'product_faq':
+                $total = 0;
+                if (Module::isInstalled('productfaq')) {
+                    $sql = 'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'product_faq`';
+                    if ($filterType === 'ids' && !empty($filterIds)) {
+                        $sql .= ' WHERE id_product IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                    }
+                    $total = (int) Db::getInstance()->getValue($sql);
+                }
+                break;
+
+            case 'product_guide':
+                $total = 0;
+                if (Module::isInstalled('productguide')) {
+                    $sql = 'SELECT COUNT(*) FROM `' . _DB_PREFIX_ . 'product_guide`';
+                    if ($filterType === 'ids' && !empty($filterIds)) {
+                        $sql .= ' WHERE id_product IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                    }
+                    $total = (int) Db::getInstance()->getValue($sql);
+                }
+                break;
+
+            case 'system_pages':
+                $shopId = (int) $this->context->shop->id;
+                $sourceLangId = (int) Configuration::get(CkcTranslate::CONF_SOURCE_LANG);
+                $sql = 'SELECT COUNT(*)
+                        FROM `' . _DB_PREFIX_ . 'meta` m
+                        INNER JOIN `' . _DB_PREFIX_ . 'meta_lang` src
+                          ON src.id_meta = m.id_meta
+                         AND src.id_lang = ' . (int) $sourceLangId . '
+                         AND src.id_shop = ' . (int) $shopId . '
+                        WHERE (
+                            TRIM(IFNULL(src.title, \'\')) != \'\'
+                            OR TRIM(IFNULL(src.description, \'\')) != \'\'
+                        )';
+                if ($filterType === 'ids' && !empty($filterIds)) {
+                    $sql .= ' AND m.id_meta IN (' . implode(',', array_map('intval', $filterIds)) . ')';
+                }
+                $total = (int) Db::getInstance()->getValue($sql);
                 break;
 
             default:
@@ -1237,6 +1479,20 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_order_states_index',
             'ckctranslate_ckc_labels_ids',
             'ckctranslate_ckc_labels_index',
+            'ckctranslate_hellowork_jobs_ids',
+            'ckctranslate_hellowork_jobs_index',
+            'ckctranslate_ets_cfu_ids',
+            'ckctranslate_ets_cfu_index',
+            'ckctranslate_ckc_realisation_ids',
+            'ckctranslate_ckc_realisation_index',
+            'ckctranslate_responsivegallery_ids',
+            'ckctranslate_responsivegallery_index',
+            'ckctranslate_product_faq_ids',
+            'ckctranslate_product_faq_index',
+            'ckctranslate_product_guide_ids',
+            'ckctranslate_product_guide_index',
+            'ckctranslate_system_pages_ids',
+            'ckctranslate_system_pages_index',
         );
 
         foreach ($keys as $key) {
@@ -1285,6 +1541,20 @@ class AdminCkcTranslateController extends ModuleAdminController
             'ckctranslate_order_states_index',
             'ckctranslate_ckc_labels_ids',
             'ckctranslate_ckc_labels_index',
+            'ckctranslate_hellowork_jobs_ids',
+            'ckctranslate_hellowork_jobs_index',
+            'ckctranslate_ets_cfu_ids',
+            'ckctranslate_ets_cfu_index',
+            'ckctranslate_ckc_realisation_ids',
+            'ckctranslate_ckc_realisation_index',
+            'ckctranslate_responsivegallery_ids',
+            'ckctranslate_responsivegallery_index',
+            'ckctranslate_product_faq_ids',
+            'ckctranslate_product_faq_index',
+            'ckctranslate_product_guide_ids',
+            'ckctranslate_product_guide_index',
+            'ckctranslate_system_pages_ids',
+            'ckctranslate_system_pages_index',
         );
 
         foreach ($keys as $key) {

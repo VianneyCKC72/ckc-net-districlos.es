@@ -63,6 +63,12 @@
       <trans-unit id="59"><source>Êtes-vous éligible à la TVA à 10&amp;nbsp;% ?</source><target>Are you eligible for 10% VAT?</target></trans-unit>
       <trans-unit id="60"><source>Disponible: </source><target>Available: </target></trans-unit>
       <trans-unit id="61"><source>Service d'installation disponible via notre partenaire</source><target>Installation service available via our partner</target></trans-unit>
+      <trans-unit id="62"><source>Service indisponible à cette adresse.</source><target>Service unavailable at this address.</target></trans-unit>
+      <trans-unit id="63"><source>Veuillez saisir un code postal.</source><target>Please enter a postal code.</target></trans-unit>
+      <trans-unit id="64"><source>Informations manquantes.</source><target>Missing information.</target></trans-unit>
+      <trans-unit id="65"><source>Configuration manquante.</source><target>Missing configuration.</target></trans-unit>
+      <trans-unit id="66"><source>Vérification en cours...</source><target>Checking...</target></trans-unit>
+      <trans-unit id="67"><source>Erreur lors de la vérification.</source><target>Error while checking.</target></trans-unit>
     </body>
   </file>
 </xliff>

@@ -187,3 +187,28 @@ Un **nouveau produit** n'est dans aucune liste : il part donc en Économique. Pe
 3. Vérifier `ps_order_carrier.id_carrier` / le transporteur affiché sur la commande.
 4. Vérifier la ligne `Districlos: transporteur "..." applique selon le type de produits commandes`
    dans les logs Lengow.
+
+## 4. Multi-statuts « Commandes expédiées »
+
+Plusieurs statuts PrestaShop peuvent déclencher l’action marketplace `ship`
+(ex. Expédié + Livré + un statut Odoo).
+
+### Fichiers patchés
+
+| Fichier | Modification |
+|---|---|
+| `LengowConfiguration.php` | `PARAM_MULTIPLE` + select « Commandes expédiées » en multi |
+| `LengowConfigurationForm.php` | Rendu `<select multiple>` + sauvegarde CSV (déjà gérée par `postProcess`) |
+| `LengowMain.php` | `getShippedOrderStateIds()` / `isShippedOrderState()` ; `getOrderState(shipped)` = **premier** ID (cible import MP → PS) |
+| `LengowHook.php` | Déclenchement `ship` si le nouveau statut est dans la liste |
+| `LengowOrder.php` | Cron unsent + resend + annulation depuis « expédié » |
+| `LengowToolbox.php` | Correspondance toolbox |
+
+Repère : `grep [CUSTOM DISTRICLOS]` dans ces fichiers.
+
+### Utilisation BO
+
+Lengow → Commandes → Paramètres des commandes → **Commandes expédiées** :
+sélection multiple (Ctrl+clic / Select2). Valeur stockée : `4,42,51` dans `LENGOW_ORDER_ID_SHIPPED`.
+
+Compatibilité : une ancienne valeur mono (`4`) continue de fonctionner.
