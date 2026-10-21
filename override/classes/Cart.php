@@ -483,22 +483,41 @@ class Cart extends CartCore
         $reductionWithoutTax = $catalogPriceHt - (float) $row['price_with_reduction_without_tax'];
         $reductionWithTax = $catalogPriceTtc - (float) $row['price_with_reduction'];
 
-        if ($reductionWithoutTax <= 0.000001 && $reductionWithTax <= 0.000001) {
+        $referencePrice = $displayTaxExcluded ? $catalogPriceHt : $catalogPriceTtc;
+        $reduction = $displayTaxExcluded ? $reductionWithoutTax : $reductionWithTax;
+        $roundedRatio = $referencePrice > 0 ? round(($reduction / $referencePrice) * 100) / 100 : 0;
+        // Écart d'arrondi pack (~0%) : garder le badge catalogue, corriger le prix barré
+        if ($roundedRatio <= 0) {
+            $spReduc = (
+                !empty($row['specific_prices']['reduction_type'])
+                && $row['specific_prices']['reduction_type'] === 'percentage'
+            ) ? (float) $row['specific_prices']['reduction'] : 0.0;
+            if ($spReduc > 0 && $spReduc < 1) {
+                $paid = (float) $row['price_with_reduction'];
+                $paidHt = (float) $row['price_with_reduction_without_tax'];
+                $row['price_without_reduction'] = $paid / (1 - $spReduc);
+                $row['price_without_reduction_without_tax'] = $paidHt / (1 - $spReduc);
+                $row['reduction'] = $row['price_without_reduction'] - $paid;
+                $row['reduction_without_tax'] = $row['price_without_reduction_without_tax'] - $paidHt;
+            } else {
+                $row['price_without_reduction'] = (float) $row['price_with_reduction'];
+                $row['price_without_reduction_without_tax'] = (float) $row['price_with_reduction_without_tax'];
+                $row['reduction'] = 0;
+                $row['reduction_without_tax'] = 0;
+            }
+
             return $row;
         }
 
         $row['price_without_reduction_without_tax'] = $catalogPriceHt;
         $row['price_without_reduction'] = $catalogPriceTtc;
         $row['reduction_without_tax'] = $reductionWithoutTax;
-        $row['reduction'] = $displayTaxExcluded ? $reductionWithoutTax : $reductionWithTax;
-
-        $referencePrice = $displayTaxExcluded ? $catalogPriceHt : $catalogPriceTtc;
-        $percentRatio = $referencePrice > 0 ? ($row['reduction'] / $referencePrice) : 0;
+        $row['reduction'] = $reduction;
         $row['specific_prices'] = [
             'id_cart' => (int) $this->id,
             'price' => (float) $cartSp['price'],
             'reduction_type' => 'percentage',
-            'reduction' => (string) (round($percentRatio * 100) / 100),
+            'reduction' => (string) $roundedRatio,
         ];
 
         return $row;
