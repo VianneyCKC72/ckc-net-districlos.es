@@ -200,11 +200,7 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
                 }
             }
 
-            // Prix pack (affichage) : on garde la valeur existante du thème (string formatée)
-            $useTax = !((int) Group::getCurrent()->price_display_method);
-            $packPrice = AdvancedPack::getPackPrice((int) $id_product, $useTax, true, true, 6, [], [], [], true);
-            $product['price'] = Tools::displayPrice($packPrice);
-            $product['has_discount'] = false;
+            $this->applyPackModalPrices($product, (int) $id_product);
 
             // Forcer le template standard (modal-part.tpl) à afficher nom+prix+contenu+qty
             $isPack = false;
@@ -303,22 +299,11 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
                 $product['cart_quantity'] = max(1, (int) $id_product_attribute['cq']);
             }
 
-            // Prix du pack : on le calcule pour éviter un affichage vide (",") et garantir le symbole de devise
             if (Module::isInstalled('pm_advancedpack') && AdvancedPack::isValidPack((int) $id_product)) {
-                $useTax = !((int) Group::getCurrent()->price_display_method); // 0=TTC, 1=HT
-                $idpal = (is_array($id_product_attribute) && isset($id_product_attribute['idpal']) && is_array($id_product_attribute['idpal']))
-                    ? $id_product_attribute['idpal']
-                    : [];
-                $ql = (is_array($id_product_attribute) && isset($id_product_attribute['ql']) && is_array($id_product_attribute['ql']))
-                    ? $id_product_attribute['ql']
-                    : [];
-                $pel = (is_array($id_product_attribute) && isset($id_product_attribute['pel']) && is_array($id_product_attribute['pel']))
-                    ? $id_product_attribute['pel']
-                    : [];
-
-                $packPrice = AdvancedPack::getPackPrice((int) $id_product, $useTax, true, true, 6, $idpal, $ql, $pel, true);
-                $product['price'] = Tools::displayPrice($packPrice);
-                $product['has_discount'] = false;
+                $idpal = (is_array($id_product_attribute) && !empty($id_product_attribute['idpal']) && is_array($id_product_attribute['idpal'])) ? $id_product_attribute['idpal'] : [];
+                $ql = (is_array($id_product_attribute) && !empty($id_product_attribute['ql']) && is_array($id_product_attribute['ql'])) ? $id_product_attribute['ql'] : [];
+                $pel = (is_array($id_product_attribute) && !empty($id_product_attribute['pel']) && is_array($id_product_attribute['pel'])) ? $id_product_attribute['pel'] : [];
+                $this->applyPackModalPrices($product, (int) $id_product, $idpal, $ql, $pel);
             }
 
             // Forcer la branche standard de modal-part.tpl (affiche quantité + prix + contenu)
@@ -343,6 +328,22 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
         ]);
 
         return $this->fetch('module:ps_shoppingcart/modal.tpl');
+    }
+
+    /** Prix pack modale : réduit + barré + HT ligne (remplace has_discount=false). */
+    private function applyPackModalPrices(array &$product, $idPack, array $idpal = [], array $ql = [], array $pel = [])
+    {
+        $useTax = !((int) Group::getCurrent()->price_display_method);
+        $price = (float) AdvancedPack::getPackPrice($idPack, $useTax, true, true, 6, $idpal, $ql, $pel, true);
+        $classic = (float) AdvancedPack::getPackPrice($idPack, $useTax, false, true, 6, $idpal, $ql, $pel, true);
+        $product['price'] = Tools::displayPrice($price);
+        $product['cart_quantity'] = max(1, (int) ($product['cart_quantity'] ?? 1));
+        $product['price_with_reduction_without_tax'] = $useTax ? (float) AdvancedPack::getPackPrice($idPack, false, true, true, 6, $idpal, $ql, $pel, true) : $price;
+        $product['price_without_reduction_without_tax'] = $useTax ? (float) AdvancedPack::getPackPrice($idPack, false, false, true, 6, $idpal, $ql, $pel, true) : $classic;
+        $product['has_discount'] = $classic > $price + 0.000001;
+        if ($product['has_discount']) {
+            $product['regular_price'] = Tools::displayPrice($classic);
+        }
     }
 
     /**
