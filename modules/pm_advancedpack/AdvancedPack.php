@@ -792,6 +792,22 @@ class AdvancedPack extends Product
                         $productPackPrice *= (1 - $packReductionAmount);
                         $productPackPriceWt *= (1 - $packReductionAmount);
                     }
+                    // Badge % par produit : remise pack/ML, sinon catalogue (use_reduc)
+                    $displayPct = 0;
+                    if ($packReductionType === 'percentage' && (float) $packReductionAmount > 0) {
+                        $displayPct = (int) round((float) $packReductionAmount * 100);
+                    } elseif (
+                        !$mlExclusive
+                        && $useProductReduc
+                        && is_array($specificPriceOutput)
+                        && ($specificPriceOutput['reduction_type'] ?? '') === 'percentage'
+                        && (float) ($specificPriceOutput['reduction'] ?? 0) > 0
+                    ) {
+                        $displayPct = (int) round((float) $specificPriceOutput['reduction'] * 100);
+                    } elseif (!empty($packProduct['customPercentageDiscount']) && (float) $packProduct['customPercentageDiscount'] > 0) {
+                        $displayPct = (int) round((float) $packProduct['customPercentageDiscount']);
+                    }
+                    $packProduct['display_reduction_percent'] = $displayPct;
                     if ($productPackPrice < 0) {
                         $productPackPrice = $productPackPriceWt = 0;
                     }
@@ -1187,6 +1203,49 @@ class AdvancedPack extends Product
         }
 
         return 0.0;
+    }
+
+    /**
+     * % badge pack à afficher (remise pack/ML homogène uniquement).
+     * 0 = ne pas afficher de badge global (promos hétérogènes par produit).
+     */
+    public static function getPackLevelDisplayPercent($idPack)
+    {
+        $idPack = (int) $idPack;
+        if ($idPack <= 0) {
+            return 0;
+        }
+
+        $tiers = self::getPackMlDiscountTiers($idPack);
+        if (count($tiers)) {
+            $amount = self::applyMlDiscountTiersToAmount($idPack, 0.0);
+
+            return $amount > 0 ? (int) round($amount * 100) : 0;
+        }
+
+        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            'SELECT `reduction_type`, `reduction_amount`
+             FROM `' . _DB_PREFIX_ . 'pm_advancedpack_pack_shop_discount`
+             WHERE `id_pack`=' . $idPack . ' AND `id_shop`=' . (int) self::getContext()->shop->id
+        );
+        if (!empty($row) && $row['reduction_type'] === 'percentage' && (float) $row['reduction_amount'] > 0) {
+            return (int) round((float) $row['reduction_amount'] * 100);
+        }
+
+        $amounts = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            'SELECT DISTINCT `reduction_type`, `reduction_amount`
+             FROM `' . _DB_PREFIX_ . 'pm_advancedpack_products`
+             WHERE `id_pack`=' . $idPack
+        );
+        if (!is_array($amounts) || count($amounts) !== 1) {
+            return 0;
+        }
+        $only = $amounts[0];
+        if (($only['reduction_type'] ?? '') !== 'percentage' || (float) ($only['reduction_amount'] ?? 0) <= 0) {
+            return 0;
+        }
+
+        return (int) round((float) $only['reduction_amount'] * 100);
     }
 
     public static function setFrontMl($ml)

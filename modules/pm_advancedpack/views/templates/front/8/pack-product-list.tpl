@@ -93,12 +93,13 @@
 					</div>
 					{if $productPack.presentation.show_price && $packShowProductsPrice && !$configuration.is_catalog}
 						{if $packShowProductsThumbnails && $packMaxImagesPerProduct > 1}<hr />{/if}
-						<div class="ap5-pack-product-price-table-container product-prices {if $productPack.reduction_amount <= 0} ap5-no-reduction{/if}">
+						{assign var='ap5LinePct' value=$productPack.display_reduction_percent|default:0}
+						<div class="ap5-pack-product-price-table-container product-prices {if $ap5LinePct <= 0 && $productPack.reduction_amount <= 0} ap5-no-reduction{/if}">
 							{if empty($productsPackForceHideInfoList[$productPack.id_product_pack])}
-							<div class="ap5-pack-product-price-table-cell {if $productPack.reduction_amount > 0} has-discount{/if}">
+							<div class="ap5-pack-product-price-table-cell {if $ap5LinePct > 0 || $productPack.reduction_amount > 0} has-discount{/if}">
 								{block name='ap5_product_price'}
 									<div class="current-price ap5-pack-product-price text-center">
-										{if $productPack.reduction_amount > 0}
+										{if $ap5LinePct > 0 || $productPack.reduction_amount > 0}
 											<div class="product-discount ap5-pack-product-original-price text-center">
 												<span class="regular-price ap5-pack-product-original-price-value">
 												{if !$priceDisplay || $priceDisplay == 2}
@@ -121,15 +122,13 @@
 													{/if}
 												{/if}
 											{/if}
-											{if $productPack.reduction_amount > 0}
-												{if $productPack.productPackPrice > 0}
-													{if $productPack.reduction_type == 'amount'}
-														<span class="discount discount-amount ap5-pack-product-reduction-value">
-															{l s='Save %amount%' d='Shop.Theme.Catalog' sprintf=['%amount%' => $productPack.presentation.productReductionAmountTotal]}
-														</span>
-													{else}
-														<span class="discount discount-percentage ap5-pack-product-reduction-value">{l s='Save %percentage%' d='Shop.Theme.Catalog' sprintf=['%percentage%' => $productPack.reduction_amount * 100|cat:'%']}</span>
-													{/if}
+											{if $productPack.productPackPrice > 0}
+												{if $productPack.reduction_type == 'amount' && $productPack.reduction_amount > 0}
+													<span class="discount discount-amount ap5-pack-product-reduction-value">
+														{l s='Save %amount%' d='Shop.Theme.Catalog' sprintf=['%amount%' => $productPack.presentation.productReductionAmountTotal]}
+													</span>
+												{elseif $ap5LinePct > 0}
+													<span class="tag-discount ap5-pack-product-reduction-value"><span class="discount-value">-{$ap5LinePct}%</span></span>
 												{/if}
 											{/if}
 										</div>

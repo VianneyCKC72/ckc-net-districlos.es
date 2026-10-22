@@ -7,15 +7,8 @@
         {assign var='productPriceWithoutReduction' value=AdvancedPack::getPackPrice($product.id, false, false, true, $priceDisplayPrecision, $packAttributesList, $packQuantityList, $packExcludeList, true)}
     {/if}
 
-    {assign var='packReductionAmount' value=$productPriceWithoutReduction-$productPrice}
-    {if $productPriceWithoutReduction > 0}
-        {assign var='packReductionPercent' value=($packReductionAmount*100)/$productPriceWithoutReduction}
-    {else}
-        {assign var='packReductionPercent' value=0}
-    {/if}
-
-    {* Used by theme override of product-prices/has-discount.tpl to display percentage for packs *}
-    {assign var='ap5_pack_reduction_percent' value=$packReductionPercent|round:0}
+    {* Badge pack uniquement si remise pack/ML homogène — pas de moyenne des promos produits *}
+    {assign var='ap5_pack_reduction_percent' value=AdvancedPack::getPackLevelDisplayPercent($product.id)}
 
     {include file='catalog/_partials/product-prices.tpl'}
 {/block}
