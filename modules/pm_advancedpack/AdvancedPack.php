@@ -55,21 +55,23 @@ class AdvancedPack extends Product
         return Tools::ps_round($unitPrice, $precision) * $qty;
     }
 
-    private static function sumCartLineTotalsForPack(array $unitPrices, array $qtyByKey, $roundType, $precision)
+    private static function sumCartLineTotalsForPack(array $unitPrices, array $qtyByKey, $roundType, $precision, array $unitMultipliers = [])
     {
         $sum = 0.0;
         foreach ($unitPrices as $key => $unitPrice) {
             $qty = max(1, (int) ($qtyByKey[$key] ?? 1));
-            $sum += self::computeCartLineTotalForRoundType($unitPrice, $qty, $roundType, $precision);
+            $mult = isset($unitMultipliers[$key]) ? (float) $unitMultipliers[$key] : 1.0;
+            $sum += self::computeCartLineTotalForRoundType((float) $unitPrice * $mult, $qty, $roundType, $precision);
         }
 
         return Tools::ps_round($sum, $precision);
     }
 
     /**
-     * Ajuste les PU composants (simulation panier ROUND_ITEM/LINE/TOTAL) pour total = getPackPrice() arrondi.
+     * Ajuste les PU HT composants (simulation panier ROUND_ITEM/LINE/TOTAL) pour matcher un total cible.
+     * $unitMultipliers : coeff par clé (1 = HT, wt/ht = simulation TTC panier).
      */
-    private static function alignPackCartSpecificPrices(array $unitPrices, array $qtyByKey, $targetTotalHt)
+    private static function alignPackCartSpecificPrices(array $unitPrices, array $qtyByKey, $targetTotal, array $unitMultipliers = [], $allowPairAdjust = true)
     {
         if (!count($unitPrices)) {
             return $unitPrices;
@@ -77,10 +79,10 @@ class AdvancedPack extends Product
 
         $precision = (int) Context::getContext()->getComputingPrecision();
         $roundType = (int) Configuration::get('PS_ROUND_TYPE');
-        $targetTotalHt = Tools::ps_round((float) $targetTotalHt, $precision);
+        $targetTotal = Tools::ps_round((float) $targetTotal, $precision);
         $tolerance = pow(10, -$precision) / 2;
 
-        if (abs(self::sumCartLineTotalsForPack($unitPrices, $qtyByKey, $roundType, $precision) - $targetTotalHt) < $tolerance) {
+        if (abs(self::sumCartLineTotalsForPack($unitPrices, $qtyByKey, $roundType, $precision, $unitMultipliers) - $targetTotal) < $tolerance) {
             return $unitPrices;
         }
 
@@ -89,19 +91,24 @@ class AdvancedPack extends Product
             return (int) ($qtyByKey[$a] ?? 1) <=> (int) ($qtyByKey[$b] ?? 1);
         });
 
+        $range = $allowPairAdjust ? 500 : 2000;
         foreach ($keys as $adjustKey) {
             $base = (float) $unitPrices[$adjustKey];
-            for ($i = -500; $i <= 500; ++$i) {
+            for ($i = -$range; $i <= $range; ++$i) {
                 $try = $unitPrices;
                 $try[$adjustKey] = $base + ($i / 10000);
                 if ($try[$adjustKey] < 0) {
                     continue;
                 }
-                $trySum = self::sumCartLineTotalsForPack($try, $qtyByKey, $roundType, $precision);
-                if (abs($trySum - $targetTotalHt) < $tolerance) {
+                $trySum = self::sumCartLineTotalsForPack($try, $qtyByKey, $roundType, $precision, $unitMultipliers);
+                if (abs($trySum - $targetTotal) < $tolerance) {
                     return $try;
                 }
             }
+        }
+
+        if (!$allowPairAdjust) {
+            return $unitPrices;
         }
 
         $lineCount = count($keys);
@@ -119,8 +126,8 @@ class AdvancedPack extends Product
                         if ($try[$k1] < 0 || $try[$k2] < 0) {
                             continue;
                         }
-                        $trySum = self::sumCartLineTotalsForPack($try, $qtyByKey, $roundType, $precision);
-                        if (abs($trySum - $targetTotalHt) < $tolerance) {
+                        $trySum = self::sumCartLineTotalsForPack($try, $qtyByKey, $roundType, $precision, $unitMultipliers);
+                        if (abs($trySum - $targetTotal) < $tolerance) {
                             return $try;
                         }
                     }
@@ -132,7 +139,7 @@ class AdvancedPack extends Product
     }
 
     /**
-     * Prix unitaires HT par composant pack, alignés sur le total getPackPrice().
+     * Prix unitaires HT par composant pack, alignés sur getPackPrice HT puis TTC (écart fiche/panier).
      *
      * @return array{0: array<string, float>, 1: array<string, int>}
      */
@@ -140,6 +147,7 @@ class AdvancedPack extends Product
     {
         $unitPrices = [];
         $qtyByKey = [];
+        $taxMultByKey = [];
         if (!AdvancedPackCoreClass::_isFilledArray($packProducts)) {
             return [$unitPrices, $qtyByKey];
         }
@@ -167,19 +175,31 @@ class AdvancedPack extends Product
                 ? (int) $idProductAttributeList[(int) $priceRow['id_product_pack']]
                 : (int) $priceRow['default_id_product_attribute'];
             $priceKey = (int) $priceRow['id_product'] . '_' . $rowIpa;
-            $unitPrices[$priceKey] = (float) $priceRow['priceInfos']['productPackPrice'];
+            $unitHt = (float) $priceRow['priceInfos']['productPackPrice'];
+            $unitWt = (float) ($priceRow['priceInfos']['productPackPriceWt'] ?? 0);
+            $unitPrices[$priceKey] = $unitHt;
             $qtyByKey[$priceKey] = (int) $priceRow['quantity'] * (int) $quantity;
+            $taxMultByKey[$priceKey] = ($unitHt > 0.000001) ? ($unitWt / $unitHt) : 1.0;
         }
 
         if (!count($unitPrices)) {
             return [$unitPrices, $qtyByKey];
         }
 
+        $precision = (int) Context::getContext()->getComputingPrecision();
         $targetPackTotalHt = Tools::ps_round(
             self::getPackPrice($idPack, false, true, true, 6, $idProductAttributeList, $quantityList, $packExcludeList, true),
-            (int) Context::getContext()->getComputingPrecision()
+            $precision
         );
         $unitPrices = self::alignPackCartSpecificPrices($unitPrices, $qtyByKey, $targetPackTotalHt);
+
+        // 2e passe : le panier arrondit le TTC par ligne (ROUND_ITEM) — l'alignement HT seul décale le TTC fiche
+        $targetPackTotalTtc = Tools::ps_round(
+            self::getPackPrice($idPack, true, true, true, 6, $idProductAttributeList, $quantityList, $packExcludeList, true),
+            $precision
+        );
+        // Passe TTC sans double boucle (perf add-to-cart) — priorité au total TTC affiché fiche
+        $unitPrices = self::alignPackCartSpecificPrices($unitPrices, $qtyByKey, $targetPackTotalTtc, $taxMultByKey, false);
 
         return [$unitPrices, $qtyByKey];
     }
