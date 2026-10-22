@@ -925,6 +925,9 @@ window.CKC_CFG_I18N = {
                         <strong class="ckc-price-main" x-text="opt.show_from_price ? (((window.CKC_CFG_I18N&&window.CKC_CFG_I18N.fromPrice)||'À partir de') + ' ' + (opt.price_base || 0).toFixed(2) + ' €') : ('+ ' + (opt.price_base || 0).toFixed(2) + ' €')"></strong>
                       </div>
                     </template>
+                    <template x-if="opt.promo_message">
+                      <span class="ckc-card__badge_promo" x-text="opt.promo_message"></span>
+                    </template>
                     <template x-if="!$store.configurator.currentTronconData().options[opt.id]">
                       <button class="ckc-configurateur-item-select-btn">{l s='Sélectionner' d='Shop.Theme.Customconfigurator'}</button>
                     </template>
@@ -1656,6 +1659,7 @@ window.CKC_CFG_I18N = {
                           <div class="ckc-recap-product-row">
                             <div class="ckc-recap-product-row__info">
                               <span class="ckc-recap-product-row__name" x-text="p.product_name"></span>
+                              <span class="ckc-card__badge_promo ckc-card__badge_promo--sm" x-text="$store.configurator.promoForProduct(t, p)" x-show="$store.configurator.promoForProduct(t, p)"></span>
                               <span class="ckc-recap-product-row__attr" x-text="p.attribute_name" x-show="p.attribute_name"></span>
                             </div>
                             <div class="ckc-recap-product-row__qty" x-text="'× ' + p.qty"></div>
@@ -2248,6 +2252,20 @@ document.addEventListener('alpine:init', () => {
         return { ...item, qty };
       });
       return items.filter(i => i.qty > 0);
+    },
+
+    promoForProduct(t, p) {
+      const name = (p.product_name || '').toLowerCase();
+      if (!name) return '';
+      const items = [
+        ...this.optionTypes.flatMap(ot => ot.options || []),
+        ...this.soubassements,
+      ];
+      const hit = items.find(i => {
+        const title = (i.title || '').toLowerCase();
+        return i.promo_message && title && (name.includes(title) || title.includes(name));
+      });
+      return hit ? hit.promo_message : '';
     },
 
     get selectedFenceType() {
