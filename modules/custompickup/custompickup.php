@@ -55,7 +55,8 @@ if (
         // );
 
         // Ne traite que si c'est un transporteur de retrait ET que le transporteur envoyé correspond au transporteur actuel
-        if ($isPickup && ($currentCartCarrier == $id_carrier || $currentCartCarrier == 0 || $currentCartCarrier == 1682)) {
+        $mainPickupId = (int) CustomPickup::getMainCarrierId();
+        if ($isPickup && ($currentCartCarrier == $id_carrier || $currentCartCarrier == 0 || $currentCartCarrier == $mainPickupId)) {
             // file_put_contents(_PS_ROOT_DIR_.'/log_custompickup_ajax.txt',
             //     date('Y-m-d H:i:s').' [AJAX] ✅ Traitement du retrait '.$id_carrier.PHP_EOL,
             //     FILE_APPEND
@@ -208,20 +209,24 @@ class CustomPickup extends Module
     }
 
     /**
-     * Récupère l'ID du transporteur principal
+     * id_carrier courant du retrait principal (suit les régénérations de transporteur).
      */
-    private function getMainCarrierId()
+    public static function getMainCarrierId()
     {
-        $mainCarrierName = Configuration::get('CUSTOMPICKUP_MAIN_CARRIER_NAME');
-        $id_lang = (int)Context::getContext()->language->id;
-        $carriers = Carrier::getCarriers($id_lang, true, false, false);
+        static $id = null;
+        if ($id !== null) {
+            return $id;
+        }
 
-        foreach ($carriers as $carrier) {
+        $mainCarrierName = Configuration::get('CUSTOMPICKUP_MAIN_CARRIER_NAME');
+        $id_lang = (int) Context::getContext()->language->id;
+        foreach (Carrier::getCarriers($id_lang, true, false, false) as $carrier) {
             if (trim($carrier['name']) === trim($mainCarrierName)) {
-                return $carrier['id_carrier'];
+                return $id = (int) $carrier['id_carrier'];
             }
         }
-        return null;
+
+        return $id = 0;
     }
 
     private function getAllStores()
@@ -457,18 +462,14 @@ class CustomPickup extends Module
             );
         }
 
-        //$this->context->controller->addJS($this->_path . '/views/js/pickup.js?v=' . time());
-
-        // Ajout dynamique de l'ID du transporteur principal pour tous les templates
-        $custompickup_main_carrier_id = $this->getMainCarrierId();
-
+        $custompickup_main_carrier_id = (int) self::getMainCarrierId();
+        Media::addJsDef(['custompickup_main_carrier_id' => $custompickup_main_carrier_id]);
         $this->context->smarty->assign('custompickup_main_carrier_id', $custompickup_main_carrier_id);
     }
 
     public function hookDisplayCarrierExtraContent($params)
     {
-        $custompickup_main_carrier_id = $this->getMainCarrierId();
-
+        $custompickup_main_carrier_id = (int) self::getMainCarrierId();
         $this->context->smarty->assign('custompickup_main_carrier_id', $custompickup_main_carrier_id);
 
         if (!isset($params['carrier']) || !$custompickup_main_carrier_id) {
@@ -592,7 +593,7 @@ class CustomPickup extends Module
             // $this->logDebug('hookActionCarrierProcess: isCurrentPickup='.($isCurrentPickup ? 'true' : 'false'));
 
             // Si le transporteur actuel n'est pas un retrait ET qu'il n'est pas 0 ET qu'il n'est pas le transporteur de groupe (1638), on nettoie la configuration
-            if (!$isCurrentPickup && $currentCarrier > 0 && $currentCarrier != 1682) {
+            if (!$isCurrentPickup && $currentCarrier > 0 && $currentCarrier != (int) self::getMainCarrierId()) {
                 $this->clearCustomPickupConfig($id_cart);
                 // $this->logDebug('hookActionCarrierProcess: configuration nettoyée car transporteur classique sélectionné');
                 return; // On ne force plus le transporteur custompickup
@@ -695,8 +696,8 @@ class CustomPickup extends Module
             } else {
                 // Sinon, on utilise le transporteur actuel du panier
                 if (Validate::isLoadedObject($cart) && $cartCarrier > 0) {
-                    // Vérifie si le transporteur du panier est le transporteur principal
-                    if ($cartCarrier == 1682 || $orderCarrier == 1682) {
+                    $mainPickupId = (int) self::getMainCarrierId();
+                    if ($mainPickupId && ($cartCarrier == $mainPickupId || $orderCarrier == $mainPickupId)) {
                         // file_put_contents(
                         //     _PS_ROOT_DIR_.'/log_custompickup_order.txt',
                         //     date('Y-m-d H:i:s') . ' [ORDER CREATE] 🔍 FALLBACK: Pas de customCarrier configuré ET transporteur principal (1682) détecté. Recherche du magasin le plus proche...' . PHP_EOL,
@@ -742,8 +743,7 @@ class CustomPickup extends Module
                                         if (isset($closestStore['carrier']['id_carrier'])) {
                                             $closestCarrierId = (int) $closestStore['carrier']['id_carrier'];
 
-                                            // Vérifier que ce n'est pas le transporteur principal
-                                            if ($closestCarrierId != 1682) {
+                                            if ($closestCarrierId != $mainPickupId) {
                                                 // Utiliser le transporteur spécifique du magasin le plus proche
                                                 $params['object']->id_carrier = $closestCarrierId;
 
