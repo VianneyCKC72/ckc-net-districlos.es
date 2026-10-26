@@ -197,4 +197,30 @@ class FrontController extends FrontControllerCore
 
         return is_file($themeFile) ? $themeFile : $layout;
     }
+
+    /* CKC - remplacement de l'override de getTotals() de CartLazyArray :
+    * déplacé ici, car l'override dans CartLazyArray peut être supprimé lors de mise à jour de Prestashop
+    */
+    protected function assignGeneralPurposeVariables()
+    {
+        parent::assignGeneralPurposeVariables();
+        $presentedCart = $this->context->smarty->getTemplateVars('cart');
+        if (!$presentedCart || !Validate::isLoadedObject($this->context->cart)) {
+            return;
+        }
+        $totals = $presentedCart['totals'];
+        if (!is_array($totals)) {
+            return;
+        }
+        $includeTax = $this->cart_presenter->includeTaxes();
+        $amount = $this->context->cart->getOrderTotal($includeTax, Cart::BOTH_WITHOUT_SHIPPING);
+        $totals['total_for_cart'] = [
+            'type' => 'total',
+            'label' => $this->trans('Total', [], 'Shop.Theme.Checkout'),
+            'amount' => $amount,
+            'value' => (new \PrestaShop\PrestaShop\Adapter\Product\PriceFormatter())->format($amount),
+        ];
+        $presentedCart['totals'] = $totals;
+        $this->context->smarty->assign('cart', $presentedCart);
+    }
 }
