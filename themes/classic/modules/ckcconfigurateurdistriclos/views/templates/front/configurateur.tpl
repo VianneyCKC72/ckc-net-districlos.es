@@ -156,7 +156,7 @@ window.CKC_CFG_I18N = {
       </header>
 
       {* ---- Zone de contenu ---- *}
-      <div class="ckc-layout" :class="{ 'ckc-layout--full': $store.configurator.currentStep === 1 }">
+      <div class="ckc-layout" :class="{ 'ckc-layout--full': $store.configurator.currentStep === 1, 'ckc-layout--wide': $store.configurator.currentStep === 4 || $store.configurator.currentStep === $store.configurator.stepOptions, 'ckc-layout--recap': $store.configurator.currentStep === $store.configurator.totalSteps }">
       <main class="ckc-content">
 
         {* ==================================================
@@ -196,37 +196,14 @@ window.CKC_CFG_I18N = {
           {* Conseil d'expert étape 1 *}
           <template x-if="$store.configurator.stepAdvice['step_1'] && $store.configurator.stepAdvice['step_1'].active && $store.configurator.stepAdvice['step_1'].content">
             <div class="ckc-expert">
-              <div class="ckc-icon-conseils-text-container">
-                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="27" height="27" ></div>
-                <div class="ckc-expert__body">
-                  <p class="ckc-expert__title_text"><strong x-text="$store.configurator.stepAdvice['step_1'].title" x-show="$store.configurator.stepAdvice['step_1'].title"></strong></p>
-                  <p class="ckc-expert__text" x-html="$store.configurator.stepAdvice['step_1'].content"></p>
-                </div>
+              <div class="ckc-expert__toggle">
+                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="20" height="20"></div>
+                <p class="ckc-expert__title_text"><strong x-text="$store.configurator.stepAdvice['step_1'].title" x-show="$store.configurator.stepAdvice['step_1'].title"></strong></p>
+                <span class="ckc-expert__chevron" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               </div>
-              <div class="ckc-icon-conseils-img-container">
-                <img class="ckc-icon-conseils-masques" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-masques.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="22" height="16" >
-                <img class="ckc-icon-conseils-affiches" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-affiches.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="24" height="24" >
-              </div>
+              <div class="ckc-expert__panel"><div class="ckc-expert__panel-inner"><div class="ckc-expert__text" x-html="$store.configurator.stepAdvice['step_1'].content"></div></div></div>
             </div>
           </template>
-
-          {* Toggle plusieurs sections *}
-          <div
-                  class="ckc-multitroncon-check"
-                  :class="{ 'checked': $store.configurator.multiTroncons }"
-                  @click="$store.configurator.multiTroncons = !$store.configurator.multiTroncons"
-          >
-            <label class="ckc-switch-troncon" @click.stop>
-              <input type="checkbox"
-                     :checked="$store.configurator.multiTroncons"
-                     @change="$store.configurator.multiTroncons = !$store.configurator.multiTroncons">
-                    <span class="checkbox"></span>
-            </label>
-            <div>
-              <strong>{l s='J\'ai plusieurs hauteurs de clôture' d='Shop.Theme.Customconfigurator'}</strong>
-              <div><span>{l s='Activez cette option si votre projet nécessite différentes hauteurs sur plusieurs sections' d='Shop.Theme.Customconfigurator'}</span></div>
-            </div>
-          </div>
 
           <div class="ckc-grid">
             <template x-for="item in $store.configurator.fenceTypes" :key="item.id">
@@ -258,6 +235,24 @@ window.CKC_CFG_I18N = {
               </div>
             </template>
           </div>
+
+          {* Toggle plusieurs sections — sous les choix *}
+          <div
+                  class="ckc-multitroncon-check"
+                  :class="{ 'checked': $store.configurator.multiTroncons }"
+                  @click="$store.configurator.multiTroncons = !$store.configurator.multiTroncons"
+          >
+            <label class="ckc-switch-troncon" @click.stop>
+              <input type="checkbox"
+                     :checked="$store.configurator.multiTroncons"
+                     @change="$store.configurator.multiTroncons = !$store.configurator.multiTroncons">
+                    <span class="checkbox"></span>
+            </label>
+            <div>
+              <strong>{l s='J\'ai plusieurs hauteurs de clôture' d='Shop.Theme.Customconfigurator'}</strong>
+              <div><span>{l s='Activez cette option si votre projet nécessite différentes hauteurs sur plusieurs sections' d='Shop.Theme.Customconfigurator'}</span></div>
+            </div>
+          </div>
         </div>
 
         {* ==================================================
@@ -275,17 +270,12 @@ window.CKC_CFG_I18N = {
           {* Conseil d'expert étape 2 *}
           <template x-if="$store.configurator.stepAdvice['step_2'] && $store.configurator.stepAdvice['step_2'].active && $store.configurator.stepAdvice['step_2'].content">
             <div class="ckc-expert">
-              <div class="ckc-icon-conseils-text-container">
-                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="27" height="27" ></div>
-                <div class="ckc-expert__body">
-                  <p class="ckc-expert__title_text"><strong x-text="$store.configurator.stepAdvice['step_2'].title" x-show="$store.configurator.stepAdvice['step_2'].title"></strong></p>
-                  <p class="ckc-expert__text" x-html="$store.configurator.stepAdvice['step_2'].content"></p>
-                </div>
+              <div class="ckc-expert__toggle">
+                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="20" height="20"></div>
+                <p class="ckc-expert__title_text"><strong x-text="$store.configurator.stepAdvice['step_2'].title" x-show="$store.configurator.stepAdvice['step_2'].title"></strong></p>
+                <span class="ckc-expert__chevron" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               </div>
-              <div class="ckc-icon-conseils-img-container">
-                <img class="ckc-icon-conseils-masques" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-masques.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="22" height="16" >
-                <img class="ckc-icon-conseils-affiches" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-affiches.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="24" height="24" >
-              </div>
+              <div class="ckc-expert__panel"><div class="ckc-expert__panel-inner"><div class="ckc-expert__text" x-html="$store.configurator.stepAdvice['step_2'].content"></div></div></div>
             </div>
           </template>
 
@@ -387,7 +377,7 @@ window.CKC_CFG_I18N = {
             {* Type de pose *}
             <div class="ckc-field-group" x-show="$store.configurator.installTypes.length > 0">
               <span class="ckc-field-label ckc-etape-selection-title">{l s='Type de pose' d='Shop.Theme.Customconfigurator'}</span>
-              <div class="ckc-grid ckc-grid--2">
+              <div class="ckc-grid">
                 <template x-for="item in $store.configurator.installTypes" :key="item.id">
                   <div
                           class="ckc-card"
@@ -504,17 +494,12 @@ window.CKC_CFG_I18N = {
           {* Conseil d'expert étape 3 *}
           <template x-if="$store.configurator.stepAdvice['step_3'] && $store.configurator.stepAdvice['step_3'].active && $store.configurator.stepAdvice['step_3'].content">
             <div class="ckc-expert">
-              <div class="ckc-icon-conseils-text-container">
-                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="27" height="27" ></div>
-                <div class="ckc-expert__body">
-                  <p class="ckc-expert__title_text"><strong x-text="$store.configurator.stepAdvice['step_3'].title" x-show="$store.configurator.stepAdvice['step_3'].title"></strong></p>
-                  <p class="ckc-expert__text" x-html="$store.configurator.stepAdvice['step_3'].content"></p>
-                </div>
+              <div class="ckc-expert__toggle">
+                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="20" height="20"></div>
+                <p class="ckc-expert__title_text"><strong x-text="$store.configurator.stepAdvice['step_3'].title" x-show="$store.configurator.stepAdvice['step_3'].title"></strong></p>
+                <span class="ckc-expert__chevron" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               </div>
-              <div class="ckc-icon-conseils-img-container">
-                <img class="ckc-icon-conseils-masques" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-masques.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="22" height="16" >
-                <img class="ckc-icon-conseils-affiches" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-affiches.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="24" height="24" >
-              </div>
+              <div class="ckc-expert__panel"><div class="ckc-expert__panel-inner"><div class="ckc-expert__text" x-html="$store.configurator.stepAdvice['step_3'].content"></div></div></div>
             </div>
           </template>
 
@@ -523,18 +508,18 @@ window.CKC_CFG_I18N = {
             <div class="ckc-grid">
               <template x-for="r in $store.configurator.ranges" :key="r.id">
                 <div
-                  class="ckc-card"
+                  class="ckc-card ckc-card--range"
                   :class="{ 'ckc-card--selected': $store.configurator.currentTronconData().rangeId === r.id }"
                   @click="$store.configurator.selectRange(r.id)"
                 >
                   <div class="ckc-card__check">✓</div>
                   <div class="ckc-card__img-wrap">
                     <template x-if="r.image_url">
-                      <img :src="r.image_url" :alt="r.title" loading="lazy">
+                      <img :src="r.image_url" :alt="(r.title || '').replace(/\s*Plus/gi, '+')" loading="lazy">
                     </template>
                   </div>
                   <div class="ckc-card__body">
-                    <p class="ckc-card__title" x-text="r.title"></p>
+                    <p class="ckc-card__title" x-text="(r.title || '').replace(/\s*Plus/gi, '+')"></p>
                     <p class="ckc-card__subtitle" x-text="r.subtitle" x-show="r.subtitle"></p>
                     <p class="ckc-card__desc" x-text="r.description" x-show="r.description"></p>
 
@@ -583,17 +568,17 @@ window.CKC_CFG_I18N = {
               </template>
               <template x-for="r in $store.configurator.notAvailablesRanges" :key="r.id">
                 <div
-                        class="ckc-card ckc-not-available-range"
+                        class="ckc-card ckc-card--range ckc-not-available-range"
                 >
                   <div class="ckc-not-available-range-message">{l s='Non disponible pour cette hauteur' d='Shop.Theme.Customconfigurator'}</div>
                   <div class="ckc-card__check">✓</div>
                   <div class="ckc-card__img-wrap">
                     <template x-if="r.image_url">
-                      <img :src="r.image_url" :alt="r.title" loading="lazy">
+                      <img :src="r.image_url" :alt="(r.title || '').replace(/\s*Plus/gi, '+')" loading="lazy">
                     </template>
                   </div>
                   <div class="ckc-card__body">
-                    <p class="ckc-card__title" x-text="r.title"></p>
+                    <p class="ckc-card__title" x-text="(r.title || '').replace(/\s*Plus/gi, '+')"></p>
                     <p class="ckc-card__subtitle" x-text="r.subtitle" x-show="r.subtitle"></p>
                     <p class="ckc-card__desc" x-text="r.description" x-show="r.description"></p>
 
@@ -733,17 +718,12 @@ window.CKC_CFG_I18N = {
           {* Conseil d'expert étape soubassement *}
           <template x-if="$store.configurator.stepAdvice['step_soubassement'] && $store.configurator.stepAdvice['step_soubassement'].active && $store.configurator.stepAdvice['step_soubassement'].content">
             <div class="ckc-expert">
-              <div class="ckc-icon-conseils-text-container">
-                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="27" height="27" ></div>
-                <div class="ckc-expert__body">
-                  <p class="ckc-expert__title_text"><strong x-text="$store.configurator.stepAdvice['step_soubassement'].title" x-show="$store.configurator.stepAdvice['step_soubassement'].title"></strong></p>
-                  <p class="ckc-expert__text" x-html="$store.configurator.stepAdvice['step_soubassement'].content"></p>
-                </div>
+              <div class="ckc-expert__toggle">
+                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="20" height="20"></div>
+                <p class="ckc-expert__title_text"><strong x-text="$store.configurator.stepAdvice['step_soubassement'].title" x-show="$store.configurator.stepAdvice['step_soubassement'].title"></strong></p>
+                <span class="ckc-expert__chevron" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               </div>
-              <div class="ckc-icon-conseils-img-container">
-                <img class="ckc-icon-conseils-masques" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-masques.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="22" height="16" >
-                <img class="ckc-icon-conseils-affiches" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-affiches.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="24" height="24" >
-              </div>
+              <div class="ckc-expert__panel"><div class="ckc-expert__panel-inner"><div class="ckc-expert__text" x-html="$store.configurator.stepAdvice['step_soubassement'].content"></div></div></div>
             </div>
           </template>
 
@@ -897,17 +877,12 @@ window.CKC_CFG_I18N = {
           {* Conseil d'expert étape options *}
           <template x-if="$store.configurator.stepAdvice['step_options'] && $store.configurator.stepAdvice['step_options'].active && $store.configurator.stepAdvice['step_options'].content">
             <div class="ckc-expert">
-              <div class="ckc-icon-conseils-text-container">
-                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="27" height="27" ></div>
-                <div class="ckc-expert__body">
-                  <p class="ckc-expert__title_text"><strong x-text="$store.configurator.stepAdvice['step_options'].title" x-show="$store.configurator.stepAdvice['step_options'].title"></strong></p>
-                  <p class="ckc-expert__text" x-html="$store.configurator.stepAdvice['step_options'].content"></p>
-                </div>
+              <div class="ckc-expert__toggle">
+                <div class="ckc-expert__avatar"><img src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-expert.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="20" height="20"></div>
+                <p class="ckc-expert__title_text"><strong x-text="$store.configurator.stepAdvice['step_options'].title" x-show="$store.configurator.stepAdvice['step_options'].title"></strong></p>
+                <span class="ckc-expert__chevron" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               </div>
-            </div>
-            <div class="ckc-icon-conseils-img-container">
-              <img class="ckc-icon-conseils-masques" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-masques.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="22" height="16" >
-              <img class="ckc-icon-conseils-affiches" src="/modules/ckcconfigurateurdistriclos/views/img/icon-conseils-affiches.svg" alt="{l s='Icône conseils expert' d='Shop.Theme.Customconfigurator'}" width="24" height="24" >
+              <div class="ckc-expert__panel"><div class="ckc-expert__panel-inner"><div class="ckc-expert__text" x-html="$store.configurator.stepAdvice['step_options'].content"></div></div></div>
             </div>
           </template>
 
@@ -949,6 +924,9 @@ window.CKC_CFG_I18N = {
                       <div class="ckc-card__price">
                         <strong class="ckc-price-main" x-text="opt.show_from_price ? (((window.CKC_CFG_I18N&&window.CKC_CFG_I18N.fromPrice)||'À partir de') + ' ' + (opt.price_base || 0).toFixed(2) + ' €') : ('+ ' + (opt.price_base || 0).toFixed(2) + ' €')"></strong>
                       </div>
+                    </template>
+                    <template x-if="opt.promo_message">
+                      <span class="ckc-card__badge_promo" x-text="opt.promo_message"></span>
                     </template>
                     <template x-if="!$store.configurator.currentTronconData().options[opt.id]">
                       <button class="ckc-configurateur-item-select-btn">{l s='Sélectionner' d='Shop.Theme.Customconfigurator'}</button>
@@ -1620,7 +1598,7 @@ window.CKC_CFG_I18N = {
                         <div class="ckc-troncon-item__number"><span x-text="t.index"></span></div>
 
                         <div class="ckc-troncon-item__meta">
-                          <div class="ckc-troncon-item__title">{l s='Section' d='Shop.Theme.Customconfigurator'} <span x-text="t.index"></span></div>
+                          <div class="ckc-troncon-item__title">{l s='Tronçon' d='Shop.Theme.Customconfigurator'} <span x-text="t.index"></span></div>
                         </div>
                       </div>
                       <div class="ckc-troncon-item__actions">
@@ -1681,6 +1659,7 @@ window.CKC_CFG_I18N = {
                           <div class="ckc-recap-product-row">
                             <div class="ckc-recap-product-row__info">
                               <span class="ckc-recap-product-row__name" x-text="p.product_name"></span>
+                              <span class="ckc-card__badge_promo ckc-card__badge_promo--sm" x-text="$store.configurator.promoForProduct(t, p)" x-show="$store.configurator.promoForProduct(t, p)"></span>
                               <span class="ckc-recap-product-row__attr" x-text="p.attribute_name" x-show="p.attribute_name"></span>
                             </div>
                             <div class="ckc-recap-product-row__qty" x-text="'× ' + p.qty"></div>
@@ -1826,7 +1805,7 @@ window.CKC_CFG_I18N = {
           <div class="ckc-sidebar-type-cloture-step-total-container">
             <div class="ckc-sidebar-type-cloture-step-total-text">
               <div>{l s='Gamme' d='Shop.Theme.Customconfigurator'}</div>
-              <p><strong x-text="$store.configurator.ranges.find(r => r.id === $store.configurator.currentTronconData().rangeId)?.title || '—'"></strong></p>
+              <p><strong x-text="($store.configurator.ranges.find(r => r.id === $store.configurator.currentTronconData().rangeId)?.title || '—').replace(/\s*Plus/gi, '+')"></strong></p>
               <p class="ckc-sidebar-type-cloture-step-total-text-sm" x-text="($store.configurator.postTypes.find(p => p.id === $store.configurator.currentTronconData().postTypeId)?.title || '-') + (($store.configurator.colors.find(c => c.id === $store.configurator.currentTronconData().colorAttrId)?.label) ? ', ' + $store.configurator.colors.find(c => c.id === $store.configurator.currentTronconData().colorAttrId).label : '')"></p>
             </div>
             <div class="ckc-sidebar-type-cloture-step-total-icon">
@@ -2027,7 +2006,7 @@ window.CKC_CFG_I18N = {
               </div>
             </div>
           </template>
-          <div>
+          <div class="ckc-footer__etape-wrap">
             <span class="ckc-footer__etape"
                   x-text="$store.configurator.footerStepLabel"></span>
           </div>
@@ -2275,6 +2254,20 @@ document.addEventListener('alpine:init', () => {
       return items.filter(i => i.qty > 0);
     },
 
+    promoForProduct(t, p) {
+      const name = (p.product_name || '').toLowerCase();
+      if (!name) return '';
+      const items = [
+        ...this.optionTypes.flatMap(ot => ot.options || []),
+        ...this.soubassements,
+      ];
+      const hit = items.find(i => {
+        const title = (i.title || '').toLowerCase();
+        return i.promo_message && title && (name.includes(title) || title.includes(name));
+      });
+      return hit ? hit.promo_message : '';
+    },
+
     get selectedFenceType() {
       const t = this.currentTronconData();
       return this.fenceTypes.find(f => f.id === t.fenceTypeId) || null;
@@ -2375,8 +2368,8 @@ document.addEventListener('alpine:init', () => {
         this.fenceTypes = this._localizeEntity(data.fence_types || []);
 
         const tunnel = data.tunnel || {};
-        // hasSoubassementStep is now set per fence_type in selectFenceType()
-        this.hasSoubassementStep = false;
+        // Afficher l'étape soubassement dans le chemin dès le départ si le tunnel l'active
+        this.hasSoubassementStep = !!(tunnel.has_soubassement_step);
         this.stepAdvice = this._localizeAdvice(data.step_advice || {});
         // info_items are now per-entity (in each fence_type, install_type, range object)
 

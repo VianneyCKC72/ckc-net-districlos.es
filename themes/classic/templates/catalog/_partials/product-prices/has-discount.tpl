@@ -2,10 +2,12 @@
     <div class="product-discount tag-discount">
         {* Réduction à commentée - si affichage de price_old.tpl pour les SOLDES *}
         <div class="font-weight-bold">
-            {if isset($ap5_pack_reduction_percent) && $ap5_pack_reduction_percent > 0}
+            {if isset($ap5_pack_reduction_percent)}
+                {if $ap5_pack_reduction_percent > 0}
                 <span class="discount-value">
                     {l s='- %percentage%' d='Shop.Theme.Catalog' sprintf=['%percentage%' => $ap5_pack_reduction_percent|cat:'%']}
                 </span>
+                {/if}
             {elseif $product.discount_type === 'percentage'}
                 <span
                     class="discount-value">{l s='- %percentage%' d='Shop.Theme.Catalog' sprintf=['%percentage%' => $product.discount_percentage_absolute]}</span>

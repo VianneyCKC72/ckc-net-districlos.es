@@ -26,45 +26,21 @@
 {capture assign="productClasses"}{if !empty($productClass)}{$productClass}{else}col-xs-12 col-sm-6 col-lg-3 col-xl-3{/if}{/capture}
 
 {* Bannière listing catégorie — campagne Destockage *}
-{if isset($language.iso_code) && $language.iso_code == 'en'}
+{assign var=_cat_id value=0}
+{if $page.page_name == 'category'}
+    {assign var=_cat_id value=Context::getContext()->controller->getCategory()->id}
+{/if}
+{if in_array($_cat_id, [169, 240, 278, 339, 337, 295, 243, 279, 323, 293, 171, 280, 294])}
+    {if isset($language.iso_code) && $language.iso_code == 'en'}
+        {assign var=category_listing_banner_file value='destockage-categorie-portails-en.webp'}
+    {else}
+        {assign var=category_listing_banner_file value='destockage-categorie-portails.webp'}
+    {/if}
+{elseif isset($language.iso_code) && $language.iso_code == 'en'}
     {assign var=category_listing_banner_file value='destockage-categorie-en.webp'}
 {else}
     {assign var=category_listing_banner_file value='destockage-categorie.webp'}
 {/if}
-{* Mapping soldes / Projet en fête par famille — conservé pour réactivation :
-{if $page.page_name == 'category'}
-    {assign var=_cat_id   value=Context::getContext()->controller->getCategory()->id}
-    {assign var=_now_ts   value=$smarty.now}
-    {assign var=_soldes_ts value=1750719660}
-    {if $_now_ts >= $_soldes_ts}
-        {if in_array($_cat_id, [215, 356, 216])}
-            {assign var=category_listing_banner_file value='promo_category_cloture_alu.png'}
-        {elseif in_array($_cat_id, [438, 439, 441])}
-            {assign var=category_listing_banner_file value='promo_category_cloture_composite.png'}
-        {elseif in_array($_cat_id, [34, 133, 6])}
-            {assign var=category_listing_banner_file value='promo_category_lattes_pvc.png'}
-        {elseif in_array($_cat_id, [241, 243, 279, 293])}
-            {assign var=category_listing_banner_file value='promo_category_portails_alu.png'}
-        {elseif in_array($_cat_id, [245, 368, 367, 4])}
-            {assign var=category_listing_banner_file value='promo_category_moteurs.png'}
-        {elseif in_array($_cat_id, [337, 323, 130, 169, 171, 280, 294])}
-            {assign var=category_listing_banner_file value='promo_category_pack_portailportillon_alu.png'}
-        {elseif in_array($_cat_id, [3, 93, 94, 96, 95, 97, 153, 92, 324])}
-            {assign var=category_listing_banner_file value='promo_category_rigide.jpg'}
-        {else}
-            {assign var=category_listing_banner_file value='category-listing-promo.jpg'}
-        {/if}
-    {else}
-        {if in_array($_cat_id, [169, 240, 243, 339, 337, 323, 171, 239, 241, 366, 4])}
-            {assign var=category_listing_banner_file value='category-joursfous.jpg'}
-        {else}
-            {assign var=category_listing_banner_file value='category-listing-promo.jpg'}
-        {/if}
-    {/if}
-{else}
-    {assign var=category_listing_banner_file value='category-listing-promo.jpg'}
-{/if}
-*}
 
 <div class="products{if !empty($cssClass)} {$cssClass}{/if} {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')} list_view {/if}">
     {foreach from=$products item="product" key="position" name=productsList}

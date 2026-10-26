@@ -11,7 +11,12 @@
             </div>
         </div>
         <div class="col-md-10 content-kit-description">
-            <h3 class="h5 text-uppercase fs-16">{$productPack.presentation.name}</h3>
+            <h3 class="h5 text-uppercase fs-16">
+                {$productPack.presentation.name}
+                {if isset($productPack.display_reduction_percent) && $productPack.display_reduction_percent > 0}
+                    <span class="tag-discount"><span class="discount-value">-{$productPack.display_reduction_percent}%</span></span>
+                {/if}
+            </h3>
             {if !empty($productPack.attributes.groups)}
                 <p class="mb-2 text-muted ap5-kit-combination-label">
                     {foreach from=$productPack.attributes.groups item=group name=ap5KitAttrGroups}

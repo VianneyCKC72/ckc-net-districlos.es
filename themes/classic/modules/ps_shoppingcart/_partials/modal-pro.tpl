@@ -42,7 +42,10 @@
                         {l s='Prix unitaire TTC' d='Shop.Theme.Custommodules'}
                     {/if}
                 </div>
-                <div class="cart-pro-value">
+                <div class="cart-pro-value{if isset($product.has_discount) && $product.has_discount} has-discount{/if}">
+                    {if isset($product.has_discount) && $product.has_discount && isset($product.regular_price)}
+                        <span class="regular-price" style="color:#FF144E;text-decoration:line-through;font-weight:600;margin-right:.35rem;">{$product.regular_price}</span>
+                    {/if}
                     {if isset($pro) && $pro.env == 1}
                         {if isset($product.price_tax_exc)}{$product.price_tax_exc} €{/if}
                     {else}
@@ -59,11 +62,18 @@
                 </div>
             </div>
 
-            {* Total ligne HT *}
+            {* Total ligne HT : barré catalogue + HT remisé (product.total est TTC côté particuliers) *}
             <div class="cart-pro-row">
                 <div class="cart-pro-label">{l s='Total HT' d='Shop.Theme.Custommodules'}</div>
-                <div class="cart-pro-value">
-                    {if isset($product.total)}{$product.total}{/if}
+                <div class="cart-pro-value{if isset($product.has_discount) && $product.has_discount} has-discount{/if}">
+                    {if isset($product.has_discount) && $product.has_discount && isset($product.price_without_reduction_without_tax) && $product.cart_quantity}
+                        <span class="regular-price" style="color:#FF144E;text-decoration:line-through;font-weight:600;margin-right:.35rem;">{Tools::displayPrice($product.price_without_reduction_without_tax * $product.cart_quantity)}</span>
+                    {/if}
+                    {if isset($product.price_with_reduction_without_tax) && $product.cart_quantity}
+                        {Tools::displayPrice($product.price_with_reduction_without_tax * $product.cart_quantity)}
+                    {elseif isset($product.total)}
+                        {$product.total}
+                    {/if}
                 </div>
             </div>
 
