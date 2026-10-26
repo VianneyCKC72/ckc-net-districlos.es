@@ -2,8 +2,164 @@
 if (!defined('_PS_VERSION_')) {
     exit;
 }
+
 class Product extends ProductCore
 {
+    /** @var array Buffer POST webservice (pas d'id encore) */
+    protected $dtcOdooExtraAdvicePending = [];
+
+    /** @var string[] */
+    protected static $dtcOdooExtraAdviceFields = [
+        'extra_advice_title',
+        'extra_advice_content',
+        'maintenance_title',
+        'maintenance_content',
+    ];
+
+    public function __construct($id_product = null, $full = false, $id_lang = null, $id_shop = null, Context $context = null)
+    {
+        parent::__construct($id_product, $full, $id_lang, $id_shop, $context);
+
+        foreach (self::$dtcOdooExtraAdviceFields as $field) {
+            $suffix = Tools::toCamelCase($field, true);
+            $this->webserviceParameters['fields'][$field] = [
+                'getter' => 'getWs' . $suffix,
+                'setter' => 'setWs' . $suffix,
+            ];
+        }
+    }
+
+    public function getWsExtraAdviceTitle()
+    {
+        return $this->dtcOdooGetExtraAdvice('extra_advice_title');
+    }
+
+    public function setWsExtraAdviceTitle($value)
+    {
+        return $this->dtcOdooSetExtraAdvice('extra_advice_title', $value);
+    }
+
+    public function getWsExtraAdviceContent()
+    {
+        return $this->dtcOdooGetExtraAdvice('extra_advice_content');
+    }
+
+    public function setWsExtraAdviceContent($value)
+    {
+        return $this->dtcOdooSetExtraAdvice('extra_advice_content', $value);
+    }
+
+    public function getWsMaintenanceTitle()
+    {
+        return $this->dtcOdooGetExtraAdvice('maintenance_title');
+    }
+
+    public function setWsMaintenanceTitle($value)
+    {
+        return $this->dtcOdooSetExtraAdvice('maintenance_title', $value);
+    }
+
+    public function getWsMaintenanceContent()
+    {
+        return $this->dtcOdooGetExtraAdvice('maintenance_content');
+    }
+
+    public function setWsMaintenanceContent($value)
+    {
+        return $this->dtcOdooSetExtraAdvice('maintenance_content', $value);
+    }
+
+    /**
+     * @param string $field
+     *
+     * @return string
+     */
+    protected function dtcOdooGetExtraAdvice($field)
+    {
+        if ((int) $this->id <= 0 || !in_array($field, self::$dtcOdooExtraAdviceFields, true)) {
+            return '';
+        }
+
+        $value = Db::getInstance()->getValue(
+            'SELECT `' . bqSQL($field) . '` FROM `' . _DB_PREFIX_ . 'ckc_product_extra`
+             WHERE `id_product` = ' . (int) $this->id
+        );
+
+        return $value !== false && $value !== null ? (string) $value : '';
+    }
+
+    /**
+     * @param string $field
+     * @param string $value
+     *
+     * @return bool
+     */
+    protected function dtcOdooSetExtraAdvice($field, $value)
+    {
+        if (!in_array($field, self::$dtcOdooExtraAdviceFields, true)) {
+            return false;
+        }
+
+        $this->dtcOdooExtraAdvicePending[$field] = (string) $value;
+
+        if ((int) $this->id > 0) {
+            return $this->dtcOdooSaveExtraAdvice([$field => $value]);
+        }
+
+        return true;
+    }
+
+    /**
+     * @param array $fields
+     *
+     * @return bool
+     */
+    protected function dtcOdooSaveExtraAdvice(array $fields)
+    {
+        $idProduct = (int) $this->id;
+        if ($idProduct <= 0) {
+            return false;
+        }
+
+        $data = [];
+        foreach ($fields as $key => $value) {
+            if (in_array($key, self::$dtcOdooExtraAdviceFields, true)) {
+                $data[$key] = pSQL((string) $value, true);
+            }
+        }
+        if (!$data) {
+            return true;
+        }
+
+        $exists = (bool) Db::getInstance()->getValue(
+            'SELECT `id_product` FROM `' . _DB_PREFIX_ . 'ckc_product_extra` WHERE `id_product` = ' . $idProduct
+        );
+
+        if ($exists) {
+            return Db::getInstance()->update('ckc_product_extra', $data, 'id_product = ' . $idProduct);
+        }
+
+        foreach (self::$dtcOdooExtraAdviceFields as $field) {
+            if (!isset($data[$field])) {
+                $data[$field] = '';
+            }
+        }
+        $data['id_product'] = $idProduct;
+
+        return Db::getInstance()->insert('ckc_product_extra', $data);
+    }
+
+    public function addWs($autodate = true, $null_values = false)
+    {
+        $result = parent::addWs($autodate, $null_values);
+        if ($result && (int) $this->id > 0 && !empty($this->dtcOdooExtraAdvicePending)) {
+            $this->dtcOdooSaveExtraAdvice($this->dtcOdooExtraAdvicePending);
+            $this->dtcOdooExtraAdvicePending = [];
+        }
+
+        return $result;
+    }
+
     public static function getIdTaxRulesGroupByIdProduct($id_product, Context $context = null)
     {
         $ctx  = Context::getContext();

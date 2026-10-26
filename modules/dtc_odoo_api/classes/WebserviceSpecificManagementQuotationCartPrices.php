@@ -1,6 +1,6 @@
 <?php
 /**
- * Endpoint webservice : prix HT des lignes d'un devis (SpecificPrice liés au panier).
+ * Endpoint webservice : prix des lignes d'un devis (SpecificPrice HT + montants HT/TTC panier).
  *
  * GET  /api/quotation_cart_prices?id_opartdevis=X
  * PUT  /api/quotation_cart_prices  (POST accepté aussi)
@@ -63,9 +63,9 @@ class WebserviceSpecificManagementQuotationCartPrices extends DtcOdooApiWsEndpoi
         if ($id <= 0) {
             return [
                 'action' => 'help',
-                'description' => 'Read/write negotiated HT prices on quotation cart lines (SpecificPrice)',
+                'description' => 'Read/write negotiated HT prices on quotation cart lines (SpecificPrice) + Presta HT/TTC amounts',
                 'methods' => [
-                    'GET' => 'Return cart lines + specific prices for id_opartdevis',
+                    'GET' => 'Return cart lines + specific prices + unit/total HT/TTC (Presta-rounded) for id_opartdevis',
                     'PUT' => 'Apply specific_price HT on cart lines',
                     'POST' => 'Same as PUT',
                 ],
@@ -184,11 +184,22 @@ class WebserviceSpecificManagementQuotationCartPrices extends DtcOdooApiWsEndpoi
                  ORDER BY `id_specific_price` DESC'
             );
 
+            $unitHt = (float) ($p['price_with_reduction_without_tax'] ?? $p['price'] ?? 0);
+            $unitTtc = (float) ($p['price_with_reduction'] ?? $p['price_wt'] ?? 0);
+            $totalHt = (float) ($p['total'] ?? ($unitHt * (int) $p['cart_quantity']));
+            $totalTtc = (float) ($p['total_wt'] ?? ($unitTtc * (int) $p['cart_quantity']));
+
             $out[] = [
                 'id_product' => $idProduct,
                 'id_product_attribute' => $idAttribute,
                 'quantity' => (int) $p['cart_quantity'],
                 'price_ht' => (float) $p['price'],
+                'unit_price_tax_excl' => $unitHt,
+                'unit_price_tax_incl' => $unitTtc,
+                'total_tax_excl' => $totalHt,
+                'total_tax_incl' => $totalTtc,
+                'tax_amount' => round($totalTtc - $totalHt, 6),
+                'tax_rate' => isset($p['rate']) ? (float) $p['rate'] : null,
                 'specific_price' => $specific ? (float) $specific['price'] : null,
                 'specific_qty' => $specific ? (int) $specific['from_quantity'] : null,
                 'name' => (string) ($p['name'] ?? ''),

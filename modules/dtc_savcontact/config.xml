@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>dtc_savcontact</name>
+	<displayName><![CDATA[SAV Contact commande]]></displayName>
+	<version><![CDATA[1.1.0]]></version>
+	<description><![CDATA[Rattache les threads commande au contact SAV et masque les messages automatiques dans la liste.]]></description>
+	<author><![CDATA[Districlos]]></author>
+	<is_configurable>0</is_configurable>
+	<need_instance>0</need_instance>
+</module>
