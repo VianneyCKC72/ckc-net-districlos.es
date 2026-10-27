@@ -1321,18 +1321,21 @@ class ckc_espacepro extends Module
             $translator = $this->context->getTranslator();
             $priceFormatter = new PriceFormatter();
 
+            $taxesIncluded = $this->context->controller->cart_presenter->includeTaxes();
+            $total_for_cart_amount = $this->context->cart->getOrderTotal($taxesIncluded, Cart::BOTH_WITHOUT_SHIPPING);
+
             $newParams = [
                 'total_for_cart' => [
                     'type' => 'total',
-                    'label' => $params['presentedCart']->totals['total_for_cart']['label'],
-                    'amount' => $params['presentedCart']->totals['total_for_cart']['amount'],
-                    'value' => $params['presentedCart']->totals['total_for_cart']['value']
+                    'label' => $translator->trans('Total', [], 'Shop.Theme.Checkout'),
+                    'amount' => $total_for_cart_amount,
+                    'value' => $priceFormatter->format($total_for_cart_amount),
                 ],
                 'total' => [
                     'type' => 'total',
                     'label' => $params['presentedCart']->totals['total']['label'],
-                    'amount' => $params['presentedCart']->totals['total_for_cart']['amount'],
-                    'value' => $params['presentedCart']->totals['total_for_cart']['value'],
+                    'amount' => $total_for_cart_amount,
+                    'value' => $priceFormatter->format($total_for_cart_amount),
                 ],
                 'total_including_tax' => [
                     'type' => 'total',
@@ -1343,8 +1346,8 @@ class ckc_espacepro extends Module
                 'total_excluding_tax' => [
                     'type' => 'total',
                     'label' => $params['presentedCart']->totals['total_excluding_tax']['label'],
-                    'amount' => $params['presentedCart']->totals['total_for_cart']['amount'],
-                    'value' => $params['presentedCart']->totals['total_for_cart']['value'],
+                    'amount' => $total_excluding_tax_cart,
+                    'value' => $priceFormatter->format($total_excluding_tax_cart),
                 ],
             ];
             $params['presentedCart']->totals = $newParams;
