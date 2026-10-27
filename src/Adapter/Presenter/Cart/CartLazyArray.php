@@ -184,18 +184,8 @@ class CartLazyArray extends AbstractLazyArray
     {
         $total_excluding_tax = $this->cart->getOrderTotal(false);
         $total_including_tax = $this->cart->getOrderTotal(true);
-        $total_excluding_tax_cart = $this->cart->getOrderTotal(false, Cart::BOTH_WITHOUT_SHIPPING);
-        $total_including_tax_cart = $this->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING);
 
         $this->totals = [
-            'total_for_cart' => [
-                'type' => 'total',
-                'label' => $this->translator->trans('Total', [], 'Shop.Theme.Checkout'),
-                'amount' => $this->cartPresenter->includeTaxes() ? $total_including_tax_cart : $total_excluding_tax_cart,
-                'value' => $this->priceFormatter->format(
-                    $this->cartPresenter->includeTaxes() ? $total_including_tax_cart : $total_excluding_tax_cart
-                ),
-            ],
             'total' => [
                 'type' => 'total',
                 'label' => $this->translator->trans('Total', [], 'Shop.Theme.Checkout'),
