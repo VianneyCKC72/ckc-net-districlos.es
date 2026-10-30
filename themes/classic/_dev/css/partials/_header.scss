@@ -407,11 +407,76 @@ body:has(.bandeau-soldes) {
 }
 body.espace_pro.-pro{
   #header{
-    /* Rapprocher "Nos produits" du logo : plus la valeur est négative, plus le bouton est à gauche */
+    /* Annule le margin négatif du header particulier : sinon « Nos produits » passe sous le logo */
     @media only screen and (min-width: 1440px) {
       .row-header > .menu-button.d-none.d-md-block {
-        margin-left: -60px;
+        margin-left: 0;
       }
+    }
+
+    /* Offres volume + recherche à gauche, configurateur avant « Mes avantages » */
+    .header-nav {
+      flex: 1 1 auto;
+      justify-content: flex-start;
+      min-width: 0;
+      gap: 12px;
+    }
+
+    .displayMenu {
+      flex: 0 0 auto;
+      padding-right: 4px;
+    }
+
+    /* « Les offres » / « au volume » : le retour à la ligne est dans le template */
+    @media only screen and (min-width: 1293px) {
+      .displayMenu .link-danger {
+        display: block;
+        line-height: 1.15;
+        text-align: left;
+        white-space: normal;
+      }
+    }
+
+    .displayTop {
+      flex: 1 1 auto;
+      justify-content: flex-start;
+      min-width: 0;
+      gap: 12px;
+    }
+
+    .displayNav2 {
+      margin-left: auto;
+      flex: 0 0 auto;
+      padding-left: 16px;
+    }
+
+    /* overflow:auto + icône positionnée en pixels : barre de défilement dans le champ */
+    #search_widget.search-widgets {
+      overflow: visible;
+      max-width: 280px;
+      min-width: 0;
+      flex: 1 1 200px;
+      width: auto;
+      margin-bottom: 0;
+    }
+
+    #search_widget form input[type="text"] {
+      float: none;
+      width: 100%;
+      max-width: none;
+      min-width: 0;
+      box-sizing: border-box;
+      background-position: right 12px center;
+      padding-right: 42px;
+    }
+
+    .btn-configurateur,
+    .displayTop > a.btn {
+      flex-shrink: 0;
+    }
+
+    .btn-configurateur {
+      width: 200px;
     }
   }
 }

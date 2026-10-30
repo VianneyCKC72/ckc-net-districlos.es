@@ -30,7 +30,7 @@ window.CKC_CFG_I18N = {
   wallEnd: '{l s='fin sur mur' d='Shop.Theme.Customconfigurator' js=1}',
   freeEnd: '{l s='fin libre' d='Shop.Theme.Customconfigurator' js=1}',
   optionsSelected: '{l s='option(s) sélectionnée(s)' d='Shop.Theme.Customconfigurator' js=1}',
-  ttcSuffix: '{l s=' € TTC' d='Shop.Theme.Customconfigurator' js=1}',
+  ttcSuffix: '{if !empty($price_tax_excluded)}{l s=' € HT' d='Shop.Theme.Customconfigurator' js=1}{else}{l s=' € TTC' d='Shop.Theme.Customconfigurator' js=1}{/if}',
   addingToCart: '{l s='Ajout en cours…' d='Shop.Theme.Customconfigurator' js=1}',
   addToCart: '{l s='Ajouter au panier' d='Shop.Theme.Customconfigurator' js=1}',
   productPrefix: '{l s='Produit #' d='Shop.Theme.Customconfigurator' js=1}',
@@ -1937,7 +1937,7 @@ window.CKC_CFG_I18N = {
         </template>
         <div class="ckc-footer__price">
           <div class="ckc-footer__total_container">
-            <div><span class="ckc-footer__ttc">{l s='Total TTC' d='Shop.Theme.Customconfigurator'}</span></div>
+            <div><span class="ckc-footer__ttc">{if !empty($price_tax_excluded)}{l s='Total HT' d='Shop.Theme.Customconfigurator'}{else}{l s='Total TTC' d='Shop.Theme.Customconfigurator'}{/if}</span></div>
             <div class="ckc-footer__amount-wrap">
               <template x-if="$store.configurator.totalPriceBeforeDiscount && $store.configurator.totalPriceBeforeDiscount > $store.configurator.totalPrice">
                 <span class="ckc-footer__amount-before"
@@ -1992,7 +1992,7 @@ window.CKC_CFG_I18N = {
         <div class="ckc-footer__nav">
           <template class="ckc-footer-fixed-total" x-if="$store.configurator.totalPrice">
             <div class="ckc-footer-fixed-total__container">
-              <div class="ckc-footer-fixed-total__label">{l s='Total TTC' d='Shop.Theme.Customconfigurator'}</div>
+              <div class="ckc-footer-fixed-total__label">{if !empty($price_tax_excluded)}{l s='Total HT' d='Shop.Theme.Customconfigurator'}{else}{l s='Total TTC' d='Shop.Theme.Customconfigurator'}{/if}</div>
               <div class="ckc-footer-fixed-total__text">
                 <template x-if="$store.configurator.totalPriceBeforeDiscount && $store.configurator.totalPriceBeforeDiscount > $store.configurator.totalPrice">
                   <span class="ckc-footer-fixed-total__amount-before" x-text="$store.configurator.totalPriceBeforeDiscount.toFixed(2) + ' €'"></span>
