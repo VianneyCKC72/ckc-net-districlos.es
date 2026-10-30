@@ -22,8 +22,9 @@ function showSelectedPickup() {
     document.getElementById('show-other-pickups').style.display = 'flex';
 }
 
-// ID du transporteur principal "Retrait chez DISTRICLOS"
-const MAIN_PICKUP_CARRIER_ID = 1682;
+const MAIN_PICKUP_CARRIER_ID = (typeof custompickup_main_carrier_id !== 'undefined' && custompickup_main_carrier_id)
+    ? custompickup_main_carrier_id
+    : 0;
 
 function disablePickupSelectionIfNotMainCarrier() {
     const mainCarrierRadio = document.querySelector('input[type="radio"][name^="delivery_option"][value*="' + MAIN_PICKUP_CARRIER_ID + '"]');
