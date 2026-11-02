@@ -34,11 +34,20 @@
             {block name='header_nav'}
                 <nav class="header-nav d-flex align-items-center">
                     <div class="displayMenu">
-                        <a class="link-danger" href="{$link->getCMSLink(660)}">{l s='Les offres au volume' d='Shop.Theme.Customglobal'}</a>
+                        <a class="link-danger" href="{$link->getCMSLink(660)}">{l s='Les offres' d='Shop.Theme.Customglobal'}<br>{l s='au volume' d='Shop.Theme.Customglobal'}</a>
                     </div>
 
                     <div class="displayTop">
                         {hook h='displayTop'}
+                        <a href="{$link->getModuleLink('ckcconfigurateurdistriclos', 'configurator')|escape:'htmlall':'UTF-8'}" class="btn btn-primary btn-configurateur">
+                            <div class="text-btn">
+                                <span class="small-text">
+                                    {l s='Configurez' d='Shop.Theme.Customglobal'}<br>
+                                </span>
+                                <span class="medium-text">{l s='votre clôture' d='Shop.Theme.Customglobal'}</span>
+                            </div>
+                            <img width="37" height="35" alt="{l s='Configurez votre clôture' d='Shop.Theme.Customglobal'}" src="/themes/classic/assets/img/configurer-icon.svg">
+                        </a>
                         <a href="{$link->getModuleLink('ckc_espacepro', 'benefitsespacepro')|escape:'html':'UTF-8'}" class="btn btn-primary d-none d-md-block">
                             <div class="fs-6 font-weight-bold">
                                 {l s='Mes avantages' d='Shop.Theme.Customglobal'}

@@ -30,7 +30,7 @@ window.CKC_CFG_I18N = {
   wallEnd: '{l s='fin sur mur' d='Shop.Theme.Customconfigurator' js=1}',
   freeEnd: '{l s='fin libre' d='Shop.Theme.Customconfigurator' js=1}',
   optionsSelected: '{l s='option(s) sélectionnée(s)' d='Shop.Theme.Customconfigurator' js=1}',
-  ttcSuffix: '{l s=' € TTC' d='Shop.Theme.Customconfigurator' js=1}',
+  ttcSuffix: '{if !empty($price_tax_excluded)}{l s=' € HT' d='Shop.Theme.Customconfigurator' js=1}{else}{l s=' € TTC' d='Shop.Theme.Customconfigurator' js=1}{/if}',
   addingToCart: '{l s='Ajout en cours…' d='Shop.Theme.Customconfigurator' js=1}',
   addToCart: '{l s='Ajouter au panier' d='Shop.Theme.Customconfigurator' js=1}',
   productPrefix: '{l s='Produit #' d='Shop.Theme.Customconfigurator' js=1}',
@@ -925,9 +925,6 @@ window.CKC_CFG_I18N = {
                         <strong class="ckc-price-main" x-text="opt.show_from_price ? (((window.CKC_CFG_I18N&&window.CKC_CFG_I18N.fromPrice)||'À partir de') + ' ' + (opt.price_base || 0).toFixed(2) + ' €') : ('+ ' + (opt.price_base || 0).toFixed(2) + ' €')"></strong>
                       </div>
                     </template>
-                    <template x-if="opt.promo_message">
-                      <span class="ckc-card__badge_promo" x-text="opt.promo_message"></span>
-                    </template>
                     <template x-if="!$store.configurator.currentTronconData().options[opt.id]">
                       <button class="ckc-configurateur-item-select-btn">{l s='Sélectionner' d='Shop.Theme.Customconfigurator'}</button>
                     </template>
@@ -1644,7 +1641,7 @@ window.CKC_CFG_I18N = {
                       <span class="ckc-recap-row__label">{l s='Prix de la section' d='Shop.Theme.Customconfigurator'}</span>
                       <span class="ckc-recap-row__value"></span>
                       <span class="ckc-recap-row__price-wrap">
-                        <template x-if="t.ml_discount_percent > 0">
+                        <template x-if="t.price_before_discount > t.price">
                           <span class="ckc-recap-row__price-before" x-text="t.price_before_discount.toFixed(2) + ' €'"></span>
                         </template>
                         <strong class="ckc-recap-row__price" x-text="t.price.toFixed(2) + ((window.CKC_CFG_I18N&&window.CKC_CFG_I18N.ttcSuffix)||' € TTC')"></strong>
@@ -1940,7 +1937,7 @@ window.CKC_CFG_I18N = {
         </template>
         <div class="ckc-footer__price">
           <div class="ckc-footer__total_container">
-            <div><span class="ckc-footer__ttc">{l s='Total TTC' d='Shop.Theme.Customconfigurator'}</span></div>
+            <div><span class="ckc-footer__ttc">{if !empty($price_tax_excluded)}{l s='Total HT' d='Shop.Theme.Customconfigurator'}{else}{l s='Total TTC' d='Shop.Theme.Customconfigurator'}{/if}</span></div>
             <div class="ckc-footer__amount-wrap">
               <template x-if="$store.configurator.totalPriceBeforeDiscount && $store.configurator.totalPriceBeforeDiscount > $store.configurator.totalPrice">
                 <span class="ckc-footer__amount-before"
@@ -1995,7 +1992,7 @@ window.CKC_CFG_I18N = {
         <div class="ckc-footer__nav">
           <template class="ckc-footer-fixed-total" x-if="$store.configurator.totalPrice">
             <div class="ckc-footer-fixed-total__container">
-              <div class="ckc-footer-fixed-total__label">{l s='Total TTC' d='Shop.Theme.Customconfigurator'}</div>
+              <div class="ckc-footer-fixed-total__label">{if !empty($price_tax_excluded)}{l s='Total HT' d='Shop.Theme.Customconfigurator'}{else}{l s='Total TTC' d='Shop.Theme.Customconfigurator'}{/if}</div>
               <div class="ckc-footer-fixed-total__text">
                 <template x-if="$store.configurator.totalPriceBeforeDiscount && $store.configurator.totalPriceBeforeDiscount > $store.configurator.totalPrice">
                   <span class="ckc-footer-fixed-total__amount-before" x-text="$store.configurator.totalPriceBeforeDiscount.toFixed(2) + ' €'"></span>
@@ -2254,20 +2251,6 @@ document.addEventListener('alpine:init', () => {
       return items.filter(i => i.qty > 0);
     },
 
-    promoForProduct(t, p) {
-      const name = (p.product_name || '').toLowerCase();
-      if (!name) return '';
-      const items = [
-        ...this.optionTypes.flatMap(ot => ot.options || []),
-        ...this.soubassements,
-      ];
-      const hit = items.find(i => {
-        const title = (i.title || '').toLowerCase();
-        return i.promo_message && title && (name.includes(title) || title.includes(name));
-      });
-      return hit ? hit.promo_message : '';
-    },
-
     get selectedFenceType() {
       const t = this.currentTronconData();
       return this.fenceTypes.find(f => f.id === t.fenceTypeId) || null;
@@ -2307,6 +2290,21 @@ document.addEventListener('alpine:init', () => {
         return { ...item, qty };
       });
       return items.filter(i => i.qty > 0);
+    },
+
+    /** Promo option/soubassement rattachée à une ligne du détail produits */
+    promoForProduct(t, p) {
+      const name = (p.product_name || '').toLowerCase();
+      if (!name) return '';
+      const items = [
+        ...this.optionTypes.flatMap(ot => ot.options || []),
+        ...this.soubassements,
+      ];
+      const hit = items.find(i => {
+        const title = (i.title || '').toLowerCase();
+        return i.promo_message && title && (name.includes(title) || title.includes(name));
+      });
+      return hit ? hit.promo_message : '';
     },
 
     // Numéros d'étapes dynamiques

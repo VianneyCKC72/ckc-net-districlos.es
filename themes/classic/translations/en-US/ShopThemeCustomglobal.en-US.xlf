@@ -63,6 +63,8 @@
       <trans-unit id="59"><source>Agence web ckc-net</source><target>ckc-net web agency</target></trans-unit>
       <trans-unit id="60"><source>Jusqu'à -17% sur nos kits !</source><target>Up to -17% on our kits!</target></trans-unit>
       <trans-unit id="61"><source>Mlle.</source><target>Miss</target></trans-unit>
+      <trans-unit id="62"><source>Les offres</source><target>Volume</target></trans-unit>
+      <trans-unit id="63"><source>au volume</source><target>offers</target></trans-unit>
     </body>
   </file>
 </xliff>

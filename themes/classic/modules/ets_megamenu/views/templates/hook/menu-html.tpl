@@ -320,18 +320,17 @@
         {/if}
         <li class="menu-mobile-custom-container-links mm_menus_li distri_megamenu mm_sub_align_full info_menu_mobile">
 
+            <a href="{$link->getModuleLink('ckcconfigurateurdistriclos', 'configurator')|escape:'htmlall':'UTF-8'}" class="btn-configurateur-mobile">
+                <img width="45px" height="45px" alt="{l s='Configurez votre clôture' d='Shop.Theme.Customglobal'}" src="/themes/classic/assets/img/configurer-icon.svg">
+                <div class="text-btn">
+                    <span class="medium-text">{l s='Configurez votre clôture' d='Shop.Theme.Customglobal'}</span>
+                </div>
+            </a>
             {if Context::getContext()->shop->id == 2}
                 <a href="{$link->getModuleLink('ckc_espacepro', 'benefitsespacepro')|escape:'html':'UTF-8'}" class="btn btn-primary btn-avantages-mobile">
                     <div class="text-btn">
                         <span class="medium-text">{l s='Mes avantages' d='Shop.Theme.Customglobal'}</span>
                     </div>
-                </a>
-            {else}
-                <a href="{$link->getModuleLink('ckcconfigurateurdistriclos', 'configurator')|escape:'htmlall':'UTF-8'}" class="btn-configurateur-mobile">
-                <img width="45px" height="45px" alt="{l s='Configurez votre clôture' d='Shop.Theme.Customglobal'}" src="/themes/classic/assets/img/configurer-icon.svg">
-                <div class="text-btn">
-                    <span class="medium-text">{l s='Configurez votre clôture' d='Shop.Theme.Customglobal'}</span>
-                </div>
                 </a>
             {/if}
         </li>

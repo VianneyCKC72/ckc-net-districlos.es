@@ -299,6 +299,8 @@
       <trans-unit id="295"><source>ZOU+ à sceller</source><target>ZOU+ set in concrete</target></trans-unit>
       <trans-unit id="296"><source>ZOU+ sur platines</source><target>ZOU+ on base plates</target></trans-unit>
       <trans-unit id="297"><source>Portillon bambou ZOU+</source><target>ZOU+ bamboo gate</target></trans-unit>
+      <trans-unit id="298"><source> € HT</source><target> € excl. tax</target></trans-unit>
+      <trans-unit id="299"><source>Total HT</source><target>Total excl. tax</target></trans-unit>
     </body>
   </file>
 </xliff>
