@@ -3637,6 +3637,10 @@ body.menu-opened #ckcpromobarre {
     }
 }
 
+body.espace_pro .menu-mobile-custom-container-links a.btn-configurateur-mobile,
+body.-pro .menu-mobile-custom-container-links a.btn-configurateur-mobile {
+    background-color: #ffa400 !important;
+}
 .menu-mobile-custom-container-links a.btn-configurateur-mobile .medium-text,
 .menu-mobile-custom-container-links a.btn-avantages-mobile .medium-text{
     @media (max-width: 768px) {

@@ -710,7 +710,8 @@ body#category.-pro .container .banner__newsletter {
 body.espace_pro,
 body.registration-pro {
   #ckcpromobarre,
-  .btn-configurateur {
+  .btn-configurateur,
+  .menu-mobile-custom-container-links a.btn-configurateur-mobile {
     background-color: $pro-color;
   }
 
