@@ -199,9 +199,11 @@ $(function () {
         if($("#product").length){
             var qty = $("#quantity_wanted").val()
             var packQtyML = $("#quantity_ml").val()
+            var packQtyHauteur = $("#quantity_hauteur").val()
             var isCart = false;
         } else {
             var qty = $("#quantity_wanted[data-product-id="+productId+"]").val()
+            var packQtyHauteur = null;
             var isCart = true;
         }
 
@@ -264,6 +266,7 @@ $(function () {
                     id_product_attribute_list: idProductAttributeList,
                     productPackChoice: productPackChoice,
                     packQtyML : packQtyML,
+                    packQtyHauteur : packQtyHauteur,
                     packQty : ap5_quantityWanted,
                     addToCart: true,
                     isCart : isCart,
@@ -271,6 +274,10 @@ $(function () {
                 },
                 dataType: 'json',
                 success: function (response) {
+                    if (response && response.success === false) {
+                        alert(response.error || 'Erreur lors de l’ajout au panier.');
+                        return;
+                    }
                     if(response == "success" || response.id_product == productId) {
                         closeServiceModal();
                         // Sur la page panier, un reload unique est plus sûr qu’un emit
