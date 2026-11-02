@@ -34,6 +34,7 @@ class DealtEligibilityModuleFrontController extends ModuleFrontController
                 $serviceId = Tools::getValue("serviceId");
                 $qty = Tools::getValue("qty");
                 $packQtyML = Tools::getValue("packQtyML");
+                $packQtyHauteur = Tools::getValue("packQtyHauteur");
                 $packQty  = Tools::getValue("packQty");
                 $id_product_attribute = !empty(Tools::getValue("id_product_attribute")) ? Tools::getValue("id_product_attribute") : 0;
 
@@ -57,6 +58,11 @@ class DealtEligibilityModuleFrontController extends ModuleFrontController
                         $productPackCustomizationList = [];
                         $idProductAttributeList = [];
                         $productPackQuantityList = [];
+
+                        $ml = ($packQtyML && (float) $packQtyML > 0) ? (float) str_replace(',', '.', (string) $packQtyML) : 0;
+                        $hauteur = ($packQtyHauteur !== false && $packQtyHauteur !== null && $packQtyHauteur !== '')
+                            ? (float) $packQtyHauteur
+                            : 0;
 
                         $idProductAttributeListJSON = Tools::getValue('id_product_attribute_list');
                         $idProductAttributeListJSON = (array)json_decode($idProductAttributeListJSON);
@@ -87,14 +93,15 @@ class DealtEligibilityModuleFrontController extends ModuleFrontController
                                 }
 
                                 foreach ($packProducts as $packProduct) {
-                                    if ($packQtyML && $packQtyML > 0) {
+                                    if ($ml > 0 || $hauteur > 0) {
                                         $formula = $packProduct['formula'];
                                         if ($formula) {
-                                            $quantity = (int)$packProduct['quantity'];
-                                            $ml = $packQtyML;
-                                            $formula = str_replace('[ML]', $ml, $formula);
-                                            $formula = str_replace('[QUANTITY]', $quantity, $formula);
-                                            $newQuantity = AdvancedPack::evaluateMathExpression($formula);
+                                            $newQuantity = AdvancedPack::computePackProductQuantityFromFormula(
+                                                $formula,
+                                                (int) $packProduct['quantity'],
+                                                $ml,
+                                                $hauteur
+                                            );
                                             $productPackQuantityList[(int)$packProduct['id_product_pack']] = (int)$newQuantity;
                                         }
                                     }
@@ -106,16 +113,17 @@ class DealtEligibilityModuleFrontController extends ModuleFrontController
                             }
                         }
 
-                        if ($packQtyML && $packQtyML > 0) {
+                        if ($ml > 0 || $hauteur > 0) {
                             $packProducts = AdvancedPack::getPackContent($productId, null, false, [], $productPackQuantityList);
                             foreach ($packProducts as $packProduct) {
                                 $formula = $packProduct['formula'];
                                 if ($formula) {
-                                    $quantity = (int)$packProduct['quantity'];
-                                    $ml = $packQtyML;
-                                    $formula = str_replace('[ML]', $ml, $formula);
-                                    $formula = str_replace('[QUANTITY]', $quantity, $formula);
-                                    $newQuantity = AdvancedPack::evaluateMathExpression($formula);
+                                    $newQuantity = AdvancedPack::computePackProductQuantityFromFormula(
+                                        $formula,
+                                        (int) $packProduct['quantity'],
+                                        $ml,
+                                        $hauteur
+                                    );
                                     $productPackQuantityList[(int)$packProduct['id_product_pack']] = (int)$newQuantity;
                                     $packHasEditedQuantity = true;
                                 }else{
@@ -129,7 +137,7 @@ class DealtEligibilityModuleFrontController extends ModuleFrontController
                             if (is_array($tmp_productPackCustomizationList) && count($tmp_productPackCustomizationList)) {
                                 $packProducts = AdvancedPack::getPackContent($productId);
                                 foreach ($tmp_productPackCustomizationList as $packChoiceRow) {
-                                    if (!in_array((int)$packChoiceRow['idProductPack'], $this->productPackExclude)) {
+                                    if (!in_array((int)$packChoiceRow['idProductPack'], $productPackExclude)) {
                                         $productPackCustomizationList[(int)$packChoiceRow['idProductPack']][(int)$packChoiceRow['idCustomizationField']] = $packChoiceRow['value'];
                                     }
                                 }
@@ -138,8 +146,8 @@ class DealtEligibilityModuleFrontController extends ModuleFrontController
                         if (AdvancedPack::isInStock($productId, $packQty, $idProductAttributeList, true, $id_product_attribute)) {
                             $cart->updateQty(1, $serviceId);
                             // packQtyML (Dealt) ≠ quantity_ml (pack) : poser frontMl pour la remise ML
-                            if ($packQtyML && (float) $packQtyML > 0) {
-                                AdvancedPack::setFrontMl((float) str_replace(',', '.', (string) $packQtyML));
+                            if ($ml > 0) {
+                                AdvancedPack::setFrontMl($ml);
                             }
                             AdvancedPack::addExplodedPackToCart($productId, $packQty, $idProductAttributeList, $productPackCustomizationList, $productPackQuantityList, $productPackExclude);
                         }
@@ -153,7 +161,8 @@ class DealtEligibilityModuleFrontController extends ModuleFrontController
 
                 $cart->update();
             } catch(\Exception $e) {
-                echo $e->getMessage();
+                // JSON valide pour éviter le parsererror jQuery (dataType: json)
+                echo json_encode(['success' => false, 'error' => $e->getMessage()]);
                 return;
             }
 
