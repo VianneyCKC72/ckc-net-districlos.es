@@ -84,6 +84,7 @@ function getQuotesForExport(): array
         OpartQuotation::ORDERED,
         OpartQuotation::EXPIRED,
         OpartQuotation::DECLINED,
+        OpartQuotation::DELETED,
     ];
 
     $query = new DbQuery();
@@ -135,6 +136,7 @@ function getQuotesForExport(): array
 
         // Contexte requis pour le calcul des prix (CRON)
         $context->cart = $cart;
+        $context->customer = $idCustomer > 0 ? new Customer($idCustomer) : new Customer();
         $context->shop = $shopCache[$cart->id_shop] ?? ($shopCache[$cart->id_shop] = new Shop($cart->id_shop));
         $context->currency = $currencyCache[$cart->id_currency]
             ?? ($currencyCache[$cart->id_currency] = new Currency($cart->id_currency));
@@ -233,7 +235,7 @@ try {
     } else {
         echo "Export terminé : {$count} devis exportés vers " . EKONSILIO_CSV_FILENAME;
     }
-} catch (Exception $e) {
+} catch (Throwable $e) {
     if (php_sapi_name() === 'cli') {
         fwrite(STDERR, 'Erreur : ' . $e->getMessage() . "\n");
     } else {
