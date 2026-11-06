@@ -110,9 +110,15 @@
         <aside class="pro-auth__visual">
             <figure class="pro-figure">
                 <picture>
-                    <source srcset="/img/cms/auth/img-espace-pro3.webp" type="image/webp">
-                    <img src="/img/cms/auth/img-espace-pro3.jpg" alt="{l s='Districlos sur salon professionnel' d='Shop.Theme.Customespacepro'}"
-                         loading="lazy">
+                    {if isset($language.iso_code) && $language.iso_code == 'en'}
+                        <source srcset="/img/cms/auth/img-espace-pro3-en.webp" type="image/webp">
+                        <img src="/img/cms/auth/img-espace-pro3-en.jpg" alt="{l s='Districlos sur salon professionnel' d='Shop.Theme.Customespacepro'}"
+                             loading="lazy">
+                    {else}
+                        <source srcset="/img/cms/auth/img-espace-pro3.webp" type="image/webp">
+                        <img src="/img/cms/auth/img-espace-pro3.jpg" alt="{l s='Districlos sur salon professionnel' d='Shop.Theme.Customespacepro'}"
+                             loading="lazy">
+                    {/if}
                 </picture>
 
                 {*<figcaption class="pro-quote">

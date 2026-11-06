@@ -51,8 +51,13 @@
       <div class="col-6 contenair-img-auth">
         <figure>
           <picture>
-            <source srcset="/img/cms/auth/img-espace-pro3.webp" type="image/webp">
-            <img class="img-connect" alt="Authentification Districlos" src="/img/cms/auth/img-espace-pro3.jpg">
+            {if isset($language.iso_code) && $language.iso_code == 'en'}
+              <source srcset="/img/cms/auth/img-espace-pro3-en.webp" type="image/webp">
+              <img class="img-connect" alt="Districlos authentication" src="/img/cms/auth/img-espace-pro3-en.jpg">
+            {else}
+              <source srcset="/img/cms/auth/img-espace-pro3.webp" type="image/webp">
+              <img class="img-connect" alt="Authentification Districlos" src="/img/cms/auth/img-espace-pro3.jpg">
+            {/if}
           </picture>
         </figure>
 
