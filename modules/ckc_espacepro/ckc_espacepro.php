@@ -344,7 +344,8 @@ class ckc_espacepro extends Module
             ['position' => 'bottom', 'priority' => 1001]
         );
 
-        if (strpos($_SERVER['REQUEST_URI'] ?? '', 'avantages-pro') !== false) {
+        $uri = $_SERVER['REQUEST_URI'] ?? '';
+        if (strpos($uri, 'avantages-pro') !== false || strpos($uri, 'benefitsespacepro') !== false) {
             $this->context->controller->registerJavascript(
                 'ckc-espacepro-layout',
                 'modules/' . $this->name . '/views/js/front/layout.js',
