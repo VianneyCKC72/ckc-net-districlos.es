@@ -794,7 +794,7 @@ class ckc_espacepro extends Module
     public function hookModuleRoutes($params)
     {
         return [
-            'benefits_pro_route' => [
+            'module-ckc_espacepro-benefitsespacepro' => [
                 'rule' => 'avantages-pro',
                 'controller' => 'benefitsespacepro',
                 'keywords' => [],

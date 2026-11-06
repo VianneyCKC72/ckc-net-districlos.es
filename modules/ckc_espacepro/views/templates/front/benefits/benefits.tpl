@@ -11,7 +11,7 @@
 
     {* Section des bénéfices *}
     <section class="benefits-section p-b-100">
-        <img class="position-absolute image-bg z-n1" src="modules/ckc_espacepro/views/img/dessins.svg" alt="">
+        <img class="position-absolute image-bg z-n1" src="{$urls.base_url}modules/ckc_espacepro/views/img/dessins.svg" alt="">
         <div class="container px-0 z-0">
             <div class="row">
             <div class="col-12">
