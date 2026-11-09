@@ -146,5 +146,26 @@ $(document).ready(function () {
     }
     // END BANDEAU SOLDES
 
+    // Contrôle affichage popup après la bannière des cookies
+    function watchAxeptio() {
+        var host = document.querySelector("#axeptio_overlay .needsclick");
+        if (!host || !host.shadowRoot) return false;
+        var sync = function () {
+            var open = !!host.shadowRoot.querySelector(".axeptio_widget");
+            document.body.classList.toggle("axeptio-banner-open", open);
+        };
+        sync();
+        new MutationObserver(sync).observe(host.shadowRoot, { childList: true, subtree: true });
+        return true;
+    }
+    if (!watchAxeptio()) {
+        var boot = new MutationObserver(function () {
+            if (watchAxeptio()) boot.disconnect();
+        });
+        boot.observe(document.documentElement, { childList: true, subtree: true });
+    }
+    new MutationObserver(watchAxeptio).observe(document.body, { childList: true, subtree: true });
+
+    // END Contrôle affichage popup après la bannière des cookies
 });
 
