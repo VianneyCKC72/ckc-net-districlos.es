@@ -30,7 +30,7 @@
       <div class="cart-summary-line cart-summary-subtotals" id="cart-subtotal-{$subtotal.type}">
 
         <span class="label">
-          {if $subtotal.type == 'shipping' && $subtotal.value == "gratuit"}
+          {if $subtotal.type == 'shipping' && $subtotal.value == "gratuit" && $selected_carrier_id_reference != 1230}
             Retrait
           {else}
             {$subtotal.label}
