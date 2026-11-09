@@ -25,7 +25,7 @@
 <nav class="pagination d-flex flex-column flex-md-row justify-content-md-between align-items-center">
   <div class="">
     {block name='pagination_summary'}
-      {l s='Showing %from%-%to% of %total% item(s)' d='Shop.Theme.Catalog' sprintf=['%from%' => $pagination.items_shown_from ,'%to%' => sizeof($products), '%total%' => sizeof($products)]}
+      {l s='Showing %from%-%to% of %total% item(s)' d='Shop.Theme.Catalog' sprintf=['%from%' => $pagination.items_shown_from ,'%to%' => $pagination.items_shown_to, '%total%' => $pagination.total_items]}
     {/block}
   </div>
 
