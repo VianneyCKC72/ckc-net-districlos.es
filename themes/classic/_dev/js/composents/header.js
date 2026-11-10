@@ -47,7 +47,7 @@ $(document).ready(function () {
 
     $("#nav_account").on("click", function (e) {
         e.preventDefault();
-        $(this).toggleClass('active')
+        $(this).find("div").toggleClass('active')
         $('.row.links').toggleClass('hide_mobile')
     });
 
