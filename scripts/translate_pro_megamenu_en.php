@@ -208,11 +208,11 @@ function proMegaMenuSelfTest(): int
     }
     $out = proMegaMenuApplyNodes($html, [0 => 'Fence', 1 => 'In-ground Rigid Mesh Fencing Kit'], 'text');
     $out = proMegaMenuApplyNodes($out, [0 => 'In-ground Rigid Mesh Fencing Kit'], 'alt');
-    if (!str_contains($out, 'Fence') || !str_contains($out, 'Occultation') || !str_contains($out, '/en/94-rigid-fence')) {
+    if (strpos($out, 'Fence') === false || strpos($out, 'Occultation') === false || strpos($out, '/en/94-rigid-fence') === false) {
         fwrite(STDERR, "remplacement texte incorrect\n{$out}\n");
         $fail++;
     }
-    if (!str_contains($out, 'alt="In-ground Rigid Mesh Fencing Kit"')) {
+    if (strpos($out, 'alt="In-ground Rigid Mesh Fencing Kit"') === false) {
         fwrite(STDERR, "remplacement alt incorrect\n{$out}\n");
         $fail++;
     }
@@ -262,13 +262,35 @@ final class ProMegaMenuEnTranslator
     /** @var array<int,array{table:string,id:int,field:string,old:string}> */
     private array $rollback = [];
 
-    public function __construct(
-        private int $sourceShop,
-        private int $targetShop,
-        private int $fromLang,
-        private int $toLang,
-        private bool $apply
-    ) {
+    /** @var int */
+    private $sourceShop;
+
+    /** @var int */
+    private $targetShop;
+
+    /** @var int */
+    private $fromLang;
+
+    /** @var int */
+    private $toLang;
+
+    /** @var bool */
+    private $apply;
+
+    /**
+     * @param int  $sourceShop
+     * @param int  $targetShop
+     * @param int  $fromLang
+     * @param int  $toLang
+     * @param bool $apply
+     */
+    public function __construct($sourceShop, $targetShop, $fromLang, $toLang, $apply)
+    {
+        $this->sourceShop = (int) $sourceShop;
+        $this->targetShop = (int) $targetShop;
+        $this->fromLang = (int) $fromLang;
+        $this->toLang = (int) $toLang;
+        $this->apply = (bool) $apply;
     }
 
     public function run(): int
