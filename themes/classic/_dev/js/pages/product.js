@@ -609,6 +609,7 @@ $(document).ready(function () {
         
         // Utiliser la fonction réutilisable pour les éléments dealt
         updateDealtElements();
+        $('#cart-page-loader').remove();
     });
 
     // Page produit uniquement
@@ -711,6 +712,22 @@ $(document).ready(function () {
         }
     });
 
+    // 1. Ajoute le loader lors d'une suppression d'un produit du panier
+    $(document).on('click', 'body#cart [data-link-action="delete-from-cart"]', function () {
+        if ($('#cart-page-loader').length) {
+            return;
+        }
+        $('body').append(
+            '<div id="cart-page-loader" style="position:fixed;inset:0;z-index:10000;background:rgba(255,255,255,.65);display:flex;align-items:center;justify-content:center;">' +
+            '<svg width="48" height="48" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="#026473">' +
+            '<circle cx="50" cy="50" r="35" stroke-width="10" stroke="currentColor" stroke-dasharray="164" stroke-linecap="round" fill="none">' +
+            '<animateTransform attributeName="transform" type="rotate" dur="1s" repeatCount="indefinite" from="0 50 50" to="360 50 50"/>' +
+            '</circle>' +
+            '</svg>' +
+            '</div>'
+        );
+    });
+
     // 2. Cache le loader
     function hideLoader() {
         $('.inline-loader').remove(); // supprime tous les loaders ajoutés
@@ -739,6 +756,11 @@ $(document).ready(function () {
     if (typeof prestashop !== 'undefined' && typeof prestashop.on === 'function') {
         prestashop.on('updateCart', function () {
             hideLoader();
+        });
+        prestashop.on('handleError', function (event) {
+            if (event && (event.eventType === 'updateProductInCart' || event.eventType === 'updateCart')) {
+                $('#cart-page-loader').remove();
+            }
         });
     }
 
