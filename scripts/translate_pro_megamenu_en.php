@@ -18,9 +18,15 @@
  *   --from-iso=fr
  *   --iso=en
  *
- * Libellés FR propres à l’espace pro (absents du menu particulier) :
+ * Libellés forcés (absents du particulier, ou plusieurs anglais possibles) :
  *   Occultation → Privacy screen
  *   Lames en PVC → PVC blades
+ *   Clôture filet piscine → Swimming pool mesh fence
+ *   Accessoires pour brise-vue → Accessories for privacy screens
+ *   Agrafeuse manuelle → Manual stapler
+ *   Panneau noisetier → Hazelwood panel
+ *   Bordure de jardin → Garden edging
+ *   Clôture composite → Composite fence
  *
  * Avec --apply : cache module ets_megamenu vidé, et cache pagecache si le module est actif.
  * Un JSONL de rollback est écrit dans var/logs/.
@@ -69,7 +75,8 @@ $translator = new ProMegaMenuEnTranslator($sourceShop, $targetShop, $fromId, $to
 exit($translator->run());
 
 /**
- * Libellés FR qui n’existent pas sur la boutique particulier.
+ * Libellés FR absents du particulier, ou présents avec plusieurs anglais.
+ * Utilisés seulement quand le bloc pro ne correspond pas à un bloc particulier précis.
  *
  * @return array<string,string>
  */
@@ -78,6 +85,12 @@ function proMegaMenuOverrides(): array
     return [
         'Occultation' => 'Privacy screen',
         'Lames en PVC' => 'PVC blades',
+        'Clôture filet piscine' => 'Swimming pool mesh fence',
+        'Accessoires pour brise-vue' => 'Accessories for privacy screens',
+        'Agrafeuse manuelle' => 'Manual stapler',
+        'Panneau noisetier' => 'Hazelwood panel',
+        'Bordure de jardin' => 'Garden edging',
+        'Clôture composite' => 'Composite fence',
     ];
 }
 
@@ -261,6 +274,9 @@ final class ProMegaMenuEnTranslator
 
     /** @var array<int,array{table:string,id:int,field:string,old:string}> */
     private array $rollback = [];
+
+    /** @var array<string,string> */
+    private $skippedAmbiguous = [];
 
     /** @var int */
     private $sourceShop;
@@ -548,6 +564,7 @@ final class ProMegaMenuEnTranslator
             return proMegaMenuOverrides()[$fr];
         }
         if (!empty($this->ambiguous[$bucket][$fr])) {
+            $this->skippedAmbiguous[$fr] = $bucket;
             return null;
         }
         if (isset($this->dict[$bucket][$fr]) && count($this->dict[$bucket][$fr]) === 1) {
@@ -560,6 +577,9 @@ final class ProMegaMenuEnTranslator
         ) {
             $value = (string) array_key_first($this->dict['content'][$fr]);
         } else {
+            if (!empty($this->ambiguous['content'][$fr])) {
+                $this->skippedAmbiguous[$fr] = 'content';
+            }
             return null;
         }
         if ($value === '' || $value === $fr) {
@@ -764,15 +784,9 @@ final class ProMegaMenuEnTranslator
             echo '- ' . $change['table'] . ' #' . $change['id'] . ' ' . $change['field']
                 . ' : «' . $change['from'] . '» → «' . $change['to'] . "»\n";
         }
-        $ambiguous = [];
-        foreach ($this->ambiguous as $bucket => $items) {
-            foreach (array_keys($items) as $fr) {
-                $ambiguous[$fr] = $bucket;
-            }
-        }
-        if ($ambiguous) {
-            echo "\nLibellés ambigus (non copiés) : " . count($ambiguous) . "\n";
-            foreach ($ambiguous as $fr => $bucket) {
+        if ($this->skippedAmbiguous) {
+            echo "\nLibellés ambigus laissés en français : " . count($this->skippedAmbiguous) . "\n";
+            foreach ($this->skippedAmbiguous as $fr => $bucket) {
                 echo '- [' . $bucket . '] ' . $fr . "\n";
             }
         }
