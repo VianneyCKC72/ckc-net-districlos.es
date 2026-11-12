@@ -46,6 +46,11 @@
       color:#000;
     }
   }
+
+  .dealt-cart-services-container:not(:has(.dealt-cart-service-box)) {
+    display: none;
+  }
+
   @media (max-width: 991px){
     .cart-grid-right > .text-right{
       margin-bottom: 10px;
