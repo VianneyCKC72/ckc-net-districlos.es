@@ -249,7 +249,7 @@ class ckc_label extends Module
                         'required' => true,
                         'rows' => 3,
                         'cols' => 40,
-                        'desc' => $this->l('Autorisé : <strong>, <em>, <br>, ↓. Un onglet par langue. Ex. : ↓ <strong><em>PRIX<br>DÉGRESSIF</em></strong>'),
+                        'desc' => $this->l('Autorisé : <strong>, <em>, <br>, <span style="color: #FF0C4D;">, ↓. Un onglet par langue. Ex. : ↓ <strong><em>PRIX<br>DÉGRESSIF</em></strong>'),
                     ],
                     [
                         'type' => 'html',
@@ -503,10 +503,24 @@ class ckc_label extends Module
         return $errors;
     }
 
-    /** HTML limité : strong/b/em/i/br + flèche ↓ en tête agrandie. */
+    /** HTML limité : strong/b/em/i/br/span(color) + flèche ↓ en tête agrandie. */
     private function sanitizeLabelText($text)
     {
-        $text = strip_tags(preg_replace('/\r\n|\r|\n/', '<br>', (string) $text), '<strong><b><em><i><br>');
+        $text = strip_tags(preg_replace('/\r\n|\r|\n/', '<br>', (string) $text), '<strong><b><em><i><br><span>');
+        $text = (string) preg_replace_callback(
+            '#<\s*span\b([^>]*)>#i',
+            static function ($matches) {
+                if (!preg_match('/style\s*=\s*(["\'])(.*?)\1/i', $matches[1], $styleMatch)) {
+                    return '<span>';
+                }
+                if (!preg_match('/^\s*color\s*:\s*(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6})\s*;?\s*$/i', $styleMatch[2], $colorMatch)) {
+                    return '<span>';
+                }
+
+                return '<span style="color: ' . strtoupper($colorMatch[1]) . ';">';
+            },
+            $text
+        );
         $text = trim($text);
 
         return preg_replace('/^↓\s*/u', '<b class="ckc-label-arrow">↓</b>', $text);
