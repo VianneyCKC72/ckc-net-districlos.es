@@ -16,11 +16,21 @@ class CartRuleRepeatDiscountService
     public const CFG_DISCOUNT = 'DTC_CARTRULE_REPEAT_DISCOUNT';
     public const CFG_TAX = 'DTC_CARTRULE_REPEAT_TAX';
     public const CFG_ID_CART_RULE = 'DTC_CARTRULE_REPEAT_ID';
+    /** IDs produits exclus du calcul de palier (CSV). */
+    public const CFG_EXCLUDE_PRODUCTS = 'DTC_CARTRULE_REPEAT_EXCLUDE_PRODUCTS';
+    /** IDs catégories exclues du calcul de palier (CSV). */
+    public const CFG_EXCLUDE_CATEGORIES = 'DTC_CARTRULE_REPEAT_EXCLUDE_CATEGORIES';
 
     private const RULE_CODE_MARKER = 'DTC_REPEAT';
 
     /** @var bool Évite la récursion actionCartSave → addCartRule → actionCartSave */
     private static $syncing = false;
+
+    /** @var array<int, true>|null Cache requête des ids exclus (produits) */
+    private static $excludeProductsCache = null;
+
+    /** @var array<int, true>|null Cache requête des ids exclus (catégories) */
+    private static $excludeCategoriesCache = null;
 
     public static function getDefaults(): array
     {
@@ -29,6 +39,8 @@ class CartRuleRepeatDiscountService
             'step' => 500.0,
             'discount' => 75.0,
             'tax' => 1,
+            'exclude_products' => '',
+            'exclude_categories' => '',
         ];
     }
 
@@ -66,6 +78,7 @@ class CartRuleRepeatDiscountService
 
     /**
      * Nombre de paliers atteints (0 si inactif / panier insuffisant).
+     * Le total éligible ignore les produits / catégories exclus en config.
      */
     public static function getTierCount(Cart $cart): int
     {
@@ -78,9 +91,108 @@ class CartRuleRepeatDiscountService
             return 0;
         }
 
-        $total = (float) $cart->getOrderTotal(self::useTax(), Cart::ONLY_PRODUCTS);
+        $total = self::getEligibleProductsTotal($cart);
 
         return (int) floor($total / $step);
+    }
+
+    /**
+     * Total produits du panier pris en compte pour les paliers.
+     * Sans exclusion → même chemin que le core (getOrderTotal).
+     * Avec exclusion → 1 parcours des lignes + 1 requête catégories max.
+     */
+    public static function getEligibleProductsTotal(Cart $cart): float
+    {
+        $excludeProducts = self::getExcludedProductIds();
+        $excludeCategories = self::getExcludedCategoryIds();
+
+        if (!$excludeProducts && !$excludeCategories) {
+            return (float) $cart->getOrderTotal(self::useTax(), Cart::ONLY_PRODUCTS);
+        }
+
+        $products = $cart->getProducts(true);
+        if (empty($products)) {
+            return 0.0;
+        }
+
+        $excludedByCategory = [];
+        if ($excludeCategories) {
+            $cartProductIds = [];
+            foreach ($products as $product) {
+                $cartProductIds[(int) $product['id_product']] = true;
+            }
+            $excludedByCategory = self::findProductIdsInCategories(
+                array_keys($cartProductIds),
+                array_keys($excludeCategories)
+            );
+        }
+
+        $useTax = self::useTax();
+        $total = 0.0;
+
+        foreach ($products as $product) {
+            $idProduct = (int) $product['id_product'];
+            if (isset($excludeProducts[$idProduct]) || isset($excludedByCategory[$idProduct])) {
+                continue;
+            }
+
+            $total += $useTax
+                ? (float) $product['total_wt']
+                : (float) $product['total'];
+        }
+
+        return $total;
+    }
+
+    /**
+     * @return array<int, true>
+     */
+    public static function getExcludedProductIds(): array
+    {
+        if (self::$excludeProductsCache !== null) {
+            return self::$excludeProductsCache;
+        }
+
+        self::$excludeProductsCache = self::parseIdList(
+            (string) Configuration::get(self::CFG_EXCLUDE_PRODUCTS)
+        );
+
+        return self::$excludeProductsCache;
+    }
+
+    /**
+     * @return array<int, true>
+     */
+    public static function getExcludedCategoryIds(): array
+    {
+        if (self::$excludeCategoriesCache !== null) {
+            return self::$excludeCategoriesCache;
+        }
+
+        self::$excludeCategoriesCache = self::parseIdList(
+            (string) Configuration::get(self::CFG_EXCLUDE_CATEGORIES)
+        );
+
+        return self::$excludeCategoriesCache;
+    }
+
+    /**
+     * Normalise une saisie CSV d'IDs (espace / point-virgule acceptés) → "1,2,3".
+     */
+    public static function normalizeIdList(string $raw): string
+    {
+        $ids = self::parseIdList($raw);
+
+        return $ids ? implode(',', array_keys($ids)) : '';
+    }
+
+    /**
+     * Invalide les caches statiques (après save config / tests).
+     */
+    public static function clearExclusionCache(): void
+    {
+        self::$excludeProductsCache = null;
+        self::$excludeCategoriesCache = null;
     }
 
     /**
@@ -227,5 +339,67 @@ class CartRuleRepeatDiscountService
     private static function formatAmount(float $amount): string
     {
         return rtrim(rtrim(number_format($amount, 2, '.', ''), '0'), '.');
+    }
+
+    /**
+     * @return array<int, true>
+     */
+    private static function parseIdList(string $raw): array
+    {
+        $raw = trim($raw);
+        if ($raw === '') {
+            return [];
+        }
+
+        $parts = preg_split('/[\s,;]+/', $raw, -1, PREG_SPLIT_NO_EMPTY);
+        if (!$parts) {
+            return [];
+        }
+
+        $ids = [];
+        foreach ($parts as $part) {
+            $id = (int) $part;
+            if ($id > 0) {
+                $ids[$id] = true;
+            }
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Produits du panier appartenant à au moins une catégorie exclue (1 requête).
+     *
+     * @param int[] $productIds
+     * @param int[] $categoryIds
+     *
+     * @return array<int, true>
+     */
+    private static function findProductIdsInCategories(array $productIds, array $categoryIds): array
+    {
+        $productIds = array_values(array_filter(array_map('intval', $productIds)));
+        $categoryIds = array_values(array_filter(array_map('intval', $categoryIds)));
+
+        if (!$productIds || !$categoryIds) {
+            return [];
+        }
+
+        $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            'SELECT DISTINCT `id_product`'
+            . ' FROM `' . _DB_PREFIX_ . 'category_product`'
+            . ' WHERE `id_product` IN (' . implode(',', $productIds) . ')'
+            . ' AND `id_category` IN (' . implode(',', $categoryIds) . ')'
+        );
+
+        if (!$rows) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[(int) $row['id_product']] = true;
+        }
+
+        return $result;
     }
 }
