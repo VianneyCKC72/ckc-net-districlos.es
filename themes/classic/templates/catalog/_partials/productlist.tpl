@@ -25,40 +25,69 @@
 
 {capture assign="productClasses"}{if !empty($productClass)}{$productClass}{else}col-xs-12 col-sm-6 col-lg-3 col-xl-3{/if}{/capture}
 
-{* Bannière listing catégorie — campagne Destockage *}
+{* Bannière listing catégorie — campagne Black2weeks *}
 {assign var=_cat_id value=0}
+{assign var=category_listing_banner_file value=''}
 {if $page.page_name == 'category'}
     {assign var=_cat_id value=Context::getContext()->controller->getCategory()->id}
 {/if}
-{if in_array($_cat_id, [169, 240, 278, 339, 337, 295, 243, 279, 323, 293, 171, 280, 294])}
-    {if isset($language.iso_code) && $language.iso_code == 'en'}
-        {assign var=category_listing_banner_file value='destockage-categorie-portails-en.webp'}
-    {else}
-        {assign var=category_listing_banner_file value='destockage-categorie-portails.webp'}
-    {/if}
-{elseif isset($language.iso_code) && $language.iso_code == 'en'}
-    {assign var=category_listing_banner_file value='destockage-categorie-en.webp'}
+{if isset($language.iso_code) && $language.iso_code == 'en'}
+    {assign var=_is_en value=1}
 {else}
-    {assign var=category_listing_banner_file value='destockage-categorie.webp'}
+    {assign var=_is_en value=0}
+{/if}
+{* Clôture alu + composite *}
+{if in_array($_cat_id, [215, 356, 216, 438, 439, 441])}
+    {if $_is_en}
+        {assign var=category_listing_banner_file value='black2weeks-categorie-alu-composite-en.webp'}
+    {else}
+        {assign var=category_listing_banner_file value='black2weeks-categorie-alu-composite.webp'}
+    {/if}
+{* Clôture / grillage rigide *}
+{elseif in_array($_cat_id, [3, 93, 94, 96, 95, 97, 153, 92, 324])}
+    {if $_is_en}
+        {assign var=category_listing_banner_file value='black2weeks-categorie-rigide-en.webp'}
+    {else}
+        {assign var=category_listing_banner_file value='black2weeks-categorie-rigide.webp'}
+    {/if}
+{* Portail de jardin (Garden) *}
+{elseif in_array($_cat_id, [114])}
+    {if $_is_en}
+        {assign var=category_listing_banner_file value='black2weeks-categorie-garden-en.webp'}
+    {else}
+        {assign var=category_listing_banner_file value='black2weeks-categorie-garden.webp'}
+    {/if}
+{* Packs portail + portillon alu — Portail battant / coulissant (alu) *}
+{elseif in_array($_cat_id, [169, 240, 278, 339, 337, 295, 243, 279, 323, 293])}
+    {if $_is_en}
+        {assign var=category_listing_banner_file value='black2weeks-categorie-packs-portail-en.webp'}
+    {else}
+        {assign var=category_listing_banner_file value='black2weeks-categorie-packs-portail.webp'}
+    {/if}
 {/if}
 
 <div class="products{if !empty($cssClass)} {$cssClass}{/if} {if (isset($smarty.cookies.show_list)) && ($page.page_name == 'category' ||  $page.page_name == 'search')} list_view {/if}">
     {foreach from=$products item="product" key="position" name=productsList}
         {include file="catalog/_partials/miniatures/product.tpl" product=$product position=$position productClasses=$productClasses}
 
-        {* Bannière Destockage (mobile + desktop) *}
-        {if !$pro.env && $page.page_name == 'category' && isset($listing.pagination.items_shown_from) && $listing.pagination.items_shown_from == 1 && !isset($smarty.cookies.show_list)}
+        {* Bannière Black2weeks (mobile + desktop) — uniquement sur catégories mappées *}
+        {if !$pro.env && $category_listing_banner_file && $page.page_name == 'category' && isset($listing.pagination.items_shown_from) && $listing.pagination.items_shown_from == 1 && !isset($smarty.cookies.show_list)}
             {if $smarty.foreach.productsList.iteration == 1}
                 <div class="category-listing-banner category-listing-banner--mobile col-6 col-sm-6 d-md-none">
                     <div class="category-listing-banner__inner">
-                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/{$category_listing_banner_file}" alt="{l s='Destockage' d='Shop.Theme.Custommodules'}" loading="lazy" width="400" height="711">
+                        <a href="{$link->getCMSLink(677)|escape:'html':'UTF-8'}">
+                            <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/{$category_listing_banner_file}" alt="{l s='BLACK2WEEKS' d='Shop.Theme.Custommodules'}" loading="lazy" width="400" height="711">
+                        </a>
                     </div>
                 </div>
             {/if}
-            {if $smarty.foreach.productsList.iteration == 3}
+            {* Desktop : après le 3e produit, ou après le dernier s'il y en a moins de 3 (ex. cat. 114) *}
+            {if $smarty.foreach.productsList.iteration == 3 || ($smarty.foreach.productsList.last && $smarty.foreach.productsList.total < 3)}
                 <div class="category-listing-banner category-listing-banner--desktop d-none d-lg-block col-lg-3 col-xl-3">
                     <div class="category-listing-banner__inner">
-                        <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/{$category_listing_banner_file}" alt="{l s='Destockage' d='Shop.Theme.Custommodules'}" loading="lazy" width="400" height="711">
+                        <a href="{$link->getCMSLink(677)|escape:'html':'UTF-8'}">
+                            <img class="img-fluid category-listing-banner__img" src="{$urls.theme_assets}img/{$category_listing_banner_file}" alt="{l s='BLACK2WEEKS' d='Shop.Theme.Custommodules'}" loading="lazy" width="400" height="711">
+                        </a>
                     </div>
                 </div>
             {/if}
