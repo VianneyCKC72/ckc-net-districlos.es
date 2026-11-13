@@ -11,6 +11,7 @@ class dtc_bandeau_soldes extends Module
         'DTC_BANDEAU_SOLDES_BADGE' => 'BONS PLANS',
         'DTC_BANDEAU_SOLDES_BADGE_COLOR_BG' => '#026473',
         'DTC_BANDEAU_SOLDES_BADGE_COLOR_TEXT' => '#FFFFFF',
+        'DTC_BANDEAU_SOLDES_BADGE_POSITION' => 'start',
         'DTC_BANDEAU_SOLDES_TEXT' => '<strong>PROJET EN FÊTE</strong> - <strong>75€</strong> tous les <strong>500€</strong> d\'achat',
         'DTC_BANDEAU_SOLDES_LINK' => '/400-bons-plans',
         'DTC_BANDEAU_SOLDES_DATE_END' => '',
@@ -37,7 +38,7 @@ class dtc_bandeau_soldes extends Module
         'DTC_BANDEAU_SOLDES_NEXT_COLOR_TEXT' => 'DTC_BANDEAU_SOLDES_COLOR_TEXT',
     ];
 
-    private const ALLOWED_HTML_TAGS = '<strong><b><em><i><br>';
+    private const ALLOWED_HTML_TAGS = '<strong><b><em><i><br><span>';
 
     public function __construct()
     {
@@ -189,9 +190,14 @@ class dtc_bandeau_soldes extends Module
                 $this->cfg('DTC_BANDEAU_SOLDES_BADGE_COLOR_TEXT'),
                 self::DEFAULTS['DTC_BANDEAU_SOLDES_BADGE_COLOR_TEXT']
             ),
-            'text' => htmlspecialchars_decode(
-                $this->trans($this->cfg('DTC_BANDEAU_SOLDES_TEXT'), [], 'Shop.Theme.Customdtc'),
-                ENT_QUOTES
+            'badge_position' => $this->sanitizeBadgePosition(
+                $this->cfg('DTC_BANDEAU_SOLDES_BADGE_POSITION')
+            ),
+            'text' => $this->sanitizeBannerHtml(
+                htmlspecialchars_decode(
+                    $this->trans($this->cfg('DTC_BANDEAU_SOLDES_TEXT'), [], 'Shop.Theme.Customdtc'),
+                    ENT_QUOTES
+                )
             ),
             'link' => $this->localizeStorefrontLink((string) $this->cfg('DTC_BANDEAU_SOLDES_LINK')),
             'color_bg' => $this->sanitizeColor(
@@ -256,6 +262,10 @@ class dtc_bandeau_soldes extends Module
                 Tools::getValue('DTC_BANDEAU_SOLDES_BADGE_COLOR_TEXT'),
                 self::DEFAULTS['DTC_BANDEAU_SOLDES_BADGE_COLOR_TEXT']
             )
+        );
+        Configuration::updateGlobalValue(
+            'DTC_BANDEAU_SOLDES_BADGE_POSITION',
+            $this->sanitizeBadgePosition(Tools::getValue('DTC_BANDEAU_SOLDES_BADGE_POSITION'))
         );
         Configuration::updateGlobalValue(
             'DTC_BANDEAU_SOLDES_TEXT',
@@ -335,7 +345,11 @@ class dtc_bandeau_soldes extends Module
             ['id' => 'on', 'value' => 1, 'label' => $this->l('Oui')],
             ['id' => 'off', 'value' => 0, 'label' => $this->l('Non')],
         ];
-        $htmlHelp = $this->l('Gras : <strong>mot</strong> — Italique : <em>mot</em>.');
+        $htmlHelp = $this->trans(
+            'Gras : <strong>mot</strong> — Italique : <em>mot</em> — Couleur : <span style="color: #FF0C4D;">mot</span>.',
+            [],
+            'Modules.Dtcbandeausoldes.Admin'
+        );
 
         return $helper->generateForm([[
             'form' => [
@@ -369,6 +383,19 @@ class dtc_bandeau_soldes extends Module
                         'type' => 'color',
                         'label' => $this->trans('Couleur du texte du badge', [], 'Modules.Dtcbandeausoldes.Admin'),
                         'name' => 'DTC_BANDEAU_SOLDES_BADGE_COLOR_TEXT',
+                    ],
+                    [
+                        'type' => 'select',
+                        'label' => $this->trans('Position du badge', [], 'Modules.Dtcbandeausoldes.Admin'),
+                        'name' => 'DTC_BANDEAU_SOLDES_BADGE_POSITION',
+                        'options' => [
+                            'query' => [
+                                ['id' => 'start', 'name' => $this->trans('Au début du texte', [], 'Modules.Dtcbandeausoldes.Admin')],
+                                ['id' => 'end', 'name' => $this->trans('À la fin du texte', [], 'Modules.Dtcbandeausoldes.Admin')],
+                            ],
+                            'id' => 'id',
+                            'name' => 'name',
+                        ],
                     ],
                     [
                         'type' => 'textarea',
@@ -525,17 +552,46 @@ class dtc_bandeau_soldes extends Module
         $html = strip_tags((string) $html, self::ALLOWED_HTML_TAGS);
 
         return (string) preg_replace_callback(
-            '#<\s*(/?)\s*(strong|b|em|i|br)\b[^>]*>#i',
+            '#<\s*(/?)\s*(strong|b|em|i|br|span)\b([^>]*)>#i',
             static function ($matches) {
+                $closing = ($matches[1] === '/');
                 $tag = Tools::strtolower($matches[2]);
                 if ($tag === 'br') {
                     return '<br>';
                 }
+                if ($closing) {
+                    return '</' . $tag . '>';
+                }
+                if ($tag === 'span') {
+                    $color = dtc_bandeau_soldes::extractInlineColorStyle($matches[3]);
 
-                return '<' . ($matches[1] === '/' ? '/' : '') . $tag . '>';
+                    return $color !== '' ? '<span style="color: ' . $color . ';">' : '<span>';
+                }
+
+                return '<' . $tag . '>';
             },
             $html
         );
+    }
+
+    private function sanitizeBadgePosition($value)
+    {
+        return ($value === 'end') ? 'end' : 'start';
+    }
+
+    /**
+     * Autorise uniquement style="color: #RGB|#RRGGBB" (admin-controlled HTML).
+     */
+    private static function extractInlineColorStyle($attrs)
+    {
+        if (!preg_match('/style\s*=\s*(["\'])(.*?)\1/i', (string) $attrs, $styleMatch)) {
+            return '';
+        }
+        if (!preg_match('/^\s*color\s*:\s*(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6})\s*;?\s*$/i', $styleMatch[2], $colorMatch)) {
+            return '';
+        }
+
+        return strtoupper($colorMatch[1]);
     }
 
     private function sanitizeDatetime($value)

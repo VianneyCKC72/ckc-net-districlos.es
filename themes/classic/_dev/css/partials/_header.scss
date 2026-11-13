@@ -767,3 +767,7 @@ body.espace_pro.-pro{
     }
   }
 }
+body.axeptio-banner-open .fancybox-container:has(#everpspopup_block_center) {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}

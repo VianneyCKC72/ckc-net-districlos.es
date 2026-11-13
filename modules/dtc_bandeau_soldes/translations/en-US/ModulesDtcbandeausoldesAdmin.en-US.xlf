@@ -22,6 +22,22 @@
         <source>Vide = conserver la couleur actuelle.</source>
         <target>Empty = keep the current color.</target>
       </trans-unit>
+      <trans-unit id="dtc_banner_html_help">
+        <source>Gras : &lt;strong&gt;mot&lt;/strong&gt; — Italique : &lt;em&gt;mot&lt;/em&gt; — Couleur : &lt;span style="color: #FF0C4D;"&gt;mot&lt;/span&gt;.</source>
+        <target>Bold: &lt;strong&gt;word&lt;/strong&gt; — Italic: &lt;em&gt;word&lt;/em&gt; — Color: &lt;span style="color: #FF0C4D;"&gt;word&lt;/span&gt;.</target>
+      </trans-unit>
+      <trans-unit id="dtc_banner_badge_position">
+        <source>Position du badge</source>
+        <target>Badge position</target>
+      </trans-unit>
+      <trans-unit id="dtc_banner_badge_position_start">
+        <source>Au début du texte</source>
+        <target>At the beginning of the text</target>
+      </trans-unit>
+      <trans-unit id="dtc_banner_badge_position_end">
+        <source>À la fin du texte</source>
+        <target>At the end of the text</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

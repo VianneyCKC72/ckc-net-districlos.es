@@ -204,6 +204,22 @@ class FrontController extends FrontControllerCore
     protected function assignGeneralPurposeVariables()
     {
         parent::assignGeneralPurposeVariables();
+
+        $deliveryOption = $this->context->cart->getDeliveryOption(null, false, false);
+        $idAddress = (int) $this->context->cart->id_address_delivery;
+        $selected = ($idAddress && isset($deliveryOption[$idAddress]))
+            ? (string) $deliveryOption[$idAddress]
+            : '';
+        $idCarrier = (int) $selected;
+        $idReference = 0;
+        if ($idCarrier > 0) {
+            $carrier = new Carrier($idCarrier);
+            if (Validate::isLoadedObject($carrier)) {
+                $idReference = (int) $carrier->id_reference;
+            }
+        }
+        $this->context->smarty->assign('selected_carrier_id_reference', $idReference);
+
         $presentedCart = $this->context->smarty->getTemplateVars('cart');
         if (!$presentedCart || !Validate::isLoadedObject($this->context->cart)) {
             return;

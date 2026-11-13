@@ -7,6 +7,7 @@
  * Fonctionnalités :
  *  - Condition "nombre minimum de commandes validées" (par règle panier)
  *  - Remise répétitive configurable : -X € tous les Y € (sans plafond)
+ *  - Exclusion produits / catégories du calcul des paliers
  *
  * La table `ps_cart_rule` du core n'est jamais altérée structurellement.
  */
@@ -23,7 +24,7 @@ class Dtc_Cartrule extends Module
     {
         $this->name = 'dtc_cartrule';
         $this->tab = 'pricing_promotion';
-        $this->version = '1.1.0';
+        $this->version = '1.2.0';
         $this->author = 'Districlos';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7.0.0', 'max' => _PS_VERSION_];
@@ -69,6 +70,8 @@ class Dtc_Cartrule extends Module
             CartRuleRepeatDiscountService::CFG_DISCOUNT,
             CartRuleRepeatDiscountService::CFG_TAX,
             CartRuleRepeatDiscountService::CFG_ID_CART_RULE,
+            CartRuleRepeatDiscountService::CFG_EXCLUDE_PRODUCTS,
+            CartRuleRepeatDiscountService::CFG_EXCLUDE_CATEGORIES,
             'DTC_CARTRULE_REPEAT_NO_HIGHLIGHT',
         ] as $key) {
             Configuration::deleteByName($key);
@@ -88,6 +91,12 @@ class Dtc_Cartrule extends Module
             $discount = (float) str_replace(',', '.', (string) Tools::getValue(CartRuleRepeatDiscountService::CFG_DISCOUNT));
             $active = (int) Tools::getValue(CartRuleRepeatDiscountService::CFG_ACTIVE);
             $tax = (int) Tools::getValue(CartRuleRepeatDiscountService::CFG_TAX);
+            $excludeProducts = CartRuleRepeatDiscountService::normalizeIdList(
+                (string) Tools::getValue(CartRuleRepeatDiscountService::CFG_EXCLUDE_PRODUCTS)
+            );
+            $excludeCategories = CartRuleRepeatDiscountService::normalizeIdList(
+                (string) Tools::getValue(CartRuleRepeatDiscountService::CFG_EXCLUDE_CATEGORIES)
+            );
 
             if ($step <= 0 || $discount <= 0) {
                 $output .= $this->displayError($this->l('Le palier et la remise doivent être des montants strictement positifs.'));
@@ -96,6 +105,9 @@ class Dtc_Cartrule extends Module
                 Configuration::updateValue(CartRuleRepeatDiscountService::CFG_STEP, $step);
                 Configuration::updateValue(CartRuleRepeatDiscountService::CFG_DISCOUNT, $discount);
                 Configuration::updateValue(CartRuleRepeatDiscountService::CFG_TAX, $tax ? 1 : 0);
+                Configuration::updateValue(CartRuleRepeatDiscountService::CFG_EXCLUDE_PRODUCTS, $excludeProducts);
+                Configuration::updateValue(CartRuleRepeatDiscountService::CFG_EXCLUDE_CATEGORIES, $excludeCategories);
+                CartRuleRepeatDiscountService::clearExclusionCache();
 
                 CartRuleRepeatDiscountService::ensureCartRule();
 
@@ -159,6 +171,18 @@ class Dtc_Cartrule extends Module
                         ],
                     ],
                     [
+                        'type' => 'text',
+                        'label' => $this->l('Produits exclus'),
+                        'name' => CartRuleRepeatDiscountService::CFG_EXCLUDE_PRODUCTS,
+                        'desc' => $this->l('IDs produits exclus du calcul des paliers (ex. : 12,45,78). Ces produits ne comptent pas dans les 500 €.'),
+                    ],
+                    [
+                        'type' => 'text',
+                        'label' => $this->l('Catégories exclues'),
+                        'name' => CartRuleRepeatDiscountService::CFG_EXCLUDE_CATEGORIES,
+                        'desc' => $this->l('IDs catégories exclues du calcul des paliers (ex. : 3,15). Toute association produit ↔ catégorie compte.'),
+                    ],
+                    [
                         'type' => 'html',
                         'name' => 'dtc_repeat_info',
                         'html_content' => '<div class="alert alert-info" style="margin:0">'
@@ -208,6 +232,16 @@ class Dtc_Cartrule extends Module
                     ? Configuration::get(CartRuleRepeatDiscountService::CFG_TAX)
                     : $defaults['tax']
             ),
+            CartRuleRepeatDiscountService::CFG_EXCLUDE_PRODUCTS => (string) (
+                Configuration::get(CartRuleRepeatDiscountService::CFG_EXCLUDE_PRODUCTS) !== false
+                    ? Configuration::get(CartRuleRepeatDiscountService::CFG_EXCLUDE_PRODUCTS)
+                    : $defaults['exclude_products']
+            ),
+            CartRuleRepeatDiscountService::CFG_EXCLUDE_CATEGORIES => (string) (
+                Configuration::get(CartRuleRepeatDiscountService::CFG_EXCLUDE_CATEGORIES) !== false
+                    ? Configuration::get(CartRuleRepeatDiscountService::CFG_EXCLUDE_CATEGORIES)
+                    : $defaults['exclude_categories']
+            ),
         ];
 
         return $helper->generateForm([$fieldsForm]);
@@ -220,6 +254,8 @@ class Dtc_Cartrule extends Module
         Configuration::updateValue(CartRuleRepeatDiscountService::CFG_STEP, $defaults['step']);
         Configuration::updateValue(CartRuleRepeatDiscountService::CFG_DISCOUNT, $defaults['discount']);
         Configuration::updateValue(CartRuleRepeatDiscountService::CFG_TAX, $defaults['tax']);
+        Configuration::updateValue(CartRuleRepeatDiscountService::CFG_EXCLUDE_PRODUCTS, $defaults['exclude_products']);
+        Configuration::updateValue(CartRuleRepeatDiscountService::CFG_EXCLUDE_CATEGORIES, $defaults['exclude_categories']);
     }
 
     /**
@@ -229,6 +265,13 @@ class Dtc_Cartrule extends Module
     {
         if (!Configuration::hasKey(CartRuleRepeatDiscountService::CFG_STEP)) {
             $this->installDefaultConfig();
+        }
+
+        if (!Configuration::hasKey(CartRuleRepeatDiscountService::CFG_EXCLUDE_PRODUCTS)) {
+            Configuration::updateValue(CartRuleRepeatDiscountService::CFG_EXCLUDE_PRODUCTS, '');
+        }
+        if (!Configuration::hasKey(CartRuleRepeatDiscountService::CFG_EXCLUDE_CATEGORIES)) {
+            Configuration::updateValue(CartRuleRepeatDiscountService::CFG_EXCLUDE_CATEGORIES, '');
         }
 
         $this->registerHook('actionCartSave');

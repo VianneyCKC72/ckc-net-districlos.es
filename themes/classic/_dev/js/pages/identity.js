@@ -62,5 +62,9 @@ $(document).ready(function () {
                 $(this).val("")
             }
         })
+
+        if (localStorage.getItem("psgdpr") === "1") {
+            $("input[name=psgdpr]").prop("checked", true).val("1");
+        }
     }
 });
