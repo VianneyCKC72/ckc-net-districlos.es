@@ -27,6 +27,10 @@
  *   Panneau noisetier → Hazelwood panel
  *   Bordure de jardin → Garden edging
  *   Clôture composite → Composite fence
+ *   Module en verre → Glass pool fence
+ *   Panneau de clôture piscine → Pool fence panel
+ *   Poteau de clôture piscine → Pool fence post
+ *   Toile Fort → Strong Fabric
  *
  * Avec --apply : cache module ets_megamenu vidé, et cache pagecache si le module est actif.
  * Un JSONL de rollback est écrit dans var/logs/.
@@ -91,6 +95,10 @@ function proMegaMenuOverrides(): array
         'Panneau noisetier' => 'Hazelwood panel',
         'Bordure de jardin' => 'Garden edging',
         'Clôture composite' => 'Composite fence',
+        'Module en verre' => 'Glass pool fence',
+        'Panneau de clôture piscine' => 'Pool fence panel',
+        'Poteau de clôture piscine' => 'Pool fence post',
+        'Toile Fort' => 'Strong Fabric',
     ];
 }
 
@@ -508,22 +516,29 @@ final class ProMegaMenuEnTranslator
             && count($frNodes) === count($matched[$enKey]);
 
         foreach ($enNodes as $i => $current) {
-            $source = $frNodes[$i] ?? $current;
-            if ($current !== '' && $current !== $source) {
+            if ($current === '') {
                 continue;
             }
+            $source = $frNodes[$i] ?? '';
+            $aligned = ($source !== '' && $current === $source);
             $replacement = null;
-            $sameSourceNode = $positional && ($matched[$frKey][$i] ?? '') === $source;
-            if ($sameSourceNode && ($matched[$enKey][$i] ?? '') !== '' && $matched[$enKey][$i] !== $current) {
-                $replacement = $matched[$enKey][$i];
-            } else {
-                $replacement = $this->resolve($bucket, $source);
-            }
-            if ($replacement === null) {
-                if ($source !== '') {
-                    $this->markMissing($source);
+            if ($aligned) {
+                $sameSourceNode = $positional && ($matched[$frKey][$i] ?? '') === $source;
+                if ($sameSourceNode && ($matched[$enKey][$i] ?? '') !== '' && $matched[$enKey][$i] !== $current) {
+                    $replacement = $matched[$enKey][$i];
+                } else {
+                    $replacement = $this->resolve($bucket, $source);
                 }
-                continue;
+                if ($replacement === null) {
+                    $this->markMissing($source);
+                    continue;
+                }
+            } else {
+                // Le HTML EN ne suit plus le HTML FR (lien en plus). Le texte peut rester français.
+                $replacement = $this->resolve($bucket, $current);
+                if ($replacement === null) {
+                    continue;
+                }
             }
             if ($replacement !== $current) {
                 $map[$i] = $replacement;
