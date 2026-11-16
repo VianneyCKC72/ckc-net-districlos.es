@@ -1,5 +1,5 @@
 <div class="ckc-shipping-estimator-block ckc-shipping-estimator-block--ribbon">
-    <span class="ckc-shipping-estimator-block__ribbon" aria-hidden="true">{l s='OFFRE LIMITÉE' d='Shop.Theme.Custommodules'}</span>
+    <span class="ckc-shipping-estimator-block__ribbon" aria-hidden="true">{l s='BLACK2WEEKS' d='Shop.Theme.Custommodules'}</span>
     <div class="ckc-shipping-estimator-product-block d-flex flex_cln align-items-center">
         <img class="ckc-shipping-estimator-product-block__icon" src="/modules/ckc_shipping_estimator/assets/img/camion.png" loading="lazy" alt="{l s='Icone livraison' d='Shop.Theme.Custommodules'}">
         <div class="small d-flex flex-column text-center ckc-shipping-estimator-product-block__text">
