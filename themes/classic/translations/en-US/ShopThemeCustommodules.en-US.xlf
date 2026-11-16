@@ -195,6 +195,8 @@
       <trans-unit id="190"><source>Destockage</source><target>Clearance</target></trans-unit>
       <trans-unit id="191"><source>Jusqu'à [1]-40%[/1] de réduction !</source><target>Up to [1]40% off[/1]!</target></trans-unit>
       <trans-unit id="192"><source>Voir nos offres !</source><target>See our offers!</target></trans-unit>
+      <trans-unit id="193"><source>BLACK2WEEKS</source><target>BLACK2WEEKS</target></trans-unit>
+      <trans-unit id="194"><source>Voir notre sélection de produits !</source><target>See our product selection!</target></trans-unit>
     </body>
   </file>
 </xliff>
