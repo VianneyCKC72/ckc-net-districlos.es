@@ -2,7 +2,7 @@
 <module>
     <name>abclos</name>
     <displayName><![CDATA[AbClos]]></displayName>
-    <version><![CDATA[1.1.0]]></version>
+    <version><![CDATA[1.2.0]]></version>
     <description><![CDATA[Intègre le snippet AbClos (A/B testing) sur la boutique.]]></description>
     <author><![CDATA[Districlos]]></author>
     <tab><![CDATA[front_office_features]]></tab>
