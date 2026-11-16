@@ -58,7 +58,7 @@
         {assign var=category_listing_banner_file value='black2weeks-categorie-garden.webp'}
     {/if}
 {* Packs portail + portillon alu — Portail battant / coulissant (alu) *}
-{elseif in_array($_cat_id, [169, 240, 278, 339, 337, 295, 243, 279, 323, 293])}
+{elseif in_array($_cat_id, [169, 240, 278, 339, 337, 243, 279, 323])}
     {if $_is_en}
         {assign var=category_listing_banner_file value='black2weeks-categorie-packs-portail-en.webp'}
     {else}
