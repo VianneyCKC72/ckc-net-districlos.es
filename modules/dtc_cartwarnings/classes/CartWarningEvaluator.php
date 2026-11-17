@@ -194,7 +194,6 @@ class CartWarningEvaluator
             $this->productMessageCssIncluded = true;
         }
 
-        // Toujours afficher l'alerte texte, même si le produit manquant est inactif / absent en boutique.
         if (empty($productData)) {
             return $this->renderTemplate('missing-product.tpl', [
                 'cart_warning_include_css' => $includeCss,

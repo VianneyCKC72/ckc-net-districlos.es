@@ -27,7 +27,8 @@
                      alt="{$dtc_closy_panel_title|escape:'html':'UTF-8'}"
                      width="160"
                      height="48"
-                     loading="eager">
+                     loading="lazy"
+                     decoding="async">
             </div>
             <div class="dtc-pq-panel__header-actions">
                 <p class="dtc-pq-panel__status" role="status">

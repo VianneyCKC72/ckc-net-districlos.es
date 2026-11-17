@@ -20,7 +20,6 @@
 
 class CartRule extends CartRuleCore
 {
-    // Cache statique pour les requêtes cart_product répétées
     private static $cart_products_cache = [];
 
     /*
@@ -74,20 +73,6 @@ class CartRule extends CartRuleCore
         return $r;
     }
 
-    /**
-     * Override pour retirer automatiquement les promos désactivées, expirées
-     * ou dont la période de validité n'a pas commencé.
-     *
-     * Le core PrestaShop ignore volontairement ces contrôles lorsque la règle est
-     * déjà présente dans le panier (cf. CartRuleCore::checkValidity, $alreadyInCart=true).
-     * Cet override force la vérification afin que les règles désactivées par l'admin
-     * ou expirées soient retirées des paniers existants.
-     *
-     * @param Context|null $context Contexte PrestaShop
-     * @param bool $useOrderPrice Utiliser les prix de commande
-     *
-     * @return array Messages d'erreur
-     */
     public static function autoRemoveFromCart(Context $context = null, bool $useOrderPrice = false)
     {
         if (!$context) {
@@ -132,55 +117,58 @@ class CartRule extends CartRuleCore
         return array_merge($errors, $parentErrors);
     }
 
-    /**
-     * Override de checkProductRestrictionsFromCart avec cache pour optimiser les requêtes cart_product
-     * Cette méthode est appelée plusieurs fois avec les mêmes paramètres pendant le checkout
-     */
     public function checkProductRestrictionsFromCart(CartCore $cart, $returnProducts = false, $displayError = true, $alreadyInCart = false)
     {
-        // Clé de cache basée sur les paramètres de la méthode
         $cache_key = $cart->id . '_' . $this->id . '_' . (int)$returnProducts . '_' . (int)$displayError . '_' . (int)$alreadyInCart;
 
-        // Vérifier si le résultat est déjà en cache
         if (isset(self::$cart_products_cache[$cache_key])) {
             return self::$cart_products_cache[$cache_key];
         }
 
-        // Appeler la méthode parente qui contient les requêtes SQL
         $result = parent::checkProductRestrictionsFromCart($cart, $returnProducts, $displayError, $alreadyInCart);
-
-        // Mettre en cache le résultat
         self::$cart_products_cache[$cache_key] = $result;
 
         return $result;
     }
 
     /*
-     * module: dtc_cartrule
-     * Ajoute la/les conditions custom Districlos aux règles panier.
-     * Délègue toute la logique aux services du module ; ne touche pas au reste
-     * du comportement natif. Si un service n'est pas disponible (module
-     * désinstallé ou feature non chargée), l'override se comporte comme le parent.
-     *
-     * Override "défensif" : tout est wrappé dans un try/catch silencieux
-     * pour ne jamais empêcher la validation native d'une règle panier
-     * en cas de problème côté module custom.
-     */
+    * module: dtc_cartrule
+    */
     public function checkValidity(Context $context, $alreadyInCart = false, $display_error = true, $check_carrier = true, $useOrderPrices = false)
     {
         try {
-            $minOrdersServicePath = _PS_MODULE_DIR_ . 'dtc_cartrule/classes/CartRuleMinOrdersService.php';
+            $moduleDir = _PS_MODULE_DIR_ . 'dtc_cartrule/classes/';
+
+            $minOrdersServicePath = $moduleDir . 'CartRuleMinOrdersService.php';
             if (file_exists($minOrdersServicePath)) {
                 if (!class_exists('CartRuleMinOrdersService', false)) {
                     require_once $minOrdersServicePath;
                 }
 
-                $idCustomer = ($context && $context->customer) ? (int) $context->customer->id : 0;
+                if (CartRuleMinOrdersService::hasAnyRestriction()) {
+                    $idCustomer = ($context && $context->customer) ? (int) $context->customer->id : 0;
 
-                if (!CartRuleMinOrdersService::isAllowedForCustomer((int) $this->id, $idCustomer)) {
-                    return $display_error
-                        ? $this->trans('This voucher requires a minimum number of previous orders.', [], 'Shop.Notifications.Error')
-                        : false;
+                    if (!CartRuleMinOrdersService::isAllowedForCustomer((int) $this->id, $idCustomer)) {
+                        return $display_error
+                            ? $this->trans('This voucher requires a minimum number of previous orders.', [], 'Shop.Notifications.Error')
+                            : false;
+                    }
+                }
+            }
+
+            $repeatServicePath = $moduleDir . 'CartRuleRepeatDiscountService.php';
+            if (file_exists($repeatServicePath)) {
+                if (!class_exists('CartRuleRepeatDiscountService', false)) {
+                    require_once $repeatServicePath;
+                }
+
+                if (CartRuleRepeatDiscountService::isRepeatRule((int) $this->id)) {
+                    $cart = ($context && Validate::isLoadedObject($context->cart)) ? $context->cart : null;
+                    if (!$cart || CartRuleRepeatDiscountService::getTierCount($cart) <= 0) {
+                        return $display_error
+                            ? $this->trans('You cannot use this voucher with these products', [], 'Shop.Notifications.Error')
+                            : false;
+                    }
                 }
             }
         } catch (\Throwable $e) {
@@ -191,17 +179,8 @@ class CartRule extends CartRuleCore
     }
 
     /*
-     * module: dtc_cartrule
-     * Remise répétitive : remplace le montant unitaire de la règle dédiée
-     * par floor(total / palier) × remise (sans plafond).
-     *
-     * Important : on laisse reduction_amount à la valeur dynamique sur l'objet
-     * en mémoire pour que CartRuleCalculator (qui ne passe pas par
-     * getContextualValue) applique le bon total, pas seulement l'affichage.
-     *
-     * On aligne aussi reduction_currency sur la devise du contexte : sinon le
-     * core peut convertir via Currency(0) et renvoyer value_real = 0 (−0,00 €).
-     */
+    * module: dtc_cartrule
+    */
     public function getContextualValue($use_tax, Context $context = null, $filter = null, $package = null, $use_cache = true)
     {
         try {
@@ -225,8 +204,7 @@ class CartRule extends CartRuleCore
                             $this->reduction_currency = $idCurrency;
                         }
 
-                        // Le cache core n'inclut pas le total panier : on le purge pour cette règle.
-                        Cache::clean('getContextualValue_' . (int) $this->id . '_*');
+                        return parent::getContextualValue($use_tax, $context, $filter, $package, false);
                     }
                 }
             }
