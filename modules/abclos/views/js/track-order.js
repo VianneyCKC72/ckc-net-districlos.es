@@ -2,7 +2,7 @@
  * AbClos — goal « revenue » sur la page confirmation de commande.
  * 1) window.abclosOrder (injecté PHP, fiable)
  * 2) fallback data-order (thème Classic)
- * Dédup localStorage ; skip preview.
+ * Dédup localStorage par référence commande ; skip preview.
  */
 (function () {
   'use strict';
@@ -36,7 +36,6 @@
     if (raw == null || raw === '') {
       return NaN;
     }
-    // "1 234,56 €" / "1234.56" → nombre
     var cleaned = String(raw)
       .replace(/\s/g, '')
       .replace(/[^\d,.-]/g, '')
@@ -86,7 +85,6 @@
       order.amounts.totals.total_including_tax &&
       order.amounts.totals.total_including_tax.amount;
 
-    // Fallback total / total_paid si structure thème custom
     if (amount == null && order.amounts && order.amounts.totals) {
       var totals = order.amounts.totals;
       if (totals.total && totals.total.amount != null) {
@@ -114,14 +112,18 @@
         return false;
       }
       try {
-        window.abclos.track(GOAL, { value: value });
+        // orderRef = 1 conversion + montant par commande (pas 1 seule fois / visiteur)
+        window.abclos.track(GOAL, { value: value, orderRef: reference });
         try {
           localStorage.setItem(storageKey(reference), '1');
         } catch (storageErr) {
-          /* ignore quota / private mode */
+          /* ignore */
         }
         if (window.console && console.debug) {
-          console.debug('[AbClos] track', GOAL, { value: value, reference: reference });
+          console.debug('[AbClos] track', GOAL, {
+            value: value,
+            orderRef: reference,
+          });
         }
       } catch (e) {
         if (window.console && console.warn) {
@@ -151,15 +153,21 @@
 
     var hit = readFromPhp() || readFromDom();
     if (!hit) {
+      if (window.console && console.debug) {
+        console.debug('[AbClos] revenue: pas de données commande sur cette page');
+      }
       return;
     }
 
     try {
       if (localStorage.getItem(storageKey(hit.reference))) {
+        if (window.console && console.debug) {
+          console.debug('[AbClos] revenue déjà envoyé pour', hit.reference);
+        }
         return;
       }
     } catch (e) {
-      /* continue without dédup if storage unavailable */
+      /* continue */
     }
 
     trackRevenue(hit.value, hit.reference);
