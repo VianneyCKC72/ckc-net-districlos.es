@@ -37,10 +37,22 @@ Désinstaller ou désactiver le module / le switch = plus aucun snippet.
    - variante appliquée si la règle URL matche
 4. Cliquez **Ajouter au panier** → le goal `add_to_cart` doit apparaître dans AbClos → Résultats.
 
+### Revenu (automatique)
+
+Sur la page **confirmation de commande**, le module envoie tout seul :
+
+```js
+abclos.track('revenue', { value: TOTAL_TTC })
+```
+
+Prérequis AbClos : objectif clé `revenue` (type Revenu) lié à l’expérience **RUNNING**.
+Le visiteur doit avoir vu une page du test avant (cookie d’assignment).
+
 ### Track manuel (console)
 
 ```js
-window.abclos.track('add_to_cart', { value: 1 });
+window.abclos.track('add_to_cart');
+window.abclos.track('revenue', { value: 129 });
 ```
 
 ## Targeting URL (AbClos → Pages)
