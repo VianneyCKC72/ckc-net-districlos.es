@@ -32,7 +32,7 @@ class Abclos extends Module
     {
         $this->name = 'abclos';
         $this->tab = 'front_office_features';
-        $this->version = '1.2.0';
+        $this->version = '1.2.1';
         $this->author = 'Districlos';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -269,15 +269,23 @@ class Abclos extends Module
             return null;
         }
 
-        // Uniquement la commande du client courant (évite fuite via id_order)
-        if (!$this->context->customer->isLogged()
-            || (int) $order->id_customer !== (int) $this->context->customer->id
-        ) {
-            // Guest : le cookie customer peut être posé juste après commande
-            $secureKey = (string) Tools::getValue('key');
-            if ($secureKey === '' || $secureKey !== (string) $order->secure_key) {
-                return null;
-            }
+        // Autoriser si : client courant, OU clé sécurisée URL, OU panier de la session
+        $secureKey = (string) Tools::getValue('key');
+        $customerOk = $this->context->customer
+            && (int) $this->context->customer->id > 0
+            && (int) $order->id_customer === (int) $this->context->customer->id;
+        $keyOk = $secureKey !== '' && $secureKey === (string) $order->secure_key;
+        $cartOk = false;
+        $idCart = (int) Tools::getValue('id_cart');
+        if (!$idCart && isset($this->context->cart->id)) {
+            $idCart = (int) $this->context->cart->id;
+        }
+        if ($idCart && (int) $order->id_cart === $idCart) {
+            $cartOk = true;
+        }
+
+        if (!$customerOk && !$keyOk && !$cartOk) {
+            return null;
         }
 
         return [
