@@ -10,17 +10,22 @@ require_once __DIR__ . '/classes/CartWarningRuleInstaller.php';
 
 class dtc_cartwarnings extends Module
 {
+    private const CFG_SCHEMA_READY = 'DTC_CARTWARNINGS_SCHEMA_READY';
+
     /** @var CartWarningEvaluator|null */
     private $evaluator;
 
     /** @var bool */
     private $schemaJustFixed = false;
 
+    /** @var bool|null */
+    private static $schemaReadyCache = null;
+
     public function __construct()
     {
         $this->name = 'dtc_cartwarnings';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.1';
+        $this->version = '1.0.2';
         $this->author = 'districlos';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -34,14 +39,22 @@ class dtc_cartwarnings extends Module
 
     public function install()
     {
-        return parent::install()
+        $ok = parent::install()
             && $this->installDb()
             && CartWarningRuleInstaller::seedDefaultRules();
+
+        if ($ok) {
+            Configuration::updateValue(self::CFG_SCHEMA_READY, 1);
+        }
+
+        return $ok;
     }
 
     public function uninstall()
     {
         CartWarningRuleRepository::clearCache();
+        Configuration::deleteByName(self::CFG_SCHEMA_READY);
+        self::$schemaReadyCache = null;
 
         return $this->uninstallDb() && parent::uninstall();
     }
@@ -63,28 +76,34 @@ class dtc_cartwarnings extends Module
     }
 
     /**
-     * Appelé depuis override CartController (page + refresh AJAX).
-     *
      * @return array<string, string>
      */
     public function assignCartWarningsToSmarty()
     {
-        $this->ensureDatabaseReady();
+        if (!$this->ensureDatabaseReady()) {
+            return [];
+        }
 
         return $this->getEvaluator()->assignToSmarty();
     }
 
     /**
-     * Crée les tables / seed si besoin (install partielle, zip sans réinstall).
-     *
-     * @return bool true si le schéma est prêt
+     * @return bool
      */
     public function ensureDatabaseReady()
     {
+        if (self::$schemaReadyCache === true) {
+            return true;
+        }
+
+        if ((int) Configuration::get(self::CFG_SCHEMA_READY) === 1) {
+            return self::$schemaReadyCache = true;
+        }
+
         $created = false;
         if (!$this->tablesExist()) {
             if (!$this->installDb()) {
-                return false;
+                return self::$schemaReadyCache = false;
             }
             $created = true;
         }
@@ -102,7 +121,12 @@ class dtc_cartwarnings extends Module
             $this->schemaJustFixed = true;
         }
 
-        return $this->tablesExist();
+        $ready = $this->tablesExist();
+        if ($ready) {
+            Configuration::updateValue(self::CFG_SCHEMA_READY, 1);
+        }
+
+        return self::$schemaReadyCache = $ready;
     }
 
     public function installDb()

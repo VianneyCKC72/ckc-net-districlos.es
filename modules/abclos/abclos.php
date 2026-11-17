@@ -32,7 +32,7 @@ class Abclos extends Module
     {
         $this->name = 'abclos';
         $this->tab = 'front_office_features';
-        $this->version = '1.1.0';
+        $this->version = '1.2.1';
         $this->author = 'Districlos';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -240,6 +240,61 @@ class Abclos extends Module
     }
 
     /**
+     * Sur la page confirmation : montant + référence pour le track revenue JS.
+     * Indépendant du markup thème (data-order Classic).
+     *
+     * @return array{reference: string, value: float}|null
+     */
+    private function getOrderConfirmationPayload()
+    {
+        if (!isset($this->context->controller->php_self)
+            || $this->context->controller->php_self !== 'order-confirmation'
+        ) {
+            return null;
+        }
+
+        $idOrder = (int) Tools::getValue('id_order');
+        if (!$idOrder) {
+            $idCart = (int) Tools::getValue('id_cart');
+            if ($idCart) {
+                $idOrder = (int) Order::getIdByCartId($idCart);
+            }
+        }
+        if (!$idOrder) {
+            return null;
+        }
+
+        $order = new Order($idOrder);
+        if (!Validate::isLoadedObject($order)) {
+            return null;
+        }
+
+        // Autoriser si : client courant, OU clé sécurisée URL, OU panier de la session
+        $secureKey = (string) Tools::getValue('key');
+        $customerOk = $this->context->customer
+            && (int) $this->context->customer->id > 0
+            && (int) $order->id_customer === (int) $this->context->customer->id;
+        $keyOk = $secureKey !== '' && $secureKey === (string) $order->secure_key;
+        $cartOk = false;
+        $idCart = (int) Tools::getValue('id_cart');
+        if (!$idCart && isset($this->context->cart->id)) {
+            $idCart = (int) $this->context->cart->id;
+        }
+        if ($idCart && (int) $order->id_cart === $idCart) {
+            $cartOk = true;
+        }
+
+        if (!$customerOk && !$keyOk && !$cartOk) {
+            return null;
+        }
+
+        return [
+            'reference' => (string) $order->reference,
+            'value' => (float) $order->total_paid_tax_incl,
+        ];
+    }
+
+    /**
      * Injection snippet + JS panier / revenue.
      */
     public function hookDisplayHeader($params)
@@ -257,6 +312,11 @@ class Abclos extends Module
 
         if ($apiKey === '' || $endpoint === '') {
             return '';
+        }
+
+        $orderPayload = $this->getOrderConfirmationPayload();
+        if ($orderPayload !== null) {
+            Media::addJsDef(['abclosOrder' => $orderPayload]);
         }
 
         $jsOptions = [

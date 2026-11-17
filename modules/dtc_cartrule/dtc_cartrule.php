@@ -1,16 +1,5 @@
 <?php
-/**
- * Module DTC Cart Rule
- *
- * Conteneur pour les extensions custom des règles panier PrestaShop.
- *
- * Fonctionnalités :
- *  - Condition "nombre minimum de commandes validées" (par règle panier)
- *  - Remise répétitive configurable : -X € tous les Y € (sans plafond)
- *  - Exclusion produits / catégories du calcul des paliers
- *
- * La table `ps_cart_rule` du core n'est jamais altérée structurellement.
- */
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -24,7 +13,7 @@ class Dtc_Cartrule extends Module
     {
         $this->name = 'dtc_cartrule';
         $this->tab = 'pricing_promotion';
-        $this->version = '1.2.0';
+        $this->version = '1.2.2';
         $this->author = 'Districlos';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = ['min' => '1.7.0.0', 'max' => _PS_VERSION_];
@@ -73,6 +62,8 @@ class Dtc_Cartrule extends Module
             CartRuleRepeatDiscountService::CFG_EXCLUDE_PRODUCTS,
             CartRuleRepeatDiscountService::CFG_EXCLUDE_CATEGORIES,
             'DTC_CARTRULE_REPEAT_NO_HIGHLIGHT',
+            'DTC_CARTRULE_HOOK_CART_SAVE',
+            'DTC_CARTRULE_REPEAT_MIN_ZERO',
         ] as $key) {
             Configuration::deleteByName($key);
         }
@@ -258,9 +249,6 @@ class Dtc_Cartrule extends Module
         Configuration::updateValue(CartRuleRepeatDiscountService::CFG_EXCLUDE_CATEGORIES, $defaults['exclude_categories']);
     }
 
-    /**
-     * Migration douce (hooks / config) sans réinstallation.
-     */
     private function ensureUpgrade(): void
     {
         if (!Configuration::hasKey(CartRuleRepeatDiscountService::CFG_STEP)) {
@@ -274,9 +262,11 @@ class Dtc_Cartrule extends Module
             Configuration::updateValue(CartRuleRepeatDiscountService::CFG_EXCLUDE_CATEGORIES, '');
         }
 
-        $this->registerHook('actionCartSave');
+        if ((int) Configuration::get('DTC_CARTRULE_HOOK_CART_SAVE') !== 1) {
+            $this->registerHook('actionCartSave');
+            Configuration::updateValue('DTC_CARTRULE_HOOK_CART_SAVE', 1);
+        }
 
-        // Désactive le highlight sur la règle existante (évite le bloc promo orange < 500 €).
         if ((int) Configuration::get('DTC_CARTRULE_REPEAT_NO_HIGHLIGHT') !== 1) {
             $idCartRule = CartRuleRepeatDiscountService::getIdCartRule();
             if ($idCartRule > 0) {
@@ -287,6 +277,18 @@ class Dtc_Cartrule extends Module
                 );
             }
             Configuration::updateValue('DTC_CARTRULE_REPEAT_NO_HIGHLIGHT', 1);
+        }
+
+        if ((int) Configuration::get('DTC_CARTRULE_REPEAT_MIN_ZERO') !== 1) {
+            $idCartRule = CartRuleRepeatDiscountService::getIdCartRule();
+            if ($idCartRule > 0) {
+                Db::getInstance()->update(
+                    'cart_rule',
+                    ['minimum_amount' => 0],
+                    'id_cart_rule = ' . (int) $idCartRule
+                );
+            }
+            Configuration::updateValue('DTC_CARTRULE_REPEAT_MIN_ZERO', 1);
         }
     }
 
@@ -344,9 +346,6 @@ class Dtc_Cartrule extends Module
         }
     }
 
-    /**
-     * Injection du champ "min commandes" sur AdminCartRules.
-     */
     public function hookDisplayBackOfficeHeader($params)
     {
         if (Tools::getValue('controller') !== 'AdminCartRules') {

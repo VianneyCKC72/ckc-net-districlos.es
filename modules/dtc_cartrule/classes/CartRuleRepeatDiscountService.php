@@ -1,10 +1,5 @@
 <?php
-/**
- * Remise répétitive : -X € tous les Y € de panier (sans plafond).
- *
- * Config module → une CartRule partagée → montant calculé dynamiquement
- * (floor(total / palier) × remise) via l'override CartRule::getContextualValue.
- */
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -16,21 +11,25 @@ class CartRuleRepeatDiscountService
     public const CFG_DISCOUNT = 'DTC_CARTRULE_REPEAT_DISCOUNT';
     public const CFG_TAX = 'DTC_CARTRULE_REPEAT_TAX';
     public const CFG_ID_CART_RULE = 'DTC_CARTRULE_REPEAT_ID';
-    /** IDs produits exclus du calcul de palier (CSV). */
     public const CFG_EXCLUDE_PRODUCTS = 'DTC_CARTRULE_REPEAT_EXCLUDE_PRODUCTS';
-    /** IDs catégories exclues du calcul de palier (CSV). */
     public const CFG_EXCLUDE_CATEGORIES = 'DTC_CARTRULE_REPEAT_EXCLUDE_CATEGORIES';
 
     private const RULE_CODE_MARKER = 'DTC_REPEAT';
 
-    /** @var bool Évite la récursion actionCartSave → addCartRule → actionCartSave */
+    /** @var bool */
     private static $syncing = false;
 
-    /** @var array<int, true>|null Cache requête des ids exclus (produits) */
+    /** @var array<int, true>|null */
     private static $excludeProductsCache = null;
 
-    /** @var array<int, true>|null Cache requête des ids exclus (catégories) */
+    /** @var array<int, true>|null */
     private static $excludeCategoriesCache = null;
+
+    /** @var array<int, int> */
+    private static $tierCountByCart = [];
+
+    /** @var array<int, float> */
+    private static $discountByCart = [];
 
     public static function getDefaults(): array
     {
@@ -76,31 +75,27 @@ class CartRuleRepeatDiscountService
         return $idCartRule > 0 && $idCartRule === self::getIdCartRule();
     }
 
-    /**
-     * Nombre de paliers atteints (0 si inactif / panier insuffisant).
-     * Le total éligible ignore les produits / catégories exclus en config.
-     */
     public static function getTierCount(Cart $cart): int
     {
         if (!self::isEnabled() || !Validate::isLoadedObject($cart) || !(int) $cart->id) {
             return 0;
         }
 
+        $idCart = (int) $cart->id;
+        if (isset(self::$tierCountByCart[$idCart])) {
+            return self::$tierCountByCart[$idCart];
+        }
+
         $step = self::getStep();
         if ($step <= 0) {
-            return 0;
+            return self::$tierCountByCart[$idCart] = 0;
         }
 
         $total = self::getEligibleProductsTotal($cart);
 
-        return (int) floor($total / $step);
+        return self::$tierCountByCart[$idCart] = (int) floor($total / $step);
     }
 
-    /**
-     * Total produits du panier pris en compte pour les paliers.
-     * Sans exclusion → même chemin que le core (getOrderTotal).
-     * Avec exclusion → 1 parcours des lignes + 1 requête catégories max.
-     */
     public static function getEligibleProductsTotal(Cart $cart): float
     {
         $excludeProducts = self::getExcludedProductIds();
@@ -176,9 +171,6 @@ class CartRuleRepeatDiscountService
         return self::$excludeCategoriesCache;
     }
 
-    /**
-     * Normalise une saisie CSV d'IDs (espace / point-virgule acceptés) → "1,2,3".
-     */
     public static function normalizeIdList(string $raw): string
     {
         $ids = self::parseIdList($raw);
@@ -186,31 +178,44 @@ class CartRuleRepeatDiscountService
         return $ids ? implode(',', array_keys($ids)) : '';
     }
 
-    /**
-     * Invalide les caches statiques (après save config / tests).
-     */
     public static function clearExclusionCache(): void
     {
         self::$excludeProductsCache = null;
         self::$excludeCategoriesCache = null;
+        self::clearComputationCache();
     }
 
-    /**
-     * Montant de remise à appliquer sur le panier (sans plafond).
-     */
+    public static function clearComputationCache(?int $idCart = null): void
+    {
+        if ($idCart === null) {
+            self::$tierCountByCart = [];
+            self::$discountByCart = [];
+
+            return;
+        }
+
+        unset(self::$tierCountByCart[$idCart], self::$discountByCart[$idCart]);
+    }
+
     public static function getDiscountForCart(Cart $cart): float
     {
-        $tiers = self::getTierCount($cart);
-        if ($tiers <= 0) {
+        if (!Validate::isLoadedObject($cart) || !(int) $cart->id) {
             return 0.0;
         }
 
-        return (float) ($tiers * self::getDiscount());
+        $idCart = (int) $cart->id;
+        if (isset(self::$discountByCart[$idCart])) {
+            return self::$discountByCart[$idCart];
+        }
+
+        $tiers = self::getTierCount($cart);
+        if ($tiers <= 0) {
+            return self::$discountByCart[$idCart] = 0.0;
+        }
+
+        return self::$discountByCart[$idCart] = (float) ($tiers * self::getDiscount());
     }
 
-    /**
-     * Crée / met à jour la CartRule partagée selon la config.
-     */
     public static function ensureCartRule(): int
     {
         $id = self::getIdCartRule();
@@ -232,7 +237,7 @@ class CartRuleRepeatDiscountService
 
         $cartRule->description = self::RULE_CODE_MARKER;
         $cartRule->code = '';
-        $cartRule->highlight = false; // Pas d'affichage "offre promo" tant que le palier n'est pas atteint
+        $cartRule->highlight = false;
         $cartRule->partial_use = false;
         $cartRule->priority = 1;
         $cartRule->active = $active;
@@ -241,12 +246,11 @@ class CartRuleRepeatDiscountService
         $cartRule->quantity = 999999999;
         $cartRule->quantity_per_user = 999999999;
         $cartRule->free_shipping = false;
-        $cartRule->minimum_amount = $step;
+        $cartRule->minimum_amount = 0;
         $cartRule->minimum_amount_tax = $tax;
         $cartRule->minimum_amount_currency = $idCurrency;
         $cartRule->minimum_amount_shipping = false;
         $cartRule->reduction_percent = 0;
-        // Valeur unitaire : le montant réel (× N paliers) est calculé dans getContextualValue.
         $cartRule->reduction_amount = $discount;
         $cartRule->reduction_tax = $tax;
         $cartRule->reduction_currency = $idCurrency;
@@ -278,9 +282,6 @@ class CartRuleRepeatDiscountService
         return (int) $cartRule->id;
     }
 
-    /**
-     * Ajoute ou retire la règle du panier selon les paliers atteints.
-     */
     public static function syncToCart(Cart $cart): void
     {
         if (self::$syncing || !Validate::isLoadedObject($cart) || !(int) $cart->id) {
@@ -288,6 +289,7 @@ class CartRuleRepeatDiscountService
         }
 
         self::$syncing = true;
+        self::clearComputationCache((int) $cart->id);
 
         try {
             $idCartRule = self::getIdCartRule();
@@ -368,8 +370,6 @@ class CartRuleRepeatDiscountService
     }
 
     /**
-     * Produits du panier appartenant à au moins une catégorie exclue (1 requête).
-     *
      * @param int[] $productIds
      * @param int[] $categoryIds
      *
