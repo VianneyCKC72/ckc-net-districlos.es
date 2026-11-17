@@ -925,6 +925,9 @@ window.CKC_CFG_I18N = {
                         <strong class="ckc-price-main" x-text="opt.show_from_price ? (((window.CKC_CFG_I18N&&window.CKC_CFG_I18N.fromPrice)||'À partir de') + ' ' + (opt.price_base || 0).toFixed(2) + ' €') : ('+ ' + (opt.price_base || 0).toFixed(2) + ' €')"></strong>
                       </div>
                     </template>
+                    <template x-if="opt.promo_message">
+                      <span class="ckc-card__badge_promo" x-text="opt.promo_message"></span>
+                    </template>
                     <template x-if="!$store.configurator.currentTronconData().options[opt.id]">
                       <button class="ckc-configurateur-item-select-btn">{l s='Sélectionner' d='Shop.Theme.Customconfigurator'}</button>
                     </template>
